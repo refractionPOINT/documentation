@@ -39,11 +39,11 @@ The report is per-control, and each control lands in one of four states:
   the manual / attestation controls (policy documents, board sign-off,
   interview evidence): the framework marks them as not auto-assessable, so no
   rule is run and no verdict is invented. A control also lands here when the
-  detection that would have decided it never ran — including when **you have
-  disabled every rule that evidences it** through a
-  [`rules` policy](custom-rules.md#compliance-interaction). A zero-violation
-  result from a detector that did not run is not evidence of compliance, so it
-  is never reported as a PASS.
+  detection that would have decided it never ran — including when a
+  [`rules` policy](custom-rules.md#compliance-interaction) has **disabled every
+  rule the control relies on** and it has no other basis to be graded from. A
+  zero-violation result from a detector that did not run is not evidence of
+  compliance, so it is never reported as a PASS.
 - **NOT_APPLICABLE** — the control has nothing to assess in *this* estate:
   either the framework's cloud has no resources connected, or the control
   declares no resource types to apply to.

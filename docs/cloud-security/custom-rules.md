@@ -154,6 +154,22 @@ Paths are rooted at `event/`, and the event body is the resource's normalized
 properties. `limacharlie cloudsec resource get "lcrn:..."` prints a real
 resource, which is the fastest way to see the exact property names for a type.
 
+!!! note "A few facets are computed at evaluation time"
+    Some properties a rule can match on are derived when the rule runs rather
+    than stored on the resource, so they do **not** appear in `resource get`:
+
+    - **Network** — `covers_all_ports` (the rule's port range spans the whole
+      port space) and `ports_effective` (the explicitly listed ports plus every
+      well-known port a listed range contains). Both exist because a declarative
+      rule cannot expand a port range itself; the firewall example below uses
+      them.
+    - **Identity** — `dormant`, `mfa_known` / `mfa_enabled`,
+      `credential_recently_used`, and `service_linked` (an AWS service-linked
+      role).
+
+    Everything else you can match on is a stored property, visible in
+    `resource get`.
+
 ### The operator allowlist
 
 A rule may use only these operators, anywhere in its `detect` tree:
@@ -406,9 +422,11 @@ rule's findings may carry none — which is the practical reason to write the
 
 !!! warning "Measure a broad rule before you trust it"
     A rule that matches a quarter of its resource type is a rule that buries the
-    rest of your worklist. Before relying on a new rule, check what it actually
-    produced (`limacharlie cloudsec finding facets`) — a single near-universal
-    condition can produce six-figure finding counts on a large estate. If the
+    rest of your worklist. Before relying on a new rule, count what it actually
+    produced — the worklist has no rule-id facet, so search for the id
+    (`limacharlie cloudsec finding list -q custom-your-rule-id`) — because a
+    single near-universal condition can produce six-figure finding counts on a
+    large estate. If the
     condition is real but the *unit* is wrong (an account-level setting reported
     once per bucket), express it at the level it is actually fixed, or ship it at
     `LOW`/`INFO` so it stays out of the default worklist while remaining
@@ -426,8 +444,16 @@ a control no detector covers at all, and it keeps `NOT_ASSESSED` out of the
 compliance score's denominator rather than inflating it into a green check. See
 [Compliance](compliance.md).
 
-Custom rules do not evidence framework controls: catalogs join controls to rule
-ids, and no catalog names a `custom-` id.
+The reverse direction is worth knowing before you write a broad rule. Your own
+rules can never make a control **pass** — a control passes when nothing proves a
+violation, and a rule only ever adds findings. They can, however, make one
+**fail**: framework catalogs join controls to detections two ways, by rule id
+(no catalog names a `custom-` id) and by **finding class**, scoped to the
+control's resource types. `public_exposure` is a class several frameworks join
+on, so a `public_exposure` rule over a resource type such a control scopes to
+attaches to it as evidence and flips it to FAIL. `misconfig` is not a class-join
+key in any shipped catalog, so a `misconfig` rule never moves a compliance
+verdict.
 
 ## Bounds
 
