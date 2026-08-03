@@ -2,7 +2,75 @@
 
 Release notes for LimaCharlie platform components, organized by date.
 
+## 2026-07-29
+
+### Web App 6.0.2
+
+A rebuilt Cloud Security Risks triage table, finding ownership as a filter and column, a self-serve Cloud Security upgrade flow, and a reorganized sidebar.
+
+#### New Features
+
+- **Cloud Security Risks — dense triage worklist**: the card-per-finding list is now a ruled, sortable table at roughly twice the row density, a sticky header, server-side sorting on Risk and Severity, and select-all in the header checkbox so the bulk triage bar only appears once you pick rows. Multiple UX improvements related to this change.
+- **Owner facet and column on Risks**: findings can now be filtered and scanned by who owns them. An Owner group in the facet rail lists Unassigned first, then your own account marked "(you)", then everyone else by count.
+- **Data Security matches the Risks layout**: the Data Security screen adopts the same tinted filter bar, flat facet rail and badge styling as the Risks worklist.
+- **Self-serve Cloud Security upgrade**: free-tier orgs can now upgrade without leaving the page. The trial band's CTA on the Cloud Security Overview opens an in-context upgrade modal that explains what upgrading changes, quotes the real monthly price for your org, collects payment details only if there's no card on file, and confirms on completion.
+- **SOPs and Organization Notes move to Organization Settings**: both sidebar entries move out of Automation — where they sat next to D&R rules, playbooks and lookups — into the Organization Settings group after Integrations, with matching breadcrumbs. Existing links and bookmarks to /sops and /org-notes still work.
+- **Apps entry always visible in the sidebar**: the Apps navigation item no longer disappears for users lacking the app.get permission; it renders for everyone and the page itself explains the missing permission when opened.
+
+#### Bug Fixes
+
+- The "Cloud Security isn't enabled" screen sent its main button to the extension's configuration page, which has no way to subscribe and often showed a permission wall; it now goes to the marketplace entry where the extension can actually be subscribed, and the button reads "View extension".
+- Cloud Security still described itself as pre-GA and not publicly subscribable in the not-enabled gate and the feedback modal, even though it is generally available and self-serve.
+- The Risks lens picker showed an empty "Select..." whenever the active class filters didn't match a preset lens, making it look like no lens was applied while a filter was in fact active; it now reads "Custom".
+- Cloud resources were classified by their name, so a load balancer called "public-lb" was drawn as the internet node and a VM called "db-1" was drawn as a data store; classification now uses the resource's actual type. Similarly, an IAM principal named something like "public-reports@..." was labelled "Public - anyone on the internet".
+- The fleet board's top attack path card navigated to a retired URL and silently bounced users to the org Overview; it now opens the Attack Surface workspace, and old bookmarked path links redirect there too.
+- Third-party assets and reconciled inventory assets both displayed as "Third-party asset" in the graph type filter and node labels; inventory assets now read "Inventory asset".
+- The shared-fix strip and the "resolves N findings" count only considered one kind of root cause, so privilege-escalation causes never appeared and mixed causes were counted twice — the strip and the finding detail card could disagree on the same fix. The shared-fix card also described every cause as a firewall rule, even when the fix was an IAM role binding.
+- Sortable Risk and Severity column headers rendered a truncated "..." because the label plus the sort icon didn't fit their track.
+- In dark mode, Risks table rows swallowed their own dividers and the header band.
+
+---
+
+## 2026-07-28
+
+### Web App 6.0.1
+
+A small fix to the Cloud Security onboarding sign-up flow.
+
+#### Bug Fixes
+
+- Signing up from a Cloud Security onboarding link still asked which product you wanted before creating an account, even though the link had already committed you to one.
+
+---
+
 ## 2026-07-27
+
+### Web App 6.0.0
+
+Cloud Security goes generally available, a one-link self-serve onboarding flow, and a rebuilt Cloud Security Overview dashboard.
+
+#### New Features
+
+- **Cloud Security is generally available**: the product is no longer gated behind an early-access flag, so every organization with the Cloud Security extension sees it in the sidebar.
+- **Self-serve onboarding link**: a single shareable URL - `/onboard?purpose=cloud-security` - now takes someone from no account to a working organization.
+- **Cloud Security Overview rebuilt**: the Overview now uses the same flat dashboard language as the Case Management dashboard.
+- **Full-screen kill-chain view**: the most-critical-path tile gains a "View full screen" action.
+- **Trial status on the Overview**: organizations on the Cloud Security trial now see a banner at the top of the Overview stating the provider-connection cap and how many are used, the trial length, and a "See plans" link — instead of only finding out when they hit the limit.
+- **Provider-aware connect wizard diagram**: the diagram in the provider setup wizard now draws what the provider you selected actually contributes — compute, network, data, identity, AI and vulnerability coverage for a cloud, or identities, apps and devices for a directory — and labels the credential path with how that provider authenticates (IAM roles, AssumeRole, GitHub App, and so on). The edge into your workspace now states the sync cadence you just chose on that step.
+
+#### Bug Fixes
+
+- The Overview coverage bar read 100% in nearly every state, because it counted only sources that had already completed one sweep rather than the estate itself; it now reports accounts collecting, shows a real shortfall while a connected source has delivered nothing, and stays empty rather than showing 0/0 before the first scan lands.
+- Privilege-escalation findings were drawn with an invented "Internet -> public exposure" entry hop and a rationale claiming an open attack path, even for identity-only findings that are not internet-reachable; the exposure claim is now only made when the backend asserts it, and entitlement hops are labelled "can assume" instead of "reaches".
+- The generic rationale on some findings printed a bare category name such as "High ciem."; the three entitlement categories now spell out what they mean.
+- Verifying your email during sign-up sent you to the organization list and lost the onboarding flow you started; the verification link now returns you exactly where you left off, and the original tab no longer sits on a stale "verify your email" card after verification completes.
+- The choke-point sentence naming your crown-jewel resources appeared in English in every language; it is now translated across all locales.
+- Creating a secret inline in the provider wizard labelled the name field "New secret (required)", which read as if it were the credential itself; it now says "New secret name". Providers that take a raw key (LimaCharlie, OpenAI, Anthropic) also show a bare-key placeholder instead of suggesting a JSON wrapper.
+- The provider wizard and first-run artwork drew logos for internal resources on a provider LimaCharlie does not support; the illustrations no longer use them.
+
+---
+
+## 2026-07-26
 
 ### Web App 5.14.0
 
