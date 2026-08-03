@@ -52,7 +52,7 @@ Cloud Security goes generally available, a one-link self-serve onboarding flow, 
 #### New Features
 
 - **Cloud Security is generally available**: the product is no longer gated behind an early-access flag, so every organization with the Cloud Security extension sees it in the sidebar.
-- **Self-serve onboarding link**: a single shareable URL - `/onboard?purpose=cloud-security` - now takes someone from no account to a working organization. 
+- **Self-serve onboarding link**: a single shareable URL - `/onboard?purpose=cloud-security` - now takes someone from no account to a working organization.
 - **Cloud Security Overview rebuilt**: the Overview now uses the same flat dashboard language as the Case Management dashboard.
 - **Full-screen kill-chain view**: the most-critical-path tile gains a "View full screen" action.
 - **Trial status on the Overview**: organizations on the Cloud Security trial now see a banner at the top of the Overview stating the provider-connection cap and how many are used, the trial length, and a "See plans" link — instead of only finding out when they hit the limit.
@@ -70,7 +70,7 @@ Cloud Security goes generally available, a one-link self-serve onboarding flow, 
 
 ---
 
-## 2026-07-27
+## 2026-07-26
 
 ### Web App 5.14.0
 
