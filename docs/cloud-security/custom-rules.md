@@ -166,6 +166,10 @@ resource, which is the fastest way to see the exact property names for a type.
     - **Identity** — `dormant`, `mfa_known` / `mfa_enabled`,
       `credential_recently_used`, and `service_linked` (an AWS service-linked
       role).
+    - **HasPermission** — `effective_public_grant`: the grant really does expose
+      the target to the internet, after accounting for a `deny` statement and
+      for a target whose own public-access block neutralizes it. Match on this
+      rather than on `public_principal`, which is only half the question.
 
     Everything else you can match on is a stored property, visible in
     `resource get`.
@@ -423,14 +427,14 @@ rule's findings may carry none — which is the practical reason to write the
 !!! warning "Measure a broad rule before you trust it"
     A rule that matches a quarter of its resource type is a rule that buries the
     rest of your worklist. Before relying on a new rule, count what it actually
-    produced — the worklist has no rule-id facet, so search for the id
-    (`limacharlie cloudsec finding list -q custom-your-rule-id`) — because a
-    single near-universal condition can produce six-figure finding counts on a
-    large estate. If the
-    condition is real but the *unit* is wrong (an account-level setting reported
-    once per bucket), express it at the level it is actually fixed, or ship it at
-    `LOW`/`INFO` so it stays out of the default worklist while remaining
-    queryable.
+    produced — the worklist has no rule-id facet, so search for the id with
+    `limacharlie cloudsec finding list -q custom-your-rule-id`. A single
+    near-universal condition can produce six-figure finding counts on a large
+    estate, and past the per-pass budget below it costs you *every* custom
+    finding, not just its own. If the condition is real but the *unit* is wrong
+    (an account-level setting reported once per bucket), express it at the level
+    it is actually fixed, or ship it at `LOW`/`INFO` so it stays out of the
+    default worklist while remaining queryable.
 
 ## Compliance interaction
 
@@ -475,7 +479,7 @@ are availability bounds, not just per-tenant quotas.
 | Compiled regex size, summed per rule and per organization | 5000 instructions |
 | Rule id / title length | 64 / 256 characters |
 | `criticality_mult` | 0 – 1.6 |
-| Findings produced per pass | 25,000 per evaluator |
+| Custom findings kept in one projection pass | 25,000 per evaluator — the pass runs two, so roughly 50,000 per organization |
 
 The 25-rules-per-resource-type bound is the one that surprises people, and it is
 the one that matters most: every rule is evaluated against every row of its type

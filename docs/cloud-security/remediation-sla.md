@@ -2,7 +2,8 @@
 
 A remediation SLA puts a **due date** on findings, so the worklist can answer
 *"what is late?"* rather than only *"what is bad?"*. You declare how long a
-finding of a given severity, class, account, or owner may stay open; every
+finding of a given severity, class, detecting rule, account, or owner may stay
+open; every
 covered finding then carries a `due_at`, and being breached is a plain
 comparison against the clock rather than a stored judgement somebody has to
 maintain.
@@ -104,8 +105,9 @@ to make the number look better.
 }
 ```
 
-Many `sla` records compose: rule lists concatenate in record order, and the
-per-severity defaults merge first-record-wins.
+Many `sla` records compose: rule lists concatenate in **record-name** order — so
+first-match-wins is deterministic across records too — and the per-severity
+defaults merge first-record-wins.
 
 ### Matching
 
@@ -273,3 +275,9 @@ Matching is a linear scan per finding on the projection hot path, over a set tha
 reaches tens of thousands of rows, so the rule count is a per-row cost multiplier.
 Ten years is not an SLA; the `due_days` ceiling keeps a fat-fingered value from
 producing an "on track until 4021" row that reads like a bug.
+
+The rule count is checked twice, and the two behave differently on purpose. A
+single record over the limit is **rejected** when you save it — you are there and
+can read the error. Records that compose past it are **truncated** in record-name
+order, keeping the rules that fit, because refusing the whole composed policy
+would silently leave the previous one applied forever.
