@@ -48,13 +48,14 @@ Copy-paste block for the DWD scopes field (one comma-separated line):
 https://www.googleapis.com/auth/admin.directory.user.readonly,https://www.googleapis.com/auth/admin.directory.group.readonly,https://www.googleapis.com/auth/admin.directory.group.member.readonly,https://www.googleapis.com/auth/admin.directory.user.security,https://www.googleapis.com/auth/admin.directory.rolemanagement.readonly,https://www.googleapis.com/auth/cloud-identity.inboundsso.readonly,https://www.googleapis.com/auth/admin.directory.device.mobile.readonly,https://www.googleapis.com/auth/admin.directory.device.chromeos.readonly,https://www.googleapis.com/auth/cloud-identity.devices.readonly,https://www.googleapis.com/auth/admin.reports.audit.readonly
 ```
 
-!!! info "Gemini usage has no preflight check"
+!!! info "What the Gemini scope collects"
     `admin.reports.audit.readonly` reads the Admin SDK **Reports** audit stream
     to land Gemini-in-Workspace usage as an application with per-user access
     edges — only the set of users seen in the trailing window, never any
-    prompt or response content. It is the one surface `provider test` does not
-    probe: if the scope is missing (or the Admin SDK API is not enabled) the
-    connection still reports OK and Gemini usage is simply left uncollected.
+    prompt or response content. Leaving it out is safe: the surface degrades to
+    unobserved (previously collected rows are kept, not deleted) and
+    `provider test` reports it as a failed **optional** check, so the connection
+    stays healthy overall.
 
 ## Register domain-wide delegation
 
@@ -166,6 +167,26 @@ internal_domains: [example.com]
 In the web app: **Add provider → Google Workspace**, then set **Customer ID**
 (`my_customer`), **Credentials** (`gw-credentials`), and **Refresh interval**.
 
+!!! tip "Use `my_customer` unless you have a reason not to"
+    `my_customer` is an alias Google resolves to the customer the impersonated
+    admin (or the service account) belongs to, so it is correct for every tenant
+    and there is nothing to look up or mistype. Set an explicit ID only when a
+    reseller-style account has to be pinned to a specific customer.
+
+    **Customer ID is not your organization's name.** It is an opaque ID Google
+    issues, like `C01ab2cd3`. Find it in the **Google Admin console** →
+    **Account** → **Account settings** → **Profile**, next to **Customer ID**.
+
+    Any other value is rejected — but Google rejects it in a way that reads like
+    a permission problem, not a typo: the Admin SDK answers an unrecognized
+    customer with a bare `HTTP 400: Bad Request` that never names the field or
+    echoes the value. Every required surface fails at once, so the connection
+    shows **Failed** and `provider test`'s first check — *Authenticate + read
+    directory users* — fails, even though the credential and the delegation are
+    fine. If `provider test` reports a 400 on that check, it re-runs the same
+    read against `my_customer` and tells you outright when the customer ID is
+    the culprit.
+
 ## Verify
 
 ```bash
@@ -182,13 +203,16 @@ limacharlie cloudsec provider test --input-file provider.yaml
 | `devices_mobile` | — | Mobile device inventory unavailable. |
 | `devices_chromeos` | — | ChromeOS device inventory unavailable. |
 | `devices_ci` | — | Cloud Identity device inventory unavailable. |
+| `reports` | — | Gemini-in-Workspace usage unavailable (no AI-application rows or per-user access edges). |
 
 ## Troubleshooting
 
 | `provider test` error | Cause | Fix |
 |---|---|---|
+| `HTTP 400: Bad Request` on the user check, with every other check failing too | `workspace_customer_id` is not a customer ID Google recognizes — most often the organization's **name** rather than the ID. Google returns this same opaque 400 for every customer-aimed call, which reads as a permission problem and sends people back to re-audit delegation and scopes that are already correct | Set `workspace_customer_id` to `my_customer`, or to the ID from **Admin console → Account → Account settings → Profile**. `provider test` names this explicitly when it can confirm it: the same read is retried against `my_customer`, and if that succeeds the check reports the real customer ID to use |
 | `HTTP 400: Invalid input` on the user check | Secret is missing or mis-nested the impersonation admin → token has no subject → `my_customer` unresolvable | Use the **wrapper** envelope above: nest the key under `service_account_json`, with `admin_email` as a sibling. If you meant the no-delegation setup, grant the service account a Workspace admin role instead |
 | Users or groups from a secondary domain are missing | `domain` is set in the secret, narrowing collection to that one domain | Remove `domain` from the secret; declare internal domains with `internal_domains` on the record |
 | `token mint failed (HTTP 401): scope not granted to the delegated admin` | DWD missing scopes (all-or-nothing mint), a non-`.readonly` variant, or not yet propagated | Register the **full** scope list exactly; wait for propagation; confirm the service account's client ID matches |
 | `core` fails: `HTTP 403: Not Authorized to access this resource/api` | A token **was** minted (so the scopes are registered) but the caller has no Workspace admin authority. Almost always the secret is a **raw service-account key with no `admin_email`** — typically the GCP provider's secret reused verbatim — so nothing is impersonated and the delegation you configured is never used. It is silently accepted as the no-delegation form. Otherwise, `admin_email` names a user who is not a Super Admin | Give Workspace its **own** secret in the wrapper envelope with `admin_email`; leave the GCP provider's secret untouched. Reusing the same *service account* is fine — reusing the same *secret* is not |
 | `HTTP 403: … API has not been used in project …` | Admin SDK / Cloud Identity API not enabled | Enable the named API in the service account's project |
+| `reports` fails: `HTTP 401: Access denied. You are not authorized to read activity records.` | The token minted (so the DWD registration itself is fine) but the impersonated admin cannot read the Reports audit stream — either `admin.reports.audit.readonly` is missing from the DWD scope list, or `admin_email` names an admin without the *Reports* privilege | Add the scope to the delegation and impersonate a Super Admin. Optional surface: leaving it as-is only drops Gemini-in-Workspace usage |
