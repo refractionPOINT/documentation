@@ -28,6 +28,14 @@ oversight waiting to be fixed:
 So adoption is a single Hive write, and the starter policy below is what to
 write.
 
+!!! note "It takes one sweep to land"
+    Like every other `cloudsec_policy` record, an `sla` policy reaches the engine
+    at the end of the **next collection sweep**, and the due dates are stamped on
+    the projection after it. Writing the record and immediately reading
+    `sla_state: none` across the estate does not mean it was rejected — change
+    the provider's `sync_now` nonce to trigger a sweep straight away instead of
+    waiting for the refresh cadence.
+
 ## The starter policy
 
 The four-tier shape below is the common industry default and a reasonable place
@@ -108,7 +116,7 @@ per-severity defaults merge first-record-wins.
 - Within a rule, keys **AND** together and lists **OR** within a key. An empty key
   is unconstrained, and an **entirely empty `match` is a deliberate catch-all** —
   that is how you say "everything else in 90 days" as the last rule.
-- The `rule` name is required and must be unique within the record. It is
+- Each rule's `name` is required and must be unique within the record. It is
   recorded on every finding the clause dates (as `sla_source`), so an operator
   can always see *which* clause put the date there.
 
@@ -116,7 +124,7 @@ per-severity defaults merge first-record-wins.
 |---|---|
 | `severity` | The finding's severity, exact, case-insensitive. |
 | `finding_class` | The finding's class (`misconfig`, `vulnerability`, `toxic_combination`, …), exact, case-insensitive. |
-| `rule` | The detecting rule's id, exactly (e.g. `public-bucket`). |
+| `rule` | The **detecting** rule's id, matched exactly — e.g. `public-data-store`. A misspelled id silently matches nothing, so copy it from a real finding (`limacharlie cloudsec finding get <id>`) rather than typing it. |
 | `account` | The finding's account, with the shared [glob dialect](configuration.md#glob-syntax) including leading-`!` negation. |
 | `owner` | The **assigned** owner, same glob dialect. |
 
@@ -143,11 +151,15 @@ the honest simple thing.
 ## Stored vs derived
 
 **Stored on the finding:** `due_at` (= `first_seen` + the matched window) and
-`sla_source` (the rule name that matched, or `default`). Both are deterministic
-from the finding's first detection and the policy, so they change only when the
-finding is created or the policy is edited.
+`sla_source` (the rule name that matched, or `default`). Both are recomputed on
+every projection pass from the finding's current attributes, so a deadline moves
+when the inputs a clause matches on move — most visibly, **assigning or
+reassigning an owner** re-runs the scan and can hand the finding to a different
+`owner`-scoped clause, with no policy edit involved. A severity change does the
+same.
 
-**Derived at read time, never stored:** the `sla_state`.
+**Derived at read time, never stored:** the `sla_state`. It is always present —
+a finding no clause covers reads `none`.
 
 | State | Meaning |
 |---|---|
@@ -196,10 +208,16 @@ closing removes it, so the recurrence is a new finding with a new `first_seen`.
 
 When a projection pass first observes a finding past its due date it emits
 `cloud_finding.sla_breached` into the organization's event stream (subject to the
-[`emission` policy](configuration.md#emission-the-event-feed)) and records the
-breach, so the event fires **exactly once** per breach rather than on every pass.
-A D&R rule can route it to a ticket, a page, or an escalation — see
+[`emission` policy](configuration.md#emission-the-event-feed)) and latches the
+breach, so the event fires **once per breached deadline** rather than on every
+pass. A D&R rule can route it to a ticket, a page, or an escalation — see
 [Automation & IaC](automation.md#escalating-an-sla-breach).
+
+The latch is held against the *specific* `due_at` it fired for. If the deadline
+later moves — a policy edit, or an owner change that hands the finding to a
+different clause — the old commitment no longer exists, the finding is re-armed,
+and a breach of the **new** deadline fires again. That is the intended reading:
+each distinct commitment gets its own alert.
 
 !!! warning "Granularity is the reprojection cadence, not the second"
     A breach is noticed on the next projection pass that touches your
@@ -210,8 +228,8 @@ A D&R rule can route it to a ticket, a page, or an escalation — see
 
 In the console, the **Risks** worklist carries a sortable **Due** column showing
 the relative deadline (`in 6d`, `12d ago`, `today`), toned by state, with the
-exact date and the clause that set it on hover. The filter rail carries a **Due**
-facet with a count per state.
+exact date and the clause that set it on hover. The filter rail carries an
+**SLA** facet with a count per state.
 
 On the CLI and API, `sla` is a repeatable selector on the findings surfaces, and
 `due_at` is a sort key:

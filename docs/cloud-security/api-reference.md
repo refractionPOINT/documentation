@@ -160,7 +160,7 @@ carry the same shape) — key fields:
 | `runtime_sids` | Sensors resolved onto the affected asset. |
 | `status`, `resolution`, `resolved_by`, `resolution_expires_at`, `owner`, `ticket` | The triage overlay. |
 | `first_seen`, `last_seen` | Lifecycle timestamps. |
-| `due_at`, `sla_source`, `sla_state` | The remediation clock. `due_at` (the deadline) and `sla_source` (the policy clause that set it, or `default`) are stored; `sla_state` — `breached` \| `due_soon` \| `on_track` \| `exempt` \| `none` — is **derived on every read** from `due_at`, `first_seen`, and `status`, because it changes with the clock and nothing writes when a deadline passes. All three are absent until the organization writes an [`sla` policy](remediation-sla.md); there is no default SLA. |
+| `due_at`, `sla_source`, `sla_state` | The remediation clock. `due_at` (the deadline) and `sla_source` (the policy clause that set it, or `default`) are stored, and are **absent** until the organization writes an [`sla` policy](remediation-sla.md) that covers the finding — there is no default SLA. `sla_state` is always present: it is **derived on every read** from `due_at`, `first_seen`, and `status` (because it changes with the clock and nothing writes when a deadline passes) and reads `none` for any finding no clause covers. Values: `breached` \| `due_soon` \| `on_track` \| `exempt` \| `none`. |
 
 ## Events
 

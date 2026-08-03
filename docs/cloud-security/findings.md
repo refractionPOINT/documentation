@@ -175,7 +175,7 @@ limacharlie cloudsec finding list --sla breached --sort due_at
 ```
 
 In the console the **Risks** table gains a sortable **Due** column and the filter
-rail a **Due** facet. There is no default SLA: with no policy record every
+rail an **SLA** facet. There is no default SLA: with no policy record every
 finding reads `none`.
 
 ## Chokepoints — fix one thing

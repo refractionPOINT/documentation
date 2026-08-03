@@ -372,23 +372,21 @@ the same record:
 
 ## How evaluation works
 
-Evaluation is **stateless and per resource**. Each rule is tested against every
-resource of its `resource_type`, on every projection pass, using only that
-resource's own properties.
+A saved record reaches the engine at the end of the **next collection sweep**,
+and is applied on the projection after it. Change the provider's `sync_now` nonce
+to a new value to trigger a sweep immediately instead of waiting for the refresh
+cadence.
 
-Two consequences matter in practice:
+Once it is there, evaluation is **stateless and per resource**: each rule is
+tested against every resource of its `resource_type`, on every projection pass,
+using only that resource's own properties. Two consequences matter in practice:
 
 - **A new rule applies to your whole existing estate**, not just to resources
-  that change afterwards. There is nothing to backfill and no re-scan to
-  request — the next projection re-derives findings across everything already in
+  that change afterwards. Nothing has to be backfilled — the first projection
+  after the policy lands re-derives findings across everything already in
   inventory.
 - **Findings close by themselves.** When the condition stops being true, the
   finding closes on the next pass, exactly like a built-in one.
-
-The record reaches the engine at the end of the **next collection sweep**, and
-applies on the projection after it. Change the provider's `sync_now` nonce to a
-new value to trigger a sweep immediately instead of waiting for the refresh
-cadence.
 
 Findings from custom rules are ordinary findings. They land in the same
 risk-ranked worklist, carry `lc_risk` and its breakdown, and support the full
@@ -414,7 +412,7 @@ rule's findings may carry none — which is the practical reason to write the
     condition is real but the *unit* is wrong (an account-level setting reported
     once per bucket), express it at the level it is actually fixed, or ship it at
     `LOW`/`INFO` so it stays out of the default worklist while remaining
-    queryable and countable for compliance.
+    queryable.
 
 ## Compliance interaction
 
@@ -444,8 +442,11 @@ are availability bounds, not just per-tenant quotas.
 | Composed policy size (all `rules` records together) | 512 KiB |
 | Size of one record | 256 KiB |
 | `detect` size per rule | 8 KiB |
+| Total `detect` budget across the organization | 64 KiB, with a rule containing a `scope` charged **10×** its size |
 | `scope` operators per rule | 2, never nested |
 | `detect` nesting depth | 32 |
+| Compiled size of one regex (`matches` pattern) | 1000 instructions |
+| Compiled regex size, summed per rule and per organization | 5000 instructions |
 | Rule id / title length | 64 / 256 characters |
 | `criticality_mult` | 0 – 1.6 |
 | Findings produced per pass | 25,000 per evaluator |
@@ -455,6 +456,17 @@ the one that matters most: every rule is evaluated against every row of its type
 and resolves its own path independently, so per-row cost is (rules on the type) ×
 (elements at the path) — a product neither the rule count nor the byte budget
 bounds. Spread rules across resource types the way the built-in pack does.
+
+!!! note "The regex bounds are program size, not pattern length"
+    If you use the `matches` operator, the budget is charged against the
+    **compiled program size** of the pattern, not how long the pattern is.
+    Nothing about a pattern's length bounds its program: a 253-byte alternation
+    compiles to 7 instructions, while a 230-byte nested-group pattern compiles to
+    over 200,000. A byte limit would accept the expensive one and reject the
+    cheap one, so the check counts instructions instead — which is why the number
+    in a rejection message will not correspond to anything you can see by looking
+    at the pattern. Flatten nested groups and large bounded repeats, or express
+    the same set as an `or` of `is` / `starts with` leaves, which is far cheaper.
 
 !!! note "Reject per record, truncate across records"
     **Within one record the Hive rejects**: you are there, you can read the
