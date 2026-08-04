@@ -26,6 +26,8 @@ rules, Cases, and Outputs you already use.
 | **CAASM** | A merged third-party asset inventory (EDR / IdP / MDM / scanner sources, including LimaCharlie's own sensors) with coverage-gap and device-posture findings — "seen by the identity provider, no EDR". |
 | **Security graph & topology** | An explorable graph of resources, identities, and their relationships (`can_reach`, `exposed_to`, `has_permission_on`, `can_assume`, …) plus an aggregated estate topology view, with a query language and saved queries. |
 | **Runtime fusion** | Bidirectional resolution between LimaCharlie sensors and the cloud assets they run on — pivot from a cloud finding to the live endpoint and back. |
+| **Your own detections** | Author your own CSPM rules — in the same detection format as the built-in pack — and disable, re-severity, or replace any built-in rule for your organization. |
+| **Remediation SLAs** | Declare how long a finding may stay open, per severity, class, account, or owner, and work the worklist by deadline as well as by risk. |
 | **MSSP fleet** | A cross-tenant fleet board that rolls up risk across every organization you manage. |
 
 ## Supported providers
@@ -121,10 +123,14 @@ organization you manage.
   formats, and first-run troubleshooting.
 - [Findings & Triage](findings.md) — the worklist, finding classes,
   dispositions, chokepoints.
+- [Remediation SLAs](remediation-sla.md) — due dates on findings, the derived
+  states, and breach events.
 - [Security Graph & Queries](graph.md) — attack paths, topology, graph
   queries, CIEM, DSPM, sensor↔asset resolution.
 - [Compliance](compliance.md) — frameworks, reports, scoped assignments.
 - [CAASM](caasm.md) — third-party asset inventory, coverage gaps, device posture.
+- [Custom Posture Rules](custom-rules.md) — author your own CSPM detections and
+  retune the built-in ones.
 - [Configuration Reference](configuration.md) — the `cloudsec_provider`,
   `cloudsec_policy`, and `cloudsec_query` Hive records.
 - [Command Line Interface](cli.md) — the `limacharlie cloudsec` command

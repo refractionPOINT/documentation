@@ -59,6 +59,15 @@ Each finding carries:
   `epss`, `in_kev`.
 - Runtime context: `runtime_sids` — the LimaCharlie sensors running on the
   affected asset, when the fusion mapping resolves any.
+- Remediation clock: `due_at`, `sla_source`, and the derived `sla_state` —
+  present once the organization has written an
+  [`sla` policy](remediation-sla.md); absent (and `sla_state: none`) until then.
+
+!!! tip "Your own rules land here too"
+    Detections you author yourself with a
+    [`rules` policy](custom-rules.md) produce ordinary findings: same worklist,
+    same ranking, same triage verbs, same events. Nothing about the rest of this
+    page treats them differently.
 
 Attack-path and `toxic_combination` findings headline the durable **workload
 group** rather than a single ephemeral node: a GKE/EKS/AKS node pool, a GCE
@@ -155,6 +164,20 @@ An operator's explicit disposition always wins over policy.
     Reading findings requires `cloudsec.get`; every disposition, owner,
     ticket, and chokepoint write requires `cloudsec.set`.
 
+## Due dates
+
+With an [`sla` policy](remediation-sla.md) written, every covered finding carries
+a `due_at` and a derived state — `breached`, `due_soon`, `on_track`, `exempt`, or
+`none` — so the worklist can be worked by deadline as well as by risk:
+
+```bash
+limacharlie cloudsec finding list --sla breached --sort due_at
+```
+
+In the console the **Risks** table gains a sortable **Due** column and the filter
+rail an **SLA** facet. There is no default SLA: with no policy record every
+finding reads `none`.
+
 ## Chokepoints — fix one thing
 
 Attack paths tend to share hops. The chokepoint view ranks resources by how
@@ -210,6 +233,10 @@ the world):
 - `cloud_finding.still_open` — re-asserted at most once per day for open
   findings that carry a linked ticket, the heartbeat that keeps a Case honest
   when the cloud was never actually fixed.
+- `cloud_finding.sla_breached` — emitted once, on the first projection pass that
+  observes an open finding past the `due_at` its
+  [`sla` policy](remediation-sla.md) assigned. Never re-fired for the same
+  breach of the same deadline.
 
 **Operator-disposition verbs** (flat payload
 `{finding_id, fingerprint, finding_class, actor, status, resolution, note?}`):

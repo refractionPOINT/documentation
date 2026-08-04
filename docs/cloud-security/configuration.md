@@ -8,7 +8,7 @@ tenant onboarding and fleet-wide policy a script, not a UI workflow (see
 | Hive | Records | Purpose |
 |---|---|---|
 | `cloudsec_provider` | one per cloud / IdP / SaaS / AI connection | what to collect and with which credential |
-| `cloudsec_policy` | many, discriminated by `policy_type` | classification, coverage, emission, exclusions, suppression, compliance assignments |
+| `cloudsec_policy` | many, discriminated by `policy_type` | classification, coverage, emission, exclusions, suppression, compliance assignments, custom posture rules, remediation SLAs |
 | `cloudsec_query` | one per saved query | shared saved graph queries |
 
 !!! info "Permissions"
@@ -266,6 +266,36 @@ is `kind` (`accepted`/`false_positive`), `reason` (required), `ttl_days`.
 A named framework assignment over a scoped subset of the estate — see
 [Compliance](compliance.md#scoped-assignments). Fields: `framework_id`
 (required, lowercase slug), `description`, `scope` (the account/name matchers).
+
+### `rules` — your own posture rules
+
+Your own CSPM detections, plus retunes of the built-in ones — see
+[Custom Posture Rules](custom-rules.md) for the full contract. Two independent
+lists, at least one non-empty:
+
+| List | Entries |
+|---|---|
+| `rules` | Your own rules. Required per rule: `id` (must start with `custom-`), `resource_type`, `finding_class` (`misconfig` or `public_exposure`), `severity`, `title`, `detect` (a D&R detection block). Optional: `name`, `subject_path`, `criticality_mult`, `meta`. |
+| `overrides` | `{rule_id, disabled?, severity?}` — retunes a built-in or custom rule for this organization only. An override that sets neither field is rejected. |
+
+Every `detect` block is compiled on the real detection engine when you save, so a
+rule that could never run is rejected while you can still read the error. Rules
+use a [closed operator
+allowlist](custom-rules.md#the-operator-allowlist), and per-organization bounds
+apply (200 rules, 25 per resource type, 1000 overrides, 512 KiB composed).
+
+### `sla` — remediation due dates
+
+The organization's remediation clock: how long a finding may stay open before it
+is late. See [Remediation SLAs](remediation-sla.md).
+
+| Field | Meaning |
+|---|---|
+| `default_due_days` | Per-severity fallback (`CRITICAL` … `INFO`), applied when no rule matched. |
+| `rules` | Ordered `{name, match, due_days}` clauses, **first match wins**. `match` accepts `severity`, `finding_class`, `rule`, `account`, `owner`; an empty `match` is a deliberate catch-all. `due_days: 0` is an **exemption** (no due date, scan stops), not "due immediately". |
+
+There is **no default SLA**: with no `sla` record every finding reads `none` and
+nothing is ever breached.
 
 ## cloudsec_query
 
