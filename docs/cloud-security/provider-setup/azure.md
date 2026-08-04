@@ -40,10 +40,37 @@ licensed, Conditional Access and sign-in activity.
 | **Application.Read.All** (application) | Fuller app-registration / service-principal credential detail | *(collected during the sweep)* |
 | **AdministrativeUnit.Read.All** (application) | Administrative-unit scoping | *(collected during the sweep)* |
 | **AgentIdentity.Read.All** (application) | Source-asserted AI-agent identities in the directory | *(collected during the sweep)* |
-| *(covered by Reader)* | Defender for Cloud vulnerability assessments via Azure Resource Graph | `defender_vuln` |
+| *(covered by Reader)* | Defender for Cloud vulnerability assessments via Azure Resource Graph — **server** VMs and **container registry images** | `defender_vuln` |
 
 A denied Graph permission 403s only its own collector — that surface goes
 unobserved while everything else still collects.
+
+!!! note "Container image vulnerabilities need the Defender for Containers plan"
+    Reader is all the *permission* we need — the image findings come from the
+    same Resource Graph security views as the server ones. What they also need
+    is the **Defender for Containers** plan (or the retired standalone
+    **Container Registry** plan) on the **Standard** tier for the subscription;
+    on the Free tier Defender publishes no registry scan results and we report
+    the subscription as having no container-image vulnerability source.
+
+    **Defender for Kubernetes / KubernetesService is a different plan** and does
+    not count: it buys runtime threat protection for the cluster, not image
+    scanning, so a subscription paying only for that is still reported as having
+    no image vulnerability source.
+
+    Each vulnerable image is reported against its **digest**, so one image is
+    one finding however many tags point at it — the same shape we use for
+    Amazon ECR and GCP Artifact Registry. Two limits are worth knowing:
+
+    - **Images are not inventoried yet.** An affected image is a finding
+      subject, not an entry in Inventory or the topology, and nothing links it
+      to the workloads that run it.
+    - **Very large registries are skipped whole, not truncated.** A subscription
+      whose registries hold more scan results than our per-subscription
+      ingestion budget reports **none** of them rather than an arbitrary
+      subset — a truncated set would look like a shrinking estate. A
+      subscription that keeps every historical build image is the case that
+      hits this.
 
 !!! note "MFA-registration state has no preflight check of its own"
     The `signin_activity` check probes the sign-in report only. MFA-registration
@@ -158,7 +185,7 @@ the Azure-specific checks follow.
 | `arm_reader` | ✅ | Reader is not assigned on the configured subscription — no resource inventory. |
 | `graph_directory` | ✅ | `Directory.Read.All` not consented — no identity inventory. |
 | `subscriptions` | — | Subscription fan-out disabled; only the configured subscription is swept. |
-| `defender_vuln` | — | Workload vulnerability findings unavailable. |
+| `defender_vuln` | — | Workload **and container image** vulnerability findings unavailable — both are rows in the same Resource Graph table behind the same grant, so one check covers both. |
 | `signin_activity` | — | Last-sign-in and dormancy enrichment unavailable (usually a missing Entra ID P1/P2 licence). |
 
 ## Troubleshooting

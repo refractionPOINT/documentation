@@ -32,6 +32,7 @@ discovers every active project underneath that node by itself.
       pubsub.googleapis.com \
       apikeys.googleapis.com \
       osconfig.googleapis.com \
+      containeranalysis.googleapis.com \
       run.googleapis.com \
       cloudfunctions.googleapis.com \
       aiplatform.googleapis.com \
@@ -84,12 +85,35 @@ Each adds one inventory or analysis surface. Skipping one leaves that surface
 | `roles/secretmanager.viewer` | Secret **metadata** inventory (names/rotation posture — never secret values) | `secret_manager` |
 | `roles/osconfig.vulnerabilityReportViewer` | Agentless workload vulnerabilities from VM Manager | `osconfig_vuln` |
 | `roles/osconfig.inventoryViewer` | The OS-inventory join that attaches package name + installed/fixed version to each CVE | *(not probed — exercised during the sweep)* |
+| `roles/containeranalysis.occurrences.viewer` | **Container image** vulnerabilities from Artifact Analysis, for images in Artifact Registry and Container Registry | `artifact_analysis` |
 | `roles/recommender.iamViewer` | Unused-privilege findings (activity-based CIEM) | `activity_ciem` |
 | `roles/policyanalyzer.activityAnalysisViewer` | Dormant-identity / last-authentication findings | `activity_ciem` |
 | `roles/aiplatform.viewer` | Vertex AI endpoint and model inventory | `vertex_ai` |
 | `roles/run.viewer` | Cloud Run service inventory **and its public-access verdict** (`run.services.list` + `run.services.getIamPolicy`) | `serverless` |
 | `roles/cloudfunctions.viewer` | Cloud Functions inventory (1st and 2nd gen) plus their invoker policies (`cloudfunctions.functions.list` + `cloudfunctions.functions.getIamPolicy`) | `serverless` |
 | `roles/cloudidentity.groups.readonly` | Google-group **membership expansion**, so `group:` IAM bindings resolve to real people | `cloud_identity` |
+
+!!! note "What container image scanning gives you, and what it does not"
+    With `roles/containeranalysis.occurrences.viewer` granted **and** Artifact
+    Analysis enabled in the project, each vulnerable image is reported against
+    its **digest**, so one image is one finding subject however many tags point
+    at it — the same shape we use for Amazon ECR and Azure Container Registry, so
+    an image is one thing to triage across clouds.
+
+    Three limits are worth knowing up front:
+
+    - **Images are not inventoried yet.** A vulnerable image appears as a
+      finding subject, not in Inventory or the topology, and nothing links it to
+      the workloads that run it.
+    - **An enabled verdict is about the API, not every repository.** We read
+      whether Artifact Analysis answers for the project. That does not prove
+      on-push scanning is configured for every repository.
+    - **Very large registries are skipped whole, not truncated.** A project
+      whose registries hold more scan results than our per-project ingestion
+      budget reports **none** of them rather than an arbitrary subset — a
+      truncated set would look like a shrinking estate. A busy CI project that
+      keeps every historical build image is the case that hits this. The
+      results are not lost on Google's side; we simply do not ingest them yet.
 
 !!! note "Serverless already works on the required baseline"
     The required `roles/viewer` + `roles/iam.securityReviewer` pair **already**
@@ -178,6 +202,7 @@ for ROLE in roles/secretmanager.viewer \
             roles/recommender.iamViewer \
             roles/policyanalyzer.activityAnalysisViewer \
             roles/aiplatform.viewer \
+            roles/containeranalysis.occurrences.viewer \
             roles/run.viewer \
             roles/cloudfunctions.viewer; do
   gcloud organizations add-iam-policy-binding "$ORG_ID" \
