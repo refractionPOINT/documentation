@@ -12,7 +12,7 @@ mkdocs>=1.5.3,<2
 mkdocs-material>=9.5.0,<10
 
 # Python Markdown Extensions
-pymdown-extensions>=10.7,<11
+pymdown-extensions>=11.0.1,<12
 
 # Redirects for old URL structure
 mkdocs-redirects>=1.2.0,<2
