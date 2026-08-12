@@ -478,7 +478,7 @@ AI-assisted detection read-out, navigation improvements, showing org selector co
 
 **Linux:**
 
-- Fix some Linux GLIBC compatibility issues. The minimum GLIBC supported version is now 2.16 (released 2012) for all 3 supported architectures (x86, x86_64, and ARM64)
+- Fix some Linux GLIBC compatibility issues. The minimum GLIBC supported version is now 2.17 (released 2012) for all 3 supported architectures (x86, x86_64, and ARM64)
 - Fix the Linux Alpine / musl libc binaries
 
 **macOS:**
