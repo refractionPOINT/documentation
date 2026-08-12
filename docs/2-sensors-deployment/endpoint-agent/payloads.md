@@ -21,6 +21,16 @@ Payloads are uploaded to the LimaCharlie platform and given a name. The task `ru
 
 The STDOUT and STDERR data will be returned in a related `RECEIPT` event, up to 1 MB. If your payload generates more data, we recommend to pipe the data to a file on disk and use the `log_get` command to retrieve it.
 
+!!! warning "The 1 MB limit is measured in bytes, and exceeding it returns no output at all"
+    Two things about this limit surprise people:
+
+    - **It is 1 MB of raw output bytes, not characters.** Output encoded as UTF-16 costs two bytes per character, so it reaches the limit at roughly 524,000 characters instead of 1,048,000. Windows tooling frequently produces UTF-16 — `Out-File`, `>` redirection and `Export-Csv` in Windows PowerShell all default to it — so a command that looks well under the limit can be at it.
+    - **Going over the limit does not truncate the output — it removes it.** The `RECEIPT` still arrives, with the payload's exit code in `ERROR`, but `STDOUT` is absent rather than clipped at 1 MB. Very close to the limit the `RECEIPT` may not arrive at all.
+
+    So if a `run` returns a receipt with no output, or no receipt, treat the output size as the first suspect. Writing to a file and collecting it with `log_get` (or `artifact_get`) has no such limit and is the right approach for anything that might approach it.
+
+    To keep large output under the limit, emit UTF-8 or ASCII rather than UTF-16 — in PowerShell, `Out-File -Encoding utf8` or `[Console]::Out.Write()` — which doubles the number of characters that fit.
+
 The payload is retrieved by the endpoint agent over HTTPS to the Ingestion API DNS endpoint. This DNS entry is available from the Sensor Download section of the web app if you need to allow it.
 
 ## Upload / Download via REST
