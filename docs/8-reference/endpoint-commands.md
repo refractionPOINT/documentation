@@ -455,6 +455,8 @@ Retrieve internal sensor debug data for troubleshooting.
 limacharlie sensor task <SID> get_debug_data
 ```
 
+Sensors running version 5.3.6 or later include a `LOSS_ACCOUNTING` sequence in the reply, reporting how many events the sensor's outbound queue has evicted or refused (in events and in bytes), how deep the queue currently is, and the bounds it is enforcing. See [the LOSS_ACCOUNTING field reference](edr-events.md#loss_accounting) for a description of each value.
+
 ---
 
 ### hidden_module_scan

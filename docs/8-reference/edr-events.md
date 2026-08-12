@@ -188,9 +188,55 @@ This event is generated when a Sensor connects to the cloud.
 
 ### DEBUG\_DATA\_REP
 
-Response from a `get_debug_data` request.
+Response from a `get_debug_data` request. It reports the sensor's own internal state at the moment of the request, including `PACKAGE_VERSION_STRING` and `PACKAGE_VERSION_GIT` (the running build), `UPTIME`, `PROCESS_ID`, `PERCENT_CPU`, `MEMORY_USAGE`, `TIMEDELTA` (the sensor's clock offset), `KERNEL_ACQ_AVAILABLE`, and, starting with sensor version 5.3.6, `LOSS_ACCOUNTING`.
 
 **Platforms:**
+
+#### LOSS\_ACCOUNTING
+
+!!! info "Added in sensor version 5.3.6"
+    `LOSS_ACCOUNTING` is reported only by sensors running version **5.3.6 or later**. Older sensors answer `get_debug_data` without it, and its absence from a reply says nothing about whether that sensor has dropped events — it only means the sensor is too old to report the figures.
+
+`LOSS_ACCOUNTING` is a sub-sequence describing what the sensor's outbound event queue has thrown away since the sensor started, together with the queue's current depth and the bounds it is being measured against.
+
+It answers a different question than [DATA_DROPPED](platform-events.md#data_dropped): `DATA_DROPPED` tells you that a sensor is losing events right now, while `LOSS_ACCOUNTING` tells you how much that host has lost in total, in events *and* in bytes, and how close its queue is to saturating. Event sizes span several orders of magnitude — a DNS request event is a few hundred bytes, a command receipt can be a megabyte — so a count of lost events on its own does not describe how much data was actually lost.
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `LOSS_EVICTED_EVENTS` | uint64 | Cumulative number of events discarded from the front of the queue to make room for newer ones. Any non-zero value means the queue reached one of its bounds at least once. |
+| `LOSS_EVICTED_BYTES` | uint64 | Estimated size, in bytes, of the events counted by `LOSS_EVICTED_EVENTS`. |
+| `LOSS_REFUSED_EVENTS` | uint64 | Cumulative number of events rejected as they were queued, because a single event was larger than the queue's entire byte budget and no amount of eviction would have made room for it. |
+| `LOSS_REFUSED_BYTES` | uint64 | Estimated size, in bytes, of the events counted by `LOSS_REFUSED_EVENTS`. |
+| `LOSS_QUEUED_EVENTS` | uint32 | Number of events waiting in the queue at the moment the reply was produced. |
+| `LOSS_QUEUED_BYTES` | uint32 | Estimated size, in bytes, of the events waiting in the queue at that moment. |
+| `LOSS_MAX_EVENTS` | uint32 | The event-count bound the queue is enforcing. Defaults to `10000`; `0` means no limit. |
+| `LOSS_MAX_BYTES` | uint32 | The byte bound the queue is enforcing. Defaults to `52428800` (50 MB); `0` means no limit. |
+
+**Sample `LOSS_ACCOUNTING` value** (the rest of the `DEBUG_DATA_REP` fields are omitted):
+
+```json
+{
+  "LOSS_ACCOUNTING": {
+    "LOSS_EVICTED_EVENTS": 1423,
+    "LOSS_EVICTED_BYTES": 5218764,
+    "LOSS_REFUSED_EVENTS": 0,
+    "LOSS_REFUSED_BYTES": 0,
+    "LOSS_QUEUED_EVENTS": 9998,
+    "LOSS_QUEUED_BYTES": 41904128,
+    "LOSS_MAX_EVENTS": 10000,
+    "LOSS_MAX_BYTES": 52428800
+  }
+}
+```
+
+#### Interpreting LOSS\_ACCOUNTING
+
+- **The four loss totals are cumulative and are never reset while the sensor runs.** A single sample tells you what has been lost since the sensor process started; to get a rate, request `get_debug_data` twice and subtract. Restarting the sensor — including an upgrade — returns the totals to `0`.
+- **The byte figures are estimates of the in-memory size of the events**, measured as they were queued. They are not the number of bytes those events would have weighed on the wire, so treat them as a measure of how much telemetry was lost rather than as an exact transfer size.
+- **Read the loss totals against the depth and bounds in the same sequence.** `LOSS_QUEUED_*` and `LOSS_MAX_*` are the denominator: several hundred evicted events on a queue that is now nearly empty describes a burst that has already passed, while the same number on a queue sitting at `LOSS_MAX_EVENTS` or `LOSS_MAX_BYTES` describes a host that is still shedding telemetry.
+- **Both bounds are enforced on every event that enters the queue**, so eviction can be triggered by either the event count or the byte budget. A host generating many small events reaches `LOSS_MAX_EVENTS` first; a host producing a few very large events reaches `LOSS_MAX_BYTES` first.
+- **A non-zero `LOSS_REFUSED_EVENTS` means individual events too large for the queue**, which is a different problem than an overloaded queue and is not solved by the host catching up on its backlog.
+- **These totals are accounted separately from the counter behind `DATA_DROPPED`.** Requesting `get_debug_data` does not consume or reset anything `DATA_DROPPED` reports, so the two signals can be used together.
 
 ### DIR\_FINDHASH\_REP
 
