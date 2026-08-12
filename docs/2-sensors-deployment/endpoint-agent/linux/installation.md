@@ -30,7 +30,17 @@ The agent exposes one runtime override for compatibility scenarios (the eBPF tie
 
 ### System Requirements
 
-The agent runs on glibc-based distributions back to glibc 2.17 (RHEL 7 / CentOS 7 / Debian 8 era and newer). For older or non-glibc systems use the **Alpine / musl** build, which is statically linked and has no host libc dependency. Older distributions like RHEL 5 / 6 are not supported by the standard glibc build because of the libc baseline; the musl build can be evaluated for those cases but kernel telemetry will be limited to whatever the host kernel exposes (see the tier table above).
+The agent runs on glibc-based distributions back to **glibc 2.12** (released May 2010). In practice that covers:
+
+- RHEL / CentOS / Oracle Linux **6** and newer (glibc 2.12)
+- Debian **7** (wheezy) and newer (glibc 2.13)
+- Ubuntu **12.04 LTS** and newer (glibc 2.15)
+
+Anything below that baseline — RHEL / CentOS **5** (glibc 2.5), Debian 6 (2.11), Ubuntu 10.04 (2.11) — is not supported by the standard glibc build. For those hosts, or for non-glibc systems, use the **Alpine / musl** build, which is statically linked and has no host libc dependency.
+
+On distributions this old, expect reduced kernel telemetry: RHEL / CentOS 6 ships kernel 2.6.32, which supports the netlink proc connector tier (real-time process create / exit) but not eBPF. Check the tier table above for what each kernel generation provides.
+
+Run `ldd --version` to check the glibc version on a host.
 
 ### Deb Package
 
