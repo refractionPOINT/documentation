@@ -2,6 +2,46 @@
 
 Release notes for LimaCharlie platform components, organized by date.
 
+## 2026-08-13
+
+### Web App 6.1.0
+
+Several UX improvements, new remediation signal (SLA due dates, root-cause roll-ups, coverage honesty), updated UX for some extensions, and performance improvements for Query Console.
+
+#### New Features
+
+- **Cloud Security speaks one language**: every remaining screen — Inventory (Resources and Third-party assets), Attack Surface, Access, the Query Console, Compliance, Policies, Settings and the MSSP fleet board — now opens on the shared tinted filter bar.
+- **Compliance report layout**: the Compliance screen becomes a charts-and-rail report — a compliance-score donut and a failures-by-severity bar chart side by side, the controls table beneath them, and the assignment cards as a rail running down beside all three.
+- **Cloud Security fleet board modernized**: `/cloud-security` adopts the UI language, adds two fleet rollup donuts, makes every column header a sort control, and splits freshness into sortable Last scan and Providers columns so a failing provider count is its own column rather than a badge in someone else's cell.
+- **SLA due dates on the findings worklist**: findings gain a Due column showing relative age ("in 6d", "12d ago", "today"), with a tooltip carrying the exact deadline, the SLA state, and the policy clause that set it.
+- **Root-cause roll-ups on findings**: when one finding's remediation already implies another, the child shows a "root cause" chip that links straight to its parent and the parent shows how many findings it implies.
+- **Compliance score honesty**: a framework that grades only a fraction of its controls no longer shows a bare green score. The score loses its good-result tint and states how much was actually assessed.
+- **Vulnerability-source coverage**: the Coverage tab adds a second dimension beside sensor coverage — whether anything is actually reporting CVEs on a workload — computed per scanner scope, so a workload with a sensor but no vulnerability source no longer reads as fully covered.
+- **Real internet entry points in the kill chain**: the first hop now renders the actual front door — App Service, Cloud Run URL, Kubernetes API server, function URL, load balancer, CDN, AI inference endpoint — labelled with its hostname, instead of a generic globe that said nothing about how an attacker got in.
+- **Privilege escalation and cloud hierarchy in Topology**: scope-escalation hops render as their own edge category with a distinct signature and priority on a crowded canvas, and cloud-hierarchy containers (organization, folder, project, account) draw as containers rather than workloads.
+- **AWS boundary and trust evidence**: permission boundaries, boundary-capped grants and trust-policy conditions on can-assume edges now have a screen, and a finding's cloud is read from the finding itself so vulnerability-coverage aggregates keep their cloud badge and readable resource name.
+- **Dedicated Event Collection page**: `ext-exfil` replaces the generic schema-driven form with a first-class page.
+- **Dedicated Artifact Collection page**: `ext-artifact` gains a custom made UI page with Collection Rules and PCAP Capture Rules tabs.
+- **Dedicated Reliable Tasking page**: `ext-reliable-tasking` moves off the generic schema renderer onto a custom page.
+- **The shared filter bar reaches the rest of the app**: the Platform Logs audit tab, False Positive Rules, and the sensor Vulnerabilities tab all move onto the same panel. The sensor Vulnerabilities tab's four bordered summary tiles become stats on the bar, and the Payloads list moves onto the standard table so dates and sizes stop wrapping.
+- **New Org and Recent Org lists for everyone**: the redesigned organization and recent-organization lists are now the default for all users.
+- **Query Console performance**: a search over a large result set now completes much faster, holds less memory and spends less time in garbage collection. Scrolling with a row selected is more performant, and result sets that previously exhausted the browser's heap now load.
+- **Connect wizard permissions**: the provider setup flow's "Permissions required" list now includes the AWS Organizations policy reads and the GCP Cloud Run / Cloud Functions viewer roles, so a customer following the least-privilege list verbatim gets the public-invoker exposure verdicts rather than silently missing them.
+
+#### Bug Fixes
+
+- A single transient failure while polling for search results — a 502, a dropped connection, a laptop changing networks — permanently ended the search with no explanation; polling now survives it and picks the query back up.
+- Returning to the Query Console tab after a network reconnect silently re-ran a finished search as a brand new server-side scan, replacing the results on screen and billing the org a second time.
+- A crash affecting dropdown menus ("Maximum update depth exceeded") caused by an upstream `react-select` bug is fixed.
+- The Cloud Security "Failed" sync badge showed the collector error only as hover text that could not be selected or copied; the tooltip now stays open and the badge copies the raw error to the clipboard.
+- The Vulnerabilities tab and section no longer appear on a sensor's detail view for organizations not subscribed to vulnerability reporting, where they showed a misleading empty "0 findings" report.
+- The CAASM coverage-policy editor offered a capability no source could satisfy, which produced a permanent coverage gap on every device; it is removed from the picker, and policies that already contain it render as unsupported instead of blank.
+- SOPs and Organization Notes had no working "View Docs" link, and their editors called records "Sop" and "Org_notes"; both now link to the published documentation and use proper record type names.
+- The Inventory resource count rendered unformatted (`373109 assets`) while every other count on the screen used thousands separators, and a shared accessibility defect meant several dropdowns' labels were not associated with their control.
+- The "EDR everywhere" policy template button appeared to do nothing due to a read-after-write bug, and a full-screen empty state could swallow clicks on neighbouring controls.
+
+---
+
 ## 2026-07-29
 
 ### Web App 6.0.2
