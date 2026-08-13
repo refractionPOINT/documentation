@@ -42,6 +42,47 @@ Several UX improvements, new remediation signal (SLA due dates, root-cause roll-
 
 ---
 
+## 2026-08-11
+
+### Endpoint Agent 5.3.5
+
+#### New Features
+
+- Linux process events now identify the container a process belongs to, including its Kubernetes pod; the fields are absent for ordinary host processes.
+- New Windows script visibility through the Antimalware Scan Interface: scripts and .NET assemblies are reported as the host application submits them for scanning, already deobfuscated. Enabled from the cloud.
+- YARA memory detections now report the address of the match, so a detection points at the exact location in the target process.
+- YARA rules can now use the `macho` module to inspect Mach-O images.
+
+#### Bug Fixes
+
+- Fixed cloud-driven sensor upgrades never taking effect on macOS. The new binary is now put in place atomically before the service is stopped, on both macOS and Linux.
+- Fixed the sensor sitting connected but idle for up to 10 minutes after its cloud connection was replaced, delaying collectors and telemetry; it now re-syncs immediately.
+- Fixed the sensor hanging indefinitely when a configured proxy accepts the connection but never answers the CONNECT request; the attempt is now bounded and retried.
+- Proxy replies split across packets, sent with LF-only headers, or answering with a 2xx status other than 200 are now handled correctly.
+- Fixed the sensor's log file being created world-writable on installed Linux sensors.
+- Uninstalling on Linux now removes the kernel acquisition mount point it used to leave behind, and macOS uninstall now deregisters its installer receipt.
+- Fixed the arm64 Debian package being refused by dpkg; it is now published as `limacharlie_<version>_arm64.deb`.
+- Payload downloads and artifact uploads are now strictly compliant HTTP, so filtering proxies and SSL inspection agents no longer drop them as malformed.
+- Fixed artifact uploads reporting success while delivering no data when a network device answered with a redirect.
+- Fixed certificate verification failures for payload downloads, artifact uploads and sensor upgrades on hosts with enterprise TLS inspection roots; verification now uses the operating system trust store alongside the built-in certificates.
+- Fixed the sensor deadlocking while listing process handles when Windows stopped answering a handle name query.
+- Fixed process hollowing detection rescanning every module in full instead of skipping the parts already matched on disk.
+- Fixed stateful detection tracking comparing only part of its key, which could route events to the wrong tracking group.
+- Fixed the sensor aborting under Wine when probing the Windows Event Log bookmark API.
+- Fixed a potential out-of-bounds read when matching short YARA rule namespaces.
+- Corrected swapped country and organization labels in the sensor's certificate issuer output.
+
+#### Improvements
+
+- Payload download and artifact upload failures now report a readable description in the command receipt and in the local log, instead of a bare numeric code.
+- Transfer failures that previously all reported error 0 now report distinct codes: a sensor that has not yet received its artifact configuration, and a connection closed without a response.
+- Payload downloads and artifact uploads now use a full HTTP client, adding chunked response support, correct response framing and enforced timeouts.
+- The Linux x86_64 and i386 sensor now requires glibc 2.12 instead of 2.17, so it installs on older distributions; the optional eBPF module still requires 2.14.
+- A configuration update is no longer held up by an in-progress payload download.
+- The payload download size limit now applies to the whole transfer rather than to each resumed request.
+
+---
+
 ## 2026-07-29
 
 ### Web App 6.0.2
@@ -72,6 +113,31 @@ A rebuilt Cloud Security Risks triage table, finding ownership as a filter and c
 ---
 
 ## 2026-07-28
+
+### Endpoint Agent 5.3.4
+
+#### New Features
+
+- The registry listing command can now recursively list sub-keys down to an optional maximum depth, reporting fully-qualified key paths; oversized results are returned as partial replies flagged for follow-up.
+
+#### Bug Fixes
+
+- Fixed corrupted process events from macOS kernel acquisition: invalid timestamps, missing file paths and command lines, and spurious phantom process records.
+- Fixed file transfers and the sensor's cloud connection aborting when a TLS 1.3 server sends a post-handshake session ticket, common behind SSL-inspection proxies.
+- Fixed repeated payload put commands failing on Windows: moving a file into place now overwrites an existing destination, matching other platforms.
+- Fixed payload downloads and log/artifact uploads failing when certificate verification is explicitly disabled.
+- Uninstalling the Windows MSI now fully removes the sensor's identity and data, so a later reinstall enrolls as a fresh sensor.
+- Fixed a rare crash caused by concurrent use of the sensor's random number generator, seen most often on macOS under heavy file activity.
+- Fixed a crash on sensor shutdown after a partially failed startup.
+- Fixed a potential crash when reading executable paths from the Windows registry under low-memory conditions.
+- Fixed assorted small latent bugs across the sensor uncovered by expanded static analysis.
+
+#### Improvements
+
+- Windows Event Log collection now resumes from where it left off after a sensor restart, recovering events logged while the sensor was not running.
+- Sensor upgrade and uninstall operations now write warnings and errors to a dedicated log file in the sensor data directory.
+- Listing endpoint protection exclusions now reports an error code on failure, distinguishing a failed query from a host with no exclusions.
+- Windows WMI query failures now report a dedicated WMI error code instead of a generic failure, for example when Defender is disabled by policy.
 
 ### Web App 6.0.1
 
@@ -167,6 +233,36 @@ Expanded Vulnerability Reporting, a revamped audit log, a redesigned REST API se
 
 ---
 
+## 2026-07-14
+
+### Endpoint Agent 5.3.3
+
+#### New Features
+
+- The sensor service can now be upgraded or uninstalled through cloud tasking.
+- Upgrade and uninstall commands reply with their result, including the OS error code on failure.
+- Sensor upgrades can be pinned to a specific version.
+- Sensor connections now report a unique per-boot identifier to the cloud.
+- Sensor connections now report the main network interface's MAC address.
+- Windows endpoint protection status now falls back to Security Center antivirus data when the Defender query fails.
+
+#### Bug Fixes
+
+- Sensors that connect but receive no data from the cloud now retry with a fresh TLS handshake after 30 seconds.
+- Fixed connection failures under pinned-certificate trust: TLS hostname verification now applies only to public CA trust.
+- Fixed a TLS 1.2 handshake failure with servers using certain RSA-PSS signature schemes.
+- Fixed macOS notarization of the sensor binary.
+- Fixed a thread-synchronization race on Linux and macOS that could destabilize the sensor.
+- Fixed a small memory leak when kernel acquisition shuts down on macOS.
+- Fixed incorrect formatting in several sensor debug log messages.
+- Fixed assorted small bugs across the sensor on Linux and Windows.
+
+#### Improvements
+
+- Updated the embedded TLS library (mbedtls) to 4.1.1.
+
+---
+
 ## 2026-07-09
 
 ### Web App 5.12.0
@@ -193,6 +289,39 @@ The console and Grid app are now fully localized in English, Español, 日本語
 - The "Create new App" button now works for orgs with zero apps; a transparent overlay was intercepting pointer events over the page header.
 - Opening the AI Terminal no longer crashes the app with "Maximum update depth exceeded".
 - Seal and isolate pending transition states now display correctly, so "Pending rejoin" and "Pending unseal" surface during the backend transition window instead of holding on "Isolated" or "Sealed".
+
+---
+
+## 2026-07-06
+
+### Endpoint Agent 5.3.2
+
+#### Bug Fixes
+
+- Fixed connection failures under pinned-certificate trust: TLS hostname verification now applies only to public CA trust.
+- Fixed a TLS 1.2 handshake failure with servers using certain RSA-PSS signature schemes.
+
+---
+
+## 2026-07-02
+
+### Endpoint Agent 5.3.1
+
+#### New Features
+
+- TLS 1.3 is now supported for the sensor's connection to the LimaCharlie cloud, with automatic fallback to TLS 1.2.
+- Shell commands can now be run as a specific user instead of always running with the sensor's own privileges.
+- USB Data Loss Prevention is now configuration-driven, so the enforcement mode and allowed-device list persist across restarts and can be managed centrally from the cloud.
+
+#### Bug Fixes
+
+- Improved the reliability of running shell commands: fixed lost error output, incorrect exit codes, and commands being cut short on hosts whose clock jumps.
+- Endpoint protection status now reports specific errors when a query fails, instead of a single generic failure.
+- Fixed several memory-safety issues and memory leaks across the sensor, including at shutdown and on Windows.
+
+#### Improvements
+
+- Linux kernel component failures are now easier to diagnose, with more detail reported in its status.
 
 ---
 
@@ -293,6 +422,38 @@ Notable improvements and fixes:
 
 ---
 
+## 2026-06-05
+
+### Endpoint Agent 5.3.0
+
+#### New Features
+
+- New `reg_get` command fetches a single named Windows registry value by key and value name, for values too large or keys too crowded to retrieve with `reg_list`.
+- macOS installation is now a single guided window with a three-step checklist — system extension, network content filter, Full Disk Access — replacing the previous sequence of seven separate prompts.
+
+#### Bug Fixes
+
+- Fixed macOS file-creation events reporting the parent directory instead of the new file's path, which stopped exfil watch rules from matching specific files.
+- Fixed a leak of registry key handles when listing Windows registry keys.
+
+#### Improvements
+
+- File hashing is faster and allocates far less memory, lowering sensor overhead on hosts with heavy file activity.
+
+---
+
+## 2026-05-30
+
+### Endpoint Agent 5.2.6
+
+#### Bug Fixes
+
+- Fixed very large artifact uploads never completing: each part is now retried up to ten times with backoff, so a brief network interruption no longer restarts the transfer from the beginning.
+- Fixed uploads of locked files larger than 4 GB on Windows looping indefinitely over the first 4 GB.
+- The sensor now shuts down promptly while an upload is retrying, instead of waiting out its backoff.
+
+---
+
 ## 2026-05-09
 
 ### Vulnerability Management Uplift
@@ -302,6 +463,29 @@ Major uplift to the Vulnerability Reporting extension and its surfaces.
 - **Canonical asset-tag namespace**: introduces the `lc:asset:*` tag convention (criticality, exposure, environment, owner, compliance) for cross-cutting asset metadata. The Vulnerability Reporting extension is the first consumer; the namespace is intended to be reused across LimaCharlie surfaces. See [Asset Tag Namespace](../2-sensors-deployment/asset-tags.md).
 - **Vulnerability Reporting extension**: new public-facing documentation covering setup, scan modes (`scheduled` / `manual` / `all`), criticality-tag overrides, KEV + EPSS enrichment, LC Risk scoring, and the full action surface. See [Vulnerability Reporting](../5-integrations/extensions/limacharlie/vulnerability-reporting.md).
 - **Finding resolutions**: documented the resolution model — every finding is implicitly **open** until an operator records `mitigated`, `accepted`, or `false_positive`. Accepted-exception expiries lapse back into the open count, and `vuln_finding.*` events (`created`, `closed`, `kev_match`, `state_changed`) can be routed via Outputs to Jira, Slack, Cases, etc.
+
+---
+
+## 2026-04-02
+
+### Endpoint Agent 5.1.0
+
+#### New Features
+
+- The `os_drivers` command now works on Linux, listing the host's loaded kernel modules.
+- The sensor health check now downloads and verifies the latest health-check binary from the cloud, so diagnostics stay current without upgrading the sensor.
+
+#### Bug Fixes
+
+- Fixed macOS and Windows sensors staying on a dead connection for hours after a network disruption; keepalive behavior is now consistent across all platforms and connections recover promptly.
+- Fixed occasional missing line breaks in the sensor's local log file.
+
+#### Improvements
+
+- The sensor health check now reports details of the installed sensor binary on disk.
+- Sensor debug data now includes the sensor service version.
+- Sensor service details are now reported to the cloud on every sync, instead of only when debug data is requested.
+- Linux and macOS sensor binaries are smaller.
 
 ---
 
