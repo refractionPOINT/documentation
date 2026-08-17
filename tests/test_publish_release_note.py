@@ -140,6 +140,17 @@ def test_the_oldest_date_is_appended_without_a_trailing_rule(tmp_path):
     assert not text.rstrip().endswith("---")
 
 
+def test_a_date_inside_a_code_fence_is_not_an_insertion_point(tmp_path):
+    """A fenced example must not be mistaken for the date group to insert into."""
+    page = PAGE.replace(
+        "Newest.",
+        "Newest.\n\n```markdown\n## 2026-02-20\n\n### Example 1.0.0\n```",
+    )
+    text = insert(tmp_path, "web-app", "6.2.0", "2026-02-20", page=page)
+    assert titles(text)[0] == ("2026-02-20", "Web App 6.2.0")
+    assert text.index("## 2026-02-20\n\n### Web App 6.2.0") < text.index("## 2026-02-09")
+
+
 def test_the_page_intro_is_preserved(tmp_path):
     text = insert(tmp_path, "Web App", "6.2.0", "2026-03-01")
     assert text.startswith("# Release Notes\n")

@@ -48,7 +48,6 @@ Exit code is 1 when a non-baselined finding is present, 2 on bad input, else 0.
 import argparse
 import json
 import os
-import re
 import sys
 from collections import defaultdict
 
@@ -61,34 +60,14 @@ from release_feed import (  # noqa: E402
     DATE_RE,
     PLATFORM_SLUG,
     classify_heading,
+    iter_markdown_headings,
 )
 
 RELEASE_NOTES_DIR = "10-release-notes"
-FENCE_RE = re.compile(r"^\s*(`{3,}|~{3,})")
-HEADING_RE = re.compile(r"^(#{1,6})\s+(.*?)\s*$")
 
 
 class StructuralError(Exception):
     """A heading the feed generator cannot interpret at all."""
-
-
-def iter_headings(text):
-    """Yield (level, title, line_number) for every heading outside a code fence."""
-    fence = None
-    for lineno, line in enumerate(text.splitlines(), start=1):
-        fence_match = FENCE_RE.match(line)
-        if fence_match:
-            marker = fence_match.group(1)
-            if fence is None:
-                fence = marker
-            elif line.strip().startswith(fence):
-                fence = None
-            continue
-        if fence is not None:
-            continue
-        heading = HEADING_RE.match(line)
-        if heading:
-            yield len(heading.group(1)), heading.group(2), lineno
 
 
 def collect(docs_dir):
@@ -124,7 +103,7 @@ def collect(docs_dir):
         collisions = defaultdict(list)
         entries = []
 
-        for level, title, lineno in iter_headings(text):
+        for level, title, lineno in iter_markdown_headings(text):
             slug = slugify(title, "-")
             if slug in slug_owner:
                 collisions[slug].append((level, title, lineno))

@@ -39,6 +39,7 @@ from release_feed import (  # noqa: E402
     COMPONENTS_BY_SLUG,
     DATE_RE,
     PLATFORM_SLUG,
+    iter_markdown_headings,
     normalize_name,
 )
 
@@ -131,10 +132,13 @@ def insert_entry(filepath: str, component: str, version: str, dt: datetime,
     with open(filepath, encoding="utf-8") as handle:
         lines = handle.read().splitlines()
 
+    # Line indices are 0-based, iter_markdown_headings reports 1-based lines.
+    # Fence-aware, so a "## 2020-01-01" inside a fenced example on the page is
+    # never mistaken for a date group and used as an insertion point.
     date_headings = [
-        (index, line[3:].strip())
-        for index, line in enumerate(lines)
-        if line.startswith("## ") and DATE_RE.match(line[3:].strip())
+        (lineno - 1, title)
+        for level, title, lineno in iter_markdown_headings("\n".join(lines))
+        if level == 2 and DATE_RE.match(title)
     ]
 
     for index, heading_date in date_headings:

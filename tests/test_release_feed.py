@@ -26,7 +26,9 @@ import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "hooks"))
 
+import release_feed  # noqa: E402
 from release_feed import (  # noqa: E402
+    CANONICAL_FEED_BASE,
     COMPONENTS,
     PLATFORM_SLUG,
     PluginError,
@@ -36,7 +38,10 @@ from release_feed import (  # noqa: E402
     classify_heading,
     extract_html_entries,
     guid_slug,
+    iter_markdown_headings,
     normalize_name,
+    on_config,
+    on_page_markdown,
     parse_markdown_entries,
     render_json_feed,
     render_rss,
@@ -251,6 +256,50 @@ Orphaned entry.
 """
     with pytest.raises(PluginError, match="not under"):
         parse_markdown_entries(page)
+
+
+SEPARATED_PAGE = """# Release Notes
+
+## 2026-02-09
+
+### Endpoint Agent 5.3.5
+
+Newest.
+
+---
+
+## 2026-01-05
+
+### Web App 6.1.0
+
+Older.
+"""
+
+
+def test_the_date_separator_is_not_part_of_the_entry_above_it():
+    """The "---" rule separates date groups; it is page layout, not content."""
+    markdown_entry = parse_markdown_entries(SEPARATED_PAGE)[0]
+    assert markdown_entry.body_markdown == "Newest."
+
+    html_entry = extract_html_entries(render_page(SEPARATED_PAGE), PAGE_URL)[0]
+    assert "<hr" not in html_entry.body_html
+    assert html_entry.body_html.endswith("</p>")
+
+
+def test_characters_xml_cannot_carry_are_dropped_from_bodies():
+    """A stray control character would make the feed unparseable for everyone."""
+    page = "# Release Notes\n\n## 2026-01-05\n\n### Web App 1.0.0\n\nBad\x0bchar.\n"
+    entry = extract_html_entries(render_page(page), PAGE_URL)[0]
+    assert "\x0b" not in entry.body_html
+    ET.fromstring(render_one(entry))
+
+
+def test_iter_markdown_headings_ignores_fenced_content():
+    text = "# A\n\n```\n## Not a heading\n```\n\n## B\n"
+    assert [(level, title) for level, title, _ in iter_markdown_headings(text)] == [
+        (1, "A"),
+        (2, "B"),
+    ]
 
 
 def test_markdown_and_html_parsers_agree_on_the_real_page(
@@ -508,6 +557,68 @@ def test_json_feed_matches_the_rss_feed(release_notes_entries):
     rss_guids = [item.findtext("guid") for item in rss.findall("channel/item")]
     assert [item["id"] for item in feed["items"]] == rss_guids
     assert feed["version"] == "https://jsonfeed.org/version/1.1"
+
+
+# ---------------------------------------------------------------------------
+# Feed links follow the build they are served from
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture
+def restore_feed_base():
+    previous = release_feed._STATE.get("feed_base")
+    yield
+    release_feed._STATE["feed_base"] = previous
+
+
+CALLOUT = f"See [RSS]({CANONICAL_FEED_BASE}endpoint-agent.xml) for agent releases.\n"
+
+
+def config_for(site_url):
+    return {
+        "site_url": site_url,
+        "extra": {
+            "social": [
+                {"link": "https://github.com/refractionPOINT", "name": "GitHub"},
+                {"link": f"{CANONICAL_FEED_BASE}feed.xml", "name": "RSS"},
+            ]
+        },
+    }
+
+
+def test_a_production_build_leaves_every_feed_link_untouched(restore_feed_base):
+    config = config_for("https://docs.limacharlie.io/")
+    on_config(config)
+    assert config["extra"]["social"][1]["link"] == f"{CANONICAL_FEED_BASE}feed.xml"
+    assert on_page_markdown(CALLOUT, None, config) is None
+
+
+def test_a_local_preview_points_its_feed_links_at_itself(restore_feed_base):
+    """Otherwise every link in the callout 404s against production while previewing."""
+    config = config_for("http://127.0.0.1:8000/")
+    on_config(config)
+
+    assert config["extra"]["social"][1]["link"] == (
+        "http://127.0.0.1:8000/10-release-notes/feed.xml"
+    )
+    assert config["extra"]["social"][0]["link"] == "https://github.com/refractionPOINT"
+
+    rewritten = on_page_markdown(CALLOUT, None, config)
+    assert "http://127.0.0.1:8000/10-release-notes/endpoint-agent.xml" in rewritten
+    assert CANONICAL_FEED_BASE not in rewritten
+
+
+def test_a_page_without_feed_links_is_not_rewritten(restore_feed_base):
+    config = config_for("http://127.0.0.1:8000/")
+    on_config(config)
+    assert on_page_markdown("Nothing to see here.\n", None, config) is None
+
+
+def test_a_build_with_no_site_url_rewrites_nothing(restore_feed_base):
+    config = config_for("")
+    on_config(config)
+    assert config["extra"]["social"][1]["link"] == f"{CANONICAL_FEED_BASE}feed.xml"
+    assert on_page_markdown(CALLOUT, None, config) is None
 
 
 def test_real_page_renders_a_usable_feed(release_notes_entries):

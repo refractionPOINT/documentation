@@ -52,6 +52,16 @@ slug so `endpoint-agent.xml` carries the whole history, without editing a
 single historical heading (which would break existing deep links). New entries
 are held to the canonical spelling by the heading lint, not by this hook.
 
+Where feed links point
+----------------------
+The subscribe callout on the page and the footer icon in mkdocs.yml spell their
+feed URLs out in full, because a relative link to a generated file does not
+survive `strict: true` (the file does not exist when links are validated). On
+any build whose site_url is not production - a `mkdocs serve` preview above all
+- `on_config` and `on_page_markdown` retarget that base at the build's own, so
+a local preview links to its own feeds instead of 404ing against production. A
+production build changes nothing.
+
 Failure behavior
 ----------------
 A structural regression (the page renders but yields no entries, a `###`
@@ -88,6 +98,15 @@ log = logging.getLogger("mkdocs.hooks.release_feed")
 # Source directory (relative to docs_dir) and the page that holds the entries.
 RELEASE_NOTES_DIR = "10-release-notes"
 RELEASE_NOTES_SRC = f"{RELEASE_NOTES_DIR}/index.md"
+
+# Feed URLs are written out in full in the documentation source and in
+# mkdocs.yml, because a relative link to a generated (non-page) file does not
+# survive MkDocs' strict link validation - the file does not exist until the
+# build has already finished. On any build that is not production (a
+# `mkdocs serve` preview, a fork with a different site_url) this base is
+# rewritten to the one the build actually serves from, so the links resolve
+# where the reader is rather than 404ing against production.
+CANONICAL_FEED_BASE = "https://docs.limacharlie.io/10-release-notes/"
 
 # A date group heading: "## 2026-08-11".
 DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
@@ -326,27 +345,24 @@ class Entry:
 # --------------------------------------------------------------------------
 
 _FENCE_RE = re.compile(r"^\s*(`{3,}|~{3,})")
+_MD_HEADING_RE = re.compile(r"^(#{1,6})\s+(.*?)\s*$")
+
+# The "---" rule that separates date groups on the page belongs to the page
+# layout, not to the entry it happens to follow, so it is cut from the last
+# entry of each group rather than shipped as a trailing horizontal rule.
+_TRAILING_RULE_MD_RE = re.compile(r"\n\s*(?:-{3,}|\*{3,}|_{3,})\s*$")
+_TRAILING_RULE_HTML_RE = re.compile(r"(?:<hr\s*/?>\s*)+$", re.IGNORECASE)
 
 
-def parse_markdown_entries(text: str) -> list[Entry]:
-    """Parse `docs/10-release-notes/index.md` into entries, bodies included.
+def iter_markdown_headings(text: str):
+    """Yield `(level, title, line_number)` for each heading outside a code fence.
 
-    Fenced code blocks are skipped so a `###` inside a shell example is never
-    mistaken for an entry heading.
+    Shared by everything that has to agree on what a heading is - the entry
+    parser, the heading lint, and the publisher that inserts new entries - so a
+    `## 2026-01-01` inside a fenced example is page content everywhere rather
+    than a date group in one place and not another.
     """
-    entries: list[Entry] = []
-    current_date: str | None = None
-    current: Entry | None = None
-    body: list[str] = []
     fence: str | None = None
-
-    def flush() -> None:
-        if current is not None:
-            markdown = "\n".join(body).strip()
-            current.body_markdown = markdown
-            current.is_breaking = _markdown_is_breaking(markdown)
-            entries.append(current)
-
     for lineno, line in enumerate(text.splitlines(), start=1):
         fence_match = _FENCE_RE.match(line)
         if fence_match:
@@ -355,52 +371,62 @@ def parse_markdown_entries(text: str) -> list[Entry]:
                 fence = marker
             elif line.strip().startswith(fence):
                 fence = None
-            if current is not None:
-                body.append(line)
             continue
         if fence is not None:
-            if current is not None:
-                body.append(line)
             continue
+        heading = _MD_HEADING_RE.match(line)
+        if heading:
+            yield len(heading.group(1)), heading.group(2), lineno
 
-        if line.startswith("## "):
-            flush()
-            current, body = None, []
-            heading_text = line[3:].strip()
-            current_date = heading_text if DATE_RE.match(heading_text) else None
+
+def parse_markdown_entries(text: str) -> list[Entry]:
+    """Parse `docs/10-release-notes/index.md` into entries, bodies included."""
+    lines = text.splitlines()
+    headings = list(iter_markdown_headings(text))
+    entries: list[Entry] = []
+    current_date: str | None = None
+
+    for index, (level, title, lineno) in enumerate(headings):
+        if level == 2:
+            current_date = title if DATE_RE.match(title) else None
             continue
+        if level != 3:
+            continue
+        if current_date is None:
+            raise PluginError(
+                f"release feed: entry '{title}' on line {lineno} is not under "
+                "a '## YYYY-MM-DD' date heading"
+            )
 
-        if line.startswith("### "):
-            flush()
-            body = []
-            title = line[4:].strip()
-            if current_date is None:
-                raise PluginError(
-                    f"release feed: entry '{title}' on line {lineno} is not under "
-                    "a '## YYYY-MM-DD' date heading"
-                )
-            heading = classify_heading(title)
-            current = Entry(
+        # The body runs to the next heading that closes the entry. The
+        # "#### Section" headings inside it are part of the entry.
+        end = len(lines)
+        for next_level, _next_title, next_lineno in headings[index + 1:]:
+            if next_level <= 3:
+                end = next_lineno - 1
+                break
+
+        body = _TRAILING_RULE_MD_RE.sub("", "\n".join(lines[lineno:end]).strip())
+        heading = classify_heading(title)
+        entries.append(
+            Entry(
                 date=current_date,
                 heading=heading,
+                body_markdown=body,
+                is_breaking=_markdown_is_breaking(body),
                 source_line=lineno,
                 categories=heading.components,
             )
-            continue
+        )
 
-        if current is not None:
-            body.append(line)
-
-    flush()
     return entries
 
 
 def _markdown_is_breaking(body_markdown: str) -> bool:
-    for line in body_markdown.splitlines():
-        if line.startswith("#### "):
-            if normalize_name(line[5:]) in BREAKING_HEADINGS:
-                return True
-    return False
+    return any(
+        level == 4 and normalize_name(title) in BREAKING_HEADINGS
+        for level, title, _lineno in iter_markdown_headings(body_markdown)
+    )
 
 
 # --------------------------------------------------------------------------
@@ -418,6 +444,13 @@ _HEADERLINK_RE = re.compile(
 _TAG_RE = re.compile(r"<[^>]+>")
 _URL_ATTR_RE = re.compile(r"\b(href|src)=\"([^\"]*)\"")
 _H4_RE = re.compile(r"<h4\b[^>]*>(?P<inner>.*?)</h4>", re.DOTALL)
+
+# XML 1.0 cannot carry these code points at all - not raw, not escaped, not
+# inside CDATA - so one of them reaching a body (a copy-paste artifact in a
+# release note) would make the whole feed unparseable for every subscriber.
+# Dropping the character costs nothing; publishing an invalid feed costs the
+# entire delivery.
+_INVALID_XML_CHARS_RE = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f]")
 
 
 def _heading_text(inner_html: str) -> str:
@@ -517,7 +550,9 @@ def extract_html_entries(page_html: str, base_url: str) -> list[Entry]:
         end = matches[index + 1].start() if index + 1 < len(matches) else len(page_html)
         body = page_html[match.end():end]
         body = _HEADERLINK_RE.sub("", body)
+        body = _INVALID_XML_CHARS_RE.sub("", body)
         body = absolutize_html_urls(body, base_url).strip()
+        body = _TRAILING_RULE_HTML_RE.sub("", body).strip()
 
         heading = classify_heading(title)
         entries.append(
@@ -567,6 +602,11 @@ def _cdata(text: str) -> str:
     return "<![CDATA[" + text.replace("]]>", "]]]]><![CDATA[>") + "]]>"
 
 
+def _xml_attr(value: str) -> str:
+    """Escape a value for use inside a double-quoted XML attribute."""
+    return xml_escape(value, {'"': "&quot;"})
+
+
 def sort_entries(entries: list[Entry]) -> list[Entry]:
     """Newest first. Python's sort is stable, so same-day entries keep page order."""
     return sorted(entries, key=lambda entry: entry.date, reverse=True)
@@ -595,7 +635,7 @@ def render_rss(
         "    <language>en</language>",
         f"    <generator>{xml_escape(generator)}</generator>",
         f"    <lastBuildDate>{last_build}</lastBuildDate>",
-        f'    <atom:link href="{xml_escape(feed_url)}" rel="self" '
+        f'    <atom:link href="{_xml_attr(feed_url)}" rel="self" '
         'type="application/rss+xml"/>',
     ]
 
@@ -657,7 +697,38 @@ def render_json_feed(
 # MkDocs events
 # --------------------------------------------------------------------------
 
-_STATE: dict[str, object] = {"entries": [], "rendered": False}
+_STATE: dict[str, object] = {"entries": [], "rendered": False, "feed_base": ""}
+
+
+def on_config(config, **_kwargs):
+    """Retarget every published feed link at the base this build serves from.
+
+    Production is the no-op case: its site_url already is the canonical base,
+    so the deployed HTML is byte-for-byte what the source says. Runs before
+    anything is rendered, so both the footer social link (mkdocs.yml) and the
+    in-page links (see `on_page_markdown`) are covered.
+    """
+    site_url = config.get("site_url") or ""
+    feed_base = urljoin(site_url, f"{RELEASE_NOTES_DIR}/") if site_url else ""
+    _STATE["feed_base"] = feed_base
+    if not feed_base or feed_base == CANONICAL_FEED_BASE:
+        return config
+
+    for link in (config.get("extra") or {}).get("social") or []:
+        url = link.get("link", "")
+        if url.startswith(CANONICAL_FEED_BASE):
+            link["link"] = feed_base + url[len(CANONICAL_FEED_BASE):]
+    return config
+
+
+def on_page_markdown(markdown, page, config, **_kwargs):
+    """Retarget in-page feed links on a non-production build. See `on_config`."""
+    feed_base = _STATE.get("feed_base") or ""
+    if not feed_base or feed_base == CANONICAL_FEED_BASE:
+        return None
+    if CANONICAL_FEED_BASE not in markdown:
+        return None
+    return markdown.replace(CANONICAL_FEED_BASE, feed_base)
 
 
 def on_pre_build(config, **_kwargs):
