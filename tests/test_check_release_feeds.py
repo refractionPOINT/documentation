@@ -115,13 +115,14 @@ def test_malformed_xml_fails(tmp_path, capsys):
     assert "not well-formed XML" in capsys.readouterr().err
 
 
-def test_an_unescaped_body_that_breaks_the_document_fails(tmp_path, capsys):
-    """The failure the CDATA handling exists to prevent, caught at the artifact."""
+def test_a_body_that_reached_the_feed_unescaped_fails(tmp_path, capsys):
+    """The artifact-level backstop for an escaping regression in the generator."""
     site, feed_dir = build_site(tmp_path)
-    broken = (feed_dir / "feed.xml").read_text(encoding="utf-8").replace(
-        "<p>Body</p>", "<p>Body</p>]]><evil/>"
+    text = (feed_dir / "feed.xml").read_text(encoding="utf-8")
+    assert "&lt;p&gt;Body&lt;/p&gt;" in text, "bodies are expected to be escaped"
+    (feed_dir / "feed.xml").write_text(
+        text.replace("&lt;p&gt;Body&lt;/p&gt;", "<p>Body</p><evil"), encoding="utf-8"
     )
-    (feed_dir / "feed.xml").write_text(broken, encoding="utf-8")
     assert run(site) == 1
     assert "not well-formed XML" in capsys.readouterr().err
 

@@ -20,6 +20,7 @@ import re
 import sys
 import xml.etree.ElementTree as ET
 from email.utils import parsedate_to_datetime
+from pathlib import Path
 
 import markdown
 import pytest
@@ -143,6 +144,26 @@ def test_classify_heading(title, slugs, version):
 )
 def test_heading_canonical_form(title, canonical):
     assert classify_heading(title).is_canonical is canonical
+
+
+def test_an_announcement_ending_in_a_number_is_not_read_as_a_version():
+    """"Platform: Support for Windows 11" must not publish as version 11."""
+    heading = classify_heading("Platform: Support for Windows 11")
+    assert heading.components == (PLATFORM_SLUG,)
+    assert heading.version is None
+    assert heading.announcement == "Support for Windows 11"
+    assert heading.is_canonical
+
+
+def test_entities_in_a_heading_resolve_the_same_way_the_source_reads():
+    """The heading text is what the guid is built from, so it must round-trip."""
+    page = "# Release Notes\n\n## 2026-01-05\n\n### Web App 1.0.0 & friends\n\nBody.\n"
+    html_entry = extract_html_entries(render_page(page), PAGE_URL)[0]
+    markdown_entry = parse_markdown_entries(page)[0]
+    assert html_entry.title == "Web App 1.0.0 & friends"
+    assert html_entry.guid("docs.limacharlie.io") == markdown_entry.guid(
+        "docs.limacharlie.io"
+    )
 
 
 def test_announcement_form_keeps_component_and_text():
@@ -454,17 +475,74 @@ def render_one(entry):
     )
 
 
-def test_cdata_terminator_in_a_body_keeps_the_feed_well_formed():
-    """A body containing `]]>` must not end the CDATA section early."""
-    body = "<p>Match on <code>x[0]]></code> in a rule.</p>"
+def test_a_body_round_trips_through_the_feed_unchanged():
+    """Including the sequences that hand-rolled XML quoting gets wrong."""
+    body = '<p>Match on <code>x[0]]&gt;</code> &amp; "quotes" in a rule.</p>'
     root = ET.fromstring(render_one(make_entry(body=body)))
-    description = root.find("channel/item/description").text
-    assert description == body
+    assert root.findtext("channel/item/description") == body
 
 
 def test_special_characters_in_a_title_are_escaped():
     root = ET.fromstring(render_one(make_entry(title="Web App 1.0.0 & <friends>")))
     assert root.findtext("channel/item/title") == "Web App 1.0.0 & <friends>"
+
+
+@pytest.mark.parametrize(
+    "hostile",
+    [
+        "</description></item><item><title>Injected</title><description>x",
+        "]]><item><title>Injected</title></item>",
+        '"><script>alert(1)</script>',
+        "<![CDATA[nested]]>",
+    ],
+)
+def test_a_body_cannot_forge_feed_structure(hostile):
+    """Release note text is content, never markup: it cannot invent an item."""
+    root = ET.fromstring(render_one(make_entry(body=hostile)))
+    items = root.findall("channel/item")
+    assert len(items) == 1
+    assert items[0].findtext("title") == "Web App 1.0.0"
+    assert items[0].findtext("description") == hostile
+
+
+def test_a_title_cannot_forge_feed_structure():
+    hostile = "</title><guid>spoofed</guid><title>x"
+    root = ET.fromstring(render_one(make_entry(title=hostile)))
+    item = root.find("channel/item")
+    assert item.findtext("title") == hostile
+    assert item.findtext("guid").startswith("tag:docs.limacharlie.io,")
+    assert len(item.findall("guid")) == 1
+
+
+@pytest.mark.parametrize(
+    "hostile",
+    [
+        '", "id": "spoofed", "junk": "',
+        '\\", "id": "spoofed"',
+        "line\nbreak\ttab",
+    ],
+)
+def test_a_body_cannot_forge_json_feed_structure(hostile):
+    import json
+
+    feed = json.loads(
+        render_json_feed(
+            title="Feed",
+            description="Feed",
+            page_url=PAGE_URL,
+            feed_url=f"{PAGE_URL}feed.json",
+            entries=[make_entry(body=hostile)],
+        )
+    )
+    assert len(feed["items"]) == 1
+    assert feed["items"][0]["content_html"] == hostile
+    assert feed["items"][0]["id"].startswith("tag:docs.limacharlie.io,")
+
+
+def test_the_feed_declares_its_encoding_and_namespace():
+    xml = render_one(make_entry())
+    assert xml.startswith('<?xml version="1.0" encoding="utf-8"?>\n')
+    assert 'xmlns:atom="http://www.w3.org/2005/Atom"' in xml
 
 
 def test_item_carries_link_guid_and_categories():
@@ -557,6 +635,57 @@ def test_json_feed_matches_the_rss_feed(release_notes_entries):
     rss_guids = [item.findtext("guid") for item in rss.findall("channel/item")]
     assert [item["id"] for item in feed["items"]] == rss_guids
     assert feed["version"] == "https://jsonfeed.org/version/1.1"
+
+
+# ---------------------------------------------------------------------------
+# The feed and the page source must describe the same entries
+# ---------------------------------------------------------------------------
+
+
+def write_release_notes(tmp_path, body):
+    docs = tmp_path / "10-release-notes"
+    docs.mkdir(parents=True)
+    (docs / "index.md").write_text(body, encoding="utf-8")
+    return tmp_path
+
+
+def test_source_and_rendered_entries_matching_is_accepted(tmp_path):
+    page = "# Release Notes\n\n## 2026-01-05\n\n### Web App 1.0.0\n\nBody.\n"
+    docs = write_release_notes(tmp_path, page)
+    release_feed._assert_matches_source(
+        extract_html_entries(render_page(page), PAGE_URL), docs
+    )
+
+
+def test_an_entry_the_source_does_not_declare_fails_the_build(tmp_path):
+    """An `###` indented inside an admonition renders as h3 but is not a heading."""
+    page = """# Release Notes
+
+## 2026-01-05
+
+### Web App 1.0.0
+
+!!! note "Aside"
+    ### Not A Release
+
+    Text.
+"""
+    docs = write_release_notes(tmp_path, page)
+    rendered = markdown.Markdown(
+        extensions=["toc", "admonition"],
+        extension_configs={"toc": {"permalink": True, "toc_depth": 3}},
+    ).convert(page)
+    entries = extract_html_entries(rendered, PAGE_URL)
+
+    assert [entry.title for entry in entries] == ["Web App 1.0.0", "Not A Release"]
+    with pytest.raises(PluginError, match="disagree on which entries exist"):
+        release_feed._assert_matches_source(entries, docs)
+
+
+def test_the_repository_page_survives_the_cross_check(release_notes_entries):
+    release_feed._assert_matches_source(
+        release_notes_entries, Path(REPO_ROOT) / "docs"
+    )
 
 
 # ---------------------------------------------------------------------------

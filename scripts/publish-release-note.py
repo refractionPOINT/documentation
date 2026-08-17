@@ -41,6 +41,7 @@ from release_feed import (  # noqa: E402
     PLATFORM_SLUG,
     iter_markdown_headings,
     normalize_name,
+    parse_markdown_entries,
 )
 
 DOCS_DIR = os.path.join(os.path.dirname(__file__), "..", "docs", "10-release-notes")
@@ -118,19 +119,30 @@ def build_entry(component: str, version: str, url: str, body: str) -> list[str]:
 
 
 def insert_entry(filepath: str, component: str, version: str, dt: datetime,
-                 url: str, body: str) -> None:
+                 url: str, body: str) -> bool:
     """Insert an entry into the release notes page, newest first.
 
     The page is ordered newest date first, and entries within a date are
     ordered newest first too, so a new entry goes directly under its date
     heading. A date heading that does not exist yet is created in the position
     that keeps the page ordered, with the ``---`` rule that separates dates.
+
+    Returns False without touching the page when that exact entry is already
+    published. The caller is a ``repository_dispatch`` that can fire twice for
+    one release, and a duplicated heading would give two feed items the same
+    identity - which fails the build rather than merely looking untidy.
     """
     date_str = dt.strftime("%Y-%m-%d")
     entry = build_entry(component, version, url, body)
 
     with open(filepath, encoding="utf-8") as handle:
-        lines = handle.read().splitlines()
+        text = handle.read()
+    lines = text.splitlines()
+
+    heading = f"{component} {version}"
+    for existing in parse_markdown_entries(text):
+        if existing.date == date_str and existing.title == heading:
+            return False
 
     # Line indices are 0-based, iter_markdown_headings reports 1-based lines.
     # Fence-aware, so a "## 2020-01-01" inside a fenced example on the page is
@@ -168,6 +180,7 @@ def insert_entry(filepath: str, component: str, version: str, dt: datetime,
 
     with open(filepath, "w", encoding="utf-8") as handle:
         handle.write("\n".join(lines).rstrip() + "\n")
+    return True
 
 
 def validate_inputs(component: str, version: str) -> None:
@@ -302,9 +315,10 @@ def main():
         sys.exit(1)
 
     dt = parse_date(args.date)
-    insert_entry(INDEX_MD, component, args.version, dt, args.url, body)
-
-    print(f"Published: {component} {args.version} -> {INDEX_MD}")
+    if insert_entry(INDEX_MD, component, args.version, dt, args.url, body):
+        print(f"Published: {component} {args.version} -> {INDEX_MD}")
+    else:
+        print(f"Already published, nothing to do: {component} {args.version}")
 
 
 if __name__ == "__main__":

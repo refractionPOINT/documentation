@@ -192,6 +192,22 @@ def test_a_breaking_section_survives_the_insert(tmp_path):
     assert parse_markdown_entries(text)[0].is_breaking is True
 
 
+def test_republishing_the_same_release_is_a_no_op(tmp_path):
+    """A dispatch can fire twice; a duplicated heading would break the build."""
+    first = insert(tmp_path, "web-app", "6.2.0", "2026-03-01")
+    second = insert(tmp_path, "web-app", "6.2.0", "2026-03-01", page=first)
+    assert second == first
+    assert [title for _, title in titles(second)].count("Web App 6.2.0") == 1
+
+
+def test_republishing_reports_that_it_did_nothing(tmp_path):
+    path = tmp_path / "index.md"
+    path.write_text(PAGE, encoding="utf-8")
+    date = datetime.strptime("2026-03-01", "%Y-%m-%d")
+    assert publish.insert_entry(str(path), "Web App", "6.2.0", date, "", "") is True
+    assert publish.insert_entry(str(path), "Web App", "6.2.0", date, "", "") is False
+
+
 def test_two_publishes_on_the_same_day_both_survive(tmp_path):
     first = insert(tmp_path, "web-app", "6.2.0", "2026-03-01")
     second = insert(tmp_path, "sensor", "5.4.0", "2026-03-01", page=first)

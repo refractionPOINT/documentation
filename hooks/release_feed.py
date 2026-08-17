@@ -77,14 +77,15 @@ Cost: one regex pass over a ~60 KB page plus ~90 KB of XML written at
 
 from __future__ import annotations
 
+import html
 import json
 import logging
 import re
+import xml.etree.ElementTree as ET
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 from urllib.parse import urljoin, urlsplit
-from xml.sax.saxutils import escape as xml_escape
 
 try:  # MkDocs is absent when the parsing helpers are imported by tests/scripts.
     from mkdocs.exceptions import PluginError
@@ -287,17 +288,22 @@ def classify_heading(title: str) -> Heading:
     """
     title = title.strip()
     announcement = None
-    match = VERSION_RE.match(title)
-    if match:
-        name = match.group("name").strip()
-        version = match.group("version").strip()
-    elif ": " in title:
-        name, _, rest = title.partition(": ")
-        name, version = name.strip(), None
+    version = None
+    prefix, separator, rest = title.partition(": ")
+
+    if separator and normalize_name(prefix) in ALIAS_INDEX:
+        # The announcement form is checked first so that an announcement whose
+        # text happens to end in a number ("Platform: Support for Windows 11")
+        # is not read as a release of version 11.
+        name = prefix.strip()
         announcement = rest.strip() or None
     else:
-        name = title
-        version = None
+        match = VERSION_RE.match(title)
+        if match:
+            name = match.group("name").strip()
+            version = match.group("version").strip()
+        else:
+            name = title
 
     key = normalize_name(name)
     components = ALIAS_INDEX.get(key)
@@ -454,17 +460,15 @@ _INVALID_XML_CHARS_RE = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f]")
 
 
 def _heading_text(inner_html: str) -> str:
-    """Recover a heading's plain text from its rendered markup."""
+    """Recover a heading's plain text from its rendered markup.
+
+    Entities are resolved with `html.unescape` rather than a hand-written set,
+    so a heading is read the same way whichever entity form Markdown produced.
+    That matters beyond cosmetics: this text is what the guid is derived from.
+    """
     text = _HEADERLINK_RE.sub("", inner_html)
     text = _TAG_RE.sub("", text)
-    text = (
-        text.replace("&amp;", "&")
-        .replace("&lt;", "<")
-        .replace("&gt;", ">")
-        .replace("&quot;", '"')
-        .replace("&#39;", "'")
-    )
-    return text.strip()
+    return html.unescape(text).strip()
 
 
 def absolutize_html_urls(fragment: str, base_url: str) -> str:
@@ -597,19 +601,20 @@ def rfc3339(date: str) -> str:
     return f"{date}T00:00:00+00:00"
 
 
-def _cdata(text: str) -> str:
-    """Wrap item HTML in CDATA, splitting any literal `]]>` that would end it."""
-    return "<![CDATA[" + text.replace("]]>", "]]]]><![CDATA[>") + "]]>"
-
-
-def _xml_attr(value: str) -> str:
-    """Escape a value for use inside a double-quoted XML attribute."""
-    return xml_escape(value, {'"': "&quot;"})
-
-
 def sort_entries(entries: list[Entry]) -> list[Entry]:
     """Newest first. Python's sort is stable, so same-day entries keep page order."""
     return sorted(entries, key=lambda entry: entry.date, reverse=True)
+
+
+ATOM_NS = "http://www.w3.org/2005/Atom"
+ET.register_namespace("atom", ATOM_NS)
+
+
+def _text_element(parent: ET.Element, tag: str, text: str) -> ET.Element:
+    """Append `<tag>text</tag>`, leaving all escaping to the serializer."""
+    element = ET.SubElement(parent, tag)
+    element.text = text
+    return element
 
 
 def render_rss(
@@ -621,43 +626,55 @@ def render_rss(
     entries: list[Entry],
     generator: str,
 ) -> str:
+    """Serialize an RSS 2.0 feed.
+
+    Built through ElementTree rather than string formatting. Everything that
+    goes in is content - entry titles written by hand, HTML bodies, URLs - and
+    hand-rolled escaping is how a stray character in a release note turns into
+    a feed that is broken at best and forged at worst. The serializer owns
+    escaping and this function only decides structure, so there is no path by
+    which body text can close a tag or open a new one.
+
+    Bodies are carried as escaped text rather than in a CDATA section. Both are
+    the same text node to a parser, but escaped text needs no `]]>` handling of
+    its own, which removes the last piece of manual quoting.
+    """
     host = urlsplit(page_url).hostname or "docs.limacharlie.io"
     entries = sort_entries(entries)
     last_build = rfc822(entries[0].date) if entries else rfc822("1970-01-01")
 
-    lines = [
-        '<?xml version="1.0" encoding="utf-8"?>',
-        '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">',
-        "  <channel>",
-        f"    <title>{xml_escape(title)}</title>",
-        f"    <link>{xml_escape(page_url)}</link>",
-        f"    <description>{xml_escape(description)}</description>",
-        "    <language>en</language>",
-        f"    <generator>{xml_escape(generator)}</generator>",
-        f"    <lastBuildDate>{last_build}</lastBuildDate>",
-        f'    <atom:link href="{_xml_attr(feed_url)}" rel="self" '
-        'type="application/rss+xml"/>',
-    ]
+    rss = ET.Element("rss", {"version": "2.0"})
+    channel = ET.SubElement(rss, "channel")
+    _text_element(channel, "title", title)
+    _text_element(channel, "link", page_url)
+    _text_element(channel, "description", description)
+    _text_element(channel, "language", "en")
+    _text_element(channel, "generator", generator)
+    _text_element(channel, "lastBuildDate", last_build)
+    ET.SubElement(
+        channel,
+        f"{{{ATOM_NS}}}link",
+        {"href": feed_url, "rel": "self", "type": "application/rss+xml"},
+    )
 
     for entry in entries:
-        lines += [
-            "    <item>",
-            f"      <title>{xml_escape(entry.title)}</title>",
-            f"      <link>{xml_escape(entry.link(page_url))}</link>",
-            f'      <guid isPermaLink="false">{xml_escape(entry.guid(host))}</guid>',
-            f"      <pubDate>{rfc822(entry.date)}</pubDate>",
-        ]
+        item = ET.SubElement(channel, "item")
+        _text_element(item, "title", entry.title)
+        _text_element(item, "link", entry.link(page_url))
+        _text_element(item, "guid", entry.guid(host)).set("isPermaLink", "false")
+        _text_element(item, "pubDate", rfc822(entry.date))
         for category in entry.categories:
-            lines.append(f"      <category>{xml_escape(category)}</category>")
+            _text_element(item, "category", category)
         if entry.is_breaking:
-            lines.append("      <category>breaking-changes</category>")
-        lines += [
-            f"      <description>{_cdata(entry.body_html)}</description>",
-            "    </item>",
-        ]
+            _text_element(item, "category", "breaking-changes")
+        _text_element(item, "description", entry.body_html)
 
-    lines += ["  </channel>", "</rss>", ""]
-    return "\n".join(lines)
+    ET.indent(rss, space="  ")
+    return (
+        '<?xml version="1.0" encoding="utf-8"?>\n'
+        + ET.tostring(rss, encoding="unicode")
+        + "\n"
+    )
 
 
 def render_json_feed(
@@ -668,6 +685,13 @@ def render_json_feed(
     feed_url: str,
     entries: list[Entry],
 ) -> str:
+    """Serialize a JSON Feed 1.1 document.
+
+    Same principle as `render_rss`: the document is built as data and handed to
+    `json.dumps`, which owns quoting. No field here is interpolated into the
+    output by hand, so an entry body cannot terminate a string or introduce a
+    key of its own.
+    """
     host = urlsplit(page_url).hostname or "docs.limacharlie.io"
     entries = sort_entries(entries)
     feed = {
@@ -696,6 +720,37 @@ def render_json_feed(
 # --------------------------------------------------------------------------
 # MkDocs events
 # --------------------------------------------------------------------------
+
+def _assert_matches_source(entries: list[Entry], docs_dir: Path) -> None:
+    """Fail the build if the feed and the page source disagree on the entries.
+
+    Two parsers read the release notes: this hook reads the rendered HTML (to
+    get MkDocs' own anchors), while the heading lint and the forum announcer
+    read the Markdown. They can silently diverge - an `###` indented inside an
+    admonition renders as an h3 but is not a source heading, a Setext
+    underline makes a heading the Markdown scan does not recognize, and inline
+    formatting in a heading changes its text and therefore its guid.
+
+    Any of those publishes a feed item that does not exist on the page, or
+    announces a release under a different identity than the feed uses. Both are
+    worse than a red build, so the two views are required to match exactly.
+    """
+    from_source: list[tuple[str, str]] = []
+    for path in sorted((docs_dir / RELEASE_NOTES_DIR).glob("*.md")):
+        source = path.read_text(encoding="utf-8")
+        from_source += [(entry.date, entry.title) for entry in parse_markdown_entries(source)]
+
+    from_html = [(entry.date, entry.title) for entry in entries]
+    if sorted(from_source) != sorted(from_html):
+        only_html = sorted(set(from_html) - set(from_source))
+        only_source = sorted(set(from_source) - set(from_html))
+        raise PluginError(
+            "release feed: the rendered page and its Markdown source disagree on "
+            f"which entries exist. Only in the rendered page: {only_html or 'none'}. "
+            f"Only in the source: {only_source or 'none'}. An entry heading must "
+            "be a top-level '### ' line with no inline formatting."
+        )
+
 
 _STATE: dict[str, object] = {"entries": [], "rendered": False, "feed_base": ""}
 
@@ -772,6 +827,8 @@ def on_post_build(config, **_kwargs):
             f"release feed: no entries parsed from {RELEASE_NOTES_SRC}. The page "
             "structure ('## YYYY-MM-DD' then '### Component Version') has changed."
         )
+
+    _assert_matches_source(entries, Path(config["docs_dir"]))
 
     site_url = config["site_url"]
     page_url = urljoin(site_url, f"{RELEASE_NOTES_DIR}/")
