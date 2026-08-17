@@ -58,6 +58,22 @@ Then create a Defender adapter in LimaCharlie with:
 - Tenant ID
 - Client ID
 - Client Secret
+- Endpoint (optional) — see below
+
+#### National clouds (GCC High, DoD)
+
+US Government tenants are network-isolated from the commercial cloud: they authenticate against a different identity host and call a different Microsoft Graph service root, and an access token issued by one deployment is **not** valid against another. The optional `endpoint` option selects the deployment:
+
+| `endpoint` | Deployment | Identity host | Microsoft Graph |
+|------------|------------|---------------|-----------------|
+| `enterprise` (default) | Global / commercial | `login.microsoftonline.com` | `graph.microsoft.com` |
+| `gcc-gov` | Microsoft 365 GCC (moderate) | `login.microsoftonline.com` | `graph.microsoft.com` |
+| `gcc-high-gov` | US Government GCC High (L4) | `login.microsoftonline.us` | `graph.microsoft.us` |
+| `dod-gov` | US Government DoD (L5) | `login.microsoftonline.us` | `dod-graph.microsoft.us` |
+
+Leaving `endpoint` empty keeps the commercial endpoints, so existing adapters need no change. Microsoft 365 GCC (moderate) runs on the worldwide endpoints — `gcc-gov` exists so the deployment can be named explicitly and behaves identically to `enterprise`. Register the application in the government portal (`portal.azure.us`) rather than `portal.azure.com`.
+
+The same `endpoint` option, with the same four values, is used by the [Microsoft Entra ID](microsoft-entra-id.md) and [Microsoft 365](microsoft-365.md) adapters.
 
 ## Deployment Configurations
 
@@ -71,6 +87,7 @@ All adapters support the same `client_options`, which you should always specify 
 ### Adapter-specific Options
 
 - `connection_string` - The connection string provided in Azure for connecting to the Azure Event Hub, including the `EntityPath=...` at the end which identifies the Hub Name (this component is sometimes now shown in the connection string provided by Azure).
+- `endpoint` - API adapter only. The Microsoft national cloud the tenant lives in: `enterprise` (default), `gcc-gov`, `gcc-high-gov` or `dod-gov`. See [National clouds](#national-clouds-gcc-high-dod).
 
 ## Guided Deployment
 

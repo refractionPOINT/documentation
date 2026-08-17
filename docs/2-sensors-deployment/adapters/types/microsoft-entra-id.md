@@ -43,6 +43,23 @@ For the full list of risk detection types, see [Microsoft's documentation](https
 - `sign_ins` requires the `AuditLog.Read.All` and `Directory.Read.All` application permissions, and the tenant must hold an Entra ID P1 (or P2) license — a Microsoft Graph requirement, the same one that applies to streaming SignInLogs to an Event Hub.
 - `audit_logs` requires the `AuditLog.Read.All` application permission.
 
+#### National clouds (GCC High, DoD)
+
+US Government tenants are network-isolated from the commercial cloud: they authenticate against a different identity host and call a different Microsoft Graph service root, and an access token issued by one deployment is **not** valid against another. The optional `endpoint` option selects the deployment:
+
+| `endpoint` | Deployment | Identity host | Microsoft Graph |
+|------------|------------|---------------|-----------------|
+| `enterprise` (default) | Global / commercial | `login.microsoftonline.com` | `graph.microsoft.com` |
+| `gcc-gov` | Microsoft 365 GCC (moderate) | `login.microsoftonline.com` | `graph.microsoft.com` |
+| `gcc-high-gov` | US Government GCC High (L4) | `login.microsoftonline.us` | `graph.microsoft.us` |
+| `dod-gov` | US Government DoD (L5) | `login.microsoftonline.us` | `dod-graph.microsoft.us` |
+
+Leaving `endpoint` empty keeps the commercial endpoints, so existing adapters need no change. Microsoft 365 GCC (moderate) runs on the worldwide endpoints — `gcc-gov` exists so the deployment can be named explicitly and behaves identically to `enterprise`.
+
+All three streams (`risk_detections`, `sign_ins`, `audit_logs`) are available in both US Government L4 and L5. Register the application in the government portal (`portal.azure.us`) rather than `portal.azure.com`; the app registration, permissions and admin consent steps below are otherwise the same.
+
+The same `endpoint` option, with the same four values, is used by the [Microsoft Defender](microsoft-defender.md) and [Microsoft 365](microsoft-365.md) adapters.
+
 ### Azure Event Hub
 
 When using Event Hub, you receive whatever data you configure Azure to stream. You must configure **Azure Diagnostic Settings** in Entra ID to send logs to your Event Hub. Common log types include:
@@ -103,7 +120,8 @@ Create a new Adapter within LimaCharlie, and select Microsoft Entra ID. Select `
    2. Client ID
    3. Client Secret
    4. Streams (optional): comma separated values among `risk_detections`, `sign_ins` and `audit_logs`; empty means `risk_detections` only
-   5. *Note: You can use the Secrets Manager for these values if you wish!*
+   5. Endpoint (optional): the Microsoft national cloud the tenant lives in — `enterprise`, `gcc-gov`, `gcc-high-gov` or `dod-gov`. Leave it empty for a commercial tenant; see [National clouds](#national-clouds-gcc-high-dod)
+   6. *Note: You can use the Secrets Manager for these values if you wish!*
 
 Click **Complete Cloud Installation**, and the Adapter should be created successfully. Monitor the **Platform Logs** for any errors.
 
