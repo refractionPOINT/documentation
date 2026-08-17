@@ -1,4 +1,7 @@
-name: Lexer Tests
+name: Python Tests
+
+# Unit tests for the Python that shapes the site: the LCQL Pygments lexer, the
+# release-notes feed generator and the release-notes heading lint.
 
 on:
   push:
@@ -14,7 +17,7 @@ permissions:
 
 jobs:
   test:
-    name: LCQL lexer unit tests
+    name: Unit tests
     runs-on: ubuntu-latest
     timeout-minutes: 10
     # Run for repository events (push to master, manual dispatch) and for pull
@@ -41,5 +44,5 @@ jobs:
           pip install -r requirements.txt
           pip install pytest==9.1.1
 
-      - name: Run LCQL lexer tests
+      - name: Run unit tests
         run: pytest tests/ -v

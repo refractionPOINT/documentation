@@ -148,6 +148,7 @@ plugins:
 hooks:
   - hooks/llms_txt.py
   - hooks/lcql_lexer.py
+  - hooks/release_feed.py
 
 markdown_extensions:
   - abbr
@@ -205,6 +206,9 @@ extra:
     - icon: fontawesome/solid/globe
       link: https://limacharlie.io
       name: LimaCharlie Platform
+    - icon: fontawesome/solid/rss
+      link: https://docs.limacharlie.io/10-release-notes/feed.xml
+      name: Release Notes RSS feed
 
 extra_css:
   - assets/stylesheets/extra.css

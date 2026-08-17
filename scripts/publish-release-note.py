@@ -1,17 +1,25 @@
 #!/usr/bin/env python3
 """Publish a release note entry to the documentation.
 
-Called by the publish-release-notes GitHub Actions workflow. Appends an entry
-to the monthly release notes file (e.g., docs/10-release-notes/2026-03.md),
-creating the file if it doesn't exist. Also updates mkdocs.yml nav if the
-monthly file is new.
+Called by the publish-release-notes GitHub Actions workflow. Inserts an entry
+into docs/10-release-notes/index.md, under the ``## YYYY-MM-DD`` heading for the
+release date, creating that date heading in the right chronological position
+when it is the first release of the day.
+
+That page is the single source the RSS/JSON feeds are generated from
+(``hooks/release_feed.py``), so an entry written anywhere else would be
+published but never announced. The ``--component`` slug is resolved to its
+canonical display name through the same component registry the feeds use, which
+is what keeps a machine-published entry in the same feed as a hand-written one
+(``--component sensor`` and ``--component endpoint-agent`` both land under
+``### Endpoint Agent``).
 
 Usage:
-    python scripts/publish-release-note.py \
-        --component "sensor" \
-        --version "v4.32.0" \
-        --date "2026-03-18T14:30:00Z" \
-        --url "https://github.com/refractionPOINT/lce/releases/tag/v4.32.0" \
+    python scripts/publish-release-note.py \\
+        --component "sensor" \\
+        --version "v4.32.0" \\
+        --date "2026-03-18T14:30:00Z" \\
+        --url "https://github.com/refractionPOINT/example/releases/tag/v4.32.0" \\
         --body "Release note content in markdown"
 """
 
@@ -23,9 +31,19 @@ import sys
 from datetime import datetime
 from urllib.parse import urlparse
 
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "hooks"))
+
+from release_feed import (  # noqa: E402
+    ALIAS_INDEX,
+    COMPONENTS,
+    COMPONENTS_BY_SLUG,
+    DATE_RE,
+    PLATFORM_SLUG,
+    normalize_name,
+)
 
 DOCS_DIR = os.path.join(os.path.dirname(__file__), "..", "docs", "10-release-notes")
-MKDOCS_YML = os.path.join(os.path.dirname(__file__), "..", "mkdocs.yml")
+INDEX_MD = os.path.join(DOCS_DIR, "index.md")
 
 # Allowlisted hosts for the release URL. A URL is accepted only when its host is
 # one of these exactly or a subdomain of one (e.g. docs.limacharlie.io). The
@@ -66,96 +84,86 @@ def parse_date(date_str: str) -> datetime:
     raise ValueError(f"Unable to parse date: {date_str}")
 
 
-def ensure_monthly_file(dt: datetime) -> str:
-    """Create the monthly file if it doesn't exist. Returns the file path."""
-    filename = dt.strftime("%Y-%m") + ".md"
-    filepath = os.path.join(DOCS_DIR, filename)
+def canonical_component(component: str) -> str:
+    """Resolve a component slug to the display name used in entry headings.
 
-    if not os.path.exists(filepath):
-        month_label = dt.strftime("%B %Y")
-        with open(filepath, "w") as f:
-            f.write(f"# Release Notes - {month_label}\n")
+    Rejects anything the registry does not know rather than inventing a
+    heading: an unrecognized name would produce an entry that lands in the
+    catch-all feed and fails scripts/check-release-note-headings.py, which is
+    worse than refusing the publish and having a human name the component.
+    """
+    slugs = ALIAS_INDEX.get(normalize_name(component))
+    if slugs and len(slugs) == 1 and slugs[0] != PLATFORM_SLUG:
+        return COMPONENTS_BY_SLUG[slugs[0]].name
+    known = ", ".join(
+        sorted(c.name for c in COMPONENTS if c.slug != PLATFORM_SLUG)
+    )
+    print(
+        f"Unknown component: {component}. Expected one of: {known} "
+        "(or any of their aliases in hooks/release_feed.py).",
+        file=sys.stderr,
+    )
+    sys.exit(1)
 
-    return filepath
+
+def build_entry(component: str, version: str, url: str, body: str) -> list[str]:
+    """Render the Markdown lines of one entry, heading included."""
+    lines = [f"### {component} {version}", ""]
+    if url:
+        lines += [f"[GitHub Release]({url})", ""]
+    if body and body.strip():
+        lines += [body.strip(), ""]
+    return lines
 
 
-def append_entry(filepath: str, component: str, version: str, dt: datetime,
+def insert_entry(filepath: str, component: str, version: str, dt: datetime,
                  url: str, body: str) -> None:
-    """Append a release note entry to the monthly file."""
-    date_str = dt.strftime("%Y-%m-%d")
+    """Insert an entry into the release notes page, newest first.
 
-    entry_lines = [
-        "",
-        f"## {component} {version}",
-        "",
-        f"**Date:** {date_str}",
-        "",
+    The page is ordered newest date first, and entries within a date are
+    ordered newest first too, so a new entry goes directly under its date
+    heading. A date heading that does not exist yet is created in the position
+    that keeps the page ordered, with the ``---`` rule that separates dates.
+    """
+    date_str = dt.strftime("%Y-%m-%d")
+    entry = build_entry(component, version, url, body)
+
+    with open(filepath, encoding="utf-8") as handle:
+        lines = handle.read().splitlines()
+
+    date_headings = [
+        (index, line[3:].strip())
+        for index, line in enumerate(lines)
+        if line.startswith("## ") and DATE_RE.match(line[3:].strip())
     ]
 
-    if url:
-        entry_lines.append(f"[GitHub Release]({url})")
-        entry_lines.append("")
-
-    if body and body.strip():
-        entry_lines.append(body.strip())
-        entry_lines.append("")
-
-    entry_lines.append("---")
-    entry_lines.append("")
-
-    with open(filepath, "a") as f:
-        f.write("\n".join(entry_lines))
-
-
-def update_mkdocs_nav(dt: datetime) -> None:
-    """Add the monthly file to mkdocs.yml nav if not already present.
-
-    Inserts in reverse chronological order so the newest month appears first
-    after the Overview entry.
-    """
-    filename = dt.strftime("%Y-%m") + ".md"
-    month_label = dt.strftime("%B %Y")
-    nav_entry = f"10-release-notes/{filename}"
-
-    with open(MKDOCS_YML, "r") as f:
-        lines = f.readlines()
-
-    # Check if already present
-    if any(nav_entry in line for line in lines):
-        return
-
-    # Find the "- Overview: 10-release-notes/index.md" line
-    overview_idx = None
-    for i, line in enumerate(lines):
-        if "10-release-notes/index.md" in line:
-            overview_idx = i
+    for index, heading_date in date_headings:
+        if heading_date == date_str:
+            # Existing date: the new entry becomes the first one of that day.
+            insert_at = index + 1
+            while insert_at < len(lines) and not lines[insert_at].strip():
+                insert_at += 1
+            lines[insert_at:insert_at] = entry
             break
+    else:
+        # First heading that is older than this release, so the page stays
+        # newest first. ISO dates compare chronologically as strings.
+        insert_at = len(lines)
+        for index, heading_date in date_headings:
+            if heading_date < date_str:
+                insert_at = index
+                break
 
-    if overview_idx is None:
-        print("Warning: Could not find Release Notes overview in mkdocs.yml nav", file=sys.stderr)
-        return
-
-    insert_line = f"      - {month_label}: {nav_entry}\n"
-
-    # Find the correct position among existing monthly entries (reverse chronological).
-    # Monthly entries follow the overview line and match the pattern YYYY-MM.md.
-    insert_idx = overview_idx + 1
-    for i in range(overview_idx + 1, len(lines)):
-        m = re.search(r'10-release-notes/(\d{4}-\d{2})\.md', lines[i])
-        if not m:
-            break
-        # If the existing entry is for a newer or same month, insert after it
-        if m.group(1) >= dt.strftime("%Y-%m"):
-            insert_idx = i + 1
+        if insert_at == len(lines):
+            # Oldest release on the page: the "---" rule leads the block so the
+            # page does not end on a stray horizontal rule.
+            block = ["", "---", "", f"## {date_str}", ""] + entry
         else:
-            break
+            block = [f"## {date_str}", ""] + entry + ["---", ""]
+        lines[insert_at:insert_at] = block
 
-    lines.insert(insert_idx, insert_line)
-
-    with open(MKDOCS_YML, "w") as f:
-        f.writelines(lines)
-
-    print(f"Added {month_label} to mkdocs.yml nav")
+    with open(filepath, "w", encoding="utf-8") as handle:
+        handle.write("\n".join(lines).rstrip() + "\n")
 
 
 def validate_inputs(component: str, version: str) -> None:
@@ -223,11 +231,30 @@ def reject_dangerous_link_schemes(body: str) -> None:
                 sys.exit(1)
 
 
+def reject_structural_markdown(body: str) -> None:
+    """Reject a body that would forge the page's own structure.
+
+    The body is written verbatim under a ``### Component Version`` heading. A
+    machine-fed body containing its own ``##`` or ``###`` heading would create a
+    phantom date group or a phantom entry - a feed item with someone else's
+    content, or a build failure from an entry with no date. Bodies legitimately
+    use ``####`` sections ("New Features"), which are inside the entry and safe.
+    """
+    for line in body.splitlines():
+        if re.match(r"^#{1,3}\s", line):
+            print(
+                f"Release body must not contain h1-h3 headings (found: {line!r}). "
+                "Use '#### Section' inside an entry.",
+                file=sys.stderr,
+            )
+            sys.exit(1)
+
+
 def sanitize_body(body: str) -> str:
     """Bound and neutralize the release-note body before it is written to docs.
 
     The body is machine-fed via repository_dispatch and rendered by MkDocs with
-    md_in_html enabled. Two classes of active content must be defused:
+    md_in_html enabled. Three classes of unsafe content must be defused:
 
     1. Raw HTML (e.g. <script>, <iframe>, event handlers). We HTML-escape the
        three structural characters (& < >), which turns any raw tag - and any
@@ -237,20 +264,23 @@ def sanitize_body(body: str) -> str:
     2. Markdown link/image destinations with a dangerous URL scheme, which
        html.escape does NOT touch (see reject_dangerous_link_schemes). These are
        vetted against a scheme allowlist and the publish is rejected on a hit.
+    3. Headings that would forge the page structure the feeds are built from
+       (see reject_structural_markdown).
 
-    Normal Markdown - headings, lists, http(s)/mailto links, emphasis,
-    inline/fenced code - is left untouched.
+    Normal Markdown - lists, http(s)/mailto links, emphasis, inline/fenced code,
+    "####" sections - is left untouched.
     """
     if len(body) > MAX_BODY_LEN:
         print(f"Body too long ({len(body)} > {MAX_BODY_LEN} chars)", file=sys.stderr)
         sys.exit(1)
     reject_dangerous_link_schemes(body)
+    reject_structural_markdown(body)
     return html.escape(body, quote=False)
 
 
 def main():
     parser = argparse.ArgumentParser(description="Publish a release note entry")
-    parser.add_argument("--component", required=True, help="Component name (e.g., sensor, python-sdk)")
+    parser.add_argument("--component", required=True, help="Component name (e.g., sensor, web-app)")
     parser.add_argument("--version", required=True, help="Version tag (e.g., v4.32.0)")
     parser.add_argument("--date", required=True, help="Release date (ISO 8601 or YYYY-MM-DD)")
     parser.add_argument("--url", default="", help="URL to the GitHub Release")
@@ -261,15 +291,16 @@ def main():
     validate_url(args.url)
     # Neutralize any raw HTML in the untrusted body before it reaches the docs.
     body = sanitize_body(args.body)
+    component = canonical_component(args.component)
 
-    os.makedirs(DOCS_DIR, exist_ok=True)
+    if not os.path.exists(INDEX_MD):
+        print(f"Release notes page not found: {INDEX_MD}", file=sys.stderr)
+        sys.exit(1)
 
     dt = parse_date(args.date)
-    filepath = ensure_monthly_file(dt)
-    append_entry(filepath, args.component, args.version, dt, args.url, body)
-    update_mkdocs_nav(dt)
+    insert_entry(INDEX_MD, component, args.version, dt, args.url, body)
 
-    print(f"Published: {args.component} {args.version} -> {filepath}")
+    print(f"Published: {component} {args.version} -> {INDEX_MD}")
 
 
 if __name__ == "__main__":

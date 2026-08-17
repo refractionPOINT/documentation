@@ -2,6 +2,22 @@
 
 Release notes for LimaCharlie platform components, organized by date.
 
+!!! tip "Subscribe to these release notes"
+    Every entry below is also published as a feed, so a new release can reach you instead of you checking this page. Entries that change an event schema or break an existing integration are additionally published on their own feed.
+
+    - **Everything**: [RSS](https://docs.limacharlie.io/10-release-notes/feed.xml) or [JSON Feed](https://docs.limacharlie.io/10-release-notes/feed.json)
+    - **Endpoint Agent only**: [RSS](https://docs.limacharlie.io/10-release-notes/endpoint-agent.xml)
+    - **Web App only**: [RSS](https://docs.limacharlie.io/10-release-notes/web-app.xml)
+    - **Adapters only**: [RSS](https://docs.limacharlie.io/10-release-notes/adapters.xml)
+    - **Extensions only**: [RSS](https://docs.limacharlie.io/10-release-notes/extensions.xml)
+    - **CLI only**: [RSS](https://docs.limacharlie.io/10-release-notes/cli.xml)
+    - **Platform announcements only**: [RSS](https://docs.limacharlie.io/10-release-notes/platform.xml)
+    - **Breaking and schema changes only**: [RSS](https://docs.limacharlie.io/10-release-notes/breaking-changes.xml)
+
+    To route a feed into Slack, run `/feed subscribe https://docs.limacharlie.io/10-release-notes/endpoint-agent.xml` in the channel that should receive it.
+
+    For discussion and email notification of the same releases, set the [Platform Updates category](https://community.limacharlie.com/c/platform-updates/5) in the community forum to Watching. For service availability rather than releases, subscribe on the [status page](https://status.limacharlie.io/).
+
 ## 2026-08-13
 
 ### Web App 6.1.0
