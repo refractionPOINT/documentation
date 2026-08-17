@@ -73,7 +73,7 @@ US Government tenants are network-isolated from the commercial cloud: they authe
 
 Leaving `endpoint` empty keeps the commercial endpoints, so existing adapters need no change. Microsoft 365 GCC (moderate) runs on the worldwide endpoints — `gcc-gov` exists so the deployment can be named explicitly and behaves identically to `enterprise`. Register the application in the government portal (`portal.azure.us`) rather than `portal.azure.com`.
 
-The same `endpoint` option, with the same four values, is used by the [Microsoft Entra ID](microsoft-entra-id.md) and [Microsoft 365](microsoft-365.md) adapters.
+The same four values are used by the [Microsoft Entra ID](microsoft-entra-id.md) adapter, where `endpoint` is likewise optional, and by the [Microsoft 365](microsoft-365.md) adapter, where it is **required** (that adapter calls the Office 365 Management Activity API, which has a distinct host per deployment including GCC moderate).
 
 ## Deployment Configurations
 
@@ -120,6 +120,9 @@ defender:
   tenant_id: "hive://secret/azure-tenant-id"
   client_id: "hive://secret/azure-defender-client-id"
   client_secret: "hive://secret/azure-defender-client-secret"
+  # Optional; omit for a commercial tenant. One of enterprise (default),
+  # gcc-gov, gcc-high-gov, dod-gov.
+  endpoint: "enterprise"
   client_options:
     identity:
       oid: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"

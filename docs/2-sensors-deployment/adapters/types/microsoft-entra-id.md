@@ -58,7 +58,7 @@ Leaving `endpoint` empty keeps the commercial endpoints, so existing adapters ne
 
 All three streams (`risk_detections`, `sign_ins`, `audit_logs`) are available in both US Government L4 and L5. Register the application in the government portal (`portal.azure.us`) rather than `portal.azure.com`; the app registration, permissions and admin consent steps below are otherwise the same.
 
-The same `endpoint` option, with the same four values, is used by the [Microsoft Defender](microsoft-defender.md) and [Microsoft 365](microsoft-365.md) adapters.
+The same four values are used by the [Microsoft Defender](microsoft-defender.md) adapter, where `endpoint` is likewise optional, and by the [Microsoft 365](microsoft-365.md) adapter, where it is **required** (that adapter calls the Office 365 Management Activity API, which has a distinct host per deployment including GCC moderate).
 
 ### Azure Event Hub
 
