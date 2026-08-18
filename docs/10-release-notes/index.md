@@ -18,6 +18,33 @@ Release notes for LimaCharlie platform components, organized by date.
 
     For discussion and email notification of the same releases, set the [Platform Updates category](https://community.limacharlie.com/c/platform-updates/5) in the community forum to Watching. For service availability rather than releases, subscribe on the [status page](https://status.limacharlie.io/).
 
+## 2026-08-14
+
+### Endpoint Agent 5.3.6
+
+#### New Features
+
+- Linux hosts that cannot provide a cgroup2 mount — unprivileged containers, read-only root filesystems, kernels built without cgroup BPF support — now keep kernel-level file, process, socket and network telemetry instead of losing all of it.
+
+#### Bug Fixes
+
+- Fixed the sensor silently discarding queued events when its outbound queue filled up; discarded events are now counted and reported.
+- The outbound event queue is now bounded by memory size as well as by event count, so a few very large events can no longer displace thousands of small ones.
+- Fixed every kernel-sourced DNS event on Linux reporting process ID 0 and being held for 10 seconds before delivery.
+- Fixed Linux network isolation being reported as available on hosts where the sensor could not exempt its own connection, where isolating the host would have cut off the connection needed to un-isolate it.
+- Fixed the sensor aborting under Wine while collecting Windows Event Log events; an incomplete Event Log bookmark implementation is now detected at the point of use and log resumption is disabled cleanly.
+- macOS file-access monitoring now matches file extensions case-insensitively, so a rule for `.docx` also matches `Report.DOCX`. Linux continues to match exactly.
+- Removing an adhoc exfil rule now returns a receipt reporting whether the rule was found and removed, matching the behavior of adding one.
+
+#### Improvements
+
+- Sensor diagnostics now report how many events the outbound queue has discarded, their estimated size, and the current queue depth against its limits.
+- Sensor diagnostics now report which Linux kernel telemetry subprograms are active, so a partial kernel acquisition is visible rather than appearing healthy.
+- On Linux hosts without kernel DNS support, DNS collection now falls back to packet capture, and packet captures are opened only when that fallback is actually in use instead of on every Linux sensor.
+- The sensor now warns when file-access monitoring is enabled with no file patterns configured, instead of appearing healthy while unable to report anything.
+
+---
+
 ## 2026-08-13
 
 ### Web App 6.1.0
