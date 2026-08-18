@@ -48,6 +48,17 @@ jobs:
       - name: Check ordered-list numbering
         run: python scripts/check-list-numbering.py docs site --baseline scripts/list-numbering-baseline.json
 
+      # Release-note headings are a published interface: they name the feed a
+      # release lands in and they are the page anchor people link to. Fails the
+      # PR on a new heading that breaks either, never on the grandfathered ones.
+      - name: Check release note headings
+        run: python scripts/check-release-note-headings.py --baseline scripts/release-note-headings-baseline.json
+
+      # Validates the feeds that hooks/release_feed.py just wrote into site/:
+      # well-formed XML/JSON, unique guids, and no link left relative.
+      - name: Check release note feeds
+        run: python scripts/check-release-feeds.py site --site-url https://docs.limacharlie.io/
+
       - name: Upload rendered site
         uses: actions/upload-artifact@v7
         with:

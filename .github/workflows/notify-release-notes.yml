@@ -1,0 +1,83 @@
+name: Notify Release Notes
+
+# Announces newly published release notes in the community forum's Platform
+# Updates category, so members who watch that category get an email. The RSS
+# and JSON feeds on the docs site cover the pull side; this is the push side.
+#
+# Security posture: read-only repository token, no build, no deploy. The only
+# outbound call is to the forum API and it requires DISCOURSE_API_KEY /
+# DISCOURSE_API_USERNAME. Without those secrets the script exits 0 without
+# posting, so the workflow is inert until the credentials are configured
+# deliberately. The script also refuses to post more than a handful of entries
+# at once, so a backfill commit cannot flood the category.
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'docs/10-release-notes/**'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Print what would be posted without calling the forum'
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+# Serialize runs: two concurrent runs could announce the same entry twice.
+concurrency:
+  group: notify-release-notes
+  cancel-in-progress: false
+
+jobs:
+  notify:
+    name: Announce new entries
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          # Full history: the announcement is the diff against the commit this
+          # push started from, which a shallow clone may not contain.
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      # No pip install: the notifier is stdlib only.
+      - name: Extract the previous release notes
+        env:
+          BEFORE_SHA: ${{ github.event.before }}
+        run: |
+          set -euo pipefail
+          # workflow_dispatch has no "before"; a new branch reports all zeros.
+          if [ -z "${BEFORE_SHA:-}" ] || [ "${BEFORE_SHA}" = "0000000000000000000000000000000000000000" ]; then
+            BEFORE_SHA="HEAD~1"
+          fi
+          if git show "${BEFORE_SHA}:docs/10-release-notes/index.md" > before.md 2>/dev/null; then
+            echo "before-image taken from ${BEFORE_SHA}"
+          else
+            # A missing before.md is not an error: the notifier treats it as
+            # "no baseline" and refuses to announce rather than guessing.
+            rm -f before.md
+            echo "no before-image available; the notifier will refuse to post"
+          fi
+
+      - name: Announce new release notes
+        env:
+          DISCOURSE_API_KEY: ${{ secrets.DISCOURSE_API_KEY }}
+          DISCOURSE_API_USERNAME: ${{ secrets.DISCOURSE_API_USERNAME }}
+          DRY_RUN: ${{ inputs.dry_run && '--dry-run' || '' }}
+        run: |
+          set -euo pipefail
+          python scripts/notify-release-notes.py \
+            --after docs/10-release-notes/index.md \
+            --before before.md \
+            ${DRY_RUN}

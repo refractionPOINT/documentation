@@ -48,6 +48,12 @@ jobs:
       - name: Build documentation
         run: mkdocs build
 
+      # Last gate before the feeds are published: a broken or duplicated feed
+      # is delivered straight into subscribers' readers, so fail the deploy
+      # rather than ship it. PRs run the same check via docs-preview.
+      - name: Check release note feeds
+        run: python scripts/check-release-feeds.py site --site-url https://docs.limacharlie.io/
+
       - name: Setup Pages
         uses: actions/configure-pages@v6
 
