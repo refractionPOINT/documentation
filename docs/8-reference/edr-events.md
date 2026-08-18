@@ -46,7 +46,7 @@ These are the events emitted by the endpoint agent for each supported operating 
 | [HTTP\_REQUEST\_HEADERS](#http_request_headers) |  |  |  | ☑️ |  |
 | [HTTP\_RESPONSE\_HEADERS](#http_response_headers) |  |  |  | ☑️ |  |
 | INGEST | ☑️ | ☑️ | ☑️ |  |  |
-| [LOG\_GET\_REP](#log_get_rep) |  |  |  |  |  |
+| [LOG\_GET\_REP](#log_get_rep) | ☑️ | ☑️ | ☑️ |  |  |
 | [LOG\_LIST\_REP](#log_list_rep) |  |  |  |  |  |
 | [MEM\_FIND\_HANDLES\_REP](#mem_find_handles_rep) |  | ☑️ |  |  |  |
 | [MEM\_FIND\_STRING\_REP](#mem_find_string_rep) | ☑️ | ☑️ | ☑️ |  |  |
@@ -800,7 +800,29 @@ Provides HTTP Response headers.
 
 ### LOG\_GET\_REP
 
-Response from a `log_get` request.
+Response event for the [`log_get`](endpoint-commands.md#log_get) sensor command, and
+for its alias [`artifact_get`](endpoint-commands.md#artifact_get).
+
+This event is a **receipt, not the collected data**. `log_get` uploads the file
+out-of-band to Artifact Collection, so the reply reports the outcome of that upload
+and the ID of the resulting artifact. To obtain the data itself, use the
+`PAYLOAD_ID` with `limacharlie artifact download --id <PAYLOAD_ID>`.
+
+**Platforms:** macOS | Windows | Linux
+
+- `ERROR`: Status of the artifact upload. `200` indicates success.
+- `ERROR_MESSAGE`: Present only on failure, describing the reason.
+- `PAYLOAD_ID`: ID of the stored artifact — either the value passed to
+  `--payload-id`, or the UUID generated for the request.
+
+**Sample Event:**
+
+```json
+{
+  "ERROR": 200,
+  "PAYLOAD_ID": "746f5893-4402-4d3b-ba4a-4c643ad17802"
+}
+```
 
 ### LOG\_LIST\_REP
 
