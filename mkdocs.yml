@@ -419,6 +419,7 @@ nav:
               - Artifact: 5-integrations/extensions/limacharlie/artifact.md
               - BinLib: 5-integrations/extensions/limacharlie/binlib.md
               - Cases: 5-integrations/extensions/limacharlie/cases.md
+              - DLP: 5-integrations/extensions/limacharlie/dlp.md
               - Dumper: 5-integrations/extensions/limacharlie/dumper.md
               - EPP: 5-integrations/extensions/limacharlie/epp.md
               - Exfil: 5-integrations/extensions/limacharlie/exfil.md

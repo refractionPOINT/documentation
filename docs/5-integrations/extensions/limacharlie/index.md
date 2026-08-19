@@ -7,6 +7,7 @@ Extensions built and maintained by LimaCharlie that extend the platform with add
 - [Artifact](artifact.md) - Collect and store forensic artifacts
 - [BinLib](binlib.md) - Binary library management
 - [Cases](cases.md) - Case management for investigations
+- [DLP](dlp.md) - USB device control and data loss prevention
 - [Dumper](dumper.md) - Memory dump collection
 - [EPP](epp.md) - Endpoint Protection Platform
 - [Exfil](exfil.md) - Data exfiltration monitoring
