@@ -13,6 +13,7 @@ Only USB mass storage is in scope. Other USB peripherals — keyboards, mice, ca
 
 ## Requirements
 
+- The DLP extension enabled on the Organization — see [Enabling the DLP extension](#enabling-the-dlp-extension). The endpoint commands further down this page are part of the agent and work without it, but centrally managed policy does not: nothing is reconciled onto an endpoint until the extension is subscribed.
 - Endpoint agent **5.3.1** or higher. USB DLP itself has been available since agent 5.0, but only 5.3.1 and above accept centrally managed policy. [Upgrade](../../../2-sensors-deployment/endpoint-agent/versioning-upgrades.md) if necessary.
 - Windows, macOS, or Linux.
 - The agent's kernel component must be installed and running. Blocking happens below user space — a filter driver on Windows, a system extension on macOS, a kernel module on Linux — so an agent deployed in user-mode-only cannot enforce a USB policy.
