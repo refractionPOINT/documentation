@@ -46,6 +46,21 @@ Policies are evaluated **top to bottom, first match wins**. For each endpoint, t
 - A policy with **no** `platforms` and **no** `tags` matches every endpoint. Use it as a fleet-wide default and place it **last** — anything below it is unreachable.
 - Put narrow policies above broad ones.
 
+There is no per-sensor targeting field — policies cannot reference a Sensor ID directly. To scope a policy to a single endpoint, give that sensor a [tag](../../../2-sensors-deployment/sensor-tags.md) nothing else carries and target the tag:
+
+```yaml
+policies:
+  # One specific endpoint: its own allowlist.
+  - tags: [usb-exception-finance-01]
+    mode: enforcing
+    usb_allowlist:
+      - 0123456789ABCDEF
+  # Everyone else: locked down.
+  - mode: enforcing
+```
+
+Because evaluation is first-match-wins, the single-sensor policy must sit **above** the broader one.
+
 The same policy list, viewed as YAML:
 
 ```yaml
@@ -69,8 +84,49 @@ policies:
 - An `enforcing` policy with an empty `usb_allowlist` blocks **all** USB mass storage on every endpoint it matches. That is a valid configuration — just confirm it is the one you meant.
 - Serial numbers may not be empty or contain whitespace. The configuration is rejected when it is saved if they do.
 - `mode` accepts only `permissive` and `enforcing`. Leaving it unset is how you exclude a matched set of endpoints from management without deleting the policy.
+- Allowlist entries do not expire. There is no time-limited (TTL) allowlisting: a serial number stays allowed until you remove it from the policy. To grant temporary access, add the serial, then remove it when the exception ends — or use [`dlp_usb_add`](#live-response-commands) for a truly short-lived exception, accepting that it lasts only until the next policy change or agent restart.
 - When an endpoint stops matching an enforcing policy — a targeting tag is removed, or the policy is deleted — it is returned to permissive on its next sync.
 - Unsubscribing removes the sync rule, so policy is no longer reconciled onto anything. To hand endpoints back in a known state, set the policy that covers them to `permissive` and let it converge **before** you unsubscribe.
+
+## Configuration via Hive
+
+In addition to the web UI, the full DLP configuration is stored as a single record in the `extension_config` [hive](../../../7-administration/config-hive/index.md) at the key `ext-dlp`, and can be managed via [git-sync](git-sync.md) (under `hives/extension_config.yaml`) or directly with the LimaCharlie CLI. Reading the record requires the `ext.conf.get` [permission](../../../8-reference/permissions.md); writing it requires `ext.conf.set`.
+
+Read the current configuration:
+
+```bash
+limacharlie hive get \
+  --hive-name extension_config \
+  --key ext-dlp \
+  --oid <oid> --output yaml
+```
+
+The record's `data` is exactly the YAML shown above: a top-level `policies` list. To write it, put that structure in a file and set the record:
+
+```bash
+limacharlie hive set \
+  --hive-name extension_config \
+  --key ext-dlp \
+  --input-file my-dlp-config.yaml \
+  --enabled \
+  --oid <oid> --output yaml
+```
+
+The same validation the web UI applies on save — `mode` values, serial number format — applies here, and an invalid record is rejected. You can dry-run a config against the live schema without writing it:
+
+```bash
+limacharlie hive validate \
+  --hive-name extension_config \
+  --key ext-dlp \
+  --input-file my-dlp-config.yaml \
+  --oid <oid> --output yaml
+```
+
+An empty (`{}`) response means the record is valid and would be accepted by a subsequent `hive set`; any other output describes the validation failure.
+
+## Verifying the applied policy
+
+Policy converges on each endpoint's next sync. To confirm what an endpoint is actually enforcing, task it with `dlp_status` (see [Live response commands](#live-response-commands)). The `DLP_STATUS_REP` reply reports the endpoint's current mode and USB serial allowlist — for a converged endpoint, these match the `mode` and `usb_allowlist` of the first policy it matches. An endpoint matching no policy, or one whose matching policy has `mode` unset, reports whatever state it was last in — permissive, unless something else set it.
 
 ## Finding USB serial numbers
 
