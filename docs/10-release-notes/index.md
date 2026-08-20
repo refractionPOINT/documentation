@@ -18,6 +18,35 @@ Release notes for LimaCharlie platform components, organized by date.
 
     For discussion and email notification of the same releases, set the [Platform Updates category](https://community.limacharlie.com/c/platform-updates/5) in the community forum to Watching. For service availability rather than releases, subscribe on the [status page](https://status.limacharlie.io/).
 
+## 2026-08-20
+
+### Web App 6.2.0
+
+Resizable columns on every table, more of LimaCharlie extensions moving onto first-class pages, multi-provider credentials for AI Sessions, better reporting when a search leaves events out, and keyboard navigation in the org pickers.
+
+#### New Features
+
+- **Resizable columns on every table**: column resizing is now on by default for every table in the app, not just Search results.
+- **The Query Console tells you when a search left events out**: a search that sheds events used to report "Complete!" regardless, and a query whose only match was skipped rendered as "no results". A warning badge in the status row now carries the headline count ("16 events skipped"), and a notice card above the results — closed by default — carries the per-reason breakdown, an explanation of why the search moved past those events rather than stalling, and a sampled list of them.
+- **Dedicated YARA Scanners page**: `ext-yara` replaces the generic schema-driven renderer with a first-class page at `/orgs/:oid/yara-scanners`.
+- **Dedicated File & Registry Integrity page**: `ext-integrity` replaces the generic schema-driven renderer with a first-class page at `/orgs/:oid/integrity`.
+- **Dedicated Sensor Cull page**: `ext-sensor-cull` replaces the generic schema-driven renderer with a first-class page at `/orgs/:oid/sensor-cull`.
+- **AI Sessions: multi-provider credentials**: alongside Anthropic, you can now connect OpenAI, Google Gemini and OpenRouter, each with its own auth methods (API key, Azure OpenAI, Vertex for Gemini, Bedrock/Vertex for Anthropic). Session profiles gain a Provider select, session details show which provider a session ran on. See User Settings → AI Terminal.
+- **Keyboard navigation in the org pickers**: both the full-screen `/orgs` list and the bottom-left org switcher autofocus their search field, let Tab move into the results, arrow keys move the highlight and Enter selects. A single filtered match is preselected, so typing enough to narrow to one org and pressing Enter enters it.
+- **Export affected hosts from Vulnerability Reporting**: an Export hosts control (CSV or Excel) on the CVE detail page, the CVE drawer's Impacted Assets tab, and the package drawer's Affected hosts section. The export drains the entire listing rather than the pages the table happened to load, de-duplicates by sensor, and reports truncation instead of passing a partial file off as complete.
+- **LOLRMM community rules render properly**: LOLRMM rules are plain Sigma YAML and now open in the Sigma detail view instead of falling through to the "Unable to parse rule content" raw fallback.
+- **Entra ID adapter on Microsoft national clouds**: the Entra ID setup and edit forms gain the endpoint picker already offered by the Defender adapter, so a US Government tenant (GCC High, DoD) can be configured. The field is optional and omitted when unset, so existing commercial adapters are untouched.
+
+#### Bug Fixes
+
+- Values loaded into a creatable multi-select rendered as empty — every existing pattern on an Artifact Collection or File & Registry Integrity rule was invisible in the edit modal. Adding one pattern to a field that looked empty silently replaced all the pre-existing ones on save.
+- AI Terminal state no longer bleeds between sessions: file upload and download cards stayed pinned to the session they happened in rather than appearing in every conversation, and switching sessions no longer carries over the composer draft, the retry prompt, the download bar or a stale "queued behind a blocked turn" notice. A freshly started session also no longer sits idle because an earlier session in the same tab already consumed an initial prompt.
+- The permissions table no longer overflows the addon and extension editors' modals, where the Write column sat off-screen until the user scrolled sideways.
+- Opening an app that has been deleted from a stale link now shows a "not found" zero state with a route back to the launcher instead of a load failure, and a malformed link no longer crashes the render.
+- Artifact Collection with no configuration saved yet reads as "no rules yet" instead of reporting an error.
+
+---
+
 ## 2026-08-14
 
 ### Endpoint Agent 5.3.6
