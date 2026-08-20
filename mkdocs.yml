@@ -562,6 +562,7 @@ nav:
       - Architecture: 9-ai-sessions/architecture.md
       - D&R-Driven Sessions: 9-ai-sessions/dr-sessions.md
       - User Sessions: 9-ai-sessions/user-sessions.md
+      - AI Providers: 9-ai-sessions/providers.md
       - Cost Tracking & Savings: 9-ai-sessions/cost-tracking.md
       - Tool Permissions & Profiles: 9-ai-sessions/tool-permissions.md
       - Runner Environment: 9-ai-sessions/runner-environment.md

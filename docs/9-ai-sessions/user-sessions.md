@@ -1,6 +1,6 @@
 # User AI Sessions
 
-User AI Sessions provide interactive access to Claude AI through the LimaCharlie web interface or API. Unlike D&R-driven sessions that run automatically, user sessions are manually initiated and allow real-time, bidirectional communication with Claude.
+User AI Sessions provide interactive access to an AI agent through the LimaCharlie web interface or API. Unlike D&R-driven sessions that run automatically, user sessions are manually initiated and allow real-time, bidirectional communication with the agent. Sessions run on Claude by default and can also run on OpenAI, Google Gemini, or OpenRouter models using your own credentials; see [AI Providers](providers.md).
 
 ## Overview
 
@@ -28,9 +28,9 @@ curl -X POST https://ai-sessions.limacharlie.io/v1/register \
   -H "Authorization: Bearer $LC_JWT"
 ```
 
-### Step 2: Store Claude Credentials
+### Step 2: Store AI Provider Credentials
 
-AI Sessions uses a Bring Your Own Key (BYOK) model. You provide your Anthropic credentials—either an API key or via Claude Max OAuth.
+AI Sessions uses a Bring Your Own Key (BYOK) model. Sessions run on Claude by default: you provide your Anthropic credentials—either an API key or via Claude Max OAuth. You can also connect OpenAI, Azure OpenAI, Google Gemini, or OpenRouter credentials and run sessions on those providers instead; see [AI Providers](providers.md). Credentials for every provider can be managed in the web application under **User Settings → AI Terminal**.
 
 #### Option A: API Key
 
@@ -141,7 +141,8 @@ curl -X POST https://ai-sessions.limacharlie.io/v1/profiles \
 | `allowed_tools` | list | Tools Claude can use. See [Tool Permissions & Profiles](tool-permissions.md) for the full pattern grammar. |
 | `denied_tools` | list | Tools Claude cannot use. Always wins over `allowed_tools`. See [Tool Permissions & Profiles](tool-permissions.md). |
 | `permission_mode` | string | `acceptEdits`, `plan`, or `bypassPermissions`. See [Tool Permissions & Profiles](tool-permissions.md#permission_mode). |
-| `model` | string | Claude model to use |
+| `provider` | string | AI provider for the session: `anthropic` (default), `openai`, `google`, or `openrouter`. See [AI Providers](providers.md). |
+| `model` | string | Model to use, in the chosen provider's naming. Defaults to the provider's default model. |
 | `max_turns` | integer | Maximum conversation turns |
 | `max_budget_usd` | float | Maximum spend limit in USD |
 | `one_shot` | boolean | When `true`, session terminates after completing its initial work. Default: `false` for user sessions. |
@@ -205,7 +206,7 @@ profiles, so you can acknowledge them before forking.
 
 Several [Profile Options](#profile-options) act as automatic termination triggers:
 `max_turns` ends the session after a number of turns, `max_budget_usd` when
-cumulative Claude cost exceeds the cap, `one_shot` after the initial task, and
+cumulative AI cost exceeds the cap, `one_shot` after the initial task, and
 `ttl_seconds` sets the session lifetime (capped at 24 hours). A platform maximum
 session duration, set by your organization's tier, also applies. When one of these is
 reached the session moves to `ended` with the matching `end_reason` below.
@@ -397,7 +398,7 @@ Claude: Here's how to create a D&R rule for detecting PowerShell
 
 ### Cannot Create Session
 
-- Ensure you have Claude credentials stored
+- Ensure you have credentials stored for the provider the session uses (Claude by default)
 - Check you haven't exceeded the maximum session limit (10)
 - Verify your profile configuration is valid
 

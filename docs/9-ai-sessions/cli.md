@@ -264,6 +264,8 @@ limacharlie ai session attach --id "$SID"
 | Flag | Description |
 |---|---|
 | `--anthropic-key` | Literal Anthropic API key or `hive://secret/<name>`. |
+| `--provider` | Replace the template's AI provider (`anthropic`, `openai`, `google`, `openrouter`). The server owns the list of accepted values. |
+| `--credential KEY=VALUE` (repeatable) | Credential entry for the chosen provider (for example `api_key=hive://secret/my-key`). Replaces the template's credentials. `VALUE` may be a literal or `hive://secret/<name>`. |
 | `--lc-api-key` | Literal LimaCharlie API key or `hive://secret/<name>`. |
 | `--lc-uid` | Literal User ID or `hive://secret/<name>`. |
 
@@ -284,6 +286,8 @@ Use the returned `session_id` with `ai session attach`, `ai session get`, or `ai
 ## `limacharlie ai auth claude`
 
 Manage the per-user Anthropic credential that backs [`ai chat`](#limacharlie-ai-chat). Org-owned sessions started via `ai start-session` ignore these and use the `anthropic_secret` field from the `ai_agent` Hive record instead — there is no need to run `auth claude` for those.
+
+Credentials for other AI providers (OpenAI, Google Gemini, OpenRouter) are managed in the web application under **User Settings → AI Terminal** or via the [credentials API](providers.md#via-the-api).
 
 The credential is stored server-side and bound to the authenticated UID. It can be either a Claude Max OAuth token (browser flow) or a raw Anthropic API key.
 
