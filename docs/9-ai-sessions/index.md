@@ -80,7 +80,7 @@ respond:
 ### For User Sessions
 
 1. [Register](user-sessions.md#step-1-registration) for AI Sessions
-2. Store your Anthropic credentials (API key or OAuth)
+2. Store your Anthropic credentials (API key or OAuth), or connect [another AI provider](providers.md) (OpenAI, Google Gemini, OpenRouter)
 3. Create a session and start interacting
 
 ## Documentation
@@ -89,6 +89,7 @@ respond:
 - [Architecture](architecture.md) - How the platform is organized, the isolation model
 - [D&R-Driven Sessions](dr-sessions.md) - Automated sessions triggered by D&R rules
 - [User Sessions](user-sessions.md) - Interactive sessions via web UI or API, including the session lifecycle
+- [AI Providers](providers.md) - Running user sessions on OpenAI, Azure OpenAI, Google Gemini, or OpenRouter with your own keys
 - [Tool Permissions & Profiles](tool-permissions.md) - How `allowed_tools`, `denied_tools`, and `permission_mode` work
 - [Runner Environment](runner-environment.md) - CLI tools, language runtimes, and reference data pre-installed in the session container
 - [Rich Cards & Slash Commands](rich-cards.md) - Interactive cards the agent renders inline, and the `/` commands that summon them

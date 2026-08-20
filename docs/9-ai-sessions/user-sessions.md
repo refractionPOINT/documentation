@@ -1,6 +1,6 @@
 # User AI Sessions
 
-User AI Sessions provide interactive access to Claude AI through the LimaCharlie web interface or API. Unlike D&R-driven sessions that run automatically, user sessions are manually initiated and allow real-time, bidirectional communication with Claude.
+User AI Sessions provide interactive access to an AI agent through the LimaCharlie web interface or API. Unlike D&R-driven sessions that run automatically, user sessions are manually initiated and allow real-time, bidirectional communication with the agent. Sessions run on Claude by default and can also run on OpenAI, Google Gemini, or OpenRouter models using your own credentials; see [AI Providers](providers.md).
 
 ## Overview
 
@@ -24,20 +24,20 @@ Navigate to the AI Sessions section in the LimaCharlie web console and click "Re
 **Via API:**
 
 ```bash
-curl -X POST https://ai-sessions.limacharlie.io/v1/register \
+curl -X POST https://ai.limacharlie.io/v1/register \
   -H "Authorization: Bearer $LC_JWT"
 ```
 
-### Step 2: Store Claude Credentials
+### Step 2: Store AI Provider Credentials
 
-AI Sessions uses a Bring Your Own Key (BYOK) model. You provide your Anthropic credentials—either an API key or via Claude Max OAuth.
+AI Sessions uses a Bring Your Own Key (BYOK) model. Sessions run on Claude by default: you provide your Anthropic credentials—either an API key or via Claude Max OAuth. You can also connect OpenAI, Azure OpenAI, Google Gemini, or OpenRouter credentials and run sessions on those providers instead; see [AI Providers](providers.md). Credentials for every provider can be managed in the web application under **User Settings → AI Terminal**.
 
 #### Option A: API Key
 
 Store your Anthropic API key directly:
 
 ```bash
-curl -X POST https://ai-sessions.limacharlie.io/v1/auth/claude/apikey \
+curl -X POST https://ai.limacharlie.io/v1/auth/claude/apikey \
   -H "Authorization: Bearer $LC_JWT" \
   -H "Content-Type: application/json" \
   -d '{"api_key": "sk-ant-api03-xxxxx"}'
@@ -52,14 +52,14 @@ If you have a Claude Max subscription, you can authenticate via OAuth:
 1. Start the OAuth flow:
 
 ```bash
-curl -X POST https://ai-sessions.limacharlie.io/v1/auth/claude/start \
+curl -X POST https://ai.limacharlie.io/v1/auth/claude/start \
   -H "Authorization: Bearer $LC_JWT"
 ```
 
 1. Poll for the authorization URL:
 
 ```bash
-curl https://ai-sessions.limacharlie.io/v1/auth/claude/url?session_id=<oauth_session_id> \
+curl https://ai.limacharlie.io/v1/auth/claude/url?session_id=<oauth_session_id> \
   -H "Authorization: Bearer $LC_JWT"
 ```
 
@@ -67,7 +67,7 @@ curl https://ai-sessions.limacharlie.io/v1/auth/claude/url?session_id=<oauth_ses
 2. Submit the authorization code:
 
 ```bash
-curl -X POST https://ai-sessions.limacharlie.io/v1/auth/claude/code \
+curl -X POST https://ai.limacharlie.io/v1/auth/claude/code \
   -H "Authorization: Bearer $LC_JWT" \
   -H "Content-Type: application/json" \
   -d '{"session_id": "<oauth_session_id>", "code": "<authorization_code>"}'
@@ -78,7 +78,7 @@ curl -X POST https://ai-sessions.limacharlie.io/v1/auth/claude/code \
 Create a new session to start working with Claude:
 
 ```bash
-curl -X POST https://ai-sessions.limacharlie.io/v1/sessions \
+curl -X POST https://ai.limacharlie.io/v1/sessions \
   -H "Authorization: Bearer $LC_JWT" \
   -H "Content-Type: application/json" \
   -d '{
@@ -93,7 +93,7 @@ For real-time interaction, connect to the session via WebSocket:
 
 ```javascript
 const ws = new WebSocket(
-  'wss://ai-sessions.limacharlie.io/v1/sessions/{sessionId}/ws?token={jwt}'
+  'wss://ai.limacharlie.io/v1/sessions/{sessionId}/ws?token={jwt}'
 );
 
 ws.onmessage = (event) => {
@@ -118,7 +118,7 @@ Profiles let you save and reuse session configurations. You can have up to 10 pr
 ### Creating a Profile
 
 ```bash
-curl -X POST https://ai-sessions.limacharlie.io/v1/profiles \
+curl -X POST https://ai.limacharlie.io/v1/profiles \
   -H "Authorization: Bearer $LC_JWT" \
   -H "Content-Type: application/json" \
   -d '{
@@ -141,7 +141,8 @@ curl -X POST https://ai-sessions.limacharlie.io/v1/profiles \
 | `allowed_tools` | list | Tools Claude can use. See [Tool Permissions & Profiles](tool-permissions.md) for the full pattern grammar. |
 | `denied_tools` | list | Tools Claude cannot use. Always wins over `allowed_tools`. See [Tool Permissions & Profiles](tool-permissions.md). |
 | `permission_mode` | string | `acceptEdits`, `plan`, or `bypassPermissions`. See [Tool Permissions & Profiles](tool-permissions.md#permission_mode). |
-| `model` | string | Claude model to use |
+| `provider` | string | AI provider for the session: `anthropic` (default), `openai`, `google`, or `openrouter`. See [AI Providers](providers.md). |
+| `model` | string | Model to use, in the chosen provider's naming. Defaults to the provider's default model. |
 | `max_turns` | integer | Maximum conversation turns |
 | `max_budget_usd` | float | Maximum spend limit in USD |
 | `one_shot` | boolean | When `true`, session terminates after completing its initial work. Default: `false` for user sessions. |
@@ -152,7 +153,7 @@ curl -X POST https://ai-sessions.limacharlie.io/v1/profiles \
 ### Setting a Default Profile
 
 ```bash
-curl -X POST https://ai-sessions.limacharlie.io/v1/profiles/{profileId}/default \
+curl -X POST https://ai.limacharlie.io/v1/profiles/{profileId}/default \
   -H "Authorization: Bearer $LC_JWT"
 ```
 
@@ -161,7 +162,7 @@ curl -X POST https://ai-sessions.limacharlie.io/v1/profiles/{profileId}/default 
 You can create a new profile from an existing session's settings:
 
 ```bash
-curl -X POST https://ai-sessions.limacharlie.io/v1/sessions/{sessionId}/capture-profile \
+curl -X POST https://ai.limacharlie.io/v1/sessions/{sessionId}/capture-profile \
   -H "Authorization: Bearer $LC_JWT" \
   -H "Content-Type: application/json" \
   -d '{"name": "My Session Config"}'
@@ -205,7 +206,7 @@ profiles, so you can acknowledge them before forking.
 
 Several [Profile Options](#profile-options) act as automatic termination triggers:
 `max_turns` ends the session after a number of turns, `max_budget_usd` when
-cumulative Claude cost exceeds the cap, `one_shot` after the initial task, and
+cumulative AI cost exceeds the cap, `one_shot` after the initial task, and
 `ttl_seconds` sets the session lifetime (capped at 24 hours). A platform maximum
 session duration, set by your organization's tier, also applies. When one of these is
 reached the session moves to `ended` with the matching `end_reason` below.
@@ -228,7 +229,7 @@ When a session enters the `ended` state, the `end_reason` field indicates why:
 ### Terminating a Session
 
 ```bash
-curl -X DELETE https://ai-sessions.limacharlie.io/v1/sessions/{sessionId} \
+curl -X DELETE https://ai.limacharlie.io/v1/sessions/{sessionId} \
   -H "Authorization: Bearer $LC_JWT"
 ```
 
@@ -237,7 +238,7 @@ curl -X DELETE https://ai-sessions.limacharlie.io/v1/sessions/{sessionId} \
 After a session is terminated, you can delete its record:
 
 ```bash
-curl -X DELETE https://ai-sessions.limacharlie.io/v1/sessions/{sessionId}/record \
+curl -X DELETE https://ai.limacharlie.io/v1/sessions/{sessionId}/record \
   -H "Authorization: Bearer $LC_JWT"
 ```
 
@@ -248,7 +249,7 @@ curl -X DELETE https://ai-sessions.limacharlie.io/v1/sessions/{sessionId}/record
 1. Request an upload URL:
 
 ```bash
-curl -X POST https://ai-sessions.limacharlie.io/v1/io/sessions/{sessionId}/upload \
+curl -X POST https://ai.limacharlie.io/v1/io/sessions/{sessionId}/upload \
   -H "Authorization: Bearer $LC_JWT" \
   -H "Content-Type: application/json" \
   -d '{
@@ -269,7 +270,7 @@ curl -X PUT "{upload_url}" \
 1. Notify that upload is complete:
 
 ```bash
-curl -X POST https://ai-sessions.limacharlie.io/v1/io/sessions/{sessionId}/upload/complete \
+curl -X POST https://ai.limacharlie.io/v1/io/sessions/{sessionId}/upload/complete \
   -H "Authorization: Bearer $LC_JWT" \
   -H "Content-Type: application/json" \
   -d '{"upload_id": "{upload_id}"}'
@@ -282,7 +283,7 @@ The file will be available in the session at the `target_path` returned in step 
 1. Request a download URL:
 
 ```bash
-curl -X POST https://ai-sessions.limacharlie.io/v1/io/sessions/{sessionId}/download \
+curl -X POST https://ai.limacharlie.io/v1/io/sessions/{sessionId}/download \
   -H "Authorization: Bearer $LC_JWT" \
   -H "Content-Type: application/json" \
   -d '{"path": "/workspace/output.txt"}'
@@ -397,7 +398,7 @@ Claude: Here's how to create a D&R rule for detecting PowerShell
 
 ### Cannot Create Session
 
-- Ensure you have Claude credentials stored
+- Ensure you have credentials stored for the provider the session uses (Claude by default)
 - Check you haven't exceeded the maximum session limit (10)
 - Verify your profile configuration is valid
 

@@ -194,7 +194,9 @@ If your team doesn't log time, the model still works — AI+Human cases are cred
 
 ## AI spend
 
-The **AI spend** in the calculation is the Claude API token cost reported by the AI gateway for your agents' sessions over the selected period. This is what **Cost Analytics** charts and breaks down by model and trigger rule, and what the savings calculation nets out. Per-minute session runtime is billed separately on your invoice.
+The **AI spend** in the calculation is the AI token cost reported by the AI gateway for your agents' sessions over the selected period. This is what **Cost Analytics** charts and breaks down by model and trigger rule, and what the savings calculation nets out. Per-minute session runtime is billed separately on your invoice.
+
+Usage is attributed to the provider and model each session ran on, so sessions on [other AI providers](providers.md) show up in the same breakdowns. For OpenRouter sessions, the cost is OpenRouter's own billed cost for each request rather than a token-rate estimate, so it matches what OpenRouter charges your key.
 
 ## Exporting the data
 

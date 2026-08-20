@@ -6,8 +6,8 @@ This document provides a complete reference for the AI Sessions REST API and Web
 
 | Environment | URL |
 |-------------|-----|
-| Production | `https://ai-sessions.limacharlie.io` |
-| Staging | `https://ai-sessions-staging.limacharlie.io` |
+| Production | `https://ai.limacharlie.io` |
+| Staging | `https://ai-staging.limacharlie.io` |
 
 ## Authentication
 
@@ -20,7 +20,7 @@ Authorization: Bearer <LC-JWT>
 For WebSocket connections, you can also pass the token as a query parameter:
 
 ```text
-wss://ai-sessions.limacharlie.io/v1/sessions/{sessionId}/ws?token=<LC-JWT>
+wss://ai.limacharlie.io/v1/sessions/{sessionId}/ws?token=<LC-JWT>
 ```
 
 ## Rate Limits
@@ -128,10 +128,13 @@ POST /v1/sessions
     "type": "org_api_key",
     "org_api_key": "xxxxxxxx"
   },
+  "provider": "openai",
   "allowed_tools": ["Bash", "Read", "Write"],
   "denied_tools": ["WebFetch"]
 }
 ```
+
+`provider` is optional: one of `anthropic`, `openai`, `google`, `openrouter`. It overrides the profile's provider for this session; when both are omitted the session runs on Claude. See [AI Providers](providers.md).
 
 ##### Response: 201 Created
 
@@ -149,7 +152,7 @@ POST /v1/sessions
 **Error Responses:**
 
 - `400`: Invalid request body
-- `403`: Not registered or no Claude credentials
+- `403`: Not registered, or no stored credentials for the session's provider
 - `409`: Maximum concurrent sessions (10) reached
 
 #### Get Session
@@ -307,6 +310,7 @@ GET /v1/profiles
       "allowed_tools": ["Bash", "Read"],
       "denied_tools": ["Write"],
       "permission_mode": "acceptEdits",
+      "provider": "anthropic",
       "model": "claude-sonnet-4-20250514",
       "max_turns": 100,
       "max_budget_usd": 10.0,
@@ -332,6 +336,7 @@ POST /v1/profiles
   "allowed_tools": ["Bash", "Read", "Grep"],
   "denied_tools": ["Write", "Edit"],
   "permission_mode": "acceptEdits",
+  "provider": "anthropic",
   "model": "claude-sonnet-4-20250514",
   "max_turns": 100,
   "max_budget_usd": 10.0,
@@ -359,6 +364,8 @@ POST /v1/profiles
   }
 }
 ```
+
+`provider` is optional: one of `anthropic`, `openai`, `google`, `openrouter` (default `anthropic`). `model` must be valid for the chosen provider; when omitted, the provider's default model is used. See [AI Providers](providers.md).
 
 **Error Responses:**
 
@@ -523,6 +530,48 @@ DELETE /v1/auth/claude
 
 ---
 
+### Provider Credentials
+
+Credentials for the non-Claude providers are managed under `/v1/credentials`. Request body shapes and examples are on the [AI Providers](providers.md) page; the full schemas are in the OpenAPI specification served by the service at `GET /openapi`.
+
+#### Get Credential Status (All Providers)
+
+```text
+GET /v1/credentials
+```
+
+##### Response: 200 OK
+
+```json
+{
+  "providers": {
+    "anthropic":  {"has_credentials": true, "type": "oauth_token", "created_at": "2026-08-01T12:00:00Z"},
+    "openai":     {"has_credentials": true, "type": "api_key", "created_at": "2026-08-10T09:30:00Z"},
+    "google":     {"has_credentials": false},
+    "openrouter": {"has_credentials": false}
+  }
+}
+```
+
+#### Store and Delete Provider Credentials
+
+```text
+POST   /v1/credentials/openai         # OpenAI API key
+POST   /v1/credentials/openai/azure   # Azure OpenAI configuration
+DELETE /v1/credentials/openai
+
+POST   /v1/credentials/google         # Google AI Studio API key
+POST   /v1/credentials/google/vertex  # Vertex AI service account (Gemini)
+DELETE /v1/credentials/google
+
+POST   /v1/credentials/openrouter     # OpenRouter API key
+DELETE /v1/credentials/openrouter
+```
+
+Storing a credential replaces any previous credential for that provider. `DELETE` removes it immediately.
+
+---
+
 ### File Transfer
 
 #### Request Upload URL
@@ -611,7 +660,7 @@ POST /v1/io/sessions/{sessionId}/download
 **Endpoint:**
 
 ```text
-wss://ai-sessions.limacharlie.io/v1/sessions/{sessionId}/ws
+wss://ai.limacharlie.io/v1/sessions/{sessionId}/ws
 ```
 
 **Authentication:**
@@ -966,7 +1015,7 @@ Maximum message size is 1 MB. Use file transfer for larger payloads.
 
 ```javascript
 const jwt = 'your-limacharlie-jwt';
-const baseUrl = 'https://ai-sessions.limacharlie.io';
+const baseUrl = 'https://ai.limacharlie.io';
 
 // 1. Create session
 const createResp = await fetch(`${baseUrl}/v1/sessions`, {
@@ -994,7 +1043,7 @@ while (status === 'starting') {
 
 // 3. Connect via WebSocket
 const ws = new WebSocket(
-  `wss://ai-sessions.limacharlie.io/v1/sessions/${session.id}/ws?token=${jwt}`
+  `wss://ai.limacharlie.io/v1/sessions/${session.id}/ws?token=${jwt}`
 );
 
 // 4. Set up heartbeat

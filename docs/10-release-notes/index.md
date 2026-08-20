@@ -47,6 +47,12 @@ Resizable columns on every table, more of LimaCharlie extensions moving onto fir
 
 ---
 
+### Platform: Multi-Provider AI Sessions
+
+#### New Features
+
+- **AI provider choice for user sessions**: user AI Sessions can now run on OpenAI (API key or Azure OpenAI), Google Gemini (AI Studio key or Vertex AI service account), and OpenRouter, in addition to Claude. Connect your own provider credentials under **User Settings → AI Terminal** (or via the API) and pick the provider on a session profile. Tool use and approvals, MCP servers, USD budget caps, hibernation, forking, and cost tracking work the same on every provider; a few capabilities stay Claude-only (plan mode, `bypassPermissions`, Task subagents, extended thinking). See [AI Providers](../9-ai-sessions/providers.md).
+
 ## 2026-08-14
 
 ### Endpoint Agent 5.3.6
