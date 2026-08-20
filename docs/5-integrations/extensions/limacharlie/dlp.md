@@ -144,6 +144,18 @@ An allowlist is built from device serial numbers. To collect them, task an endpo
 
 `usb_list_keys` runs in user space, so it works on an endpoint whose kernel component is absent — useful for surveying devices before you deploy a policy.
 
+## Assessing impact before enforcing
+
+There is no report-only mode: `mode` is either `permissive` or `enforcing`, and no event is emitted when a device is blocked — or would have been blocked. To measure what an allowlist would break **before** turning enforcement on, stage the rollout:
+
+1. **Inventory in permissive.** Subscribe the extension and leave endpoints in `permissive` (or matched by no policy) — neither changes endpoint behavior. Then collect real device usage:
+    - Task the fleet with `usb_list_keys` on a recurring cadence — [Reliable Tasking](reliable-tasking.md) handles endpoints that are offline at task time. Every reply is retained as a `USB_KEY_LIST_REP` event (part of the default event collection set — see [Event collection](#event-collection)), so telemetry accumulates the serial number, vendor, and product of each device seen, per endpoint.
+    - On Windows and macOS, the passive [`VOLUME_MOUNT`](../../../8-reference/edr-events.md#volume_mount) event fires in real time when a volume is mounted — useful for spotting active removable-storage use between polls. It is not available on Linux.
+2. **Diff against the proposed allowlist.** Aggregate the observed `USB_SERIAL_NUMBER` values per endpoint from the collected `USB_KEY_LIST_REP` events (the Query console works well for this). The serials **not** on your proposed `usb_allowlist` are exactly the devices — and endpoints — that enforcement would block. For a standing report, keep the approved serials in a [lookup](../../../7-administration/config-hive/lookups.md) and alert on any observed serial missing from it with a [D&R rule](../../../7-administration/config-hive/dr-rules.md) on `USB_KEY_LIST_REP`.
+3. **Enforce in stages.** Targeting is tag-based, so apply `enforcing` to a pilot tag first and broaden from there, keeping a broad `permissive` policy below it as an instant rollback (it converges on each endpoint's next sync).
+
+Run the inventory phase long enough to catch devices used on a longer cadence — backup drives that only appear monthly are a common surprise. A device plugged in and removed between two `usb_list_keys` polls may go unobserved, so treat the inventory as a lower bound.
+
 ## Live response commands
 
 The same controls are available as endpoint commands, for investigation and emergency response:
