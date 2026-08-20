@@ -6,8 +6,8 @@ This document provides a complete reference for the AI Sessions REST API and Web
 
 | Environment | URL |
 |-------------|-----|
-| Production | `https://ai-sessions.limacharlie.io` |
-| Staging | `https://ai-sessions-staging.limacharlie.io` |
+| Production | `https://ai.limacharlie.io` |
+| Staging | `https://ai-staging.limacharlie.io` |
 
 ## Authentication
 
@@ -20,7 +20,7 @@ Authorization: Bearer <LC-JWT>
 For WebSocket connections, you can also pass the token as a query parameter:
 
 ```text
-wss://ai-sessions.limacharlie.io/v1/sessions/{sessionId}/ws?token=<LC-JWT>
+wss://ai.limacharlie.io/v1/sessions/{sessionId}/ws?token=<LC-JWT>
 ```
 
 ## Rate Limits
@@ -545,7 +545,7 @@ GET /v1/credentials
 ```json
 {
   "providers": {
-    "anthropic":  {"has_credentials": true, "type": "oauth", "created_at": "2026-08-01T12:00:00Z"},
+    "anthropic":  {"has_credentials": true, "type": "oauth_token", "created_at": "2026-08-01T12:00:00Z"},
     "openai":     {"has_credentials": true, "type": "api_key", "created_at": "2026-08-10T09:30:00Z"},
     "google":     {"has_credentials": false},
     "openrouter": {"has_credentials": false}
@@ -660,7 +660,7 @@ POST /v1/io/sessions/{sessionId}/download
 **Endpoint:**
 
 ```text
-wss://ai-sessions.limacharlie.io/v1/sessions/{sessionId}/ws
+wss://ai.limacharlie.io/v1/sessions/{sessionId}/ws
 ```
 
 **Authentication:**
@@ -1015,7 +1015,7 @@ Maximum message size is 1 MB. Use file transfer for larger payloads.
 
 ```javascript
 const jwt = 'your-limacharlie-jwt';
-const baseUrl = 'https://ai-sessions.limacharlie.io';
+const baseUrl = 'https://ai.limacharlie.io';
 
 // 1. Create session
 const createResp = await fetch(`${baseUrl}/v1/sessions`, {
@@ -1043,7 +1043,7 @@ while (status === 'starting') {
 
 // 3. Connect via WebSocket
 const ws = new WebSocket(
-  `wss://ai-sessions.limacharlie.io/v1/sessions/${session.id}/ws?token=${jwt}`
+  `wss://ai.limacharlie.io/v1/sessions/${session.id}/ws?token=${jwt}`
 );
 
 // 4. Set up heartbeat
