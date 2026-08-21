@@ -314,9 +314,9 @@ This can be used in conjunction with the `deleted_sensor` event to allow sensors
 Two things to know when relying on this:
 
 - The [`deleted_sensor`](platform-events.md#deleted_sensor) event that triggers
-  the rule fires at most once per sensor per 24-48 hours, so the rule has to be
-  in place *before* the sensor is deleted. Adding it afterwards means waiting
-  out the window.
+  the rule normally fires only once per sensor per 24-48 hours, so the rule has
+  to be in place *before* the sensor is deleted. Adding it afterwards means
+  waiting out the window.
 - The event type is `deleted_sensor`, lowercase. A rule matching on
   `event: DELETED_SENSOR` loads without error and never fires, because the
   `event:` selector is compared case-sensitively and is not affected by
