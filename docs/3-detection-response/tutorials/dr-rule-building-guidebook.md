@@ -772,6 +772,10 @@ Controls sensor tamper resistance. Sealing is persistent (survives reboots).
 
 Restores a previously deleted sensor. Often used with the `deleted_sensor` deployment event.
 
+Note that `deleted_sensor` (lowercase -- the selector is case-sensitive) is
+emitted at most once per sensor per 24-48 hours, so the rule must exist before
+the sensor is deleted.
+
 ```yaml
 - action: undelete sensor
 ```
