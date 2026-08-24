@@ -33,6 +33,7 @@ Create the App with **read-only** access on the following. All are
 | **Secrets** | Organization | Organization Actions-secret inventory (**names only**, never values) | `org_secrets` |
 | **Administration** | Repository | Branch-protection posture and deploy-key inventory (deploy keys are also the one activity signal — see [Known limitations](#known-limitations)) | *(collected during the sweep)* |
 | **Secrets** | Repository | Whether a repository has Actions secrets at all — an existence flag, not a name list (org-level secrets are the ones inventoried by name) | *(collected during the sweep)* |
+| **Contents** | Repository | [Code Scanning](../code-scanning.md) — dependencies, secrets, infrastructure-as-code, container images and licenses. Without it the connector inventories repositories but cannot read them | *(reported on the code scan status)* |
 
 !!! note "The setup wizard asks for Administration as required"
     The in-product **Add provider** wizard lists both Administration grants
@@ -153,3 +154,17 @@ limacharlie cloudsec provider test --input-file provider.yaml
   public-profile emails only. Organization-level SSO is read normally.
 - An **Actions OIDC trust** with no corresponding cloud-side role is reported
   as a dangling trust rather than a fabricated "can assume" edge.
+
+## Scanning repository contents
+
+Granting **Contents → Read-only** turns on [Code Scanning](../code-scanning.md)
+for the repositories a `code_scanning` policy selects. The permission is an
+increase on an existing installation, so GitHub requires an organization owner to
+**approve the permission request** on the installation page before it takes
+effect; until then, selected repositories report
+`github_app_missing_contents_permission` on the code scan status rather than
+failing silently.
+
+Code is read inside an ephemeral sandbox and never persisted — only the
+normalized finding report leaves it, and discovered secrets are stored as a
+salted hash. The App stays read-only: nothing writes to your repositories.

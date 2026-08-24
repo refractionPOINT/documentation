@@ -43,11 +43,19 @@ Each finding carries:
   same fingerprint across sweeps.
 - `finding_class` — one of `toxic_combination`, `public_exposure`,
   `ciem_risk`, `privilege_escalation`, `vulnerability`, `misconfig`,
-  `malware`, `secret`, `scan_finding`, `coverage_gap`, `device_posture`
-  (`malware`, `secret`, and `scan_finding` are reserved for capabilities not
-  yet enabled). Cloud-workload coverage findings additionally carry
-  `workload_coverage_gap`, which is not part of the class list offered by the
-  suppression rule picker.
+  `malware`, `secret`, `scan_finding`, `coverage_gap`, `device_posture`,
+  plus `license_risk`, `eol_runtime` and `code_weakness` (`scan_finding` is
+  reserved for a capability not yet enabled, and `code_weakness` is produced by
+  static analysis, which does not ship yet). Cloud-workload coverage findings
+  additionally carry `workload_coverage_gap`, which is not part of the class
+  list offered by the suppression rule picker.
+
+    `secret`, `malware`, `license_risk` and `eol_runtime`, and the `misconfig`
+    findings whose rule id is an infrastructure-as-code check, come from
+    [Code Scanning](code-scanning.md). Those carry a `repo` key and a `code`
+    block with the file, the line range, the package and the fixed version where
+    one applies — and the **Repository** filter narrows the worklist to one
+    repository.
 - `severity` (`CRITICAL` … `INFO`), `lc_risk`, and the `risk_breakdown`
   above.
 - The affected resource (`resource_urn`, `resource_name`, `resource_type`,
