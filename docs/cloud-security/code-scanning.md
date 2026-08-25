@@ -184,15 +184,20 @@ the [query pack](graph.md):
 |---|---|
 | `vulnerable_packages_on_exposed_workloads` | which advisories are in images that internet-facing workloads actually run |
 | `images_with_kev_on_exposed_workloads` | the same, narrowed to known-exploited vulnerabilities |
-| `secrets_in_repos_with_cloud_oidc` | which pipeline identities can assume a cloud identity — the blast radius of a leaked repository credential |
+| `secrets_in_repos_with_cloud_oidc` | which federated pipeline identities can assume a cloud identity — the blast radius of a leaked repository credential |
 | `eol_runtimes_in_production_images` | which end-of-life runtimes reach a running workload |
 
 !!! note "Read an empty result carefully"
-    Each pack query's `description` states which producers it depends on. Three
-    of the four above need the workload→image link, which is populated only for
-    the image sources your policy enables — so an empty result can mean "that
-    link is not collected here" rather than "nothing is affected". The
-    description says which.
+    Three of the four need the **`runs-image`** link, and that link only covers
+    the image sources your policy's `image_sources` enables — `dockerfile` (the
+    default) links images a scanned repository declares, `workloads` links the
+    digest-pinned images your cloud inventory reports a workload running. So an
+    empty result can mean "that link was not collected here" rather than
+    "nothing is affected". Each query's `description` says exactly which.
+
+    `secrets_in_repos_with_cloud_oidc` anchors on every **federated** principal,
+    not only CI ones, so a directory federation into your cloud appears
+    alongside pipeline trusts — read the principal's subject to tell them apart.
 
 ## Compliance
 
@@ -212,7 +217,11 @@ limacharlie cloudsec compliance report --framework cis-supply-chain
 ```
 
 Both apply only when a source-code provider is connected; on an estate without
-one they report **NOT_APPLICABLE** rather than a vacuous pass. Because most of
+one they report **NOT_APPLICABLE** rather than a vacuous pass. And every control
+that grades an *outcome* ("are there secrets in the source?") additionally waits
+for the lane to have **completed a scan pass**: a connected provider is not the
+same fact as a scanned repository, so until a scan runs those controls report
+**NOT_ASSESSED** rather than passing off an engine that never ran. Because most of
 `cis-supply-chain` is not auto-assessable, its report carries the low-coverage
 qualifier — read the coverage figure next to the score, never the score alone.
 See [Compliance](compliance.md) for how scoring and coverage work.
