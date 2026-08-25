@@ -181,6 +181,48 @@ GET /v1/sessions/{sessionId}
 }
 ```
 
+#### Rename Session
+
+```text
+PATCH /v1/sessions/{sessionId}
+```
+
+Update a session's user-facing name. The name is metadata over the session
+record, so renaming works in every state, `ended` included.
+
+##### Request Body
+
+```json
+{
+  "name": "Ransomware triage - host WIN-DC01"
+}
+```
+
+Leading and trailing whitespace is trimmed. The trimmed name must be non-empty
+and at most 200 characters.
+
+##### Response: 200 OK
+
+Returns the updated session in the same shape as [Get Session](#get-session).
+
+```json
+{
+  "session": {
+    "id": "abc123",
+    "name": "Ransomware triage - host WIN-DC01",
+    "status": "running",
+    "region": "us-central1",
+    "created_at": "2025-01-15T10:30:00Z"
+  }
+}
+```
+
+**Error Responses:**
+
+- `400`: Missing or malformed body, empty name (`name_required`), or a name over 200 characters (`name_too_long`)
+- `403`: The session belongs to another user
+- `404`: No such session
+
 #### Terminate Session
 
 ```text
