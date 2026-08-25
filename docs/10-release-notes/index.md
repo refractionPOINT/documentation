@@ -18,6 +18,30 @@ Release notes for LimaCharlie platform components, organized by date.
 
     For discussion and email notification of the same releases, set the [Platform Updates category](https://community.limacharlie.com/c/platform-updates/5) in the community forum to Watching. For service availability rather than releases, subscribe on the [status page](https://status.limacharlie.io/).
 
+## 2026-08-24
+
+### Endpoint Agent 5.3.7
+
+#### New Features
+
+- On Linux, DNS events now report the process that sent the query or received the response, where the kernel supports it (verified on 5.15 and newer); older kernels keep delivering DNS events without a process ID. DNS events on Windows and macOS are unchanged.
+- On Linux, kernel telemetry — file, process, socket, network and DNS — now loads on kernel 5.4, where it previously failed to load entirely. Network isolation still requires a newer kernel.
+
+#### Bug Fixes
+
+- On Linux, fixed all network connection telemetry being lost on kernels that cannot support network isolation; connection tracking now loads independently of isolation.
+- On Linux, fixed the DNS tracker staying on packet capture for the life of the sensor when it started before kernel acquisition was ready, leaving DNS events without a process ID on hosts where the kernel could provide one.
+- On Linux, fixed the process tracker staying on its netlink fallback under the same conditions, which could leave short-lived processes without a path or command line.
+- On Linux, hardened kernel DNS collection against packets whose declared payload length exceeds what they carry; such packets could corrupt the sensor's buffer and caused the DNS events behind them to be discarded.
+- On Linux, fixed sensor diagnostics reporting every kernel telemetry subprogram as inactive when the reporting component had simply not yet queried the kernel; the status is now omitted until it is known.
+- Fixed a possible deadlock when the sensor is stopped by a signal on Linux and macOS.
+
+#### Improvements
+
+- On Linux, sensor diagnostics now report whether DNS events are being attributed to a process.
+
+---
+
 ## 2026-08-20
 
 ### Web App 6.2.0
