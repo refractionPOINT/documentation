@@ -54,7 +54,7 @@ Two minutes is a hard ceiling on a single call. Work that can exceed it must be 
 
 ### Making retries work for you
 
-The platform retries on a `5xx` and stops on a `4xx`. Your extension controls which it gets, through the `retriable` field on the response:
+The platform retries a response whose status is `408`, `429`, `500`, `502`, `503` or `504`, and gives up on anything else — including `400` and the `5xx` codes not in that list. Your extension controls which it returns through the `retriable` field on the response:
 
 - **Omitted (the default)** — treated as retriable, returned as HTTP 500. Chosen for backwards compatibility; it is the wrong default for most permanent failures.
 - **`true`** — retriable, HTTP 500.
@@ -70,6 +70,8 @@ return common.Response{Error: "api_key is not valid", Retriable: &notRetriable}
 // Retriable: a transient upstream failure.
 return common.Response{Error: "vendor API timed out"}
 ```
+
+`429` is handled differently from the other retriable codes: the platform does not spend its fast in-process retries on it, and instead backs off over a much longer window. If your extension needs to shed load, returning `429` is the right way to say so.
 
 Because retries exist, **handlers must be idempotent.** Every message carries an `idempotency_key` that is stable across the retries of a single logical call; use it to deduplicate work that must not happen twice.
 

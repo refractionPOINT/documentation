@@ -27,7 +27,7 @@ The full set of guarantees — timeouts, retries, size limits, signing — is in
 
 ### Public and Private Extensions
 
-Anyone can build an extension. Private extensions require the owner to hold the `billing.ctrl` and `user.ctrl` permissions on an organization in order to subscribe it.
+Anyone can build an extension. Subscribing any organization to any extension requires the `billing.ctrl` and `user.ctrl` permissions on that organization. A **private** extension additionally can only be subscribed by its owner, so while it is private you can only install it into organizations you can administer yourself.
 
 To make an extension public, and optionally monetize it, contact `answers@limacharlie.io`. Once public, it is visible to and subscribable by everyone.
 

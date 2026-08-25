@@ -16,6 +16,20 @@ Only then is your extension called. A request that fails any of these never reac
 
 This is the answer to most cases of "my extension is not being called." Check the schema before you check the handler; the [troubleshooting table](runtime-contract.md#troubleshooting) lists the exact messages.
 
+### Configuration Is Treated Differently
+
+The configuration attached to requests and events goes through a similar but *not* identical pass. The differences matter:
+
+| | Request parameters | Configuration |
+| --- | --- | --- |
+| Defaults applied | Yes | No |
+| `requirements` checked | Yes | No |
+| Unknown keys | Rejected with an error | **Silently dropped** before your extension sees them |
+| Types checked | Yes | Yes |
+| Secrets resolved | Yes | Yes |
+
+The silent drop is the one to watch: removing a field from your config schema does not just hide it, it strips any stored value for that field out of the configuration your extension receives, with no error anywhere. Keep a field in the schema until you are sure nothing depends on it.
+
 !!! warning "Validation is top-level only"
     The platform validates the top level of a request or config. For a field whose `data_type` is `object` or `record`, it checks only that the value *is* an object — the nested `fields`, their types, and any nested `requirements` are **not** enforced.
 
@@ -94,7 +108,9 @@ A field with a `default_value` is always present by the time requirements are ch
 
 `secret` is the mechanism for handling third-party credentials, and it is worth understanding properly: it is not just a picker.
 
-The user selects a secret from their organization's secrets manager, and the schema stores only a *reference*. When a request carrying that reference reaches the platform, the reference is **replaced with the secret's actual value** before the request is forwarded to your extension. Your handler receives the plaintext credential; the credential is never stored by, or visible to, your extension outside of that call.
+The user selects a secret from their organization's secrets manager, and what is stored is only a *reference*, of the form `hive://secret/<secret-name>`. When a request or configuration carrying that reference reaches the platform, the reference is **replaced with the secret's actual value** before it is forwarded to your extension. Your handler receives the plaintext credential; the credential is never stored by, or visible to, your extension outside of that call.
+
+Substitution is triggered by the `hive://secret/` prefix, not by the field's type. A `secret` field holding anything else is passed through unchanged, so a caller can supply a literal value — do not assume a `secret` parameter always arrived by reference.
 
 This means an extension can integrate a credentialed third-party API without ever asking users to paste a key into extension-specific storage, and without holding long-lived customer credentials of its own. Prefer it over a `string` field for anything sensitive.
 
