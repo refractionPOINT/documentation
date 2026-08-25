@@ -1,91 +1,123 @@
 # Building Extensions
 
-This section is a work in progress
+An Extension is a small HTTPS service that LimaCharlie calls over webhooks. You host it and own the code; LimaCharlie handles multi-tenancy, credentials, configuration storage and the user interface.
 
-Feel free to reach out to us on the [community forum](https://community.limacharlie.com/) if you'd like to learn more
+Feel free to reach out on the [community forum](https://community.limacharlie.com/) if you get stuck.
 
 ## Why Extensions?
 
-Building functionality as a LimaCharlie Extension provides you specific convenience:
+- **Multi-tenancy** — organizations subscribe to your extension, and the same code serves all of them.
+- **Credentials handling** — you never store organization credentials. Every callback arrives with a LimaCharlie SDK already authenticated for the relevant organization, scoped to the permissions your extension declared. Third-party credentials are handled through [secrets](schema-data-types.md#secrets), which are resolved into the request for you.
+- **Configuration** — LimaCharlie stores a configuration object per organization and asks you to validate changes.
+- **User interface** — the schema your extension advertises is rendered into a working UI automatically. You can build your own instead, but you do not have to.
 
-- **Multi-tenancy**: LC organizations can subscribe to your extension and you can replicate the features you're building across tenants.
-- **Credentials handling**: you don't need to store any credentials from LC organizations. Every callback you receive will include an authenticated LimaCharlie SDK for the Organization relevant to the callback, with the permissions you requesed for the extension.
-- **Configuration**: you're always welcome to store some configuration wherever the extension lives, but as a convenience LC will provide you with a configuration JSON object for your extension (stored in Hive) and with a callback for you to validate the content of the configuration when a user makes a modification.
-- **GUI**: each extension defines its own Schema, a structure indicating to LimaCharlie what actions the extension exposes, how to call it and what to expect as a return value from actions. This information is then automatically interpreted by LimaCharlie to generate a custom user interface for your extension, making it extremely easy to expose new functionality in LimaCharlie without having to build any kind of UI (though you're always free to build one if you'd like).
+## How It Works
 
-### Public/Private Limitations
+```mermaid
+flowchart LR
+    A["User / D&R rule<br/>CLI / another extension"] --> B["LimaCharlie"]
+    B -->|"signed HTTPS webhook"| C["Your extension"]
+    C -->|"response"| B
+    C -->|"pre-authenticated SDK"| B
+```
 
-Anyone can build Extensions for LimaCharlie. The only limit is put on making an Extension public. Private extensions require the owner of the extension to have the `billing.ctrl` and `user.ctrl` permission on an organization in order to subscribe the organization to the private extension.
+Your service needs to be reachable over HTTPS with a certificate chaining to a public root CA. Anything that can serve HTTP works — Google Cloud Run, Cloud Functions, AWS Lambda, ECS, or your own hardware. We recommend a managed, highly available platform.
 
-### Want to take your Extension public?
+The full set of guarantees — timeouts, retries, size limits, signing — is in the [Runtime Contract](runtime-contract.md).
 
-If you'd like to make your extension public (and/or monetize it), reach out to `answers@limacharlie.io` and we'll help you out. Once public, an extension is visible by everyone and can subscribed by everyone.
+### Public and Private Extensions
 
-## High Level Structure
+Anyone can build an extension. Subscribing any organization to any extension requires the `billing.ctrl` and `user.ctrl` permissions on that organization. A **private** extension additionally can only be subscribed by its owner, so while it is private you can only install it into organizations you can administer yourself.
 
-![image.png](../../assets/images/image(252).png)
+To make an extension public, and optionally monetize it, contact `answers@limacharlie.io`. Once public, it is visible to and subscribable by everyone.
 
-Extensions are small services that receive webhooks from LimaCharlie. This means building an extension requires exposing a small HTTPS service to the internet. We recommend using something like [Google Cloud Run](https://cloud.google.com/run/), but ultimately you could also use AWS Lambdas or even host on your own hardware.
+## Install
 
-This https server will communicate with the LimaCharlie cloud according to a simple protocol using JSON.
+=== "Go"
 
-That being said, don't worry, you don't need to know the underlying way the extension protocol works as long as you're comfortable with our public implementations.
+    ```bash
+    go get github.com/refractionPOINT/lc-extension
+    ```
 
-## Getting Started
+=== "Python"
 
-Want to get your hands on an example? We recommend using one of the following frameworks to get started.
+    ```bash
+    pip install lcextension
+    ```
 
-- Golang: <https://github.com/refractionPOINT/lc-extension>
-- Python: <https://github.com/refractionPOINT/lc-extension/tree/master/python>
+The Go SDK is the more complete of the two and is what the examples here use; see the [Python notes](schema-data-types.md#language-references) for the current gaps.
 
-For a more step-by-step overview, let's dig into some of the core concepts of building an extension. We will reference Golang since it provides stricter typing, but conceptually it's the same across implementations.
+## A Complete Extension
 
-### Extension Definition
+This is a working extension. It exposes one user-facing action that lists sensors matching a selector, stores a small configuration, and reports a billing metric per call.
 
-To create an extension, start by creating a definition - accessible through the [web interface for your personal add-ons](https://app.limacharlie.io/add-ons/published).
+```go title="main.go"
+--8<-- "snippets/golang/extension_basic/main.go"
+```
 
-The required aspects of your definition are as follows:
+Points worth noticing, because each corresponds to something that bites people later:
 
-- **Destination URL:** this is the HTTPS URL where your extension will be reachable at.
-- **Required Extensions:** this is the list of other extensions your extension assumes it will have access to. When an org subscribes and is missing one of those, the user will be prompted to subscribe to these.
-- **Shared Secret:** this is an arbitrary string that will be used by LimaCharlie and your extension to sign webhooks to your extension, allowing it to very the authenticity of the hook. Make it something at least 32 characters and random.
-- **Extension Flairs:** these are modifiers that will be applied to your extension. Namely the `segment` flair will isolate the resources the extension can access so that it can only see and modify things (like  rules) that it has created, making it great for extensions that need a narrow scope, you should enable it unless you know you need it off. The `bulk` flair tells LimaCharlie that it expects to make a lot of API calls to the LC cloud, which will increase the API quota for the extension.
-- **Permissions:** the list of permissions this extension requires on each organization subscribed to it. Use the least amount of permissions possible.
+- **`buildExtension` is a function.** That is what lets tests construct the same extension the server runs. See [Testing](testing.md).
+- **`ErrorHandler` is set.** The Go framework calls it without a nil check — including when a request arrives with a bad signature — so an extension that leaves it unset panics on the first malformed request it receives.
+- **The request struct field names match the schema parameter names.** The framework unmarshals request data into a copy of `RequestStruct` using the JSON tags; a mismatch produces a zero value rather than an error.
+- **`params.Org` is already authenticated.** No credential handling, no key storage.
+- **Permanent errors are marked non-retriable.** Otherwise the platform retries them three times with backoff.
+- **Event handlers are what subscribe you to events.** In Go, the advertised event list comes from the `EventHandlers` map, not from the `RequiredEvents` field.
 
-### Schema
+## Registering the Extension
 
-The Extension Schema is the next important piece of building your extension. It describes what your extension can do and helps define the GUI.
+Create the definition from [your published add-ons page](https://app.limacharlie.io/add-ons/published).
 
-Here's an example high-level structure of a schema.
+| Field | Meaning |
+| --- | --- |
+| **Destination URL** | The HTTPS URL your extension is reachable at |
+| **Shared Secret** | Used to sign webhooks so your extension can verify they came from LimaCharlie. Make it random and at least 32 characters |
+| **Permissions** | What your extension may do in each subscribed organization. Use as few as possible |
+| **Required Extensions** | Other extensions yours depends on. Users are prompted to subscribe to them |
+| **Extension Flairs** | Modifiers, described below |
+
+Once registered, LimaCharlie fetches your schema. Subscribe an organization to it and you will receive a `subscribe` event; from then on that organization can interact with the extension.
+
+!!! note "Heartbeats"
+    The protocol defines a heartbeat message, and both SDKs answer it, but LimaCharlie does not currently send heartbeats on a schedule. Do not rely on them as a liveness signal or as a way to keep a serverless instance warm.
+
+### Flairs
+
+The `segment` flair isolates your extension's resources so it can only see and modify the things it created — rules, configurations and so on. It is the right default for most extensions, and you should leave it on unless you specifically need to read or modify resources your extension did not create.
+
+The `bulk` flair marks an extension as expecting a high volume of API calls. Note that extension API keys already receive the platform's highest request quota by virtue of being extension keys, so setting this flair does not currently change the quota an extension gets.
+
+## The Schema
+
+The schema describes your configuration and your actions. It drives the generated UI, and the platform enforces it before your extension is called — unknown parameters are rejected, types are checked, defaults are applied and secrets are resolved.
 
 ```json
 {
   "config_schema": {
-    "fields": { ... }
+    "fields": { },
     "requirements": null
   },
   "request_schema": {
-    // defines two custom requests, 'dir_list' and 'refresh'
     "dir_list": {
       "is_impersonated": false,
       "is_user_facing": false,
+      "short_description": "directory listing",
       "long_description": "directory listing",
       "parameters": {
-        "fields": { ... },
+        "fields": { },
         "requirements": null
-      },
-      "short_description": "directory listing"
+      }
     },
     "refresh": {
       "is_impersonated": false,
       "is_user_facing": true,
+      "short_description": "refresh data",
       "long_description": "refresh data",
       "parameters": {
-        "fields": { ... },
+        "fields": { },
         "requirements": null
-      },
-      "short_description": "refresh data"
-    },
+      }
+    }
   },
   "required_events": [
     "subscribe",
@@ -94,101 +126,58 @@ Here's an example high-level structure of a schema.
 }
 ```
 
-**The Field Configuration**
- Notice that for both the `config_schema` and the `request_schema` there is a recurring object structure that looks like the following:
+When starting out, use the simplest data type that fits each field — `string`, `bool`, `json` — and get the whole thing working end to end. Refine the types afterwards so the UI adapts. Full details are in [Schema & Data Types](schema-data-types.md).
 
-```text
-"fields": { .. }, // key-value pair
-"requirements": [[]],
-```
+### Config Schema
 
-While hidden in the example above, each `field` key-value pair shares the same structure and has a minimal implementation as such:
+An optional description of the extension's configuration, stored per organization as a Hive record in `extension_configuration`. Not every extension needs one.
 
-```text
-field_name: {
-  data_type: "string",
-  description: "",
-},
-```
+### Request Schema
 
-The `requirements` field references the field keys to define whether or not certain fields individually or as a set are required. You can think of the first array to join elements with an AND, while the nested array serves as an OR.
- For example:
+A map of action name to definition. The important fields:
 
-- `[['denominator'], ['numerator']]` means:
-   (denominator AND numerator),
-- `[['denominator'], ['numerator', 'default']]` means:
-   (denominator AND ( one of numerator OR default)).
+- **`is_user_facing`** — whether the action appears in the UI. It does not restrict access: an action that is not user-facing is still callable through the API, from a D&R rule, and as a `supported_action`. Use it to hide actions your extension calls on itself.
+- **`is_impersonated`** — whether the action runs as the calling user rather than as the extension. See [impersonation](runtime-contract.md#impersonation).
+- **`parameters`** — the fields the action accepts.
+- **`short_description`**, **`long_description`**, **`label`** — how the action is presented.
+- **`messages`** — `in_progress`, `success` and `error` text shown to the user.
+- **`response`** — an optional description of what the action returns. Skip it until you are refining the UI.
 
-When getting started, we recommend utilizing the simplest data type applicable. This will enable you to get a grasp of the whole extensions framework and allow you to quickly test our your service. Such as `string`, `boolean`, `json`, etc.
+## Callbacks
 
-Afterwards, we recommend you define the data_type and other optional fields further, so that the UI may adapt to your defined data types. For more details, see the [data types reference](schema-data-types.md) or the [lc-extension SDK source](https://github.com/refractionPOINT/lc-extension/blob/master/common/config_schema.go).
+**Configuration validation** — called when a user changes the configuration. Return an error to reject the change. This is the only guard users have against a broken configuration, so validate properly rather than accepting everything.
 
-#### Config Schema (optional)
+**Events** — platform-generated occurrences: `subscribe`, `unsubscribe`, and `update` (once every 24 hours, per organization). `update` is where extensions reconcile the resources they manage.
 
-The config schema is a description of what the extension's config should look like, when stored as a Hive record in the `extension_configuration` Hive for convenience.
+**Requests** — the actions users, D&R rules and other extensions invoke. One callback per action.
 
-Not all extensions will have a configuration, feel free to reach out on the [community forum](https://community.limacharlie.com/) if you need help determining whether or not your extension needs a configuration.
+## Testing
 
-At the core, the config schema is simply a list of fields.
-
-#### Request Schema
-
-Every Request Schema exists as a key value pair of the request name, and a corresponding schema contents. The critical contents include the following fields:
-
-- **is_impersonated**: Whether or not the request impersonates the user through it's authentication
-- **is_user_facing**: Whether or not this request should be visisble to the user in the UI. It does not prevent this request from bieng used through the API or as a `supported_action` (more on that later).
-- **parameters**: This contains the data_type and other fields *(recall the same fields format as the config schema)*
-
-Other optional fields exist to facilitate the user experience, such as:
-
-- **short_description**
-- **long_description**
-- **messages**: Includes 3 nested fields, `in_progress`, `success`, `error` to provide additional context for each case.
-
-#### Response Schema (optional)
-
-Each request schema may optionally contain a response schema in the same fields format as a config schema and the request parameters.
-
-When getting started, we recommend that you skip this until you are ready to refine the extension's GUI, or you wish to clarify that kind of response a user should expect.
-
-### Callbacks
-
-Callbacks are functionality that an extension can specify whenever some type of event occurs.
-
-#### Configuration Validation Callback
-
-This callback is used by LimaCharlie to check the validity of a change in configuration done in Hive. If the configuration is valid, return success, otherwise you can return an error.
-
-#### Event Callback
-
-Events are events generated by the LimaCharlie platform outside your control. Currently, these 3 events are supported:
-
-- **subscribe**: called when an organization subscribes to an extension.
-- **unsubscribe**: called when an organization unsubscribes from an extension.
-- **update**: called once a day per organization subscribed to the extension. It is a convenient way to perform updates to an organization like when needing to update D&R rules used by the extension.
-
-Your extension will only receive these events if they were specified as of-interest in the extension's Schema.
-
-#### Request Callback
-
-The requests are the core way users, D&R rules or other extensions can interact with your extension. You can define one callback per `action`. It is common for an extension to have multiple actions, some public (for user-generated requests) and some private (to be used internally by the extension in the course of doing whatever it does).
+Both halves of an extension can be simulated locally — the platform calling in, and the LimaCharlie API being called out to — so a full lifecycle runs as a unit test with no cloud resources. See [Testing Extensions](testing.md).
 
 ## Simplified Frameworks
 
-The Golang implementation of Extensions provides 3 different simplified frameworks to make the job of producing a new extension more straight forward in specific cases: <https://github.com/refractionPOINT/lc-extension/tree/master/simplified>
+For common shapes of extension, the Go SDK provides [ready-made frameworks](https://github.com/refractionPOINT/lc-extension/tree/master/simplified) that leave you only the interesting part to write.
 
-### D&R
+### D&R Rules
 
-This simplified framework, found in `dr.go` allows you to package D&R rules as an extension making it easy for you to distribute and update D&R rules to many orgs. Its core mechanism is based on defining the `GetRules()` function and returning a structure like `map[DR-Namespace]map[RuleName]RuleContent`. The simplified framework takes care of the recurring updates and everything else.
+`dr.go` packages D&R rules as an extension, making it easy to distribute and update rules across many organizations. Implement `GetRules()`, returning `map[namespace]map[ruleName]RuleInfo`; the framework handles subscription, recurring updates and cleanup. It also gives users a configuration for disabling new rules by default and for a global suppression period.
 
-### Lookup
+### Lookups
 
-Similarl to the D&R simplified framework, but is used to package Lookups. Example: <https://github.com/refractionPOINT/lc-extension/blob/master/examples/lookup/main.go>
+The same idea for Lookups. See the [example](https://github.com/refractionPOINT/lc-extension/blob/master/examples/lookup/main.go).
 
 ### CLI
 
-This simplified framework serves to streamline the integration of 3rd party Command Line Interface tools so that they can be automated using LimaCharlie, often bringing bi-directionality to the platform.
+`cli.go` wraps third-party command line tools so they can be driven from LimaCharlie, which is often the fastest way to bring bi-directionality to an integration. Register one or more tools with a handler, a credentials format and an example command, and the framework builds the schema, the UI and the execution plumbing around them.
 
-LimaCharlie Extensions allow users to expand and customize their security environments by integrating third-party tools, automating workflows, and adding new capabilities. Organizations subscribe to Extensions, which are granted specific permissions to interact with their infrastructure. Extensions can be private or public, enabling tailored use or broader community sharing. This framework supports scalability, flexibility, and secure, repeatable deployments.
+## Scaling Beyond One Service
 
-In LimaCharlie, an Organization represents a tenant within the Agentic SecOps Workspace, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete control over security operations. This structure enables flexible, multi-tenant setups, ideal for managed security providers or enterprises managing multiple departments or clients.
+For extensions that need isolation between organizations, the [Cloud Run multiplexer](https://github.com/refractionPOINT/lc-extension/tree/master/multiplexer) is itself an extension that provisions a dedicated Cloud Run service per subscribed organization and proxies webhooks to it.
+
+## Next Steps
+
+- [Schema & Data Types](schema-data-types.md) — what the platform enforces, and every data type
+- [Building the User Interface](building-ui.md) — layouts and field presentation
+- [Testing Extensions](testing.md) — the simulator and mock API
+- [Runtime Contract](runtime-contract.md) — timeouts, retries, continuations, metrics, troubleshooting
