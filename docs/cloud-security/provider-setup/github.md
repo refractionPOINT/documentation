@@ -33,6 +33,34 @@ Create the App with **read-only** access on the following. All are
 | **Secrets** | Organization | Organization Actions-secret inventory (**names only**, never values) | `org_secrets` |
 | **Administration** | Repository | Branch-protection posture and deploy-key inventory (deploy keys are also the one activity signal — see [Known limitations](#known-limitations)) | *(collected during the sweep)* |
 | **Secrets** | Repository | Whether a repository has Actions secrets at all — an existence flag, not a name list (org-level secrets are the ones inventoried by name) | *(collected during the sweep)* |
+| **Dependabot alerts** | Repository | GitHub's own **Dependabot** alerts, ingested as findings and deduplicated against LimaCharlie's own dependency scanning; and whether each repository has Dependabot alerts **enabled** | `dependabot_alerts` |
+| **Code scanning alerts**, **Secret scanning alerts** | Repository | GitHub's own **code-scanning** and **secret-scanning** alerts, ingested as findings and deduplicated against LimaCharlie's own analysis | `security_events` |
+
+### GitHub's own alerts, and what happens to them
+
+With the two alert permissions granted, GitHub's own security products become a second
+*source* rather than a second worklist:
+
+- A **Dependabot** alert for an advisory LimaCharlie already found in the same repository
+  and package is folded into that one finding, which then lists both sources and links to
+  the GitHub alert. It does not appear twice, and its state follows LimaCharlie's scan.
+- The same applies to **secret-scanning** and **code-scanning** alerts that describe the
+  same credential, or the same rule in the same file, as a finding of our own.
+- An alert about a repository LimaCharlie is **not** scanning stays a finding of its own —
+  that is the coverage this ingest adds.
+
+**Secret values are never read.** Secret-scanning alerts are requested with GitHub's
+`hide_secret` option, and there is no field anywhere in the pipeline to store a credential
+value. What is stored is the credential's type, GitHub's own validity verdict (whether the
+token is still live), and where it was found.
+
+**If the permissions are not granted, nothing breaks.** The alert surfaces are simply not
+collected, the connection stays healthy, and the reason is recorded on the provider's scan
+status rather than reported as a failure. Whether each repository has **secret scanning**
+and **code scanning** enabled additionally depends on the organization **Administration**
+read: where GitHub does not expose it, that state is reported as *not observed* rather than
+as disabled, and the corresponding checks stay silent instead of flagging every repository
+for a setting nobody could see.
 
 !!! note "The setup wizard asks for Administration as required"
     The in-product **Add provider** wizard lists both Administration grants
