@@ -170,6 +170,131 @@ downloadable artifact.
 A repository that has not been scanned yet reports `sbom_not_generated_yet`
 rather than an empty document.
 
+## Bring your own scanner
+
+Not everything worth knowing about a repository comes from the hosted scan. You
+may already run a scanner in CI, use an analyzer for a language the hosted lane
+does not cover, or want results for a repository before you connect the
+organization. So the lane takes results **you** produced:
+
+```bash
+limacharlie cloudsec code ingest --repo acme/payments --source sarif -f results.sarif
+```
+
+`--source` is `sarif` (SARIF 2.1.0, which nearly every scanner can emit),
+`cyclonedx` (a bill of materials, with or without its `vulnerabilities`
+section), or `report` — the LimaCharlie scanner's own document, which is what
+`code scan` below produces.
+
+### It is the same finding, not a copy of it
+
+A pushed finding is **deduplicated against the hosted scan by identity**. A
+dependency vulnerability is identified by its advisory, the package and the
+manifest that declares it — never by a line number — so when both lanes see
+`CVE-2021-23337` in `lodash` in `package-lock.json`, there is one finding, whose
+age and triage state survive. Pushing the same document twice writes nothing at
+all.
+
+Three rules follow from that, and they are worth knowing before you wire up a
+pipeline:
+
+- **A pushed document can only close findings it previously reported.** Fix a
+  dependency, push again, and that finding closes. It can never close something
+  the hosted scanner found — your dependency scan says nothing about the secrets
+  and misconfigurations the sandbox looked for. The reverse is also true: a
+  hosted scan will not close what you pushed.
+- **What the format cannot carry is reported, not guessed.** The response's
+  `notes` names it. `iac_resource_ref_absent`, for example, means the document
+  identified an infrastructure finding by file alone, because SARIF has no field
+  for the resource address — so those findings do not dedupe against the hosted
+  scan's, which identify the resource.
+- **Credential findings in a third-party document are refused**
+  (`secrets_not_ingestable`). A secret is identified here by a keyed digest of
+  the matched value, which no foreign format carries; what such a document *does*
+  routinely carry is the credential itself, in a snippet, and that is not
+  something to accept. Use the hosted lane for secrets.
+
+The repository must already be in your collected inventory and be selected by an
+enabled `code_scanning` policy — the same switch and the same globs the hosted
+lane uses.
+
+### Scanning locally
+
+`code scan` runs the LimaCharlie scanner over a checkout on your own machine —
+or in your CI — and, with `--ingest`, pushes the result:
+
+```bash
+# Look at the report without sending anything.
+limacharlie cloudsec code scan ~/src/payments -o report.json.gz
+
+# Scan and push.
+limacharlie cloudsec code scan ~/src/payments --repo acme/payments --ingest
+```
+
+Nothing about the checkout leaves the machine except the report. The scanner runs
+in a container by default (which carries the pinned engines and their databases);
+`--binary` runs an already-installed agent instead, which is what a CI image that
+ships one should do.
+
+**Secret scanning is off by default here**, and turning it on locally is usually
+not what you want: a secret's identity depends on a deployment-side key this
+command does not have, so locally-found credentials cannot dedupe against the
+hosted scan's — and the ingest refuses them for the same reason.
+
+### A GitHub Actions recipe
+
+This runs on every push to the default branch, scans the checkout, and pushes the
+report. It uses no LimaCharlie CI minutes: the work happens in your runner.
+
+```yaml
+name: Cloud Security code scan
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # The scanner reads the working tree. Full history is only needed if you
+          # scan git history for secrets, which the local scan does not do.
+          fetch-depth: 1
+
+      - name: Install the LimaCharlie CLI
+        run: pipx install limacharlie
+
+      - name: Scan and push
+        env:
+          # A LimaCharlie API key with `cloudsec.set`, stored as a repository secret.
+          LC_OID: ${{ secrets.LC_OID }}
+          LC_API_KEY: ${{ secrets.LC_API_KEY }}
+        run: |
+          limacharlie login --oid "$LC_OID" --api-key "$LC_API_KEY" --alias ci
+          limacharlie cloudsec code scan . \
+            --repo "$GITHUB_REPOSITORY" \
+            --commit "$GITHUB_SHA" \
+            --ingest
+```
+
+To push results from a scanner you already run, replace the last step with an
+`ingest` of its output — most tools have a SARIF formatter:
+
+```yaml
+      - name: Push existing results
+        run: |
+          limacharlie cloudsec code ingest \
+            --repo "$GITHUB_REPOSITORY" \
+            --source sarif \
+            --commit "$GITHUB_SHA" \
+            -f results.sarif
+```
+
+`$GITHUB_REPOSITORY` is already `<owner>/<name>`, which is exactly the repository
+key the lane uses.
+
 ## The joins that make it worth doing
 
 Code findings are not a separate island. The repository is a node in the
@@ -257,7 +382,6 @@ Named here so their absence is not mistaken for a clean result:
 - **Push-triggered rescans**, **pull-request checks and merge gating**, and
   **dependency auto-fix pull requests**. All of these need write access, which the
   read-only connector does not have and will not gain.
-- **Bring-your-own scan results** (uploading SARIF or CycloneDX from your own CI).
 - **GitLab, Bitbucket and Azure DevOps.** The scanner and the storage model are
   source-control-agnostic by design, but only GitHub is connected today.
 
