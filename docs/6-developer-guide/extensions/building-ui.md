@@ -18,12 +18,13 @@ Note that there are small changes to this structure depending on the layout sele
 
 ### Picking Your Layout Type
 
-- `auto` (default layout, it will pick one of the below)
-- `config` (use this if you have a configuration)
-- `editor` (very specific use-case for editing large code blocks like yaml)
-- `action` (use this to prioritize certain actions in the UI)
-- `description`
-- `key` (just a variation of description)
+- `auto` — the default; picks one of the below for you
+- `default` — renders a default action's response, typically as a table
+- `config` — use this if you have a configuration
+- `editor` — for editing large code blocks such as YAML
+- `action` — use this to prioritize certain actions in the UI
+- `description` — renders the action's long description as Markdown, for context
+- `key` — a variation of `description` that shows the configuration below it, for a small number of config fields
 
 For the action, and editor layouts, make sure you define one (or more) default actions as well. The editor UI for the action layout will show all the actions in-page, as opposed to a button on the top right. When set to the editor layout, the UI will automatically run the default action and display the results and a supported action.
 
@@ -34,12 +35,13 @@ Every field has the following optional details to further adjust the UI.
 - **label**: Add a label if you want a more 'human-legible' label on this field
 - **placeholder**: Placeholder text on the input can serve as an example for the user
 - **description**: A description for this field can be added that will be available as a tooltip on the UI next to the field label
-- **display\_index**: The display index starts at 1 (not 0) and guides the GUI on the order to show the fields. A display index of 1, will display before a display index of 2.
-- **default\_value**: A default value for the field, will auto-populate the field with this value
+- **display\_index**: The display index starts at 1 (not 0) and guides the GUI on the order to show the fields. A display index of 1, will display before a display index of 2. A `0` is indistinguishable from an unset value once the schema is serialized, and unset fields sort last
+- **default\_value**: A default value for the field. The UI pre-populates it, and the platform fills it in server-side when the field is absent from a request
+- **required**: Marks the field as required in the UI. This complements the schema-level `requirements` array, which is what the platform actually enforces
 
 Some other configurations that conditionally apply to specific data\_types:
 
-- **filter**: Available on select primitive data\_types.
+- **filter**: Input constraints on select primitive data\_types. These shape the form only — they are not enforced by the platform, and do not apply to requests from D&R rules, the API or the CLI.
 - **enum\_values**: Details on the available enums, to support the enum data type.
 - **complex\_enum\_values**: Details to support the complex enum data type. Supports reference links, and categories.
 - **object**: An object that contains nested key-value pairs for more fields, and serves to detail the nested fields.
@@ -57,8 +59,11 @@ In the schema, it is possible to define several views to utilize a combination o
 
 ### Setting Supported Actions
 
-Functionality for this field is set to be expanded in the future
+Supported actions are tied to a request's response. They let the response data be modified and passed along to a follow-up action, rendered as buttons on the result. This is useful for a dry run that a user then confirms, or for chaining into a workflow.
 
-Please feel free to reach out to us on the [community forum](https://community.limacharlie.com/) if you'd like to stay up to date on
+Functionality for this field is set to be expanded in the future. Reach out on the [community forum](https://community.limacharlie.com/) if you would like to stay up to date on it.
 
-Supported actions are tied to a request's (also called "actions") response. It allows the response data to be modified and passed along to a follow-up action. This may be useful when operating a dry run, or triggering a workflow.
+## See Also
+
+- [Schema & Data Types](schema-data-types.md) — every data type, and what the platform enforces
+- [Testing Extensions](testing.md) — asserting that the schema advertises what you think it does

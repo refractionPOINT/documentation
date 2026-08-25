@@ -26,8 +26,10 @@ Connect AI assistants to LimaCharlie via the Claude Code Plugin or MCP:
 Create custom extensions for LimaCharlie:
 
 - [Getting Started](extensions/building-extensions.md)
-- [User Interface](extensions/building-ui.md)
 - [Schema & Data Types](extensions/schema-data-types.md)
+- [User Interface](extensions/building-ui.md)
+- [Testing Extensions](extensions/testing.md)
+- [Runtime Contract](extensions/runtime-contract.md)
 
 ## Infrastructure as Code
 
