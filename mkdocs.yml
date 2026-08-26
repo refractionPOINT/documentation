@@ -611,6 +611,7 @@ nav:
       - Custom Posture Rules: cloud-security/custom-rules.md
       - Configuration Reference: cloud-security/configuration.md
       - Command Line Interface: cloud-security/cli.md
+      - IDE & MCP: cloud-security/mcp.md
       - API Reference: cloud-security/api-reference.md
       - Automation & IaC: cloud-security/automation.md
 
