@@ -604,6 +604,7 @@ nav:
           - Anthropic: cloud-security/provider-setup/anthropic.md
           - LimaCharlie: cloud-security/provider-setup/limacharlie.md
       - Findings & Triage: cloud-security/findings.md
+      - Code Scanning: cloud-security/code-scanning.md
       - Remediation SLAs: cloud-security/remediation-sla.md
       - Security Graph & Queries: cloud-security/graph.md
       - Compliance: cloud-security/compliance.md
@@ -611,6 +612,7 @@ nav:
       - Custom Posture Rules: cloud-security/custom-rules.md
       - Configuration Reference: cloud-security/configuration.md
       - Command Line Interface: cloud-security/cli.md
+      - IDE & MCP: cloud-security/mcp.md
       - API Reference: cloud-security/api-reference.md
       - Automation & IaC: cloud-security/automation.md
 
