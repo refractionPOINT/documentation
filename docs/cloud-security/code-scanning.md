@@ -145,8 +145,9 @@ can only ever add coverage.
 it is the only thing that forces a full clone — on a large monorepo that is the
 difference between a fast scan and one that hits the clone cap.
 
-`image_sources: registries` is accepted and **not enumerated**: a policy asking
-for it gets the referenced images only. Registry enumeration is not implemented.
+`image_sources: ["registries"]` is accepted and **not enumerated**: a policy
+asking for it gets the referenced images only. Registry enumeration is not
+implemented.
 
 ### Force a rescan
 
@@ -161,6 +162,11 @@ The next pass picks up the repositories the policy selects, respecting the
 per-repository debounce.
 
 ## Reading the results
+
+!!! note "The `cloudsec code` commands need a current CLI"
+    Upgrade before you start — `pipx upgrade limacharlie` (or
+    `pip install --upgrade limacharlie`). An older CLI has no `code` command
+    group at all and answers `No such command`.
 
 ```bash
 # Repositories, their scan state and open-finding rollups.
@@ -183,8 +189,8 @@ which is not the same as the lane being off.
 The findings themselves are ordinary findings:
 
 ```bash
-limacharlie cloudsec finding list --repo acme/payments --finding-class vulnerability
-limacharlie cloudsec finding list --finding-class secret --severity CRITICAL
+limacharlie cloudsec finding list --repo acme/payments --class vulnerability
+limacharlie cloudsec finding list --class secret --severity CRITICAL
 ```
 
 See the [CLI reference](cli.md) and the [API reference](api-reference.md) for the
@@ -230,6 +236,10 @@ GitHub App webhook ──push──▶ LimaCharlie webhook adapter ──▶ D&R
    `github-code-webhook`.
 
    ```bash
+   OID=<your organization id>
+   # The org's installation key: `limacharlie org get --oid "$OID"`, or
+   # Sensors -> Installation Keys in the web app.
+   INSTALLATION_KEY=<an installation key for that org>
    SECRET=$(python3 -c "import secrets;print(secrets.token_urlsafe(32))")
    cat > hook.json <<JSON
    {
@@ -517,10 +527,11 @@ in a container by default (which carries the pinned engines and their databases)
 `--binary` runs an already-installed agent instead, which is what a CI image that
 ships one should do. `--scanners` defaults to `sca,iac,licenses`.
 
-**Secret scanning is off by default here**, and turning it on locally is usually
-not what you want: a secret's identity depends on a deployment-side key this
-command does not have, so locally-found credentials cannot dedupe against the
-hosted scan's — and the ingest refuses them for the same reason.
+**Secret scanning cannot run locally**, and asking for it is an error rather than
+a quietly narrower scan: `--scanners sca,iac,secrets` fails. A secret's identity
+here is a digest keyed by a deployment-side value this command does not have, so
+locally-found credentials could not deduplicate against the hosted scan's — and
+the ingest refuses them for the same reason. Use the hosted lane for secrets.
 
 ### A GitHub Actions recipe
 
@@ -553,7 +564,7 @@ jobs:
           LC_OID: ${{ secrets.LC_OID }}
           LC_API_KEY: ${{ secrets.LC_API_KEY }}
         run: |
-          limacharlie login --oid "$LC_OID" --api-key "$LC_API_KEY" --alias ci
+          limacharlie auth login --oid "$LC_OID" --api-key "$LC_API_KEY"
           limacharlie cloudsec code scan . \
             --repo "$GITHUB_REPOSITORY" \
             --commit "$GITHUB_SHA" \
@@ -698,7 +709,7 @@ Named here so their absence is not mistaken for a clean result:
   infrastructure findings are never swept and fixed ones stay open. Do not set
   it until it ships.
 - **`severity_floor` filtering** — see the note above.
-- **Container-registry enumeration** (`image_sources: registries`).
+- **Container-registry enumeration** (`image_sources: ["registries"]`).
 - **Source-control platforms other than GitHub.** The scanner and the storage
   model are source-control-agnostic by design, but GitHub is the only connector
   today.
