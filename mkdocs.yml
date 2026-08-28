@@ -584,7 +584,7 @@ nav:
           - Case-Reviewer Agent: 9-ai-sessions/compliance/case-reviewer-agent.md
           - Gap Analysis: 9-ai-sessions/compliance/gap-analysis.md
 
-  - Email Security:
+  - Email Security (Private Beta):
       - Command Line Interface: email-security/cli.md
       - AI Triage: email-security/ai-triage.md
 
