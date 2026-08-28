@@ -88,7 +88,7 @@ limacharlie cloudsec caasm ingest --source okta --records-file users.json
 limacharlie cloudsec provider test --input-file provider.json
 limacharlie cloudsec provider manifest --type gcp        # "what you get" for a provider
 
-# Code scanning and pushed results
+# Code scanning and pushed results (requires a CLI release newer than 5.6.2)
 limacharlie cloudsec code repos --with-findings --all
 limacharlie cloudsec code scan . --repo acme/api --ingest
 limacharlie cloudsec code ingest --repo acme/api --source sarif --file results.sarif

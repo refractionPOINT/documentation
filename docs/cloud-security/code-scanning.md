@@ -13,9 +13,9 @@ when you want scan feedback on every push instead of waiting for a scheduled
 hosted scan.
 
 !!! note "CLI version"
-    The `cloudsec code scan` and `cloudsec code ingest` commands were added
-    after CLI 5.6.2. They require the first `limacharlie` release newer than
-    5.6.2. Check your installation before using the examples:
+    The `cloudsec code` commands used on this page were added after CLI 5.6.2.
+    They require the first `limacharlie` release newer than 5.6.2. Check your
+    installation before using the examples:
 
     ```bash
     limacharlie --version
@@ -36,6 +36,12 @@ You need:
 Authenticate interactively with `limacharlie auth login`, or set `LC_OID` and
 `LC_API_KEY` in CI. Create and scope organization API keys as described in
 [API Keys](../7-administration/access/api-keys.md).
+
+To configure the required policy in the console, open **Cloud Security →
+Policies → Code scanning**, turn on **Enable code scanning**, and add the
+repository's `<owner>/<repository>` name under **Include**. Select at least one
+hosted scanning engine, then save the policy. The policy can select a repository
+even when it does not come from a connected source-control organization.
 
 Repository names use the `<owner>/<repository>` form, for example `acme/api`.
 If a checkout has a hosted Git remote, the local scan command can infer this
@@ -233,7 +239,7 @@ deliberately skipped.
 
 | Problem | What to check |
 |---|---|
-| `No such command 'scan'` or `No such command 'ingest'` | Upgrade to a CLI release newer than 5.6.2. |
+| A `cloudsec code` command is missing | Upgrade to a CLI release newer than 5.6.2. |
 | The CLI cannot identify the repository | Pass `--repo <owner>/<repository>` explicitly. |
 | Docker is not found | Install and start Docker, or upload a document produced by an existing scanner with `code ingest`. |
 | The repository is not recorded | Confirm that the repository matches an enabled code-scanning policy and is within the organization's repository quota. |
