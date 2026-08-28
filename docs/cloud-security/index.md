@@ -26,6 +26,7 @@ rules, Cases, and Outputs you already use.
 | **CAASM** | A merged third-party asset inventory (EDR / IdP / MDM / scanner sources, including LimaCharlie's own sensors) with coverage-gap and device-posture findings — "seen by the identity provider, no EDR". |
 | **Security graph & topology** | An explorable graph of resources, identities, and their relationships (`can_reach`, `exposed_to`, `has_permission_on`, `can_assume`, …) plus an aggregated estate topology view, with a query language and saved queries. |
 | **Runtime fusion** | Bidirectional resolution between LimaCharlie sensors and the cloud assets they run on — pivot from a cloud finding to the live endpoint and back. |
+| **Code security** | Scan connected repositories in the hosted service, run the LimaCharlie scanner inside your own environment, or push existing SARIF and CycloneDX results into the same findings worklist. |
 | **Your own detections** | Author your own CSPM rules — in the same detection format as the built-in pack — and disable, re-severity, or replace any built-in rule for your organization. |
 | **Remediation SLAs** | Declare how long a finding may stay open, per severity, class, account, or owner, and work the worklist by deadline as well as by risk. |
 | **MSSP fleet** | A cross-tenant fleet board that rolls up risk across every organization you manage. |
@@ -84,6 +85,7 @@ map onto the capabilities above:
 | **Attack Surface** | The toxic-combination paths, grouped by shared fix, on an interactive graph canvas — plus a **Query console** tab for ad-hoc graph queries and saved queries. |
 | **Identity & Access** | CIEM — who can reach what, with a per-identity drill-down (**Grants** and **Access map** tabs). |
 | **Data Security** | DSPM — data-store posture and exposure. |
+| **Code** | Repository scan status, code findings, SBOM downloads, and results from hosted or customer-run scanners. |
 | **Inventory** | The estate itself, in four views: **Topology** (the landing view — an aggregated diagram of the estate), **Resources** (the resource system-of-record), **Third-party assets**, and **Sensor coverage** (CAASM). |
 | **Compliance** | Per-control framework assessment and scoped assignments. |
 | **Report** | A print-optimized posture report over the current estate, also reachable from **Overview → View report**. |
@@ -118,6 +120,8 @@ organization you manage.
   provider, run your first sweep.
 - [Connecting Providers](providers.md) — the thirteen connectors, their
   credentials, and what each collects.
+- [Code Scanning & Pushed Results](code-scanning.md) — scan a local checkout,
+  ingest SARIF or CycloneDX, and run the workflow in GitHub Actions.
 - [Provider Setup](provider-setup/index.md) — onboarding walkthrough for every
   platform: exact scopes, how to create the credential, credential-secret
   formats, and first-run troubleshooting.
