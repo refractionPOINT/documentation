@@ -110,12 +110,43 @@ service-account key:
     classification list and does not restrict collection.
 
 !!! danger "Do not flatten the wrapper"
-    Do **not** place `admin_email` / `domain` at the top level next to the
-    service-account-key fields. A secret that looks like a bare service-account
-    key is read as the **no-delegation** form: the impersonation admin is
-    ignored, the token is minted with no subject, and Google returns
-    **`HTTP 400: Invalid Input`** on the first directory call — unless the
-    service account itself holds a Workspace admin role.
+    `admin_email` and `domain` are siblings of `service_account_json`, **not**
+    fields inside it and **not** extra keys alongside `type` / `private_key` /
+    `client_email` at the top level.
+
+    A secret whose top level looks like a service-account key is read as the
+    **no-delegation** form. `admin_email` is then ignored *wherever it sits* —
+    no error, no warning — the token is minted with no subject, and every call
+    goes to Google as the service account itself. The domain-wide delegation
+    you registered is never used.
+
+    The symptom is **not** a validation error. Tokens mint normally, and every
+    Google surface answers with an authorization denial instead:
+
+    ```text
+    core   HTTP 403: Not Authorized to access this resource/api
+    groups HTTP 403: Not Authorized to access this resource/api
+    ```
+
+    That reads exactly like a missing scope, which sends people back to
+    re-audit a delegation setup that is already correct.
+
+!!! tip "Check which form your secret is in"
+    Before storing it, look at the **top-level** keys:
+
+    ```bash
+    jq 'keys' gw-secret.json
+    # want:  ["admin_email", "service_account_json"]   (+ "domain" if you set it)
+    # wrong: [..., "client_email", ..., "private_key", ..., "type", ...]
+    ```
+
+    If `type`, `private_key` or `client_email` appear at the **top** level, the
+    secret is the no-delegation form no matter what else is in it.
+
+    Reusing the same *service account* as the GCP provider is fine. Reusing the
+    same *secret* is not — the GCP provider takes the raw key verbatim, so
+    pointing the Workspace record at it lands in exactly this case. Give
+    Workspace its own secret.
 
 Store it:
 
@@ -131,6 +162,14 @@ Or in the web app: **Organization Settings → Secrets Manager → Add**, name i
 `gw-credentials`, and paste the JSON.
 
 ### Alternative: no delegation
+
+!!! warning "Only if you chose this deliberately"
+    This form is accepted, but it is not the recommended setup and it is the
+    one operators land in **by accident** — it is what a raw service-account
+    key, pasted verbatim, is read as. If `core` is failing with
+    `HTTP 403: Not Authorized to access this resource/api` and you did not set
+    this up on purpose, you are in this form by accident: go back to the
+    [wrapper envelope](#create-the-credentials-secret).
 
 If you would rather not register domain-wide delegation, the **raw
 service-account key JSON** is accepted as the secret on its own — the file GCP
@@ -225,9 +264,26 @@ limacharlie cloudsec provider test --input-file provider.yaml
 | `provider test` error | Cause | Fix |
 |---|---|---|
 | `HTTP 400: Bad Request` on the user check, with every other check failing too | `workspace_customer_id` is not a customer ID Google recognizes — most often the organization's **name** rather than the ID. Google returns this same opaque 400 for every customer-aimed call, which reads as a permission problem and sends people back to re-audit delegation and scopes that are already correct | Set `workspace_customer_id` to `my_customer`, or to the ID from **Admin console → Account → Account settings → Profile**. `provider test` names this explicitly when it can confirm it: the same read is retried against `my_customer`, and if that succeeds the check reports the real customer ID to use |
-| `HTTP 400: Invalid input` on the user check | Secret is missing or mis-nested the impersonation admin → token has no subject → `my_customer` unresolvable | Use the **wrapper** envelope above: nest the key under `service_account_json`, with `admin_email` as a sibling. If you meant the no-delegation setup, grant the service account a Workspace admin role instead |
 | Users or groups from a secondary domain are missing | `domain` is set in the secret, narrowing collection to that one domain | Remove `domain` from the secret; declare internal domains with `internal_domains` on the record |
 | `token mint failed (HTTP 401): scope not granted to the delegated admin` | DWD missing scopes (all-or-nothing mint), a non-`.readonly` variant, or not yet propagated | Register the **full** scope list exactly; wait for propagation; confirm the service account's client ID matches |
-| `core` fails: `HTTP 403: Not Authorized to access this resource/api` | A token **was** minted (so the scopes are registered) but the caller has no Workspace admin authority. Almost always the secret is a **raw service-account key with no `admin_email`** — typically the GCP provider's secret reused verbatim — so nothing is impersonated and the delegation you configured is never used. It is silently accepted as the no-delegation form. Otherwise, `admin_email` names a user who is not a Super Admin | Give Workspace its **own** secret in the wrapper envelope with `admin_email`; leave the GCP provider's secret untouched. Reusing the same *service account* is fine — reusing the same *secret* is not |
+| `core` fails: `HTTP 403: Not Authorized to access this resource/api` | A token **was** minted (so the scopes are registered) but the caller has no Workspace admin authority. Almost always the secret is a **raw service-account key with no `admin_email`** — typically the GCP provider's secret reused verbatim, or the wrapper flattened — so nothing is impersonated and the delegation you configured is never used. It is silently accepted as the no-delegation form. Otherwise, `admin_email` names a user who is not a Super Admin | Give Workspace its **own** secret in the wrapper envelope with `admin_email`; leave the GCP provider's secret untouched. Reusing the same *service account* is fine — reusing the same *secret* is not. Confirm the form with the `jq 'keys'` check [above](#create-the-credentials-secret) |
 | `HTTP 403: … API has not been used in project …` | Admin SDK / Cloud Identity API not enabled | Enable the named API in the service account's project |
 | `reports` fails: `HTTP 401: Access denied. You are not authorized to read activity records.` | The token minted (so the DWD registration itself is fine) but the impersonated admin cannot read the Reports audit stream — either `admin.reports.audit.readonly` is missing from the DWD scope list, or `admin_email` names an admin without the *Reports* privilege | Add the scope to the delegation and impersonate a Super Admin. Optional surface: leaving it as-is drops only Gemini-in-Workspace usage — but it does leave the connection's **Last Sync** badge on Failed, per the note above |
+
+!!! tip "A changed error means you fixed something"
+    These failures **mask each other**, and the **Last Sync** badge says only
+    *Failed* either way — so a real fix can look like no fix at all.
+
+    Google validates the customer ID *before* it checks authorization, so a
+    wrong `workspace_customer_id` answers `400` on every surface and hides
+    whatever the credential would have said. Correct the customer ID and the
+    same connection starts answering `403` instead. That is not a new problem
+    and not a regression: it is the next one, previously unreachable.
+
+    Read the *error text*, not the badge, and re-diagnose against the table
+    above after each change. `provider test` is the fastest way to see it —
+    it reports one check per surface rather than a single verdict.
+
+    Both misconfigurations can be present at once, so budget for two rounds:
+    an unrecognized customer ID and a flattened secret are independent, and
+    fixing either one alone still leaves the connection Failed.
