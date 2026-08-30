@@ -584,10 +584,15 @@ nav:
           - Case-Reviewer Agent: 9-ai-sessions/compliance/case-reviewer-agent.md
           - Gap Analysis: 9-ai-sessions/compliance/gap-analysis.md
 
+  - Email Security (Private Beta):
+      - Command Line Interface: email-security/cli.md
+      - AI Triage: email-security/ai-triage.md
+
   - Cloud Security:
       - Overview: cloud-security/index.md
       - Getting Started: cloud-security/getting-started.md
       - Connecting Providers: cloud-security/providers.md
+      - Code Scanning & Pushed Results: cloud-security/code-scanning.md
       - Provider Setup:
           - Overview: cloud-security/provider-setup/index.md
           - Google Cloud: cloud-security/provider-setup/gcp.md

@@ -105,6 +105,7 @@ scanners:
 severity_floor: LOW
 schedule: daily
 image_sources: ["dockerfile"]
+autofix_registry_access: true
 ```
 
 ```bash
@@ -122,6 +123,7 @@ limacharlie hive set --hive-name cloudsec_policy --key code-scanning \
 | `schedule` | `daily` (the default), `weekly`, or `manual`. |
 | `sast_ruleset` | Which static-analysis pack runs. Leave it empty for the curated default. |
 | `image_sources` | Where the image lane looks: `dockerfile` (the default) or `workloads`. |
+| `autofix_registry_access` | Whether dependency AutoFix may make read-only package-registry metadata requests. Omitted means `true`; set it to `false` to keep AutoFix on the ordinary restricted scan lane. See [Dependency AutoFix](#dependency-autofix-pull-requests). |
 | `pr_checks`, `pr_comments`, `gating.fail_on` | The pull-request lane — see [below](#pull-request-checks-and-merge-gating). |
 
 !!! note "`severity_floor` does not filter yet"
@@ -134,7 +136,10 @@ An org may hold **several** `code_scanning` records and they compose, so you can
 scan a small set of sensitive repositories daily with every engine on, and the
 rest weekly with a narrower set. Composition takes the union of the enabled
 engines, the lowest `severity_floor` and the most frequent schedule, so a record
-can only ever add coverage.
+can generally add coverage. `autofix_registry_access` is deliberately stricter:
+an explicit `false` in **any** matching record wins over `true` or an omitted
+field. This prevents a broader policy from silently widening registry access
+for a repository whose narrower policy disabled it.
 
 !!! note "The glob dialect is the shared Cloud Security one"
     `*`, `?`, `[…]`, `{a,b}`, and a leading `!` for negation *within a list*.
@@ -436,23 +441,31 @@ package flagged **malicious** (the remediation is removal and credential
 rotation, not an upgrade), a vulnerability with **no published fixed version**,
 and an ecosystem with no editor.
 
-**Be aware of the lockfile limitation, because it decides whether the pull
+**Be aware of the lockfile behavior, because it decides whether the pull
 request is complete:**
 
 | Ecosystem | What is edited | Is that the whole fix? |
 |---|---|---|
 | **maven** | `pom.xml` `<version>`, or the property it references | **Yes** — there is no lockfile |
 | **pip** | the pin in `requirements.txt` | **Yes** — there is no lockfile. A `--hash`-pinned requirement, or a lock file from another Python tool, is refused with the reason |
-| **npm** | `package.json`, range operator preserved | **No.** `npm ci` installs from `package-lock.json`, whose entry needs the new version's resolved URL and integrity digest — published facts the checkout does not contain |
-| **go** | the `require` line in `go.mod` | **No.** `go.sum` carries a hash of the module zip, which cannot be computed without downloading it |
+| **npm** | `package.json`, range operator preserved; with registry metadata access, the corresponding `package-lock.json` entry | **Yes by default.** AutoFix uses the registry's published version, resolved tarball URL and integrity metadata to rewrite the lockfile entry alongside the manifest. With `autofix_registry_access: false`, it edits the manifest only and marks the lockfile stale |
+| **go** | the `require` line in `go.mod` | **Yes when there is no `go.sum`.** When one exists, it carries a hash of the module zip that cannot be computed without downloading it, so the pull request marks that lockfile stale |
 
 The sandbox carries no package manager, deliberately: running one would execute
 resolution code — and, for npm, lifecycle scripts — from the dependency graph
-under suspicion. So for npm and go the pull request raises the manifest and its
-body carries an unmissable block with the exact command to run
-(`npm install --package-lock-only --ignore-scripts`, `go mod tidy`). Merging one
-of those believing the lockfile moved would fix nothing, which is why it is
-stated on the pull request rather than in a footnote.
+under suspicion. Default-enabled npm AutoFix instead makes one read-only
+registry metadata request and rewrites the existing lockfile entry directly; it
+does not install or execute the package. The registry-enabled AutoFix job uses a
+separate, tightly scoped egress lane from ordinary scans.
+
+Set `autofix_registry_access: false` when even that metadata request is not
+acceptable. The npm pull request then raises `package.json` only and carries an
+unmissable stale-lockfile warning with
+`npm install --package-lock-only --ignore-scripts`. Go AutoFix remains
+manifest-only by design; when the repository has a `go.sum`, its pull request
+carries the corresponding `go mod tidy` warning. Merging either stale-lockfile
+pull request believing the lock moved would fix nothing, which is why the
+warning appears on the pull request rather than in a footnote.
 
 Nothing is written to your findings when the branch is pushed. A branch is a
 proposal: the finding closes when the merge lands and the next scan of the
@@ -544,6 +557,9 @@ name: Cloud Security code scan
 on:
   push:
     branches: [main]
+
+permissions:
+  contents: read
 
 jobs:
   scan:

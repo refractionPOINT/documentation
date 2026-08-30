@@ -156,9 +156,9 @@ It needs the separate, opt-in **Code Actions** App on the connection — the
 read-only collection App never gains write access. Without it the call is
 refused with `write_app_not_configured`, and with the App but without its
 `contents: write` permission, `write_app_lacks_contents`. See
-[Code Scanning](code-scanning.md#dependency-autofix-pull-requests) for the setup
-and for the npm / go lockfile caveat that decides whether the pull request is
-complete on its own.
+[Code Scanning](code-scanning.md#dependency-autofix-pull-requests) for the setup,
+the npm registry-metadata policy, and the Go lockfile caveat that decide whether
+the pull request is complete on its own.
 
 The tool answers as soon as the request is accepted; **the pull request is the
 result**, so read it in the repository rather than in the tool's reply.
