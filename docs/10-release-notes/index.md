@@ -18,6 +18,35 @@ Release notes for LimaCharlie platform components, organized by date.
 
     For discussion and email notification of the same releases, set the [Platform Updates category](https://community.limacharlie.com/c/platform-updates/5) in the community forum to Watching. For service availability rather than releases, subscribe on the [status page](https://status.limacharlie.io/).
 
+## 2026-08-31
+
+### Endpoint Agent 5.3.8
+
+#### New Features
+
+- New `usb_list_devices` command lists every USB device on the host — device class, manufacturer, product and serial number, and the interfaces each device exposes — so a composite device such as a flash drive that also presents a keyboard is reported as both.
+
+#### Bug Fixes
+
+- On Windows, fixed a severe delay opening files on network shares. The sensor asked Windows for a fully resolved path on every file open, which a network redirector can only answer with one round trip per path component — measured at 6.4 seconds to open a single document over SMB. Network volumes now use the path the application opened with; local volumes are unchanged.
+- On Windows, fixed a possible system crash when non-cached asynchronous file I/O reached the file filter.
+- Fixed process events being attributed to the wrong parent on hosts that create processes rapidly. A process ID reused within roughly 70 seconds of its previous owner's exit could be linked to that dead process, which also prevented the real parent from ever being found.
+- On Windows kernel acquisition, fixed process and registry events being returned out of chronological order once their internal buffer filled.
+- On Windows kernel acquisition, fixed network connection and termination events being discarded a whole buffer at a time — nearly every event in a burst — instead of only the oldest, and with no record of the loss.
+- On Windows, the crash minidump is no longer written into `C:\Windows\System32`, where it accumulated and was never removed; it now goes to the sensor's data directory and is removed on uninstall.
+- Module images staged by a run that ended uncleanly are now cleaned up at startup instead of accumulating in the sensor's data directory.
+- Hardened process enumeration and termination tracking against memory-allocation failure and a malformed process list, either of which could leak memory or crash the sensor.
+- On Windows, fixed payload downloads and artifact uploads failing on hosts whose certificate store does not hold the server's root certificate; the sensor's embedded certificate chain was only consulted when Windows reported a partially trusted chain, not an untrusted root.
+- On Windows 7, fixed a crash while validating a server certificate for payload downloads and artifact uploads.
+
+#### Improvements
+
+- Windows crash reports now carry the full fault detail — exception code, faulting address, the memory address accessed and whether it was read or written, registers, and a stack trace resolvable per module — instead of only an approximate location, so a crash can be diagnosed without a follow-up on the affected host.
+- Sensor modules delivered to a host now appear under a name that identifies the module rather than a generic temporary file name.
+- Updated embedded third-party libraries for HTTP, TLS certificate verification and archive handling.
+
+---
+
 ## 2026-08-24
 
 ### Endpoint Agent 5.3.7
