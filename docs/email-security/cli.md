@@ -1,22 +1,12 @@
 # Command Line Interface
 
-!!! warning "Private beta"
-    Email Security is in **private beta**. It is not generally available, and
-    access is enabled per organization — if the `ext-email-security` extension
-    is not in your catalog, this product is not turned on for you yet.
+--8<-- "includes/email-security-beta.md"
 
-    While it is in beta, expect the surface described here to move: commands,
-    fields and event shapes may change between releases, and they may change in
-    ways that are not backwards compatible. Pin a CLI version if you script
-    against it, and re-read this page after upgrading.
-
-    Talk to us before relying on it in production.
-
-The `limacharlie mailsec` command group covers the whole Email Security API
-surface: the coverage screen, the message index and drawer, the audited raw-EML
-download, campaigns and campaign-wide sweeps, sender profiles, the action audit
-trail, the abuse-mailbox report queue, retro-hunts, custom-rule validation and
-backtest, the connection preflight, and the served onboarding guide.
+The `limacharlie mailsec` command group covers the Email Security API surface:
+the coverage screen, the message index and drawer, the audited raw-EML download,
+campaigns and campaign-wide sweeps, sender profiles, the action audit trail, the
+abuse-mailbox report queue, custom-rule validation and backtest, the connection
+preflight, and the served onboarding guide.
 
 Commands take the global options (`--oid`,
 `--output json|yaml|toon|csv|table|jsonl`, `--filter <jmespath>`,
@@ -35,7 +25,9 @@ limacharlie extension subscribe --name ext-email-security --oid $OID
 
 Provider connections and policy are Hive records — manage them with the
 standard `limacharlie hive` commands (`mailsec_provider`, `mailsec_policy`,
-`dr-mail`). This group is the query, triage and remediation surface.
+`dr-mail`). This group is the query, triage and remediation surface. See
+[Policy Reference](policy.md) for the record contracts and
+[API Reference](api-reference.md) for the routes these commands call.
 
 ## Permissions
 
@@ -45,7 +37,7 @@ trusted with four separable things:
 | Permission | Covers |
 |---|---|
 | `mailsec.get` | Read the product's own view: queue, drawer, campaigns, senders, audit trail |
-| `mailsec.set` | Change detection behaviour and triage state |
+| `mailsec.set` | Change triage state — resolving a user report |
 | `mailsec.act` | Remediate live mail at the provider |
 | `mailsec.get.eml` | Download the original bytes of a message; requires a logged justification |
 
@@ -77,8 +69,8 @@ limacharlie mailsec message action <msg_uuid> --action restore_message
 # Campaigns: one attack, triaged once
 limacharlie mailsec campaign list --min-members 3
 limacharlie mailsec campaign get <campaign_id>
-limacharlie mailsec campaign action <campaign_id> --action quarantine_message           # preview
-limacharlie mailsec campaign action <campaign_id> --action quarantine_message --confirm <campaign_id>
+limacharlie mailsec campaign action <campaign_id> --action quarantine_message              # preview
+limacharlie mailsec campaign action <campaign_id> --action quarantine_message --confirm <token>
 
 # Senders and the audit trail
 limacharlie mailsec sender get cfo@corp.example
@@ -94,11 +86,6 @@ limacharlie mailsec report resolve <report_id> --disposition true_positive
 limacharlie mailsec rule validate --file rule.json --rule-id custom-lookalike
 limacharlie mailsec rule backtest --file rule.json --since 2026-08-01
 
-# Hunts
-limacharlie mailsec hunt create --detect-file detect.json --since 2026-07-01
-limacharlie mailsec hunt get <hunt_id>
-limacharlie mailsec hunt remediate <hunt_id> --action quarantine_message --confirm <hunt_id>
-
 # Analysis and setup
 limacharlie mailsec analyze --file suspect.eml --org-domain corp.example
 limacharlie mailsec connection test gws-exp
@@ -107,16 +94,30 @@ limacharlie mailsec onboarding --provider gworkspace
 
 ## Things worth knowing before you script this
 
-### Actions preview by default
+### Campaign actions preview by default
 
-`campaign action` and `hunt remediate` report what they *would* do and change
-nothing unless you pass `--confirm`. That is deliberate for an operation whose
-blast radius is every mailbox that received an attack.
+`campaign action` reports what it *would* do and changes nothing unless you pass
+`--confirm`. That is deliberate for an operation whose blast radius is every
+mailbox that received an attack.
+
+The preview returns the members, the distinct mailboxes it would touch, and a
+`confirm` **token derived from that exact member set**. Pass the token back —
+**not** the campaign id, which is refused — so a campaign that absorbed new
+members while you were reading the preview fails the confirmation rather than
+sweeping a set nobody approved.
 
 ```bash
-limacharlie mailsec campaign action <campaign_id> --action quarantine_message            # dry run
-limacharlie mailsec campaign action <campaign_id> --action quarantine_message --confirm <campaign_id>
+PREVIEW=$(limacharlie mailsec campaign action "$CAMPAIGN" \
+  --action quarantine_message --output json)
+echo "$PREVIEW" | jq '{member_count, mailbox_count}'
+
+TOKEN=$(echo "$PREVIEW" | jq -r .confirm)
+limacharlie mailsec campaign action "$CAMPAIGN" \
+  --action quarantine_message --confirm "$TOKEN"
 ```
+
+Sweeps are capped at 500 members: above that the answer is a person deciding,
+not a bigger dialog. See [Campaigns](campaigns.md#sweeping-a-campaign).
 
 ### `alert_only` is a success, not a failure
 
@@ -209,8 +210,9 @@ limacharlie mailsec message list \
   --output json --filter 'messages[].{id: msg_uuid, subject: subject}'
 
 # Quarantine every member of a campaign, after reading the preview
-limacharlie mailsec campaign action "$CAMPAIGN" --action quarantine_message --output yaml
-limacharlie mailsec campaign action "$CAMPAIGN" --action quarantine_message --confirm "$CAMPAIGN"
+PREVIEW=$(limacharlie mailsec campaign action "$CAMPAIGN" --action quarantine_message --output json)
+limacharlie mailsec campaign action "$CAMPAIGN" --action quarantine_message \
+  --confirm "$(echo "$PREVIEW" | jq -r .confirm)"
 
 # Resolve the oldest open report
 REPORT=$(limacharlie mailsec report list --status open --oldest-first --limit 1 \

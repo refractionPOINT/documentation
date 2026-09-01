@@ -585,7 +585,21 @@ nav:
           - Gap Analysis: 9-ai-sessions/compliance/gap-analysis.md
 
   - Email Security (Private Beta):
+      - Overview: email-security/index.md
+      - Getting Started: email-security/getting-started.md
+      - Connecting Providers: email-security/providers.md
+      - Provider Setup:
+          - Microsoft 365: email-security/provider-setup/microsoft-365.md
+          - Google Workspace: email-security/provider-setup/google-workspace.md
+      - Messages & Triage: email-security/messages.md
+      - Campaigns: email-security/campaigns.md
+      - User Reports: email-security/user-reports.md
+      - Detections & Verdicts: email-security/detections.md
+      - Custom Rules: email-security/custom-rules.md
+      - Policy Reference: email-security/policy.md
+      - Events & Automation: email-security/automation.md
       - Command Line Interface: email-security/cli.md
+      - API Reference: email-security/api-reference.md
       - AI Triage: email-security/ai-triage.md
 
   - Cloud Security:
