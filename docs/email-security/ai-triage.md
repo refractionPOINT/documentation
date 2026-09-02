@@ -364,32 +364,29 @@ Prove the recipe before trusting it.
     limacharlie ai session get --id <SESSION_ID> --oid "$OID"
     ```
 
-3. **Read the transcript.** Confirm the agent read the message, pivoted sensibly, and
-   reached a conclusion it can defend with evidence. An active agent's quarantine or
-   report-resolution shows up in the message and report timelines and in the
+3. **Read the transcript, and see the write-back.** Confirm the agent read the message,
+   pivoted sensibly, and reached a conclusion it can defend with evidence. When an active
+   agent revises a verdict it lands as a `mode: ai` [verdict revision](detections.md): the
+   message row updates and an `EMAIL_VERDICT` event is emitted, so the queue shows what the
+   agent decided and why, exactly as it does for the scorer. An active agent's quarantine
+   or report-resolution shows up in the message and report timelines and in the
    `EMAIL_ACTION` audit trail.
 
-!!! note "Current write-back limits, stated plainly"
-    Two pieces of the loop are not yet persisted by the server, and the reference playbook
-    is honest about them rather than pretending otherwise:
+!!! warning "The agent needs the `mailsec` CLI in its runtime — the one real gap today"
+    The agent reaches Email Security by driving the `limacharlie mailsec ...` command
+    group, and that command group must be present in the CLI inside the session runtime.
+    The `lc-essentials` plugin installs the `limacharlie` CLI
+    ([runner environment](../9-ai-sessions/runner-environment.md)), but some runtimes still
+    ship a CLI old enough to predate the `mailsec` commands — a runtime on `v5.6.2`, for
+    example, lacks them.
 
-    - The agent's structured rationale is not yet written into the report's AI-summary
-      field, and the message's `mode: ai` [verdict revision](detections.md) and the
-      automatic reporter reply after it are not yet emitted.
-    - The `submit_to_triage` automation action validates but the remediation executor does
-      not yet perform it (it records a failed action), so the third trigger is installed
-      for completeness and begins firing once that action lands. See the
-      [Policy Reference](policy.md).
-
-    Everything else — starting sessions, investigating, quarantining, and resolving reports
-    — works today.
-
-!!! warning "The agent needs a current CLI in its runtime"
-    The agent reaches Email Security through the `limacharlie mailsec ...` command group,
-    which is only present in a recent `limacharlie` CLI. The `lc-essentials` plugin
-    installs the CLI into the session ([runner environment](../9-ai-sessions/runner-environment.md));
-    if the `mailsec` commands are missing, the agent cannot do its job. Confirm your
-    session runtime carries a CLI new enough to include them.
+    When that happens the agent still starts and still investigates through the events and
+    data it is handed, but it cannot run the `mailsec` tools to pivot or act — the
+    reference playbook detects the missing command group, reports the coverage gap, and
+    defers to a human rather than guessing. Confirm your session runtime carries a
+    `limacharlie` CLI new enough to include `limacharlie mailsec`. The server side —
+    verdict write-back, actions, report resolution, and the `submit_to_triage` trigger —
+    is live; this is purely about the CLI shipped in the agent's runtime.
 
 ## Passive first, then active
 
