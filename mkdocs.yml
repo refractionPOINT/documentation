@@ -586,6 +586,7 @@ nav:
 
   - Email Security (Private Beta):
       - Overview: email-security/index.md
+      - How a Message Is Processed: email-security/pipeline.md
       - Getting Started: email-security/getting-started.md
       - Connecting Providers: email-security/providers.md
       - Provider Setup:
@@ -596,6 +597,7 @@ nav:
       - User Reports: email-security/user-reports.md
       - Detections & Verdicts: email-security/detections.md
       - Custom Rules: email-security/custom-rules.md
+      - IOC & Reputation Feeds: email-security/ioc-feeds.md
       - Policy Reference: email-security/policy.md
       - Events & Automation: email-security/automation.md
       - Command Line Interface: email-security/cli.md

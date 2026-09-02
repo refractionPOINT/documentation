@@ -99,6 +99,7 @@ Managing connections and policy uses the ordinary Hive permissions for the
 
 | | |
 |---|---|
+| [How a Message Is Processed](pipeline.md) | The pipeline end to end: what is synchronous, what is stored, and how long it takes |
 | [Getting Started](getting-started.md) | Subscribe, connect a tenant, see the first judged message |
 | [Connecting Providers](providers.md) | The connection record, credentials, scope, ingest modes and the connection test |
 | [Microsoft 365](provider-setup/microsoft-365.md) · [Google Workspace](provider-setup/google-workspace.md) | Per-provider setup |
@@ -107,6 +108,7 @@ Managing connections and policy uses the ordinary Hive permissions for the
 | [User Reports](user-reports.md) | The abuse mailbox and the report SLA queue |
 | [Detections & Verdicts](detections.md) | How a verdict is produced, and what the rules can read |
 | [Custom Rules](custom-rules.md) | Writing, validating and backtesting your own mail rules |
+| [IOC & Reputation Feeds](ioc-feeds.md) | Mirroring a threat feed into a lookup and matching messages against it |
 | [Policy Reference](policy.md) | Every `mailsec_policy` record type |
 | [Events & Automation](automation.md) | The `EMAIL_*` events and wiring them to D&R |
 | [Command Line Interface](cli.md) · [API Reference](api-reference.md) | The programmable surface |
