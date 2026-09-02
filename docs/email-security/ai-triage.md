@@ -3,239 +3,432 @@
 --8<-- "includes/email-security-beta.md"
 
 Email Security produces an explainable verdict for every message. AI triage is the
-optional second pass: an agent that reads the message the way an analyst would, looks up
-what else it can find, and writes a conclusion with the evidence behind it.
+optional second pass: an agent that reads a message the way an analyst would, pivots on
+what else it can find, writes a conclusion with the evidence behind it, and — when you
+allow it — acts.
 
-Nothing on this page is installed for you. It is a set of worked examples you adapt —
-the agent's playbook, what it is allowed to do, and when it runs are all decisions that
-belong to you, and they differ enough between organizations that a default would be
-wrong more often than right.
+Triage is **not** a mailsec feature with a toggle. There is no `enable_triage` button and
+no triage "mode". It is an ordinary [AI Sessions](../9-ai-sessions/index.md) agent that
+watches Email Security events and works under a LimaCharlie API key. Email Security
+provides the raw material an agent needs; the agent, its triggers, its credentials and its
+permissions are a recipe **you** assemble. That decoupling is deliberate: it buys you full
+freedom — bring your own model and provider, start from the reviewed reference and edit its
+prompt, or write your own agent against the same events and API.
 
-## How it works
-
-Triage is an ordinary [AI Session](../9-ai-sessions/index.md) driving the LimaCharlie
-CLI. There is no email-specific AI integration to configure:
-
-- The agent is an `ai_agent` Hive record — the same kind used everywhere else.
-- It reaches Email Security through `limacharlie mailsec ...`, the same commands you
-  use.
-- A D&R rule starts it, using the standard `start ai agent` response action.
-- Budgets, turn limits and model selection are the session's, enforced by AI Sessions.
-
-That choice is deliberate. Because the agent is a normal API client, you can bring your
-own model or provider, run the same playbook by hand to see what it does, and reason
-about its access with the tools you already use for every other integration.
+Nothing on this page is installed for you. This is the recipe, worked end to end, plus a
+reference bundle you copy.
 
 !!! important "What the agent may do is a permission, not a setting"
-    There is no triage "mode". The agent authenticates with an API key, and that key
-    either carries `mailsec.act` or it does not.
+    The agent authenticates with a LimaCharlie API key, and that key either carries
+    `mailsec.act` or it does not.
 
-    A read-only triage agent — one that investigates and reports but never touches
-    mail — is simply an agent whose key lacks `mailsec.act`. The API refuses the action;
-    the agent cannot talk its way past it. **Do not rely on the prompt for this.** A
-    prompt is a request, not a control.
+    A **passive** agent — one that investigates and explains but never moves mail — is
+    simply an agent whose key lacks `mailsec.act`. If it tries to act anyway, the API
+    refuses server-side and writes an audit row; the agent cannot talk its way past it.
+    **Do not rely on the prompt for this.** A prompt is a request, not a control.
+
+## The two halves: substrate vs recipe
+
+Email Security ships the substrate. You assemble the agent on top of it. Keeping the line
+clear is the whole idea, so here it is explicitly.
+
+| Email Security provides (the substrate) | You assemble (the recipe) |
+|---|---|
+| The events an agent triggers on, on the `edr` D&R target: `EMAIL_MESSAGE`, `EMAIL_USER_REPORT`, `EMAIL_ACTION` (and `EMAIL_VERDICT` for the write-back) | The `ai_agent` record — the agent's playbook, model, and session limits |
+| The read/act API and its `limacharlie mailsec ...` CLI the agent drives as tools: message and report reads, sender profiles, `similar`/`campaign` pivots, report resolution, the typed actions, and the verdict write-back | The trigger rules that decide **when** the agent runs |
+| The permission model that decides what any agent may **do**, per credential, server-side, audited | The credentials: an AI provider key and a LimaCharlie API key at whatever permission ceiling you choose |
+| The `submit_to_triage` automation action — the one place mailsec says "this message warrants a look" | Whether the agent may act at all, and what it costs |
+
+The benefit of doing it this way is that the agent is a normal API client. You can run its
+playbook by hand to see exactly what it does, reason about its access with the same tools
+you use for every other integration, and swap any part of it without waiting on a product
+release.
 
 ## Before you start
 
 1. The org is subscribed to `ext-email-security` and has at least one connected mail
-   provider.
-2. You have an AI provider credential (Anthropic, Bedrock, Vertex, OpenAI, …). See
+   provider ingesting mail. See [Connecting Providers](providers.md).
+2. You have an AI provider credential (Anthropic, OpenAI, Google, Bedrock, Vertex, …)
+   available to store as a [Hive Secret](../7-administration/config-hive/secrets.md). See
    [AI Sessions providers](../9-ai-sessions/providers.md).
-3. You have decided whether this agent may act. That is the first real decision, and
-   the rest of the page assumes you have made it.
+3. AI Sessions is available in the org — the `start ai agent` response action and the
+   `ai_agent` Hive record are the platform mechanisms triage is built from. See
+   [D&R-Driven AI Sessions](../9-ai-sessions/dr-sessions.md).
+4. You have decided whether this agent may act. Start passive; that is the recommendation,
+   and the rest of this page assumes you can widen later.
 
-## Step 1 — Create the API key the agent will use
+All commands use `$OID` for the organization id. Set it once:
 
-The key's permissions are the agent's ceiling. Start read-only; you can widen later.
+```bash
+export OID="c1ffedc0-ffee-4a1e-b1a5-abc123def456"
+```
 
-=== "Investigate only (recommended to start)"
+## Step 1 — Store the AI provider credential
+
+The agent runs on a model, and the model needs a key. Store it as a secret so the agent
+record references it rather than embedding it:
+
+```bash
+echo '{"secret": "<your-anthropic-api-key>"}' | \
+  limacharlie hive set --hive-name secret --key mailsec-triage-anthropic \
+  --oid "$OID" --enabled
+```
+
+This example uses Anthropic; any [supported provider](../9-ai-sessions/providers.md) works.
+The provider and model are yours to choose — mailsec neither supplies nor meters them.
+
+## Step 2 — Create the LimaCharlie API key the agent will use
+
+The key's permissions are the agent's ceiling, and they are the *only* thing that makes an
+agent passive or active. Create the key, then store it as a secret too.
+
+=== "Passive (recommended to start)"
+
+    A passive agent investigates and explains. It reads the queue, the parsed message
+    model, sender history, campaigns and the audit trail, and it writes a conclusion — but
+    it cannot move mail. If it tries, the API returns a refusal and audits the attempt.
 
     ```bash
-    limacharlie api-key create --oid $OID \
+    limacharlie api-key create --oid "$OID" \
       --name mailsec-triage \
-      --permissions "mailsec.get,org.get"
+      --permissions "mailsec.get,ai_agent.operate"
     ```
 
-    The agent can read the queue, the message drawer, campaigns, sender profiles and
-    the audit trail. If it tries to quarantine anything the API returns 403.
+    - `mailsec.get` — read reports, the parsed message model, sender profiles, `similar`
+      and campaign pivots, and the action audit trail.
+    - `ai_agent.operate` — the platform guardrail that lets a key be driven by an AI agent
+      at all. Without it the agent cannot start.
 
-=== "Investigate and remediate"
+=== "Active (grant later, once you trust it)"
+
+    An active agent may additionally remediate: quarantine, trash, banner, move-to-spam,
+    restore, act on a whole campaign, and write a `mode: ai` verdict. Every action passes
+    through the same choke point as a human's — your `alert_only` / `enforce` policy
+    applies, and an audit row names the agent as the actor.
 
     ```bash
-    limacharlie api-key create --oid $OID \
+    limacharlie api-key create --oid "$OID" \
       --name mailsec-triage \
-      --permissions "mailsec.get,mailsec.act,org.get"
+      --permissions "mailsec.get,ai_agent.operate,mailsec.act"
     ```
 
-    Adds live remediation. Every action still passes through the same choke point as a
-    human's: your `alert_only` / `enforce` mode applies, and an audit row is written
-    naming the agent as the actor.
+    - `mailsec.act` — the write tier: move mail and write the `mode: ai` verdict.
+    - Add `mailsec.set` as well if you also want the agent to **resolve user reports**
+      (close a report with a disposition). Omit it and the agent investigates reports but
+      leaves them open for a human.
 
-Add `mailsec.get.eml` only if you want the agent to read raw message bytes. That
-permission is separate because it takes the original mail out of your tenant, and every
-use is written to the access audit with a justification.
+!!! warning "Raw EML is deliberately withheld"
+    Do not grant `mailsec.get.eml` to this agent. The playbook is grounded in the parsed
+    message model and indexed evidence, which is enough to triage. Raw message bytes are a
+    separate privileged workflow — every use takes the original mail out of your tenant and
+    is written to the access audit with a justification — and the reference agent is built
+    to work without them.
 
-Store the key as a secret so the agent record can reference it rather than embed it:
+Store the key value as a secret so the agent record can reference it:
 
 ```bash
 echo '{"secret": "<the-api-key-value>"}' | \
-  limacharlie hive set --hive-name secret --key mailsec-triage-key --oid $OID --enabled
+  limacharlie hive set --hive-name secret --key mailsec-triage-key \
+  --oid "$OID" --enabled
 ```
 
-## Step 2 — Write the agent
+## Step 3 — Install the agent record
 
-An `ai_agent` record holds the playbook and the session's limits. This example is a
-starting point — the prompt is the part you should expect to edit.
+The agent is an `ai_agent` Hive record: the playbook, the model, the session limits, and
+references to the two secrets from Steps 1 and 2. Copy the reviewed reference from the
+public [`lc-ai`](https://github.com/refractionPOINT/lc-ai/tree/master/ai-agents/triage/mailsec-triage)
+bundle (`ai-agents/triage/mailsec-triage`) — it ships the agent and all three triggers as
+one reviewable unit — and wire in your credentials.
+
+The record has the following shape. The `prompt` below is abbreviated: copy the full
+playbook from the reference, which walks the agent through resolving the work item,
+gathering bounded corroborating evidence, remediating only when the credential permits it,
+and finishing with an auditable result.
+
+```yaml
+# mailsec-triage-agent.yaml
+lc_api_key_secret: hive://secret/mailsec-triage-key
+anthropic_secret: hive://secret/mailsec-triage-anthropic
+
+name: "Email triage: {{ .msg_uuid }}{{ .report_id }}"
+prompt: |
+  You are an email security analyst triaging one LimaCharlie Email Security
+  message or user report. You receive trigger data containing oid and either
+  msg_uuid or report_id. Always pass --oid <oid> and --output yaml.
+  # ... copy the full reference playbook here ...
+
+data:
+  oid: routing.oid
+debounce_key: "mailsec-triage-{{ .msg_uuid }}{{ .report_id }}"
+
+plugins:
+  - lc-essentials
+
+max_turns: 20
+max_budget_usd: 0.50
+ttl_seconds: 180
+one_shot: true
+permission_mode: bypassPermissions
+```
 
 ```bash
-cat > triage-agent.json <<'EOF'
-{
-  "prompt": "You are an email security analyst triaging a single message. You have the LimaCharlie CLI.\n\nStart with:\n    limacharlie mailsec message get <msg_uuid> --output yaml\n\nThat returns the index row and the parsed message model: sender, recipients, subject, links, attachments, authentication results (SPF/DKIM/DMARC), delivery hops, and the verdict the scoring engine already reached with the signals that fired.\n\nUseful follow-ups, roughly in order of value:\n    limacharlie mailsec message similar <msg_uuid>      who else received this\n    limacharlie mailsec sender get <address-or-domain>  has this sender written before\n    limacharlie mailsec campaign get <campaign_id>      the wider attack, if clustered\n    limacharlie mailsec message list --link-domain <d>  who else got mail linking there\n\nDecide three things:\n1. Is this malicious, suspicious, graymail, benign, or genuinely unclear?\n2. WHY, in terms a responder can verify. Name the evidence: the authentication result, the lookalike domain and what it imitates, the attachment type, the sender's history or lack of one.\n3. How far it reached: how many mailboxes, and whether it clusters into a campaign.\n\nRules for your conclusion:\n- Say what the evidence supports and no more. 'The sending domain was registered four days ago and DMARC failed' is useful. 'This is a targeted APT campaign' is not, unless you can point at what shows it.\n- If you cannot tell, say so and escalate. An honest 'unclear, needs a human, here is what I checked' is a good outcome. A confident wrong verdict is what destroys trust in the whole product.\n- A message a HUMAN reported deserves more care than its score suggests. Someone chose to report it; that is evidence in itself.\n- Never claim you performed an action you did not perform.\n\nIf your key carries mailsec.act you may remediate:\n    limacharlie mailsec message action <msg_uuid> --action quarantine_message --reason \"...\"\n    limacharlie mailsec campaign action <campaign_id> --action quarantine_message --confirm <campaign_id>\nOnly when the evidence is clear-cut. Campaign actions preview unless you pass --confirm; read the preview first. If your key lacks the permission the API will refuse you: that is the organization's decision, not an error to work around. Report your verdict and stop.\n\nFinish with a short structured summary: verdict, the evidence, reach, and what you did or recommend.",
-
-  "name": "Email triage: {{ .msg_uuid }}",
-  "debounce_key": "mailsec-triage-{{ .msg_uuid }}",
-
-  "max_turns": 20,
-  "max_budget_usd": 0.50,
-  "one_shot": true,
-
-  "plugins": ["lc-essentials"],
-
-  "lc_api_key_secret": "hive://secret/mailsec-triage-key",
-  "anthropic_secret": "hive://secret/anthropic-key"
-}
-EOF
-
 limacharlie hive set --hive-name ai_agent --key mailsec-triage \
-  --oid $OID --input-file triage-agent.json --enabled
+  --input-file mailsec-triage-agent.yaml --oid "$OID" --enabled
 ```
 
-What each of the non-obvious fields buys you:
+What the non-obvious fields buy you:
 
 | Field | Why it is there |
 |---|---|
-| `debounce_key` | One session per message. A redelivered notification or a second rule firing on the same message queues behind the first instead of paying twice to reach the same conclusion. |
-| `max_budget_usd` | A per-session ceiling, enforced by AI Sessions. This is the real cost control — there is no separate Email Security budget to keep in sync. |
+| `lc_api_key_secret` | The key from Step 2 — the agent's permission ceiling. Passive or active is decided here, not in the prompt. |
+| `anthropic_secret` | The provider key from Step 1. To run on a different provider, reference that provider's credential instead — see [AI Sessions providers](../9-ai-sessions/providers.md). |
+| `plugins: [lc-essentials]` | Puts the `limacharlie` CLI in the session. Without it the agent has no way to reach anything. |
+| `max_budget_usd` | A per-run ceiling enforced by AI Sessions. This is the real cost control — a run that reaches it stops. There is no separate Email Security budget to keep in sync. |
+| `max_turns`, `ttl_seconds` | Bound how long a single run can go round and how long it can live. |
+| `debounce_key` | One session per work item. A redelivered notification or a second rule firing on the same message queues behind the first instead of paying twice for the same conclusion. |
 | `one_shot` | The session ends when the task is done rather than idling. |
-| `plugins` | `lc-essentials` is what puts the `limacharlie` CLI in the session. Without it the agent has no way to reach anything. |
-| `lc_api_key_secret` | The key from Step 1 — the agent's permission ceiling. |
 
-## Step 3 — Decide when it runs
+The reference record ships **disabled** (`usr_mtd.enabled: false`), so installing it starts
+no session and spends nothing until you enable it. With a passive key, an enabled agent is
+safe — it can only investigate.
 
-The agent does nothing until something starts it. These are two rules worth having, and
-they answer different questions, so keep them separate — you may well want one without
-the other.
+## Step 4 — Install the three triggers
+
+The agent does nothing until something starts it. The reference ships three trigger rules
+in `dr-general`, and they answer three different questions. Install them together with the
+agent: a trigger without its agent fires and fails.
+
+Each rule targets `edr` (the D&R target the `EMAIL_*` events arrive on), responds with
+`start ai agent` pointing at the record from Step 3, and shares **one** org-local
+suppression key capped at 60 starts per minute — a single ceiling on triage volume no
+matter which rule fired. Save each rule to its own file and install it into `dr-general`.
 
 ### On a suspicious message
 
-```bash
-cat > triage-suspicious.json <<'EOF'
-{
-  "detect": {
-    "target": "log",
-    "event": "EMAIL_MESSAGE",
-    "op": "is",
-    "path": "event/verdict/verdict",
-    "value": "suspicious"
-  },
-  "respond": [{
-    "action": "start ai agent",
-    "definition": "mailsec-triage",
-    "debounce_key": "mailsec-triage-{{ .msg_uuid }}",
-    "data": { "msg_uuid": "event/msg_uuid" }
-  }]
-}
-EOF
-
-limacharlie hive set --hive-name dr-general --key mailsec-triage-suspicious \
-  --oid $OID --input-file triage-suspicious.json --enabled
+```yaml
+detect:
+  target: edr
+  event: EMAIL_MESSAGE
+  op: is
+  path: event/verdict/verdict
+  value: suspicious
+respond:
+  - action: start ai agent
+    definition: hive://ai_agent/mailsec-triage
+    debounce_key: "mailsec-triage-{{ .event.msg_uuid }}"
+    data:
+      oid: "{{ .routing.oid }}"
+      msg_uuid: "{{ .event.msg_uuid }}"
+      campaign_id: "{{ .event.campaign_id }}"
+    suppression:
+      is_global: true
+      keys:
+        - mailsec-triage-volume
+      max_count: 60
+      period: 1m
 ```
 
 `suspicious` rather than `malicious` is the interesting choice. A malicious verdict is
 already actionable and your automations handle it. The value of triage is the band where
-the score did **not** settle the question — which is also the band that produces the
-analyst toil.
+the score did **not** settle the question — which is also the band that produces analyst
+toil.
+
+```bash
+limacharlie hive set --hive-name dr-general --key mailsec-triage-suspicious \
+  --input-file mailsec-triage-suspicious.yaml --oid "$OID" --enabled
+```
 
 ### On a user report
 
-```bash
-cat > triage-report.json <<'EOF'
-{
-  "detect": {
-    "target": "log",
-    "event": "EMAIL_USER_REPORT",
-    "op": "exists",
-    "path": "event/report_id"
-  },
-  "respond": [{
-    "action": "start ai agent",
-    "definition": "mailsec-triage",
-    "debounce_key": "mailsec-triage-report-{{ .report_id }}",
-    "data": {
-      "msg_uuid": "event/original_msg_uuid",
-      "report_id": "event/report_id"
-    }
-  }]
-}
-EOF
-
-limacharlie hive set --hive-name dr-general --key mailsec-triage-user-report \
-  --oid $OID --input-file triage-report.json --enabled
+```yaml
+detect:
+  target: edr
+  event: EMAIL_USER_REPORT
+  op: exists
+  path: event/report_id
+respond:
+  - action: start ai agent
+    definition: hive://ai_agent/mailsec-triage
+    debounce_key: "mailsec-triage-report-{{ .event.report_id }}"
+    data:
+      oid: "{{ .routing.oid }}"
+      report_id: "{{ .event.report_id }}"
+      msg_uuid: "{{ .event.original_msg_uuid }}"
+      reported_msg_uuid: "{{ .event.reported_msg_uuid }}"
+      campaign_id: "{{ .event.campaign_id }}"
+    suppression:
+      is_global: true
+      keys:
+        - mailsec-triage-volume
+      max_count: 60
+      period: 1m
 ```
 
-Note there is **no verdict filter** here. Someone took the trouble to report a message,
-which is evidence the scorer did not have. Filtering these by score would discard the
-signal exactly when it disagrees with you — the only time it is interesting.
+There is **no verdict filter** here. Someone took the trouble to report a message, which is
+evidence the scorer did not have. Filtering reports by score would discard the signal
+exactly when it disagrees with you — the only time it is interesting. See
+[User Reports](user-reports.md).
 
-!!! warning "A report can arrive without an original"
+!!! note "A report can arrive without an original"
     `original_msg_uuid` is empty when the reported message was never indexed — the mail
-    predates the connection, or landed in a mailbox outside your scope. The report is
-    still real and still queued. If your prompt assumes an original exists, say what the
-    agent should do when it does not: read the forwarded copy and say the original was
-    not found.
-
-## Step 4 — Try it by hand first
-
-Run the playbook yourself against a real message before letting a rule fire it. It takes
-a minute and it is the difference between finding out now and finding out from a bill:
+    predates the connection, or landed outside protected scope. The reference playbook
+    falls back to `reported_msg_uuid` (the forwarded copy) and says plainly that the
+    original was outside coverage rather than inventing one.
 
 ```bash
-limacharlie mailsec message list --verdict suspicious --limit 5 --oid $OID --output yaml
-limacharlie mailsec message get <msg_uuid> --oid $OID --output yaml
-limacharlie mailsec message similar <msg_uuid> --oid $OID --output yaml
+limacharlie hive set --hive-name dr-general --key mailsec-triage-user-report \
+  --input-file mailsec-triage-user-report.yaml --oid "$OID" --enabled
 ```
 
-If those give you what you would want an analyst to see, the agent will have it too. If
-they do not, fix the prompt before wiring the trigger — a session that has to guess is a
-session that will assert.
+### On an automation asking for a look
 
-## Controlling cost
+```yaml
+detect:
+  target: edr
+  event: EMAIL_ACTION
+  op: and
+  rules:
+    - op: is
+      path: event/action
+      value: submit_to_triage
+    - op: is
+      path: event/result
+      value: ok
+respond:
+  - action: start ai agent
+    definition: hive://ai_agent/mailsec-triage
+    debounce_key: "mailsec-triage-{{ .event.msg_uuid }}"
+    data:
+      oid: "{{ .routing.oid }}"
+      msg_uuid: "{{ .event.msg_uuid }}"
+    suppression:
+      is_global: true
+      keys:
+        - mailsec-triage-volume
+      max_count: 60
+      period: 1m
+```
 
-Everything here is the session's, not Email Security's:
+This rule lets your own [policy automations](policy.md) hand a message to the agent:
+`submit_to_triage` is the action that says "this one warrants a look."
 
-- `max_budget_usd` caps one run.
-- `max_turns` caps how long it can go round.
-- `debounce_key` stops duplicate work on the same message.
-- The trigger rule is what controls **volume**. Widening it from `suspicious` to every
-  message is the single largest cost decision on this page.
+!!! warning "The `result == ok` filter is load-bearing, not decoration"
+    An `alert_only` organization still emits `EMAIL_ACTION` for `submit_to_triage` as an
+    **audit** of the action its policy withheld — with a non-`ok` result. Matching the
+    action alone would start a paid AI session for exactly the organizations that chose not
+    to act. The `result == ok` predicate keeps the trigger honest to the enforcement choke
+    point. Keep it.
 
-To see what you are actually spending, use the AI Sessions
-[cost tracking](../9-ai-sessions/cost-tracking.md) surface. Email Security does not
-meter this separately — one budget in one place, rather than two that can disagree.
+```bash
+limacharlie hive set --hive-name dr-general --key mailsec-triage-submitted \
+  --input-file mailsec-triage-submitted.yaml --oid "$OID" --enabled
+```
+
+## Cost and guardrails
+
+Every cost control lives on the agent and on AI Sessions — none of it is metered or
+mirrored by Email Security, so there is one budget in one place rather than two that can
+disagree.
+
+- `max_budget_usd` hard-stops a single run when it reaches the ceiling.
+- `max_turns` and `ttl_seconds` bound how far and how long one run can go.
+- `debounce_key` stops duplicate work on the same message or report.
+- The **shared 60/1m suppression** bounds total triage volume across all three triggers —
+  the single largest cost lever on this page. Widening the suspicious-message rule to every
+  message, or raising the suppression cap, is the decision to make deliberately.
+- Model and provider are yours; their rates are the provider's.
+
+To see what you are spending, use the AI Sessions
+[cost tracking](../9-ai-sessions/cost-tracking.md) surface.
+
+## Verify it works
+
+Prove the recipe before trusting it.
+
+1. **Run the playbook by hand first.** It takes a minute and it is the difference between
+   finding out now and finding out from a bill:
+
+    ```bash
+    limacharlie mailsec message list --verdict suspicious --limit 5 --oid "$OID" --output yaml
+    limacharlie mailsec message get <msg_uuid> --oid "$OID" --output yaml
+    limacharlie mailsec message similar <msg_uuid> --oid "$OID" --output yaml
+    ```
+
+    If those give you what you would want an analyst to see, the agent will have it too.
+
+2. **Trigger a real run.** Report a test phishing message to the abuse mailbox, or wait for
+   a message to land at the `suspicious` verdict, then watch a session start:
+
+    ```bash
+    limacharlie ai session list --status running --oid "$OID"
+    limacharlie ai session get --id <SESSION_ID> --oid "$OID"
+    ```
+
+3. **Read the transcript.** Confirm the agent read the message, pivoted sensibly, and
+   reached a conclusion it can defend with evidence. An active agent's quarantine or
+   report-resolution shows up in the message and report timelines and in the
+   `EMAIL_ACTION` audit trail.
+
+!!! note "Current write-back limits, stated plainly"
+    Two pieces of the loop are not yet persisted by the server, and the reference playbook
+    is honest about them rather than pretending otherwise:
+
+    - The agent's structured rationale is not yet written into the report's AI-summary
+      field, and the message's `mode: ai` [verdict revision](detections.md) and the
+      automatic reporter reply after it are not yet emitted.
+    - The `submit_to_triage` automation action validates but the remediation executor does
+      not yet perform it (it records a failed action), so the third trigger is installed
+      for completeness and begins firing once that action lands. See the
+      [Policy Reference](policy.md).
+
+    Everything else — starting sessions, investigating, quarantining, and resolving reports
+    — works today.
+
+!!! warning "The agent needs a current CLI in its runtime"
+    The agent reaches Email Security through the `limacharlie mailsec ...` command group,
+    which is only present in a recent `limacharlie` CLI. The `lc-essentials` plugin
+    installs the CLI into the session ([runner environment](../9-ai-sessions/runner-environment.md));
+    if the `mailsec` commands are missing, the agent cannot do its job. Confirm your
+    session runtime carries a CLI new enough to include them.
+
+## Passive first, then active
+
+Run passive to begin — a key with `mailsec.get` and `ai_agent.operate` but **not**
+`mailsec.act`. The agent investigates every trigger and writes a conclusion you can read,
+but it cannot move mail, so a wrong call costs nothing but a session. Watch its transcripts
+until its judgment matches what you would have done by hand.
+
+When you trust it, widen the key to add `mailsec.act` (and `mailsec.set` if it should also
+resolve reports). Nothing else changes — same agent, same triggers, same prompt. Active is
+just a wider ceiling on the same key.
 
 ## Turning it off
 
-Disable the trigger rules. The agent record can stay; it costs nothing when nothing
+Disable the three trigger rules. The agent record can stay; it costs nothing when nothing
 starts it.
 
 ```bash
 limacharlie hive set --hive-name dr-general --key mailsec-triage-suspicious \
-  --oid $OID --input-file triage-suspicious.json --disabled
+  --input-file mailsec-triage-suspicious.yaml --oid "$OID" --disabled
+limacharlie hive set --hive-name dr-general --key mailsec-triage-user-report \
+  --input-file mailsec-triage-user-report.yaml --oid "$OID" --disabled
+limacharlie hive set --hive-name dr-general --key mailsec-triage-submitted \
+  --input-file mailsec-triage-submitted.yaml --oid "$OID" --disabled
 ```
 
-## What the agent writes back
+## Customize, or bring your own
 
-A triage verdict is recorded like any other, with `mode: ai` and the rationale attached,
-so the queue shows what was decided and why. The
-explainability contract applies to the agent exactly as it does to the scoring engine: a
-verdict a responder cannot check is not a verdict they can act on.
+The reference is a starting point, not a black box. Because triage is ordinary AI Sessions
+content, every part of it is yours to change:
+
+- **Edit the prompt.** It is the part you should expect to tune — the pivots you want
+  emphasized, the bar for calling something malicious, how conservatively it should act.
+- **Swap the model or provider.** Reference a different provider credential on the record
+  and pick its model; the tools, permissions, budgets and lifecycle are identical across
+  [providers](../9-ai-sessions/providers.md).
+- **Change when it runs.** The triggers are plain D&R rules. Narrow them, widen them, or
+  add your own — for example a rule that only triages mail to your VIP list.
+- **Write your own agent.** The events (`EMAIL_MESSAGE`, `EMAIL_USER_REPORT`,
+  `EMAIL_ACTION`) and the `limacharlie mailsec ...` API are a stable contract. Any harness
+  that can consume them and hold a LimaCharlie API key can do triage; the reference just
+  saves you the first draft.
