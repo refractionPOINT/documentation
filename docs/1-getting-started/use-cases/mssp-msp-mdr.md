@@ -1,5 +1,8 @@
 # Security Service Providers (MSSP, MSP, MDR)
 
+!!! tip "Looking for a hands-on, opinionated walkthrough?"
+    This page is the high-level platform-fit overview. If you're starting an MSSP today and want a step-by-step playbook — what to connect, starter rules, alerting and case management, multi-tenant access, AI assistance, and Infrastructure-as-Code from day 1 — read [So You Want to Start an MSSP — A Walkthrough](../mssp-walkthrough.md).
+
 The LimaCharlie Agentic SecOps Workspace (ASW) is a unified platform for modern cybersecurity operations.
 
 The ASW delivers core cybersecurity capabilities and infrastructure via a public cloud model: on-demand, pay-per-use, and API-first. For the cybersecurity industry, this is a paradigm shift comparable to how the IT public cloud revolutionized IT.
