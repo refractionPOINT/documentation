@@ -33,6 +33,7 @@ Create the App with **read-only** access on the following. All are
 | **Secrets** | Organization | Organization Actions-secret inventory (**names only**, never values) | `org_secrets` |
 | **Administration** | Repository | Branch-protection posture and deploy-key inventory (deploy keys are also the one activity signal — see [Known limitations](#known-limitations)) | *(collected during the sweep)* |
 | **Secrets** | Repository | Whether a repository has Actions secrets at all — an existence flag, not a name list (org-level secrets are the ones inventoried by name) | *(collected during the sweep)* |
+| **Contents** | Repository | [Code Scanning](../code-scanning.md) — dependencies, secrets, infrastructure-as-code, container images, code weaknesses and licenses. Without it the connector inventories repositories but cannot read them | `code_contents` |
 | **Dependabot alerts** | Repository | GitHub's own **Dependabot** alerts, ingested as findings and deduplicated against LimaCharlie's own dependency scanning; and whether each repository has Dependabot alerts **enabled** | `dependabot_alerts` |
 | **Code scanning alerts**, **Secret scanning alerts** | Repository | GitHub's own **code-scanning** and **secret-scanning** alerts, ingested as findings and deduplicated against LimaCharlie's own analysis | `security_events` |
 
@@ -181,3 +182,31 @@ limacharlie cloudsec provider test --input-file provider.yaml
   public-profile emails only. Organization-level SSO is read normally.
 - An **Actions OIDC trust** with no corresponding cloud-side role is reported
   as a dangling trust rather than a fabricated "can assume" edge.
+
+## Scanning repository contents
+
+Granting **Contents → Read-only** turns on [Code Scanning](../code-scanning.md)
+for the repositories a `code_scanning` policy selects. The permission is an
+increase on an existing installation, so GitHub requires an organization owner to
+**approve the permission request** on the installation page before it takes
+effect; until then, selected repositories report
+`github_app_missing_contents_permission` on the code scan status rather than
+failing silently.
+
+Code is read inside an ephemeral sandbox and never persisted — only the
+normalized finding report leaves it, and discovered secrets are stored as a
+salted hash. **This App stays read-only.** Nothing in the collection or scanning
+path writes to your repositories.
+
+### The separate write App, if you want checks or fix pull requests
+
+Publishing a pull-request check, commenting on a pull request or opening a
+dependency fix pull request needs write access, and that is deliberately **not**
+this App. It is a second, opt-in App — "LimaCharlie Code Actions" — that you
+create, install on the repositories you choose, and name on the provider record
+with `github_actions_app_id`, `github_actions_installation_id` and
+`actions_credentials`. The record is refused if it points at the same App, or the
+same secret, as the read connection.
+
+Its manifest, the permission union it needs and the wiring are in
+[Code Scanning](../code-scanning.md#pull-request-checks-and-merge-gating).
