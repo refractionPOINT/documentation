@@ -16,9 +16,11 @@ These are the events emitted by the endpoint agent for each supported operating 
 | [CLOUD\_NOTIFICATION](#cloud_notification) | ☑️ | ☑️ | ☑️ | ☑️ | ☑️ |
 | [CODE\_IDENTITY](#code_identity) | ☑️ | ☑️ | ☑️ |  |  |
 | [CONNECTED](#connected) | ☑️ | ☑️ | ☑️ | ☑️ | ☑️ |
+| [CONTAINER\_LIST\_REP](#container_list_rep) |  |  | ☑️ |  |  |
 | DATA\_DROPPED | ☑️ | ☑️ | ☑️ |  |  |
 | [DEBUG\_DATA\_REP](#debug_data_rep) |  | ☑️ |  |  |  |
 | DELETED\_SENSOR | ☑️ | ☑️ | ☑️ |  |  |
+| [DIR\_FIND\_REP](#dir_find_rep) | ☑️ | ☑️ | ☑️ |  |  |
 | [DIR\_FINDHASH\_REP](#dir_findhash_rep) | ☑️ | ☑️ | ☑️ |  |  |
 | [DIR\_LIST\_REP](#dir_list_rep) | ☑️ | ☑️ | ☑️ |  |  |
 | [DNS\_REQUEST](#dns_request) | ☑️ | ☑️ | ☑️ | ☑️ | ☑️ |
@@ -33,6 +35,7 @@ These are the events emitted by the endpoint agent for each supported operating 
 | [FILE\_DEL\_REP](#file_del_rep) | ☑️ | ☑️ | ☑️ |  |  |
 | [FILE\_DELETE](#file_delete) | ☑️ | ☑️ | ☑️ |  |  |
 | [FILE\_GET\_REP](#file_get_rep) | ☑️ | ☑️ | ☑️ |  |  |
+| [FILE\_GREP\_REP](#file_grep_rep) | ☑️ | ☑️ | ☑️ |  |  |
 | [FILE\_HASH\_REP](#file_hash_rep) | ☑️ | ☑️ | ☑️ |  |  |
 | [FILE\_INFO\_REP](#file_info_rep) | ☑️ | ☑️ | ☑️ |  |  |
 | [FILE\_MODIFIED](#file_modified) | ☑️ | ☑️ | ☑️ |  |  |
@@ -186,6 +189,43 @@ This event is generated when a Sensor connects to the cloud.
 }
 ```
 
+### CONTAINER\_LIST\_REP
+
+Response event for the `container_list` sensor command.
+
+**Platforms:** Linux
+
+Each entry in `CONTAINERS` describes one container or, when `--include-images`
+is used, one local image (`CONTAINER_IS_IMAGE`). Entries discovered from cgroups
+but not enriched by a container daemon are marked `CONTAINER_IS_PARTIAL`, and
+`CONTAINER_DAEMON_ERRORS` counts the daemon queries that failed.
+
+**Sample Event:**
+
+```json
+{
+  "event": {
+    "CONTAINERS": [
+      {
+        "CONTAINER_ID": "3f2b1c8d9e0a",
+        "CONTAINER_RUNTIME": "docker",
+        "NAME": "web-frontend",
+        "CONTAINER_IMAGE_REF": "nginx:1.27",
+        "CONTAINER_IMAGE_DIGEST": "sha256:9c2b0f...",
+        "CONTAINER_CREATED_AT": 1756684800000,
+        "STATE": "running",
+        "PROCESS_ID": 4812
+      }
+    ],
+    "SCAN_ENTRIES_SCANNED": 217,
+    "CONTAINER_DAEMON_ERRORS": 0,
+    "CONTAINER_IS_PARTIAL": 0,
+    "SCAN_IS_TRUNCATED": 0,
+    "SCAN_STOPPED_REASON": "completed"
+  }
+}
+```
+
 ### DEBUG\_DATA\_REP
 
 Response from a `get_debug_data` request. It reports the sensor's own internal state at the moment of the request, including `PACKAGE_VERSION_STRING` and `PACKAGE_VERSION_GIT` (the running build), `UPTIME`, `PROCESS_ID`, `PERCENT_CPU`, `MEMORY_USAGE`, `TIMEDELTA` (the sensor's clock offset), `KERNEL_ACQ_AVAILABLE`, and, starting with sensor version 5.3.6, `LOSS_ACCOUNTING`.
@@ -237,6 +277,49 @@ It answers a different question than [DATA_DROPPED](platform-events.md#data_drop
 - **Both bounds are enforced on every event that enters the queue**, so eviction can be triggered by either the event count or the byte budget. A host generating many small events reaches `LOSS_MAX_EVENTS` first; a host producing a few very large events reaches `LOSS_MAX_BYTES` first.
 - **A non-zero `LOSS_REFUSED_EVENTS` means individual events too large for the queue**, which is a different problem than an overloaded queue and is not solved by the host catching up on its backlog.
 - **These totals are accounted separately from the counter behind `DATA_DROPPED`.** Requesting `get_debug_data` does not consume or reset anything `DATA_DROPPED` reports, so the two signals can be used together.
+
+### DIR\_FIND\_REP
+
+Response event for the `dir_find` sensor command.
+
+**Platforms:** macOS | Windows | Linux
+
+`FILES` holds one entry per hit. `HASH_MD5`, `HASH_SHA1` and `HASH` (SHA-256)
+are present only when `--with-hashes` was requested. `FILE_IS_DIRECTORY` marks
+directory hits returned by `--include-dirs`.
+
+Every bounded search reports how much work it did, so a truncated result is
+never mistaken for an empty one:
+
+- `SCAN_ENTRIES_SCANNED`: filesystem entries examined
+- `SCAN_FILES_SCANNED`: files considered after the include/exclude expressions
+- `SCAN_BYTES_PROCESSED`: bytes read
+- `SCAN_IS_TRUNCATED`: `1` when a budget stopped the search early
+- `SCAN_STOPPED_REASON`: which budget stopped it
+
+**Sample Event:**
+
+```json
+{
+  "event": {
+    "FILES": [
+      {
+        "FILE_PATH": "C:\\Users\\jdoe\\Downloads\\setup.exe",
+        "FILE_SIZE": 481232,
+        "MODIFICATION_TIME": 1756771200000,
+        "HASH_MD5": "d41d8cd98f00b204e9800998ecf8427e",
+        "HASH_SHA1": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+        "HASH": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
+    "SCAN_ENTRIES_SCANNED": 18422,
+    "SCAN_FILES_SCANNED": 15310,
+    "SCAN_BYTES_PROCESSED": 4812331,
+    "SCAN_IS_TRUNCATED": 0,
+    "SCAN_STOPPED_REASON": "completed"
+  }
+}
+```
 
 ### DIR\_FINDHASH\_REP
 
@@ -443,6 +526,48 @@ Response event for the `file_get` sensor command.
   "FILE_CONTENT": "$BASE64_ENCODED_FILE_CONTENTS",
   "FILE_PATH": "C:\\windows\\system32\\svchost.exe",
   "FILE_SIZE": 78880
+}
+```
+
+### FILE\_GREP\_REP
+
+Response event for the `file_grep` sensor command.
+
+**Platforms:** macOS | Windows | Linux
+
+`FILE_MATCHES` is a flat list of matches across all files. `MATCH_PATTERN_INDEX`
+is the zero-based index of the `--pattern` that matched. `FILE_CONTENT` carries
+the matched bytes plus any requested `--context-bytes`, and is absent entirely
+when the search was run with `--no-content`.
+
+Every bounded search reports how much work it did, so a truncated result is
+never mistaken for an empty one:
+
+- `SCAN_ENTRIES_SCANNED`: filesystem entries examined
+- `SCAN_FILES_SCANNED`: files considered after the include/exclude expressions
+- `SCAN_BYTES_PROCESSED`: bytes read
+- `SCAN_IS_TRUNCATED`: `1` when a budget stopped the search early
+- `SCAN_STOPPED_REASON`: which budget stopped it
+
+**Sample Event:**
+
+```json
+{
+  "event": {
+    "FILE_MATCHES": [
+      {
+        "FILE_PATH": "/home/jdoe/app/.env",
+        "MATCH_PATTERN_INDEX": 0,
+        "MATCH_OFFSET": 412,
+        "MATCH_LENGTH": 21
+      }
+    ],
+    "SCAN_ENTRIES_SCANNED": 9014,
+    "SCAN_FILES_SCANNED": 7781,
+    "SCAN_BYTES_PROCESSED": 33814402,
+    "SCAN_IS_TRUNCATED": 0,
+    "SCAN_STOPPED_REASON": "completed"
+  }
 }
 ```
 
@@ -800,7 +925,13 @@ Provides HTTP Response headers.
 
 ### LOG\_GET\_REP
 
-Response from a `log_get` request.
+Response from a `log_get` or `artifact_get` request.
+
+For a multi-file `artifact_get --root-dir` request, the event carries a `FILES`
+list with one entry per selected file (`FILE_PATH`, `PAYLOAD_ID`, `ERROR`, and
+`ERROR_MESSAGE` on failure), plus the scan accounting fields
+`SCAN_ENTRIES_SCANNED`, `SCAN_FILES_SCANNED`, `SCAN_BYTES_PROCESSED`,
+`SCAN_IS_TRUNCATED` and `SCAN_STOPPED_REASON`.
 
 ### LOG\_LIST\_REP
 

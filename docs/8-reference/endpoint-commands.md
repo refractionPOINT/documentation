@@ -6,8 +6,10 @@ For commands which emit a report/reply event type from the agent, the correspond
 
 | Command | Report/Reply Event | macOS | Windows | Linux | Chrome | Edge |
 | --- | --- | --- | --- | --- | --- | --- |
-| [artifact\_get](#artifact_get) | N/A | ☑️ | ☑️ | ☑️ |  |  |
+| [artifact\_get](#artifact_get) | [LOG\_GET\_REP](edr-events.md#log_get_rep) | ☑️ | ☑️ | ☑️ |  |  |
+| [container\_list](#container_list) | [CONTAINER\_LIST\_REP](edr-events.md#container_list_rep) |  |  | ☑️ |  |  |
 | deny\_tree | N/A | ☑️ | ☑️ | ☑️ |  |  |
+| [dir\_find](#dir_find) | [DIR\_FIND\_REP](edr-events.md#dir_find_rep) | ☑️ | ☑️ | ☑️ |  |  |
 | [dir\_find\_hash](#dir_findhash) | [DIR\_FINDHASH\_REP](edr-events.md#dir_findhash_rep) | ☑️ | ☑️ | ☑️ |  |  |
 | [dir\_list](#dir_list) | [DIR\_LIST\_REP](edr-events.md#dir_list_rep) | ☑️ | ☑️ | ☑️ |  |  |
 | [dns\_resolve](#dns_resolve) | [DNS\_REQUEST](edr-events.md#dns_request) | ☑️ | ☑️ | ☑️ | ☑️ | ☑️ |
@@ -18,6 +20,7 @@ For commands which emit a report/reply event type from the agent, the correspond
 | [exfil\_get](#exfil_get) | [GET\_EXFIL\_EVENT\_REP](edr-events.md#get_exfil_event_rep) | ☑️ | ☑️ | ☑️ |  |  |
 | [file\_del](#file_del) | [FILE\_DEL\_REP](edr-events.md#file_del_rep) | ☑️ | ☑️ | ☑️ |  |  |
 | [file\_get](#file_get) | [FILE\_GET\_REP](edr-events.md#file_get_rep) | ☑️ | ☑️ | ☑️ |  |  |
+| [file\_grep](#file_grep) | [FILE\_GREP\_REP](edr-events.md#file_grep_rep) | ☑️ | ☑️ | ☑️ |  |  |
 | [file\_hash](#file_hash) | [FILE\_HASH\_REP](edr-events.md#file_hash_rep) | ☑️ | ☑️ | ☑️ |  |  |
 | [file\_info](#file_info) | [FILE\_INFO\_REP](edr-events.md#file_info_rep) | ☑️ | ☑️ | ☑️ |  |  |
 | [file\_mov](#file_mov) | [FILE\_MOV\_REP](edr-events.md#file_mov_rep) | ☑️ | ☑️ | ☑️ |  |  |
@@ -68,24 +71,123 @@ For commands which emit a report/reply event type from the agent, the correspond
 
 ### artifact_get
 
-Collect an artifact from a sensor by specifying a file path.
+Collect one or more artifacts from a sensor and upload them to Artifact Collection.
+
+Exactly one of `--file`, `--source` or `--root-dir` must be given. `--root-dir`
+selects the bounded multi-file mode, which walks a directory tree and uploads
+every file matching the include expressions, subject to the budgets below.
 
 **Platforms:** macOS | Windows | Linux
 
 **Parameters:**
 
-- `file` (required): File path to collect from the sensor
-- `type` (optional): Artifact type (e.g., "pcap")
-- `payload_id` (optional): Idempotent payload ID for the request (auto-generated if not provided)
-- `days_retention` (optional): Number of days the artifact should be retained (default: 30)
-- `is_ignore_cert` (optional): If set, the sensor will ignore SSL certificate mismatches during artifact upload
+- `--file`: Single file path to collect from the sensor
+- `--source`: OS-specific artifact source to collect (for example a Windows Event Log channel)
+- `--root-dir`: Root directory for bounded multi-file retrieval
+- `-x, --file-exp` (optional): Glob to retrieve under `--root-dir`, repeatable; defaults to all files
+- `-X, --exclude-exp` (optional): Glob to exclude under `--root-dir`, repeatable
+- `-d, --depth` (optional): Maximum directory depth for multi-file retrieval (default: 6, max: 32)
+- `--max-files` (optional): Maximum files to upload (default: 25, max: 100)
+- `--max-file-size` (optional): Maximum size in bytes of each uploaded file (default: 8388608, max: 67108864)
+- `--max-total-bytes` (optional): Maximum bytes uploaded across all files (default: 67108864, max: 1073741824)
+- `--max-files-scanned` (optional): Maximum filesystem entries to examine (default: 250000)
+- `--max-seconds` (optional): Wall-clock discovery budget in seconds (default: 120, max: 900)
+- `--type` (optional): Artifact type (e.g., "pcap")
+- `--payload-id` (optional): Idempotent payload ID for the request (auto-generated if not
+  provided). Not valid with `--root-dir`; multi-file mode generates one payload ID per file.
+- `--days-retention` (optional): Number of days the artifact should be retained (default: 30)
+- `--is-ignore-cert` (optional): If set, the sensor will ignore SSL certificate mismatches during artifact upload
 
-**Response Event:** FILE_GET_REP
+**Response Event:** LOG_GET_REP
+
+**Usage Examples:**
+
+```bash
+limacharlie task send --sid <SID> --task 'artifact_get --file "C:\\Windows\\System32\\drivers\\etc\\hosts"'
+```
+
+Collect every `.conf` file under `/etc`, at most 10 files and 8 MB in total:
+
+```bash
+limacharlie task send --sid <SID> --task 'artifact_get --root-dir /etc -x "*.conf" --max-files 10 --max-total-bytes 8388608'
+```
+
+**Sample Response (multi-file):**
+
+```json
+{
+  "event": {
+    "FILES": [
+      {
+        "FILE_PATH": "/etc/ssh/sshd_config",
+        "PAYLOAD_ID": "4e6f2f1a-2c3d-4b5e-8a90-1f2e3d4c5b6a",
+        "ERROR": 200
+      }
+    ],
+    "SCAN_ENTRIES_SCANNED": 812,
+    "SCAN_FILES_SCANNED": 137,
+    "SCAN_BYTES_PROCESSED": 48213,
+    "SCAN_IS_TRUNCATED": 0,
+    "SCAN_STOPPED_REASON": "completed"
+  }
+}
+```
+
+Each entry reports the per-file upload status in `ERROR` (200 on success), with
+`ERROR_MESSAGE` present when an individual file fails. A partial run still
+returns the files it did upload.
+
+---
+
+### container_list
+
+Inventory the containers running on a Linux host, and optionally the local
+container images, across the Docker, containerd, Podman and CRI-O runtimes.
+
+Containers are discovered from cgroups, so they are reported even when no
+container daemon is reachable. When a Docker or Podman daemon is available the
+records are enriched with the image reference, digest, state and creation time;
+records that could not be enriched are marked `CONTAINER_IS_PARTIAL`.
+
+**Platforms:** Linux
+
+**Parameters:**
+
+- `--runtime` (optional): Runtime to query: `docker`, `containerd`, `podman`, `crio`, or `all` (default: `all`)
+- `--include-images` (optional): Also list local Docker/Podman images
+- `--include-stopped` (optional): Also list stopped Docker/Podman containers
+- `--limit` (optional): Maximum total records (default: 500, max: 5000)
+
+**Response Event:** CONTAINER_LIST_REP
 
 **Usage Example:**
 
 ```bash
-limacharlie sensor task <SID> artifact_get --file "C:\\Windows\\System32\\drivers\\etc\\hosts"
+limacharlie task send --sid <SID> --task 'container_list --runtime docker --include-images'
+```
+
+**Sample Response:**
+
+```json
+{
+  "event": {
+    "CONTAINERS": [
+      {
+        "CONTAINER_ID": "3f2b1c8d9e0a",
+        "CONTAINER_RUNTIME": "docker",
+        "NAME": "web-frontend",
+        "CONTAINER_IMAGE_REF": "nginx:1.27",
+        "CONTAINER_IMAGE_DIGEST": "sha256:9c2b0f...",
+        "STATE": "running",
+        "PROCESS_ID": 4812
+      }
+    ],
+    "SCAN_ENTRIES_SCANNED": 217,
+    "CONTAINER_DAEMON_ERRORS": 0,
+    "CONTAINER_IS_PARTIAL": 0,
+    "SCAN_IS_TRUNCATED": 0
+  }
+}
 ```
 
 ---
@@ -122,6 +224,69 @@ limacharlie task send --sid <SID> --task 'dir_list "C:\\Windows\\System32" "*.ex
         "LAST_MODIFIED": 1579000000
       }
     ]
+  }
+}
+```
+
+---
+
+### dir_find
+
+Search a directory tree for files matching metadata criteria, and optionally
+return their hashes. This is the general form of
+[dir\_findhash](#dir_findhash): it can filter on size, modification time and
+hash at once, and it is bounded by explicit time, entry and byte budgets so a
+search cannot run away on a large filesystem.
+
+**Platforms:** macOS | Windows | Linux
+
+**Parameters:**
+
+- `rootDir` (positional, required): Root directory to search
+- `-x, --file-exp` (optional): Glob to include, repeatable; defaults to all files
+- `-X, --exclude-exp` (optional): Glob to exclude, repeatable; matching directories are pruned
+- `-d, --depth` (optional): Maximum directory depth (default: 1, max: 32)
+- `--min-size` (optional): Minimum file size in bytes
+- `--max-size` (optional): Maximum file size in bytes
+- `--newer-than` (optional): Only files modified after this Unix epoch second
+- `--older-than` (optional): Only files modified before this Unix epoch second
+- `--hash` (optional): MD5, SHA-1 or SHA-256 digest to match, repeatable
+- `--with-hashes` (optional): Return MD5, SHA-1 and SHA-256 for every hit
+- `--limit` (optional): Maximum results (default: 1000, max: 10000)
+- `--max-files-scanned` (optional): Maximum filesystem entries to examine (default: 250000, max: 5000000)
+- `--max-seconds` (optional): Wall-clock budget in seconds (default: 120, max: 900)
+- `--max-bytes` (optional): Maximum bytes read for hashing (default: 1073741824)
+- `--one-file-system` (optional): Do not cross filesystem boundaries
+- `--include-dirs` (optional): Also return matching directories
+
+**Response Event:** DIR_FIND_REP
+
+**Usage Example:**
+
+```bash
+limacharlie task send --sid <SID> --task 'dir_find "C:\\Users" -x "*.exe" -X "AppData" --depth 4 --newer-than 1756684800 --with-hashes'
+```
+
+**Sample Response:**
+
+```json
+{
+  "event": {
+    "FILES": [
+      {
+        "FILE_PATH": "C:\\Users\\jdoe\\Downloads\\setup.exe",
+        "FILE_SIZE": 481232,
+        "MODIFICATION_TIME": 1756771200000,
+        "HASH_MD5": "d41d8cd98f00b204e9800998ecf8427e",
+        "HASH_SHA1": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+        "HASH": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
+    "SCAN_ENTRIES_SCANNED": 18422,
+    "SCAN_FILES_SCANNED": 15310,
+    "SCAN_BYTES_PROCESSED": 4812331,
+    "SCAN_IS_TRUNCATED": 0,
+    "SCAN_STOPPED_REASON": "completed"
   }
 }
 ```
@@ -289,6 +454,73 @@ Retrieve a file from the endpoint and upload it to LimaCharlie cloud storage.
 ```bash
 limacharlie sensor task <SID> file_get --file_path "C:\\Windows\\System32\\calc.exe"
 ```
+
+---
+
+### file_grep
+
+Search the contents of files under a directory tree for one or more literal
+byte patterns. Patterns are literal, not regular expressions.
+
+Use `--no-content` to return only the path, pattern index, offset and length of
+each match and never any file bytes. This lets an operator confirm that a
+secret or indicator is present on a host without exfiltrating the surrounding
+data.
+
+**Platforms:** macOS | Windows | Linux
+
+**Parameters:**
+
+- `rootDir` (positional, required): Root directory to search
+- `-p, --pattern` (required): Literal byte pattern to find, repeatable
+- `-x, --file-exp` (optional): Glob to include, repeatable; defaults to all files
+- `-X, --exclude-exp` (optional): Glob to exclude, repeatable; matching directories are pruned
+- `-d, --depth` (optional): Maximum directory depth (default: 1, max: 32)
+- `-i, --ignore-case` (optional): Use ASCII case-insensitive matching
+- `--context-bytes` (optional): Surrounding bytes to return for each match (max: 4096)
+- `--no-content` (optional): Return only path and offsets, never file bytes
+- `--max-file-size` (optional): Maximum file size to read in bytes (default: 16777216, max: 67108864)
+- `--max-matches-per-file` (optional): Maximum matches returned per file (default: 10, max: 1000)
+- `--limit` (optional): Maximum total matches (default: 500, max: 10000)
+- `--max-files-scanned` (optional): Maximum filesystem entries to examine (default: 250000, max: 5000000)
+- `--max-seconds` (optional): Wall-clock budget in seconds (default: 120, max: 900)
+- `--max-bytes` (optional): Maximum bytes read (default: 1073741824)
+- `--binary` (optional): Also scan files that contain NUL bytes
+- `--one-file-system` (optional): Do not cross filesystem boundaries
+
+**Response Event:** FILE_GREP_REP
+
+**Usage Example:**
+
+```bash
+limacharlie task send --sid <SID> --task 'file_grep /home -x "*.env" -p "AWS_SECRET_ACCESS_KEY" --depth 5 --no-content'
+```
+
+**Sample Response:**
+
+```json
+{
+  "event": {
+    "FILE_MATCHES": [
+      {
+        "FILE_PATH": "/home/jdoe/app/.env",
+        "MATCH_PATTERN_INDEX": 0,
+        "MATCH_OFFSET": 412,
+        "MATCH_LENGTH": 21
+      }
+    ],
+    "SCAN_ENTRIES_SCANNED": 9014,
+    "SCAN_FILES_SCANNED": 7781,
+    "SCAN_BYTES_PROCESSED": 33814402,
+    "SCAN_IS_TRUNCATED": 0,
+    "SCAN_STOPPED_REASON": "completed"
+  }
+}
+```
+
+`MATCH_PATTERN_INDEX` is the zero-based index of the `--pattern` that matched.
+`FILE_CONTENT` carries the matched bytes plus any requested context, and is
+absent when `--no-content` is used.
 
 ---
 
