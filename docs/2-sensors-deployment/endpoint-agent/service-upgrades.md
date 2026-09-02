@@ -70,7 +70,7 @@ Instead of running an installer on the host, you can task a sensor to upgrade it
 The native upgrade procedure is currently in beta, so the `--beta` flag is required; the command is rejected without it.
 
 ```bash
-limacharlie sensor task <SID> upgrade_core --beta
+limacharlie task send --sid <SID> --task 'upgrade_core --beta'
 ```
 
 Optional flags:
