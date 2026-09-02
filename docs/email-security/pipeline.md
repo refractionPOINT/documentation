@@ -135,7 +135,7 @@ organizations want to own detection entirely through their own `dr-mail` rules,
 and forcing our opinions into their verdicts would make that impossible.
 
 ```yaml
-# hive: mailsec_policy, record name: 00-managed-rules
+# managed-rules.yaml, saved as mailsec_policy record 00-managed-rules
 policy_type: managed_rules
 enabled: false
 ```
