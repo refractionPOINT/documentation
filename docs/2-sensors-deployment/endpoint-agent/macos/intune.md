@@ -26,7 +26,7 @@ Set up the installation script by following these steps:
 
    3. Deployment channel: Device channel
 
-   4. Configuration profile file: Download and use the [LimaCharlie MDM profile](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/MDM_profiles/LimaCharlie.mobileconfig.zip).
+   4. Configuration profile file: Download and use the [LimaCharlie MDM profile](https://docs.limacharlie.io/assets/files/rphcp.mobileconfig.zip). See [MDM Configuration Profiles](mdm-profiles.md) for what it contains.
 
 Set the Assignments to include all users who need the profile installed.
 
