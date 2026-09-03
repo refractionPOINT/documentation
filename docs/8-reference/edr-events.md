@@ -2088,7 +2088,10 @@ Each entry describes the device and the interfaces it exposes:
   as integers rather than the hexadecimal notation vendor lists use
 - `USB_DEVICE_CLASS`: the device-level USB class, `0` when the class is declared
   per interface instead
-- `USB_USB_VERSION`: the USB revision in binary-coded decimal, so `300` is USB 3.0
+- `USB_USB_VERSION`: the USB revision as hundredths, so `300` is USB 3.0 and
+  `210` is USB 2.1. The agent decodes the device's binary-coded-decimal
+  descriptor into this form, and reports `0` when the descriptor is not valid
+  BCD rather than guessing at it.
 - `USB_MANUFACTURER_STRING`, `USB_PRODUCT_STRING`, `USB_SERIAL_NUMBER`: the
   descriptor strings, each omitted entirely when the device does not report it
 - `USB_INTERFACES`: one entry per interface, with `USB_INTERFACE_CLASS`,
