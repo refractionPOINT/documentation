@@ -50,6 +50,7 @@ For commands which emit a report/reply event type from the agent, the correspond
 | [os\_version](#os_version) | [OS\_VERSION\_REP](edr-events.md#os_version_rep) | ☑️ | ☑️ | ☑️ |  |  |
 | put | [RECEIPT](edr-events.md#receipt) | ☑️ | ☑️ | ☑️ |  |  |
 | [rejoin\_network](#rejoin_network) | [REJOIN\_NETWORK](edr-events.md#rejoin_network) | ☑️ | ☑️ | ☑️ | ☑️ | ☑️ |
+| [repo\_list](#repo_list) | [REPO\_LIST\_REP](edr-events.md#repo_list_rep) | ☑️ | ☑️ | ☑️ |  |  |
 | restart | N/A | ☑️ | ☑️ | ☑️ |  |  |
 | [run](#run) | N/A | ☑️ | ☑️ | ☑️ |  |  |
 | seal |  |  | ☑️ |  |  |  |
@@ -57,6 +58,7 @@ For commands which emit a report/reply event type from the agent, the correspond
 | set\_performance\_mode | N/A | ☑️ | ☑️ | ☑️ |  |  |
 | shutdown |  | ☑️ | ☑️ | ☑️ |  |  |
 | [uninstall](#uninstall) | N/A | ☑️ | ☑️ | ☑️ |  |  |
+| [usb\_list\_devices](#usb_list_devices) | [USB\_DEVICE\_LIST\_REP](edr-events.md#usb_device_list_rep) | ☑️ | ☑️ | ☑️ |  |  |
 | [upgrade\_core](#upgrade_core) | N/A | ☑️ | ☑️ | ☑️ |  |  |
 | [yara\_scan](#yara_scan) | [YARA\_DETECTION](edr-events.md#yara_detection) | ☑️ | ☑️ | ☑️ |  |  |
 | yara\_update | N/A | ☑️ | ☑️ | ☑️ |  |  |
@@ -128,7 +130,7 @@ limacharlie task send --sid <SID> --task 'artifact_get --root-dir /etc -x "*.con
     "SCAN_FILES_SCANNED": 137,
     "SCAN_BYTES_PROCESSED": 48213,
     "SCAN_IS_TRUNCATED": 0,
-    "SCAN_STOPPED_REASON": "completed"
+    "SCAN_STOPPED_REASON": "complete"
   }
 }
 ```
@@ -173,11 +175,11 @@ limacharlie task send --sid <SID> --task 'container_list --runtime docker --incl
   "event": {
     "CONTAINERS": [
       {
-        "CONTAINER_ID": "3f2b1c8d9e0a",
+        "CONTAINER_ID": "b66423fa5cb15cb7dad7ee901e91d4e022916fdc977ba43c30b8ca2f953e8d79",
         "CONTAINER_RUNTIME": "docker",
         "NAME": "web-frontend",
         "CONTAINER_IMAGE_REF": "nginx:1.27",
-        "CONTAINER_IMAGE_DIGEST": "sha256:9c2b0f...",
+        "CONTAINER_IMAGE_DIGEST": "9c2b0f6cd1a54e5f3f8c2b1d7e4a09b3c65d8e2f1a4b7c093d6e5f8a2b1c4d7e0",
         "STATE": "running",
         "PROCESS_ID": 4812
       }
@@ -277,16 +279,16 @@ limacharlie task send --sid <SID> --task 'dir_find "C:\\Users" -x "*.exe" -X "Ap
         "FILE_PATH": "C:\\Users\\jdoe\\Downloads\\setup.exe",
         "FILE_SIZE": 481232,
         "MODIFICATION_TIME": 1756771200000,
-        "HASH_MD5": "d41d8cd98f00b204e9800998ecf8427e",
-        "HASH_SHA1": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
-        "HASH": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        "HASH_MD5": "77a097c81e679798f68f968be1498620",
+        "HASH_SHA1": "55c92f35ad24bc59ca2ea74028203ae3a3a7d493",
+        "HASH": "aeb6310a1ac57c1beb98d74361c58b056522780c1b4d60e7a6c605ecaed47e01"
       }
     ],
     "SCAN_ENTRIES_SCANNED": 18422,
     "SCAN_FILES_SCANNED": 15310,
     "SCAN_BYTES_PROCESSED": 4812331,
     "SCAN_IS_TRUNCATED": 0,
-    "SCAN_STOPPED_REASON": "completed"
+    "SCAN_STOPPED_REASON": "complete"
   }
 }
 ```
@@ -506,14 +508,15 @@ limacharlie task send --sid <SID> --task 'file_grep /home -x "*.env" -p "AWS_SEC
         "FILE_PATH": "/home/jdoe/app/.env",
         "MATCH_PATTERN_INDEX": 0,
         "MATCH_OFFSET": 412,
-        "MATCH_LENGTH": 21
+        "MATCH_LENGTH": 21,
+        "FILE_CONTENT": "REJfSE9TVD0xMC4wLjAuNQpleHBvcnQgQVdTX1NFQ1JFVF9BQ0NFU1NfS0VZPXdKYWxyWFV0bkZFTUkvSzdNREVORwoj"
       }
     ],
     "SCAN_ENTRIES_SCANNED": 9014,
     "SCAN_FILES_SCANNED": 7781,
     "SCAN_BYTES_PROCESSED": 33814402,
     "SCAN_IS_TRUNCATED": 0,
-    "SCAN_STOPPED_REASON": "completed"
+    "SCAN_STOPPED_REASON": "complete"
   }
 }
 ```
@@ -1140,6 +1143,88 @@ limacharlie sensor task <SID> rejoin_network
 
 ---
 
+### repo_list
+
+Report the git working copies present on a host, and what each one is: its
+checked-out revision, its remotes and, optionally, its declared submodules. Use
+it to find source checkouts on machines that are not meant to hold code, or to
+inventory which repositories an engineering fleet has cloned.
+
+The search is bounded by explicit depth, repository, entry and time budgets so
+it cannot run away on a large filesystem.
+
+**Platforms:** macOS | Windows | Linux
+
+**Parameters:**
+
+- `-r, --root` (optional): Root directory to search from, repeatable. When
+  omitted the agent uses its own per-platform roots, described below, and never
+  scans the whole volume. An explicitly empty root is rejected rather than
+  ignored.
+- `-d, --depth` (optional): Maximum directory depth below each root (default: 6, max: 32)
+- `--with-submodules` (optional): Also report the submodules declared in each repository's `.gitmodules`
+- `--max-repos` (optional): Maximum repositories to report before stopping (default: 200, max: 5000)
+- `--max-entries` (optional): Maximum filesystem entries to examine before stopping (default: 500000)
+- `--max-seconds` (optional): Wall-clock budget in seconds (default: 120, max: 900)
+
+Out-of-range budgets are rejected when the command is issued rather than being
+silently clamped, so a value the agent would not honour fails at the prompt.
+
+With no `--root`, the default roots are:
+
+| Platform | Default roots |
+| --- | --- |
+| Windows | `C:\Users` |
+| macOS | `/Users`, `/opt`, `/srv` |
+| Linux | `/home`, `/root`, `/opt`, `/srv` |
+
+**Response Event:** REPO_LIST_REP
+
+**Usage Example:**
+
+```bash
+limacharlie task send --sid <SID> --task 'repo_list --with-submodules --depth 4'
+```
+
+Restricting the search to specific roots:
+
+```bash
+limacharlie task send --sid <SID> --task 'repo_list -r "C:\\Users\\jdoe\\src" -r "D:\\code" --max-repos 50'
+```
+
+**Sample Response:**
+
+```json
+{
+  "event": {
+    "REPOSITORY_LIST": [
+      {
+        "DIRECTORY_PATH": "C:\\Users\\jdoe\\src\\lc-test-repo",
+        "REPOSITORY_GIT_DIR": "C:\\Users\\jdoe\\src\\lc-test-repo\\.git",
+        "REPOSITORY_HEAD_COMMIT": "0123456789abcdef0123456789abcdef01234567",
+        "REPOSITORY_HEAD_REF": "refs/heads/main",
+        "MODIFICATION_TIME": 1756771200000,
+        "REPOSITORY_REMOTES": [
+          {
+            "NAME": "origin",
+            "URL": "https://github.com/example/lc-test-repo.git"
+          }
+        ]
+      }
+    ],
+    "DIRECTORY_LIST_DEPTH": 6,
+    "SCAN_ENTRIES_SCANNED": 1195,
+    "SCAN_MAX_ENTRIES": 500000,
+    "SCAN_MAX_RESULTS": 200,
+    "SCAN_MAX_SECONDS": 120,
+    "SCAN_IS_TRUNCATED": 0,
+    "SCAN_STOPPED_REASON": "complete"
+  }
+}
+```
+
+---
+
 ### run
 
 Execute a command or script on the endpoint (out-of-band execution).
@@ -1203,6 +1288,64 @@ By default, the sensor uninstalls itself by running a shell command that invokes
 ```bash
 limacharlie sensor task <SID> uninstall --is-confirmed
 limacharlie sensor task <SID> uninstall --is-confirmed --native
+```
+
+---
+
+### usb_list_devices
+
+List every USB device currently attached to the host, whatever its class. This
+is the general form of `usb_list_keys`, which reports only mass-storage keys.
+The command takes no arguments.
+
+**Platforms:** macOS | Windows | Linux
+
+**Parameters:** None
+
+**Response Event:** USB_DEVICE_LIST_REP
+
+**Usage Example:**
+
+```bash
+limacharlie task send --sid <SID> --task 'usb_list_devices'
+```
+
+**Sample Response:**
+
+```json
+{
+  "event": {
+    "USB_DEVICES": [
+      {
+        "USB_VENDOR_ID": 2385,
+        "USB_PRODUCT_ID": 5734,
+        "USB_DEVICE_CLASS": 0,
+        "USB_USB_VERSION": 300,
+        "USB_MANUFACTURER_STRING": "Kingston",
+        "USB_SERIAL_NUMBER": "BAD0USB",
+        "USB_INTERFACES": [
+          {
+            "USB_INTERFACE_CLASS": 8,
+            "USB_INTERFACE_SUBCLASS": 6,
+            "USB_INTERFACE_PROTOCOL": 80
+          }
+        ]
+      }
+    ],
+    "ERROR": 0
+  }
+}
+```
+
+A host with no USB devices attached returns an empty list, not an error:
+
+```json
+{
+  "event": {
+    "USB_DEVICES": [],
+    "ERROR": 0
+  }
+}
 ```
 
 ---
