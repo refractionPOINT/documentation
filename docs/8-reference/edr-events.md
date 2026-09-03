@@ -90,6 +90,7 @@ These are the events emitted by the endpoint agent for each supported operating 
 | [REGISTRY\_WRITE](#registry_write) |  | ☑️ |  |  |  |
 | [REJOIN\_NETWORK](#rejoin_network) | ☑️ | ☑️ | ☑️ | ☑️ |  |
 | [REMOTE\_PROCESS\_HANDLE](#remote_process_handle) |  | ☑️ |  |  |  |
+| [REPO\_LIST\_REP](#repo_list_rep) | ☑️ | ☑️ | ☑️ |  |  |
 | [SEGREGATE\_NETWORK](#segregate_network) | ☑️ | ☑️ | ☑️ | ☑️ |  |
 | [SENSITIVE\_PROCESS\_ACCESS](#sensitive_process_access) |  | ☑️ |  |  |  |
 | [SERVICE\_CHANGE](#service_change) | ☑️ | ☑️ | ☑️ |  |  |
@@ -103,6 +104,7 @@ These are the events emitted by the endpoint agent for each supported operating 
 | [TERMINATE\_UDP4\_CONNECTION](#terminate_udp4_connection) | ☑️ | ☑️ | ☑️ |  |  |
 | [TERMINATE\_UDP6\_CONNECTION](#terminate_udp6_connection) | ☑️ | ☑️ | ☑️ |  |  |
 | [THREAD\_INJECTION](#thread_injection) |  | ☑️ |  |  |  |
+| [USB\_DEVICE\_LIST\_REP](#usb_device_list_rep) | ☑️ | ☑️ | ☑️ |  |  |
 | [USER\_LOGIN](#user_login) | ☑️ |  |  |  |  |
 | [USER\_LOGOUT](#user_logout) | ☑️ |  |  |  |  |
 | [USER\_OBSERVED](#user_observed) | ☑️ | ☑️ | ☑️ |  |  |
@@ -200,6 +202,18 @@ is used, one local image (`CONTAINER_IS_IMAGE`). Entries discovered from cgroups
 but not enriched by a container daemon are marked `CONTAINER_IS_PARTIAL`, and
 `CONTAINER_DAEMON_ERRORS` counts the daemon queries that failed.
 
+`CONTAINER_ID` is the full 64-character identifier, not the shortened form the
+Docker CLI prints. `CONTAINER_IMAGE_DIGEST` is a bare 64-character digest with
+no `sha256:` prefix.
+
+The agent enriches records by querying the Docker and Podman sockets. It has no
+containerd or CRI-O client, so containers under those runtimes are discovered by
+scanning cgroups alone and are always reported as partial, carrying
+`CONTAINER_ID`, `CONTAINER_RUNTIME`, `PROCESS_ID` and `STATE` but no name or
+image reference. On a containerd-only host, such as a typical Kubernetes node,
+every entry is partial. `--include-images` and `--include-stopped` likewise
+apply to Docker and Podman only.
+
 **Sample Event:**
 
 ```json
@@ -207,11 +221,11 @@ but not enriched by a container daemon are marked `CONTAINER_IS_PARTIAL`, and
   "event": {
     "CONTAINERS": [
       {
-        "CONTAINER_ID": "3f2b1c8d9e0a",
+        "CONTAINER_ID": "b66423fa5cb15cb7dad7ee901e91d4e022916fdc977ba43c30b8ca2f953e8d79",
         "CONTAINER_RUNTIME": "docker",
         "NAME": "web-frontend",
         "CONTAINER_IMAGE_REF": "nginx:1.27",
-        "CONTAINER_IMAGE_DIGEST": "sha256:9c2b0f...",
+        "CONTAINER_IMAGE_DIGEST": "9c2b0f6cd1a54e5f3f8c2b1d7e4a09b3c65d8e2f1a4b7c093d6e5f8a2b1c4d7e0",
         "CONTAINER_CREATED_AT": 1756684800000,
         "STATE": "running",
         "PROCESS_ID": 4812
@@ -221,7 +235,7 @@ but not enriched by a container daemon are marked `CONTAINER_IS_PARTIAL`, and
     "CONTAINER_DAEMON_ERRORS": 0,
     "CONTAINER_IS_PARTIAL": 0,
     "SCAN_IS_TRUNCATED": 0,
-    "SCAN_STOPPED_REASON": "completed"
+    "SCAN_STOPPED_REASON": "complete"
   }
 }
 ```
@@ -295,7 +309,8 @@ never mistaken for an empty one:
 - `SCAN_FILES_SCANNED`: files considered after the include/exclude expressions
 - `SCAN_BYTES_PROCESSED`: bytes read
 - `SCAN_IS_TRUNCATED`: `1` when a budget stopped the search early
-- `SCAN_STOPPED_REASON`: which budget stopped it
+- `SCAN_STOPPED_REASON`: which budget stopped it, one of `complete`, `max_results`,
+  `max_entries`, `max_seconds` or `max_bytes`
 
 **Sample Event:**
 
@@ -307,16 +322,16 @@ never mistaken for an empty one:
         "FILE_PATH": "C:\\Users\\jdoe\\Downloads\\setup.exe",
         "FILE_SIZE": 481232,
         "MODIFICATION_TIME": 1756771200000,
-        "HASH_MD5": "d41d8cd98f00b204e9800998ecf8427e",
-        "HASH_SHA1": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
-        "HASH": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        "HASH_MD5": "77a097c81e679798f68f968be1498620",
+        "HASH_SHA1": "55c92f35ad24bc59ca2ea74028203ae3a3a7d493",
+        "HASH": "aeb6310a1ac57c1beb98d74361c58b056522780c1b4d60e7a6c605ecaed47e01"
       }
     ],
     "SCAN_ENTRIES_SCANNED": 18422,
     "SCAN_FILES_SCANNED": 15310,
     "SCAN_BYTES_PROCESSED": 4812331,
     "SCAN_IS_TRUNCATED": 0,
-    "SCAN_STOPPED_REASON": "completed"
+    "SCAN_STOPPED_REASON": "complete"
   }
 }
 ```
@@ -538,7 +553,9 @@ Response event for the `file_grep` sensor command.
 `FILE_MATCHES` is a flat list of matches across all files. `MATCH_PATTERN_INDEX`
 is the zero-based index of the `--pattern` that matched. `FILE_CONTENT` carries
 the matched bytes plus any requested `--context-bytes`, and is absent entirely
-when the search was run with `--no-content`.
+when the search was run with `--no-content`. It is base64-encoded, because the
+matched region is raw bytes and need not be valid text. `MATCH_OFFSET` and
+`MATCH_LENGTH` describe the match within the file, not within `FILE_CONTENT`.
 
 Every bounded search reports how much work it did, so a truncated result is
 never mistaken for an empty one:
@@ -547,7 +564,8 @@ never mistaken for an empty one:
 - `SCAN_FILES_SCANNED`: files considered after the include/exclude expressions
 - `SCAN_BYTES_PROCESSED`: bytes read
 - `SCAN_IS_TRUNCATED`: `1` when a budget stopped the search early
-- `SCAN_STOPPED_REASON`: which budget stopped it
+- `SCAN_STOPPED_REASON`: which budget stopped it, one of `complete`, `max_results`,
+  `max_entries`, `max_seconds` or `max_bytes`
 
 **Sample Event:**
 
@@ -559,14 +577,15 @@ never mistaken for an empty one:
         "FILE_PATH": "/home/jdoe/app/.env",
         "MATCH_PATTERN_INDEX": 0,
         "MATCH_OFFSET": 412,
-        "MATCH_LENGTH": 21
+        "MATCH_LENGTH": 21,
+        "FILE_CONTENT": "REJfSE9TVD0xMC4wLjAuNQpleHBvcnQgQVdTX1NFQ1JFVF9BQ0NFU1NfS0VZPXdKYWxyWFV0bkZFTUkvSzdNREVORwoj"
       }
     ],
     "SCAN_ENTRIES_SCANNED": 9014,
     "SCAN_FILES_SCANNED": 7781,
     "SCAN_BYTES_PROCESSED": 33814402,
     "SCAN_IS_TRUNCATED": 0,
-    "SCAN_STOPPED_REASON": "completed"
+    "SCAN_STOPPED_REASON": "complete"
   }
 }
 ```
@@ -1205,7 +1224,7 @@ The following file patterns are considered "documents":
 {
   "FILE_PATH": "C:\\Users\\dev\\Desktop\\evil.exe",
   "TIMESTAMP": 1468335816308,
-  "HASH": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  "HASH": "aeb6310a1ac57c1beb98d74361c58b056522780c1b4d60e7a6c605ecaed47e01"
 }
 ```
 
@@ -1668,6 +1687,81 @@ The `ACCESS_FLAGS` is the access mask as defined in Microsoft's [Process Securit
 }
 ```
 
+### REPO\_LIST\_REP
+
+Response event for the `repo_list` sensor command.
+
+**Platforms:** macOS | Windows | Linux
+
+`REPOSITORY_LIST` holds one entry per git working copy found. Each entry carries
+`DIRECTORY_PATH` (the working copy) and `REPOSITORY_GIT_DIR` (its git directory,
+which differs for linked worktrees and submodules), plus the checked-out
+revision.
+
+- `REPOSITORY_HEAD_COMMIT`: the commit `HEAD` resolves to
+- `REPOSITORY_HEAD_REF`: the branch `HEAD` points at, absent on a detached `HEAD`
+- `REPOSITORY_IS_DETACHED`: `1` when `HEAD` names a commit rather than a branch
+- `REPOSITORY_REMOTES`: the configured remotes, each with `NAME` and `URL`
+- `REPOSITORY_SUBMODULES`: present only when `--with-submodules` was requested,
+  each with `NAME`, `DIRECTORY_PATH` and `URL` as declared in `.gitmodules`
+
+The reply echoes the budgets it ran under and reports the work it did, so a
+truncated result is never mistaken for an empty one:
+
+- `SCAN_ENTRIES_SCANNED`: filesystem entries examined
+- `SCAN_IS_TRUNCATED`: `1` when a budget stopped the search early
+- `SCAN_STOPPED_REASON`: which budget stopped it, one of `complete`,
+  `max_results`, `max_entries` or `max_seconds`
+
+`DIRECTORY_PATH` at the top level lists the roots that were searched, and is
+absent when the command ran against the agent's own per-platform defaults.
+
+**Sample Event:**
+
+```json
+{
+  "event": {
+    "REPOSITORY_LIST": [
+      {
+        "DIRECTORY_PATH": "C:\\Users\\jdoe\\src\\lc-test-repo",
+        "REPOSITORY_GIT_DIR": "C:\\Users\\jdoe\\src\\lc-test-repo\\.git",
+        "REPOSITORY_HEAD_COMMIT": "0123456789abcdef0123456789abcdef01234567",
+        "REPOSITORY_HEAD_REF": "refs/heads/main",
+        "MODIFICATION_TIME": 1756771200000,
+        "REPOSITORY_REMOTES": [
+          {
+            "NAME": "origin",
+            "URL": "https://github.com/example/lc-test-repo.git"
+          }
+        ],
+        "REPOSITORY_SUBMODULES": [
+          {
+            "NAME": "vendor/dep",
+            "DIRECTORY_PATH": "vendor/dep",
+            "URL": "https://github.com/example/dep.git"
+          }
+        ]
+      },
+      {
+        "DIRECTORY_PATH": "C:\\Users\\jdoe\\src\\detached",
+        "REPOSITORY_GIT_DIR": "C:\\Users\\jdoe\\src\\detached\\.git",
+        "REPOSITORY_HEAD_COMMIT": "fedcba9876543210fedcba9876543210fedcba98",
+        "REPOSITORY_IS_DETACHED": 1,
+        "MODIFICATION_TIME": 1756771200000
+      }
+    ],
+    "REPOSITORY_WITH_SUBMODULES": 1,
+    "DIRECTORY_LIST_DEPTH": 6,
+    "SCAN_ENTRIES_SCANNED": 1195,
+    "SCAN_MAX_ENTRIES": 500000,
+    "SCAN_MAX_RESULTS": 200,
+    "SCAN_MAX_SECONDS": 120,
+    "SCAN_IS_TRUNCATED": 0,
+    "SCAN_STOPPED_REASON": "complete"
+  }
+}
+```
+
 ### SEGREGATE\_NETWORK
 
 Emitted when a sensor is segregated (isolated) from the network using the `segregate_network` command. An error code of 0 indicates success.
@@ -1977,6 +2071,62 @@ This event is generated when the sensor detects what looks like a thread injecti
 }
 ```
 
+### USB\_DEVICE\_LIST\_REP
+
+Response event for the `usb_list_devices` sensor command.
+
+**Platforms:** macOS | Windows | Linux
+
+`USB_DEVICES` holds one entry per USB device currently attached, and is an empty
+list when the host has none. `ERROR` is `0` on success. The related
+`usb_list_keys` command reports only mass-storage keys, whereas this one reports
+every attached device whatever its class.
+
+Each entry describes the device and the interfaces it exposes:
+
+- `USB_VENDOR_ID` and `USB_PRODUCT_ID`: the USB vendor and product identifiers,
+  as integers rather than the hexadecimal notation vendor lists use
+- `USB_DEVICE_CLASS`: the device-level USB class, `0` when the class is declared
+  per interface instead
+- `USB_USB_VERSION`: the USB revision in binary-coded decimal, so `300` is USB 3.0
+- `USB_MANUFACTURER_STRING`, `USB_PRODUCT_STRING`, `USB_SERIAL_NUMBER`: the
+  descriptor strings, each omitted entirely when the device does not report it
+- `USB_INTERFACES`: one entry per interface, with `USB_INTERFACE_CLASS`,
+  `USB_INTERFACE_SUBCLASS` and `USB_INTERFACE_PROTOCOL`. A device that exposes no
+  interfaces reports an empty list.
+
+**Sample Event:**
+
+```json
+{
+  "event": {
+    "USB_DEVICES": [
+      {
+        "USB_VENDOR_ID": 2385,
+        "USB_PRODUCT_ID": 5734,
+        "USB_DEVICE_CLASS": 0,
+        "USB_USB_VERSION": 300,
+        "USB_MANUFACTURER_STRING": "Kingston",
+        "USB_SERIAL_NUMBER": "BAD0USB",
+        "USB_INTERFACES": [
+          {
+            "USB_INTERFACE_CLASS": 8,
+            "USB_INTERFACE_SUBCLASS": 6,
+            "USB_INTERFACE_PROTOCOL": 80
+          },
+          {
+            "USB_INTERFACE_CLASS": 3,
+            "USB_INTERFACE_SUBCLASS": 1,
+            "USB_INTERFACE_PROTOCOL": 1
+          }
+        ]
+      }
+    ],
+    "ERROR": 0
+  }
+}
+```
+
 ### USER\_LOGIN
 
 Generated when a user logs in to the operating system.
@@ -2038,6 +2188,6 @@ Generated when a YARA scan finds a match.
 {
   "RULE_NAME": "malware_detection_rule",
   "FILE_PATH": "C:\\malicious.exe",
-  "HASH": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  "HASH": "aeb6310a1ac57c1beb98d74361c58b056522780c1b4d60e7a6c605ecaed47e01"
 }
 ```
