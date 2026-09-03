@@ -20,15 +20,20 @@ Application Installation
 
 ## Configuration Profile Details
 
-We have provided a sample configuration profile for reference: [![MobileConfig icon](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/MDM_profiles/mobileconfig-icon.png)](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/MDM_profiles/LimaCharlie.mobileconfig.zip)
+We have provided a sample configuration profile for reference: [![MobileConfig icon](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/MDM_profiles/mobileconfig-icon.png)](https://docs.limacharlie.io/assets/files/rphcp.mobileconfig.zip)
 
-[Download LimaCharlie.mobileconfig sample configuration profile](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/MDM_profiles/LimaCharlie.mobileconfig.zip)
+[Download the sample configuration profile](https://docs.limacharlie.io/assets/files/rphcp.mobileconfig.zip) (a zip archive containing `rphcp.mobileconfig`)
 
-This profile includes the following permissions:
+This profile includes the following payloads:
 
-- System Extension
-- Full Disk Access
-- Network Content Filter
+- **System Extension** - allowlists the agent's Endpoint Security and Network extension, `com.refractionpoint.rphcp.extension`, under team identifier `N7N82884NH`.
+- **Full Disk Access** - a Privacy Preferences Policy Control (TCC) grant of `SystemPolicyAllFiles` to the app, the system extension, and the `/usr/local/bin/rphcp` daemon binary.
+- **Network Content Filter** - pre-approves the agent's socket and packet filters.
+- **Managed Login Items** - marks the agent's launchd daemon, `com.refractionpoint.rphcp`, as managed. Since macOS 13 that daemon appears under System Settings > General > Login Items with an "Allow in the Background" toggle that any user of the machine can switch off; a matching `com.apple.servicemanagement` rule greys the toggle out and pins it on. The profile carries two overlapping rules: a `LabelPrefix` rule for the daemon the installer creates, and a `TeamIdentifier` rule for any other background item RPHCP.app registers.
+
+On macOS 15 and newer, the System Extension payload additionally sets `NonRemovableFromUISystemExtensions`, which blocks removal of the extension from System Settings > General > Login Items & Extensions and from the Finder. Earlier macOS releases ignore the key.
+
+The identifiers, code requirements, and daemon label in this profile are verified against every signed agent release, so a deployed copy stays in step with what the installer ships.
 
 ## Silent Installation Preference
 
@@ -115,3 +120,6 @@ anchor apple generic and identifier "com.refractionpoint.rphcp.client" and (cert
 ![System Extensions Required](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/MDM_profiles/JamfPro-4-ContentFilter.png)
 
 1. Deploy the configuration profile to your devices.
+
+!!! note
+    These steps build the three permission payloads by hand, and leave out the Managed Login Items payload described above - the one that keeps a user from switching the agent off in System Settings. To get every payload, upload the sample profile above to Jamf Pro as a custom profile instead of rebuilding it in the UI.
