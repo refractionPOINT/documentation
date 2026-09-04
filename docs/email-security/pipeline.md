@@ -111,7 +111,7 @@ the message at the provider.
 
 | | |
 |---|---|
-| **Synchronous, one pass per message** | Fetch, parse, every enrichment including attachment explosion, matching, scoring, the verdict, campaign clustering, persistence, and the `EMAIL_MESSAGE` emission |
+| **Synchronous, one pass per message** | Fetch, parse, every enrichment including attachment explosion, matching, scoring, the verdict, campaign clustering, persistence, and the emission of `EMAIL_MESSAGE` followed by the engine's own `EMAIL_VERDICT` (`revision/seq: 0`) |
 | **Later, and recorded as such** | Verdict revisions, remediation outcomes, campaign membership added when a later message joins the cluster |
 
 A revision does **not** rewrite `EMAIL_MESSAGE`. The original event stands as the
@@ -120,6 +120,13 @@ sequence number, and an `EMAIL_VERDICT` event is emitted carrying the new
 conclusion. Two consumers reading the same stream therefore agree on both what
 was decided and what it was changed to, which a mutated event could never give
 you.
+
+The engine's own verdict gets an `EMAIL_VERDICT` too, at `revision/seq: 0` and
+`revision/mode: auto`, emitted at ingest right after that message's
+`EMAIL_MESSAGE`. It repeats a verdict that is already inside `EMAIL_MESSAGE`, so
+that one rule against `EMAIL_VERDICT` covers the engine's call *and* every later
+override instead of needing one rule per event type. The `seq 0` event is not a
+revision: a message nobody has overridden still reports zero revisions.
 
 !!! info "Why the first pass is not allowed to wait"
     Anything the pipeline waits on is a mailbox that stays unjudged while it

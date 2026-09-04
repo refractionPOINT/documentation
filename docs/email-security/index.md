@@ -25,7 +25,7 @@ it at the provider.
 | **Remediation** | Typed, idempotent, audited actions performed at the provider: quarantine, trash, move to spam, restore, apply and remove a warning banner. Available by policy automation, from the console, from a D&R rule, from the API and from the CLI. |
 | **Campaigns** | Messages the engine attributed to one attack are clustered, so a campaign that hit forty mailboxes is triaged once and swept once. |
 | **User reports** | An abuse mailbox becomes an SLA queue: reports are joined back to the original message across the whole tenant, robots that mail the abuse address are auto-resolved out of the queue, and reporters can be sent a templated acknowledgement. |
-| **Telemetry** | `EMAIL_MESSAGE`, `EMAIL_VERDICT`, `EMAIL_ACTION`, `EMAIL_USER_REPORT` and `EMAIL_INGEST_ERROR` land in the same lake as your EDR, cloud and identity telemetry — so "phish delivered, then that user's endpoint ran a new binary" is one D&R rule. |
+| **Telemetry** | `EMAIL_MESSAGE`, `EMAIL_VERDICT` (every verdict decision — the engine's own at ingest, then each override), `EMAIL_ACTION`, `EMAIL_USER_REPORT` and `EMAIL_INGEST_ERROR` land in the same lake as your EDR, cloud and identity telemetry — so "phish delivered, then that user's endpoint ran a new binary" is one D&R rule. |
 | **Configuration as data** | Connections, policy and custom rules are Hive records, so everything is API-first and git-syncable from day one. |
 
 ## What it does not do

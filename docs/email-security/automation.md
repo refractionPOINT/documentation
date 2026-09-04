@@ -46,14 +46,22 @@ of them.
 | `event/revision/seq` | `0` for the rule pack's verdict, `1…` for each override |
 | `event/revision/mode` | `auto`, `analyst`, `ai` or `detonation` |
 | `event/revision/verdict`, `event/revision/score` | The decision |
-| `event/revision/rationale` | The reasons, strongest first. For an override these are what the analyst or agent wrote; for `seq 0` they are the names of the signals that fired |
+| `event/revision/rationale` | The reasons, strongest first. For an override these are what the analyst or agent wrote; for `seq 0` they are the names of the signals that fired — so it is **absent** on a benign message that matched nothing, which is the common case |
 | `event/revision/top_signals`, `event/revision/engine_version` | `seq 0` only — the rule ids that fired and the pack version that decided. An override has neither: nothing *matched*, somebody decided |
 | `event/revision/actor` | Who decided. Empty on `seq 0`: the rule pack is not a person, and `engine_version` is what identifies it |
-| `event/revision/prior` | What the override displaced — verdict, score, mode and engine version. Empty on `seq 0`, which displaced nothing |
+| `event/revision/prior` | What the override displaced — verdict, score, mode and engine version. On `seq 0` it is present but empty (`verdict: ""`, `score: 0`), because the engine's first call displaced nothing — so match on `revision/seq` or `revision/mode` to tell the two apart, not on `prior` |
 
 The MDM is deliberately *not* repeated here: it is already in the immutable
 `EMAIL_MESSAGE`, and copying it into every verdict change would multiply a year
 of telemetry by how often people change their minds.
+
+!!! warning "It roughly doubles your mail event volume"
+    `EMAIL_VERDICT` at `seq 0` is emitted for **every** ingested message, not only
+    for flagged ones, so a protected mailbox now produces about two events per
+    message instead of one. These are ordinary telemetry: they are evaluated by
+    your D&R rules and they land in your retention like any other event. The
+    bodies are small — identity plus a verdict, never the parsed message — so the
+    byte volume moves far less than the count.
 
 !!! info "Everything the rule needs is in the event"
     The verdict, the top signals and the enrichments the pipeline resolved are
