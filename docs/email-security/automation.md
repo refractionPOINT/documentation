@@ -19,11 +19,41 @@ is one sensor, not ten thousand.
 | Event | Emitted when |
 |---|---|
 | `EMAIL_MESSAGE` | Once per message, at ingest. Carries the whole parsed model — headers, sender, recipients, body, links, attachments, authentication, hops — plus the enrichments and the verdict. It is the record that this mail arrived |
+| `EMAIL_VERDICT` | On **every** verdict decision: the rule pack's own, at ingest right after the `EMAIL_MESSAGE` (`revision/seq: 0`, `revision/mode: auto`), and then once per override afterwards (`seq: 1…`, mode `analyst`, `ai` or `detonation`) |
 | `EMAIL_ACTION` | On every remediation outcome, including failures and skips. Who asked, what was attempted, what happened |
 | `EMAIL_USER_REPORT` | When a message reaches the abuse mailbox and becomes a report |
 | `EMAIL_INGEST_ERROR` | When a message could not be fetched or processed. Coverage honesty: failures are visible, never silent |
 
-`EMAIL_MESSAGE` is emitted once and is immutable.
+`EMAIL_MESSAGE` is emitted once and is immutable. When a verdict changes, the
+original event is never rewritten — a new `EMAIL_VERDICT` is emitted instead, so
+the verdict history is the sequence of those events and a replay can reconstruct
+what was known at any point in time.
+
+### `EMAIL_VERDICT`
+
+The body carries the message's identity plus one `revision` block, and it is the
+same shape whichever decision it reports — which is the point: one rule reads all
+of them.
+
+| Path | |
+|---|---|
+| `event/msg_uuid` | The durable handle every typed action takes. A provider message id is folder-scoped and stops resolving the moment the message is quarantined; this does not |
+| `event/mailbox/address`, `event/provider` | Whose mail, from where |
+| `event/internet_message_id` | The cross-mailbox join key: one message sent to forty people is forty `msg_uuid`s and one of these |
+| `event/sender_email`, `event/sender_root_domain`, `event/subject` | Enough to match on without a lookup |
+| `event/ts` | The message's delivery time. The **event's own** timestamp is when the decision was made, so a hunt can window on either |
+| `event/campaign_id` | The campaign, if the message clustered into one |
+| `event/revision/seq` | `0` for the rule pack's verdict, `1…` for each override |
+| `event/revision/mode` | `auto`, `analyst`, `ai` or `detonation` |
+| `event/revision/verdict`, `event/revision/score` | The decision |
+| `event/revision/rationale` | The reasons, strongest first. For an override these are what the analyst or agent wrote; for `seq 0` they are the names of the signals that fired |
+| `event/revision/top_signals`, `event/revision/engine_version` | `seq 0` only — the rule ids that fired and the pack version that decided. An override has neither: nothing *matched*, somebody decided |
+| `event/revision/actor` | Who decided. Empty on `seq 0`: the rule pack is not a person, and `engine_version` is what identifies it |
+| `event/revision/prior` | What the override displaced — verdict, score, mode and engine version. Empty on `seq 0`, which displaced nothing |
+
+The MDM is deliberately *not* repeated here: it is already in the immutable
+`EMAIL_MESSAGE`, and copying it into every verdict change would multiply a year
+of telemetry by how often people change their minds.
 
 !!! info "Everything the rule needs is in the event"
     The verdict, the top signals and the enrichments the pipeline resolved are
