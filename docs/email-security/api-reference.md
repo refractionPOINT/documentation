@@ -97,6 +97,38 @@ success/failure:
 A campaign sweep returns `attempted`, `succeeded`, `alert_only` and a per-member
 `failed` map. It does not abort on the first error.
 
+## Telemetry event contract
+
+The routes above are the read/write surface. The **event** surface is ordinary
+LimaCharlie telemetry on the `email` platform, delivered to the default D&R
+target and to every configured Output, and it is a contract in its own right:
+these types and JSON paths are frozen and additive-only, because a year of stored
+telemetry and every customer rule is keyed on them.
+
+| Event | Cardinality |
+|---|---|
+| `EMAIL_MESSAGE` | Exactly once per message, at ingest, immutable. Carries the full Message Data Model |
+| `EMAIL_VERDICT` | Once per verdict **decision**. `revision/seq: 0` with `revision/mode: auto` is the rule pack's own verdict, emitted at ingest immediately after that message's `EMAIL_MESSAGE`; `seq: 1…` is one per override (`analyst`, `ai`, `detonation`) |
+| `EMAIL_ACTION` | Once per remediation outcome, including failures and skips |
+| `EMAIL_USER_REPORT` | Once per message that reaches the abuse mailbox |
+| `EMAIL_INGEST_ERROR` | Once per message that could not be fetched or processed |
+
+Two consequences worth stating plainly:
+
+- **The verdict appears twice at ingest** — inside `EMAIL_MESSAGE` under
+  `event/verdict/…` and again as the `seq 0` `EMAIL_VERDICT` under
+  `event/revision/…`. That is deliberate. It is what lets a rule about verdicts
+  be written once instead of once for the engine and once for every later
+  override, and it is why `EMAIL_VERDICT` can be treated as the complete verdict
+  stream for a message.
+- **The `seq 0` event is not a revision record.** `GET /messages/{msg_uuid}`
+  reports `revision_count: 0` and an empty revision history for a message nobody
+  has overridden. The rule pack's verdict is on the message itself, not in its
+  history of disagreements.
+
+The `EMAIL_VERDICT` body is documented field by field in
+[Events & Automation](automation.md#email_verdict).
+
 ## Attribution
 
 `actor` and `source` on every audit row are stamped by the server from the

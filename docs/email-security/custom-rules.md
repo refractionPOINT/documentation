@@ -184,3 +184,50 @@ A `dr-mail` rule is one of two seats. The other is an ordinary D&R rule in
 `dr-general` matching the `EMAIL_*` events, which gets the platform's full
 response arsenal and can correlate mail with the rest of your telemetry. See
 [Events & Automation](automation.md).
+
+### Acting on a verdict
+
+`EMAIL_VERDICT` carries every verdict decision — the rule pack's own at
+`seq: 0`, and each later override — so a rule that should fire whenever a message
+is judged malicious is written once, against one path:
+
+```yaml
+# Detect
+op: and
+rules:
+  - op: is
+    path: routing/event_type
+    value: EMAIL_VERDICT
+  - op: is
+    path: event/revision/verdict
+    value: malicious
+```
+
+```yaml
+# Respond
+- action: report
+  name: email-verdict-malicious
+- action: extension request
+  extension name: ext-email-security
+  extension action: quarantine_message
+  extension request:
+    msg_uuid: '{{ .event.msg_uuid }}'
+```
+
+That fires when the pack decides a message is malicious **and** when an analyst,
+the AI triage agent or a link detonation later decides so. Narrow it with the
+fields that distinguish them:
+
+| To match | Add |
+|---|---|
+| Only the rule pack's own decision | `path: event/revision/seq`, `value: 0` |
+| Only overrides | `op: is greater than`, `path: event/revision/seq`, `value: 0` |
+| Only what a human decided | `path: event/revision/mode`, `value: analyst` |
+| Only a *change* to malicious | `path: event/revision/prior/verdict`, `op: is not`, `value: malicious` |
+| A specific rule that fired | `op: is`, `path: event/revision/top_signals/?/rule_id`, `value: ms-link-credentials-in-url` — the `?` matches any element of the list (`seq 0` only; an override carries no signals) |
+
+!!! warning "Overrides go both ways"
+    An override can also clear a verdict. A rule that quarantines on
+    `verdict: malicious` will see the escalation, and a later `benign` revision
+    does **not** undo the action it took — write the compensating rule if you
+    want one.
