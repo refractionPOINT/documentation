@@ -123,7 +123,7 @@ provider, and audited.
 | `trash_message` | To the provider's recoverable trash |
 | `move_to_spam` | To the provider's junk/spam location |
 | `restore_message` | Back to where it was before we moved it, falling back to the Inbox when that is unknown |
-| `banner_message` | Prepend the sanitized warning banner |
+| `banner_message` | Prepend the organization's warning banner. Its wording comes from the `banners` [policy record](policy.md#banners) and is escaped into a fixed template — no caller supplies HTML |
 | `unbanner_message` | Remove it |
 
 The per-provider mechanics differ and are documented in
