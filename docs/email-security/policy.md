@@ -315,10 +315,14 @@ the `--banner` flag are deprecated and ignored, and will be removed. If you
 change the wording here, every subsequent `banner_message` uses it.
 
 `enabled` is what lets **automation** banner this organization's mail: with it
-off, an automation or a D&R rule that asks for `banner_message` is decided and
-audited but the mailbox is not touched (`alert_only`). An analyst acting on one
-message is the same exception it is for every other action — a person who
-clicked has already made the decision this switch withholds from automation.
+off, an automation, a D&R rule or the AI triage agent asking for
+`banner_message` is decided and audited but the mailbox is not touched
+(`alert_only`). It does **not** gate a banner somebody asked for — from the
+console, the API or the CLI — because the switch exists to stop the product
+rewriting mail on its own, not to stop an operator from acting on a message in
+front of them. An organization that has never written this record still has
+working `banner_message` from the console; it simply has no automated
+bannering, and the wording is the packaged sentence.
 
 Bannering also needs the provider capability: `Mail.ReadWrite` is enough on
 Microsoft 365 (edited in place), while Google Workspace additionally needs the
