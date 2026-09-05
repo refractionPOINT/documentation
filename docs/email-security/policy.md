@@ -316,28 +316,76 @@ optional `https://mail.google.com/` scope and **replaces** the message.
 
 ## `retention`
 
-How long flagged evidence is kept.
+How long Email Security keeps your mail data. Lower it and the data is deleted;
+this is the setting that makes "we hold nothing older than N days" true.
 
 ```yaml
 policy_type: retention
+message_days: 14
 flagged_days: 180
 ```
 
-| Field | Default | Range |
-|---|---|---|
-| `flagged_days` | 400 | 30–400 |
+| Field | Default | Range | Governs |
+|---|---|---|---|
+| `message_days` | 35 | 1–35 | The searchable message index and the stored copy of the raw message |
+| `flagged_days` | 400 | 1–400 | Flagged evidence, its stored copy, verdict revisions, and the action, report, campaign and sender-profile history |
 
-400 is the schema's hard ceiling: policy can only choose *within* what the store
-keeps, because a policy asking for longer would be a promise the database
-silently breaks.
+Set either, or both. A record that sets neither is rejected — a retention policy
+that does nothing is worse than no policy, because you would believe it was in
+force.
 
-Composition takes the **maximum** rather than the last writer. Two records
-disagreeing about retention is a disagreement about how much evidence to destroy,
-and the safe resolution is always "keep it longer" — a shorter setting is
-recoverable by editing policy, deleted rows are not.
+### Two numbers, because there are two lanes
 
-The 35-day searchable message index and the raw-message window are separate and
-are not configured here.
+The **message index** is the recent operational surface: every message, with the
+metadata the queue and the hunt read, plus the raw message itself. It is what
+`message_days` shortens.
+
+The **evidence lane** is what an investigation reaches for months later: the
+flagged messages, their stored copies, every verdict revision, and the record of
+what was done to the mail and who did it. It is what `flagged_days` shortens.
+There is no separate "evidence" setting — this is it.
+
+"Keep my queue for a week" and "keep my phishing evidence for a week" are
+different asks, so they are different fields.
+
+### The defaults are ceilings, not targets
+
+400 and 35 are the store's own hard limits. Policy can only choose a **shorter**
+horizon, never a longer one: a setting past the ceiling is rejected rather than
+quietly ignored, because it would be a promise the database silently breaks.
+
+The floor is **one day**. Below that a message would not survive long enough for
+the queue, the verdict and the analyst who opens it to exist, so a shorter value
+is rejected rather than clamped — Email Security tells you it will not do it
+instead of doing something else.
+
+### What deletion actually removes
+
+Data past your horizon is removed on a recurring sweep — the rows, the stored
+copies of the messages in cloud storage, the parsed projections beside them, and
+the link-detonation results derived from that mail. Deletion is permanent and
+there is no undo, which is why the horizon is a policy you edit rather than a
+button you press.
+
+Two consequences worth knowing:
+
+- Lowering a value takes effect on the next sweep, and a large backlog drains
+  over several sweeps rather than all at once.
+- The horizons are independent. A flagged message's evidence can outlive its
+  index entry (the usual case: 400 against 35), and if you set `flagged_days`
+  *below* `message_days` the reverse happens — the index entry remains without a
+  downloadable copy of the message, because you asked for the message itself to
+  be deleted.
+
+`GET /coverage` reports the horizon actually in force, so a window reaching past
+it is labelled rather than shown as though the missing days were empty.
+
+### Composition
+
+Composition takes the **minimum**, not the last writer. If one record says 30
+days and another says 200, the answer is 30: a retention record is an instruction
+to delete — usually one you have committed to somebody else — so the strictest
+one wins, in the direction of holding less of your mail.
 
 ---
 
