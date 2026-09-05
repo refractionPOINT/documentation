@@ -9,7 +9,7 @@ fleet-wide policy are a script, not a UI workflow.
 | Hive | Records | Purpose |
 |---|---|---|
 | `mailsec_provider` | one per mail connection | which tenant to protect, with which credential — see [Connecting Providers](providers.md) |
-| `mailsec_policy` | many, discriminated by `policy_type` | automations, exclusions, VIPs, thresholds, banners, retention, reporter replies, hunt defaults |
+| `mailsec_policy` | many, discriminated by `policy_type` | automations, exclusions, VIPs, thresholds, banners, retention, reporter replies, hunt defaults, clustering |
 | `dr-mail` | one per custom rule | your own mail detection rules — see [Custom Rules](custom-rules.md) |
 
 ## How `mailsec_policy` records work
@@ -33,7 +33,7 @@ How each type composes:
 | `exclusions` | Concatenated — a set of independent suppressions |
 | `vips` | Union, deduplicated and sorted |
 | `thresholds` | Last writer wins per field, with the ordering invariant re-checked afterwards |
-| `banners`, `reporter_reply`, `hunt_defaults` | Last writer wins per field |
+| `banners`, `reporter_reply`, `hunt_defaults`, `clustering` | Last writer wins per field |
 | `retention` | **Maximum** wins — see [Retention](#retention) |
 
 ### Unknown fields are refused
@@ -380,6 +380,48 @@ dry_run: true
 | `window_days` | 7 | 1–365 |
 | `max_results` | 1000 | 1–100000 |
 | `dry_run` | `true` | An operation that can bulk-remediate defaults to "show me what this would match" |
+
+---
+
+## `clustering`
+
+How aggressively messages are grouped into a campaign — which is what sets the
+blast radius of a campaign-wide action. It is a separate record from
+`thresholds` on purpose: `thresholds` is how harshly mail is *judged*, and
+folding the reach of a bulk quarantine into a record named for scoring would hide
+it.
+
+```yaml
+policy_type: clustering
+body_similarity: true
+body_similarity_distance: 30
+```
+
+| Field | Default | Range |
+|---|---|---|
+| `body_similarity` | `true` | Whether the body fuzzy hash may count as an agreeing cluster key |
+| `body_similarity_distance` | 30 | 0–35. Lower is stricter; 0 means byte-identical normalized bodies only |
+
+The default is **on**, because the organization that most needs body similarity —
+one being hit by a kit that randomizes subjects and links — is the one least
+likely to go looking for a switch to turn on.
+
+The distance default is measured, not chosen: across a 404-message corpus of
+ordinary business mail the closest pair of *unrelated* messages is 39 apart,
+while two copies of one message differing only in the recipient's name and the
+link's tracking parameters are 0 apart. The ceiling of 35 sits below that closest
+pair deliberately — a setting above it is one you cannot have measured.
+
+See [Body similarity](campaigns.md#body-similarity) for what the key is and how a
+body is normalized before it is hashed.
+
+!!! note "Turning it off does not stop the digest being computed"
+    `body_similarity: false` stops the digest counting as *agreement*. It is
+    still computed, still stored, still returned on the message and still
+    searchable. So turning the switch back on gives you working clustering
+    immediately, rather than only for mail that arrives afterwards — and the
+    digest an analyst is looking at is never a value the product quietly stopped
+    maintaining.
 
 ---
 
