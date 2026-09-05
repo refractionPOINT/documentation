@@ -204,16 +204,17 @@ authenticated data, which means a copied object cannot be opened somewhere else.
 
 ### Two retention lanes
 
-| Lane | Kept | Holds |
-|---|---|---|
-| Transient | **35 days** | Every message |
-| Retained | up to **400 days** | Flagged messages and the evidence attached to them |
+| Lane | Kept | Holds | Shortened by |
+|---|---|---|---|
+| Transient | **35 days** | Every message | `message_days` |
+| Retained | up to **400 days** | Flagged messages and the evidence attached to them | `flagged_days` |
 
 The lane is chosen at ingest from the verdict. A message that becomes evidence
 later, because it was reported, re-judged or acted on, is promoted into the
-retained lane by re-sealing it there. The retained window is tunable within the
-ceiling through [`mailsec_policy/retention`](policy.md#retention); 400 days is
-the store's hard limit, and policy can only choose within what the store keeps.
+retained lane by re-sealing it there. Both windows are tunable *downwards*
+through [`mailsec_policy/retention`](policy.md#retention): 35 and 400 days are
+the store's hard limits, policy can only choose within what the store keeps, and
+what falls past the horizon you set is deleted.
 
 The searchable message index keeps 35 days as well. `EMAIL_*` events go to the
 platform's telemetry lake and follow your ordinary retention, which is why
