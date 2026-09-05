@@ -77,6 +77,16 @@ across all 71,631 pairs. The policy ceiling is 35, below that closest pair on
 purpose: a setting above it is one you cannot have measured, and what it buys is
 a campaign-wide quarantine reaching mail that was never part of the attack.
 
+!!! warning "It is closer to all-or-nothing than a tolerance"
+    At the length of ordinary email, TLSH is very sensitive: two bodies whose
+    normalized text is byte-identical score **0**, and a single per-recipient word
+    the normalization could not identify — a name in a footer, an amount, a company
+    — has been measured at **100**, well past the ceiling. So the threshold is not a
+    slider that trades recall for precision in small steps. What it buys is the mass
+    case: one pitch, randomized subjects and links. A kit that rewrites a word of
+    prose per victim will not group, and that failure is entirely on the recall
+    side — it can never merge unrelated mail.
+
 ### It still takes two keys
 
 Body similarity does **not** join a campaign on its own. It is the strongest of
