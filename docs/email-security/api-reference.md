@@ -89,6 +89,7 @@ that fires on volume. A refused attempt carries `result: refused` and a
 | `eml_expired` | The raw copy aged out of its retention lane |
 | `read_failed` | The object is there and could not be read |
 | `eml_store_not_configured` | This deployment has no raw-message store |
+| `internal_error` | The service could not complete the read (an index-store failure, not an object failure) |
 
 The response's `audited` block echoes the `action_id`, the recorded actor and
 justification, and `event_emitted` — which is `false` when the organization has
