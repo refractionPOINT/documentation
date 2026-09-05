@@ -18,6 +18,20 @@ Release notes for LimaCharlie platform components, organized by date.
 
     For discussion and email notification of the same releases, set the [Platform Updates category](https://community.limacharlie.com/c/platform-updates/5) in the community forum to Watching. For service availability rather than releases, subscribe on the [status page](https://status.limacharlie.io/).
 
+## 2026-09-04
+
+### Extensions: Email Security tenant purge
+
+#### New Features
+
+- **Tenant purge for Email Security**: everything Email Security holds for an organization can now be deleted on request — the message index and the up-to-400-day evidence lane, campaigns, sender profiles, the product's action audit trail, user (abuse-mailbox) reports, stored raw messages and their parsed copies, link-detonation results, and the organization's provider connection and policy configuration. The purge also stops the mail connections at Microsoft 365 and Google Workspace, so the provider stops sending notifications instead of repopulating the index. It is irreversible, requires Owner-level authority (`mailsec.act`, `billing.ctrl` and `user.ctrl` together), and is recorded in the organization's audit log with the caller's identity and an optional reason.
+- The purge is two steps, and previews by default: `limacharlie mailsec tenant purge` prints the warning and mints a single-use confirmation token that expires in five minutes, and destroys nothing until that token is passed back with `--confirm`. A purge that reports `complete: false` did not finish and can simply be re-run with a fresh token. The Python SDK exposes the same pair as `Mailsec.prepare_tenant_purge()` and `Mailsec.purge_tenant()`.
+- Email Security data is now also deleted **automatically**: 30 days after an organization unsubscribes from the extension — resubscribing at any point inside that window cancels the scheduled deletion — and immediately when the organization itself is deleted.
+
+See [Data retention and deletion](../email-security/policy.md#data-retention-and-deletion), the [CLI notes](../email-security/cli.md#the-tenant-purge-is-irreversible) and [`DELETE /tenant`](../email-security/api-reference.md#delete-tenant).
+
+---
+
 ## 2026-08-31
 
 ### Endpoint Agent 5.3.8
