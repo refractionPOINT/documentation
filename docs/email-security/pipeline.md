@@ -220,6 +220,11 @@ platform's telemetry lake and follow your ordinary retention, which is why
 [LCQL](automation.md#querying-mail-with-lcql) reaches further back than the queue
 does.
 
+Both lanes can also be emptied outright rather than waited out: a tenant purge
+removes everything this product holds for an organization at once, and the same
+deletion runs on its own 30 days after an organization unsubscribes. See
+[Data retention and deletion](policy.md#data-retention-and-deletion).
+
 ### What lands in telemetry
 
 `EMAIL_MESSAGE` carries parsed body content, so mail text is in your normal

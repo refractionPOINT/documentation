@@ -337,7 +337,99 @@ and the safe resolution is always "keep it longer" — a shorter setting is
 recoverable by editing policy, deleted rows are not.
 
 The 35-day searchable message index and the raw-message window are separate and
-are not configured here.
+are not configured here — see [Data retention and deletion](#data-retention-and-deletion)
+for all three clocks, and for removing an organization's Email Security data
+outright rather than waiting for a window to end.
+
+---
+
+## Data retention and deletion
+
+Retention and deletion answer different questions. Retention decides *when* data
+ages out on a clock and runs on its own. A **tenant purge** decides that the data
+is gone *now*: everything Email Security holds for one organization, removed
+everywhere, in one operation, on request.
+
+### The three clocks
+
+| Lane | Kept | Holds |
+|---|---|---|
+| Message index | **35 days** | The searchable row for every message, and what the queue and the drawer read from |
+| Evidence | up to **400 days** | Flagged messages and the evidence attached to them. Tunable with [`retention`](#retention) within the 400-day ceiling |
+| Raw messages | 35 days after delivery, longer once a message is flagged | The original bytes and the parsed copy behind them |
+
+Nothing on those clocks needs a request. Data leaves each lane when its window
+ends, and only that lane's window moves it. See
+[Two retention lanes](pipeline.md#two-retention-lanes) for how a message is
+placed in a lane and promoted between them.
+
+### What a purge removes
+
+A tenant purge permanently deletes, for one organization:
+
+- the message index and the long-term evidence lane
+- campaigns
+- sender profiles
+- the remediation and action audit trail this product keeps
+- user (abuse-mailbox) reports
+- stored raw messages and their parsed copies
+- link-detonation results
+- the organization's Email Security provider connection and policy configuration
+
+It also **stops the mail connections at Microsoft 365 and Google Workspace**, so
+the provider stops sending notifications. That matters as much as the deletion
+itself: a purge that left the connections running would begin repopulating the
+index with the next message to arrive.
+
+!!! danger "A purge cannot be undone"
+    There is no restore, no grace period and no partial scope — the unit is the
+    whole organization. A purged organization looks to Email Security exactly
+    like one that was never connected.
+
+### Authority and audit
+
+Both the preview and the purge itself require **Owner-level authority**:
+`mailsec.act`, `billing.ctrl` and `user.ctrl` together. That is the same trio
+deleting the organization requires; there is no separate "owner" permission to
+grant, and no combination short of all three is accepted.
+
+The purge is written to the organization's audit log with your authenticated
+identity and, if you supplied one, a free-text `reason` of up to 1024
+characters. As everywhere else in this product, the identity is stamped by the
+server from your verified claims rather than taken from the request.
+
+### It also happens without a request
+
+| Event | When the data is deleted |
+|---|---|
+| The organization unsubscribes from Email Security | **30 days** later. Resubscribing at any point inside those 30 days cancels the scheduled deletion |
+| The organization itself is deleted | Immediately |
+
+Neither needs anyone to ask. The 30-day delay exists so that unsubscribing by
+mistake, or moving billing around, is recoverable — and resubscribing is all the
+recovery takes.
+
+### Requesting a purge
+
+Two steps, because the confirmation token is minted by a call that shows you the
+warning and changes nothing:
+
+```bash
+# 1. Preview. Prints the warning and mints a single-use token; deletes nothing.
+PREVIEW=$(limacharlie mailsec tenant purge --oid "$OID" --output json)
+echo "$PREVIEW" | jq -r .warning
+
+# 2. Purge, within 5 minutes, quoting that token.
+limacharlie mailsec tenant purge --oid "$OID" \
+  --confirm "$(echo "$PREVIEW" | jq -r .confirmation)" \
+  --reason "Tenant offboarded"
+```
+
+The token is single-use and expires 5 minutes after it is minted, so a purge
+cannot be replayed and a re-run always starts from a fresh preview. See
+[the CLI notes](cli.md#the-tenant-purge-is-irreversible) and
+[`DELETE /tenant`](api-reference.md#delete-tenant) for the response fields and
+for what to do when a purge reports that it did not finish.
 
 ---
 

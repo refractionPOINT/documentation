@@ -6,7 +6,7 @@ The `limacharlie mailsec` command group covers the Email Security API surface:
 the coverage screen, the message index and drawer, the audited raw-EML download,
 campaigns and campaign-wide sweeps, sender profiles, the action audit trail, the
 abuse-mailbox report queue, custom-rule validation and backtest, the connection
-preflight, and the served onboarding guide.
+preflight, the served onboarding guide, and the tenant purge.
 
 Commands take the global options (`--oid`,
 `--output json|yaml|toon|csv|table|jsonl`, `--filter <jmespath>`,
@@ -32,7 +32,7 @@ standard `limacharlie hive` commands (`mailsec_provider`, `mailsec_policy`,
 ## Permissions
 
 Four, rather than the usual get/set pair, because Email Security asks to be
-trusted with four separable things:
+trusted with four separable things — plus one command that is not any of them:
 
 | Permission | Covers |
 |---|---|
@@ -40,6 +40,7 @@ trusted with four separable things:
 | `mailsec.set` | Change triage state — resolving a user report |
 | `mailsec.act` | Remediate live mail at the provider |
 | `mailsec.get.eml` | Download the original bytes of a message; requires a logged justification |
+| `mailsec.act` **and** `billing.ctrl` **and** `user.ctrl` | `tenant purge`, in both its preview and its destructive form. Owner-level authority, the same trio deleting the organization requires — there is no separate "owner" permission |
 
 `mailsec.get.eml` is separate on purpose: opening the drawer shows you the
 product's structured view of a message, while downloading the EML takes a
@@ -90,6 +91,9 @@ limacharlie mailsec rule backtest --file rule.json --since 2026-08-01
 limacharlie mailsec analyze --file suspect.eml --org-domain corp.example
 limacharlie mailsec connection test gws-exp
 limacharlie mailsec onboarding --provider gworkspace
+
+# Delete everything Email Security holds for this org — previews without --confirm
+limacharlie mailsec tenant purge
 ```
 
 ## Things worth knowing before you script this
@@ -174,6 +178,42 @@ and would have you discard a good rule.
 ```bash
 limacharlie mailsec rule backtest --file rule.json --output yaml
 ```
+
+### The tenant purge is irreversible
+
+`tenant purge` permanently deletes everything Email Security holds for the
+organization — the message index and the long-term evidence lane, campaigns,
+sender profiles, the action audit trail, user reports, stored raw messages and
+their parsed copies, and link-detonation results — and removes the provider
+connection and policy records, which stops the provider sending any further
+notifications. There is no undo and no smaller scope than the whole tenant.
+
+So it is two calls. With **no** `--confirm` the command previews: it prints the
+warning and mints a confirmation token, and destroys nothing.
+
+```bash
+# 1. Preview. Prints the warning and a single-use token; changes nothing.
+PREVIEW=$(limacharlie mailsec tenant purge --oid "$OID" --output json)
+echo "$PREVIEW" | jq -r .warning
+
+# 2. Purge, within 5 minutes, quoting that token.
+TOKEN=$(echo "$PREVIEW" | jq -r .confirmation)
+limacharlie mailsec tenant purge --oid "$OID" \
+  --confirm "$TOKEN" \
+  --reason "Tenant offboarded"
+```
+
+The token is **single-use and expires 5 minutes after it is minted**, so a purge
+cannot be replayed and cannot be scripted without someone having been shown the
+warning. A purge that comes back with `complete: false` did not finish and is
+safe to repeat — but repeating it means starting again at step 1, because step 2
+spent the token.
+
+`--reason` is optional, capped at 1024 characters, and written to the
+organization's audit log with your identity. Requires Owner-level authority. See
+[Data retention and deletion](policy.md#data-retention-and-deletion) for exactly
+what a purge removes, and for the deletion that happens on its own 30 days after
+an organization unsubscribes.
 
 ## Filtering and pagination
 
