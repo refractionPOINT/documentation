@@ -82,6 +82,7 @@ that fires on volume. A refused attempt carries `result: refused` and a
 |---|---|
 | `permission_denied` | The caller holds `mailsec.get` but not `mailsec.get.eml` |
 | `quota_exceeded` | The organization's download budget for the window is spent |
+| `quota_unavailable` | The budget could not be evaluated (a `503`, not a `429` — nothing was exceeded) |
 | `justification_missing` / `justification_too_short` / `justification_too_long` | No usable reason was supplied |
 | `message_not_found` | The `msg_uuid` matched no indexed message |
 | `eml_never_stored` | The message exists but no raw copy was written at ingest |
@@ -105,6 +106,12 @@ no live mail connection to ship the event on. Expand the `action_id` through
     Exceeding either returns `429` with a body naming the budget. The
     organization-wide refusal is recorded in the action audit and emitted as an
     `EMAIL_ACTION` with `refused_reason: quota_exceeded`.
+
+    These budgets **fail closed**: if they cannot be evaluated, the download is
+    refused with a `503` and `refused_reason: quota_unavailable` rather than
+    served. A budget that cannot be counted is not a budget, and this is the one
+    route that hands original message bytes out of the platform. No other Email
+    Security route is rate-limited, so none is affected.
 
     Every other Email Security route returns the product's *view* of a message —
     the index row, the verdict, the parsed model — and reading those in bulk is
