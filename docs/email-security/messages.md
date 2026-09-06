@@ -66,9 +66,11 @@ that means something else. Restart the walk instead.
 
 ### Retention
 
-The searchable message index keeps **35 days**. Flagged messages — and their
-stored evidence — are retained longer, up to **400 days**, tunable through
-[`mailsec_policy/retention`](policy.md#retention). A miss on an older id is a
+The searchable message index keeps **35 days** by default; flagged messages and
+their stored evidence are kept up to **400 days**. Both are *maxima* you can
+lower — `message_days` and `flagged_days` in
+[`mailsec_policy/retention`](policy.md#retention) — and data past whichever
+horizon you set is deleted rather than merely hidden. A miss on an older id is a
 normal outcome and returns a null message rather than an error.
 
 ## The drawer
