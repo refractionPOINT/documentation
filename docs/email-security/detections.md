@@ -38,6 +38,35 @@ The verdict object on a message carries:
     list). A score with no explanation would not be actionable and is not
     offered.
 
+### The verdict is also an event
+
+Every verdict this product reaches is emitted as an `EMAIL_VERDICT` event, so a
+rule that acts on verdicts is written **once**:
+
+| `revision/seq` | `revision/mode` | What it is |
+|---|---|---|
+| `0` | `auto` | What the rule pack decided, emitted at ingest immediately after the message's `EMAIL_MESSAGE` |
+| `1`, `2`, … | `analyst` | A human overrode it |
+| | `ai` | The AI triage agent overrode it |
+| | `detonation` | Link detonation found something at the other end and overrode it |
+
+The `seq 0` event repeats a verdict that is already inside `EMAIL_MESSAGE`, and
+that duplication is deliberate: without it, "tell me when a message is judged
+malicious" would be two rules against two paths on two event types — one for the
+engine's opinion and one for everything that happened after it — that you would
+have to keep in agreement forever.
+
+`EMAIL_MESSAGE` is still emitted once per message and is still immutable. The
+verdict *history* is the sequence of `EMAIL_VERDICT` events, which is what lets a
+hunt reconstruct what was known at any point in time.
+
+The `seq 0` event is an event and nothing else. It is not an entry in the
+message's revision history, and a message nobody has overridden reports zero
+revisions in the API and the console.
+
+See [Events & Automation](automation.md) for the payload and
+[Custom Rules](custom-rules.md#acting-on-a-verdict) for a rule that uses it.
+
 ## Scoring
 
 Each matching rule carries a **weight** (0–100, how much this evidence is worth)

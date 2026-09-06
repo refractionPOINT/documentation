@@ -34,7 +34,7 @@ clear is the whole idea, so here it is explicitly.
 
 | Email Security provides (the substrate) | You assemble (the recipe) |
 |---|---|
-| The events an agent triggers on, on the `edr` D&R target: `EMAIL_MESSAGE`, `EMAIL_USER_REPORT`, `EMAIL_ACTION` (and `EMAIL_VERDICT` for the write-back) | The `ai_agent` record — the agent's playbook, model, and session limits |
+| The events an agent triggers on, on the `edr` D&R target: `EMAIL_MESSAGE`, `EMAIL_VERDICT`, `EMAIL_USER_REPORT`, `EMAIL_ACTION`. Note `EMAIL_VERDICT` fires for **every** verdict decision, including the engine's own at ingest (`revision/seq: 0`) — a trigger meant for overrides only should say `revision/seq` is greater than `0` | The `ai_agent` record — the agent's playbook, model, and session limits |
 | The read/act API and its `limacharlie mailsec ...` CLI the agent drives as tools: message and report reads, sender profiles, `similar`/`campaign` pivots, report resolution, the typed actions, and the verdict write-back | The trigger rules that decide **when** the agent runs |
 | The permission model that decides what any agent may **do**, per credential, server-side, audited | The credentials: an AI provider key and a LimaCharlie API key at whatever permission ceiling you choose |
 | The `submit_to_triage` automation action — the one place mailsec says "this message warrants a look" | Whether the agent may act at all, and what it costs |
@@ -367,8 +367,9 @@ Prove the recipe before trusting it.
 3. **Read the transcript, and see the write-back.** Confirm the agent read the message,
    pivoted sensibly, and reached a conclusion it can defend with evidence. When an active
    agent revises a verdict it lands as a `mode: ai` [verdict revision](detections.md): the
-   message row updates and an `EMAIL_VERDICT` event is emitted, so the queue shows what the
-   agent decided and why, exactly as it does for the scorer. An active agent's quarantine
+   message row updates and an `EMAIL_VERDICT` event is emitted at the next `revision/seq`, so
+   the queue shows what the agent decided and why, exactly as it does for the scorer — whose
+   own verdict shipped as `seq 0` on the same event type at ingest. An active agent's quarantine
    or report-resolution shows up in the message and report timelines and in the
    `EMAIL_ACTION` audit trail.
 
