@@ -419,9 +419,9 @@ everywhere, in one operation, on request.
 
 | Lane | Kept | Holds |
 |---|---|---|
-| Message index | **35 days** | The searchable row for every message, and what the queue and the drawer read from |
-| Evidence | up to **400 days** | Flagged messages and the evidence attached to them. Tunable with [`retention`](#retention) within the 400-day ceiling |
-| Raw messages | 35 days after delivery, longer once a message is flagged | The original bytes and the parsed copy behind them |
+| Message index | up to **35 days** | The searchable row for every message, and what the queue and the drawer read from. Tunable with [`retention`](#retention) `message_days` within the 35-day ceiling |
+| Evidence | up to **400 days** | Flagged messages and the evidence attached to them. Tunable with [`retention`](#retention) `flagged_days` within the 400-day ceiling |
+| Raw messages | follows the message-index lane, and the evidence lane once a message is flagged | The original bytes and the parsed copy behind them |
 
 Nothing on those clocks needs a request. Data leaves each lane when its window
 ends, and only that lane's window moves it. See
