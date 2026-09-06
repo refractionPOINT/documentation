@@ -18,6 +18,10 @@ standard `Authorization: Bearer <JWT>` header.
     connection test — requires `mailsec.act`. Downloading raw message bytes
     requires `mailsec.get` **and** `mailsec.get.eml`.
 
+    The tenant purge routes are the exception to all of that. Both
+    `GET /tenant` and `DELETE /tenant` require Owner-level authority —
+    `mailsec.act` **and** `billing.ctrl` **and** `user.ctrl` together.
+
     Connections, policy and custom rules are **not** `/mailsec` routes: their CRUD
     goes through Hive (`mailsec_provider`, `mailsec_policy`, `dr-mail`).
 
@@ -51,6 +55,7 @@ Shared behaviours:
 | `GET /senders/{key}` | The accumulated profile for one correspondent. `key` is qualified (`email:someone@corp.example` or `domain:corp.example`) or a bare address or domain. A key with no profile says so explicitly rather than returning a zeroed profile |
 | `GET /actions/{action_id}` | `{action}` — one audit entry expanded, **including the JSON request payload the message timeline omits**. For a raw-message download that payload carries the access justification. Gated on `mailsec.get`: reading who did what to a message is part of reading the product |
 | `GET /onboarding` | `{scopes, steps, script}` — the setup steps, OAuth scopes and `gcloud` commands for connecting a tenant, for rendering in a setup flow. Each step carries a `console` and, where verifiable, a `verified_by` naming the connection-test check that proves it. Params: `provider` (`gworkspace` default, or `m365`), `project_id`, `sa_email`, `topic`, `subscription` — supply them and the commands come back ready to run rather than templated |
+| `GET /tenant` | `{confirmation, expires_in_seconds, warning}` — the tenant-purge preview. Returns the warning describing exactly what a purge removes, and mints the single-use `confirmation` token that [`DELETE /tenant`](#delete-tenant) requires. **It changes nothing.** The token expires after `expires_in_seconds` (300). Requires Owner-level authority, not `mailsec.get` |
 
 ### `GET /messages/{msg_uuid}/eml`
 
@@ -63,6 +68,60 @@ the `justification` query parameter is **required**.
 
 Raw copies expire 35 days after delivery (longer for flagged messages), after
 which this returns a typed expiry error while the index row stays readable.
+
+### `DELETE /tenant`
+
+The tenant purge. It permanently deletes everything Email Security holds for the
+organization — the message index and the long-term evidence lane, campaigns,
+sender profiles, the action audit trail, user reports, stored raw messages and
+their parsed copies, link-detonation results, and the organization's provider
+connection and policy configuration — and it stops the mail connections at the
+provider so no further notifications arrive. It cannot be undone, and there is no
+smaller scope than the whole organization.
+
+Both this route and `GET /tenant` require **Owner-level authority**:
+`mailsec.act`, `billing.ctrl` and `user.ctrl` together — the same three
+permissions deleting the organization requires. There is no separate "owner"
+permission.
+
+The `confirmation` token comes from `GET /tenant`, which returns the warning text
+and changes nothing. The token is **single-use** and expires **5 minutes** after
+it is minted, so the destructive call cannot be replayed, and cannot be reached
+without the warning having been served first.
+
+| Param | |
+|---|---|
+| `confirmation` | **Required.** The token minted by `GET /tenant`. A token that has expired, has already been spent, or was minted for another organization is refused |
+| `reason` | Optional free text, **1024 characters maximum**. Recorded in the organization's audit log next to your authenticated identity. An over-long reason is refused rather than truncated |
+
+The response reports what was removed rather than flattening it into success:
+
+| Field | |
+|---|---|
+| `complete` | `true` when nothing was left behind. `false` means part of the purge did not finish and the call should be repeated |
+| `objects_deleted` | Stored raw messages removed |
+| `mdms_deleted` | Parsed message copies (Message Data Models) removed |
+| `detonation_results_deleted` | Link-detonation results removed |
+| `detonation_results_skipped` | Link-detonation results left in place — reported rather than quietly counted as deleted |
+| `objects_failed` | Stored items that could not be removed. Any non-zero value is a reason `complete` is `false` |
+| `tables_purged` | The list of the product's data sets that were cleared, named so a partial purge shows which ones were reached |
+| `subscriptions_stopped` | Provider notification subscriptions stopped, after which the provider sends nothing further |
+| `subscriptions_failed` | Subscriptions the provider would not stop |
+| `mailboxes_walked` | Mailboxes visited while stopping notifications |
+| `provider_records_deleted` | Email Security provider connection records removed |
+| `policy_records_deleted` | Email Security policy records removed |
+| `connections_unreachable` | Connections that could not be reached at all — a revoked credential or a tenant that is already gone. Their data is still purged; only the provider-side stop could not be confirmed |
+| `rows_remained` | Rows still present when the pass ended. Non-zero means re-run |
+
+**The call is re-runnable.** A purge that returns `complete: false` has deleted
+whatever it could, and repeating it deletes what remained — nothing is
+double-counted and nothing is skipped for having been attempted. Mint a **fresh**
+confirmation token for each attempt: the previous one was spent.
+
+Deletion also happens without this route being called — 30 days after an
+organization unsubscribes from Email Security, and immediately when the
+organization is deleted. See
+[Data retention and deletion](policy.md#data-retention-and-deletion).
 
 ## Writes
 
