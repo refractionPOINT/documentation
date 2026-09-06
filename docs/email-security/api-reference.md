@@ -66,8 +66,59 @@ the `justification` query parameter is **required**.
 |---|---|
 | `justification` | Why these bytes are being accessed. Recorded against your authenticated identity in the organization's action audit and retained for 400 days — a failed attempt is recorded too. Stored verbatim; the backend enforces a minimum and a maximum length and refuses an over-long reason rather than truncating |
 
-Raw copies expire 35 days after delivery (longer for flagged messages), after
+Raw copies expire with their retention lane — `message_days` (up to 35) for the message index, `flagged_days` (up to 400) once a message is flagged, see [`retention`](policy.md#retention) — after
 which this returns a typed expiry error while the index row stays readable.
+
+**Every attempt is telemetry.** Served or refused, each call emits an
+`EMAIL_ACTION` event with `action: get_eml` on the connection's sensor, carrying
+the actor, the message, the mailbox, the stated justification, and — on a served
+download — the `bytes` handed over. That is what makes the download *alertable*
+rather than merely recorded: see
+[Detections & Verdicts](detections.md#watching-the-download-itself) for a rule
+that fires on volume. A refused attempt carries `result: refused` and a
+`refused_reason`:
+
+| `refused_reason` | Meaning |
+|---|---|
+| `permission_denied` | The caller holds `mailsec.get` but not `mailsec.get.eml` |
+| `quota_exceeded` | The organization's download budget for the window is spent |
+| `quota_unavailable` | The budget could not be evaluated (a `503`, not a `429` — nothing was exceeded) |
+| `justification_missing` / `justification_too_short` / `justification_too_long` | No usable reason was supplied |
+| `message_not_found` | The `msg_uuid` matched no indexed message |
+| `eml_never_stored` | The message exists but no raw copy was written at ingest |
+| `eml_expired` | The raw copy aged out of its retention lane |
+| `read_failed` | The object is there and could not be read |
+| `eml_store_not_configured` | This deployment has no raw-message store |
+| `internal_error` | The service could not complete the read (an index-store failure, not an object failure) |
+
+The response's `audited` block echoes the `action_id`, the recorded actor and
+justification, and `event_emitted` — which is `false` when the organization has
+no live mail connection to ship the event on. Expand the `action_id` through
+`GET /actions/{action_id}` to read the justification back.
+
+!!! warning "This route is rate-limited, and deliberately the only one that is"
+    Two budgets apply, both per rolling hour:
+
+    | Budget | Limit |
+    |---|---|
+    | Per API key (or user) per organization | **120** downloads |
+    | Per organization, across every key | **600** downloads |
+
+    Exceeding either returns `429` with a body naming the budget. The
+    organization-wide refusal is recorded in the action audit and emitted as an
+    `EMAIL_ACTION` with `refused_reason: quota_exceeded`.
+
+    These budgets **fail closed**: if they cannot be evaluated, the download is
+    refused with a `503` and `refused_reason: quota_unavailable` rather than
+    served. A budget that cannot be counted is not a budget, and this is the one
+    route that hands original message bytes out of the platform. No other Email
+    Security route is rate-limited, so none is affected.
+
+    Every other Email Security route returns the product's *view* of a message —
+    the index row, the verdict, the parsed model — and reading those in bulk is
+    what a dashboard does. This one returns the message, so a legitimate key
+    doing it in bulk is exfiltration. There is no bulk EML export route, and the
+    limits are sized for an analyst working a queue rather than for a scrape.
 
 ### `DELETE /tenant`
 

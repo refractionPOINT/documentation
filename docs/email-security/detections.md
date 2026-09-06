@@ -215,6 +215,87 @@ without forking anything, through
     your sender history, your VIP list — is named explicitly in the response
     rather than silently missing.
 
+## Watching the download itself
+
+Detection does not stop at the mail. The most privileged thing anyone can do in
+this product is take a person's original message out of it, and that act is
+telemetry too: every call to
+[`GET /messages/{msg_uuid}/eml`](api-reference.md#get-messagesmsg_uuideml) —
+served or refused — emits an `EMAIL_ACTION` with `action: get_eml`, carrying the
+actor, the mailbox, the stated justification, and the `bytes` handed over.
+
+One download is an analyst doing their job. A hundred in an hour is not, and it
+is the *volume* that says so — which is why the byte count is on the event.
+
+```yaml
+# Detect: one identity pulling raw mail in bulk
+op: and
+rules:
+  - op: is
+    path: routing/event_type
+    value: EMAIL_ACTION
+  - op: is
+    path: event/action
+    value: get_eml
+  - op: is
+    path: event/result
+    value: ok
+```
+
+```yaml
+# Respond
+- action: report
+  name: mailsec-raw-download
+  detect_data:
+    actor: '{{ .detect.event.actor }}'
+    mailbox: '{{ .detect.event.mailbox.address }}'
+    bytes: '{{ .detect.event.bytes }}'
+  suppression:
+    is_global: true
+    keys:
+      - 'mailsec-raw-download'
+      - '{{ .detect.event.actor }}'
+    max_count: 25
+    period: 1h
+```
+
+The suppression block is doing the real work: it lets twenty-five downloads an
+hour by one identity pass without a detection and reports the twenty-sixth, so
+the rule is quiet for normal use and loud for a scrape. Set `max_count` to what
+your team actually does in an hour, not to a number that feels safe.
+`is_global: true` keys the budget on the identity across the whole organization
+rather than per sensor — an analyst working two mail connections is still one
+analyst.
+
+Templates in `detect_data` and `metadata` resolve against the **detection**, not
+the raw event, which is why the paths above are `.detect.event.…`.
+
+!!! tip "Alert on the refusals too — they are the earlier signal"
+    A stolen or over-broad key usually fails before it succeeds. Match
+    `event/result` = `refused` and read `event/refused_reason`:
+    `permission_denied` means somebody without the `mailsec.get.eml` grant
+    reached for raw mail, and `quota_exceeded` means the organization's download
+    budget was hit. Both are worth a detection on the first occurrence, with no
+    suppression at all.
+
+```yaml
+# Detect: somebody reached for raw mail without the grant
+op: and
+rules:
+  - op: is
+    path: routing/event_type
+    value: EMAIL_ACTION
+  - op: is
+    path: event/action
+    value: get_eml
+  - op: is
+    path: event/refused_reason
+    value: permission_denied
+```
+
+Both rules are ordinary platform D&R rules on the `edr` target, so the same
+response arsenal applies — page a channel, open a ticket, disable the key.
+
 ## Two seats for rules
 
 Signal rules run in the collector, before the verdict is emitted. Platform D&R
