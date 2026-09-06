@@ -68,6 +68,14 @@ executor, so the organization's `alert_only` / `enforce` mode, the audit row and
 idempotency all apply unchanged — there is exactly one remediation path in this
 product.
 
+A rule does not supply banner HTML: `banner_message` uses the organization's own
+banner from its [`banners` policy record](policy.md#banners), rendered
+server-side into a fixed escaped template. Automated bannering also requires
+`enabled` on the [`banners` record](policy.md#banners); without it a rule's
+`banner_message` is decided and audited but the mailbox is not touched
+(`alert_only`). Bannering asked for by a person — console, API, CLI — is not
+gated by that switch.
+
 Actions dispatched this way are attributed with `source: dr` in the audit trail.
 
 !!! tip "Which seat should this rule sit in?"

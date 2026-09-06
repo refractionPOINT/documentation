@@ -305,8 +305,24 @@ text: "External sender. Verify before clicking links or opening attachments."
 | `text` | A packaged warning | **Plain text only** — no `<` or `>` — and capped at 512 characters |
 
 The HTML template is fixed and sanitized in code; policy contributes only the
-text. Accepting markup here would turn a configuration field into stored HTML
-injection against your own users.
+text, and it is HTML-escaped when the banner is rendered. Accepting markup here
+would turn a configuration field into stored HTML injection against your own
+users, so it is refused at the record and escaped again at the render.
+
+**This record is the only source of a banner's wording.** No API call, CLI flag
+or D&R rule supplies banner HTML — the `banner` field on the action routes and
+the `--banner` flag are deprecated and ignored, and will be removed. If you
+change the wording here, every subsequent `banner_message` uses it.
+
+`enabled` is what lets **automation** banner this organization's mail: with it
+off, an automation, a D&R rule or the AI triage agent asking for
+`banner_message` is decided and audited but the mailbox is not touched
+(`alert_only`). It does **not** gate a banner somebody asked for — from the
+console, the API or the CLI — because the switch exists to stop the product
+rewriting mail on its own, not to stop an operator from acting on a message in
+front of them. An organization that has never written this record still has
+working `banner_message` from the console; it simply has no automated
+bannering, and the wording is the packaged sentence.
 
 Bannering also needs the provider capability: `Mail.ReadWrite` is enough on
 Microsoft 365 (edited in place), while Google Workspace additionally needs the
