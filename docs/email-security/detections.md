@@ -28,7 +28,7 @@ The verdict object on a message carries:
 | `tags` | The deduplicated, sorted tags of the rules that actually contributed |
 | `engine_version` | The rule-pack version that decided it |
 | `decided_at` | When |
-| `mode` | `auto` (the rule pack), `analyst` (a human override) or `ai` |
+| `mode` | Who last decided: `auto` (the rule pack), `analyst` (a person), `ai` (a triage agent) or `detonation` ([link detonation](#link-detonation)). See [Revising a verdict](#revising-a-verdict) |
 | `campaign_id` | The campaign this message was clustered into, if any |
 
 !!! info "A number alone is never the answer"
@@ -219,6 +219,7 @@ chain).
 | `enrichments/sender_domain` | The sender domain's registration age, from RDAP with a bounded global cache |
 | `enrichments/link_features[]` | Per link, aligned with `links[]`: `domain`, `domain_age_days`, `popularity_bucket` (`top1k` / `top100k` / `top1m` / `unranked`), `in_urlhaus`, `mixed_script` (a homograph label mixing writing systems), `credentials_in_url` (the `https://apple.com@evil.example/` trick) |
 | `enrichments/lookalike` | `vip_hit` (`display_name:<name>` when the display name matches a VIP whose address does not, `email:<addr>` when the sender *is* the VIP), `org_domain_distance` and `brand_domain_distance` — edit distances against your own domains and known brands |
+| `enrichments/detonation` | What [link detonation](#link-detonation) found at the other end of a link, when it ran: `hops[]` with each hop's `resolved_ips`, `connected_addr` and `tls`, a `landing` (`effective_url`, `title`, `has_password_input`, `form_action_hosts`, …), or a `refusal` (`kind`, `reason`). **Added after the first verdict**, so it is absent on a message that was never detonated — which is most of them |
 | `attachments[].explode` | Attachment explosion: recursive `children` with their own names, hashes, magic types and depth; `archive` (`encrypted`, `file_count`, `max_depth_hit`); `vba` (`auto_exec`, `suspicious`, `hex_strings`); `qr[].url`; `ocr_excerpt`; `yara_matches`; the `scanners` that ran |
 
 Attachment explosion is bounded — a per-message time budget and size and event
