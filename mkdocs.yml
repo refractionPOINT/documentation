@@ -593,6 +593,7 @@ nav:
           - Microsoft 365: email-security/provider-setup/microsoft-365.md
           - Google Workspace: email-security/provider-setup/google-workspace.md
       - Messages & Triage: email-security/messages.md
+      - Bulk Remediation: email-security/remediation.md
       - Campaigns: email-security/campaigns.md
       - User Reports: email-security/user-reports.md
       - Detections & Verdicts: email-security/detections.md
@@ -603,6 +604,7 @@ nav:
       - Command Line Interface: email-security/cli.md
       - API Reference: email-security/api-reference.md
       - AI Triage: email-security/ai-triage.md
+      - Troubleshooting: email-security/troubleshooting.md
 
   - Cloud Security:
       - Overview: cloud-security/index.md

@@ -9,7 +9,7 @@ fleet-wide policy are a script, not a UI workflow.
 | Hive | Records | Purpose |
 |---|---|---|
 | `mailsec_provider` | one per mail connection | which tenant to protect, with which credential — see [Connecting Providers](providers.md) |
-| `mailsec_policy` | many, discriminated by `policy_type` | automations, exclusions, VIPs, thresholds, banners, retention, reporter replies, hunt defaults, clustering |
+| `mailsec_policy` | many, discriminated by `policy_type` | managed detections, automations, exclusions, VIPs, thresholds, banners, retention, reporter replies, hunt defaults, clustering |
 | `dr-mail` | one per custom rule | your own mail detection rules — see [Custom Rules](custom-rules.md) |
 
 ## How `mailsec_policy` records work
@@ -33,7 +33,7 @@ How each type composes:
 | `exclusions` | Concatenated — a set of independent suppressions |
 | `vips` | Union, deduplicated and sorted |
 | `thresholds` | Last writer wins per field, with the ordering invariant re-checked afterwards |
-| `banners`, `reporter_reply`, `hunt_defaults`, `clustering` | Last writer wins per field |
+| `managed_rules`, `banners`, `reporter_reply`, `hunt_defaults`, `clustering` | Last writer wins per field |
 | `retention` | **Maximum** wins — see [Retention](#retention) |
 
 ### Unknown fields are refused
@@ -59,6 +59,112 @@ through the API or through git-sync.
 An organization that has written no policy still has one. Every type below states
 its default, and the defaults are deliberately inert: nothing moves mail, nothing
 modifies mail, and nothing sends mail until you say so.
+
+---
+
+## `managed_rules`
+
+The switch for the packaged detection pack. It is the first record in this
+reference because it is the only one that can turn detection off.
+
+```yaml
+policy_type: managed_rules
+enabled: false
+```
+
+| Field | Default | |
+|---|---|---|
+| `enabled` | `true` | Whether the managed rule pack is matched at all |
+
+**`enabled` must be stated.** A `managed_rules` record that sets nothing is
+refused rather than read as "disable": the failure mode of guessing wrong here is
+an organization with no detection that believes it has some.
+
+**Absent is enabled.** An organization that has never written this record has the
+pack. "No record" is the product default, not an opt-out, and nothing in the
+console or the API renders a missing record as off.
+
+**When it is off**, the managed pack is not matched at all. Your own `dr-mail`
+rules still are, and they are still scored the same way — so an organization that
+wants to own detection entirely can. A message that then matches nothing is
+`unknown`, never `benign`: "nobody was looking" and "we looked and it was fine"
+are different facts and are reported differently. See
+[Managed detections are optional](pipeline.md#managed-detections-are-optional).
+
+You do not need this switch to *tune* the pack. Disabling one packaged rule, or
+changing its weight, is a [`rule_overrides`](#thresholds) entry.
+
+### The three ways to flip it
+
+All three write the same record — same name, same `policy_type`, same field — and
+the collector cannot tell which one wrote it.
+
+=== "Console"
+
+    **Email Security → Settings** carries a managed-detection switch, and
+    **Overview** leads with a banner while the pack is off — that one fact
+    changes how every count below it should be read. Turning the pack **off**
+    asks for confirmation; turning it back on restores the product default and
+    does not.
+
+    When more than one `managed_rules` record exists, or the canonical one has
+    been disabled in the Hive, the switch is **replaced** by a status badge
+    showing the resolved value and a link to the **Policy** page. It does not
+    offer to write, because a write in that state would either be overridden by
+    a later-named record or silently do nothing — and a switch that reports a
+    state it did not produce is worse than no switch.
+
+=== "CLI"
+
+    ```bash
+    cat > managed-rules.yaml <<'YAML'
+    policy_type: managed_rules
+    enabled: false
+    YAML
+
+    limacharlie hive set --hive-name mailsec_policy --key managed_rules \
+      --input-file managed-rules.yaml --enabled --oid $OID
+    ```
+
+=== "Extension"
+
+    `ext-email-security` exposes two actions for reading and flipping this
+    without hand-writing a record — which is how a D&R rule or an automation
+    reaches it:
+
+    | Action | Body | Returns |
+    |---|---|---|
+    | `set_managed_rules` | `enabled` (**required** boolean), optional `reason` — recorded as the record's comment | `managed_rules_enabled` |
+    | `get_managed_rules` | — | `managed_rules_enabled`, and `configured` |
+
+    `configured` is the field that distinguishes **on by default** from **turned
+    on deliberately**: it is `false` when no record exists. `set_managed_rules`
+    needs `mailsec.set`; `get_managed_rules` needs `mailsec.get`.
+
+!!! note "`managed_rules` is the canonical record name"
+    The console and the extension both write the record **named**
+    `managed_rules`, and the CLI example above does too. Any record name works —
+    composition is last-writer-wins in record-name order over the records the
+    Hive has *enabled* — but a second record named later than `managed_rules`
+    wins over it, and a `managed_rules` record the Hive has disabled does not
+    count at all. Keep it to one record unless you mean to layer them.
+
+    Only the extension stamps the record with the `lc:system` tag. The console
+    and the CLI do not add it, and the console **preserves** it when it edits a
+    record the extension wrote — so the tag tells you how a record was first
+    created, and nothing more. Do not treat its absence as meaningful.
+
+### How fast a change takes effect
+
+| | |
+|---|---|
+| **Normally** | Seconds. A `mailsec_policy` write is broadcast on the Hive's change feed and the collector drops that organization's cached policy on the spot |
+| **If the broadcast is missed** | The next mailbox-lease renewal tick re-reads policy |
+| **Worst case** | **Five minutes** — the resolved-policy cache's TTL, which expires whether or not anything was heard |
+
+The broadcast is the fast path and never the guarantee: it is fire-and-forget, so
+a collector that was restarting can miss it. The bound you are promised is the
+five-minute TTL, and the broadcast is why you almost never wait for it.
 
 ---
 
@@ -98,12 +204,14 @@ refused at save — "quarantine all mail" is never what someone meant to write.
 
 ### `actions`
 
-| Action | |
-|---|---|
-| `quarantine_message` | Out of the inbox, restorable |
-| `trash_message` | To recoverable trash |
-| `move_to_spam` | To the junk/spam location |
-| `banner_message` | Prepend the warning banner |
+| Action | | Touches the mailbox |
+|---|---|:--:|
+| `quarantine_message` | Out of the inbox, restorable — a change of **placement** | ✅ |
+| `trash_message` | To recoverable trash — a change of placement | ✅ |
+| `move_to_spam` | To the junk/spam location — a change of placement | ✅ |
+| `banner_message` | Prepend the warning banner. A **modification**, not a placement: a bannered message does not move. Needs `enabled` on the [`banners`](#banners) record | ✅ |
+| `submit_to_triage` | Record that this message warrants a look, and say so as telemetry | |
+| `crawl_link` | Queue the message's links for [detonation](detections.md#link-detonation) | |
 
 Deliberately **not** automatable: the campaign-wide sweeps (an automation acting
 on one message must not fan out to hundreds without a human — that is an explicit
@@ -111,11 +219,49 @@ action), `restore_message` (undoing is a human decision), and the disposition
 labels (labels are evidence, and a machine writing them would poison the data set
 that measures the machine).
 
-!!! warning "Two further action names validate but do not execute"
-    Policy validation accepts `submit_to_triage` and `crawl_link` as automatable,
-    but the remediation executor implements neither, so an automation that
-    dispatches one records a failed action rather than doing anything. Use only
-    the four actions in the table above.
+### The two asking actions
+
+`submit_to_triage` and `crawl_link` touch no mailbox. They record a question and
+hand it off, and neither promotes the message to the 400-day evidence lane —
+asking is not an answer. The message gets there when the question produces one.
+
+`submit_to_triage` calls nothing and starts nothing: it writes an audit row and
+emits an `EMAIL_ACTION`, which is the event an
+[AI triage agent's trigger rule](ai-triage.md) fires on. Deciding *which* mail
+warrants a look is this product's half of the job; deciding how an agent runs and
+what it costs belongs to the agent.
+
+!!! danger "A trigger on `submit_to_triage` must filter on `result`"
+    An `EMAIL_ACTION` is emitted for **every** outcome, including `alert_only` —
+    that is what makes the audit complete. So an organization in `alert_only`
+    emits `EMAIL_ACTION{action: submit_to_triage, result: alert_only}`, meaning
+    "this organization's automations *would* have asked for a look".
+
+    A rule matching the action alone reads that as consent and starts a paid
+    session for exactly the organizations that chose not to have things happen on
+    their behalf. Always write:
+
+    ```yaml
+    op: and
+    rules:
+      - op: is
+        path: routing/event_type
+        value: EMAIL_ACTION
+      - op: is
+        path: event/action
+        value: submit_to_triage
+      - op: is
+        path: event/result
+        value: ok
+    ```
+
+`crawl_link` returns `ok` meaning **queued**, not fetched. It is subject to the
+same enforcement check as everything else, and deliberately so: a detonation
+opens a connection to attacker-controlled infrastructure, which confirms to the
+sender that the mail landed in a monitored mailbox. An organization in
+`alert_only` has said "do not do things on my behalf", and that is such a thing.
+An analyst asking always executes. Where detonation is not deployed, the action
+records a failed result naming that rather than pretending to have queued it.
 
 ### `mode`
 
@@ -145,6 +291,16 @@ save, and anything that ever slipped past decoding still behaves as
 malicious → quarantine and graymail → move to spam among them. Nobody is
 surprise-quarantined on day one. Review the seeded records before switching any
 of them to `enforce`.
+
+!!! note "An automation edit can take up to ten minutes to apply"
+    Automations are **compiled** from the resolved policy, and that compile
+    happens on a ten-minute tick rather than per message. Everything the
+    judgement path reads — [`thresholds`](#thresholds), [`exclusions`](#exclusions),
+    the [`managed_rules`](#managed_rules) switch — applies within five minutes and
+    usually within seconds. An edit here is the one with the longer bound.
+
+    Plan a change to `enforce` accordingly: the switch is not instantaneous, and
+    switching it back is subject to the same tick.
 
 ---
 
@@ -487,7 +643,7 @@ A scheduled deletion is never silent. You learn about it three ways:
   the deletion was scheduled, and what cancels it.
 - **Seven days before it fires**, as a second notice marked `FINAL NOTICE`.
 - **At any time**, from the `entitlement` block of
-  [`GET /coverage`](api-reference.md#get-coverage) — `purge_scheduled_at`,
+  [`GET /coverage`](api-reference.md#reads) — `purge_scheduled_at`,
   `purge_reason`, `purge_days_remaining` and `purge_cancellable`. The block is
   absent from the response only when nothing is scheduled.
 
@@ -522,7 +678,7 @@ once rather than 14 days per subscription. Moving the organization off the free
 tier clears the limits immediately.
 
 Read the remaining time from the `entitlement` block of
-[`GET /coverage`](api-reference.md#get-coverage): `trial_ends_at` and
+[`GET /coverage`](api-reference.md#reads): `trial_ends_at` and
 `trial_days_remaining`.
 
 ### What happens when the trial ends
@@ -626,6 +782,22 @@ dry_run: true
 | `window_days` | 7 | 1–365 |
 | `max_results` | 1000 | 1–100000 |
 | `dry_run` | `true` | An operation that can bulk-remediate defaults to "show me what this would match" |
+
+!!! warning "Nothing reads this record yet"
+    The record type validates and composes like every other one, and it is
+    documented here because it is savable and will be refused if you get it
+    wrong. But **no surface consumes it today.** The server-side retro-hunt
+    (`POST /hunts`, `GET /hunts/{hunt_id}`, `POST /hunts/{hunt_id}/remediate`)
+    is registered in the public OpenAPI document and answers a typed
+    `not_implemented` — the URLs and their permission gates are frozen ahead of
+    the engine that will serve them. The console's **Hunt** screen is a
+    different thing entirely: it compiles your criteria to
+    [LCQL](automation.md#querying-mail-with-lcql) and runs the ordinary
+    historical-event search over `EMAIL_MESSAGE`, with its own window control,
+    and it does not read this record.
+
+    Writing `hunt_defaults` now is harmless and changes nothing. Do not treat a
+    `dry_run: true` here as a safety control over anything.
 
 ---
 

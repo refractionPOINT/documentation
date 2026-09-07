@@ -104,6 +104,7 @@ Managing connections and policy uses the ordinary Hive permissions for the
 | [Connecting Providers](providers.md) | The connection record, credentials, scope, ingest modes and the connection test |
 | [Microsoft 365](provider-setup/microsoft-365.md) · [Google Workspace](provider-setup/google-workspace.md) | Per-provider setup |
 | [Messages & Triage](messages.md) | The queue, the drawer, actions and the audit trail |
+| [Bulk Remediation](remediation.md) | Acting on a set of messages you named: preview, confirm, execute, poll |
 | [Campaigns](campaigns.md) | Clustering and campaign-wide sweeps |
 | [User Reports](user-reports.md) | The abuse mailbox and the report SLA queue |
 | [Detections & Verdicts](detections.md) | How a verdict is produced, and what the rules can read |
@@ -112,3 +113,4 @@ Managing connections and policy uses the ordinary Hive permissions for the
 | [Policy Reference](policy.md) | Every `mailsec_policy` record type |
 | [Events & Automation](automation.md) | The `EMAIL_*` events and wiring them to D&R |
 | [Command Line Interface](cli.md) · [API Reference](api-reference.md) | The programmable surface |
+| [Troubleshooting](troubleshooting.md) | What each failure looks like, and where it is reported |
