@@ -246,8 +246,8 @@ rule would be matching.
 
 ### Two kinds of rule cannot be backtested
 
-Both are **refused by name**, and in both cases the rule itself is fine — it
-validates, it saves, and it runs.
+Both are **refused by name**, and in neither case is the rule itself the problem:
+the backtest is what cannot be run, not the rule.
 
 **A rule using `lookup`.** The `lookup` operator resolves one of your
 organization's own `lookup` Hive records, and the service that answers a backtest
