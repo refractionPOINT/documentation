@@ -107,6 +107,8 @@ limacharlie mailsec onboarding --provider gworkspace
 limacharlie mailsec tenant purge
 ```
 
+`--window-days` accepts 1-35 (the platform's maximum message retention) and cannot be combined with an explicit `--since`/`--until`. Out-of-range values for `--limit`, `--min-score` and `--min-members` are refused with an error naming the flag rather than silently clamped or ignored.
+
 ## Things worth knowing before you script this
 
 ### Campaign actions preview by default
