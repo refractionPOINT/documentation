@@ -84,6 +84,7 @@ limacharlie mailsec coverage --oid $OID --output yaml --filter 'entitlement'
 | `plan` | `paid` or `trial`. Omitted when `resolved` is `false` |
 | `trial_started_at`, `trial_ends_at`, `trial_expired`, `trial_days_remaining` | The clock, where one applies. Days remaining rounds **up** — a trial with four hours to run has not had its last day yet. Omitted when `resolved` is `false` |
 | `mailbox_cap`, `mailbox_cap_enforced` | A protected-mailbox ceiling, and whether it is actually being enforced. Omitted when `resolved` is `false` |
+| `mailboxes_active`, `mailboxes_over_cap`, `mailbox_cap_reached` | How many mailboxes are protected, how many were found and left unprotected because of the cap, and whether the cap is reached. This is the shortfall as a **number** — how much of the estate is not covered — rather than something to infer |
 | `purge_schedule_available` | `false` means the schedule could not be **read**, so the pending-deletion fields are absent rather than rendered as "nothing scheduled" |
 | `purge_scheduled_at`, `purge_reason`, `purge_days_remaining`, `purge_cancellable` | A pending deletion, why, when, and whether undoing the condition withdraws it |
 
@@ -96,16 +97,20 @@ found, and not being watched. Not `excluded` (which is your own scope decision)
 and not `error` (which would be a fault to fix). A cap **bounds activation and
 never deactivation**: nothing un-protects a mailbox that is already protected.
 
-!!! note "The clock and the ceiling may be reported without being enforced"
-    Whether Email Security applies a trial clock or a mailbox ceiling at all is a
-    per-deployment setting, and it can be switched on in a reporting posture
-    first — resolving each organization's plan and saying what *would* apply,
-    while refusing nobody. `mailbox_cap_enforced` is the field that tells the two
-    apart, and a `gate_reason` of `trial_expired` only ever appears where the
-    limit is actually being applied. Where the setting is off entirely, the plan,
-    clock and cap fields are simply absent.
+`mailbox_cap_enforced` is worth reading rather than assuming: a deployment can
+resolve every organization's plan and report what *would* apply while refusing
+nobody, and in that posture the cap is a number to plan against rather than one
+that is turning mailboxes away.
 
-    Do not read a populated `trial_ends_at` as an announcement about pricing.
+What a trial is, how long it runs and how many mailboxes it covers are in
+[Plans, the free trial, and the mailbox cap](policy.md#plans-the-free-trial-and-the-mailbox-cap).
+
+!!! note "A lapsed trial is not the same as an unsubscribe"
+    An organization whose trial ended is still **subscribed**, so the API still
+    answers: you can search the queue, read a message and remediate mail that was
+    already ingested. What stops is ingestion. An organization that unsubscribed
+    loses the API as well — that is the difference between the two rows of
+    `gate_reason`.
 
 ### 3. Check the connection itself
 

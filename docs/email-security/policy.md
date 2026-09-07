@@ -621,26 +621,103 @@ server from your verified claims rather than taken from the request.
 
 ### It also happens without a request
 
-| Event | `purge_reason` | When the data is deleted |
+| Event | When the data is deleted | What cancels it |
 |---|---|---|
-| The organization unsubscribes from Email Security | `unsubscribed` | **30 days** later. Resubscribing at any point inside those 30 days cancels the scheduled deletion |
-| A free trial of Email Security lapses | `trial_expired` | **30 days** later. Moving the organization off the free tier inside those 30 days cancels it |
-| The organization itself is deleted | `org_deleted` | Immediately |
-| A [tenant purge](#requesting-a-purge) is asked for | `requested` | Immediately |
+| The organization unsubscribes from Email Security | **30 days** later | Resubscribing at any point inside those 30 days |
+| The organization's free trial ends and it stays on the free tier | **30 days** later | Moving the organization off the free tier at any point inside those 30 days |
+| The organization itself is deleted | Immediately | Nothing — the organization no longer exists |
 
-None of the first three needs anyone to ask. The 30-day delay exists so that
-unsubscribing by mistake, or moving billing around, is recoverable — and undoing
-the condition is all the recovery takes. The trial case gets the **same** 30 days
-deliberately: from your side the two situations are the same situation, and
-giving the shorter grace to the customer most likely to have misread a deadline
-would be exactly backwards.
+None of them needs anyone to ask. The 30-day delay exists so that unsubscribing
+by mistake, letting a trial lapse over a holiday, or moving billing around is
+recoverable — and undoing the thing that started the clock is all the recovery
+takes. The two cancellations are **not interchangeable**: resubscribing does not
+cancel a deletion scheduled because a trial ended, and upgrading does not cancel
+one scheduled because the organization unsubscribed. Each undoes only what it
+contradicts.
 
-**You are told, twice.** A notice is delivered to the organization's error stream
-when a deletion is first scheduled and again in the final seven days. Each names
-the exact date, says what undoing it takes, and says plainly that nothing has
-been deleted yet. `coverage`'s `entitlement` block carries the same facts as data
-— `purge_scheduled_at`, `purge_reason`, `purge_days_remaining` and
-`purge_cancellable`. See [Troubleshooting](troubleshooting.md#we-unsubscribed-what-happens-to-our-data).
+### You are told before it happens
+
+A scheduled deletion is never silent. You learn about it three ways:
+
+- **When it is scheduled**, as an error-stream notice naming the exact date, why
+  the deletion was scheduled, and what cancels it.
+- **Seven days before it fires**, as a second notice marked `FINAL NOTICE`.
+- **At any time**, from the `entitlement` block of
+  [`GET /coverage`](api-reference.md#reads) — `purge_scheduled_at`,
+  `purge_reason`, `purge_days_remaining` and `purge_cancellable`. The block is
+  absent from the response only when nothing is scheduled.
+
+Both notices go to the organization's error stream, which is the same place
+Email Security reports that ingestion has paused — so there is one place to
+watch, and a D&R rule or an output can act on either. Each notice is delivered
+exactly once per scheduled deletion; if the deadline moves, the notices are
+re-sent for the new date.
+
+## Plans, the free trial, and the mailbox cap
+
+Email Security is available to every organization. What differs between a
+**trial** organization and a **paid** one is how long it runs and how many
+mailboxes it protects.
+
+An organization is on the trial when it is on the LimaCharlie free tier — the
+same line the rest of the platform draws, so an organization evaluating Email
+Security and Cloud Security at once gets one answer about what it is paying for.
+
+| | Trial | Paid |
+|---|---|---|
+| Duration | **14 days** from the day Email Security was enabled | No limit |
+| Protected mailboxes | **25** | No limit |
+| Everything else — detections, remediation, retention, API, telemetry | Identical | Identical |
+
+### The 14-day clock
+
+The clock starts the day the organization first subscribes to
+`ext-email-security` and is recorded durably. **Unsubscribing and resubscribing
+does not restart it**: the clock survives an unsubscribe, so a trial is 14 days
+once rather than 14 days per subscription. Moving the organization off the free
+tier clears the limits immediately.
+
+Read the remaining time from the `entitlement` block of
+[`GET /coverage`](api-reference.md#reads): `trial_ends_at` and
+`trial_days_remaining`.
+
+### What happens when the trial ends
+
+The same thing that happens when an organization unsubscribes, and for the same
+reason — the product stops, nothing is deleted yet:
+
+- **Ingestion pauses.** No new mail is analyzed, and the mail connections are
+  not renewed, so the provider's own watches expire on their own schedule.
+- **Nothing is deleted, and nothing is changed.** The connections, the policy
+  records and every message already analyzed are intact and follow their normal
+  [retention](#data-retention-and-deletion).
+- **Reading and acting still work.** An analyst can still search the queue, read
+  a message and remediate mail that was already ingested.
+- **The 30-day deletion clock starts**, with the notices described above.
+
+Moving the organization off the free tier resumes ingestion within about five
+minutes, and cancels the scheduled deletion. Mail delivered while ingestion was
+paused is not analyzed retroactively.
+
+### The 25-mailbox cap
+
+A trial organization protects up to 25 mailboxes. The cap applies to the whole
+organization, across every connected mail tenant, and it works on **activation**
+only:
+
+- Discovery still finds every mailbox in the tenant — the ones past the cap are
+  reported as `discovered` rather than `protected`, so you can see exactly how
+  much of the estate is not covered.
+- A mailbox that is already protected is **never** dropped to fit a cap. If the
+  cap is reached, further mailboxes stop being protected; the ones already being
+  watched keep being watched.
+- Use [`exclusions`](#exclusions) and the connection's `scope` to choose *which*
+  25 mailboxes matter — the executives and finance addresses attacks aim at are
+  the ones worth spending a trial on.
+
+`GET /coverage`'s `entitlement` block reports `mailbox_cap`, `mailboxes_active`,
+`mailboxes_over_cap` and `mailbox_cap_reached`, so the shortfall is a number
+rather than a discovery.
 
 ### Requesting a purge
 

@@ -27,6 +27,20 @@ limacharlie extension list --oid $OID
 Subscribing also seeds the recommended policy records — all in `alert_only`
 mode, so nothing moves mail until you say so. See [Policy Reference](policy.md).
 
+!!! info "Free trial: 14 days, 25 mailboxes"
+    An organization on the LimaCharlie free tier gets Email Security in full for
+    **14 days** and protects up to **25 mailboxes** while it does. Every feature
+    is the same as on a paid plan; only the duration and the mailbox count
+    differ. The clock starts the day you subscribe and **does not restart if you
+    unsubscribe and resubscribe**, so point the 25 at the mailboxes that matter
+    — start with the executives, finance and the abuse mailbox.
+
+    When the trial ends, ingestion pauses and nothing is deleted; the data is
+    removed 30 days later unless the organization moves off the free tier, and
+    you are told before that happens. The full rules, and the exact fields to
+    read the countdown from, are in
+    [Plans, the free trial, and the mailbox cap](policy.md#plans-the-free-trial-and-the-mailbox-cap).
+
 ## 2. Grant the permissions
 
 Email Security ships four permissions. A user or API key that will triage mail
@@ -180,6 +194,28 @@ the **worst** connection, and an organization with no connection at all reads
 The same call reports message volume and the verdict funnel over a window, the
 parse-degradation rate, backfill progress, the emission backlog, open reports,
 active campaigns, and the effective automation mode.
+
+It also carries an `entitlement` block: which plan the organization is on, when
+a trial ends, how many mailboxes it may protect against how many it is
+protecting, and — if one is scheduled — the date its Email Security data will be
+deleted and what cancels it. On a trial organization this is where you check
+that the 25 mailboxes are the 25 you meant:
+
+```yaml
+entitlement:
+  plan: trial
+  trial_ends_at: "2026-09-20T14:02:11Z"
+  trial_days_remaining: 12
+  mailbox_cap: 25
+  mailboxes_active: 25
+  mailboxes_over_cap: 118        # discovered, not protected
+  mailbox_cap_reached: true
+```
+
+`mailboxes_over_cap` is the number that matters: those mailboxes were found and
+are not being watched. Narrow the connection's `scope`, or move off the free
+tier. See
+[Plans, the free trial, and the mailbox cap](policy.md#plans-the-free-trial-and-the-mailbox-cap).
 
 !!! note "Backfill is metadata-only"
     On connection, the collector walks up to `ingest.backfill_days` (14 by
