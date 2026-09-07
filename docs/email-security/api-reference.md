@@ -61,7 +61,6 @@ Shared behaviours:
 
 **Numeric and boolean parameters are validated.** `limit` is 1-1000 (the backend serves 200 by default), `min_score` is 0-100, `min_members` is 0 or more, and `user_reported` and `oldest_first` take `true`/`false`. A value that is unparseable, out of range, or given more than once is refused with **400** and a response body naming the parameter, for example `{"parameter": "limit", "error": "limit: \"all\" is not an integer"}`. It is not silently dropped, so a filter you sent is always a filter that was applied.
 
-
 ### `GET /messages/{msg_uuid}/eml`
 
 The justified raw download. Requires `mailsec.get` **and** `mailsec.get.eml`, and
