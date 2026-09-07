@@ -122,15 +122,17 @@ by **two different elements**:
 op: and
 rules:
   - op: is
-    path: links/?/href_url/is_ip
-    value: true
-  - op: is
     path: links/?/href_url/domain/root
     value: evil.example
+  - op: is
+    path: links/?/mismatched
+    value: true
 ```
 
-That fires on a message with one IP-literal link to somewhere harmless *and* a
-separate ordinary link to `evil.example`. Nothing in it says "the same link".
+That fires on a message with a perfectly ordinary link to `evil.example` *and* a
+separate, unrelated link whose visible text disagrees with its destination.
+Nothing in it says "the same link" — and a phishing message that carries a
+tracking pixel and a footer link will satisfy pairs like this by accident.
 
 ### `scope` re-roots a whole sub-rule onto one element
 
@@ -139,23 +141,24 @@ whole sub-rule against **each element in turn**, with the element as the root �
 so every condition inside is about the *same* one.
 
 ```yaml
-# A single link that is an IP literal AND on a non-standard port
+# ONE link that both points at evil.example and lies about where it goes
 op: scope
 path: links
 rule:
   op: and
   rules:
     - op: is
-      path: href_url/is_ip
-      value: true
+      path: href_url/domain/root
+      value: evil.example
     - op: is
-      path: href_url/port
-      value: 8080
+      path: mismatched
+      value: true
 ```
 
-Paths inside a `scope` are **relative to the element** — `href_url/is_ip`, not
-`links/?/href_url/is_ip`. That is the other half of the trap: a rule that keeps
-the full path inside a `scope` block looks correct and matches nothing.
+Paths inside a `scope` are **relative to the element** — `href_url/domain/root`
+and `mismatched`, not `links/?/href_url/domain/root`. That is the other half of
+the trap: a rule that keeps the full path inside a `scope` block looks correct
+and matches nothing.
 
 | | `?` | `scope` |
 |---|---|---|
