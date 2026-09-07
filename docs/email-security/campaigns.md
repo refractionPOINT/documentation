@@ -29,6 +29,26 @@ whole tenant into one campaign.
 Candidates are considered newest first, bounded, and the first one reaching the
 threshold wins. Joining an existing campaign always beats seeding a new one.
 
+## A campaign takes two messages
+
+A campaign is created on the **second** message, never the first. When a message
+agrees with an earlier one that is not yet in any campaign, the campaign is
+created around **both** of them in one step — the earlier message is the seed, so
+the campaign's identity and its sample subject come from the first message of the
+attack, which is what you expect to see when you open it.
+
+A single message is not a campaign. `member_count` is the spread the campaign
+list leads with and the number a campaign-wide quarantine is justified by, so a
+cluster of one is deliberately not shown anywhere: not in the campaign list, not
+in the Overview's active-campaign count, and not in the campaign detail. Setting
+`min_members` to `1` does not reveal them — the filter can only narrow past the
+two-member minimum, never below it.
+
+`member_count` **never goes down**. A campaign row lives for 400 days while the
+message index it draws on lives for 35, so the count is the historical spread of
+the attack rather than a count of messages still in the index. A campaign whose
+members have aged out still tells you how big the attack was.
+
 ## Body similarity
 
 The first three keys are all things an attacker can randomize. A kit that gives
@@ -159,6 +179,8 @@ limacharlie mailsec campaign get <campaign_id> --oid $OID
 
 Filters: `state` (`open`, `closed`), `verdict`, `min_members`, `since`/`until`,
 all repeatable where it makes sense and keyset-paginated like every other list.
+`min_members` narrows past the two-member minimum every campaign already meets;
+values below `2` have no effect.
 
 The detail view gives the campaign's span, its membership, its verdict and the
 keys that bound its messages together. From a message, `campaign_id` is on the
