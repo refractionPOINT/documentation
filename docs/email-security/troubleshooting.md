@@ -80,7 +80,7 @@ limacharlie mailsec coverage --oid $OID --output yaml --filter 'entitlement'
 |---|---|
 | `resolved` | **Read this first.** `false` means the plan could not be resolved. It is not a claim that you have no limits — it means nothing looked |
 | `subscribed` | Whether the extension subscription was found |
-| `gate_reason` | Present only when mail is **not** being worked, naming why: `not_subscribed` or `trial_expired`. Absent is the healthy state — branch on the key, not on an empty string |
+| `gate_reason` | Present only when mail is **not** being worked, naming why. Absent is the healthy state — branch on the key, not on an empty string. In practice the value you can see here is `trial_expired`: the other one, `not_subscribed`, describes an organization whose `coverage` call is itself refused |
 | `plan` | `paid` or `trial`. Omitted when `resolved` is `false` |
 | `trial_started_at`, `trial_ends_at`, `trial_expired`, `trial_days_remaining` | The clock, where one applies. Days remaining rounds **up** — a trial with four hours to run has not had its last day yet. Omitted when `resolved` is `false` |
 | `mailbox_cap`, `mailbox_cap_enforced` | A protected-mailbox ceiling, and whether it is actually being enforced. Omitted when `resolved` is `false` |
