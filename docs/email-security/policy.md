@@ -197,12 +197,14 @@ refused at save — "quarantine all mail" is never what someone meant to write.
 
 ### `actions`
 
-| Action | |
-|---|---|
-| `quarantine_message` | Out of the inbox, restorable |
-| `trash_message` | To recoverable trash |
-| `move_to_spam` | To the junk/spam location |
-| `banner_message` | Prepend the warning banner |
+| Action | | Moves mail |
+|---|---|:--:|
+| `quarantine_message` | Out of the inbox, restorable | ✅ |
+| `trash_message` | To recoverable trash | ✅ |
+| `move_to_spam` | To the junk/spam location | ✅ |
+| `banner_message` | Prepend the warning banner. Needs `enabled` on the [`banners`](#banners) record | ✅ |
+| `submit_to_triage` | Record that this message warrants a look, and say so as telemetry | |
+| `crawl_link` | Queue the message's links for [detonation](detections.md#link-detonation) | |
 
 Deliberately **not** automatable: the campaign-wide sweeps (an automation acting
 on one message must not fan out to hundreds without a human — that is an explicit
@@ -210,11 +212,49 @@ action), `restore_message` (undoing is a human decision), and the disposition
 labels (labels are evidence, and a machine writing them would poison the data set
 that measures the machine).
 
-!!! warning "Two further action names validate but do not execute"
-    Policy validation accepts `submit_to_triage` and `crawl_link` as automatable,
-    but the remediation executor implements neither, so an automation that
-    dispatches one records a failed action rather than doing anything. Use only
-    the four actions in the table above.
+### The two asking actions
+
+`submit_to_triage` and `crawl_link` touch no mailbox. They record a question and
+hand it off, and neither promotes the message to the 400-day evidence lane —
+asking is not an answer. The message gets there when the question produces one.
+
+`submit_to_triage` calls nothing and starts nothing: it writes an audit row and
+emits an `EMAIL_ACTION`, which is the event an
+[AI triage agent's trigger rule](ai-triage.md) fires on. Deciding *which* mail
+warrants a look is this product's half of the job; deciding how an agent runs and
+what it costs belongs to the agent.
+
+!!! danger "A trigger on `submit_to_triage` must filter on `result`"
+    An `EMAIL_ACTION` is emitted for **every** outcome, including `alert_only` —
+    that is what makes the audit complete. So an organization in `alert_only`
+    emits `EMAIL_ACTION{action: submit_to_triage, result: alert_only}`, meaning
+    "this organization's automations *would* have asked for a look".
+
+    A rule matching the action alone reads that as consent and starts a paid
+    session for exactly the organizations that chose not to have things happen on
+    their behalf. Always write:
+
+    ```yaml
+    op: and
+    rules:
+      - op: is
+        path: routing/event_type
+        value: EMAIL_ACTION
+      - op: is
+        path: event/action
+        value: submit_to_triage
+      - op: is
+        path: event/result
+        value: ok
+    ```
+
+`crawl_link` returns `ok` meaning **queued**, not fetched. It is subject to the
+same enforcement check as everything else, and deliberately so: a detonation
+opens a connection to attacker-controlled infrastructure, which confirms to the
+sender that the mail landed in a monitored mailbox. An organization in
+`alert_only` has said "do not do things on my behalf", and that is such a thing.
+An analyst asking always executes. Where detonation is not deployed, the action
+records a failed result naming that rather than pretending to have queued it.
 
 ### `mode`
 

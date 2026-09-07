@@ -96,6 +96,87 @@ behind a message, and remediation goes through `extension request`.
     `dr-mail` rule is the escape hatch when your condition does not fit the
     match fields.
 
+## Matching one link, not any two links
+
+A mail rule reads the message as JSON, and the paths it writes are the emitted
+event's own field names. Two constructs walk a list, and confusing them is the
+most common way a mail rule quietly matches the wrong thing.
+
+### `?` walks a list and compares values
+
+`?` is a **path segment**. It stands for "every element", and the condition
+matches if **any** element satisfies it.
+
+```yaml
+# Any link whose registrable domain is evil.example
+op: is
+path: links/?/href_url/domain/root
+value: evil.example
+```
+
+Cheap, and right most of the time. But two conditions using `?` can be satisfied
+by **two different elements**:
+
+```yaml
+# WRONG if you meant "one link that is both"
+op: and
+rules:
+  - op: is
+    path: links/?/href_url/is_ip
+    value: true
+  - op: is
+    path: links/?/href_url/domain/root
+    value: evil.example
+```
+
+That fires on a message with one IP-literal link to somewhere harmless *and* a
+separate ordinary link to `evil.example`. Nothing in it says "the same link".
+
+### `scope` re-roots a whole sub-rule onto one element
+
+`scope` is an **operator**. It takes a `path` and a `rule`, and evaluates that
+whole sub-rule against **each element in turn**, with the element as the root —
+so every condition inside is about the *same* one.
+
+```yaml
+# A single link that is an IP literal AND on a non-standard port
+op: scope
+path: links
+rule:
+  op: and
+  rules:
+    - op: is
+      path: href_url/is_ip
+      value: true
+    - op: is
+      path: href_url/port
+      value: 8080
+```
+
+Paths inside a `scope` are **relative to the element** — `href_url/is_ip`, not
+`links/?/href_url/is_ip`. That is the other half of the trap: a rule that keeps
+the full path inside a `scope` block looks correct and matches nothing.
+
+| | `?` | `scope` |
+|---|---|---|
+| What it is | A segment in a `path` | An operator with `path` and `rule` |
+| Correlates fields of one element | **No** | **Yes** |
+| Paths inside | Full, from the message root | Relative to the element |
+| Cost | One extraction | The sub-rule, once per element |
+
+### `scope` is capped, and nesting is refused
+
+Use `?` unless you actually need the correlation, because `scope` is the one
+allowed operator whose cost the rule's own size does not describe: the element
+counts — links, attachments, headers, hops — come from **the message**, not from
+your rule.
+
+- At most **two** `scope` operators per rule.
+- A `scope` inside another `scope` is **refused at save**, not merely
+  discouraged. Nesting multiplies: elements to the power of the depth.
+
+Both refusals name the reason rather than reporting a generic validation error.
+
 ## Validation
 
 A `dr-mail` record is validated at **write time** by compiling it on the real
@@ -159,6 +240,43 @@ message history. Both `rule validate` and `rule backtest` are gated on
 `mailsec.get`: they reveal only messages you can already read, and a rule author
 should be able to check their work with the grant that lets them see what the
 rule would be matching.
+
+### Two kinds of rule cannot be backtested
+
+Both are **refused by name**, and in both cases the rule itself is fine — it
+validates, it saves, and it runs.
+
+**A rule using `lookup`.** The `lookup` operator resolves one of your
+organization's own `lookup` Hive records, and the service that runs a backtest
+has no access to them. It could only ever report that the rule matched nothing,
+which is a claim about your mail that nothing looked at:
+
+```text
+a rule using `lookup` (hive://lookup/ioc-domains) cannot be backtested: the
+backtest runs on an api pod, which has no access to this organization's lookup
+records, so it could only report that the rule matched nothing. The rule is
+otherwise valid — save it and it evaluates normally in the pipeline, where the
+collector resolves the lookup
+```
+
+This is a real limitation, not a temporary error to retry. To size an IOC rule
+before enabling it, either backtest the same rule with the `lookup` clause
+removed — which tells you how much the rest of the logic narrows — or save the
+rule and watch it live, which is safe because a `dr-mail` rule contributes to a
+verdict and your automations are in `alert_only` until you say otherwise. See
+[IOC & Reputation Feeds](ioc-feeds.md).
+
+**A `post_verdict` rule.** It runs against the verdict a pass would compute, and
+a backtest replays a message rather than re-scoring it. Backtest the
+`pre_verdict` rules that produce the verdict instead.
+
+!!! note "`lookup` rules validate — they just cannot be replayed"
+    `rule validate` accepts them, and it goes further: it checks at write time
+    that the `lookup` record you named actually exists in your organization, and
+    refuses the save if it does not. A dangling `hive://lookup/` reference is the
+    most common authoring mistake, it saves cleanly and matches nothing forever,
+    and that reads as coverage. A rule may name at most **four** lookups, and the
+    resource must be of the form `hive://lookup/<name>`.
 
 ## Tuning the managed pack
 

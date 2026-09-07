@@ -18,6 +18,25 @@ Release notes for LimaCharlie platform components, organized by date.
 
     For discussion and email notification of the same releases, set the [Platform Updates category](https://community.limacharlie.com/c/platform-updates/5) in the community forum to Watching. For service availability rather than releases, subscribe on the [status page](https://status.limacharlie.io/).
 
+## 2026-09-07
+
+### Extensions: Email Security bulk remediation, verdict revisions and the managed-detection switch
+
+#### New Features
+
+- **Bulk remediation over a selection you name.** Any search result — a filtered page of the queue, a hunt, a list of ids in a file — can now be remediated at the provider in one operation, with the campaign sweep's preview-then-confirm discipline: `POST /actions/bulk/preview` reports each message's current state and the distinct-mailbox blast radius and mints a confirmation derived from that exact selection, `POST /actions/bulk/execute` returns a `bulk_id` immediately and paces the provider writes in the background, and `GET /actions/bulk/{bulk_id}` reports per-message outcomes and running counts. Capped at 500 per call, refused rather than truncated above it. `limacharlie mailsec message bulk-action` wraps the pair, reads its selection from `--msg-uuids`, `--input-file` or standard input, and carries the outcome in its exit code.
+- **Verdict revisions are documented end to end.** `POST /messages/{msg_uuid}/verdict` re-judges one message in the `analyst` or `ai` seat with a required rationale, and `GET /messages/{msg_uuid}/revisions` serves the whole append-only chain with the prior state each revision displaced. Re-recording a verdict a message already carries is a success reporting `applied: false`, not an error. Revising requires `mailsec.act` rather than `mailsec.set`, because it can promote a message's evidence to the 400-day lane and emits an `EMAIL_VERDICT`.
+- **A resolved user report can be reopened.** `POST /reports/{report_id}/reopen` (`limacharlie mailsec report reopen`) puts a report back in the queue and keeps its resolution columns, so the row still reads "previously resolved by …" rather than erasing what is being disputed. It is the escape hatch the abuse-mailbox auto-resolver depends on.
+- **The managed detection pack has a documented switch.** The `managed_rules` policy record, the console's Settings toggle, and the `set_managed_rules` / `get_managed_rules` extension actions all write the same thing. Absent means enabled; a record that states no value is refused; a change reaches the pipeline in seconds, with a five-minute backstop.
+- **Link detonation is documented**: what triggers it (a `suspicious` verdict with links, up to five URLs per message), the organization-wide claim that makes a campaign cost one fetch, every refusal reason, and what a `mode: detonation` verdict revision means — including that it never overrules a person or an agent.
+- **Time to verdict is a real number.** `coverage`'s `overview.processing_latency_p95` reports p50/p95/p99 with the basis it measures, the denominator it measured over, and — when there is no number — which of the two honest reasons applies. Backfilled and re-driven mail is excluded so a recovery cannot report a latency measured in days.
+- New [Troubleshooting](../email-security/troubleshooting.md) page: the entitlement gate (mail that arrives while unsubscribed is never read and is never backfilled), watch renewals, silent-mailbox stalls, `EMAIL_INGEST_ERROR`, connection handover during a platform update, and the 30-day deletion clock.
+- Custom rules now document `scope` versus the `?` path wildcard — only `scope` correlates two conditions on the *same* link or attachment — and state plainly that a rule using `lookup`, or a `post_verdict` rule, cannot be backtested.
+
+See [Bulk Remediation](../email-security/remediation.md), [Detections & Verdicts](../email-security/detections.md#revising-a-verdict), [Policy Reference](../email-security/policy.md#managed_rules) and [Troubleshooting](../email-security/troubleshooting.md).
+
+---
+
 ## 2026-09-04
 
 ### Extensions: Email Security tenant purge

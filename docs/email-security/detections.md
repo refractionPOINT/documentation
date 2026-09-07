@@ -295,6 +295,169 @@ without forking anything, through
     your sender history, your VIP list — is named explicitly in the response
     rather than silently missing.
 
+## Link detonation
+
+Static link features answer what a URL *looks* like. Detonation answers where it
+actually goes: the redirect chain, the address each hop really connected to, the
+landing page's certificate, and bounded signals from the page itself.
+
+It is an **enrichment, never a gate**. No mail is held waiting for it. The
+message is judged, `EMAIL_MESSAGE` is emitted and the automations run first;
+detonation happens afterwards and, if what it finds changes the answer, it files
+a [verdict revision](#revising-a-verdict) in `mode: detonation`.
+
+!!! info "Availability is per region"
+    Detonation needs an isolated, separately-governed analysis environment — the
+    process that fetches attacker-chosen URLs and parses attacker-written HTML
+    holds no mailbox credential, no organization key and no LimaCharlie identity
+    at all. Where that environment is not deployed, detonation is simply
+    **absent**: nothing is stamped, and it never degrades into a fetch from a
+    service that can reach a mailbox.
+
+### What gets detonated
+
+Four conditions, all of them required:
+
+| | |
+|---|---|
+| The verdict is **`suspicious`** | Not `malicious` — that has already crossed the threshold that fires automations, so a fetch there takes a slot from the message where the answer would change something. Not `benign`, for the other end of the same argument |
+| The message has at least one `http`/`https` link | Other schemes are skipped before anything is queued |
+| It is a **first ingest**, not a redelivery | A re-delivered message has already had its turn |
+| The environment is deployed in that region | Otherwise absent |
+
+Up to **five distinct URLs per message**, taken in message order after
+duplicates are folded together. Five, because a phishing message's payload link
+is in the first few and a newsletter has hundreds — and stated honestly: a
+message whose sixth link is the malicious one is not fully examined.
+
+The URLs come from the message's own link list, **after** a mail gateway's
+rewrite has been unwrapped. Detonating the wrapper would describe your mail
+plumbing rather than the attacker's infrastructure.
+
+Two other things reach the same machinery: an analyst or a rule dispatching
+[`crawl_link`](policy.md#the-two-asking-actions), and an
+[AI triage agent](ai-triage.md) doing the same. Three invocations, one mechanism
+— a second detonation path would be a second answer for one message.
+
+### One fetch per URL, per organization
+
+A URL is **claimed** before it is fetched, and the claim is organization-wide
+rather than per message. That is what makes a campaign cheap: four hundred
+messages carrying one link cost one fetch.
+
+| Outcome | |
+|---|---|
+| **Claimed** | This is the first caller. It fetches and writes the result back |
+| **Fresh** | A completed result already exists and is recent enough to reuse. Nothing is fetched |
+| **In flight** | Another caller holds a live claim. Nothing is stamped and **nothing waits** — mail is never held for detonation |
+| **Backoff** | This URL failed recently and is not retried yet |
+
+Everything about the lane sheds rather than blocks or grows: bounded workers, a
+bounded queue, and a per-organization cap on how many detonations are in flight
+at once so one organization's campaign cannot take every slot. A drop costs one
+message a better verdict, which is a different thing from losing mail, and the
+two do not share a policy.
+
+### A refusal is a result, not an error
+
+"This link redirects to the cloud metadata address" is the single most valuable
+thing detonation produces, so a refusal is a **successful** detonation carrying a
+typed reason — never an error a caller would log as infrastructure and discard.
+
+| Reason | |
+|---|---|
+| `invalid_url` | The URL could not be parsed |
+| `scheme_not_allowed` | Not `http` or `https` |
+| `port_not_allowed` | Not a web port |
+| `credentials_in_url` | Credentials before the host — the `https://apple.com@evil.example/` trick |
+| `blocked_address` | A hop resolved to an address that must never be connected to: loopback, link-local, private ranges, the cloud metadata address |
+| `no_usable_address` | The name resolved, and **every** address it resolved to was blocked. Deliberately its own finding: "this host now points only at an internal address" is not a DNS failure |
+| `dns_failure` | The name did not resolve |
+| `too_many_hops` | The redirect chain ran past its limit |
+| `redirect_loop` | The chain came back to somewhere it had been |
+| `missing_location` | A redirect status with no usable destination |
+| `budget_exceeded` | The target stalled past the time budget — itself evidence |
+| `transport_error` | The connection failed |
+| `disabled` | Detonation was asked for where it is not deployed |
+
+Each hop's real connected address is recorded, so a name that answered
+differently the second time cannot hide behind the first answer. TLS facts are
+recorded even when the certificate does not verify — refusing to look at a page
+because its certificate is untrusted would blind detonation to the pages most
+likely to be malicious. Oversized pages are **truncated and reported as
+truncated**, never refused: refusing would hand an attacker a one-line way to
+blind detonation by padding a harvest page.
+
+### `mode: detonation`
+
+When the evidence changes the class, the message is re-judged in full — both
+rule packs, your policy, your thresholds — and the new class is filed as a
+revision in `mode: detonation`.
+
+It has the **lowest authority** of the three revising modes:
+
+| The message's current mode | A detonation revision |
+|---|---|
+| `auto`, or a previous `detonation` | Applies |
+| `ai` | **Refused.** The evidence is still stamped on the message |
+| `analyst` | **Refused.** The evidence is still stamped on the message |
+
+A machine does not overrule a person, or an agent that already looked. The
+refusal is a satisfied outcome, not a failure: the detonation block lands on the
+message either way, and only the verdict is left alone.
+
+`detonation` is not a mode any caller can claim. The
+[revision API](api-reference.md#post-messagesmsg_uuidverdict) accepts `analyst`
+and `ai`; this one is stamped by the engine that produced it.
+
+### What is kept, and what is not
+
+The **page body never comes back**. What is stored is a hash and size, a title, a
+bounded excerpt, structural signals, and the redirect chain with each hop's
+resolved and connected addresses and TLS facts.
+
+Results are **always sealed** — there is no plaintext mode, and the lane refuses
+to start without a key. Each result is encrypted under a key derived from your
+organization's own key, stored under a path that leads with your organization id,
+and bound to that exact path so that a copied object cannot be opened elsewhere.
+The environment that does the fetching never holds your organization's key; it
+writes through a single-object, single-use signed URL and holds no credential of
+yours at all.
+
+Detonation results are removed by a [tenant purge](policy.md#what-a-purge-removes)
+and by the ordinary retention sweep, along with everything else the product holds
+for you.
+
+### Reading it
+
+The detonation block lands on the message's enrichments and in the drawer, and
+rules read it as an ordinary path:
+
+```yaml
+# The landing page asks for a password
+op: is
+path: enrichments/detonation/landing/has_password_input
+value: true
+```
+
+```yaml
+# A link's chain ended somewhere it must never be connected to
+op: is
+path: enrichments/detonation/refusal/kind
+value: blocked_address
+```
+
+The block carries `hops[]` (each with `host`, `resolved_ips`, `connected_addr`,
+`status`, `next_url` and `tls`), a `landing` (`effective_url`, `status`, `title`,
+`body_sha256`, `body_bytes`, `body_complete`, `text_excerpt`,
+`has_password_input`, `form_count`, `form_action_hosts`), a `refusal`
+(`kind`, `reason`) where there was one, `elapsed_ms` and `detonated_at`.
+
+When several of a message's links were detonated, the drawer shows the most
+damning one — credential harvest first, then a refusal that found a private
+pivot, then any other refusal, then a landing with a bad certificate. The others
+are not discarded: each link carries its own resolved chain.
+
 ## Watching the download itself
 
 Detection does not stop at the mail. The most privileged thing anyone can do in

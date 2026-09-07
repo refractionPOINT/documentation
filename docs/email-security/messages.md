@@ -138,6 +138,11 @@ limacharlie mailsec message action <msg_uuid> \
 
 Actions require `mailsec.act`.
 
+To act on many messages at once — a filtered page of this queue, or a selection
+you built elsewhere — see [Bulk Remediation](remediation.md). It is the same
+executor and the same audit trail, with a preview and a confirmation over the set
+you named.
+
 ### Outcomes are reported honestly
 
 | `result` | Meaning |

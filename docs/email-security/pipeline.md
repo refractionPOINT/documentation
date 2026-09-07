@@ -264,30 +264,97 @@ justification that is stored verbatim against your authenticated identity. A
 failed attempt is recorded too, and the bytes are not served if the audit write
 fails. See [Messages & Triage](messages.md#downloading-the-original-message).
 
-## Latency
+## Time to verdict
 
-End-to-end time for a message is three terms:
+End-to-end time for a message is three terms, and only two of them are ours:
 
 | Term | Who owns it |
 |---|---|
 | **Provider notification delay** | Your mail provider. This is normally the dominant term and it is not ours to shorten |
-| **Queue** | Time between the notification arriving and a worker picking it up |
-| **Processing** | Fetch, parse, enrich, score, persist, emit |
+| **Queue wait** | Time between the notification arriving and a worker picking it up |
+| **Processing** | Fetch, parse, enrich, judge, cluster, persist, store, emit |
 
 Within processing, fetching from the provider and exploding attachments are the
 expensive stages, and only the second of those is bounded by a budget we choose.
 Parsing, matching and scoring are not where the time goes.
 
-!!! note "We do not publish a latency figure yet"
-    The `coverage` call reports the processing-latency percentile as
-    **not recorded** rather than returning an estimate, because the immutable
-    timestamps that would make it a measurement are not yet recorded. A number
-    that looks like a measurement and is not one is worse than an honest gap, so
-    the gap is what you get until it can be computed properly.
+### The number you get
 
-    Verdict revisions are a separate clock entirely. A revision arrives when a
-    person or an agent gets to the message, which is a queue-depth question
-    rather than a pipeline question.
+`coverage` reports it, per organization, under
+`overview.processing_latency_p95`:
+
+```bash
+limacharlie mailsec coverage --oid $OID --output yaml \
+  --filter 'overview.processing_latency_p95'
+```
+
+```yaml
+status: available
+basis: provider_received_to_event_emitted
+value_ms: 4180
+p50_ms: 1120
+p99_ms: 21400
+sample_size: 3907
+messages_considered: 4012
+```
+
+| Field | |
+|---|---|
+| `basis` | **`provider_received_to_event_emitted`** — the provider's own delivery timestamp to the moment that message's `EMAIL_MESSAGE` shipped. It is deliberately provider-inclusive: it includes a term we do not control, and it is still the right headline, because it is what you experience and the only version of the question you can check against your own mailbox |
+| `value_ms` | The p95, which is what the field is named for |
+| `p50_ms`, `p99_ms` | Because one percentile is not a distribution — p95 alone cannot tell "everything takes twenty seconds" from "almost everything is instant and a tail is stuck" |
+| `sample_size` | How many messages the percentiles were computed from |
+| `messages_considered` | The **denominator**: how many the window looked at. `sample_size / messages_considered` is what says whether a confident number came from most of your mail or from a handful of it |
+| `sampled`, `sample_limit` | Present when the read was bound to the window's most recent slice, said out loud rather than left to be assumed |
+
+### When there is no number, it says so
+
+An empty population is never reported as zero. `status` is `not_recorded` and
+`reason` distinguishes two genuinely different incidents:
+
+| `reason` | What happened |
+|---|---|
+| `no_messages_emitted_in_window` | Nothing was emitted at all — a quiet tenant, or a connection that has stopped. The `connections` block is what tells you which |
+| `no_live_ingests_measured_in_window` | Messages **were** emitted and none of them was measurable: the window is dominated by a backfill or by a re-drive of older mail |
+
+`messages_considered` is reported in both cases, and it is what separates them: a
+zero denominator and a large one mean opposite things about whether to worry.
+
+!!! note "Backfilled and re-driven mail is excluded on purpose"
+    The historical backfill, an incident backfill, and the emission sweeper's
+    repairs all go back through the same ingest path — one path, deliberately —
+    so such a message can be a week old by the time its event ships. Those
+    samples would not widen the tail, they would *define* it, and one recovery
+    would report a time to verdict measured in days. They are identified and left
+    out of this population rather than quietly averaged into it.
+
+    A delivery timestamp slightly in our future is ordinary — the provider's
+    clock is not ours — so a negative duration is clamped to zero and **counted**
+    rather than stored or dropped. Storing it makes a median read as "we answer
+    before the mail arrives"; dropping it silently removes exactly the samples a
+    skewed clock produces, so the number would look perfect precisely when it is
+    not measuring what it claims.
+
+### The per-stage breakdown
+
+The stage vocabulary the pipeline is instrumented against is the same one this
+page describes — `end_to_end`, `queue_wait`, `processing`, and then `fetch`,
+`parse`, `enrich`, `judge`, `cluster`, `persist`, `store`, `emit` — measured at
+p50, p95 and p99 over a rolling five-minute window.
+
+That breakdown is **our** operational telemetry, not a per-tenant surface: it
+carries no organization, mailbox or message identity, and it is not returned by
+any API. `processing_latency_p95` above is the per-organization number. The
+stages are named here because they are what an escalation will be answered in
+terms of: `enrich` waits on external lookups, `judge` is CPU over the compiled
+rule packs, and `cluster` scales with how much of your history agrees with the
+message in hand — so "the p95 doubled" is a different incident depending on which
+of them moved.
+
+!!! note "Verdict revisions are a separate clock entirely"
+    A revision arrives when a person or an agent gets to the message, which is a
+    queue-depth question rather than a pipeline question. It is not in this
+    number and should not be.
 
 ## Where to go next
 
@@ -299,3 +366,4 @@ Parsing, matching and scoring are not where the time goes.
 | [Events & Automation](automation.md) | The `EMAIL_*` events and the D&R seat |
 | [Messages & Triage](messages.md) | The queue, the drawer, actions and the audit trail |
 | [Policy Reference](policy.md) | Every `mailsec_policy` record type |
+| [Troubleshooting](troubleshooting.md) | When a stage does not do what this page says |
