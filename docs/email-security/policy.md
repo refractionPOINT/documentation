@@ -285,6 +285,16 @@ malicious → quarantine and graymail → move to spam among them. Nobody is
 surprise-quarantined on day one. Review the seeded records before switching any
 of them to `enforce`.
 
+!!! note "An automation edit can take up to ten minutes to apply"
+    Automations are **compiled** from the resolved policy, and that compile
+    happens on a ten-minute tick rather than per message. Everything the
+    judgement path reads — [`thresholds`](#thresholds), [`exclusions`](#exclusions),
+    the [`managed_rules`](#managed_rules) switch — applies within five minutes and
+    usually within seconds. An edit here is the one with the longer bound.
+
+    Plan a change to `enforce` accordingly: the switch is not instantaneous, and
+    switching it back is subject to the same tick.
+
 ---
 
 ## `exclusions`

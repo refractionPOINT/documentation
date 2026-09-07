@@ -12,9 +12,9 @@ This page is the map from a symptom to the thing that reports it.
 limacharlie mailsec coverage --oid $OID --output yaml
 ```
 
-It leads with `connections`, deliberately — a screen reporting 1,400 protected
-mailboxes next to a connection that has not completed a pass since Tuesday is
-lying with true numbers.
+Read `connections` first, before any of the counts. A screen reporting 1,400
+protected mailboxes next to a connection that has not completed a pass since
+Tuesday is lying with true numbers.
 
 ## Nothing is being ingested at all
 
@@ -199,11 +199,13 @@ derived, so the same connection reconnecting — after an update, a failover or 
 restart — reuses the key it already has instead of creating another. An
 organization with two mail connections has two such keys and stays at two.
 
-If you are looking at a large number of `mailsec`-tagged installation keys, that
-is the signature of an older build that minted one per connection attempt, and
-it is fixed. The surplus keys are safe to delete; keep the ones the live
-connections are using. Deleting a key a connection is using costs an ingestion
-gap until it is ensured again, so prune deliberately rather than in bulk.
+If you are looking at far more `mailsec`-tagged installation keys than you have
+mail connections, that is the signature of an older build that minted one per
+connection attempt rather than reusing one. It is fixed, and the surplus keys are
+inert — but telling them apart from the ones your connections are actually using
+is not something the console shows you, so **open a support ticket rather than
+deleting them by hand.** Deleting a key a connection is using costs that
+connection an ingestion gap.
 
 ## We unsubscribed — what happens to our data?
 

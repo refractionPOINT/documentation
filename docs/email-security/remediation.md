@@ -162,9 +162,15 @@ Each member appears in `items[]`:
 through `GET /actions/{action_id}` like any other action.
 
 `counts` carries the same vocabulary as running totals — `total`, `pending`,
-`ok`, `skipped`, `failed`, `alert_only`, `not_found`. **`counts.pending` reaching
-zero is what "done" means**; the `state` answers the different question of
-whether anything is still moving.
+`ok`, `skipped`, `failed`, `alert_only`, `not_found`. `alert_only` is counted
+separately from `ok` on purpose: one is a provider write and the other is a
+decision the organization's policy withheld.
+
+**Read `state` to know whether to keep polling, and `counts` to know what
+happened.** They answer different questions and can disagree in the one way that
+matters: a job that ends `interrupted` is terminal with members still `pending`,
+because nothing will attempt them now. `counts.pending` at zero means every
+member settled; it is not the definition of "stop polling".
 
 !!! note "Two `reason` fields, two authors"
     `reason` at the top level is the **operator's** justification for the whole
