@@ -96,8 +96,8 @@ changing its weight, is a [`rule_overrides`](#thresholds) entry.
 
 ### The three ways to flip it
 
-All three write the same record, and a record written by one is indistinguishable
-from a record written by another.
+All three write the same record — same name, same `policy_type`, same field — and
+the collector cannot tell which one wrote it.
 
 === "Console"
 
@@ -107,10 +107,12 @@ from a record written by another.
     asks for confirmation; turning it back on restores the product default and
     does not.
 
-    When the records do not compose to one obvious target — two records
-    deciding, or a record the Hive has disabled — the switch shows the resolved
-    value read-only and sends you to the **Policy** page rather than writing a
-    record that a later-named one would override.
+    When more than one `managed_rules` record exists, or the canonical one has
+    been disabled in the Hive, the switch is **replaced** by a status badge
+    showing the resolved value and a link to the **Policy** page. It does not
+    offer to write, because a write in that state would either be overridden by
+    a later-named record or silently do nothing — and a switch that reports a
+    state it did not produce is worse than no switch.
 
 === "CLI"
 
@@ -141,11 +143,16 @@ from a record written by another.
 
 !!! note "`managed_rules` is the canonical record name"
     The console and the extension both write the record **named**
-    `managed_rules`, tagged `lc:system`. Any record name works — composition is
-    last-writer-wins in record-name order over the records the Hive has
-    *enabled* — but a second record named later than `managed_rules` wins over
-    it, and a `managed_rules` record the Hive has disabled does not count at all.
-    Keep it to one record unless you mean to layer them.
+    `managed_rules`, and the CLI example above does too. Any record name works —
+    composition is last-writer-wins in record-name order over the records the
+    Hive has *enabled* — but a second record named later than `managed_rules`
+    wins over it, and a `managed_rules` record the Hive has disabled does not
+    count at all. Keep it to one record unless you mean to layer them.
+
+    Only the extension stamps the record with the `lc:system` tag. The console
+    and the CLI do not add it, and the console **preserves** it when it edits a
+    record the extension wrote — so the tag tells you how a record was first
+    created, and nothing more. Do not treat its absence as meaningful.
 
 ### How fast a change takes effect
 
@@ -197,12 +204,12 @@ refused at save — "quarantine all mail" is never what someone meant to write.
 
 ### `actions`
 
-| Action | | Moves mail |
+| Action | | Touches the mailbox |
 |---|---|:--:|
-| `quarantine_message` | Out of the inbox, restorable | ✅ |
-| `trash_message` | To recoverable trash | ✅ |
-| `move_to_spam` | To the junk/spam location | ✅ |
-| `banner_message` | Prepend the warning banner. Needs `enabled` on the [`banners`](#banners) record | ✅ |
+| `quarantine_message` | Out of the inbox, restorable — a change of **placement** | ✅ |
+| `trash_message` | To recoverable trash — a change of placement | ✅ |
+| `move_to_spam` | To the junk/spam location — a change of placement | ✅ |
+| `banner_message` | Prepend the warning banner. A **modification**, not a placement: a bannered message does not move. Needs `enabled` on the [`banners`](#banners) record | ✅ |
 | `submit_to_triage` | Record that this message warrants a look, and say so as telemetry | |
 | `crawl_link` | Queue the message's links for [detonation](detections.md#link-detonation) | |
 

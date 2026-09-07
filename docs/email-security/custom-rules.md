@@ -250,36 +250,46 @@ Both are **refused by name**, and in both cases the rule itself is fine — it
 validates, it saves, and it runs.
 
 **A rule using `lookup`.** The `lookup` operator resolves one of your
-organization's own `lookup` Hive records, and the service that runs a backtest
-has no access to them. It could only ever report that the rule matched nothing,
-which is a claim about your mail that nothing looked at:
+organization's own `lookup` Hive records, and the service that answers a backtest
+cannot reach them. The refusal names the resource it could not resolve, and says
+what to do instead: the rule is otherwise valid, so save it and it evaluates
+normally in the pipeline, where the lookup **is** resolved.
 
-```text
-a rule using `lookup` (hive://lookup/ioc-domains) cannot be backtested: the
-backtest runs on an api pod, which has no access to this organization's lookup
-records, so it could only report that the rule matched nothing. The rule is
-otherwise valid — save it and it evaluates normally in the pipeline, where the
-collector resolves the lookup
-```
+That is a real limitation, not a transient error to retry. The alternative would
+have been to report "0 messages matched" for a rule that in fact matches plenty,
+which is a claim about your mail that nothing looked at.
 
-This is a real limitation, not a temporary error to retry. To size an IOC rule
-before enabling it, either backtest the same rule with the `lookup` clause
-removed — which tells you how much the rest of the logic narrows — or save the
-rule and watch it live, which is safe because a `dr-mail` rule contributes to a
-verdict and your automations are in `alert_only` until you say otherwise. See
-[IOC & Reputation Feeds](ioc-feeds.md).
+To size an IOC rule before enabling it, either backtest the same rule with the
+`lookup` clause removed — which tells you how much the rest of the logic narrows
+— or save it and watch it live, which is safe because a `dr-mail` rule
+contributes to a verdict and your automations are in `alert_only` until you say
+otherwise. See [IOC & Reputation Feeds](ioc-feeds.md).
 
 **A `post_verdict` rule.** It runs against the verdict a pass would compute, and
 a backtest replays a message rather than re-scoring it. Backtest the
 `pre_verdict` rules that produce the verdict instead.
 
-!!! note "`lookup` rules validate — they just cannot be replayed"
-    `rule validate` accepts them, and it goes further: it checks at write time
-    that the `lookup` record you named actually exists in your organization, and
-    refuses the save if it does not. A dangling `hive://lookup/` reference is the
-    most common authoring mistake, it saves cleanly and matches nothing forever,
-    and that reads as coverage. A rule may name at most **four** lookups, and the
-    resource must be of the form `hive://lookup/<name>`.
+### Rules for `lookup` in a mail rule
+
+| | |
+|---|---|
+| Form | The resource must be `hive://lookup/<name>` — nothing else is accepted |
+| Count | At most **four** `lookup` operators per rule. Each resolves a whole lookup record for your organization |
+| Existence | Checked **on save**, not by `rule validate` — see below |
+
+!!! warning "`rule validate` does not check that the lookup exists"
+    A `lookup` rule naming a record your organization does not have **passes
+    `rule validate` and then fails the save.** That is the one place where "valid
+    here means savable there" does not hold: the existence check needs to read
+    your `lookup` records, and the validate call cannot.
+
+    The check itself is worth having, and the Hive does run it: a dangling
+    `hive://lookup/` reference is the most common authoring mistake, it would
+    otherwise save cleanly and match nothing forever, and that reads as coverage.
+    The refusal names the record and tells you to create it first.
+
+    So: write the lookup before you write the rule that names it, and treat a
+    save failure after a clean validate as this, not as a mystery.
 
 ## Tuning the managed pack
 

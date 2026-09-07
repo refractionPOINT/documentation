@@ -216,14 +216,17 @@ over would be wrong.
 
 `--reason` **is** supported on the execute and reaches the audit trail.
 
-!!! bug "Two stale claims in the CLI and SDK say otherwise — ignore them"
+!!! bug "The CLI's `--ai-help` text contradicts itself about `--reason`"
     `limacharlie mailsec message bulk-action --ai-help` ends with a paragraph
-    claiming "there is no `--reason`", and the Python SDK's
-    `bulk_action_execute()` docstring warns that `reason` may be dropped in
-    transit by an older deployment. **Both are stale.** The flag is registered,
-    the gateway forwards it, and an earlier paragraph in that same help text
-    describes it correctly. Trust this page and `--help`; the two texts are being
-    corrected.
+    claiming "there is no `--reason`". That paragraph is **stale**: the flag is
+    registered, the gateway forwards it, and an earlier paragraph in the same
+    help text describes it correctly. Trust this page and `--help`; the help text
+    is being corrected.
+
+    The Python SDK's `bulk_action_execute()` docstring carries a related but
+    different caveat — that `reason` needs a gateway new enough to forward it.
+    That was true of older deployments and is not a contradiction; it is simply
+    no longer the situation on a current one.
 
     Passing `--reason` to a *preview* does nothing, and the CLI says so rather
     than accepting it quietly: the preview mints the confirmation and takes no
@@ -238,13 +241,21 @@ like in a runbook:
 
 | Exit | |
 |---|---|
-| `0` | The job completed and **at least one message was acted on** — or you passed `--no-wait`, or you ran a preview and it produced a token |
-| non-zero | The execute was not accepted; the job completed but **every** attempted member failed; it ended `interrupted`; it is `stalled`; it was still running at the timeout; or a poll errored |
+| `0` | The job reached `complete` without the "nothing worked" case below — or you passed `--no-wait`, or you ran a preview and it produced a token |
+| non-zero | The execute was not accepted; the job completed with **zero successes and at least one failure**; it ended `interrupted`; it is `stalled`; it was still running at the timeout; or a poll errored |
 
+The non-zero rule is narrower than "nothing was remediated", deliberately.
 Per-member failures inside an otherwise successful batch are your data, not an
-error, and do **not** make the command exit non-zero. Zero successes with at
-least one failure does: nothing was remediated, and a chained command must not
-run as though it was.
+error. Zero successes **with at least one failure** is an error: nothing was
+remediated and something broke, so a chained command must not run as though it
+had worked.
+
+A batch that completes with no failures and no successes — every member
+`skipped` because the provider already had them where you wanted them, every
+member `alert_only` because the organization is not in enforce mode, or every
+member `not_found` — exits **`0`**. Nothing broke. If "at least one provider
+write actually happened" is what your runbook needs, read `counts.ok` rather
+than relying on the exit code.
 
 The `bulk_id` is announced on stderr *before* the first poll, so a poll that
 fails still leaves you holding the handle. With `--quiet`, the exit code and

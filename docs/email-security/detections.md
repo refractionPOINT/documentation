@@ -379,7 +379,10 @@ typed reason — never an error a caller would log as infrastructure and discard
 | `missing_location` | A redirect status with no usable destination |
 | `budget_exceeded` | The target stalled past the time budget — itself evidence |
 | `transport_error` | The connection failed |
-| `disabled` | Detonation was asked for where it is not deployed |
+
+(A thirteenth code, `disabled`, is reserved in the contract for "asked for
+where detonation is not deployed". Nothing stamps it on a message — in that
+situation nothing is stamped at all — so do not write a rule that waits for it.)
 
 Each hop's real connected address is recorded, so a name that answered
 differently the second time cannot hide behind the first answer. TLS facts are
@@ -402,6 +405,7 @@ It has the **lowest authority** of the three revising modes:
 | `auto`, or a previous `detonation` | Applies |
 | `ai` | **Refused.** The evidence is still stamped on the message |
 | `analyst` | **Refused.** The evidence is still stamped on the message |
+| Anything else | **Refused.** The rule is an allow-list, so a mode this build does not recognize is not overwritten either |
 
 A machine does not overrule a person, or an agent that already looked. The
 refusal is a satisfied outcome, not a failure: the detonation block lands on the
@@ -448,11 +452,19 @@ path: enrichments/detonation/refusal/kind
 value: blocked_address
 ```
 
-The block carries `hops[]` (each with `host`, `resolved_ips`, `connected_addr`,
+The block carries `url` — **which link this describes**, and the only field that
+says so — plus `hops[]` (each with `host`, `resolved_ips`, `connected_addr`,
 `status`, `next_url` and `tls`), a `landing` (`effective_url`, `status`, `title`,
 `body_sha256`, `body_bytes`, `body_complete`, `text_excerpt`,
 `has_password_input`, `form_count`, `form_action_hosts`), a `refusal`
 (`kind`, `reason`) where there was one, `elapsed_ms` and `detonated_at`.
+
+!!! warning "Most of these fields are absent rather than false or empty"
+    A boolean like `has_password_input`, and `refusal/kind` itself, are omitted
+    when they have no value — so "the page had no password field" and "no
+    detonation ran" look identical to a rule that only tests for `false`. Test
+    for **presence** first when the difference matters, exactly as you would for
+    [any other enrichment](#enrichments).
 
 When several of a message's links were detonated, the drawer shows the most
 damning one — credential harvest first, then a refusal that found a private

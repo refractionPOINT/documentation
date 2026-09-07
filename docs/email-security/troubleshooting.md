@@ -16,6 +16,13 @@ Read `connections` first, before any of the counts. A screen reporting 1,400
 protected mailboxes next to a connection that has not completed a pass since
 Tuesday is lying with true numbers.
 
+!!! warning "A `403` on that command is itself the answer"
+    Every `/v1/mailsec/*` route — reads included — requires the organization to
+    be subscribed to `ext-email-security`. If `coverage` comes back `403`, stop
+    here and go to [the subscription check](#1-check-the-subscription): the
+    product is off for this organization, and no other command on this page will
+    answer either.
+
 ## Nothing is being ingested at all
 
 ### 1. Check the subscription
@@ -28,14 +35,19 @@ that unsubscribes stops being ingested.
 limacharlie extension list --oid $OID
 ```
 
-What "gated" means, precisely:
+What unsubscribing does, precisely:
 
 | | |
 |---|---|
 | **No new mail is read** | Every arriving notification is discarded |
 | **No discovery, no subscription creation, no watch renewal** | The provider's own watches then expire on their own schedule, and the provider stops sending |
-| **Existing data is untouched** | A gate is not a deletion. The [retention lanes](policy.md#data-retention-and-deletion) still govern expiry |
-| **Reading and remediating still work** | An analyst must still be able to act on mail already ingested |
+| **The whole API surface is refused** | Every `/v1/mailsec/*` route returns `403`, reads included, so the CLI and the console cannot show you the queue either. The console shows a subscribe screen instead of the product |
+| **Existing data is untouched** | A gate is not a deletion. The [retention lanes](policy.md#data-retention-and-deletion) still govern expiry, and your `mailsec_provider` and `mailsec_policy` records are preserved so a resubscribe needs no reconfiguration |
+
+The two halves are enforced in different places and for different reasons — the
+API refuses because the subscription is the product's enable gate, and the
+collector stops reading mail because a cancelled customer's mail must not be
+read. Neither one alone would be enough.
 
 !!! danger "Mail that arrives while you are unsubscribed is never read, and is never backfilled"
     This is a design decision, not a gap waiting to be filled. Resubscribing
@@ -57,8 +69,8 @@ Timings, both directions:
 
 ### 2. Check the entitlement block
 
-`coverage` carries an `entitlement` block reporting what the platform believes
-about this organization:
+Once `coverage` answers at all, its `entitlement` block reports what the platform
+believes about this organization:
 
 ```bash
 limacharlie mailsec coverage --oid $OID --output yaml --filter 'entitlement'
@@ -66,26 +78,34 @@ limacharlie mailsec coverage --oid $OID --output yaml --filter 'entitlement'
 
 | Field | |
 |---|---|
-| `resolved` | **Read this first.** `false` means the tier could not be resolved, and every other field is then absent rather than guessed. It is not a claim that you have no limits |
+| `resolved` | **Read this first.** `false` means the plan could not be resolved. It is not a claim that you have no limits — it means nothing looked |
 | `subscribed` | Whether the extension subscription was found |
-| `gate_reason` | `""` when mail may be worked; otherwise `not_subscribed` or `trial_expired` |
-| `plan` | `paid` or `trial` |
-| `trial_started_at`, `trial_ends_at`, `trial_expired`, `trial_days_remaining` | The clock, when one applies. Days remaining rounds **up** — a trial with four hours to run has not had its last day yet |
-| `mailbox_cap`, `mailbox_cap_enforced` | The protected-mailbox ceiling, and whether it is actually being enforced |
-| `purge_schedule_available` | `false` means the schedule could not be **read**. The block is then absent rather than rendered as "nothing scheduled" |
+| `gate_reason` | Present only when mail is **not** being worked, naming why: `not_subscribed` or `trial_expired`. Absent is the healthy state — branch on the key, not on an empty string |
+| `plan` | `paid` or `trial`. Omitted when `resolved` is `false` |
+| `trial_started_at`, `trial_ends_at`, `trial_expired`, `trial_days_remaining` | The clock, where one applies. Days remaining rounds **up** — a trial with four hours to run has not had its last day yet. Omitted when `resolved` is `false` |
+| `mailbox_cap`, `mailbox_cap_enforced` | A protected-mailbox ceiling, and whether it is actually being enforced. Omitted when `resolved` is `false` |
+| `purge_schedule_available` | `false` means the schedule could not be **read**, so the pending-deletion fields are absent rather than rendered as "nothing scheduled" |
 | `purge_scheduled_at`, `purge_reason`, `purge_days_remaining`, `purge_cancellable` | A pending deletion, why, when, and whether undoing the condition withdraws it |
+
+`resolved: false` omits the **plan, the clock and the cap** and nothing else: the
+subscription facts and any pending deletion are still reported, because those are
+read separately and a failure in one does not make the other unknown.
 
 Where a mailbox ceiling applies, mailboxes past it stay in state `discovered` —
 found, and not being watched. Not `excluded` (which is your own scope decision)
 and not `error` (which would be a fault to fix). A cap **bounds activation and
 never deactivation**: nothing un-protects a mailbox that is already protected.
 
-!!! note "Trial limits are reported before they are enforced"
-    During the private beta the trial clock and the mailbox ceiling are resolved
-    and reported — so `entitlement` tells you what *would* apply — while nothing
-    is refused on their account. `mailbox_cap_enforced` is the field that says
-    which of the two you are looking at. Do not read a populated `trial_ends_at`
-    as an announcement about pricing.
+!!! note "The clock and the ceiling may be reported without being enforced"
+    Whether Email Security applies a trial clock or a mailbox ceiling at all is a
+    per-deployment setting, and it can be switched on in a reporting posture
+    first — resolving each organization's plan and saying what *would* apply,
+    while refusing nobody. `mailbox_cap_enforced` is the field that tells the two
+    apart, and a `gate_reason` of `trial_expired` only ever appears where the
+    limit is actually being applied. Where the setting is off entirely, the plan,
+    clock and cap fields are simply absent.
+
+    Do not read a populated `trial_ends_at` as an announcement about pricing.
 
 ### 3. Check the connection itself
 

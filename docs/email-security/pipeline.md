@@ -314,7 +314,7 @@ An empty population is never reported as zero. `status` is `not_recorded` and
 
 | `reason` | What happened |
 |---|---|
-| `no_messages_emitted_in_window` | Nothing was emitted at all — a quiet tenant, or a connection that has stopped. The `connections` block is what tells you which |
+| `no_messages_emitted_in_window` | The window held nothing this number can be computed from — a quiet tenant, a connection that has stopped, or a window made up **entirely** of backfilled mail. The `connections` block is what tells you which |
 | `no_live_ingests_measured_in_window` | Messages **were** emitted and none of them was measurable: the window is dominated by a backfill or by a re-drive of older mail |
 
 `messages_considered` is reported in both cases, and it is what separates them: a
