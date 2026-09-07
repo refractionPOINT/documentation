@@ -614,14 +614,26 @@ server from your verified claims rather than taken from the request.
 
 ### It also happens without a request
 
-| Event | When the data is deleted |
-|---|---|
-| The organization unsubscribes from Email Security | **30 days** later. Resubscribing at any point inside those 30 days cancels the scheduled deletion |
-| The organization itself is deleted | Immediately |
+| Event | `purge_reason` | When the data is deleted |
+|---|---|---|
+| The organization unsubscribes from Email Security | `unsubscribed` | **30 days** later. Resubscribing at any point inside those 30 days cancels the scheduled deletion |
+| A free trial of Email Security lapses | `trial_expired` | **30 days** later. Moving the organization off the free tier inside those 30 days cancels it |
+| The organization itself is deleted | `org_deleted` | Immediately |
+| A [tenant purge](#requesting-a-purge) is asked for | `requested` | Immediately |
 
-Neither needs anyone to ask. The 30-day delay exists so that unsubscribing by
-mistake, or moving billing around, is recoverable — and resubscribing is all the
-recovery takes.
+None of the first three needs anyone to ask. The 30-day delay exists so that
+unsubscribing by mistake, or moving billing around, is recoverable — and undoing
+the condition is all the recovery takes. The trial case gets the **same** 30 days
+deliberately: from your side the two situations are the same situation, and
+giving the shorter grace to the customer most likely to have misread a deadline
+would be exactly backwards.
+
+**You are told, twice.** A notice is delivered to the organization's error stream
+when a deletion is first scheduled and again in the final seven days. Each names
+the exact date, says what undoing it takes, and says plainly that nothing has
+been deleted yet. `coverage`'s `entitlement` block carries the same facts as data
+— `purge_scheduled_at`, `purge_reason`, `purge_days_remaining` and
+`purge_cancellable`. See [Troubleshooting](troubleshooting.md#we-unsubscribed-what-happens-to-our-data).
 
 ### Requesting a purge
 
