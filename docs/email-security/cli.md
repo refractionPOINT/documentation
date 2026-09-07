@@ -4,9 +4,10 @@
 
 The `limacharlie mailsec` command group covers the Email Security API surface:
 the coverage screen, the message index and drawer, the audited raw-EML download,
-campaigns and campaign-wide sweeps, sender profiles, the action audit trail, the
-abuse-mailbox report queue, custom-rule validation and backtest, the connection
-preflight, the served onboarding guide, and the tenant purge.
+verdict revisions, campaigns and campaign-wide sweeps, bulk remediation over a
+selection you name, sender profiles, the action audit trail, the abuse-mailbox
+report queue, custom-rule validation and backtest, the connection preflight, the
+served onboarding guide, and the tenant purge.
 
 Commands take the global options (`--oid`,
 `--output json|yaml|toon|csv|table|jsonl`, `--filter <jmespath>`,
@@ -63,9 +64,18 @@ limacharlie mailsec message get <msg_uuid>
 limacharlie mailsec message similar <msg_uuid>              # who else got it
 limacharlie mailsec message eml <msg_uuid> --justification "INC-4471"
 
+# Re-judging a message, and reading how its verdict moved
+limacharlie mailsec message revise <msg_uuid> --verdict malicious --rationale "confirmed credential harvest"
+limacharlie mailsec message revisions <msg_uuid>
+
 # Remediation
 limacharlie mailsec message action <msg_uuid> --action quarantine_message --reason "confirmed phish"
 limacharlie mailsec message action <msg_uuid> --action restore_message
+
+# Bulk remediation over a selection you name: previews without --confirm
+limacharlie mailsec message bulk-action --action quarantine_message --input-file uuids.txt
+limacharlie mailsec message bulk-action --action quarantine_message --input-file uuids.txt --confirm <token> --reason "INC-4471"
+limacharlie mailsec message bulk-status <bulk_id>
 
 # Campaigns: one attack, triaged once
 limacharlie mailsec campaign list --min-members 3
@@ -82,6 +92,7 @@ limacharlie mailsec action get <action_id>
 limacharlie mailsec report list --status open --oldest-first
 limacharlie mailsec report get <report_id>
 limacharlie mailsec report resolve <report_id> --disposition true_positive
+limacharlie mailsec report reopen <report_id>
 
 # Custom rules
 limacharlie mailsec rule validate --file rule.json --rule-id custom-lookalike
@@ -178,6 +189,49 @@ and would have you discard a good rule.
 ```bash
 limacharlie mailsec rule backtest --file rule.json --output yaml
 ```
+
+### Bulk remediation previews by default too
+
+`message bulk-action` is the campaign sweep's discipline over a selection you
+name: omit `--confirm` and it previews, pass the token back and it executes. The
+selection can come from `--msg-uuids`, `--input-file`, or standard input — which
+is what lets the queue pipe into it:
+
+```bash
+limacharlie mailsec message list --verdict malicious --output json \
+  | jq -r '.messages[].msg_uuid' \
+  | limacharlie mailsec message bulk-action --action quarantine_message --input-file -
+```
+
+The execute must repeat the **identical** `--action`, `--msg-uuids` and
+`--attempt` the preview was minted with — the token is derived from those three,
+not issued as a nonce. `--reason` is not one of them, and **is** supported: it is
+recorded on the job's audit row and on every message's.
+
+The job runs in the background, `--wait` is the default, and **the exit code
+carries the outcome** — `0` only when the job completed and something was acted
+on. The full contract, including every `state`, `result` and count, is in
+[Bulk Remediation](remediation.md#from-the-cli).
+
+### Revising a verdict is `mailsec.act`, not `mailsec.set`
+
+`message revise` records a human disposition over the scorer's, appending to the
+message's history rather than overwriting it. `--rationale` is required and
+audited — at least one, at most ten, each 280 characters or fewer.
+
+```bash
+limacharlie mailsec message revise <msg_uuid> \
+  --verdict benign --rationale "internal test send" --rationale "sender verified"
+limacharlie mailsec message revisions <msg_uuid> --output yaml
+```
+
+The CLI always revises as `analyst`, because the operator of a CLI is a person.
+An autonomous agent revises with its **own** key and `mode: ai` through the API,
+so the audit can always say whether a person or a model decided.
+
+`applied: false` is an honest outcome and not an error: the message already
+carried that verdict and nothing changed. See
+[Detections & Verdicts](detections.md#revising-a-verdict).
 
 ### The tenant purge is irreversible
 

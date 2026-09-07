@@ -90,6 +90,38 @@ two analysts clicking at once is not an error.
     weighing on every later message from a legitimate correspondent. The repair
     runs once per report even if the resolution is retried.
 
+## Reopening
+
+```bash
+limacharlie mailsec report reopen <report_id> --oid $OID
+```
+
+A resolved report goes back to `open` and is worked again. The command takes no
+options beyond the report id: **who** reopened it is stamped from your
+authenticated identity and cannot be supplied by the caller.
+
+The resolution columns are deliberately **kept**. Only the status moves, so the
+row still reads "previously resolved `benign` by `system:automated-sender`"
+rather than erasing the very thing being disputed — and `reopened_from` names the
+state it came out of.
+
+Reopening a report that is already `open` or `triaging` succeeds and reports
+`already_open`, so two analysts clicking at once is not an error. An unknown
+report id **is** an error rather than a silent success, because this names one
+specific row to change.
+
+Reopening needs `mailsec.set` — exactly the permission the resolve it undoes
+needs, and deliberately not a wider one. An analyst who can close a report must
+be able to reopen one, or a mis-click is permanent.
+
+!!! tip "This is the escape hatch the auto-resolver depends on"
+    A report from an [automated sender](#automated-senders) is born resolved and
+    attributed to `system:automated-sender`. That classifier is only defensible
+    because it is reversible: without a reopen, one wrong call about an
+    organization's mail would close real reports permanently. It serves a wrong
+    AI resolution and an analyst's mis-click equally — none of the three is
+    special here.
+
 ## Automated senders
 
 An abuse mailbox receives a great deal that is not a report: vendor service

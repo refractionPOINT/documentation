@@ -142,25 +142,26 @@ organizations want to own detection entirely through their own `dr-mail` rules,
 and forcing our opinions into their verdicts would make that impossible.
 
 ```yaml
-# managed-rules.yaml, saved as mailsec_policy record 00-managed-rules
+# managed-rules.yaml, saved as the mailsec_policy record named managed_rules
 policy_type: managed_rules
 enabled: false
 ```
 
 ```bash
-limacharlie hive set --hive-name mailsec_policy --key 00-managed-rules \
+limacharlie hive set --hive-name mailsec_policy --key managed_rules \
   --input-file managed-rules.yaml --enabled --oid $OID
 ```
 
-The extension also exposes `get_managed_rules` and `set_managed_rules` for
-reading and flipping this without hand-writing the record.
+The console carries the same switch on **Email Security → Settings**, and the
+`ext-email-security` extension exposes `get_managed_rules` and
+`set_managed_rules` for reading and flipping it without hand-writing a record.
 
 | | |
 |---|---|
 | **Default** | Enabled. An organization that has written no policy has the pack |
 | **When disabled** | The managed pack is not matched at all. Your own `dr-mail` rules still are, and they are still scored the same way |
 | **If nothing matches** | The verdict is `unknown`, never `benign`. "Nobody was looking" and "we looked and it was fine" are different facts and are reported differently |
-| **Time to take effect** | On the next policy resolve. A policy change invalidates the cache, and there is a five-minute backstop for a change we did not hear about |
+| **Time to take effect** | Seconds, over the policy change feed. Five minutes worst case — the resolved-policy cache's TTL, which is the backstop for a change the collector did not hear about |
 
 The record must state `enabled` explicitly. A `managed_rules` record that sets
 nothing is refused rather than read as "disable", because the failure mode of
@@ -170,6 +171,10 @@ some.
 You do not need this switch to tune the pack. Disabling one packaged rule, or
 changing its weight, is a
 [`rule_overrides`](custom-rules.md#tuning-the-managed-pack) entry.
+
+The full record contract — composition, the three ways to write it, and what the
+console does when two records disagree — is in
+[Policy Reference](policy.md#managed_rules).
 
 ## The state model
 

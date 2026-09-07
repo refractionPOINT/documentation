@@ -9,7 +9,7 @@ fleet-wide policy are a script, not a UI workflow.
 | Hive | Records | Purpose |
 |---|---|---|
 | `mailsec_provider` | one per mail connection | which tenant to protect, with which credential — see [Connecting Providers](providers.md) |
-| `mailsec_policy` | many, discriminated by `policy_type` | automations, exclusions, VIPs, thresholds, banners, retention, reporter replies, hunt defaults, clustering |
+| `mailsec_policy` | many, discriminated by `policy_type` | managed detections, automations, exclusions, VIPs, thresholds, banners, retention, reporter replies, hunt defaults, clustering |
 | `dr-mail` | one per custom rule | your own mail detection rules — see [Custom Rules](custom-rules.md) |
 
 ## How `mailsec_policy` records work
@@ -33,7 +33,7 @@ How each type composes:
 | `exclusions` | Concatenated — a set of independent suppressions |
 | `vips` | Union, deduplicated and sorted |
 | `thresholds` | Last writer wins per field, with the ordering invariant re-checked afterwards |
-| `banners`, `reporter_reply`, `hunt_defaults`, `clustering` | Last writer wins per field |
+| `managed_rules`, `banners`, `reporter_reply`, `hunt_defaults`, `clustering` | Last writer wins per field |
 | `retention` | **Maximum** wins — see [Retention](#retention) |
 
 ### Unknown fields are refused
@@ -59,6 +59,105 @@ through the API or through git-sync.
 An organization that has written no policy still has one. Every type below states
 its default, and the defaults are deliberately inert: nothing moves mail, nothing
 modifies mail, and nothing sends mail until you say so.
+
+---
+
+## `managed_rules`
+
+The switch for the packaged detection pack. It is the first record in this
+reference because it is the only one that can turn detection off.
+
+```yaml
+policy_type: managed_rules
+enabled: false
+```
+
+| Field | Default | |
+|---|---|---|
+| `enabled` | `true` | Whether the managed rule pack is matched at all |
+
+**`enabled` must be stated.** A `managed_rules` record that sets nothing is
+refused rather than read as "disable": the failure mode of guessing wrong here is
+an organization with no detection that believes it has some.
+
+**Absent is enabled.** An organization that has never written this record has the
+pack. "No record" is the product default, not an opt-out, and nothing in the
+console or the API renders a missing record as off.
+
+**When it is off**, the managed pack is not matched at all. Your own `dr-mail`
+rules still are, and they are still scored the same way — so an organization that
+wants to own detection entirely can. A message that then matches nothing is
+`unknown`, never `benign`: "nobody was looking" and "we looked and it was fine"
+are different facts and are reported differently. See
+[Managed detections are optional](pipeline.md#managed-detections-are-optional).
+
+You do not need this switch to *tune* the pack. Disabling one packaged rule, or
+changing its weight, is a [`rule_overrides`](#thresholds) entry.
+
+### The three ways to flip it
+
+All three write the same record, and a record written by one is indistinguishable
+from a record written by another.
+
+=== "Console"
+
+    **Email Security → Settings** carries a managed-detection switch, and
+    **Overview** leads with a banner while the pack is off — that one fact
+    changes how every count below it should be read. Turning the pack **off**
+    asks for confirmation; turning it back on restores the product default and
+    does not.
+
+    When the records do not compose to one obvious target — two records
+    deciding, or a record the Hive has disabled — the switch shows the resolved
+    value read-only and sends you to the **Policy** page rather than writing a
+    record that a later-named one would override.
+
+=== "CLI"
+
+    ```bash
+    cat > managed-rules.yaml <<'YAML'
+    policy_type: managed_rules
+    enabled: false
+    YAML
+
+    limacharlie hive set --hive-name mailsec_policy --key managed_rules \
+      --input-file managed-rules.yaml --enabled --oid $OID
+    ```
+
+=== "Extension"
+
+    `ext-email-security` exposes two actions for reading and flipping this
+    without hand-writing a record — which is how a D&R rule or an automation
+    reaches it:
+
+    | Action | Body | Returns |
+    |---|---|---|
+    | `set_managed_rules` | `enabled` (**required** boolean), optional `reason` — recorded as the record's comment | `managed_rules_enabled` |
+    | `get_managed_rules` | — | `managed_rules_enabled`, and `configured` |
+
+    `configured` is the field that distinguishes **on by default** from **turned
+    on deliberately**: it is `false` when no record exists. `set_managed_rules`
+    needs `mailsec.set`; `get_managed_rules` needs `mailsec.get`.
+
+!!! note "`managed_rules` is the canonical record name"
+    The console and the extension both write the record **named**
+    `managed_rules`, tagged `lc:system`. Any record name works — composition is
+    last-writer-wins in record-name order over the records the Hive has
+    *enabled* — but a second record named later than `managed_rules` wins over
+    it, and a `managed_rules` record the Hive has disabled does not count at all.
+    Keep it to one record unless you mean to layer them.
+
+### How fast a change takes effect
+
+| | |
+|---|---|
+| **Normally** | Seconds. A `mailsec_policy` write is broadcast on the Hive's change feed and the collector drops that organization's cached policy on the spot |
+| **If the broadcast is missed** | The next mailbox-lease renewal tick re-reads policy |
+| **Worst case** | **Five minutes** — the resolved-policy cache's TTL, which expires whether or not anything was heard |
+
+The broadcast is the fast path and never the guarantee: it is fire-and-forget, so
+a collector that was restarting can miss it. The bound you are promised is the
+five-minute TTL, and the broadcast is why you almost never wait for it.
 
 ---
 
@@ -537,6 +636,22 @@ dry_run: true
 | `window_days` | 7 | 1–365 |
 | `max_results` | 1000 | 1–100000 |
 | `dry_run` | `true` | An operation that can bulk-remediate defaults to "show me what this would match" |
+
+!!! warning "Nothing reads this record yet"
+    The record type validates and composes like every other one, and it is
+    documented here because it is savable and will be refused if you get it
+    wrong. But **no surface consumes it today.** The server-side retro-hunt
+    (`POST /hunts`, `GET /hunts/{hunt_id}`, `POST /hunts/{hunt_id}/remediate`)
+    is registered in the public OpenAPI document and answers a typed
+    `not_implemented` — the URLs and their permission gates are frozen ahead of
+    the engine that will serve them. The console's **Hunt** screen is a
+    different thing entirely: it compiles your criteria to
+    [LCQL](automation.md#querying-mail-with-lcql) and runs the ordinary
+    historical-event search over `EMAIL_MESSAGE`, with its own window control,
+    and it does not read this record.
+
+    Writing `hunt_defaults` now is harmless and changes nothing. Do not treat a
+    `dry_run: true` here as a safety control over anything.
 
 ---
 

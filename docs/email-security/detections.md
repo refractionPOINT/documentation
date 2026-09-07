@@ -67,6 +67,86 @@ revisions in the API and the console.
 See [Events & Automation](automation.md) for the payload and
 [Custom Rules](custom-rules.md#acting-on-a-verdict) for a rule that uses it.
 
+## Revising a verdict
+
+The engine's call is the first word, not the last. A person or an AI triage agent
+can replace it, and the replacement is **appended** rather than written over the
+top.
+
+```bash
+limacharlie mailsec message revise <msg_uuid> \
+  --verdict malicious --rationale "confirmed credential harvest" --oid $OID
+```
+
+| Field | |
+|---|---|
+| `verdict` | **Required.** `malicious`, `suspicious`, `graymail`, `benign` or `unknown`. `unknown` is an honest abstention that escalates to a human queue. `error` is refused — it means judgement itself failed, which is an engine fact nobody decides |
+| `mode` | **Required.** Which seat decided: `analyst` or `ai`. `auto` is refused; the scorer does not override itself. The CLI always sends `analyst`, because the operator of a CLI is a person — an agent revises with its **own** key and `mode: ai` |
+| `rationale` | **Required.** A non-empty list of short reasons. A class with no reason is a naked verdict, and the same explainability contract applies to a revision as to the engine |
+| `score` | Optional. Omit it and the engine's score stays beside the new class, rather than a made-up number landing in the column a backtest reads |
+
+`rationale` is bounded rather than refused: at most **10 bullets of 280
+characters**, clipped on a character boundary with `rationale_truncated` set. A
+verdict is not thrown away over a long explanation.
+
+**Who** revised is stamped from your authenticated identity and is never read
+from the request. `mode` names the seat, not the person, so a caller misstating
+it can only do so beside an `actor` it did not choose — where the two disagree
+visibly.
+
+!!! note "A no-op is a success, not an error"
+    Re-recording the class, score and mode a message already carries changes
+    nothing: `applied: false`, `already_current: true`, and `revision_seq` names
+    the revision that already says it. Re-wording the rationale alone is not a
+    change. A person confirming an agent's call **is** one, because the mode
+    moves.
+
+Revising takes **`mailsec.act`**, not `mailsec.set` — the only place on this
+surface where the permission is not read off the "does it touch a mailbox" line.
+A revision can move a message into the flagged set, which promotes its evidence
+from the 35-day lane to the 400-day one, and that promotion is a ratchet with no
+demotion. It also emits an `EMAIL_VERDICT` that fires every matching rule. That
+is the product doing things on the organization's behalf, and `mailsec.act` is
+the single grant an operator revokes to stop an autonomous caller doing them.
+
+### The four modes
+
+| `mode` | Who |
+|---|---|
+| `auto` | The rule pack, at ingest. Only the engine writes this one |
+| `analyst` | A person, through the console, the CLI or the API |
+| `ai` | An autonomous triage agent calling with its own organization credentials — see [AI Triage](ai-triage.md) |
+| `detonation` | [Link detonation](#link-detonation) came back with something the static pass could not know |
+
+### The history
+
+The revisions are an append-only sequence. Each entry carries its `seq`, the
+`verdict` and `mode`, the `actor`, `decided_at`, the `rationale`, and the `prior`
+state it displaced — verdict, score, mode and engine version. **The first
+revision's `prior` is the engine's own verdict**, so the chain reaches back to
+what the pack originally said without a separate lookup.
+
+```bash
+limacharlie mailsec message revisions <msg_uuid> --oid $OID --output yaml
+```
+
+`GET /messages/{msg_uuid}/revisions` serves the whole chain, oldest first. It is
+deliberately **not paginated** — a message's revisions are few by nature — but
+`revisions_truncated` reports the pathological history that exceeded the
+backend's ceiling. It is gated on `mailsec.get`: a revision is the product's own
+structured record of a decision about a message you can already open, not the
+original bytes `mailsec.get.eml` guards.
+
+The message drawer inlines the most recent revisions, which is what an analyst
+reads; the route exists for the rare message with more than the drawer inlines,
+and for an audit export that wants the chain entire. A message nobody has
+overridden reports `revision_count: 0` and an empty history — the engine's own
+verdict is on the message, not in its history of disagreements.
+
+Nothing is rewritten. `EMAIL_MESSAGE` still stands as the record of what the
+engine decided at ingest, the row carries the current answer, and each revision
+ships an [`EMAIL_VERDICT`](automation.md#email_verdict) at the next `seq`.
+
 ## Scoring
 
 Each matching rule carries a **weight** (0–100, how much this evidence is worth)
