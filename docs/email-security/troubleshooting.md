@@ -262,7 +262,7 @@ one immediately is a [tenant purge](cli.md#the-tenant-purge-is-irreversible).
 
 | Symptom | Where it is reported |
 |---|---|
-| No mail at all | `coverage.connections`, `coverage.entitlement.gate_reason`, `extension list` |
+| No mail at all | `extension list` **first** (a `403` from `coverage` means unsubscribed), then `coverage.connections` and `coverage.entitlement.gate_reason` |
 | A connection in error | `mailsec connection test <record>` — each requirement, independently |
 | Mailboxes found but not watched | `coverage.mailboxes.discovered`, plus `mailbox_cap` where one applies |
 | Individual messages missing | `EMAIL_INGEST_ERROR`, `coverage` parse-degradation rate |
