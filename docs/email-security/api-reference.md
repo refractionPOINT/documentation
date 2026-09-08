@@ -290,11 +290,30 @@ refusal rather than a `404` you cannot tell from a typo. The permission gates ar
 live and are the same ones the served routes use; what is missing is the replay
 engine behind them.
 
-**Do not build against them yet, and do not branch on the refusal.**
-`GET /hunts/{hunt_id}` answers a typed `not_implemented` naming the milestone it
-waits on. The two `POST`s currently fail with a plain routing error instead,
-because the typed refusal is registered on a different backend from the one they
-are addressed to. Treat all three as unavailable rather than as a contract.
+**Do not build against them yet — but the refusal itself is a contract you can
+branch on.** All three answer the same typed, non-retryable `not_implemented`,
+naming the milestone that will serve the route and the system that milestone
+needs:
+
+```json
+{
+  "error": "get_hunt is not implemented until M7 (needs: the replay/retro-hunt engine (plan §6.14))",
+  "retry": false,
+  "data": {
+    "error_code": "not_implemented",
+    "rpc": "get_hunt",
+    "milestone": "M7",
+    "needs": "the replay/retro-hunt engine (plan §6.14)"
+  }
+}
+```
+
+Match on `data.error_code` rather than on the message text: the text is meant for
+a human reading a log and is free to change, the code is not. `retry` is `false`
+and means it — an unimplemented route does not become implemented inside a retry
+budget, so a client that retries has tripled its load for the same answer. A
+client can hide the feature on this code today and have it light up when the
+engine lands, with no change on either side.
 
 Until they serve, mail hunting is
 [LCQL over `EMAIL_MESSAGE`](automation.md#querying-mail-with-lcql) — which is what
