@@ -38,6 +38,34 @@ is_create_action: true
 The `index` value stays a plain name; Elastic resolves it to the data stream's
 backing indices and applies the lifecycle policy configured on the Elastic side.
 
+### Timestamp requirement
+
+Elastic also requires that every document indexed into a data stream carry a
+`@timestamp` field mapped as `date` or `date_nanos`. LimaCharlie records do not
+have a top-level `@timestamp`; their time is in `routing.event_time`, a Unix
+timestamp in milliseconds, which the default `date` mapping accepts as
+`epoch_millis`.
+
+So either add the field on the Elastic side with an ingest pipeline on the data
+stream, or add it to the records themselves with the output's
+`custom_transform`. Prefix the key with `+` to put the transform in additive
+mode, which keeps the rest of the record instead of replacing it with only the
+listed fields:
+
+```text
+custom_transform: |-
+  {
+    "+@timestamp": "routing.event_time"
+  }
+```
+
+The unquoted `routing.event_time` is a field path rather than a template
+string, so the value is copied as a number and Elastic reads it as
+`epoch_millis`.
+
+See [Template Strings and Transforms](../../../4-data-queries/template-transforms.md)
+for the transform syntax.
+
 ## Related articles
 
 - [OpenSearch](opensearch.md)
