@@ -160,6 +160,11 @@ job's own identity, so the attempt is part of what it names, while a sweep's
 token authorizes a member set and nothing else. Repeat a bulk `--attempt` on the
 execute; add or change a sweep's freely.
 
+`--attempt` on a campaign sweep needs a recent `limacharlie` release; an older
+one refuses the flag as unknown, and the field can be sent directly to the API
+in the meantime (see
+[Campaigns](campaigns.md#repeating-a-sweep-and-asking-for-a-second-one-on-purpose)).
+
 ```bash
 limacharlie mailsec campaign action "$CAMPAIGN" \
   --action quarantine_message --confirm "$TOKEN" \
