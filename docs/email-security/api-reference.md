@@ -183,7 +183,7 @@ organization is deleted. See
 | Route | Does |
 |---|---|
 | `POST /messages/{msg_uuid}/actions` | Perform a typed action on one message. Body: `action` (`quarantine_message`, `trash_message`, `move_to_spam`, `restore_message`, `banner_message`, `unbanner_message`), optional `reason`, optional `attempt` (idempotency token — omit to collapse onto the existing attempt). `banner_message` uses the organization's own banner, rendered from its `mailsec_policy` record of type `banners`; the body's `banner` field is **deprecated and ignored** and will be removed. Requires `mailsec.act` |
-| `POST /campaigns/{campaign_id}/actions` | Sweep a campaign. Same body plus `confirm`. **Without `confirm` this previews** and changes nothing, returning the member ids, the distinct mailboxes, the counts and a `confirm` token derived from that exact member set. With `confirm` it executes exactly that set; a campaign that grew since the preview is refused. Capped at 500 members. `reason` is recorded on **every member's** audit row and on the sweep's own row (`action_id` in the response); `attempt` mints a new row per member, so a deliberate retry is recorded beside what it retried instead of over it. Neither is part of the `confirm` token. Requires `mailsec.act` |
+| `POST /campaigns/{campaign_id}/actions` | Sweep a campaign. Same body plus `confirm`. **Without `confirm` this previews** and changes nothing, returning the member ids, the distinct mailboxes, the counts and a `confirm` token derived from that exact member set. With `confirm` it executes exactly that set; a campaign that grew since the preview is refused. Capped at 500 members. `reason` is recorded on **every member's** audit row and on the sweep's own row (`action_id` in the response); `attempt` (bounded at 128 characters, refused not truncated) mints a new row per member, so a deliberate retry is recorded beside what it retried instead of over it. Neither is part of the `confirm` token. Requires `mailsec.act` |
 | `POST /actions/bulk/execute` | Execute a previewed bulk remediation. Returns a `bulk_id` immediately and the provider work proceeds in the background. Requires `mailsec.act`. See [Bulk Remediation](remediation.md) |
 | `POST /reports/{report_id}/resolve` | Record a triage outcome. Body: `disposition` — one of `true_positive`, `false_positive`, `benign`. Resolving an already-resolved report succeeds and reports `already_resolved`, so two analysts clicking at once is not an error. Requires `mailsec.set` |
 | `POST /reports/{report_id}/reopen` | Put a resolved report back in the queue — see [`POST /reports/{report_id}/reopen`](#post-reportsreport_idreopen). Requires `mailsec.set` |
@@ -314,10 +314,11 @@ success/failure:
 | `failed` | The provider refused or errored; `error` carries the reason |
 | `pending` | In flight |
 
-A campaign sweep returns `attempted`, `succeeded`, `alert_only`, a per-member
-`failed` map, and `action_id` — the sweep's own audit row, readable through
-`GET /actions/{action_id}`, carrying the operator's justification and the counts.
-It does not abort on the first error.
+A campaign sweep returns `attempted`, `succeeded`, `skipped` (a subset of
+`succeeded`: members already in the target state, which cost no provider write),
+`alert_only`, a per-member `failed` map, and `action_id` — the sweep's own audit
+row, readable through `GET /actions/{action_id}`, carrying the operator's
+justification and the counts. It does not abort on the first error.
 
 ## Telemetry event contract
 

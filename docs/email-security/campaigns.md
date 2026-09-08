@@ -253,10 +253,17 @@ campaign_id: <campaign_id>
 action: quarantine_message
 attempted: 38
 succeeded: 36
+skipped: 4
 alert_only: 0
 failed:
   <msg_uuid>: "<provider error>"
+action_id: <action_id>
 ```
+
+`skipped` counts members that were **already** where the action wanted them. It is
+a *subset* of `succeeded` — the campaign is where you asked, and those members
+cost no provider write — so a re-run of a sweep reads `succeeded: 38, skipped: 38`
+rather than looking identical to the run that really moved 38 messages.
 
 A sweep does **not** abort on the first error. Stopping halfway leaves a campaign
 half-remediated, which is the worst of both states: the attacker still has reach
@@ -323,6 +330,10 @@ the retry lands **beside** the attempt it retried rather than over it. Repeating
 the *same* attempt collapses onto the same rows, which is what makes a lost
 response safe to re-send. `attempt` is not part of the confirmation token either,
 so a token minted by a preview stays valid when you decide to record one.
+
+It is an opaque handle, not prose: it is bounded at 128 characters and refused
+rather than truncated, because it is recorded on every member's audit row and a
+clipped idempotency token is a *different* token.
 
 ## Permissions
 
