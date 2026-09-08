@@ -430,22 +430,15 @@ write scope membership and to add or remove `acl:` tags on any record it
 manages. Pushing installation keys is included in that: a key carrying an `acl:`
 tag cannot be written without it.
 
-!!! note "The Infrastructure extension does not sync scopes yet"
+!!! note "Check your Infrastructure extension version"
     [Infrastructure Extension](../../5-integrations/extensions/limacharlie/infrastructure.md)
-    syncs a fixed set of configuration types and does not currently include the
-    `acl` hive. If you manage your organization through it, scope records still
-    have to be created and maintained separately — through the CLI, the API or
-    the web app. The `acl:` tags on records the extension *does* manage are
-    ordinary record tags and are carried along with them.
-
-!!! danger "Never pull as a non-member and push the result back"
-    A pull run by someone outside a scope captures restricted records with their
-    contents replaced by the redaction marker. Pushing that file back would try
-    to overwrite the real contents with the marker. LimaCharlie refuses the
-    write, so nothing is destroyed — but the push fails, and if the same file is
-    committed to git it will keep failing for everyone. Run configuration pulls
-    as an identity that holds every scope in the organization, or exclude the
-    restricted records from the file.
+    syncs a fixed set of configuration types. Support for the `acl` hive is
+    recent: when present, it applies the same rule as every other hive and
+    includes scope records only if the identity the extension runs as holds both
+    `acl.get` and `acl.set`. On an older version scopes are simply not synced,
+    and have to be maintained through the CLI, the API or the web app. Either
+    way the `acl:` tags on records the extension already manages are ordinary
+    record tags and travel with them.
 
 ## What resource ACLs do not restrict
 
