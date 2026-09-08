@@ -54,8 +54,10 @@ deploy it:
    reports each one independently. See [Connecting Providers](providers.md).
 3. **Mailboxes are discovered and subscribed.** The collector enumerates the
    directory, subscribes to change notifications (Microsoft Graph subscriptions,
-   Gmail watch → your own Pub/Sub topic), and runs a metadata-only historical
-   backfill so sender-history signals work on day two rather than day ninety.
+   Gmail watch → your own Pub/Sub topic), and runs a historical backfill — up to
+   fourteen days, judged with the same rules as live mail but emitting no
+   telemetry and taking no actions — so the queue has real verdicts on day one
+   and sender-history signals work on day two rather than day ninety.
 4. **Each message is judged.** Fetch → parse → enrich → evaluate signal rules →
    score → verdict → campaign clustering → policy automations → persist and emit.
 5. **You work the queue** in **Messages**, **Campaigns** and **User Reports**,

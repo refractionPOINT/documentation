@@ -264,6 +264,51 @@ justification that is stored verbatim against your authenticated identity. A
 failed attempt is recorded too, and the bytes are not served if the audit write
 fails. See [Messages & Triage](messages.md#downloading-the-original-message).
 
+## The historical backfill
+
+When a connection is first made, the collector walks up to `ingest.backfill_days`
+(0–90, default **14**) of the mail already in each protected mailbox. That walk
+runs the **same** enrich and score stages live mail runs — the managed pack, your
+own `dr-mail` rules, your policy's thresholds and exclusions — so the queue has
+real verdicts on your first day, the raw copy and the judged model are stored on
+the same retention lanes, a flagged message gets the same 400-day evidence row,
+and a hunt or a [rule backtest](policy.md) has a fortnight of your own mail to
+run against.
+
+**And it stops there.** For backfilled mail there is:
+
+- no `EMAIL_MESSAGE` and no `EMAIL_VERDICT` — nothing reaches your telemetry, so
+  no D&R rule fires and no Output ships a fortnight of history;
+- no policy automation and no remediation — nothing is quarantined, moved,
+  bannered or trashed;
+- no link detonation, and no user-report processing;
+- no contribution to [time to verdict](#time-to-verdict) — see below.
+
+The reasoning is one sentence: mail delivered eleven days ago has already been
+read, filed and acted on by the person it was addressed to, so quarantining it
+now is a surprise, and replaying two weeks of it into your detection rules on the
+day you switch the product on is a denial of service on your own alerting.
+Judging it is what makes the product useful on day one; acting on it is not.
+
+What backfilled mail *does* feed is the two statistics whose whole purpose is
+history: **sender profiles** (including the flagged counter, so a sender who was
+attacking you last week is not treated as a stranger this week) and **campaign
+clustering** — a campaign that spans the fortnight is shown as one campaign
+rather than as its last two messages.
+
+**It is paced.** The walk is bounded per connection per cycle and per collector
+pod, so it can never take ingest capacity from live mail; a large estate's
+fortnight fills in over hours rather than in one burst. Progress is in
+`coverage.backfill`, and mail that arrives *during* the walk is ordinary live
+mail and is judged, emitted and acted on normally.
+
+The drawer labels each such message `judged_via: backfill` — see
+[Messages & Triage](messages.md#which-lane-judged-it). A backfilled message can
+therefore show a `malicious` verdict beside an empty action timeline; that is the
+lane working, not a fault.
+
+Setting `backfill_days: 0` disables the walk entirely.
+
 ## Time to verdict
 
 End-to-end time for a message is three terms, and only two of them are ours:
@@ -321,12 +366,14 @@ An empty population is never reported as zero. `status` is `not_recorded` and
 zero denominator and a large one mean opposite things about whether to worry.
 
 !!! note "Backfilled and re-driven mail is excluded on purpose"
-    The historical backfill, an incident backfill, and the emission sweeper's
-    repairs all go back through the same ingest path — one path, deliberately —
-    so such a message can be a week old by the time its event ships. Those
-    samples would not widen the tail, they would *define* it, and one recovery
-    would report a time to verdict measured in days. They are identified and left
-    out of this population rather than quietly averaged into it.
+    The [historical backfill](#the-historical-backfill) emits nothing at all, so
+    it never enters this population. An incident backfill and the emission
+    sweeper's repairs *do* go back through the same ingest path — one path,
+    deliberately — so such a message can be a week old by the time its event
+    ships. Those samples would not widen the tail, they would *define* it, and
+    one recovery would report a time to verdict measured in days. They are
+    identified and left out of this population rather than quietly averaged into
+    it.
 
     A delivery timestamp slightly in our future is ordinary — the provider's
     clock is not ours — so a negative duration is clamped to zero and **counted**

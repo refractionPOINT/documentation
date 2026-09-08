@@ -75,7 +75,7 @@ Addresses and domains are lowercased on save.
 | Field | Meaning |
 |---|---|
 | `mode` | `auto` (default) picks push where the provider supports it, `push` requires it, `poll` forces periodic polling. |
-| `backfill_days` | Historical **metadata-only** bootstrap window, 0–90, default **14**. It seeds sender profiles and campaign statistics; it computes no verdicts and performs no actions. `0` disables it, at the cost of first-contact signals being uninformative for the first weeks. |
+| `backfill_days` | Historical bootstrap window, 0–90, default **14**. That history is **judged** with the same rules live mail is judged with, and it seeds sender profiles and campaign statistics — but it **emits no telemetry and performs no actions** (no `EMAIL_MESSAGE`, no `EMAIL_VERDICT`, no automation, no remediation), and it is paced so it cannot compete with live ingestion. `0` disables it, at the cost of an empty queue on day one and first-contact signals being uninformative for the first weeks. |
 
 Push is the normal mode for both providers. Polling exists for small tenants and
 as a failure fallback; at scale it spends provider quota continuously whether or
