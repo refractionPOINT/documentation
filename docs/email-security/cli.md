@@ -151,7 +151,14 @@ id per member and a new sweep record, so a re-run after a provider outage is
 recorded *beside* the run that failed rather than over it; the same value twice
 collapses again. It is an opaque handle you mint, not prose: at most 128
 characters, refused rather than truncated, because a clipped idempotency token
-is a *different* token. Like `--reason`, it is not part of the confirmation.
+is a *different* token, and it is checked on the preview leg too.
+
+Like `--reason`, it is **not** part of a campaign sweep's confirmation — unlike a
+*bulk* action's `--attempt` [below](#bulk-remediation-previews-by-default-too),
+which is. The two tokens answer different questions: a bulk token derives the
+job's own identity, so the attempt is part of what it names, while a sweep's
+token authorizes a member set and nothing else. Repeat a bulk `--attempt` on the
+execute; add or change a sweep's freely.
 
 ```bash
 limacharlie mailsec campaign action "$CAMPAIGN" \

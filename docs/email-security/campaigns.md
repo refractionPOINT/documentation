@@ -335,6 +335,8 @@ limacharlie mailsec campaign action "$CAMPAIGN" --oid $OID \
   --attempt after-the-outage
 ```
 
+Or straight against the API:
+
 ```bash
 curl -X POST "https://api.limacharlie.io/v1/mailsec/$OID/campaigns/$CAMPAIGN/actions" \
   -H "Authorization: bearer $JWT" -H "Content-Type: application/json" \

@@ -226,12 +226,18 @@ accepting it quietly: the preview mints the confirmation and takes no `reason`
 by design, precisely so that rewording a justification can never invalidate a
 selection somebody already approved.
 
-!!! note "Older CLI builds say the flag does not exist"
+!!! note "Older builds on either side of the wire"
     `limacharlie mailsec message bulk-action --ai-help` used to end with a stale
     paragraph claiming "there is no `--reason`", contradicting an earlier
     paragraph in the same text that described the flag correctly. That paragraph
-    has been removed. If your installed CLI still prints it, trust this page and
-    `--help`: the flag has been registered and forwarded the whole time.
+    has been removed; if your installed CLI still prints it, trust this page and
+    `--help`.
+
+    The flag itself has always been registered, but it did not always reach the
+    audit trail: the API used to drop `reason` from this one route before it got
+    to the backend, which is why the Python SDK's `bulk_action_execute()`
+    docstring still carries a note about it. Current deployments forward and
+    record it, so the caveat is history rather than a contradiction.
 
 ### The exit code carries the outcome
 
