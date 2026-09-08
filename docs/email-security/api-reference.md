@@ -291,9 +291,8 @@ live and are the same ones the served routes use; what is missing is the replay
 engine behind them.
 
 **Do not build against them yet — but the refusal itself is a contract you can
-branch on.** All three answer the same typed, non-retryable `not_implemented`,
-naming the milestone that will serve the route and the system that milestone
-needs:
+branch on.** All three answer a **`400`** carrying the same typed, non-retryable
+`not_implemented`. `GET /hunts/{hunt_id}` answers:
 
 ```json
 {
@@ -308,12 +307,17 @@ needs:
 }
 ```
 
-Match on `data.error_code` rather than on the message text: the text is meant for
-a human reading a log and is free to change, the code is not. `retry` is `false`
-and means it — an unimplemented route does not become implemented inside a retry
-budget, so a client that retries has tripled its load for the same answer. A
-client can hide the feature on this code today and have it light up when the
-engine lands, with no change on either side.
+`error_code` is the only field to branch on. `rpc` names the route that refused
+and differs per route; `needs` is prose and also differs — the remediation route
+names the remediation executor as well. The `error` text is meant for a human
+reading a log and is free to change; the code is not. `milestone` and the `§`
+reference are internal build-order identifiers, not a published schedule or a
+commitment to a date.
+
+`retry` is `false` and means it: an unimplemented route does not become
+implemented inside a retry budget, so a client that retries pays for the same
+answer again. Branch on `error_code` to hide the feature today, and the same
+check keeps working when the engine lands.
 
 Until they serve, mail hunting is
 [LCQL over `EMAIL_MESSAGE`](automation.md#querying-mail-with-lcql) — which is what
