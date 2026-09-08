@@ -263,8 +263,66 @@ half-remediated, which is the worst of both states: the attacker still has reach
 and the operator believes it is handled. Every member is attempted and every
 failure is named.
 
-Re-running a sweep is idempotent per message and action, so clicking twice does
-not produce two audit rows claiming two quarantines.
+`action_id` is the sweep's own audit row — see below.
+
+### Say why
+
+`reason` is your justification for the campaign-wide action, recorded against
+your authenticated identity. It is stored **on every member's audit row** and on
+the sweep's own record, so an analyst asking "why was *my* message
+quarantined" gets the answer inline from the message, without having to find the
+sweep it came from.
+
+```bash
+limacharlie mailsec campaign action <campaign_id> \
+  --action quarantine_message --confirm "<token>" \
+  --reason "INC-4471: reporter-confirmed credential harvest" --oid $OID
+```
+
+It is optional — an automation has no sentence to type — and bounded at 1024
+characters. An over-long reason is **refused, not truncated**: a clipped
+justification is a corrupted audit record. The bound applies to the preview too,
+so you learn about it before the dialog asks you to confirm.
+
+The reason is deliberately **not** part of the confirmation token. Rewording your
+justification after reading the preview does not invalidate it.
+
+### The sweep's own record
+
+A sweep writes one audit row for itself, beside the one row per member. Its id
+comes back as `action_id`, and it reads like any other action:
+
+```bash
+limacharlie mailsec action get <action_id> --oid $OID
+```
+
+It carries who asked, when, why, and the counts — "quarantined 412 of 418, 6
+failed" — which is also what the campaign's own action history shows.
+
+### Repeating a sweep, and asking for a second one on purpose
+
+Re-running a sweep is idempotent per message and action: clicking twice does not
+produce two audit rows claiming two quarantines, and the provider re-checks each
+message's placement, so a member that is already where the action wanted it comes
+back `skipped`. This is the supported repair for a sweep that partly failed —
+re-run the same action and the members that failed are attempted again.
+
+When you want the retry **recorded separately** — a re-run after a provider
+outage, where the record of what failed matters as much as the record of the
+retry — pass an `attempt` token:
+
+```bash
+curl -X POST "https://api.limacharlie.io/v1/mailsec/$OID/campaigns/$CAMPAIGN/actions" \
+  -H "Authorization: bearer $JWT" -H "Content-Type: application/json" \
+  -d '{"action":"quarantine_message","confirm":"<token>",
+       "reason":"re-running after the provider outage","attempt":"after-the-outage"}'
+```
+
+Any new value mints a new audit row per member and a new record for the sweep, so
+the retry lands **beside** the attempt it retried rather than over it. Repeating
+the *same* attempt collapses onto the same rows, which is what makes a lost
+response safe to re-send. `attempt` is not part of the confirmation token either,
+so a token minted by a preview stays valid when you decide to record one.
 
 ## Permissions
 
