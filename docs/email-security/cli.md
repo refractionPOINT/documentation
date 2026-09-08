@@ -179,6 +179,15 @@ An action's `result` can come back as `alert_only`, meaning the action was
 enforce mode. Do not treat it as an error — it is the product doing what you
 configured, reported honestly rather than dressed up as `ok`.
 
+### Windowed coverage is budgeted
+
+`coverage` with no `--window-days` is served from a short-lived server-side memo
+and is the right shape for a script that polls it. Naming a window recomputes
+the period from scratch, so those calls are counted against a per-organization
+[read budget](api-reference.md#read-budgets) — generous (2,400/hour, decaying
+every minute), but a tight loop over `--window-days` will reach it and answer
+`429`.
+
 ### Filters are tri-state
 
 Leaving a boolean filter unset means the dimension is *unconstrained*, which is
