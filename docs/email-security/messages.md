@@ -65,7 +65,7 @@ walk:
 narrow the *answer* rather than the *scan*, so they do not satisfy the
 requirement.
 
-```
+```http
 # refused
 GET /v1/mailsec/$OID/messages?q=invoice
 
