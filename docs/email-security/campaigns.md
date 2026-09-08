@@ -90,9 +90,9 @@ the body is reduced to what it actually says:
 
 How much this matters, measured rather than claimed: one phishing pitch templated
 over eight recipients — name, greeting, amount, account fragment, tracking token
-and signature all varying per copy — is **39 to 135 apart before normalization and
-0 apart after it**, in all three shapes such a kit takes (addressed to each victim,
-collected from a shared mailbox, or top-posted above a stolen thread). The default
+and signature all varying per copy — is **37 to 219 apart before normalization and
+0 apart after it**, across all three shapes such a kit takes (addressed to each
+victim, collected from a shared mailbox, or top-posted above a stolen thread). The default
 join distance is 30, so without the normalization this key would not work at the
 length of an ordinary email.
 
