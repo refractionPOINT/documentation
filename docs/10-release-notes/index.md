@@ -18,6 +18,54 @@ Release notes for LimaCharlie platform components, organized by date.
 
     For discussion and email notification of the same releases, set the [Platform Updates category](https://community.limacharlie.com/c/platform-updates/5) in the community forum to Watching. For service availability rather than releases, subscribe on the [status page](https://status.limacharlie.io/).
 
+## 2026-09-08
+
+### Web App 6.3.0
+
+A full testing workspace for D&R and False Positive rules, endpoint agents as a vulnerability source in Cloud Security, and a Query Console that holds far less memory.
+
+#### New Features
+
+- **Rule testing workspace for D&R rules**: the rule page's stored tests and its replay panel are now one surface. A fullscreen workspace replays every stored case against the rule as currently edited and reports pass or fail per case, with a summary in the section header. A replayed event can be saved onto the matching test side in one click, so an ad-hoc probe becomes a stored case. A second workspace runs the rule over stored telemetry as a historical scan and renders each hit as a row, with a "Keep as non-match test" button that stores the hit's matched payload on the suite. Each suite row also gets a play button beside Run all, so one case can be re-run without disturbing the other verdicts.
+- **Rule logic tree**: the detect block renders as its boolean tree with the replay evaluation drawn on it. Green nodes evaluated true, red nodes false, and dashed nodes were short-circuited. Clicking an operation shows what it read, what it expected, and what it saw in the event. Multi-event runs get a per-event switcher, a failed run pre-selects the operation that killed the match, and stateful rules render their `with child` and `with descendant` subtrees. Anything the view cannot reconstruct from the trace falls back to the raw lines rather than guessing.
+- **Test coverage on the rules list**: a sortable Tests column shows each rule's case count, and a coverage readout beside the filter controls reports over the rows on screen. Narrowing to Custom rules answers how much of what your own team wrote is tested, instead of being dragged down by managed and service rules.
+- **A rule now tells you how much it matches**: saving an enabled rule replays the last hour of stored telemetry in the background and reports how often the rule matched. A count at flood level (100 an hour or more) comes back as a warning. A rule that is too broad announces itself seconds after the save instead of hours later in Detections. False Positive rules report suppressions and never warn, because a busy suppressor is a working one. Metadata-only saves skip the check, and a failed check stays silent rather than blocking the save.
+- **The save gate matches the server**: saving a rule with failing tests always failed at the API, but the dialog offered "Save anyway". It now blocks the save and routes into the rule testing workspace. A `report`, `add var` or `del var` action with no `name` is also caught inline in the editor rather than as an opaque API error.
+- **Edit rules in YAML or JSON, with import and export**: the D&R editor gains a YAML/JSON toggle over the detect and respond editors, file export of the stored shape (detect, respond, tests) as `.yaml` or `.json`, drag-and-drop import validated before it reaches the editors, and smart paste on the detect editor. The editor sniffs each rule's format on open and warns before a conversion would drop YAML comments. False Positive rules get the same toolbar.
+- **False Positive rules get the full testing experience**: the testing workspace and the rule logic tree are now on the False Positive rule page as well.
+- **Promote a Query Console query to a D&R rule**: an LCQL query converts to a detect block with no AI involved. Sensor selectors, event types and the filter expression tree all map across. Time ranges and projections are dropped with an explicit note. Anything that would make the rule broader than the query, such as an unsupported operator or an incomplete query, stops the conversion instead.
+- **Test a detection against its rule**: a new action in the detection viewer opens the originating D&R rule's testing workspace with the triggering event preloaded. It appears when the detection carries a real sensor event and the viewer holds the replay permission.
+- **Endpoint agents are a vulnerability source in Cloud Security**: a new Policies tab turns the endpoint-agent vulnerability lane on, so CVEs a LimaCharlie agent reports become Cloud Security findings. The Coverage tab reports the lane beside cloud compute coverage, a host with no cloud provider behind it renders as a first-class resource with its own findings and pivots, and a finding's kill chain badges the hops a LimaCharlie agent covers.
+- **More to go on when triaging a vulnerability**: findings now carry the exploit band (KEV overdue, KEV due, exploit likely, exploit probable, elevated, baseline), whether a fix is available, which lane observed it (cloud, agent, or both), and CISA's KEV due date. Each of these is absent when the platform did not report it, and an absence is shown as unknown rather than as a negative answer.
+- **VEX and SLA policy editors**: two `cloudsec_policy` types had no authoring surface, and both sit behind a headline feature. Policies gains a VEX tab for the OpenVEX documents that move a finding to "not affected" with author provenance, including a client-side parse preview, and an SLA tab for the clock behind every finding's due date. A finding can now be marked not affected from the finding itself.
+- **Coverage page**: the Inventory tab's sensor coverage becomes a Coverage page that reports each lane separately, so a workload with an agent but no vulnerability source no longer reads as fully covered. The org-level pending count for endpoint-agent inventory is reported instead of being dropped.
+- **Shared fixes**: when one remediation resolves several findings, the finding shows the other findings it covers and drills through to the exact cause.
+- **Integrations panel**: Cloud Security accepts SARIF, CycloneDX, LimaCharlie scanner reports and third-party asset batches, and every one of those doors was API-only and named nowhere in the app. Settings gains an Integrations tab that documents them in-product, deep-linkable at `?tab=integrations`.
+- **Identity and asset filters**: the Access and Assets screens gain server-side selectors, and sensitivity counts survive a cross-filter instead of resetting.
+- **Compliance reason codes**: a control that was not assessed now says why, rather than sitting blank. Azure authorization evidence has its own view, and a finding whose authorization coverage has a gap is classed as such.
+- **Managed Kubernetes clusters are typed**: the platform is retyping managed clusters from `ComputeInstance` to `KubeCluster`, with namespaces, workloads, services and roles alongside. Every Cloud Security list and map keyed on resource type now understands them, so a cluster keeps its place in the compute population and is classified the same way on every path that reaches it.
+- **The Providers list names the provider**: the source badge and the record name become one identity column with the brand glyph, the record name, and the provider's full name spelled out under it. A provider type this build has never seen degrades to a neutral badge carrying the raw token instead of rendering blank.
+- **Elastic output**: the `is_create_action` parameter is described, so the output editor renders it as an optional checkbox instead of an unlabelled required field.
+
+#### Bug Fixes
+
+- The event tree could crash the app. An atom cycle in `routing/parent` and `routing/this` recursed until the stack blew and tripped the global error boundary. The tree and the ancestor walk now track the atoms they have visited, read a self-reference as "no parent", and truncate instead of spinning.
+- Atoms and sensor ids interpolated into Insight URLs are now escaped. Event data decides what an atom contains, and one carrying a `/` rerouted the request to a different endpoint that answers with a success and no event, so the ancestor chain silently truncated with no error. Detection ids are escaped on both the read and the delete.
+- The extension definition editor showed every permission unchecked no matter what the extension held, and saving from that state dropped every permission the user did not happen to re-tick.
+- Selecting a rule from halfway down the D&R sidebar jumped the list back to the top. The sidebar now keeps its scroll position while the editor still resets.
+- Pasting a second rule while a smart-paste suggestion was still showing kept the stale card and never offered the new suggestion's action.
+- The inline "mark as crown jewel" prefill seeded the resource family instead of the resource kind, which the platform rejected for data stores and identities and mis-seeded for compute.
+- Renaming an AI Session with a name over 200 characters failed with a raw API error. The input now shows an inline error and the mutation never fires. Length is counted in code points, so an emoji-heavy name the API accepts is not rejected.
+- A tooltip on truncated text now re-measures when its container resizes, so it appears and disappears as the column changes width instead of going stale.
+
+#### Improvements
+
+- **The Query Console holds far less memory.** A loaded search now releases the rows on pages far from the viewport and fetches them again from the continuation token when you scroll back. What a search retains no longer grows with every row it has ever loaded, so a very large result set stays usable.
+- **The Detections live feed holds up under a flood.** Every incoming batch used to re-sort the whole accumulated list. Batches now merge into the already sorted rows.
+- Section collapsers can be dragged with touch as well as a mouse, and stop dragging cleanly when the tab is hidden or focus is lost.
+
+---
+
 ## 2026-09-07
 
 ### Extensions: Email Security bulk remediation, verdict revisions and the managed-detection switch
