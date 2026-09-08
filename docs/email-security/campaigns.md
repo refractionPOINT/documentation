@@ -57,21 +57,29 @@ other has been written down, find nothing, and are both stored attributed to
 nothing — and a campaign that forms around a third copy later would leave one of
 them out.
 
-A **retro-join pass** closes that. Every recently-delivered message that is
-ungrouped and carries enough cluster keys to be groupable is re-asked its
-question on a cadence, against the messages that have arrived since. When the
-answer changes, the message joins — or, if the only thing it agrees with is
-another ungrouped message, the two of them become a campaign together, with both
-counted.
+A **retro-join pass** closes that, and what it looks at is narrow on purpose.
+
+A campaign is created from exactly one earlier message — the seed. When a message
+forms or joins a campaign, any *other* ungrouped message it agreed with is one the
+engine has just proved belongs with that campaign and passed over. Those, and only
+those, are queued to be asked again.
 
 | | |
 |---|---|
-| **How long a message stays in the queue of open questions** | 24 hours from delivery. Past that it is retired: a message whose mate has not arrived within a day is one that later mail will find through the ordinary lookup anyway, since it is still a candidate |
-| **How often a message is re-asked** | At most once every ten minutes, and only while it is both ungrouped and inside that window |
+| **What is queued** | A message another message agreed with, on at least two cluster keys, and did not take into the campaign it made. Not "anything that could conceivably cluster" — most mail satisfies the two-key rule and is in no campaign, and queueing all of it would leave the messages that matter waiting behind it |
+| **How long it stays queued** | 24 hours from delivery. Past that it is dropped: mail arriving later still finds it through the ordinary lookup, since it remains a candidate |
+| **How often it is asked** | At most once every ten minutes, and only while it is still ungrouped and inside that window |
 | **What you see** | The message's `campaign_id` and `cluster_reason` fill in, `member_count` grows, and a campaign-wide sweep from that point reaches it. An [`EMAIL_VERDICT` with `campaign_joined_late: true`](automation.md#a-message-that-joins-a-campaign-late) is emitted so a rule can respond to the change |
 
-A message that can never cluster — no subject, no links, no attachments and no
-usable body — is never re-asked, because no answer could change.
+Nothing is queued for an organization whose mail is not clustering, and a message
+that agreed with nothing is never re-asked — there is no answer waiting to change.
+
+!!! note "It applies from the day it is enabled"
+    Messages that were already ungrouped before this existed are not revisited:
+    the queue is built by the passes that leave a message out, so it starts empty.
+    In practice the next message of a live attack re-derives the same set, so an
+    ongoing campaign repairs itself; a campaign that finished before the feature
+    was on stays as it was recorded.
 
 ## Body similarity
 
