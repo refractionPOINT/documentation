@@ -101,9 +101,9 @@ length of an ordinary email.
 Two bodies count as the same body at a **distance of 30 or less**, which is a
 policy knob (`clustering` — see the [Policy Reference](policy.md#clustering)).
 
-30 is measured. Across a 404-message corpus of ordinary business mail —
-newsletters, invoices, calendar invites, internal notices — the **closest pair of
-unrelated messages is 40 apart**, and at 30 the body key produces zero agreements
+30 is measured. Across a corpus of several hundred pieces of ordinary business
+mail — newsletters, invoices, calendar invites, internal notices — the **closest
+pair of unrelated messages is 40 apart**, and at 30 the body key produces zero agreements
 across every pair. The policy ceiling is 35, below that closest pair on purpose: a
 setting above it is one you cannot have measured, and what it buys is a
 campaign-wide quarantine reaching mail that was never part of the attack. That
