@@ -49,6 +49,30 @@ message index it draws on lives for 35, so the count is the historical spread of
 the attack rather than a count of messages still in the index. A campaign whose
 members have aged out still tells you how big the attack was.
 
+## Messages that join after the fact
+
+Clustering runs while a message is being ingested. Two copies of one attack that
+arrive in the same instant therefore each look for a campaign-mate before the
+other has been written down, find nothing, and are both stored attributed to
+nothing — and a campaign that forms around a third copy later would leave one of
+them out.
+
+A **retro-join pass** closes that. Every recently-delivered message that is
+ungrouped and carries enough cluster keys to be groupable is re-asked its
+question on a cadence, against the messages that have arrived since. When the
+answer changes, the message joins — or, if the only thing it agrees with is
+another ungrouped message, the two of them become a campaign together, with both
+counted.
+
+| | |
+|---|---|
+| **How long a message stays in the queue of open questions** | 24 hours from delivery. Past that it is retired: a message whose mate has not arrived within a day is one that later mail will find through the ordinary lookup anyway, since it is still a candidate |
+| **How often a message is re-asked** | At most once every ten minutes, and only while it is both ungrouped and inside that window |
+| **What you see** | The message's `campaign_id` and `cluster_reason` fill in, `member_count` grows, and a campaign-wide sweep from that point reaches it. An [`EMAIL_VERDICT` with `campaign_joined_late: true`](automation.md#a-message-that-joins-a-campaign-late) is emitted so a rule can respond to the change |
+
+A message that can never cluster — no subject, no links, no attachments and no
+usable body — is never re-asked, because no answer could change.
+
 ## Body similarity
 
 The first three keys are all things an attacker can randomize. A kit that gives
