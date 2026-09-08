@@ -217,12 +217,25 @@ are not being watched. Narrow the connection's `scope`, or move off the free
 tier. See
 [Plans, the free trial, and the mailbox cap](policy.md#plans-the-free-trial-and-the-mailbox-cap).
 
-!!! note "Backfill is metadata-only"
+!!! note "Backfill is judged, and acts on nothing"
     On connection, the collector walks up to `ingest.backfill_days` (14 by
-    default) of existing mail to seed sender profiles and campaign statistics.
-    It computes **no verdicts and takes no actions** on that history — its
-    purpose is that "we have never heard from this sender" is a true statement
-    on day two instead of day ninety. Progress is reported in `coverage`.
+    default) of existing mail. It judges that history with the same rules it
+    judges live mail with, so the queue has real verdicts on your first day and
+    a hunt or a rule backtest has something to run against — and it seeds sender
+    profiles and campaign statistics, so "we have never heard from this sender"
+    is a true statement on day two instead of day ninety.
+
+    It **takes no actions and emits no telemetry** on that history. No
+    `EMAIL_MESSAGE`, no `EMAIL_VERDICT`, no policy automation and no
+    remediation: mail delivered eleven days ago has already been read and filed
+    by the person it was addressed to, and quarantining it now — or replaying a
+    fortnight of it into your D&R rules on the day you switch the product on —
+    is not something you asked for. The drawer says so on each such message
+    (`judged_via: backfill`).
+
+    It is also **paced**, so it cannot compete with live ingestion: a large
+    estate's fortnight fills in over hours rather than all at once. Progress is
+    reported in `coverage`.
 
 ## 7. Read the first judged message
 
