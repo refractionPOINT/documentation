@@ -136,6 +136,12 @@ limacharlie mailsec campaign action "$CAMPAIGN" \
 Sweeps are capped at 500 members: above that the answer is a person deciding,
 not a bigger dialog. See [Campaigns](campaigns.md#sweeping-a-campaign).
 
+`--reason` is recorded on every member's audit row **and** on the sweep's own
+row, which comes back as `action_id` and reads through
+`limacharlie mailsec action get`. It is bounded at 1024 characters and refused
+rather than truncated, and it is not part of the confirmation token — rewording
+it after the preview does not invalidate the token.
+
 ### `alert_only` is a success, not a failure
 
 An action's `result` can come back as `alert_only`, meaning the action was

@@ -253,18 +253,97 @@ campaign_id: <campaign_id>
 action: quarantine_message
 attempted: 38
 succeeded: 36
+skipped: 4
 alert_only: 0
 failed:
   <msg_uuid>: "<provider error>"
+action_id: <action_id>
 ```
+
+`skipped` counts members that were **already** where the action wanted them. It is
+a *subset* of `succeeded` — the campaign is where you asked, and those members
+cost no provider write — so a re-run of a sweep reads `succeeded: 38, skipped: 38`
+rather than looking identical to the run that really moved 38 messages.
 
 A sweep does **not** abort on the first error. Stopping halfway leaves a campaign
 half-remediated, which is the worst of both states: the attacker still has reach
 and the operator believes it is handled. Every member is attempted and every
 failure is named.
 
-Re-running a sweep is idempotent per message and action, so clicking twice does
-not produce two audit rows claiming two quarantines.
+`action_id` is the sweep's own audit row — see below.
+
+### Say why
+
+`reason` is your justification for the campaign-wide action, recorded against
+your authenticated identity. It is stored **on every member's audit row** and on
+the sweep's own record, so an analyst asking "why was *my* message
+quarantined" gets the answer inline from the message, without having to find the
+sweep it came from.
+
+```bash
+limacharlie mailsec campaign action <campaign_id> \
+  --action quarantine_message --confirm "<token>" \
+  --reason "INC-4471: reporter-confirmed credential harvest" --oid $OID
+```
+
+It is optional — an automation has no sentence to type — and bounded at 1024
+characters. An over-long reason is **refused, not truncated**: a clipped
+justification is a corrupted audit record. The bound applies to the preview too,
+so you learn about it before the dialog asks you to confirm.
+
+The reason is deliberately **not** part of the confirmation token. Rewording your
+justification after reading the preview does not invalidate it.
+
+### The sweep's own record
+
+A sweep writes one audit row for itself, beside the one row per member. Its id
+comes back as `action_id`, and it reads like any other action — though its
+`action` is the campaign-level name (`quarantine_campaign`), with the
+per-message action inside the request:
+
+```bash
+limacharlie mailsec action get <action_id> --oid $OID
+```
+
+It carries who asked, when, why, and the counts — "quarantined 412 of 418, 6
+failed". The campaign's own action history lists the sweep as one row — who
+asked and how it ended — and this is the read you expand it with: the counts and
+the justification live on the row's request, which the history strip does not
+select.
+
+A second sweep of the same campaign upserts each member's row, so an already-swept
+member's inline `reason` and `actor` become the *second* operator's. The first
+operator's justification survives on their own sweep record, which is the other
+reason each sweep writes one.
+
+### Repeating a sweep, and asking for a second one on purpose
+
+Re-running a sweep is idempotent per message and action: clicking twice does not
+produce two audit rows claiming two quarantines, and the provider re-checks each
+message's placement, so a member that is already where the action wanted it comes
+back `skipped`. This is the supported repair for a sweep that partly failed —
+re-run the same action and the members that failed are attempted again.
+
+When you want the retry **recorded separately** — a re-run after a provider
+outage, where the record of what failed matters as much as the record of the
+retry — pass an `attempt` token:
+
+```bash
+curl -X POST "https://api.limacharlie.io/v1/mailsec/$OID/campaigns/$CAMPAIGN/actions" \
+  -H "Authorization: bearer $JWT" -H "Content-Type: application/json" \
+  -d '{"action":"quarantine_message","confirm":"<token>",
+       "reason":"re-running after the provider outage","attempt":"after-the-outage"}'
+```
+
+Any new value mints a new audit row per member and a new record for the sweep, so
+the retry lands **beside** the attempt it retried rather than over it. Repeating
+the *same* attempt collapses onto the same rows, which is what makes a lost
+response safe to re-send. `attempt` is not part of the confirmation token either,
+so a token minted by a preview stays valid when you decide to record one.
+
+It is an opaque handle, not prose: it is bounded at 128 characters and refused
+rather than truncated, because it is recorded on every member's audit row and a
+clipped idempotency token is a *different* token.
 
 ## Permissions
 
