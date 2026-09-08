@@ -36,7 +36,8 @@ LimaCharlie uses a granular permission system that controls access to all platfo
 `acl.set` and `acl.get` are included in the Owner and Administrator roles. See
 [Resource ACLs](../7-administration/access/resource-acls.md); note that
 `acl.set` is confidentiality-equivalent to unrestricted read access, because a
-holder can add themselves to any scope.
+holder can add themselves to any scope. Unlike most hive permissions these have
+no per-record form — `acl.set.<scope>` grants nothing.
 
 ### Sensor Management
 

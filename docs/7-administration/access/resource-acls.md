@@ -83,9 +83,14 @@ Two of these deserve a plain warning.
 | `acl.set` | Create, edit and delete scope records, **and** add or remove any `acl:` tag on any resource |
 | `acl.get` | Read scope records and list what a scope covers |
 
-`acl.set` is included in the **Owner** and **Administrator** predefined roles.
-Operator, Viewer and Basic do not get it. Both permissions can also be granted
-individually to a user or an API key.
+`acl.set` and `acl.get` are both included in the **Owner** and
+**Administrator** predefined roles. Operator, Viewer and Basic get neither.
+Either can also be granted individually to a user or an API key.
+
+Unlike most Config Hive permissions, these do **not** support a per-record form:
+`acl.set.mailsec` does not let someone edit `hive://acl/mailsec`. That is
+deliberate — a per-record variant would let a holder grant themselves a scope
+without ever holding `acl.set`.
 
 !!! warning "`acl.set` is equivalent to seeing everything"
     Anyone holding `acl.set` can add themselves to any scope, so treat it as
@@ -99,7 +104,10 @@ individually to a user or an API key.
 ## Setting up a scope
 
 The example below restricts a mail-security feed to a small team. It uses the
-CLI; every step has a REST equivalent.
+CLI; every step has a REST equivalent, and the web app has an **ACL Scopes**
+page under Access Management that does the same thing with a member picker and
+an "applies to" view of everything carrying the tag. If you do not see that page,
+the feature is not yet enabled for your organization — contact support.
 
 ### 1. Create the scope record
 
@@ -126,10 +134,17 @@ limacharlie hive set --hive-name acl --key mailsec \
     --comment "Mail security team" --oid <oid>
 ```
 
-!!! warning "Pass `--enabled`, or the scope locks everything"
+!!! warning "Pass `--enabled` whenever you pass any other metadata flag"
     A disabled scope record resolves to *no members*, which locks every
     resource tagged with it rather than unlocking them. The same is true of an
-    expired record. See [Disabling and deleting scopes](#disabling-and-deleting-scopes).
+    expired record.
+
+    A scope record created with **no** metadata flags at all is enabled by
+    default. But as soon as you add `--comment`, `--expiry`, `--tag-add` or
+    `--tag-rm`, the CLI sends a metadata block, and an omitted `enabled` in that
+    block means *disabled*. The command above passes `--comment`, so it must
+    also pass `--enabled` — as it does. See
+    [Disabling and deleting scopes](#disabling-and-deleting-scopes).
 
 Scope names must be lowercase, and may not contain spaces, commas or `/`.
 
@@ -167,6 +182,10 @@ limacharlie installation-key create \
     --tags "acl:mailsec,mailsec" --oid <oid>
 ```
 
+Writing an installation key that carries an `acl:` tag needs `acl.set` on top of
+the usual `ikey.set` — and so does *removing* the tag later, because creating a
+key replaces its whole tag list rather than applying a delta.
+
 Configuration records — the extension's own configs, its secrets, a lookup
 containing sensitive values:
 
@@ -174,6 +193,10 @@ containing sensitive values:
 limacharlie hive set --hive-name extension_config --key ext-mailsec \
     --tag-add acl:mailsec --oid <oid>
 ```
+
+Used this way — with no `--input-file` — the command reads the record's current
+metadata first, so its other tags and its contents are preserved. It therefore
+only works on a record that already exists.
 
 ### 4. Check your work
 
@@ -218,15 +241,16 @@ so the resource becomes unreadable to everyone except LimaCharlie operations.
 This is deliberate — the alternative would mean a deleted scope record silently
 unlocked data.
 
-**A change can take up to five minutes to apply everywhere.** Adding or removing
-a member, or tagging a sensor, normally takes effect within seconds, but the
-guaranteed upper bound is about five minutes. **Removing someone from a scope is
+**A change can take up to about six minutes to apply everywhere.** Adding or
+removing a member, or tagging a sensor, normally takes effect within seconds,
+but the guaranteed upper bound is roughly six minutes. **Removing someone from a scope is
 not instant revocation.** If you need certainty — an employee leaving under
 difficult circumstances, for instance — remove their platform access as well.
 
-**Scope tags cannot expire.** LimaCharlie refuses a TTL on any `acl:` tag,
-because an expiring tag would quietly un-restrict a sensor on a timer with
-nobody attached to the change. Time-box the *scope record* instead, using its
+**Scope tags cannot be given an expiry.** LimaCharlie refuses a TTL on any
+`acl:` tag, because an expiring tag would quietly un-restrict a sensor on a
+timer with nobody attached to the change — tag expiry is swept automatically and
+leaves no audit record. Time-box the *scope record* instead, using its
 expiry — but note that an expired scope record locks its resources rather than
 releasing them.
 
@@ -235,6 +259,14 @@ releasing them.
 organization error. Rules run under a synthesized identity, so there is no
 accountable author for such a change. Apply and remove scope tags through the
 API, the CLI or the web app.
+
+**Restrict at least one sensor, even if configuration records are your real
+target.** Direct reads of a restricted configuration record are gated on their
+own. But two paths — expanding an investigation, and what an extension is told
+about the request it is handling — only start enforcing once the organization
+has at least one sensor carrying an `acl:` tag. If your goal is to compartment a
+feed, you are tagging its sensors anyway; if your goal is only to hide a
+configuration record, tag the sensor it belongs to as well.
 
 **Deleting a resource is not blocked.** `acl.set` is required to strip a scope
 tag, but deleting the whole record only needs the ordinary delete permission.
@@ -260,13 +292,24 @@ limacharlie output create --name mailsec-archive --module s3 \
     --type event --input-file s3-config.yaml --oid <oid>
 ```
 
-You may only name scopes you hold yourself (or scopes you can grant yourself,
-if you hold `acl.set`). The check happens once, when the output is saved, so
-data delivery stays fast.
+You may only name scopes you hold yourself. Holding `acl.set` also works here,
+since an `acl.set` holder could add themselves to the scope anyway — but note
+this means creating an output is a second way to reach restricted content, and
+it is the output's creation that appears in the audit trail rather than a change
+of scope membership. The check happens once, when the output is saved, so data
+delivery stays fast.
 
 A temporary live stream — the kind the web app and `limacharlie stream` open —
 inherits the scopes of whoever opened it, so two analysts tailing the same
-organization can legitimately see different events.
+organization can legitimately see different events. `acl.set` is **not** a
+bypass for a live stream: opening one is reading content now, so every scope the
+stream asks for must actually be held.
+
+!!! warning "Exporting query results to an output is stricter"
+    When you export the results of a historical query or a replay to an output,
+    **every** restricted record is dropped, regardless of which scopes you hold
+    or which scopes the output names. An export is a shared organization-level
+    archive, so it is deliberately built the same way no matter who runs it.
 
 Output **samples** follow the same rule: you must hold every scope the output
 names to read them.
@@ -295,12 +338,31 @@ acl_scopes:
   - mailsec
 ```
 
-The declaration is carried to extensions the rule calls, so an extension knows
-what the rule is entitled to act on.
+This is a **guard on what the rule may send out of the platform**, not a note.
+Three response actions — `service request`, `extension request` and
+`start ai agent` — carry event content to another component, so they run only
+when the rule names every `acl:` scope the triggering event carries.
 
-Changing the list requires `acl.set`, or membership in every scope in the new
-list. Leaving it untouched requires nothing special — a colleague who is not in
-`mailsec` can still edit the rule's `detect` and `respond` sections.
+!!! warning "A rule with no `acl_scopes` cannot act on restricted events"
+    A rule that declares nothing covers nothing, so those three actions are
+    refused on every event from a restricted sensor, and the refusal is raised
+    as an organization error. If you restrict a sensor and a rule that fires on
+    it calls an extension, you must add the scope to that rule. Every other
+    action — `report`, `add tag`, `task`, and the rest — is unaffected.
+
+Changing the list requires `acl.set`, `access.global`, or membership in every
+scope in the **new** list — not merely in the ones you are adding. Removing the
+last scope is the one case membership cannot satisfy: emptying a non-empty list
+needs `acl.set`. Leaving the list untouched requires nothing special, so a
+colleague who is not in `mailsec` can still edit the rule's `detect` and
+`respond` sections.
+
+!!! danger "Edit scoped rules with `--input-file`"
+    `limacharlie dr set --detect ... --respond ...` rebuilds the rule from those
+    two fields alone and silently drops `acl_scopes`. Since dropping the last
+    scope requires `acl.set`, a colleague editing the rule that way gets a
+    refusal they cannot explain — or, if they do hold `acl.set`, quietly removes
+    the guard. Use `limacharlie dr set --input-file` on scoped rules.
 
 ## Restricted configuration records
 
@@ -328,6 +390,70 @@ and the public record-by-GUID endpoint.
     extension's API key name to the scope as an `api_key` member — otherwise
     the extension loses access to its own configuration.
 
+## Searching restricted data
+
+A restricted sensor does not produce an error in search — it produces **fewer
+rows**. Historical event queries, detection listings and replays simply omit
+records from sensors whose scope you do not hold, and the counts you see are
+counts of what you can see. Two analysts running the same query against the same
+time range can legitimately get different totals, and neither result is wrong.
+
+The same applies to timelines and to investigation expansion.
+
+## Auditing changes
+
+Every change that affects a resource ACL is recorded in the organization's audit
+log:
+
+- Adding or removing an `acl:` tag on a sensor or an installation key.
+- Creating, editing, enabling, disabling or deleting a scope record — these are
+  ordinary Config Hive writes and carry the usual hive audit trail, including
+  who made the change.
+
+Read them with `limacharlie audit list --oid <oid>` or the **Audit** view in the
+web app. Reviewing scope membership changes is worth putting on the same cadence
+as your [access review](user-access.md#verifying-and-reviewing-access).
+
+## Infrastructure as code
+
+Scope records are syncable like any other Config Hive content. Both
+`limacharlie sync pull` and `limacharlie sync push` take `--hive-acl`, and the
+`acl` hive is included in `--all`:
+
+```bash
+limacharlie sync pull --config-file org.yaml --hive-acl --oid <oid>
+limacharlie sync push --config-file org.yaml --hive-acl --oid <oid>
+```
+
+The syncing identity needs `acl.set` on top of its usual permissions — both to
+write scope membership and to add or remove `acl:` tags on any record it
+manages. Pushing installation keys is included in that: a key carrying an `acl:`
+tag cannot be written without it.
+
+!!! danger "Never pull as a non-member and push the result back"
+    A pull run by someone outside a scope captures restricted records with their
+    contents replaced by the redaction marker. Pushing that file back would try
+    to overwrite the real contents with the marker. LimaCharlie refuses the
+    write, so nothing is destroyed — but the push fails, and if the same file is
+    committed to git it will keep failing for everyone. Run configuration pulls
+    as an identity that holds every scope in the organization, or exclude the
+    restricted records from the file.
+
+## What resource ACLs do not restrict
+
+- **LimaCharlie operations.** Platform operations staff hold a separate
+  organization-wide access permission that resource ACLs never gate. This is
+  what makes support and incident response possible; it is unchanged by anything
+  on this page.
+- **Deletion.** Covered above — an ACL protects confidentiality, not
+  availability.
+- **Billing and usage.** Restricted telemetry is ordinary telemetry for
+  quota, retention and billing purposes.
+- **Indicator and object searches.** Asking which sensors have observed a
+  hash, domain or file path reports restricted sensors too. This is consistent
+  with the visibility rule — the answer is metadata, not content — but it does
+  mean a restricted sensor's *presence* in a result set is not hidden.
+
 ## Disabling and deleting scopes
 
 This is the one area where the intuitive expectation is backwards.
@@ -348,14 +474,20 @@ scope record is the opposite of removing a restriction.
 | Status | Code | What happened |
 | --- | --- | --- |
 | 403 | `ACL_CONTENT_RESTRICTED` | Your permissions were sufficient, but you are not a member of a scope on the resource. Retrying will not help |
-| 401 | `UNAUTHORIZED_ACL_TAG` | You tried to add or remove an `acl:` tag without `acl.set` |
+| 401 | `UNAUTHORIZED_ACL_TAG` | You tried to add or remove an `acl:` tag on a **sensor** or an **installation key** without `acl.set` |
+| 400 | `UNAUTHORIZED` | The same refusal on a **configuration record's** tags, or a refused change to a rule's `acl_scopes` |
 | 400 | `ACL_TAG_TTL_NOT_ALLOWED` | You tried to give an `acl:` tag a TTL |
-| 400 | `ACL_SCOPE_UNAVAILABLE` | LimaCharlie could not determine whether you are entitled. This is temporary — retry |
+| 400 | `INVALID` | You tried to save a record whose contents are the redaction marker, or to save it with the etag of a redacted read |
+| 400 | `ACL_SCOPE_UNAVAILABLE` / `ACL_SCOPES_UNAVAILABLE` | While saving an output, or a rule's `acl_scopes`, LimaCharlie could not work out which scopes you hold. Temporary — retry |
 | 400 | — | The scope record is malformed: an unknown member type, an empty `id`, a duplicate member or an invalid scope name |
 
-The distinction between the first and the fourth matters when you are debugging:
-403 is a definite "no", while `ACL_SCOPE_UNAVAILABLE` means the answer could not
-be worked out and says nothing about your entitlement.
+Only the 403 and 401 rows carry a machine-readable `error_code` field; the rest
+put the code inside the `error` string, so match on the message for those.
+
+Note the asymmetry that matters most when debugging: a **403 is a definite
+"no"**, but a failure to *work out* the answer on a read path is not an error at
+all. It fails closed silently — you get an empty result or a redacted record
+rather than a message. See the troubleshooting note below.
 
 ## Worked example: compartmentalising a mail feed
 
@@ -378,21 +510,32 @@ and are healthy.
 
 ## Troubleshooting
 
-**"An analyst suddenly sees nothing at all."** Check whether a scope record was
-disabled, deleted or allowed to expire — all three lock every resource tagged
-with that scope. Then check for a typo in a scope tag: a tag naming a scope that
-does not exist locks its resource.
+**"An analyst suddenly sees nothing at all."** Three causes, in the order worth
+checking. First, a scope record that was disabled, deleted or allowed to expire
+— all three lock every resource tagged with that scope. Second, a typo in a
+scope tag: a tag naming a scope that does not exist locks its resource. Third, a
+transient platform problem resolving scope membership, which fails closed
+*silently* — you get empty results rather than an error. If the first two check
+out and the symptom is organization-wide, contact support rather than assuming a
+configuration mistake.
 
 **"I have `acl.set` but still cannot see the data."** `acl.set` lets you manage
 scopes; it does not make you a member of one. Add yourself to the scope.
 
-**"I removed someone from the scope and they can still read."** Allow up to five
+**"I removed someone from the scope and they can still read."** Allow up to six
 minutes. If it persists beyond that, remove their platform access and contact
 support.
 
 **"An extension stopped working after I tagged its config."** Add the
 extension's organization API key to the scope as an `api_key` member, using the
-key's name.
+key's name. If the extension is invoked from a D&R rule, that rule also needs
+the scope in its `acl_scopes`.
+
+**"Sensors stopped picking up a configuration change."** Some configuration is
+served to sensors through an unauthenticated path that cannot evaluate scope
+membership, so it refuses a tagged record outright rather than redacting it, and
+affected sensors keep their last known-good configuration indefinitely. Do not
+put an `acl:` tag on configuration that sensors fetch directly.
 
 **"Some sensors are restricted and some are not, from the same install key."**
 The key's tags apply at enrollment. Sensors enrolled before you tagged the key
