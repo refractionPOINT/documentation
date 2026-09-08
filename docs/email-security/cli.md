@@ -184,7 +184,7 @@ configured, reported honestly rather than dressed up as `ok`.
 `coverage` with no `--window-days` is served from a short-lived server-side memo
 and is the right shape for a script that polls it. Naming a window recomputes
 the period from scratch, so those calls are counted against a per-organization
-[read budget](api-reference.md#read-budgets) — generous (2,400/hour, decaying
+[read budget](api-reference.md#read-budgets) — generous (7,200/hour, decaying
 every minute), but a tight loop over `--window-days` will reach it and answer
 `429`.
 
