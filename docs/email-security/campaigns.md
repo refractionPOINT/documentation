@@ -329,6 +329,15 @@ outage, where the record of what failed matters as much as the record of the
 retry — pass an `attempt` token:
 
 ```bash
+limacharlie mailsec campaign action "$CAMPAIGN" --oid $OID \
+  --action quarantine_message --confirm "<token>" \
+  --reason "re-running after the provider outage" \
+  --attempt after-the-outage
+```
+
+Or straight against the API:
+
+```bash
 curl -X POST "https://api.limacharlie.io/v1/mailsec/$OID/campaigns/$CAMPAIGN/actions" \
   -H "Authorization: bearer $JWT" -H "Content-Type: application/json" \
   -d '{"action":"quarantine_message","confirm":"<token>",

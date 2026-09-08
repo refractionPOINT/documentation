@@ -214,24 +214,30 @@ and second column of a pasted CSV are the usual way this happens — is refused
 identical to a legitimately expired one, and the counts you would be consenting
 over would be wrong.
 
-`--reason` **is** supported on the execute and reaches the audit trail.
+`--reason` **is** supported on the execute and reaches the audit trail: it is
+recorded on the job's own row and on every message's, so an analyst reading one
+message's timeline sees why it was acted on without having to discover that the
+row belongs to a bulk job. It is not part of the confirmation token, so
+rewording it between previewing and executing neither invalidates a token you
+hold nor starts a second job over the same messages.
 
-!!! bug "The CLI's `--ai-help` text contradicts itself about `--reason`"
-    `limacharlie mailsec message bulk-action --ai-help` ends with a paragraph
-    claiming "there is no `--reason`". That paragraph is **stale**: the flag is
-    registered, the gateway forwards it, and an earlier paragraph in the same
-    help text describes it correctly. Trust this page and `--help`; the help text
-    is being corrected.
+Passing `--reason` to a *preview* does nothing, and the CLI says so rather than
+accepting it quietly: the preview mints the confirmation and takes no `reason`
+by design, precisely so that rewording a justification can never invalidate a
+selection somebody already approved.
 
-    The Python SDK's `bulk_action_execute()` docstring carries a related but
-    different caveat — that `reason` needs a gateway new enough to forward it.
-    That was true of older deployments and is not a contradiction; it is simply
-    no longer the situation on a current one.
+!!! note "Older builds on either side of the wire"
+    `limacharlie mailsec message bulk-action --ai-help` used to end with a stale
+    paragraph claiming "there is no `--reason`", contradicting an earlier
+    paragraph in the same text that described the flag correctly. That paragraph
+    has been removed; if your installed CLI still prints it, trust this page and
+    `--help`.
 
-    Passing `--reason` to a *preview* does nothing, and the CLI says so rather
-    than accepting it quietly: the preview mints the confirmation and takes no
-    `reason` by design, so that rewording a justification can never invalidate a
-    selection somebody already approved.
+    The flag itself has always been registered, but it did not always reach the
+    audit trail: the API used to drop `reason` from this one route before it got
+    to the backend, which is why the Python SDK's `bulk_action_execute()`
+    docstring still carries a note about it. Current deployments forward and
+    record it, so the caveat is history rather than a contradiction.
 
 ### The exit code carries the outcome
 

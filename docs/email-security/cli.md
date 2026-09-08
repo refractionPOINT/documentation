@@ -142,6 +142,36 @@ row, which comes back as `action_id` and reads through
 rather than truncated, and it is not part of the confirmation token — rewording
 it after the preview does not invalidate the token.
 
+`--attempt` asks for a **deliberate second run**. Re-running a sweep is
+idempotent per member — the per-member audit key is the campaign itself, so a
+double click, or a retry of a request whose response you never saw, collapses
+onto the row each member already has instead of claiming a move that happened
+once as two. A new `--attempt` composes with the campaign, minting a new action
+id per member and a new sweep record, so a re-run after a provider outage is
+recorded *beside* the run that failed rather than over it; the same value twice
+collapses again. It is an opaque handle you mint, not prose: at most 128
+characters, refused rather than truncated, because a clipped idempotency token
+is a *different* token, and it is checked on the preview leg too.
+
+Like `--reason`, it is **not** part of a campaign sweep's confirmation — unlike a
+*bulk* action's `--attempt` [below](#bulk-remediation-previews-by-default-too),
+which is. The two tokens answer different questions: a bulk token derives the
+job's own identity, so the attempt is part of what it names, while a sweep's
+token authorizes a member set and nothing else. Repeat a bulk `--attempt` on the
+execute; add or change a sweep's freely.
+
+`--attempt` on a campaign sweep needs a recent `limacharlie` release; an older
+one refuses the flag as unknown, and the field can be sent directly to the API
+in the meantime (see
+[Campaigns](campaigns.md#repeating-a-sweep-and-asking-for-a-second-one-on-purpose)).
+
+```bash
+limacharlie mailsec campaign action "$CAMPAIGN" \
+  --action quarantine_message --confirm "$TOKEN" \
+  --reason "re-running after the provider outage" \
+  --attempt after-the-outage
+```
+
 ### `alert_only` is a success, not a failure
 
 An action's `result` can come back as `alert_only`, meaning the action was
