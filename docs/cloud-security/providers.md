@@ -165,6 +165,12 @@ settings/members/teams (identities), repositories (data stores), installed Apps 
 webhooks / deploy keys / Actions secrets (non-human identities), and the Actions
 OIDC subject configuration.
 
+With the **Contents → Read-only** permission added, the same connection also
+drives [Code Scanning](code-scanning.md) — dependencies, secrets,
+infrastructure-as-code, container images and licenses, scanned in an ephemeral
+sandbox and filed as ordinary findings. It is opt-in per repository through a
+`code_scanning` policy; nothing is scanned until you write one.
+
 ## AI security (AISPM)
 
 AI providers bring your model-platform organizations into the estate as
