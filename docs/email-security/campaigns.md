@@ -73,44 +73,64 @@ the body is reduced to what it actually says:
   register;
 - **email addresses** collapse to a placeholder — the greeting and the "this was
   sent to …" footer are otherwise a per-recipient signature;
-- the **salutation** and the **recipient's own name** collapse, so "Dear Riley,"
-  and "Dear Morgan," are the same sentence;
-- long **digit, hex and opaque tokens** collapse — invoice numbers, ticket ids,
-  unsubscribe and tracking tokens;
+- the **greeting** collapses, salutation and all, so "Dear Riley," and "Good
+  morning Morgan" are the same sentence;
+- **every recipient's name** collapses wherever it appears in the prose — the
+  names on the To and Cc lines as well as the mailbox's own — so a kit that writes
+  "this notice was sent to Riley only" does not sign each copy;
+- **signature blocks** collapse: the sign-off line and the short block after it,
+  which is where a templated message puts its rotating persona or case worker;
+- **quoted replies and forwarded threads** collapse, so a kit that top-posts one
+  pitch above each victim's own stolen thread is one message, not forty;
+- **numbers** collapse to a single placeholder each — an amount, an account
+  fragment, a date, a reference — and so do **hex, opaque and short
+  letter-and-digit tokens**: invoice numbers, ticket ids, unsubscribe and tracking
+  tokens;
 - whitespace collapses last.
 
-How much this matters, measured rather than claimed: two copies of one 630-byte
-phishing body differing only in the recipient's name and the tracking parameters
-on its link are **86 apart before normalization and 0 apart after it**. The
-default join distance is 30, so without the normalization this key would not work
-at the length of an ordinary email.
+How much this matters, measured rather than claimed: one phishing pitch templated
+over eight recipients — name, greeting, amount, account fragment, tracking token
+and signature all varying per copy — is **37 to 219 apart before normalization and
+0 apart after it**, across all three shapes such a kit takes (addressed to each
+victim, collected from a shared mailbox, or top-posted above a stolen thread). The default
+join distance is 30, so without the normalization this key would not work at the
+length of an ordinary email.
 
 ### The threshold
 
 Two bodies count as the same body at a **distance of 30 or less**, which is a
 policy knob (`clustering` — see the [Policy Reference](policy.md#clustering)).
 
-30 is measured. Across a 404-message corpus of ordinary business mail —
-newsletters, invoices, calendar invites, internal notices — the **closest pair of
-unrelated messages is 39 apart**, and at 30 the body key produces zero agreements
-across all 71,631 pairs. The policy ceiling is 35, below that closest pair on
-purpose: a setting above it is one you cannot have measured, and what it buys is
-a campaign-wide quarantine reaching mail that was never part of the attack.
+30 is measured. Across a corpus of several hundred pieces of ordinary business
+mail — newsletters, invoices, calendar invites, internal notices — the **closest
+pair of unrelated messages is 40 apart**, and at 30 the body key produces zero agreements
+across every pair. The policy ceiling is 35, below that closest pair on purpose: a
+setting above it is one you cannot have measured, and what it buys is a
+campaign-wide quarantine reaching mail that was never part of the attack. That
+margin is re-measured whenever the normalization changes, and it is the number a
+change has to justify itself against.
 
-!!! warning "It is closer to all-or-nothing than a tolerance"
-    At the length of ordinary email, TLSH is very sensitive: two bodies whose
-    normalized text is byte-identical score **0**, and a single per-recipient word
-    the normalization could not identify — a name in a footer, an amount, a company
-    — has been measured at **100**, well past the ceiling. So the threshold is not a
-    slider that trades recall for precision in small steps. What it buys is the mass
-    case: one pitch, randomized subjects and links. A kit that rewrites a word of
-    prose per victim will not group, and that failure is entirely on the recall
-    side — it can never merge unrelated mail.
+!!! warning "The normalization is what groups mail — the threshold is not a tolerance dial"
+    At the length of ordinary email this hash is very sensitive, and the numbers
+    above are what the **normalization** achieves, not what the threshold tolerates.
+    Two bodies whose normalized text is byte-identical score **0**; a single
+    per-recipient word the normalization could **not** identify — a company, a city,
+    a word of prose — costs a median of 20 to 30 points but exceeds 100 in the worst
+    5% of cases, measured across a whole corpus rather than on one pair.
+
+    So a residual per-copy word is close to a coin flip, and moving the distance from
+    30 to the ceiling of 35 changes that from roughly half the cases to roughly two
+    thirds while spending most of the margin against unrelated mail. **Raising the
+    threshold is not the lever it looks like.** What the key reliably buys is the
+    mass case — one pitch, randomized subjects, links, names, amounts, references and
+    signatures — which is the dominant real shape. A kit that rewrites a word of
+    prose per victim may still not group, and that failure is entirely on the recall
+    side: it can never merge unrelated mail.
 
 ### It still takes two keys
 
 Body similarity does **not** join a campaign on its own. It is the strongest of
-the four keys and it is still one key, and a 39-point margin is a margin rather
+the four keys and it is still one key, and a 40-point margin is a margin rather
 than a wall — two form letters from different vendors can read alike. What the
 key changes is not the threshold but how often it is *reachable*: a message whose
 subject and links were randomized now has a second key to agree on.
