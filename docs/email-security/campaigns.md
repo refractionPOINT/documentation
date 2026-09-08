@@ -297,14 +297,24 @@ justification after reading the preview does not invalidate it.
 ### The sweep's own record
 
 A sweep writes one audit row for itself, beside the one row per member. Its id
-comes back as `action_id`, and it reads like any other action:
+comes back as `action_id`, and it reads like any other action — though its
+`action` is the campaign-level name (`quarantine_campaign`), with the
+per-message action inside the request:
 
 ```bash
 limacharlie mailsec action get <action_id> --oid $OID
 ```
 
 It carries who asked, when, why, and the counts — "quarantined 412 of 418, 6
-failed" — which is also what the campaign's own action history shows.
+failed". The campaign's own action history lists the sweep as one row — who
+asked and how it ended — and this is the read you expand it with: the counts and
+the justification live on the row's request, which the history strip does not
+select.
+
+A second sweep of the same campaign upserts each member's row, so an already-swept
+member's inline `reason` and `actor` become the *second* operator's. The first
+operator's justification survives on their own sweep record, which is the other
+reason each sweep writes one.
 
 ### Repeating a sweep, and asking for a second one on purpose
 
