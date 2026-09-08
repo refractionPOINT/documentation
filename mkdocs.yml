@@ -610,7 +610,7 @@ nav:
       - Overview: cloud-security/index.md
       - Getting Started: cloud-security/getting-started.md
       - Connecting Providers: cloud-security/providers.md
-      - Code Scanning & Pushed Results: cloud-security/code-scanning.md
+      - Code Scanning: cloud-security/code-scanning.md
       - Provider Setup:
           - Overview: cloud-security/provider-setup/index.md
           - Google Cloud: cloud-security/provider-setup/gcp.md
@@ -634,6 +634,7 @@ nav:
       - Custom Posture Rules: cloud-security/custom-rules.md
       - Configuration Reference: cloud-security/configuration.md
       - Command Line Interface: cloud-security/cli.md
+      - IDE & MCP: cloud-security/mcp.md
       - API Reference: cloud-security/api-reference.md
       - Automation & IaC: cloud-security/automation.md
 
