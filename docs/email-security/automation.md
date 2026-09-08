@@ -43,6 +43,8 @@ of them.
 | `event/sender_email`, `event/sender_root_domain`, `event/subject` | Enough to match on without a lookup |
 | `event/ts` | The message's delivery time. The **event's own** timestamp is when the decision was made, so a hunt can window on either |
 | `event/campaign_id` | The campaign, if the message clustered into one |
+| `event/campaign_joined_late` | Present and `true` only when this event exists *because* the campaign above was identified after the message had already been delivered and reported. See [A message that joins a campaign late](#a-message-that-joins-a-campaign-late) |
+| `event/cluster_reason` | The cluster keys that agreed — why this message is in that campaign. Carried on a late join, which is the event the question gets asked about |
 | `event/revision/seq` | `0` for the rule pack's verdict, `1…` for each override |
 | `event/revision/mode` | `auto`, `analyst`, `ai` or `detonation` |
 | `event/revision/verdict`, `event/revision/score` | The decision |
@@ -54,6 +56,55 @@ of them.
 The MDM is deliberately *not* repeated here: it is already in the immutable
 `EMAIL_MESSAGE`, and copying it into every verdict change would multiply a year
 of telemetry by how often people change their minds.
+
+### A message that joins a campaign late
+
+Clustering runs while a message is being ingested, so two copies of one attack
+that arrive in the same instant each look for a campaign-mate before the other
+has been written down — and both are stored attributed to nothing. When a
+campaign one of them belongs to is identified afterwards, its membership is
+recorded and an `EMAIL_VERDICT` is emitted carrying
+**`campaign_joined_late: true`**.
+
+```yaml
+# Detect: mail we already delivered has been shown to be part of a campaign.
+op: and
+rules:
+  - op: is
+    path: routing/event_type
+    value: EMAIL_VERDICT
+  - op: is
+    path: event/campaign_joined_late
+    value: true
+```
+
+It is a flag on the existing event rather than an event type of its own,
+deliberately: a rule already written against `EMAIL_VERDICT` keeps working and
+simply starts seeing the campaign, which is the one fact a campaign-wide response
+needs.
+
+**The `revision` block on this event is a restatement, not a new decision.**
+Nothing was re-judged — the verdict is exactly what it was — so:
+
+| Path | On a late join |
+|---|---|
+| `revision/seq` | The message's *current* revision sequence: `0` when the engine's verdict has never been overridden, which is the usual case, and `1…` when it has. A consumer de-duplicating on `(msg_uuid, seq)` therefore reads this as a decision it already holds, now carrying a campaign |
+| `revision/decided_at` | The clock of the decision being restated. On a message whose engine verdict was never overridden — the usual case — that is when the **join** happened, because the join is the only thing this event reports as new. On an already-overridden message it is the **original** override's timestamp, because restating an analyst's decision under a clock they did not choose would be worse. So match late joins on `campaign_joined_late`, never on a time window |
+| `revision/verdict`, `revision/mode`, `revision/actor` | Whatever the message already carried. An overridden message restates its analyst's or agent's decision verbatim, attribution included |
+
+The original `EMAIL_MESSAGE` is never rewritten, here as everywhere: it stands as
+the record of what was known at ingest, and this is the record of what was learned
+afterwards.
+
+!!! tip "Why you want to act on this"
+    A campaign-wide quarantine reaches the members the product knows about. A
+    message that was never attributed to its campaign is one the sweep does not
+    touch and one the campaign's member count does not include — so this event is
+    how a response you have already run learns that it missed something.
+
+    Match on the flag rather than on a time window, per the `decided_at` note
+    above: on an already-overridden message the event carries the original
+    decision's timestamp, so a rule scoped to "the last hour" would miss it.
 
 !!! warning "It roughly doubles your mail event volume"
     `EMAIL_VERDICT` at `seq 0` is emitted for **every** ingested message, not only

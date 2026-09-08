@@ -49,6 +49,38 @@ message index it draws on lives for 35, so the count is the historical spread of
 the attack rather than a count of messages still in the index. A campaign whose
 members have aged out still tells you how big the attack was.
 
+## Messages that join after the fact
+
+Clustering runs while a message is being ingested. Two copies of one attack that
+arrive in the same instant therefore each look for a campaign-mate before the
+other has been written down, find nothing, and are both stored attributed to
+nothing — and a campaign that forms around a third copy later would leave one of
+them out.
+
+A **retro-join pass** closes that, and what it looks at is narrow on purpose.
+
+A campaign is created from exactly one earlier message — the seed. When a message
+forms or joins a campaign, any *other* ungrouped message it agreed with is one the
+engine has just proved belongs with that campaign and passed over. Those, and only
+those, are queued to be asked again.
+
+| | |
+|---|---|
+| **What is queued** | A message another message agreed with, on at least two cluster keys, and did not take into the campaign it made. Not "anything that could conceivably cluster" — most mail satisfies the two-key rule and is in no campaign, and queueing all of it would leave the messages that matter waiting behind it |
+| **How long it stays queued** | 24 hours from delivery. Past that it is dropped: mail arriving later still finds it through the ordinary lookup, since it remains a candidate |
+| **How often it is asked** | At most once every ten minutes, and only while it is still ungrouped and inside that window |
+| **What you see** | The message's `campaign_id` and `cluster_reason` fill in, `member_count` grows, and a campaign-wide sweep from that point reaches it. An [`EMAIL_VERDICT` with `campaign_joined_late: true`](automation.md#a-message-that-joins-a-campaign-late) is emitted so a rule can respond to the change |
+
+Nothing is queued for an organization whose mail is not clustering, and a message
+that agreed with nothing is never re-asked — there is no answer waiting to change.
+
+!!! note "It applies from the day it is enabled"
+    Messages that were already ungrouped before this existed are not revisited:
+    the queue is built by the passes that leave a message out, so it starts empty.
+    In practice the next message of a live attack re-derives the same set, so an
+    ongoing campaign repairs itself; a campaign that finished before the feature
+    was on stays as it was recorded.
+
 ## Body similarity
 
 The first three keys are all things an attacker can randomize. A kit that gives
