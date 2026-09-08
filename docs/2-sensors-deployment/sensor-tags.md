@@ -40,6 +40,17 @@ You can use tags to create workflows and automations. For instance, you can conf
 
 Create a Yara scanning rule so that endpoints tagged as 'sales' are continuously scanned against the specific sets of Yara signatures.
 
+## The reserved `acl:` namespace
+
+Tags beginning with `acl:` are reserved. They restrict who may read a sensor's
+telemetry, task it, or see its detections, and adding or removing one requires
+the `acl.set` permission on top of the usual `sensor.tag`. They also cannot be
+given a TTL, and Detection & Response rules are not permitted to add or remove
+them.
+
+Use any other tag freely — the reservation applies only to the `acl:` prefix.
+See [Resource ACLs](../7-administration/access/resource-acls.md).
+
 ## Adding Tags
 
 Tags can be added to a sensor a few different ways:

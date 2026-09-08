@@ -30,6 +30,13 @@ LimaCharlie uses a granular permission system that controls access to all platfo
 | apikey.ctrl | Create, delete, and modify API keys |
 | user.ctrl | Manage user accounts and permissions |
 | billing.ctrl | Access and modify billing information |
+| acl.get | Read resource ACL scope membership |
+| acl.set | Manage resource ACL scope membership, and add or remove `acl:` tags |
+
+`acl.set` and `acl.get` are included in the Owner and Administrator roles. See
+[Resource ACLs](../7-administration/access/resource-acls.md); note that
+`acl.set` is confidentiality-equivalent to unrestricted read access, because a
+holder can add themselves to any scope.
 
 ### Sensor Management
 
