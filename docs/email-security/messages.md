@@ -44,8 +44,10 @@ limacharlie mailsec message list --verdict suspicious --verdict malicious \
 
 ### Free text needs a window
 
-Every other filter in the table above is a **lookup**: the backend picks a read
-index from it and seeks straight to the matching rows. `q` is not. It is matched
+Most of the filters in the table above are a **lookup**: `mailbox`,
+`sender_email`, `campaign_id`, `link_domain`, `attachment_sha256` and a *single*
+`verdict` each pick the read index, so the backend seeks straight to the matching
+rows. `q` is not one of them. It is matched
 against the subject and sender of each candidate row as the index is walked, so
 its cost follows how much of the index gets read rather than how many rows come
 back — and the most expensive `q` is the one that matches **nothing**, because
@@ -80,7 +82,10 @@ GET /v1/mailsec/$OID/messages?q=invoice&mailbox=cfo@corp.example
 counted against a per-organization
 [read budget](api-reference.md#read-budgets); one carrying a `mailbox`,
 `sender_email`, `campaign_id`, `link_domain` or `attachment_sha256` is an index
-lookup and is not counted at all.
+lookup and is not counted at all. A single `verdict` satisfies the requirement
+above but does **not** exempt the search: the verdict index is keyed by verdict
+and then time, so `verdict=benign` seeks into what is, for most organizations,
+all of their mail.
 
 In the web console the search box supplies the bound for you: searching without
 any other filter searches everything retained, and the result summary says so.

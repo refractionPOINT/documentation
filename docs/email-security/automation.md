@@ -160,11 +160,12 @@ Pair it with the `coverage` call, which reports mailboxes in `error`, the
 parse-degradation rate and the emission backlog. See
 [Getting Started](getting-started.md#6-watch-coverage-fill-in).
 
-Poll it **without a window**. With no `since`/`until`/`window_days` the answer
-comes from a short-lived server-side memo, so a once-a-minute poll costs almost
-nothing and is not counted against the
+Poll it **without a window**. With no `since`/`until`/`window_days` the answer is
+eligible for a short-lived server-side memo and is **not** counted against the
 [read budget](api-reference.md#read-budgets); naming a window recomputes the
-period on every call and is.
+period on every call and is counted. The memo lives 60 seconds, so polling faster
+than once a minute buys you nothing — and a once-a-minute poll lands on the
+expiry most times, so it is not free either. It is simply not budgeted.
 
 ## Querying mail with LCQL
 
