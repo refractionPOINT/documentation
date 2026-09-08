@@ -25,7 +25,7 @@ about the rows a browser happened to have loaded.
 | `attachment_sha256` | Messages carrying an attachment with this hash |
 | `user_reported` | Tri-state — see below |
 | `min_score` | Messages scoring at least this much |
-| `q` | Free-text over the message's identifying fields |
+| `q` | Free-text over the message's subject and sender address, up to 512 characters. It is matched row by row rather than looked up, so it must be accompanied by something that bounds the read: a `since`, or one of `mailbox` / `sender_email` / `campaign_id` / `link_domain` / `attachment_sha256`, or a **single** `verdict`. On its own it is refused — see [Free text needs a window](#free-text-needs-a-window) |
 | `since` / `until` | RFC3339 or unix seconds |
 
 Repeatable filters **OR within a key and AND across keys**: `verdict=suspicious`
@@ -41,6 +41,46 @@ limacharlie mailsec message list --verdict suspicious --verdict malicious \
     Omitting `user_reported` means the dimension is *unconstrained*. Setting it
     to `false` selects mail **nobody reported**, which is a different and much
     larger set than "all mail".
+
+### Free text needs a window
+
+Every other filter in the table above is a **lookup**: the backend picks a read
+index from it and seeks straight to the matching rows. `q` is not. It is matched
+against the subject and sender of each candidate row as the index is walked, so
+its cost follows how much of the index gets read rather than how many rows come
+back — and the most expensive `q` is the one that matches **nothing**, because
+nothing fills the page and the walk runs to the end of your retention.
+
+So a `q` on its own is refused, and it has to name something that bounds the
+walk:
+
+- a **`since`** — an `until` alone does not count, because the walk is
+  newest-first, so `until` moves where it starts and `since` is where it stops;
+- or one of **`mailbox`**, **`sender_email`**, **`campaign_id`**,
+  **`link_domain`**, **`attachment_sha256`**;
+- or a **single** `verdict`. Two or more verdicts is not a lookup either, so it
+  does not count.
+
+`state`, `direction`, `user_reported`, `min_score` and `sender_root_domain`
+narrow the *answer* rather than the *scan*, so they do not satisfy the
+requirement.
+
+```
+# refused
+GET /v1/mailsec/$OID/messages?q=invoice
+
+# bounded by time
+GET /v1/mailsec/$OID/messages?q=invoice&since=1757116800
+
+# bounded by a lookup, any time
+GET /v1/mailsec/$OID/messages?q=invoice&mailbox=cfo@corp.example
+```
+
+`q` is also capped at **512 characters**, and free-text searches are counted
+against a per-organization [read budget](api-reference.md#read-budgets).
+
+In the web console the search box supplies the bound for you: searching without
+any other filter searches everything retained, and the result summary says so.
 
 ### The two IOC pivots
 

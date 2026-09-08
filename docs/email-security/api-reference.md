@@ -44,8 +44,8 @@ Shared behaviours:
 
 | Route | Returns |
 |---|---|
-| `GET /coverage` | Mailboxes discovered / protected / excluded / in error, message volume and the verdict funnel over the window, the parse-degradation rate, backfill progress, the emission backlog, per-connection health, and the `overview` block (open reports, active campaigns, resolved automation mode, and `processing_latency_p95` — see [Time to verdict](pipeline.md#time-to-verdict)). Params: `since`, `until`, `window_days`. With no window at all the default period is served from a short-lived server-side memo; naming an explicit range or a `window_days` always computes that exact period. `window_days` is the whole-days shorthand the CLI's `--window-days` uses (1-35, counted back from now); it cannot be combined with `since`/`until`, and its ceiling is the platform's maximum message retention. A window reaching past the organization's own retention horizon returns `volume.truncated`: the counts are of what is really stored, and the flag says the period asked about is longer than the period kept |
-| `GET /messages` | `{messages, next_cursor}` — the message index. Filters: `mailbox`, `sender_email`, `sender_root_domain`, `campaign_id`, `link_domain`, `attachment_sha256`, `verdict[]`, `state[]`, `direction[]`, `user_reported`, `min_score`, `q`, `since`, `until`, `cursor`, `limit` |
+| `GET /coverage` | Mailboxes discovered / protected / excluded / in error, message volume and the verdict funnel over the window, the parse-degradation rate, backfill progress, the emission backlog, per-connection health, and the `overview` block (open reports, active campaigns, resolved automation mode, and `processing_latency_p95` — see [Time to verdict](pipeline.md#time-to-verdict)). Params: `since`, `until`, `window_days`. With no window at all the default period is served from a short-lived server-side memo; naming an explicit range or a `window_days` always computes that exact period. `window_days` is the whole-days shorthand the CLI's `--window-days` uses (1-35, counted back from now); it cannot be combined with `since`/`until`, and its ceiling is the platform's maximum message retention. A window reaching past the organization's own retention horizon returns `volume.truncated`: the counts are of what is really stored, and the flag says the period asked about is longer than the period kept. An explicit window (including `window_days`) is recomputed rather than memoized, so it is subject to the [read budget](#read-budgets); the default no-window call is not |
+| `GET /messages` | `{messages, next_cursor}` — the message index. Filters: `mailbox`, `sender_email`, `sender_root_domain`, `campaign_id`, `link_domain`, `attachment_sha256`, `verdict[]`, `state[]`, `direction[]`, `user_reported`, `min_score`, `q`, `since`, `until`, `cursor`, `limit`. `q` is a free-text match evaluated row by row rather than looked up, so it must be accompanied by something that bounds the read — a `since`, or one of `mailbox` / `sender_email` / `campaign_id` / `link_domain` / `attachment_sha256`, or a **single** `verdict`. On its own it is refused; it is capped at 512 characters; and it is subject to the [read budget](#read-budgets) |
 | `GET /messages/{msg_uuid}` | `{message, mdm, mdm_source}` — the index row, the full signal rationale, the action timeline, and the Message Data Model. `mdm_source` is `stored` (the model the collector judged with, enrichments included) or `eml_reparse` (a fresh parse of the original bytes, no enrichments). `mdm_unavailable_reason` replaces the model when neither is available |
 | `GET /messages/{msg_uuid}/similar` | `{messages, since}` — recent messages sharing at least one clustering key, each with the `matched_keys` that matched, plus the lookback window that was searched. Candidates, not a cluster |
 | `GET /messages/{msg_uuid}/revisions` | `{revisions, revisions_truncated}` — one message's whole verdict-revision history, oldest first: who decided (`actor`, `mode`), when, the structured rationale, and the `prior` state each one displaced. The first revision's `prior` is the engine's own verdict and the pack version that produced it. Not paginated — revisions are few by nature — but an optional `limit` is accepted and `revisions_truncated` reports the pathological history that exceeded the backend's ceiling. Gated on `mailsec.get`: a revision is the product's structured record of a decision about a message you can already open |
@@ -177,6 +177,52 @@ Deletion also happens without this route being called — 30 days after an
 organization unsubscribes from Email Security, and immediately when the
 organization is deleted. See
 [Data retention and deletion](policy.md#data-retention-and-deletion).
+
+## Read budgets
+
+Two reads on this surface recompute something rather than serving a cached or
+seekable answer, and both are bounded per organization.
+
+- **`GET /coverage` with an explicit window** — a `since`/`until` pair, or a
+  `window_days`. With no window at all the answer comes from a short-lived
+  server-side memo and is not budgeted; naming a window computes the period
+  from scratch, which is a grouped scan of everything in it plus a bounded
+  latency sample.
+- **`GET /messages` with `q`** — the free-text filter is matched row by row
+  against the subject and sender of every candidate, so its cost follows how
+  much of the index is walked rather than how many rows come back.
+
+The budget is **2,400 of each per organization per hour**, counted across every
+credential in the organization and decaying in one-minute steps. It is sized
+well above interactive use: the console's Overview sends no window and is never
+counted at all, and a team of analysts searching continuously plus an
+automation polling a windowed coverage read every minute uses well under half
+of it.
+
+Over the budget the request answers `429` with:
+
+```json
+{
+  "error": "the email-security read budget for this organization (2400 in 1h0m0s) is spent for \"message_search\"; …",
+  "rate_bucket": "mailsec_read",
+  "route": "message_search",
+  "quota": 2400,
+  "period": "1h0m0s"
+}
+```
+
+`rate_bucket` is `mailsec_read`, which is what distinguishes this refusal from
+the raw-download budget on
+[`GET /messages/{msg_uuid}/eml`](#get-messagesmsg_uuideml) — both are `429`s on
+this surface and they mean different things. `route` is `coverage_window` or
+`message_search`. A `Retry-After` header carries the number of seconds after
+which capacity can have returned (the decay step, not the whole hour), and
+`X-RateLimit-Quota` / `X-RateLimit-Period` restate the budget.
+
+If a read is refused, the two cheapest ways to get it served are to drop the
+coverage window (the default period is memoized) or to add a `mailbox`,
+`sender_email`, `campaign_id` or IOC filter to the search, which makes it an
+index lookup rather than a walk.
 
 ## Writes
 
