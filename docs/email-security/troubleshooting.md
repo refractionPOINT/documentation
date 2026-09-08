@@ -173,6 +173,8 @@ value: EMAIL_INGEST_ERROR
 | `external/provider_message_id` | The provider's own id for the message |
 | `mailbox/id` | The mailbox, when it is known |
 | `subscription_id` | The notification subscription, when set |
+| `attempts` | How many delivery attempts the platform made before retiring the work item (present when the failure is a retirement, not a first-pass fetch or parse error) |
+| `failed_at` | When the mail was lost, which is not necessarily when the event shipped: an organization whose connection was down for a day gets its whole backlog with the original times |
 
 Three things about it are deliberate and worth knowing:
 
@@ -183,14 +185,21 @@ Three things about it are deliberate and worth knowing:
   message, not about one delivery attempt. Transient failures are retried and
   produce no event.
 - **It is emitted once per message**, not once per attempt.
+- **It is durable.** A failure is recorded first and emitted second, so a message
+  lost while your connection was down is still reported once the connection is
+  back. `stage: dead_lettered` is the retirement case: a message the platform
+  tried to process `attempts` times and gave up on.
 
 Work that could not even be attributed to an organization — an undecodable
 payload — is retired to an internal sink and produces **no** event in anyone's
 telemetry, because an unattributable payload must not let a caller write into
 some tenant's error feed.
 
-Alert on it. Pair it with `coverage`'s mailboxes-in-`error` count, its
-parse-degradation rate and its emission backlog. See
+Alert on it. Pair it with `coverage`'s `ingest_errors` block, which counts the
+same failures over the coverage window (`total`, `by_stage`, plus `pending`
+rows that have been recorded but not yet shipped to your telemetry and
+`undelivered` rows the platform gave up shipping), with its mailboxes-in-`error`
+count, its parse-degradation rate and its emission backlog. See
 [Events & Automation](automation.md#watching-your-own-coverage).
 
 ## A short gap right after a platform update
