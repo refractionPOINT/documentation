@@ -76,8 +76,11 @@ GET /v1/mailsec/$OID/messages?q=invoice&since=1757116800
 GET /v1/mailsec/$OID/messages?q=invoice&mailbox=cfo@corp.example
 ```
 
-`q` is also capped at **512 characters**, and free-text searches are counted
-against a per-organization [read budget](api-reference.md#read-budgets).
+`q` is also capped at **512 characters**. A search bounded only by time is
+counted against a per-organization
+[read budget](api-reference.md#read-budgets); one carrying a `mailbox`,
+`sender_email`, `campaign_id`, `link_domain` or `attachment_sha256` is an index
+lookup and is not counted at all.
 
 In the web console the search box supplies the bound for you: searching without
 any other filter searches everything retained, and the result summary says so.

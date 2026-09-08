@@ -188,25 +188,29 @@ seekable answer, and both are bounded per organization.
   server-side memo and is not budgeted; naming a window computes the period
   from scratch, which is a grouped scan of everything in it plus a bounded
   latency sample.
-- **`GET /messages` with `q`** — the free-text filter is matched row by row
-  against the subject and sender of every candidate, so its cost follows how
-  much of the index is walked rather than how many rows come back.
+- **`GET /messages` with `q`, when the search is a *walk*** — the free-text
+  filter is matched row by row against the subject and sender of every
+  candidate, so its cost follows how much of the index is walked rather than how
+  many rows come back. A `q` accompanied by `mailbox`, `sender_email`,
+  `campaign_id`, `link_domain` or `attachment_sha256` is an index lookup instead
+  and is **not counted at all**. A bare `verdict` does not exempt it: the verdict
+  index is keyed by verdict then time, so `verdict=benign` looks up a partition
+  that is, for most organizations, all of their mail.
 
-The budget is **2,400 of each per organization per hour**, counted across every
+The budget is **7,200 of each per organization per hour**, counted across every
 credential in the organization and decaying in one-minute steps. It is sized
 well above interactive use: the console's Overview sends no window and is never
-counted at all, and a team of analysts searching continuously plus an
-automation polling a windowed coverage read every minute uses well under half
-of it.
+counted at all, and eight analysts searching continuously for an hour without
+pause comes to roughly half of it.
 
 Over the budget the request answers `429` with:
 
 ```json
 {
-  "error": "the email-security read budget for this organization (2400 in 1h0m0s) is spent for \"message_search\"; …",
+  "error": "the email-security read budget for this organization (7200 in 1h0m0s) is spent for \"message_search\"; …",
   "rate_bucket": "mailsec_read",
   "route": "message_search",
-  "quota": 2400,
+  "quota": 7200,
   "period": "1h0m0s"
 }
 ```
@@ -222,7 +226,7 @@ which capacity can have returned (the decay step, not the whole hour), and
 If a read is refused, the two cheapest ways to get it served are to drop the
 coverage window (the default period is memoized) or to add a `mailbox`,
 `sender_email`, `campaign_id` or IOC filter to the search, which makes it an
-index lookup rather than a walk.
+index lookup rather than a walk and takes it out of the budget entirely.
 
 ## Writes
 
