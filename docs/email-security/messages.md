@@ -47,8 +47,9 @@ limacharlie mailsec message list --verdict suspicious --verdict malicious \
     subject and the sender address. `%` and `_` are ordinary characters rather
     than wildcards, so searching for `50% off` returns mail whose subject
     contains `50% off` — not mail whose subject contains `50` followed later by
-    ` off`. Surrounding whitespace is ignored, and text that is only whitespace
-    is not a filter at all. There is no wildcard or regular-expression syntax.
+    `off`, which is what a wildcard would have matched. Surrounding whitespace
+    is ignored, and text that is only whitespace is not a filter at all. There
+    is no wildcard or regular-expression syntax.
 
     Because it is matched row by row rather than looked up, a `q` has to be
     accompanied by something that bounds the read: a `since`, or one of
