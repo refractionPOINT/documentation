@@ -210,6 +210,26 @@ quoted threads, hidden-text detection), `links`, `attachments`, `auth` (parsed
 SPF / DKIM / DMARC / ARC results with alignment) and `hops` (the parsed `Received`
 chain).
 
+!!! note "`body/current_thread/text` covers every rendering of the message"
+    A message usually carries its content twice — once as `text/plain` and once as
+    `text/html` — and nothing in the mail standards makes the two agree. A sender
+    who writes a decoy into one part and the real message into the other would
+    otherwise choose what your rules get to read.
+
+    So `body/current_thread/text` is the newest segment of **both** renderings: the
+    plain one first, then the text a reader would see rendered from the HTML,
+    separated by a blank line. The HTML half is left out only when it already
+    appears word for word in the plain part, which is the case for most ordinary
+    mail. Two consequences for a rule author:
+
+    - Match with substring or regex patterns rather than whole-value equality. On a
+      message whose two renderings differ, this field says the same thing twice.
+    - It is a matching surface, not a display one. To show a person the message,
+      read `body/html/display_text` or `body/plain/raw`.
+
+    The quoted history is still excluded from it — that is the point of
+    `current_thread` — and it is available separately under `body/previous_threads`.
+
 ### Enrichments
 
 | Path | What it carries |
