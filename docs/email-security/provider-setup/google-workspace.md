@@ -163,9 +163,10 @@ limacharlie hive set --hive-name mailsec_provider --key gws-prod \
   --input-file gws.yaml --enabled --oid $OID
 ```
 
-`ingest.mode: push` requires **both** `pubsub_topic` and `pubsub_subscription`;
-a record that asks for push and names nowhere to receive is refused at save. Use
-`auto` to let the collector decide.
+Google Workspace supports `ingest.mode: push` only, and requires **both**
+`pubsub_topic` and `pubsub_subscription`. An omitted, `auto` or `poll` mode—or a
+push record that names nowhere to receive—is refused at save with the fields to
+repair.
 
 ## Verify
 
@@ -181,8 +182,8 @@ limacharlie mailsec connection test gws-prod --include-watch --oid $OID --output
 | `mail_modify` | ✅ | `gmail.modify` is not delegated — no analysis or remediation |
 | `mail_full` | — | `https://mail.google.com/` not delegated; banners and reporter replies are unavailable. Reported as `skipped`, and `ok` stays true |
 | `mailbox_read` | ✅ | Delegation is in place but the directory returned nothing, or the impersonated admin cannot list users |
-| `pubsub_pull` | ✅ (when push is configured) | The service account lacks `roles/pubsub.subscriber` on the subscription, or the subscription name is wrong |
-| `pubsub_watch` | ✅ (when push is configured) | Gmail cannot publish to the topic — usually the missing publisher binding, or a topic outside the service account's project |
+| `pubsub_pull` | ✅ | The service account lacks `roles/pubsub.subscriber` on the subscription, or the subscription name is wrong |
+| `pubsub_watch` | ✅ | Gmail cannot publish to the topic — usually the missing publisher binding, or a topic outside the service account's project |
 
 `--include-watch` establishes a real Gmail watch and requires a real Pub/Sub pull
 before lifecycle can pass. It is idempotent and the watch expires on its own.
@@ -194,9 +195,10 @@ before lifecycle can pass. It is idempotent and the watch expires on its own.
   collector pulls your subscription with the same service-account credential and
   reads the change history from the last known point. Watches are renewed on a
   daily schedule — Gmail expires them within seven days.
-- **Poll mode** walks each mailbox's change history on an interval. It is a
-  small-tenant and failure fallback, not a scale plan: it spends quota in your
-  project continuously whether or not any mail arrived.
+- Push is the only supported Workspace delivery mode. If Pub/Sub delivery is
+  interrupted, coverage shows the connection degradation. Once delivery returns,
+  the collector resumes from the stored Gmail history watermark rather than
+  claiming a separate polling fallback.
 - Sent mail is ingested as `direction: outbound`, observation-only.
 
 !!! warning "Gmail cannot enumerate active watches"
