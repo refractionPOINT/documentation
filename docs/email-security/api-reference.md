@@ -186,8 +186,18 @@ organization is deleted. See
 
 ## Read budgets
 
-Two reads on this surface recompute something rather than serving a cached or
-seekable answer, and both are bounded per organization.
+Some reads on this surface recompute something rather than serving a cached or
+seekable answer, and those are bounded per organization. There are **two
+separate budgets**, because the reads they cover are expensive in different
+resources: the two below are measured in database work, and the
+[rule replays](#the-replay-budget) further down are measured in **stored
+messages re-read**. They are counted separately, refill on different clocks, and
+carry different `rate_bucket` values — so do not retry one on the other's
+advice.
+
+### The query budget
+
+Two reads recompute a query rather than serving a cached or seekable answer.
 
 - **`GET /coverage` with an explicit window** — a `since`/`until` pair, or a
   `window_days`. With no window at all the answer comes from a short-lived
@@ -235,6 +245,58 @@ If a read is refused, the two cheapest ways to get it served are to drop the
 coverage window (the default period is memoized) or to add a `mailbox`,
 `sender_email`, `campaign_id` or IOC filter to the search, which makes it an
 index lookup rather than a walk and takes it out of the budget entirely.
+
+### The replay budget
+
+Two `POST` routes are reads as well, and they are the most expensive ones here.
+
+- **`POST /rules/backtest`** — replaying a candidate rule does not query an
+  index, it re-reads your mail. For every message in the window it fetches the
+  stored original, decrypts it, decompresses it, parses it back into the Message
+  Data Model and evaluates the rule against it. Its cost therefore follows **how
+  many messages are in the window**, not how many the rule matches.
+- **`POST /hunts`** — a retro-hunt is the same shape over a wider window. It is
+  budgeted now, before it serves, so that the budget is not a change of contract
+  later. See [Registered, but not implemented yet](#registered-but-not-implemented-yet).
+
+This budget is counted in **messages re-read** rather than in requests, and one
+call is charged the most it could re-read (2,000 — the backtest's own scan
+bound), because the platform cannot know how much of your window it will walk
+until it has walked it. The organization's allowance is **12,000 messages
+re-read per 10 minutes**, decaying in one-minute steps, which is **6 rule
+backtests per 10 minutes** across every credential in the organization.
+
+That is sized for authoring a rule — write, backtest, read the report, adjust —
+and not for a loop. It is deliberately tighter than the query budget above:
+a single backtest can occupy a datacenter's mail-reading capacity for tens of
+seconds, where a coverage recompute is a bounded query.
+
+Over the budget the request answers `429` with:
+
+```json
+{
+  "error": "the email-security read budget for this organization (6 in 10m0s) is spent for \"rule_backtest\"; …",
+  "rate_bucket": "mailsec_post_read",
+  "route": "rule_backtest",
+  "quota": 6,
+  "period": "10m0s"
+}
+```
+
+`rate_bucket` is `mailsec_post_read` — **not** the `mailsec_read` above, and the
+difference matters to a client: the two budgets refill on different windows, so
+a client that treated them as one would retry a backtest on advice that does not
+apply to it. `route` is `rule_backtest` or `hunt_create`. `Retry-After` is `60`
+(the decay step), and `X-RateLimit-Quota` / `X-RateLimit-Period` restate the
+budget as `6` and `600` seconds.
+
+Like the query budget, this one bounds **cost and not access**, so it
+**fails open**: if it cannot be evaluated the backtest is served.
+
+If a backtest is refused, waiting is the answer — there is no narrower shape that
+takes it out of the budget, because the charge is the same whatever window you
+ask for. Asking for a narrower window does make the call itself cheaper and
+faster, which is worth doing for its own sake.
 
 ## Writes
 
@@ -331,7 +393,7 @@ close a report must be able to reopen one, or a mis-click is permanent.
 | `POST /analyze` | Parse a raw message into the Message Data Model and judge it with the packaged rules against default policy. **Nothing is ingested or stored**: no index row is written, no raw copy kept, and the organization's mail history is unchanged. Body: `eml_b64` (preferred) or `eml`, plus optional `org_domains` and `direction`. Tenant context it cannot have — your sender history, your VIP list — is named explicitly in the payload rather than silently missing. Requires `mailsec.get` |
 | `POST /actions/bulk/preview` | Preview a bulk remediation over a caller-supplied selection: reports each message's current state and the distinct-mailbox blast radius, and mints the `confirm` token derived from that exact selection. **Nothing is changed and no job is created** — it is a `POST` only because up to 500 message ids do not belong in a query string. Requires `mailsec.get`, like the campaign preview it mirrors. See [Bulk Remediation](remediation.md) |
 | `POST /rules/validate` | Compile a candidate `dr-mail` rule and report its errors without saving it. Body: `rule` (object), optional `rule_id`. Runs the same compile the `dr-mail` Hive applies on save, with **one exception**: it does not check that a `lookup` resource the rule names actually exists in your organization, because it cannot read your `lookup` records. A rule naming a missing lookup validates here and is refused on save — see [Custom Rules](custom-rules.md#rules-for-lookup-in-a-mail-rule). An invalid rule is a `200` carrying `valid: false` and the reason, not an error response. Requires `mailsec.get` |
-| `POST /rules/backtest` | Replay a candidate rule over the organization's indexed message window and report what it would have matched. Body: `rule`, optional `rule_id`, `since`, `until`. Every response carries a `coverage_note` and counts what it could not examine (`skipped_no_raw`, `skipped_unparse`, `truncated`). `precision` is `null` — not `0` — when nothing it matched has an analyst disposition yet. Requires `mailsec.get` |
+| `POST /rules/backtest` | Replay a candidate rule over the organization's indexed message window and report what it would have matched. Body: `rule`, optional `rule_id`, `since`, `until`. Every response carries a `coverage_note` and counts what it could not examine (`skipped_no_raw`, `skipped_unparse`, `truncated`). `precision` is `null` — not `0` — when nothing it matched has an analyst disposition yet. Every message in the window is re-read from storage, which makes this the most expensive read on the surface: it is subject to the [replay budget](#the-replay-budget). Requires `mailsec.get` |
 
 ## Registered, but not implemented yet
 
@@ -347,6 +409,12 @@ before any client ships against them, and so that calling one gives you a
 refusal rather than a `404` you cannot tell from a typo. The permission gates are
 live and are the same ones the served routes use; what is missing is the replay
 engine behind them.
+
+`POST /hunts` is already counted against the
+[replay budget](#the-replay-budget), even while it refuses. That is deliberate:
+the budget exists to bound what a hunt will cost when it serves, and adding it
+on the day the engine lands would be a change of contract for clients that had
+already shipped.
 
 **Do not build against them yet, and do not branch on the refusal.**
 `GET /hunts/{hunt_id}` answers a typed `not_implemented` naming the milestone it
