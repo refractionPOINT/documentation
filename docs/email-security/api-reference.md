@@ -31,6 +31,11 @@ Shared behaviours:
   `?verdict=malicious&verdict=suspicious`. OR within a key, AND across keys.
 - **Boolean selectors are tri-state.** An absent parameter means "not filtered",
   which is *not* the same as passing `false`.
+- **Free-text search (`q`) is literal.** It is a case-insensitive substring match
+  over the message's subject and sender address. `%` and `_` are ordinary
+  characters rather than wildcards — searching for `50% off` returns mail whose
+  subject contains `50% off`, and nothing else. Surrounding whitespace is
+  ignored, and a search that is only whitespace is not a filter at all.
 - **Keyset pagination.** Pages carry `next_cursor`; pass it back as `?cursor=`.
   An empty `next_cursor` is the last page. A cursor is **bound to the filter set
   that minted it** — changing a filter mid-walk fails the next page rather than
