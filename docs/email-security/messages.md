@@ -25,7 +25,7 @@ about the rows a browser happened to have loaded.
 | `attachment_sha256` | Messages carrying an attachment with this hash |
 | `user_reported` | Tri-state — see below |
 | `min_score` | Messages scoring at least this much |
-| `q` | Free-text over the message's identifying fields |
+| `q` | Free-text over the message's subject and sender address. **Literal** — see below |
 | `since` / `until` | RFC3339 or unix seconds |
 
 Repeatable filters **OR within a key and AND across keys**: `verdict=suspicious`
@@ -41,6 +41,21 @@ limacharlie mailsec message list --verdict suspicious --verdict malicious \
     Omitting `user_reported` means the dimension is *unconstrained*. Setting it
     to `false` selects mail **nobody reported**, which is a different and much
     larger set than "all mail".
+
+!!! info "`q` is a literal substring, not a pattern"
+    The search text is matched **literally** and case-insensitively against the
+    subject and the sender address. `%` and `_` are ordinary characters rather
+    than wildcards, so searching for `50% off` returns mail whose subject
+    contains `50% off` — not mail whose subject contains `50` followed later by
+    ` off`. Surrounding whitespace is ignored, and text that is only whitespace
+    is not a filter at all. There is no wildcard or regular-expression syntax.
+
+    Because it is matched row by row rather than looked up, a `q` has to be
+    accompanied by something that bounds the read: a `since`, or one of
+    `mailbox`, `sender_email`, `campaign_id`, `link_domain`,
+    `attachment_sha256`, or a single `verdict`. On its own it is refused. It is
+    also capped at 512 characters — search for a distinctive fragment of a
+    subject rather than the whole of it.
 
 ### The two IOC pivots
 

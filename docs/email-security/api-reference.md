@@ -105,7 +105,7 @@ justification, and `event_emitted` — which is `false` when the organization ha
 no live mail connection to ship the event on. Expand the `action_id` through
 `GET /actions/{action_id}` to read the justification back.
 
-!!! warning "This route is rate-limited, and deliberately the only one that is"
+!!! warning "This route carries the platform's only hard download quota"
     Two budgets apply, both per rolling hour:
 
     | Budget | Limit |
@@ -120,14 +120,31 @@ no live mail connection to ship the event on. Expand the `action_id` through
     These budgets **fail closed**: if they cannot be evaluated, the download is
     refused with a `503` and `refused_reason: quota_unavailable` rather than
     served. A budget that cannot be counted is not a budget, and this is the one
-    route that hands original message bytes out of the platform. No other Email
-    Security route is rate-limited, so none is affected.
+    route that hands original message bytes out of the platform — and the only
+    one that fails closed.
 
     Every other Email Security route returns the product's *view* of a message —
     the index row, the verdict, the parsed model — and reading those in bulk is
     what a dashboard does. This one returns the message, so a legitimate key
     doing it in bulk is exfiltration. There is no bulk EML export route, and the
     limits are sized for an analyst working a queue rather than for a scrape.
+
+!!! note "Two reads are *governed* rather than quota'd"
+    Two read shapes make the platform recompute rather than look up, so they are
+    counted per organization per read class — **7,200 per rolling hour** each —
+    and answer `429` past it:
+
+    | Governed read | When it is counted |
+    |---|---|
+    | `GET /messages` | Only when it carries a `q` that nothing but time bounds |
+    | `GET /coverage` | Only when it names an explicit window (`since`/`until`, or `window_days`) |
+
+    A search that also names a `mailbox`, `sender_email`, `campaign_id`,
+    `link_domain` or `attachment_sha256` is an index lookup and is **not**
+    counted, and neither is the default `GET /coverage` call with no window,
+    which is the one the console makes. Unlike the download budgets above, this
+    one **fails open**: if it cannot be evaluated the read is served, because a
+    counting outage should not black out a dashboard.
 
 ### `DELETE /tenant`
 
