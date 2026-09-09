@@ -104,6 +104,23 @@ right needs to know which one they are reading, so the field is always present.
 Neither requires a justification. The model is the product's own structured view;
 the *original bytes* are what is gated.
 
+### Which lane judged it
+
+`judged_via` says whether this message's verdict came from live ingestion or
+from the connection's historical backfill.
+
+| `judged_via` | What it means |
+|---|---|
+| `live` | An ordinary ingest. The `EMAIL_MESSAGE` and `EMAIL_VERDICT` events shipped, and any policy automation that matched has run |
+| `backfill` | The message was already in the mailbox when the connection was made. It is judged with the same rules, and **nothing was emitted and nothing acted on it** |
+| absent / `null` | The read did not carry the field. Treat it as unknown — never as `live` |
+
+The distinction matters on exactly one screen, and it is worth stating plainly:
+a backfilled message can show a `malicious` verdict beside an empty action
+timeline and no telemetry. That is the lane working as designed, not a broken
+connection and not somebody suppressing an alert. See
+[the ingest pipeline](pipeline.md#the-historical-backfill).
+
 ### Similar messages
 
 `GET /messages/{id}/similar` (`limacharlie mailsec message similar <msg_uuid>`)
