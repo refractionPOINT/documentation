@@ -179,6 +179,15 @@ An action's `result` can come back as `alert_only`, meaning the action was
 enforce mode. Do not treat it as an error — it is the product doing what you
 configured, reported honestly rather than dressed up as `ok`.
 
+### Windowed coverage is budgeted
+
+`coverage` with no `--window-days` is served from a short-lived server-side memo
+and is the right shape for a script that polls it. Naming a window recomputes
+the period from scratch, so those calls are counted against a per-organization
+[read budget](api-reference.md#read-budgets) — generous (7,200/hour, decaying
+every minute), but a tight loop over `--window-days` will reach it and answer
+`429`.
+
 ### Filters are tri-state
 
 Leaving a boolean filter unset means the dimension is *unconstrained*, which is
@@ -227,6 +236,15 @@ and would have you discard a good rule.
 ```bash
 limacharlie mailsec rule backtest --file rule.json --output yaml
 ```
+
+### Backtests are budgeted
+
+`rule backtest` re-reads every stored message in its window, so it is bounded per
+organization: **6 backtests per 10 minutes**, decaying every minute, across every
+credential in the organization. Past it the command reports a `429` carrying
+`rate_bucket: mailsec_post_read` and a `Retry-After`. It is sized for authoring a
+rule by hand; a script looping it will reach it. See
+[Read budgets](api-reference.md#the-replay-budget).
 
 ### Bulk remediation previews by default too
 
