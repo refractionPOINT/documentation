@@ -64,7 +64,7 @@ Timings, both directions:
 | | |
 |---|---|
 | Ingestion stops after unsubscribing | Within **5 minutes** |
-| Discovery, watch renewal and polling stop | Within **10 minutes** of that |
+| Discovery and subscription/watch renewal stop | Within **10 minutes** of that |
 | Resubscribing recovers | On the same bounds, with no restart and no support ticket |
 
 ### 2. Check the entitlement block

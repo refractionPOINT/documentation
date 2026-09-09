@@ -32,7 +32,7 @@ scope:
   domains: []
 
 ingest:
-  mode: auto | push | poll
+  mode: auto | push        # Workspace requires explicit push
   backfill_days: 14
 
 features:
@@ -74,12 +74,13 @@ Addresses and domains are lowercased on save.
 
 | Field | Meaning |
 |---|---|
-| `mode` | `auto` (default) picks push where the provider supports it, `push` requires it, `poll` forces periodic polling. |
+| `mode` | Microsoft 365 accepts `auto` (the default, resolving to Graph notification push) or explicit `push`. Google Workspace requires explicit `push` plus both Pub/Sub fields. Other values are refused at save. |
 | `backfill_days` | Historical **metadata-only** bootstrap window, 0–90, default **14**. It seeds sender profiles and campaign statistics; it computes no verdicts and performs no actions. `0` disables it, at the cost of first-contact signals being uninformative for the first weeks. |
 
-Push is the normal mode for both providers. Polling exists for small tenants and
-as a failure fallback; at scale it spends provider quota continuously whether or
-not any mail arrived.
+Push is the only implemented live-delivery path. During a notification-path
+outage, coverage reports the degradation and recovery resumes from the durable
+provider watermark; the product does not claim a polling fallback it does not
+run.
 
 ### `features`
 

@@ -114,7 +114,7 @@ envelope for you.
 provider: m365
 credentials: hive://secret/m365-mail
 ingest:
-  mode: auto
+  mode: auto  # Microsoft 365 auto is Graph notification push
   backfill_days: 14
 features:
   outbound_observation: true
@@ -132,7 +132,7 @@ limacharlie hive set --hive-name mailsec_provider --key m365-prod \
     discovered, subscribed or ingested — so a first connection that appears to
     do nothing is usually this.
 
-The full field reference — scope, ingest modes, features — is in
+The full field reference — scope, provider-specific delivery mode, features — is in
 [Connecting Providers](providers.md).
 
 ## 5. Verify the connection
