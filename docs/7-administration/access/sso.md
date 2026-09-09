@@ -31,6 +31,7 @@ In LimaCharlie, an Organization represents a tenant within the Agentic SecOps Wo
 ## Related Articles
 
 - [User Access](user-access.md)
+- [Session Lifetime Enforcement](session-lifetime.md)
 
 ## What's Next
 
