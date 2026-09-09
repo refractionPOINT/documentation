@@ -75,7 +75,7 @@ Addresses and domains are lowercased on save.
 | Field | Meaning |
 |---|---|
 | `mode` | Microsoft 365 accepts `auto` (the default, resolving to Graph notification push) or explicit `push`. Google Workspace requires explicit `push` plus both Pub/Sub fields. Other values are refused at save. |
-| `backfill_days` | Historical **metadata-only** bootstrap window, 0–90, default **14**. It seeds sender profiles and campaign statistics; it computes no verdicts and performs no actions. `0` disables it, at the cost of first-contact signals being uninformative for the first weeks. |
+| `backfill_days` | Historical bootstrap window, 0–90, default **14**. That history is **judged** with the same rules live mail is judged with, and it seeds sender profiles and campaign statistics — but it **emits no telemetry and performs no actions** (no `EMAIL_MESSAGE`, no `EMAIL_VERDICT`, no automation, no remediation), and it is paced so it cannot compete with live ingestion. `0` disables it, at the cost of an empty queue on day one and first-contact signals being uninformative for the first weeks. |
 
 Push is the only implemented live-delivery path. During a notification-path
 outage, coverage reports the degradation and recovery resumes from the durable
