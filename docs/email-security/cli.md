@@ -237,6 +237,15 @@ and would have you discard a good rule.
 limacharlie mailsec rule backtest --file rule.json --output yaml
 ```
 
+### Backtests are budgeted
+
+`rule backtest` re-reads every stored message in its window, so it is bounded per
+organization: **6 backtests per 10 minutes**, decaying every minute, across every
+credential in the organization. Past it the command reports a `429` carrying
+`rate_bucket: mailsec_post_read` and a `Retry-After`. It is sized for authoring a
+rule by hand; a script looping it will reach it. See
+[Read budgets](api-reference.md#the-replay-budget).
+
 ### Bulk remediation previews by default too
 
 `message bulk-action` is the campaign sweep's discipline over a selection you

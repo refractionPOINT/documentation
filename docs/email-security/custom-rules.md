@@ -244,6 +244,21 @@ message history. Both `rule validate` and `rule backtest` are gated on
 should be able to check their work with the grant that lets them see what the
 rule would be matching.
 
+### Backtests are budgeted, because they re-read your mail
+
+A backtest is not an index query. For every message in the window it fetches the
+stored original, decrypts it, decompresses it, parses it and evaluates your rule
+against it — so it is the most expensive read on the Email Security surface, and
+an organization gets **6 backtests per 10 minutes** across every credential in
+it. Past that the call answers `429` with `rate_bucket: mailsec_post_read` and a
+`Retry-After`; see [Read budgets](api-reference.md#the-replay-budget).
+
+That is sized for the loop this page describes — write, backtest, read the
+report, adjust — and not for a script. Asking for a narrower window does not take
+the call out of the budget (the charge is the same whatever window you name), but
+it does make the call itself faster, and a backtest over a wide window on a busy
+organization can take tens of seconds.
+
 ### Two kinds of rule cannot be backtested
 
 Both are **refused by name**, and in neither case is the rule itself the problem:
