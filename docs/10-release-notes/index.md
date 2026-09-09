@@ -20,6 +20,35 @@ Release notes for LimaCharlie platform components, organized by date.
 
 ## 2026-09-08
 
+### Endpoint Agent 5.3.9
+
+#### New Features
+
+- New `dir_find` command walks a directory tree and reports file metadata and hashes, with include and exclude patterns, size and age filters, and caps on how many files and bytes a single run may touch.
+- New `file_grep` command searches file contents for literal patterns, with optional case-insensitivity, a per-file match limit, surrounding context bytes, and an option to include binary files.
+- New `container_list` command inventories containers and images on a Linux host — runtime, image reference and digest, creation time, state and main process id — covering Docker and Podman, with containers under containerd and CRI-O identified from their process cgroups.
+- Artifact retrieval can now collect several files in one task: files are selected by pattern under a root directory, each paired with a caller-supplied payload id, and bounded by limits on file count and total bytes.
+- New `repo_list` command reports the git checkouts on a host along with their identity — worktree path, remotes and their URLs, the current branch and the commit it resolves to, whether HEAD is detached, the last fetch time, and optionally the declared submodules — so a repository can be tied to the hosts that have it cloned without a follow-up file read per candidate.
+
+#### Bug Fixes
+
+- On Linux, fixed an upgrade leaving the sensor stopped. Stopping the service also terminated the upgrade process running inside it, so the new binary was installed but never started, and no restart policy brought it back.
+- On Linux, fixed a cloud-driven uninstall being terminated by the service stop it had just issued, which left the service definition, the sensor's data directory and the staged uninstaller behind.
+- On Linux and macOS, the sensor now shuts down cleanly when stopped. Termination signals were not handled, so every service stop, restart, reboot and upgrade was reported to the cloud as a crash — nearly the entire crash volume from those platforms. A stop now waits for the sensor's own teardown (measured at about 4 seconds with all modules loaded) rather than being immediate.
+- On Windows, fixed the sensor terminating itself when Windows briefly refused to return a process listing, which happens transiently while the process list is changing under it.
+- On CentOS and RHEL 7 (and other hosts with glibc 2.17), fixed a crash during a clean shutdown.
+- Fixed crash reports being lost on hosts that could not reach the cloud on their first connection attempt, real crashes then being reported as clean exits, and the sensor occasionally reporting a crash context it had manufactured itself.
+- The sensor's log file is now created readable only by its owner. It was world-readable, and it can contain DNS queries, file paths and command lines. A host that has already been logging keeps its existing file's permissions until that file is removed.
+- Hardened DNS collection against two out-of-bounds reads reachable from a crafted DNS packet the host merely observes: a datagram too short to hold a DNS header, and a compression pointer in the final byte of a packet.
+
+#### Improvements
+
+- macOS and Linux crashes now produce a full crash report — stack trace, loaded modules and fault detail — where previously they left only a marker saying the last run had not exited cleanly. Debug information is published per release, so a report from either platform can be resolved to source without a follow-up on the affected host.
+- 32-bit Windows crash reports now carry a complete stack trace instead of the two or three frames the optimized build allowed.
+- The Linux sensor download is substantially smaller — roughly 45% for the service binary and 30% for the Host Based Sensor module — because debug information is now published separately instead of being shipped to endpoints. Every upgrade transfers less.
+- The sample macOS MDM profile now marks the sensor's background service and system extension as managed, so they can no longer be switched off or removed by a user from System Settings.
+- Releases now include the Varist file scanning engine, so it can be turned on by configuration instead of requiring a custom build.
+
 ### Web App 6.3.0
 
 A full testing workspace for D&R and False Positive rules, endpoint agents as a vulnerability source in Cloud Security, and a Query Console that holds far less memory.
