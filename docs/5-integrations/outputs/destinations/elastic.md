@@ -9,6 +9,7 @@ Output events and detections to [Elastic](https://www.elastic.co/).
 - `cloud_id`: Cloud ID from Elastic.
 - `api_key`: API key; if using it for auth. (use either username/password -or- API key)
 - `is_create_action`: if `true`, the `_bulk` request uses the `create` action instead of `index`. Required when sending to a data stream.
+- `is_compress_request`: if `true`, the `_bulk` request body is gzipped.
 
 Example:
 
@@ -65,6 +66,22 @@ string, so the value is copied as a number and Elastic reads it as
 
 See [Template Strings and Transforms](../../../4-data-queries/template-transforms.md)
 for the transform syntax.
+
+## Compressing requests
+
+Setting `is_compress_request` to `true` gzips the `_bulk` request body and sends
+it with `Content-Encoding: gzip`, which Elasticsearch decompresses
+transparently. LimaCharlie's JSON compresses well, so this cuts the bytes
+leaving LimaCharlie for your cluster substantially, at the cost of some CPU
+spent compressing. It is independent of `is_create_action` and works with both
+bulk actions.
+
+```text
+addresses: https://elastic.mydomain.com:9200
+api_key: some-api-key
+index: limacharlie
+is_compress_request: true
+```
 
 ## Related articles
 
