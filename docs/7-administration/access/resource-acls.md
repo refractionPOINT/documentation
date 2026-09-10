@@ -333,6 +333,13 @@ limacharlie hive set --hive-name acl --key mailsec \
   record locks everything tagged with it (see
   [Disabling and deleting scopes](#disabling-and-deleting-scopes)). `warn_only`
   is the opposite, and it is what you want while you are still deciding.
+- **It does not let you name the scope in a saved configuration.** Adding a scope
+  to an output's `acl_scopes`, or to a D&R rule's, still requires that you hold
+  the scope for real. A trial has to be reversible: a configuration written
+  during one outlives it, so an output opted in by somebody outside the scope
+  would keep exporting that scope's records after you started enforcing. A
+  temporary live stream is the exception, because it is a read that ends with the
+  connection rather than a saved configuration.
 - **It does not suppress the audit trail.** Setting and clearing the flag are
   ordinary hive writes and appear in the audit log like any other.
 
@@ -428,9 +435,13 @@ names to read them.
     A scope in [`warn_only`](#trying-a-scope-out-first-warn_only) mode does not
     withhold anything from an output that has not named it, and reports the
     delivery instead — which is the point, since an ACL quietly removing records
-    from a SIEM feed is the effect most likely to catch you out. Outputs are the
-    one place where the flag takes a short while to take effect rather than
-    applying immediately, so give it a couple of minutes after changing it.
+    from a SIEM feed is the effect most likely to catch you out.
+
+    Two details. Outputs are the one place where the flag takes a short while to
+    take effect rather than applying immediately, so give it a couple of minutes
+    after changing it. And it does **not** let you add the scope to an output's
+    `acl_scopes` unless you hold the scope for real — that configuration outlives
+    the trial, so it is deliberately not part of the dry run.
 
 !!! note "Long-term retention outputs are a special case"
     Outputs that feed LimaCharlie's own telemetry retention keep everything,
