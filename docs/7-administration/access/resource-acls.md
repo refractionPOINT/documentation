@@ -148,6 +148,12 @@ limacharlie hive set --hive-name acl --key mailsec \
 
 Scope names must be lowercase, and may not contain spaces, commas or `/`.
 
+!!! tip "Consider starting with `warn_only: true`"
+    A scope record may carry `warn_only: true`, which stops the scope being
+    enforced while still reporting everyone it *would* have blocked. It is the
+    safe way to find out what a new ACL breaks before it breaks it — see
+    [Trying a scope out first](#trying-a-scope-out-first-warn_only).
+
 ### 2. Choose the right member types
 
 | Type | `id` is | Matches |
@@ -225,6 +231,117 @@ tag: `limacharlie tag find --tag acl:mailsec`.
 Finally, sign in as somebody who is *not* a member and confirm the sensor's
 timeline is empty while the sensor itself is still listed. Testing with an
 account that holds `acl.set` proves nothing — check with a real analyst account.
+
+## Trying a scope out first: `warn_only`
+
+The hard part of a resource ACL is not writing it — it is finding out who it will
+break. A scope enabled on a Monday morning quietly empties a dashboard for
+somebody you forgot about, or cuts a tagged sensor out of the SIEM feed your
+on-call rotation depends on.
+
+`warn_only` is the dry run. Set it on the scope record and the scope is **not
+enforced at all** — every resource tagged with it behaves exactly as if the tag
+were not there, for everybody — while LimaCharlie files an **organization
+error** each time somebody reaches content the scope *would* have withheld. Those
+are the entries in the web app's **Errors** view, and what `limacharlie org
+errors` returns.
+
+```yaml
+# mailsec-scope.yaml
+members:
+  - type: user
+    id: 8f2c14b6-1d0e-4b7a-9f33-6c5e0a1d2b44
+warn_only: true
+```
+
+```bash
+limacharlie hive set --hive-name acl --key mailsec \
+    --input-file mailsec-scope.yaml --enabled \
+    --comment "Mail security team (trial)" --oid <oid>
+```
+
+Then tag the resources exactly as you would for real, and leave it alone for a
+working day or two — long enough for the shift patterns, the scheduled reports
+and the nightly integrations to run. Read what it found:
+
+```bash
+limacharlie org errors --oid <oid>
+```
+
+Each warn-only scope produces one entry, under the component `acl/<scope name>`,
+carrying the most recent thing it would have blocked:
+
+```text
+component: acl/mailsec
+error: ACL scope "mailsec" is in warn_only mode and is NOT being enforced:
+       analyst@example.com would have been denied access to sensor
+       4f2e1a7c-... . Add that principal to hive://acl/mailsec, or remove
+       warn_only from the scope record to start enforcing it.
+```
+
+Work through them: for each one, either add the principal to the scope because
+they legitimately need the data, or accept that they will lose access. Then
+dismiss the entry and keep watching:
+
+```bash
+limacharlie org dismiss-error --component acl/mailsec --oid <oid>
+```
+
+When the entry stops coming back, nothing you know about is still relying on the
+access the scope will remove. Enforce it by taking the flag out:
+
+```yaml
+# mailsec-scope.yaml
+members:
+  - type: user
+    id: 8f2c14b6-1d0e-4b7a-9f33-6c5e0a1d2b44
+warn_only: false
+```
+
+```bash
+limacharlie hive set --hive-name acl --key mailsec \
+    --input-file mailsec-scope.yaml --enabled \
+    --comment "Mail security team" --oid <oid>
+```
+
+### What to expect from the warnings
+
+- **One entry per scope, not one per person.** Organization errors hold a single
+  entry per component and each new violation replaces the last, so the entry
+  names the most recent principal rather than all of them. Check back over a few
+  days — or dismiss the entry and see who turns up next — rather than expecting a
+  complete list in one read.
+- **Repeats are debounced.** A scope being hit continuously reports about once
+  every fifteen minutes, so the timestamp keeps moving while the problem lasts
+  without the error list filling up.
+- **Members are not reported.** Only somebody the scope would actually have
+  blocked produces a warning, so a quiet error list genuinely means "nobody is
+  relying on this access".
+- **Warnings are best-effort, enforcement is not.** A warning can occasionally be
+  dropped under load; the *absence* of enforcement is exact. Treat a clean trial
+  as strong evidence, not as a proof.
+- **The trial is not free.** A warn-only scope is granted rather than skipped, so
+  the organization still does the work of an enforced one. It is a state to pass
+  through, not to live in.
+
+### What `warn_only` does not change
+
+- **It does not relax who may edit ACLs.** `acl.set` is still required to add or
+  remove an `acl:` tag on a sensor, a configuration record or an installation
+  key, and D&R rules still may not write those tags at all.
+- **It is not the same as disabling the scope.** A disabled or expired scope
+  record locks everything tagged with it (see
+  [Disabling and deleting scopes](#disabling-and-deleting-scopes)). `warn_only`
+  is the opposite, and it is what you want while you are still deciding.
+- **It does not let you name the scope in a saved configuration.** Adding a scope
+  to an output's `acl_scopes`, or to a D&R rule's, still requires that you hold
+  the scope for real. A trial has to be reversible: a configuration written
+  during one outlives it, so an output opted in by somebody outside the scope
+  would keep exporting that scope's records after you started enforcing. A
+  temporary live stream is the exception, because it is a read that ends with the
+  connection rather than a saved configuration.
+- **It does not suppress the audit trail.** Setting and clearing the flag are
+  ordinary hive writes and appear in the audit log like any other.
 
 ## Rules that will surprise you
 
@@ -313,6 +430,18 @@ stream asks for must actually be held.
 
 Output **samples** follow the same rule: you must hold every scope the output
 names to read them.
+
+!!! tip "`warn_only` covers outputs too"
+    A scope in [`warn_only`](#trying-a-scope-out-first-warn_only) mode does not
+    withhold anything from an output that has not named it, and reports the
+    delivery instead — which is the point, since an ACL quietly removing records
+    from a SIEM feed is the effect most likely to catch you out.
+
+    Two details. Outputs are the one place where the flag takes a short while to
+    take effect rather than applying immediately, so give it a couple of minutes
+    after changing it. And it does **not** let you add the scope to an output's
+    `acl_scopes` unless you hold the scope for real — that configuration outlives
+    the trial, so it is deliberately not part of the dry run.
 
 !!! note "Long-term retention outputs are a special case"
     Outputs that feed LimaCharlie's own telemetry retention keep everything,
@@ -465,6 +594,7 @@ This is the one area where the intuitive expectation is backwards.
 | Disable the scope record | **Everything tagged with it locks** — nobody is a member of a disabled scope |
 | Let the scope record expire | Same — everything locks |
 | Delete the scope record | Same — everything locks |
+| Set `warn_only: true` on the scope record | Nothing is restricted, and every access the scope would have blocked is reported as an organization error |
 | Remove the `acl:` tag from the resource | The resource becomes unrestricted, including its history |
 
 **To un-restrict something, remove the tag from the resource.** Deleting the
