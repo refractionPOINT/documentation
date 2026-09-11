@@ -114,6 +114,8 @@ End customers must stay confined to their own organization. The safe pattern is 
 !!! warning "Groups are additive only"
     Permissions granted through a group are **added** to the user's direct permissions on each included organization. A group cannot be used to *reduce* or *restrict* what a user can see. Treat "membership in a group" as "give every permission in that group, on every org in that group."
 
+    If you need to *restrict* a subset of resources inside an organization — a sensitive feed that most of the org should not read — that is what [Resource ACLs](resource-acls.md) are for. They are the only mechanism that subtracts access, and they operate on individual sensors, installation keys, configuration records and outputs rather than on whole organizations.
+
 If you want to give a customer access to *multiple* of their own organizations (for example, a customer with several business units), you have two clean options:
 
 - **Direct users on each org.** Simple, auditable, fine if the customer only has a handful of orgs.
