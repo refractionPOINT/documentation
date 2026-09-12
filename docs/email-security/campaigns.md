@@ -324,6 +324,15 @@ message's placement, so a member that is already where the action wanted it come
 back `skipped`. This is the supported repair for a sweep that partly failed —
 re-run the same action and the members that failed are attempted again.
 
+The same repair covers a sweep that was **interrupted**. A collector that begins
+shutting down during a sweep (a deploy, a rebalance) stops between two members —
+the member in flight is always finished and recorded — and answers a retryable
+error naming how far it got (`N of M members were actioned`) and the sweep's
+`action_id`; the same happens when the caller's own request ends first. The
+sweep's audit row then reads `pending` rather than `ok`, so a partial
+campaign-wide action can never look complete. Re-run the same confirmation:
+members already actioned come back `skipped`, the rest are attempted.
+
 When you want the retry **recorded separately** — a re-run after a provider
 outage, where the record of what failed matters as much as the record of the
 retry — pass an `attempt` token:
