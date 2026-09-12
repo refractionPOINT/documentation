@@ -26,7 +26,7 @@ The verdict object on a message carries:
 | `top_signals` | Up to five contributing rules, heaviest first, each with `rule_id`, `name` and `weight`. This is the "why this verdict" block |
 | `matched_signals` | Every rule id that matched, including suppressed ones — the hunting surface |
 | `tags` | The deduplicated, sorted tags of the rules that actually contributed |
-| `engine_version` | The rule-pack version that decided it |
+| `engine_version` | The engine that decided it: the rule-pack version plus the build of the parsing and enrichment library it ran with (`mailsec-pack-0.5.1+v0.1.55`). Two verdicts with the same value came from the same engine; a parser change alone changes it |
 | `decided_at` | When |
 | `mode` | Who last decided: `auto` (the rule pack), `analyst` (a person), `ai` (a triage agent) or `detonation` ([link detonation](#link-detonation)). See [Revising a verdict](#revising-a-verdict) |
 | `campaign_id` | The campaign this message was clustered into, if any |
@@ -258,7 +258,9 @@ makes a history rule an amplifier of *other* evidence and never of itself.
 ## The managed rule pack
 
 A packaged, versioned set of rules ships with the product and its version is
-stamped into every verdict as `engine_version`. The current pack:
+the first half of every verdict's `engine_version` (the second half names the
+build of the parsing and enrichment library the rules ran with, because what a
+rule reads is decided there). The current pack:
 
 | Rule id | Class | Weight | What it says |
 |---|---|:--:|---|
