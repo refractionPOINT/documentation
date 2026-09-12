@@ -59,10 +59,14 @@ limacharlie mailsec message list --attachment-sha256 <sha256> --oid $OID
 Pages are keyset-paginated. `next_cursor` is opaque and is passed back verbatim;
 an empty one is the last page.
 
-A cursor is **bound to the filter set that minted it**. The backend chooses its
-read index from the filters and stamps that choice into the cursor, so changing a
-filter mid-walk fails the next page rather than silently resuming at a position
-that means something else. Restart the walk instead.
+A message cursor is **bound to the complete filter set that minted it**: the
+token carries a digest of your organization, the sort order and every filter —
+`q`, verdict, state, direction, mailbox, sender, campaign, score floor, time
+window, link domain and attachment hash — so changing any of them mid-walk fails
+the next page (`400`, `error_code: cursor_filter_changed`, `restart_walk: true`)
+rather than silently resuming at the previous search's position. Filter values
+are not readable from the token. Restart the walk from the first page instead;
+a cursor minted before this binding existed is refused the same way once.
 
 ### Retention
 
