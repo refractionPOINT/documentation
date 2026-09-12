@@ -152,12 +152,23 @@ path: event
 **Purpose**: Process platform audit logs.
 **Data Source**: Tracks platform changes, tasking, replays, hive modifications, and other administrative actions.
 
+Audit events are not wrapped in a `routing` / `event` envelope. Paths start at the
+audit record's own top-level keys — `etype`, `oid`, `time`, `ident`, `origin`, `msg`,
+`entity` and `mtd` — with no `event/` prefix. The `event:` in the detect is matched
+against `etype`.
+
 ```yaml
 target: audit
+event: untag_sensor
 op: is
-path: event/action
-value: dr_rule_updated
+path: mtd/tags/?
+value: no_ai
 ```
+
+Because audit events carry no sensor routing, `op: is tagged`, `op: is platform`,
+`action: add tag`, `action: remove tag` and `{{ .routing.sid }}` do not work on this
+target — use `{{ .entity.sid }}` and dispatch sensor changes through an extension.
+See [Detection on Alternate Targets](../alternate-targets.md#target-audit).
 
 ### 8. Billing Target
 
