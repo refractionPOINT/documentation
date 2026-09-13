@@ -17,6 +17,7 @@ about the rows a browser happened to have loaded.
 | `verdict` | Repeatable: `malicious`, `suspicious`, `graymail`, `benign`, `unknown` |
 | `state` | Repeatable: `delivered`, `quarantined`, `trashed`, `restored`, `bannered`, `spam` |
 | `direction` | Repeatable: `inbound`, `outbound`, `internal` |
+| `lane` | `live` for ordinary incoming mail or `backfill` for the initial history walk; omit for either |
 | `mailbox` | One protected mailbox address |
 | `sender_email` | One sender address |
 | `sender_root_domain` | One sender registrable domain |
@@ -31,6 +32,13 @@ about the rows a browser happened to have loaded.
 Repeatable filters **OR within a key and AND across keys**: `verdict=suspicious`
 plus `verdict=malicious` plus `mailbox=cfo@corp.example` means "suspicious or
 malicious, delivered to that mailbox".
+
+The processing-lane filter is available on time-window, verdict, and IOC-pivot
+queries. It cannot be combined with `mailbox`, `sender_email`, or `campaign_id`
+because those indexes do not carry the lane dimension. The API refuses such a
+combination with the typed, non-retryable `lane_unsupported` error and names the
+conflicting dimension; the console clears and disables the lane control while
+one of those filters is active.
 
 ```bash
 limacharlie mailsec message list --verdict suspicious --verdict malicious \
