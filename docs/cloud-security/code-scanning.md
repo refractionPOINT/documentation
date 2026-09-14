@@ -48,22 +48,32 @@ it", it is **we never keep it**:
   filesystem, restricted egress and a hard 30-minute wall clock. It reaches
   your source-control host, our object storage and our vulnerability-database
   mirror, and nothing else.
-- The access token it is handed is **scoped to the single repository being
-  scanned** and expires in an hour.
+- On **GitHub**, the access token it is handed is **scoped to the single repository
+  being scanned** and expires in an hour. **GitLab** and **Bitbucket** cannot narrow a token
+  that way, so the job clones with the connection's own **read-only** token — which is why
+  those connectors refuse tokens carrying administrative or broad write scopes.
 - **Only the report leaves.** Findings, the bill of materials and hashes — never
   file contents, never a diff, never a secret's value.
 - A discovered secret is stored as a **salted hash**. There is no field on a
   finding capable of holding the credential, which is deliberate: the plaintext
   never reaches storage, a log, or an event.
-- The connected GitHub App stays **read-only**. Publishing pull-request checks
-  or opening fix pull requests takes a **separate, opt-in App** that you create
-  and install yourself (see [Pull-request checks](#pull-request-checks-and-merge-gating)).
-  The read connection never gains a write permission.
+- **Nothing is written unless you grant it.** A GitHub App granted read access
+  scans and never writes. Pull-request checks and fix pull requests use the write
+  permissions you choose to grant that App (see
+  [Pull-request checks](#pull-request-checks-and-merge-gating)), and each write mints a
+  token for only the permissions that one action needs. GitLab and Bitbucket
+  connections never write.
 
 ## Turning it on
 
-Two things are required: the App needs to be able to read repository contents,
-and you need a `code_scanning` policy that says which repositories to scan.
+Two things are required: the connection needs to be able to read repository
+contents, and you need a `code_scanning` policy that says which repositories to scan.
+
+Code scanning works with **GitHub**, **GitLab** (GitLab.com and self-managed) and
+**Bitbucket Cloud** connections. For GitLab and Bitbucket, read access is part of
+connecting — the token's required scopes already include cloning — so skip step 1 and see
+[GitLab setup](provider-setup/gitlab.md) or [Bitbucket Cloud setup](provider-setup/bitbucket.md).
+A GitLab project in a subgroup is named by its full path, e.g. `acme/platform/api`.
 
 Before either, you need:
 
@@ -82,7 +92,7 @@ The policy can also be edited in the console under **Cloud Security → Policies
 Code scanning**: turn on **Enable code scanning**, add the repository's
 `<owner>/<repository>` under **Include**, and select at least one engine.
 
-### 1. Grant `Contents: Read-only`
+### 1. GitHub: grant `Contents: Read-only`
 
 The connector's baseline permissions inventory repositories but cannot read them.
 Add the **Contents → Read-only** *Repository* permission to your GitHub App and
@@ -369,61 +379,49 @@ push get scanned" is answered by that repository's row in
 A daily scan says what a repository *contains*. A pull-request check says what a
 change *introduces*, on the pull request, before the merge.
 
-This is the one part of the lane that writes to your organization, so it uses a
-credential nothing else here has: a **separate, opt-in App that you create**.
-The collection App is read-only forever and does not fall back into this role —
-without the write App the lane refuses with `write_app_not_configured`.
+Pull-request checks, pull-request comments and [AutoFix](#dependency-autofix-pull-requests)
+are **GitHub-only**. They are the one part of the lane that writes to your organization,
+and they use write permissions **granted to the connection's own GitHub App** — nothing is
+written until you grant them. What each feature needs:
 
-### Create the "Code Actions" App
+| Feature | App permissions | Policy switch |
+|---|---|---|
+| Pull-request checks | **Checks: Read and write**, **Pull requests: Read and write** | `pr_checks: true` |
+| Pull-request comments | **Checks: Read and write**, **Pull requests: Read and write** | `pr_comments: true` |
+| Dependency AutoFix pull requests | **Contents: Read and write**, **Pull requests: Read and write** | an enabled `code_scanning` policy; each fix is requested per finding |
 
-Post this manifest to
-`https://github.com/organizations/<org>/settings/apps/new?state=lc-code-actions`
-as a form field named `manifest`, or create the App by hand with exactly these
-permissions and events:
+Granting a permission only makes a feature **available**; the policy switch is what turns it
+on. The App's permissions are also not what any single call holds: the check writer asks
+for `checks + pull_requests + metadata` and deliberately **not** `contents`, so publishing a
+status can never carry the ability to rewrite your source, and the AutoFix writer asks for
+`contents + pull_requests + metadata` and not `checks`.
 
-```json
-{
-  "name": "LimaCharlie Code Actions",
-  "url": "https://limacharlie.io",
-  "public": false,
-  "default_permissions": {
-    "checks": "write",
-    "pull_requests": "write",
-    "contents": "write",
-    "metadata": "read"
-  },
-  "default_events": ["pull_request"]
-}
-```
+The **Code** page reports, per connection, which of these the App can actually do — read
+from the installation's granted permissions — and names the permission to add when one is
+missing. A write the App cannot perform is refused with `write_app_not_configured`, naming the
+missing permission.
 
-That permission set is the **union** of what pull-request checks and
-[AutoFix](#dependency-autofix-pull-requests) need, so one App serves both. The
-App's permissions are not what any single call holds: the check-run writer asks
-for `checks + pull_requests + metadata` and deliberately **not** `contents`, so
-publishing a status can never carry the ability to rewrite your source; the
-AutoFix writer asks for `contents + pull_requests + metadata` and deliberately
-not `checks`.
+### Grant the permissions
 
-If you want **checks only**, use `"contents": "read"` (or drop it): everything
-below works and AutoFix refuses with `write_app_lacks_contents`, naming the one
-checkbox to add. If you want **AutoFix only**, `contents: write` +
-`pull_requests: write` is enough and you simply leave `pr_checks` off.
+Edit the App: **Organization → Settings → Developer settings → GitHub Apps → your App →
+Permissions**, set the permissions above, and **approve the permission request** on the
+organization's installation page — GitHub requires an owner to accept a permission increase
+on an existing installation.
 
-Install it on the repositories you want checked — *Only select repositories* is
-the right answer for a trial — and note the App ID and the installation ID.
+### A separate write App, if you prefer
 
-### Wire it up
+Keeping the write permissions on a **second App** is still supported: create an App with the
+permissions above, install it on the repositories you want checked, and name it on the
+provider record. When a record names one, it is used for every write instead of the
+connection App.
 
 ```bash
-# 1. The private key, as its own secret — never the read connection's.
 limacharlie secret set --key github-code-actions-key \
     --value "$(python3 -c 'import json;print(json.dumps({"private_key":open("code-actions.private-key.pem").read()}))')" \
     --enabled
 ```
 
 ```yaml
-# 2. Three more fields on the provider record, alongside the read connection's,
-#    which are left exactly as they are.
 provider_type: github
 github_org: "acme"
 github_app_id: "1234567"
@@ -434,11 +432,13 @@ github_actions_installation_id: "54321098"
 actions_credentials: hive://secret/github-code-actions-key
 ```
 
-The record is refused if the write App is the same App, or points at the same
-secret, as the read connection.
+The three fields are set together or not at all, and the record is refused if the write App
+is the same App, or points at the same secret, as the read connection.
+
+### Turn it on
 
 ```yaml
-# 3. Turn it on in the code_scanning policy.
+# In the code_scanning policy.
 pr_checks: true
 pr_comments: true
 gating:
@@ -816,9 +816,9 @@ Named here so their absence is not mistaken for a clean result:
 - **Container-registry enumeration** (`image_sources: ["registries"]`). The value
   is accepted by the policy validator, but nothing enumerates a registry — this
   is the expensive, unbounded half of the image lane and it is not built.
-- **Source-control platforms other than GitHub.** The scanner and the storage
-  model are source-control-agnostic by design, but GitHub is the only connector
-  today.
+- **Pull-request checks, comments, AutoFix and push-triggered rescans on GitLab and
+  Bitbucket.** Those connections are scanned on the policy's schedule and write nothing.
+- **Bitbucket Data Center** (self-hosted). Bitbucket Cloud is supported.
 
 ## Troubleshooting
 
@@ -834,7 +834,7 @@ Named here so their absence is not mistaken for a clean result:
 | A repository reports `scan_status: partial` with `sast_ruleset_unresolved` | The code-scanning policy names a static-analysis rule pack that is not available, so static analysis did not run on that repository. Clear the custom `sast_ruleset` value to use the built-in pack. Nothing else about the repository is affected: its dependency, infrastructure, license and secret findings are complete and still close normally. |
 | A repository reports `scan_status: unknown` with `repo_not_scanned` | Nothing has scanned it yet. Confirm it is inside an enabled code-scanning policy's include list, then allow the next scheduled pass to reach it. `limacharlie cloudsec code status` is the authoritative answer about the scan run itself; follow it when the two disagree. |
 | A repository or image reports `free_tier_code_repos_cap` or `free_tier_code_images_cap` | The organization is on the free tier, which covers the first 10 repositories per connected source-control organization and the 5 most-referenced container images per organization. The covered set is stable rather than rotating, so findings do not appear and disappear between passes. Narrow the policy to the repositories you care about, or move off the free tier. A `_report` suffix means the limit is not being applied: everything was scanned, and the message reports what the limit would have done. |
-| A pull-request check or AutoFix does nothing, reporting `write_app_not_configured` or `write_app_lacks_contents` | Only the write was refused. Scanning and existing findings are unaffected. The write App is separate from the read connection and opt-in: the first message means no Code Actions App is configured, the second that it lacks `Contents: Read and write`. They are two different pages in GitHub's settings. |
+| A pull-request check or AutoFix does nothing, reporting `write_app_not_configured` or `write_app_lacks_contents` | Only the write was refused. Scanning and existing findings are unaffected. The App that writes — the connection's App, or a separate Code Actions App if the record names one — lacks the permission the message names: `Checks` and `Pull requests: Read and write` for checks and comments, `Contents: Read and write` for AutoFix. The **Code** page shows which is missing per connection. Grant it and approve the permission request on the installation page. |
 | An AutoFix pull request reports `lockfile_stale` | The pull request is real and correct; the lockfile still has to be regenerated. npm: `npm install --package-lock-only --ignore-scripts`. Go: `go mod tidy`. This is expected for Go whenever a `go.sum` exists, and for npm only under `autofix_registry_access: false`, a `yarn.lock`/`pnpm-lock.yaml`, or an entry that could not be rewritten safely. |
 | A finding you expected is absent entirely | Check the policy's `severity_floor`. A finding under the floor is never recorded, so it has no row to filter for. `LOW`, `INFO` and an empty value mean no floor. |
 

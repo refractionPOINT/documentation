@@ -49,6 +49,8 @@ Per-provider scope fields:
 | `auth0` | `auth0_domain` — the canonical tenant domain (`*.auth0.com`); the credential is an M2M app authorized for the Management API |
 | `cloudflare` | `cloudflare_account_id` — the 32-hex account id |
 | `github` | `github_org`, `github_app_id`, `github_installation_id` — a GitHub App installed on the org; the App private key is the credential |
+| `gitlab` | `gitlab_namespace` — the group's full path (or a user namespace); optional `gitlab_base_url` — the https root of a self-managed instance. The credential is an access token with `read_api` + `read_repository` |
+| `bitbucket` | `bitbucket_workspace` — the Bitbucket Cloud workspace slug. The credential is an Atlassian API token with `read:repository:bitbucket`, `read:workspace:bitbucket` and `read:user:bitbucket` |
 | `openai` | optional `openai_org_id` (`org-...`); the credential is an Admin API key with `api.management.read` |
 | `anthropic` | optional `anthropic_org_uuid` (required when only the compliance plane is connected); Console Admin key in `credentials`, optional compliance key in `compliance_credentials` |
 | `limacharlie` | exactly one of `limacharlie_oid` (org key) or `limacharlie_uid` (user key — the MSSP fleet case) |

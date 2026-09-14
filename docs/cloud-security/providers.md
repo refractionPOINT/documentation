@@ -13,7 +13,7 @@ Either way, run the [credential test](getting-started.md#test-the-credential-bef
 first — it probes every permission a sweep needs and reports exactly which are
 missing.
 
-## The thirteen connectors
+## The fifteen connectors
 
 | `provider_type` | Surface | Scope field(s) | Credential (JSON stored in the secret) |
 |---|---|---|---|
@@ -27,6 +27,8 @@ missing.
 | [`auth0`](provider-setup/auth0.md) | Identity | `auth0_domain` | `{"client_id": "...", "client_secret": "..."}` (M2M) |
 | [`cloudflare`](provider-setup/cloudflare.md) | SaaS | `cloudflare_account_id` | `{"api_token": "...", "user_api_token": "..."}` |
 | [`github`](provider-setup/github.md) | SaaS | `github_org` + `github_app_id` + `github_installation_id` | `{"private_key": "-----BEGIN..."}` (GitHub App) |
+| [`gitlab`](provider-setup/gitlab.md) | Source control | `gitlab_namespace` (+ `gitlab_base_url` for self-managed) | `{"token": "glpat-..."}` (access token) |
+| [`bitbucket`](provider-setup/bitbucket.md) | Source control | `bitbucket_workspace` | `{"token": "ATATT3..."}` (Atlassian API token) |
 | [`openai`](provider-setup/openai.md) | AI | *(optional `openai_org_id`)* | `{"admin_api_key": "sk-admin-..."}` |
 | [`anthropic`](provider-setup/anthropic.md) | AI | *(optional `anthropic_org_uuid`)* | `{"admin_api_key": "sk-ant-admin01-..."}` (+ optional compliance key) |
 | [`limacharlie`](provider-setup/limacharlie.md) | LimaCharlie | one of `limacharlie_oid` or `limacharlie_uid` | `{"api_key": "..."}` |
@@ -170,6 +172,28 @@ drives [Code Scanning](code-scanning.md) — dependencies, secrets,
 infrastructure-as-code, container images and licenses, scanned in an ephemeral
 sandbox and filed as ordinary findings. It is opt-in per repository through a
 `code_scanning` policy; nothing is scanned until you write one.
+
+### GitLab (`gitlab`)
+
+**Setup guide:** [step-by-step onboarding](provider-setup/gitlab.md).
+
+One **namespace** — a group with its subgroups, or a user namespace — on GitLab.com or a
+self-managed instance. Set `gitlab_namespace` to the full path and, for self-managed GitLab,
+`gitlab_base_url` to the https instance root. The credential is a group, project or personal
+access token with exactly `read_api` and `read_repository`: `{"token": "glpat-..."}`. Tokens
+carrying `api`, `admin_mode` or `sudo` are refused. Its projects become repositories that a
+`code_scanning` policy can select for [Code Scanning](code-scanning.md).
+
+### Bitbucket Cloud (`bitbucket`)
+
+**Setup guide:** [step-by-step onboarding](provider-setup/bitbucket.md).
+
+One **workspace** on Bitbucket Cloud. Set `bitbucket_workspace` to the slug. The credential is
+an Atlassian API token with `read:repository:bitbucket`, `read:workspace:bitbucket` and
+`read:user:bitbucket`: `{"token": "ATATT3..."}`. Tokens with `admin:` or `delete:` scopes are
+refused, and the token's account must be a member of the workspace. Its repositories become
+repositories that a `code_scanning` policy can select for [Code Scanning](code-scanning.md).
+Bitbucket Data Center is not supported.
 
 ## AI security (AISPM)
 
