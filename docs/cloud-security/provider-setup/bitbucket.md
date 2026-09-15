@@ -119,13 +119,11 @@ limacharlie cloudsec provider test --input-file provider.yaml
 - The API token must stay narrow for the lifetime of the connection, and it must be a
   **scoped** token. Because Bitbucket has no way to narrow a token per repository, each scan
   clones with the connection's own token, so the refusal of a broad token is not only a
-  connection-test result:
-    - a token carrying an `admin:` or `delete:` scope is refused by the connection test, by
-      code scanning, **and on every inventory sweep**;
-    - a token created **without** scopes is bounded by nothing, so it is refused by the
-      connection test and by code scanning. The inventory sweep still runs on it — it never
-      hands the token to anything — so the estate keeps refreshing while code scanning does
-      not.
+  connection-test result. A token carrying an `admin:` or `delete:` scope is refused by the
+  connection test, by code scanning **and on every inventory sweep**. A token created
+  **without** scopes is bounded by nothing, and is refused by the connection test and by
+  code scanning — the inventory sweep still runs on it, because the sweep never hands the
+  token to anything, so the estate keeps refreshing while code scanning does not.
 - The connection is the **repository estate** of one workspace. Members, groups, access keys,
   repository variables and branch restrictions are not collected, so the branch-protection
   findings GitHub repositories raise do not apply.
