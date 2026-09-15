@@ -623,6 +623,8 @@ nav:
           - Auth0: cloud-security/provider-setup/auth0.md
           - Cloudflare: cloud-security/provider-setup/cloudflare.md
           - GitHub: cloud-security/provider-setup/github.md
+          - GitLab: cloud-security/provider-setup/gitlab.md
+          - Bitbucket Cloud: cloud-security/provider-setup/bitbucket.md
           - OpenAI: cloud-security/provider-setup/openai.md
           - Anthropic: cloud-security/provider-setup/anthropic.md
           - LimaCharlie: cloud-security/provider-setup/limacharlie.md

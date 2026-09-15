@@ -24,12 +24,14 @@ extension (step 1 of
 | [Auth0](auth0.md) | Identity | M2M application authorized on the Management API with read scopes |
 | [Cloudflare](cloudflare.md) | SaaS | One scoped read-only API token + the account ID |
 | [GitHub](github.md) | SaaS | A GitHub App installed on the org, read-only permission set |
+| [GitLab](gitlab.md) | Source control | A group/project access token with `read_api` + `read_repository` |
+| [Bitbucket Cloud](bitbucket.md) | Source control | An Atlassian API token with three read scopes; the account must be a workspace member |
 | [OpenAI](openai.md) | AI | An Admin API key created with `api.management.read` |
 | [Anthropic](anthropic.md) | AI | A Console Admin key and/or an Enterprise Compliance key |
 | [LimaCharlie](limacharlie.md) | LimaCharlie | An org or user API key with read permissions |
 
 [Connecting Providers](../providers.md) is the conceptual overview of the same
-thirteen connectors — what each collects and why.
+fifteen connectors — what each collects and why.
 
 ## The common model
 

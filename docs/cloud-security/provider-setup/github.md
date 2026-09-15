@@ -36,6 +36,8 @@ Create the App with **read-only** access on the following. All are
 | **Contents** | Repository | [Code Scanning](../code-scanning.md) — dependencies, secrets, infrastructure-as-code, container images, code weaknesses and licenses. Without it the connector inventories repositories but cannot read them | `code_contents` |
 | **Dependabot alerts** | Repository | GitHub's own **Dependabot** alerts, ingested as findings and deduplicated against LimaCharlie's own dependency scanning; and whether each repository has Dependabot alerts **enabled** | `dependabot_alerts` |
 | **Code scanning alerts**, **Secret scanning alerts** | Repository | GitHub's own **code-scanning** and **secret-scanning** alerts, ingested as findings and deduplicated against LimaCharlie's own analysis | `security_events` |
+| **Checks**, **Pull requests** (Read and write) | Repository | [Pull-request checks and comments](../code-scanning.md#pull-request-checks-and-merge-gating). Write access, granted only if you want these | *(reported on the **Code** page)* |
+| **Contents** (Read and write) | Repository | [Dependency AutoFix pull requests](../code-scanning.md#dependency-autofix-pull-requests), together with **Pull requests: Read and write**. Write access, granted only if you want it | *(reported on the **Code** page)* |
 
 ### GitHub's own alerts, and what happens to them
 
@@ -198,15 +200,22 @@ normalized finding report leaves it, and discovered secrets are stored as a
 salted hash. **This App stays read-only.** Nothing in the collection or scanning
 path writes to your repositories.
 
-### The separate write App, if you want checks or fix pull requests
+### Pull-request checks and fix pull requests
 
-Publishing a pull-request check, commenting on a pull request or opening a
-dependency fix pull request needs write access, and that is deliberately **not**
-this App. It is a second, opt-in App — "LimaCharlie Code Actions" — that you
-create, install on the repositories you choose, and name on the provider record
-with `github_actions_app_id`, `github_actions_installation_id` and
-`actions_credentials`. The record is refused if it points at the same App, or the
-same secret, as the read connection.
+These write to your repositories, so they need write permissions **you choose to grant the
+same App**: **Checks** and **Pull requests** (Read and write) for checks and comments, and
+**Contents** (Read and write) with **Pull requests** for dependency fix pull requests. Until
+you grant them the App stays read-only, and granting a permission only makes a feature
+available — the `code_scanning` policy switches are what turn it on.
 
-Its manifest, the permission union it needs and the wiring are in
+Each write mints a token for only the permissions that one action needs, so publishing a
+check never carries the ability to change source. The **Code** page reports, per
+connection, what the App can currently do and which permission to add.
+
+A **separate write App** is still supported for teams that prefer to keep write access on a
+second App: name it with `github_actions_app_id`, `github_actions_installation_id` and
+`actions_credentials`, and it is used for every write instead. The record is refused if it
+points at the same App, or the same secret, as the read connection.
+
+The permissions, the policy switches and the webhook wiring are in
 [Code Scanning](../code-scanning.md#pull-request-checks-and-merge-gating).
