@@ -96,7 +96,7 @@ limacharlie cloudsec provider test --input-file provider.yaml
 | `auth` | ✅ | The token was rejected (wrong, revoked or expired). Nothing else is probed. |
 | `token_scopes` | ✅ | The token lacks `read:workspace:bitbucket`. |
 | `token_read_repository` | ✅ | The token lacks `read:repository:bitbucket`, so scans cannot clone. |
-| `token_not_workspace_admin` | ✅ | The token carries an `admin:` or `delete:` scope. Replace it with a read-only token. |
+| `token_not_workspace_admin` | ✅ | The token carries an `admin:` or `delete:` scope. Replace it with a read-only token. The same refusal is applied when a scan asks for the credential and on every sweep, so it is not something a saved connection can get past. |
 | `token_read_only` | — | The token carries write scopes the connection never uses. |
 | `workspace` | ✅ | The slug does not exist, or the token cannot see it. |
 | `workspace_membership` | ✅ | The token's account is not a member of the workspace. |
@@ -111,9 +111,16 @@ limacharlie cloudsec provider test --input-file provider.yaml
 | `workspace` fails as refused | The token lacks `read:workspace:bitbucket`, or the account is not a member | Add the scope, or add the account to the workspace |
 | `workspace_membership` fails | The account can see the workspace but is not a member | Add the account to the workspace |
 | `token_not_workspace_admin` fails | A token created with broad scopes | Create a token with only the three read scopes and update the secret |
+| `token_scopes` reports the scopes as not verified, and scans then fail | The API token was created **without** scopes, so Bitbucket reports none — such a token is not bounded by any scope and carries the account's full reach | Create a scoped API token with `read:repository:bitbucket`, `read:workspace:bitbucket` and `read:user:bitbucket`, and update the secret |
+| A scan fails with "the Bitbucket API token is an administrative or delete-capable credential" | The connection's secret was rotated to a broader token after the connection was created | Create a token with only the three read scopes and update the secret |
 
 ## Known limitations
 
+- The API token must stay narrow for the lifetime of the connection, and it must be a
+  **scoped** token. Because Bitbucket has no way to narrow a token per repository, each scan
+  clones with the connection's own token, so a token carrying an `admin:` or `delete:` scope
+  — or a token created without scopes, which is bounded by nothing — is refused at scan time
+  and on each sweep, not only when the connection is created.
 - The connection is the **repository estate** of one workspace. Members, groups, access keys,
   repository variables and branch restrictions are not collected, so the branch-protection
   findings GitHub repositories raise do not apply.

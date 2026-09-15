@@ -100,12 +100,13 @@ limacharlie cloudsec provider test --input-file provider.yaml
 | `auth` | ✅ | The token was rejected (wrong, revoked or expired), or the instance URL is wrong. Nothing else is probed. |
 | `token_scopes` | ✅ | The token lacks `read_api`, so the namespace cannot be listed. |
 | `token_read_repository` | ✅ | The token lacks `read_repository`, so scans cannot clone. |
-| `token_not_tenant_wide` | ✅ | The token carries `api`, `admin_mode` or `sudo`. Replace it with a read-only token. |
+| `token_not_tenant_wide` | ✅ | The token carries `api`, `admin_mode` or `sudo`. Replace it with a read-only token. The same refusal is applied when a scan asks for the credential and on every sweep, so it is not something a saved connection can get past. |
 | `token_read_only` | — | The token carries write scopes the connection never uses. |
 | `token_expiry` | — | The token is inactive or close to expiry. |
 | `namespace` | ✅ | The namespace path does not exist, or the token cannot see it. |
 | `projects` | ✅ | The project listing is not readable. |
 | `projects_visible` | — | The listing works but no project is visible to the token — usually a membership gap. |
+| `code_scanning_reachable` | — | The connection points at a self-managed instance, which code scanning cannot reach. The inventory and its posture are unaffected. |
 
 ## Troubleshooting
 
@@ -116,13 +117,24 @@ limacharlie cloudsec provider test --input-file provider.yaml
 | `projects_visible` fails | The token's owner is not a member of the projects | Grant the token Reporter on the group, or on each project |
 | Projects shared into the group are missing | Shared projects belong to their own namespace | Connect that namespace as well |
 | `token_scopes` reports scopes as unverified on self-managed | Older GitLab versions do not expose token introspection | Expected; the first scan's clone is the authoritative check |
+| The connection was saved, the inventory appears, but scans never produce findings | The instance is self-managed — see `code_scanning_reachable` and the limitation below | Connect a GitLab.com namespace for code scanning, or use the inventory and posture only |
+| A scan fails with "the GitLab access token is a tenant-wide or administrative credential" | The connection's secret was rotated to a token carrying `api`, `admin_mode` or `sudo` after the connection was created | Create a token with only `read_api` and `read_repository` and update the secret |
 
 ## Known limitations
 
+- The access token must stay narrow for the lifetime of the connection. Because GitLab has
+  no way to narrow a token per repository, each scan clones with the connection's own token,
+  so a token carrying `api`, `admin_mode` or `sudo` is refused at scan time and on each
+  sweep — not only when the connection is created.
 - The connection is the **repository estate** of one namespace. Group members, service
   accounts, deploy tokens, CI/CD variables and group settings posture are not collected.
 - Protected-branch and push-rule posture is not collected, so the branch-protection findings
   GitHub repositories raise do not apply.
+- **Code scanning is available for GitLab.com only.** A self-managed instance can be
+  connected and its projects are inventoried and assessed normally, but repository cloning
+  runs in an isolated, egress-restricted environment that reaches GitLab.com and does not
+  reach customer-run instances, so scans of those projects cannot complete. The connection
+  test reports this as `code_scanning_reachable`.
 - **Scans run on the schedule** of the `code_scanning` policy. Push-triggered rescans are not
   available for GitLab.
 - **Nothing is written to GitLab.** Merge-request checks, comments and dependency AutoFix pull
