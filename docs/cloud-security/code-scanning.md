@@ -296,8 +296,12 @@ GitHub App webhook ──push──▶ LimaCharlie webhook adapter ──▶ D&R
 ```
 
 1. **Create a webhook adapter** in your organization — a `cloud_sensor` record
-   with `sensor_type: webhook`. The secret in the URL is what authenticates the
-   hook, so make it long and random. See the
+   with `sensor_type: webhook`. It carries two secrets, both long and random:
+   `secret` goes in the hook URL, and `signature_secret` is the key GitHub signs
+   every delivery with (the webhook's **Secret** in GitHub). With
+   `signature_scheme: hmac-sha256`, LimaCharlie refuses any delivery whose
+   `X-Hub-Signature-256` signature does not match, and drops a delivery it has
+   already accepted, so knowing the URL is not enough to trigger a scan. See the
    [webhook adapter tutorial](../2-sensors-deployment/adapters/tutorials/webhook-adapter.md)
    for the record shape; the code lane's convention is the hostname
    `github-code-webhook`.
@@ -308,11 +312,15 @@ GitHub App webhook ──push──▶ LimaCharlie webhook adapter ──▶ D&R
    # or Sensors -> Installation Keys in the web app.
    INSTALLATION_KEY=<an installation key for that org>
    SECRET=$(python3 -c "import secrets;print(secrets.token_urlsafe(32))")
+   SIGNATURE_SECRET=$(python3 -c "import secrets;print(secrets.token_urlsafe(32))")
    cat > hook.json <<JSON
    {
      "sensor_type": "webhook",
      "webhook": {
        "secret": "$SECRET",
+       "signature_scheme": "hmac-sha256",
+       "signature_header": "X-Hub-Signature-256",
+       "signature_secret": "$SIGNATURE_SECRET",
        "client_options": {
          "hostname": "github-code-webhook",
          "identity": {"oid": "$OID", "installation_key": "$INSTALLATION_KEY"},
@@ -329,7 +337,15 @@ GitHub App webhook ──push──▶ LimaCharlie webhook adapter ──▶ D&R
    The hook URL is `https://<your org's hook domain>/<oid>/github-code-webhook/<secret>`;
    the domain comes from `GET /orgs/{oid}/urls`.
 
-2. **Point the GitHub App's webhook at that URL**, `push` events only.
+   `signature_secret` can also reference a stored secret instead of holding the
+   value (`"signature_secret": "hive://secret/github-code-webhook-signature"`).
+
+2. **Point the GitHub App's webhook at that URL**, `push` events only, content
+   type `application/json`, with **Secret** set to `$SIGNATURE_SECRET`. A delivery
+   without a valid signature is refused with `401`, and the rule below only fires
+   on deliveries whose signature was verified. GitHub's **Redeliver** of a
+   delivery that was already accepted within the last 24 hours is acknowledged
+   but not processed again.
 
 3. **Install the D&R rule.** It ships as a recipe rather than being installed for
    you, so you can read what it does and fork it. The Cloud Security **Code**
@@ -344,6 +360,11 @@ GitHub App webhook ──push──▶ LimaCharlie webhook adapter ──▶ D&R
        - op: is
          path: routing/hostname
          value: github-code-webhook
+       # Set only on a delivery whose signature LimaCharlie verified; any other
+       # adapter, or a body that includes the field itself, never carries it.
+       - op: is
+         path: event/__lc_signature_verified
+         value: true
        - op: exists
          path: event/head_commit/id
        - op: exists
@@ -447,7 +468,8 @@ gating:
 
 Finally, add `pull_request` to the webhook you created above and install the
 second recipe rule, `cloudsec-code-pr-check`. It is the same shape as the push
-rule: it matches `event/action` in `opened`, `synchronize` and `reopened` and
+rule, including the `routing/hostname` and `event/__lc_signature_verified`
+conditions: it matches `event/action` in `opened`, `synchronize` and `reopened` and
 forwards `repo`, `pr`, `base_sha`, `head_sha` and `action` to the
 `code_pr_check` extension action. Everything else on a pull request — labels,
 assignments, reviews, closing — leaves the diff untouched and is refused, so a
