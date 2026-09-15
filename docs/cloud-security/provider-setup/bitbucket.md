@@ -94,9 +94,9 @@ limacharlie cloudsec provider test --input-file provider.yaml
 | Check | Required | Meaning if it fails |
 |---|:--:|---|
 | `auth` | ✅ | The token was rejected (wrong, revoked or expired). Nothing else is probed. |
-| `token_scopes` | ✅ | The token lacks `read:workspace:bitbucket`. |
+| `token_scopes` | ✅ | The token lacks `read:workspace:bitbucket` — or the API reported no scopes at all, which means the token was created without any and is bounded by nothing. Code scanning refuses such a token; the inventory sweep still runs on it. |
 | `token_read_repository` | ✅ | The token lacks `read:repository:bitbucket`, so scans cannot clone. |
-| `token_not_workspace_admin` | ✅ | The token carries an `admin:` or `delete:` scope. Replace it with a read-only token. The same refusal is applied when a scan asks for the credential and on every sweep, so it is not something a saved connection can get past. |
+| `token_not_workspace_admin` | ✅ | The token carries an `admin:` or `delete:` scope. Replace it with a read-only token. The same refusal is applied when a scan asks for the credential and on every inventory sweep, so it is not something a saved connection can get past. |
 | `token_read_only` | — | The token carries write scopes the connection never uses. |
 | `workspace` | ✅ | The slug does not exist, or the token cannot see it. |
 | `workspace_membership` | ✅ | The token's account is not a member of the workspace. |
@@ -118,9 +118,14 @@ limacharlie cloudsec provider test --input-file provider.yaml
 
 - The API token must stay narrow for the lifetime of the connection, and it must be a
   **scoped** token. Because Bitbucket has no way to narrow a token per repository, each scan
-  clones with the connection's own token, so a token carrying an `admin:` or `delete:` scope
-  — or a token created without scopes, which is bounded by nothing — is refused at scan time
-  and on each sweep, not only when the connection is created.
+  clones with the connection's own token, so the refusal of a broad token is not only a
+  connection-test result:
+    - a token carrying an `admin:` or `delete:` scope is refused by the connection test, by
+      code scanning, **and on every inventory sweep**;
+    - a token created **without** scopes is bounded by nothing, so it is refused by the
+      connection test and by code scanning. The inventory sweep still runs on it — it never
+      hands the token to anything — so the estate keeps refreshing while code scanning does
+      not.
 - The connection is the **repository estate** of one workspace. Members, groups, access keys,
   repository variables and branch restrictions are not collected, so the branch-protection
   findings GitHub repositories raise do not apply.

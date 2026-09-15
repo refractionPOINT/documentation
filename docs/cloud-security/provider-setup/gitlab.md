@@ -104,6 +104,7 @@ limacharlie cloudsec provider test --input-file provider.yaml
 | `token_read_only` | — | The token carries write scopes the connection never uses. |
 | `token_expiry` | — | The token is inactive or close to expiry. |
 | `namespace` | ✅ | The namespace path does not exist, or the token cannot see it. |
+| `namespace_membership` | ✅ | The token's account is not confirmed as able to see the whole namespace (Reporter or above). A public or internal group answers a non-member with its **public** projects only, so an unconfirmed listing cannot be trusted as the estate. Checked again on every sweep. |
 | `projects` | ✅ | The project listing is not readable. |
 | `projects_visible` | — | The listing works but no project is visible to the token — usually a membership gap. |
 | `code_scanning_reachable` | — | The connection points at a self-managed instance, which code scanning cannot reach. The inventory and its posture are unaffected. |
@@ -114,6 +115,7 @@ limacharlie cloudsec provider test --input-file provider.yaml
 |---|---|---|
 | `token_not_tenant_wide` fails | The token has `api` (common for personal tokens) | Create a token with only `read_api` and `read_repository` and update the secret |
 | `namespace` fails | A group name instead of its full path, or a subgroup path missing its parent | Use the path from the group's URL, e.g. `acme/platform` |
+| `namespace_membership` fails | The token's account holds no role on the group, or it was removed from it. A group access token's bot user is a member by construction; a personal token's owner is not | Grant the account at least **Reporter** on the group. For a *user* namespace, connect the namespace belonging to that account, or use a group instead |
 | `projects_visible` fails | The token's owner is not a member of the projects | Grant the token Reporter on the group, or on each project |
 | Projects shared into the group are missing | Shared projects belong to their own namespace | Connect that namespace as well |
 | `token_scopes` reports scopes as unverified on self-managed | Older GitLab versions do not expose token introspection | Expected; the first scan's clone is the authoritative check |
@@ -124,8 +126,9 @@ limacharlie cloudsec provider test --input-file provider.yaml
 
 - The access token must stay narrow for the lifetime of the connection. Because GitLab has
   no way to narrow a token per repository, each scan clones with the connection's own token,
-  so a token carrying `api`, `admin_mode` or `sudo` is refused at scan time and on each
-  sweep — not only when the connection is created.
+  so a token carrying `api`, `admin_mode` or `sudo` is refused by the connection test, by
+  code scanning, **and on every inventory sweep** — not only when the connection is
+  created.
 - The connection is the **repository estate** of one namespace. Group members, service
   accounts, deploy tokens, CI/CD variables and group settings posture are not collected.
 - Protected-branch and push-rule posture is not collected, so the branch-protection findings
