@@ -33,11 +33,11 @@ Field descriptions:
 
 - `secret`: this secret value will be part of the URL to accept your webhooks. It enables you to prevent or revoke unauthorized access to a hook.
 - `signature_scheme`, `signature_header`, `signature_secret`: optional verification of a signature the sender computes over each request. Leave all three empty to authenticate with `secret` alone. The supported scheme is `hmac-sha256`, the format GitHub uses for `X-Hub-Signature-256`:
-    - `signature_header` is the header carrying the signature (default `X-Hub-Signature-256`), and its value must be `sha256=` followed by the hex HMAC-SHA256 of the raw request body.
-    - `signature_secret` is the HMAC key: the value, or a reference to a stored secret like `hive://secret/<name>`. If the scheme is set without it, every request is refused.
-    - A request with a missing or wrong signature is refused with `401`. A request carrying a signature already accepted in the last 24 hours is acknowledged with `{"success":true,"duplicate":true}` and not ingested again.
-    - JSON events from a verified request carry `"__lc_signature_verified": true`, so a D&R rule can require it. The field is removed from events of any request that was not verified.
-    - If you require another signature format, please get in touch with us.
+  - `signature_header` is the header carrying the signature (default `X-Hub-Signature-256`), and its value must be `sha256=` followed by the hex HMAC-SHA256 of the raw request body.
+  - `signature_secret` is the HMAC key: the value, or a reference to a stored secret like `hive://secret/<name>`. If the scheme is set without it, every request is refused.
+  - A request with a missing or wrong signature is refused with `401`. A request carrying a signature already accepted in the last 24 hours is acknowledged with `{"success":true,"duplicate":true}` and not ingested again.
+  - JSON events from a verified request carry `"__lc_signature_verified": true`, so a D&R rule can require it. The field is removed from events of any request that was not verified.
+  - If you require another signature format, please get in touch with us.
 - `client_options.hostname`: provide your own name for the webhook adapter.
 - `client_options.identity.oid`: the OID of the organization you wish to send to.
 - `client_options.identity.installation_key`: the installation key to be used for the adapter.
