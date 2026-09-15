@@ -433,6 +433,7 @@ nav:
               - Reliable Tasking: 5-integrations/extensions/limacharlie/reliable-tasking.md
               - Sensor Cull: 5-integrations/extensions/limacharlie/sensor-cull.md
               - Usage Alerts: 5-integrations/extensions/limacharlie/usage-alerts.md
+              - Varist Hybrid Analyzer: 5-integrations/extensions/limacharlie/varist.md
               - Vulnerability Reporting: 5-integrations/extensions/limacharlie/vulnerability-reporting.md
               - YARA Manager: 5-integrations/extensions/limacharlie/yara-manager.md
           - Third Party:
