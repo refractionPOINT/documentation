@@ -531,13 +531,27 @@ to a pull request being opened, and the feature is silently inert.
        extension action: code_pr_check
        extension request:
          repo: '{{ .event.repository.full_name }}'
-         pr: '{{ .event.pull_request.number }}'
+         # A path, not a '{{ ... }}' template -- see the warning below.
+         pr: event.pull_request.number
          base_sha: '{{ .event.pull_request.base.sha }}'
          head_sha: '{{ .event.pull_request.head.sha }}'
          base_ref: '{{ .event.pull_request.base.ref }}'
          head_ref: '{{ .event.pull_request.head.ref }}'
          action: '{{ .event.action }}'
    ```
+
+!!! warning "`pr` is a path, and the other fields are templates"
+    This is not a typo in the rule. A D&R `extension request` value written as
+    `{{ ... }}` is rendered to **text**, while a value written as a bare path
+    keeps the payload's own type. The pull-request *number* has to arrive as a
+    number, so it is a path; every other field is text anyway, so every other
+    field is a template.
+
+    Writing `pr: '{{ .event.pull_request.number }}'` looks right and fails
+    silently: the request is rejected before it reaches Cloud Security, with
+    `invalid value for pr: not an integer, a string`, and **no check appears on
+    the pull request**. If checks stop appearing after you edit the rule, this is
+    the first thing to look at.
 
 Everything else that happens on a pull request — labels, assignments, reviews,
 edits, closing — leaves the diff untouched, so the rule ignores it and a busy
@@ -585,11 +599,15 @@ In order, stopping at the first thing that is wrong:
    No match means a condition did not hold — most often the `action`, or a
    delivery whose signature was not verified (a rule that also matches nothing
    for a *push* points at the signature rather than at this rule).
-3. **The check ran.** The repository's row in `limacharlie cloudsec code repos`
+3. **The request was accepted.** A rule that matched but sent a malformed field
+   is reported against the extension rather than on the pull request — see the
+   warning about `pr` above, whose symptom is
+   `invalid value for pr: not an integer, a string`.
+4. **The check ran.** The repository's row in `limacharlie cloudsec code repos`
    is about scheduled scans, not pull requests; the pull request's **Checks** tab
    is where a pull-request check appears. Expect one named **LimaCharlie Code
    Security**, `in_progress` within seconds and completed within a few minutes.
-4. **It was refused.** If the check never appears, the refusal names the reason:
+5. **It was refused.** If the check never appears, the refusal names the reason:
    `pr_checks_disabled` (the policy switch is off for that repository),
    `write_app_not_configured` (the App cannot publish — grant the permissions
    above and accept them on the installation), `pr_write_budget_exhausted` or
