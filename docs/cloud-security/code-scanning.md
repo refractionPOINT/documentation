@@ -569,15 +569,9 @@ to a pull request being opened, and the feature is silently inert.
 
 Everything else that happens on a pull request — labels, assignments, reviews,
 closing — leaves the code under review untouched, so the rule ignores it and a
-busy repository's chatter never becomes scan traffic. The three actions above are
-also the only ones the service accepts, so widening the rule alone changes
-nothing.
-
-!!! note "Retargeting a pull request's base branch does not re-run the check"
-    Changing the base branch changes what the pull request introduces, but GitHub
-    reports it as an `edited` action rather than a `synchronize`, and the check
-    already on the head commit is not recomputed. Push a commit, or close and
-    reopen the pull request, to get a check against the new base.
+busy repository's chatter never becomes scan traffic. Those actions are also the
+only ones the service accepts, together with the retargeting `edited` covered
+below, so widening the rule alone changes nothing.
 
 Nothing in the rule is trusted. LimaCharlie re-reads the pull request from GitHub
 and uses **GitHub's** commits, refuses one that is not open or whose head does not
@@ -586,10 +580,10 @@ collapse into one check, on the newest head commit.
 
 !!! note "Draft pull requests are checked"
     A draft gets a check like any other pull request. This is deliberate: the
-    service reacts to `opened`, `synchronize` and `reopened` and **not** to
-    `ready_for_review`, so a rule that skipped drafts would leave a draft that is
-    marked ready — with no further push — with no check at all. If that check is a
-    required one, the pull request could never be merged.
+    service reacts to `opened`, `synchronize`, `reopened` and a retargeting
+    `edited`, and **not** to `ready_for_review`, so a rule that skipped drafts
+    would leave a draft that is marked ready — with no further push — with no check
+    at all. If that check is a required one, the pull request could never be merged.
 
     To exclude drafts anyway, fork the rule and add one condition:
 
@@ -601,6 +595,87 @@ collapse into one check, on the newest head commit.
 
     Then be aware of the trade-off above, and push a commit after marking a pull
     request ready for review so its check runs.
+
+### Keeping the check honest when the base branch changes
+
+Pointing a pull request at a different base changes what it introduces without
+pushing anything. GitHub reports that as an `edited` action, not a
+`synchronize` — so without this rule the check already sitting on the head
+commit stays exactly as it was, green or red, measured against a base that is
+no longer the base. If you made the check **required**, that is a merge gate
+satisfied by a scan of a diff that no longer exists.
+
+Install `cloudsec-code-pr-retarget` alongside the rule above — same webhook, same
+adapter, same signing secret. Save the YAML below as `pr-retarget.yaml`, then:
+
+```bash
+limacharlie hive set --hive-name dr-general \
+    --key cloudsec-code-pr-retarget --input-file pr-retarget.yaml --enabled
+```
+
+```yaml
+detect:
+  event: json
+  op: and
+  rules:
+    - op: is
+      path: routing/hostname
+      value: github-code-webhook
+    - op: is
+      path: event/__lc_signature_verified
+      value: true
+    - op: is
+      path: event/action
+      value: edited
+    # The base actually moved. Only a base change carries this field.
+    - op: exists
+      path: event/changes/base/sha/from
+    - op: exists
+      path: event/pull_request/number
+    - op: exists
+      path: event/repository/full_name
+    - op: exists
+      path: event/pull_request/head/sha
+    - op: exists
+      path: event/pull_request/base/sha
+respond:
+  - action: extension request
+    extension name: ext-cloud-security
+    extension action: code_pr_check
+    extension request:
+      repo: '{{ .event.repository.full_name }}'
+      # A path, not a '{{ ... }}' template -- see the warning above.
+      pr: event.pull_request.number
+      base_sha: '{{ .event.pull_request.base.sha }}'
+      head_sha: '{{ .event.pull_request.head.sha }}'
+      base_ref: '{{ .event.pull_request.base.ref }}'
+      head_ref: '{{ .event.pull_request.head.ref }}'
+      action: '{{ .event.action }}'
+      # The base the pull request moved AWAY from.
+      prev_base_sha: '{{ .event.changes.base.sha.from }}'
+```
+
+A new check then runs against the new base, and that newer check run on the same
+head commit supersedes the old one. Nothing else changes: the pull request is still re-read from
+GitHub, and the base that is scanned is the one GitHub reports, not the one in
+the rule.
+
+!!! warning "Why the retarget is its own rule, and why `prev_base_sha` belongs only on it"
+    A rule has one response. A retarget has to send `prev_base_sha`, and the
+    `opened`, `synchronize` and `reopened` events do not have that field, so the two
+    cannot share a response — see the last paragraph of this warning.
+
+    GitHub also reports a base change, a title change and a description change with
+    the same `edited` action. `changes.base.sha.from` is the field that tells them
+    apart, which is why the retarget rule both **matches on it** and forwards it.
+    Matching matters: without that condition the rule still fires on every title
+    edit, and each of those requests is refused before it reaches Cloud Security.
+
+    Do **not** copy `prev_base_sha` onto the `cloudsec-code-pr-check` rule. A
+    `{{ ... }}` template over a field the event does not have renders to the literal
+    text `<no value>`, which is rejected — so that one line would stop **every**
+    check in your organization, not just retargets. It is safe on the retarget rule
+    precisely because that rule only fires when the field is there.
 
 ### Is it firing?
 
@@ -618,6 +693,10 @@ In order, stopping at the first thing that is wrong:
    limacharlie replay run --name cloudsec-code-pr-check \
        --start 1750000000 --end 1750000600
    ```
+
+   For a base-branch change, replay `cloudsec-code-pr-retarget` instead. No match
+   there most often means the edit was not a base change: a title or description
+   edit carries no `changes.base`.
 
    Replay does not send the extension request, it shows you what the rule *would*
    have sent — which is the fastest way to see whether `pr` came out as a number
@@ -644,7 +723,10 @@ In order, stopping at the first thing that is wrong:
      requests: Read and write**, and accept them on the organization's
      installation page;
    - the repository is not in the collected inventory, or is archived;
-   - the connection has spent its daily source-control write budget.
+   - the connection has spent its daily source-control write budget;
+   - for a base-branch change: the new base is the same commit as the old one, so
+     what the pull request introduces did not change and there is nothing to
+     re-check.
 
 ### What the check says
 
