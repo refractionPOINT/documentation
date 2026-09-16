@@ -340,12 +340,16 @@ GitHub App webhook ──push──▶ LimaCharlie webhook adapter ──▶ D&R
    `signature_secret` can also reference a stored secret instead of holding the
    value (`"signature_secret": "hive://secret/github-code-webhook-signature"`).
 
-2. **Point the GitHub App's webhook at that URL**, `push` events only, content
+2. **Point the GitHub App's webhook at that URL**, `push` events, content
    type `application/json`, with **Secret** set to `$SIGNATURE_SECRET`. A delivery
    without a valid signature is refused with `401`, and the rule below only fires
    on deliveries whose signature was verified. GitHub's **Redeliver** of a
    delivery that was already accepted within the last 24 hours is acknowledged
    but not processed again.
+
+   This is the only hook the code lane needs.
+   [Pull-request checks](#pull-request-checks-and-merge-gating) add
+   `pull_request` to this same hook rather than creating a second one.
 
 3. **Install the D&R rule.** It ships as a recipe rather than being installed for
    you, so you can read what it does and fork it. The Cloud Security **Code**
@@ -400,16 +404,22 @@ push get scanned" is answered by that repository's row in
 A daily scan says what a repository *contains*. A pull-request check says what a
 change *introduces*, on the pull request, before the merge.
 
+It has three parts, and all three are needed: **permissions** the App grants,
+the **policy switch** that turns the feature on, and the **webhook plus relay
+rule** that tells LimaCharlie a pull request happened. The last one is the step
+most easily missed — with `pr_checks: true` and no `pull_request` webhook,
+nothing ever fires and no error is raised anywhere.
+
 Pull-request checks, pull-request comments and [AutoFix](#dependency-autofix-pull-requests)
 are **GitHub-only**. They are the one part of the lane that writes to your organization,
 and they use write permissions **granted to the connection's own GitHub App** — nothing is
 written until you grant them. What each feature needs:
 
-| Feature | App permissions | Policy switch |
-|---|---|---|
-| Pull-request checks | **Checks: Read and write**, **Pull requests: Read and write** | `pr_checks: true` |
-| Pull-request comments | **Checks: Read and write**, **Pull requests: Read and write** | `pr_comments: true` |
-| Dependency AutoFix pull requests | **Contents: Read and write**, **Pull requests: Read and write** | an enabled `code_scanning` policy; each fix is requested per finding |
+| Feature | App permissions | Policy switch | Trigger |
+|---|---|---|---|
+| Pull-request checks | **Checks: Read and write**, **Pull requests: Read and write** | `pr_checks: true` | the `pull_request` webhook + `cloudsec-code-pr-check` |
+| Pull-request comments | **Checks: Read and write**, **Pull requests: Read and write** | `pr_comments: true` | the same rule |
+| Dependency AutoFix pull requests | **Contents: Read and write**, **Pull requests: Read and write** | an enabled `code_scanning` policy | each fix is requested per finding |
 
 Granting a permission only makes a feature **available**; the policy switch is what turns it
 on. The App's permissions are also not what any single call holds: the check writer asks
@@ -466,14 +476,124 @@ gating:
   fail_on: HIGH
 ```
 
-Finally, add `pull_request` to the webhook you created above and install the
-second recipe rule, `cloudsec-code-pr-check`. It is the same shape as the push
-rule, including the `routing/hostname` and `event/__lc_signature_verified`
-conditions: it matches `event/action` in `opened`, `synchronize` and `reopened` and
-forwards `repo`, `pr`, `base_sha`, `head_sha` and `action` to the
-`code_pr_check` extension action. Everything else on a pull request — labels,
-assignments, reviews, closing — leaves the diff untouched and is refused, so a
-busy repository's chatter does not become scan traffic.
+### Fire the check from the webhook
+
+The policy switch and the permissions make checks *possible*. What makes one
+appear on a pull request is the second recipe rule — without it nothing reacts
+to a pull request being opened, and the feature is silently inert.
+
+!!! warning "A pull-request check needs the webhook, not just `pr_checks: true`"
+    Turning `pr_checks` on does not make checks appear by itself. The webhook
+    must send `pull_request` events, and `cloudsec-code-pr-check` must be
+    installed. Both steps are below, and [Is it firing?](#is-it-firing) is how
+    you confirm it.
+
+1. **Add `pull_request` to the webhook** you created in
+   [Rescanning on every push](#rescanning-on-every-push). It is the same hook,
+   the same URL and the same signing secret — a second adapter would only mean a
+   second secret to get wrong.
+
+2. **Install `cloudsec-code-pr-check`** into `dr-general`. The Cloud Security
+   **Code** page offers to write it; the equivalent YAML is:
+
+   ```yaml
+   detect:
+     event: json
+     op: and
+     rules:
+       - op: is
+         path: routing/hostname
+         value: github-code-webhook
+       # Set only on a delivery whose signature LimaCharlie verified.
+       - op: is
+         path: event/__lc_signature_verified
+         value: true
+       - op: exists
+         path: event/pull_request/number
+       - op: exists
+         path: event/pull_request/head/sha
+       - op: exists
+         path: event/pull_request/base/sha
+       - op: or
+         rules:
+           - op: is
+             path: event/action
+             value: opened
+           - op: is
+             path: event/action
+             value: synchronize
+           - op: is
+             path: event/action
+             value: reopened
+   respond:
+     - action: extension request
+       extension name: ext-cloud-security
+       extension action: code_pr_check
+       extension request:
+         repo: '{{ .event.repository.full_name }}'
+         pr: '{{ .event.pull_request.number }}'
+         base_sha: '{{ .event.pull_request.base.sha }}'
+         head_sha: '{{ .event.pull_request.head.sha }}'
+         base_ref: '{{ .event.pull_request.base.ref }}'
+         head_ref: '{{ .event.pull_request.head.ref }}'
+         action: '{{ .event.action }}'
+   ```
+
+Everything else that happens on a pull request — labels, assignments, reviews,
+edits, closing — leaves the diff untouched, so the rule ignores it and a busy
+repository's chatter never becomes scan traffic. The three actions above are also
+the only ones the service accepts, so widening the rule alone changes nothing.
+
+Nothing in the rule is trusted. LimaCharlie re-reads the pull request from GitHub
+and uses **GitHub's** commits, refuses one that is not open or whose head does not
+match, and refuses a base equal to its head. Several pushes in quick succession
+collapse into one check, on the newest head commit.
+
+!!! note "Draft pull requests are checked"
+    A draft gets a check like any other pull request. This is deliberate: the
+    service reacts to `opened`, `synchronize` and `reopened` and **not** to
+    `ready_for_review`, so a rule that skipped drafts would leave a draft that is
+    marked ready — with no further push — with no check at all. If that check is a
+    required one, the pull request could never be merged.
+
+    To exclude drafts anyway, fork the rule and add one condition:
+
+    ```yaml
+       - op: is
+         path: event/pull_request/draft
+         value: false
+    ```
+
+    Then be aware of the trade-off above, and push a commit after marking a pull
+    request ready for review so its check runs.
+
+### Is it firing?
+
+In order, stopping at the first thing that is wrong:
+
+1. **GitHub delivered it.** The App's (or repository's) webhook has a **Recent
+   Deliveries** tab. A `pull_request` delivery should be there with a `200`. A
+   `401` means the signature did not verify — the webhook's **Secret** and the
+   adapter's `signature_secret` are not the same value.
+2. **The rule matched.** Replay it over the minutes around the delivery:
+
+   ```bash
+   limacharlie replay run --name cloudsec-code-pr-check \
+       --start $(date -d '15 minutes ago' +%s) --end $(date +%s)
+   ```
+
+   No match means a condition did not hold — most often the `action`, or a
+   delivery whose signature was not verified (a rule that also matches nothing
+   for a *push* points at the signature rather than at this rule).
+3. **The check ran.** The repository's row in `limacharlie cloudsec code repos`
+   is about scheduled scans, not pull requests; the pull request's **Checks** tab
+   is where a pull-request check appears. Expect one named **LimaCharlie Code
+   Security**, `in_progress` within seconds and completed within a few minutes.
+4. **It was refused.** If the check never appears, the refusal names the reason:
+   `pr_checks_disabled` (the policy switch is off for that repository),
+   `write_app_not_configured` (the App cannot publish — grant the permissions
+   above and accept them on the installation), `pr_write_budget_exhausted` or
+   `pr_write_budget_unavailable` (the daily source-control write budget).
 
 ### What the check says
 
