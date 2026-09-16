@@ -28,7 +28,7 @@ Adapter Type: `harmony`
 
 - `client_id`: Infinity Portal Client ID. Create under *Global Settings → API Keys*. For Infinity Events the key must include the *Logs as a Service* service; for the Entities source it must include the *Harmony Email & Collaboration* service. A single key with both services attached is supported.
 - `access_key`: Infinity Portal Access Key paired with the Client ID above.
-- `url` *(optional)*: Infinity Portal gateway **base** URL — the API paths are appended to it. Defaults to `https://cloudinfra-gw.portal.checkpoint.com`. Use the regional variant (for example `https://cloudinfra-gw-us.portal.checkpoint.com`) if your tenant lives in a regional data center. Both `/app/laas-logs-api` and `/app/hec-api` share the same hostname per region. Do not paste the Infinity Portal's **Authentication URL** here: it ends in `/auth/external`, which the adapter appends itself. A `url` that already contains one of the adapter's own API paths (`/auth/external`, `/app/laas-logs-api`, `/app/hec-api`), or that carries a query or fragment, is rejected at startup. An unrelated path prefix is fine — if you reach the gateway through a reverse proxy, `https://proxy.example.com/checkpoint` is a valid value.
+- `url` *(optional)*: Infinity Portal gateway **base** URL — the API paths are appended to it. Defaults to `https://cloudinfra-gw.portal.checkpoint.com`. Use the regional variant (for example `https://cloudinfra-gw-us.portal.checkpoint.com`) if your tenant lives in a regional data center. Both `/app/laas-logs-api` and `/app/hec-api` share the same hostname per region. Do not paste the Infinity Portal's **Authentication URL** here: it ends in `/auth/external`, which the adapter appends itself. A `url` whose path contains one of the adapter's own API paths as a whole segment (`/auth/external`, `/app/laas-logs-api`, `/app/hec-api`, matched case-insensitively), or that carries a query or fragment, is rejected at startup. An unrelated path prefix is fine — if you reach the gateway through a reverse proxy, `https://proxy.example.com/checkpoint` is a valid value, as is a prefix that merely resembles one of ours such as `/auth/external-gw`.
 
 All duration fields below are parsed with [`time.ParseDuration`](https://pkg.go.dev/time#ParseDuration) — for example `"60s"`, `"5m"`, `"1h30m"`, `"360h"`.
 
@@ -46,18 +46,22 @@ All duration fields below are parsed with [`time.ParseDuration`](https://pkg.go.
 - the query comes back in state `Canceled`; or
 - the query submission is refused with HTTP 403, whose body carries `Unauthorized to perform operations on the given Cloud Service` in `error.details`.
 
+A skipped window is not retried: the adapter advances past it and moves on, so a refusal that turns out to be transient costs that cloud service the events in that window. That is the deliberate trade for not pinning the cursor and re-querying an ever-growing window on a product the tenant will never be able to read.
+
 Set `events.cloud_services` to just the products the tenant is licensed for to silence the warnings.
 
-A 403 has two quite different causes, and they are worth telling apart before narrowing the list:
+A *soft-failed* 403 has two quite different causes, and they are worth telling apart before narrowing the list:
 
 - **The tenant is not licensed for that product.** Only that cloud service is refused; the rest keep ingesting normally.
 - **The API key is missing the *Logs as a Service* service.** *Every* cloud service is refused, so the Infinity Events source ships nothing at all. Rather than let that pass as a handful of warnings, the adapter raises a single error saying every configured cloud service was refused. Check the key's attached services in the Infinity Portal — and if the key is right, the configured products are ones this tenant has none of.
 
 !!! note "When a 403 is *not* treated as a warning"
-    Only a 403 refusing the **submission** of a query, and only one whose body names the cloud service, is soft-failed.
+    Only a 403 refusing the **submission** of a query, and only one whose body carries the gateway's exact phrase `Unauthorized to perform operations on the given Cloud Service` (matched case-insensitively), is soft-failed.
 
     - A 403 arriving later, while the adapter polls the query's status or retrieves its records, is reported as an error — records from that window may already have been shipped, so the adapter must not quietly skip past the remainder.
-    - A 403 that does not name the cloud service is reported as an error too. It is not the gateway declining one product but something else refusing the request: an IP restriction, or a corporate proxy or WAF in front of the gateway.
+    - Any other 403 is reported as an error: an IP restriction, or a corporate proxy or WAF in front of the gateway. Should Check Point ever reword its message, refusals fall back to being reported as errors rather than being skipped silently.
+
+    A **misspelled cloud service name** is refused separately, with `The provided Cloud Service is unknown` — this is what the ampersand warning above is about. It is not a licensing gap and will not resolve on its own: that service ingests nothing and reports an error every poll until the spelling in `events.cloud_services` is corrected.
 
 **`entities` block — HEC entity-query source:**
 
