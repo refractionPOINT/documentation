@@ -75,10 +75,24 @@ for a setting nobody could see.
 
 ## Create the GitHub App
 
+!!! tip "Or let LimaCharlie create it"
+    In the web app, **Add provider → GitHub → Create a GitHub App for me
+    (recommended)** creates this App in your GitHub organization from a manifest,
+    with the permissions already set, and saves the connection once an owner has
+    installed it. It also sets up the App's webhook for
+    [Code Scanning](../code-scanning.md#github-let-limacharlie-create-the-app) push
+    rescans and pull-request checks. The steps below are for creating the App by
+    hand.
+
 1. **Organization → Settings → Developer settings → GitHub Apps → New GitHub
    App.**
 2. Name it (e.g. `LimaCharlie Cloud Security`), set a homepage URL, and
    **uncheck Webhook → Active** (the collector polls; it needs no callback).
+   If you plan to use Code Scanning's push rescans or pull-request checks, the
+   webhook is needed after all: once connected, use **Fix webhook** on the
+   **Code** page, then tick **Active** and subscribe to **Push** and **Pull
+   request** (see
+   [Webhook status and Fix webhook](../code-scanning.md#webhook-status-and-fix-webhook)).
 3. Under **Permissions**, set each permission above to **Read-only**.
 4. Under **Where can this GitHub App be installed?**, choose **Only on this
    account**.
@@ -139,7 +153,7 @@ refresh: 6h
 Both IDs are the **numeric** values, as strings. `github_org` is the bare org
 slug — no URL, no owner prefix.
 
-In the web app: **Add provider → GitHub**, then set **Organization**, **App
+In the web app: **Add provider → GitHub → I already have a GitHub App**, then set **Organization**, **App
 ID**, **Installation ID**, **Credentials**, and **Refresh interval**.
 
 ## Verify
