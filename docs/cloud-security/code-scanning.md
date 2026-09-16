@@ -50,8 +50,8 @@ it", it is **we never keep it**:
   mirror, and nothing else.
 - On **GitHub**, the access token it is handed is **scoped to the single repository
   being scanned** and expires in an hour. **GitLab** and **Bitbucket** cannot narrow a token
-  that way, so the job clones with the connection's own **read-only** token — which is why
-  those connectors refuse tokens carrying administrative or broad write scopes.
+  that way, so the job clones with the connection's own token — which is why those connectors
+  ask for a token holding only the read scopes, and flag a broader one at connection time.
 - **Only the report leaves.** Findings, the bill of materials and hashes — never
   file contents, never a diff, never a secret's value.
 - A discovered secret is stored as a **salted hash**. There is no field on a

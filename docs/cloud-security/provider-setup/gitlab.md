@@ -30,17 +30,33 @@ The connector only ever reads: every API call is a `GET`, and a scan's clone is 
 
 Nothing else is needed.
 
-!!! warning "Broad tokens are refused"
-    A token carrying **`api`**, **`admin_mode`** or **`sudo`** fails the credential test
-    (`token_not_tenant_wide`). It is not about what the connector does — it only reads — but
-    about where the token goes: GitLab cannot narrow an access token to one repository, so
-    the token each scan clones with is the connection's own token. A credential that can
-    write everywhere the account reaches does not belong in a job that analyses untrusted
-    source. Create a token with exactly `read_api` and `read_repository`.
+!!! warning "Use a narrow token — a broad one is accepted, but it is yours to justify"
+    A token carrying more than the two scopes above still connects, and the credential test
+    says so as an **advisory** note (`token_read_only`) rather than refusing it. That
+    includes `write_repository` and the like, and it includes **`api`**, **`admin_mode`** and
+    **`sudo`**.
 
-    A token with a narrower extra write scope (`write_repository`, `write_registry`,
-    `create_runner`, …) still connects, with an advisory note recommending the two read
-    scopes.
+    It is worth understanding what you are accepting. GitLab cannot narrow an access token to
+    one repository, so the token each scan clones with is the connection's own token,
+    mounted into a job that analyses untrusted third-party source. `api` is read-write across
+    everything the account can reach, and `admin_mode`/`sudo` are the instance
+    administrator's reach. Create a token with exactly `read_api` and `read_repository`.
+
+    What *is* refused is a token that can do **neither** job: no scope that can enumerate, or
+    no scope that can clone. The check is the capability, not the scope's name — `api` counts
+    as both, and `write_repository` counts as the clone — so an `api`-only token connects and
+    sweeps, with the advisory note above.
+
+!!! info "A missing scope is refused wherever the token is used"
+    The credential test is not the only gate, because a token can be rotated after a
+    connection is saved. `read_api` is re-checked on **every inventory sweep**, and
+    `read_repository` before **every scan**. A sweep that refuses leaves the inventory
+    **unchanged** — the repositories and their findings stay exactly as they were, and the
+    provider's status carries the reason — rather than reporting an empty estate.
+
+    The one exception is a self-managed instance that does not serve token introspection
+    (`GET /personal_access_tokens/self`): there the scopes cannot be read at all, so nothing
+    is refused on them and the clone itself remains the authoritative check.
 
 ## Create the token
 
@@ -98,31 +114,45 @@ limacharlie cloudsec provider test --input-file provider.yaml
 | Check | Required | Meaning if it fails |
 |---|:--:|---|
 | `auth` | ✅ | The token was rejected (wrong, revoked or expired), or the instance URL is wrong. Nothing else is probed. |
-| `token_scopes` | ✅ | The token lacks `read_api`, so the namespace cannot be listed. |
-| `token_read_repository` | ✅ | The token lacks `read_repository`, so scans cannot clone. |
-| `token_not_tenant_wide` | ✅ | The token carries `api`, `admin_mode` or `sudo`. Replace it with a read-only token. |
-| `token_read_only` | — | The token carries write scopes the connection never uses. |
-| `token_expiry` | — | The token is inactive or close to expiry. |
+| `token_scopes` | ✅ | The token holds no scope that can enumerate — neither `read_api` nor `api` — so the namespace cannot be listed. Re-checked on every sweep. |
+| `token_read_repository` | ✅ | The token holds no scope that can clone — neither `read_repository` nor `write_repository` nor `api` — so scans cannot clone. Re-checked before every scan. |
+| `token_read_only` | — | The token is broader than the connection uses — a write scope, or `api`/`admin_mode`/`sudo`. Advisory: the connection still saves. |
+| `token_expiry` | — | The token is inactive or close to expiry. Advisory here, but a revoked or expired token is refused before every scan. |
 | `namespace` | ✅ | The namespace path does not exist, or the token cannot see it. |
+| `namespace_membership` | ✅ | The token's account is not confirmed as able to see the whole namespace (Reporter or above). A public or internal group answers a non-member with its **public** projects only, so an unconfirmed listing cannot be trusted as the estate. Checked again on every sweep. |
 | `projects` | ✅ | The project listing is not readable. |
 | `projects_visible` | — | The listing works but no project is visible to the token — usually a membership gap. |
+| `code_scanning_reachable` | — | The connection points at a self-managed instance, which code scanning cannot reach. The inventory and its posture are unaffected. |
 
 ## Troubleshooting
 
 | `provider test` result | Cause | Fix |
 |---|---|---|
-| `token_not_tenant_wide` fails | The token has `api` (common for personal tokens) | Create a token with only `read_api` and `read_repository` and update the secret |
 | `namespace` fails | A group name instead of its full path, or a subgroup path missing its parent | Use the path from the group's URL, e.g. `acme/platform` |
+| `namespace_membership` fails | The token's account holds no role on the group, or it was removed from it. A group access token's bot user is a member by construction; a personal token's owner is not | Grant the account at least **Reporter** on the group. For a *user* namespace, connect the namespace belonging to that account, or use a group instead |
 | `projects_visible` fails | The token's owner is not a member of the projects | Grant the token Reporter on the group, or on each project |
 | Projects shared into the group are missing | Shared projects belong to their own namespace | Connect that namespace as well |
 | `token_scopes` reports scopes as unverified on self-managed | Older GitLab versions do not expose token introspection | Expected; the first scan's clone is the authoritative check |
+| The connection was saved, the inventory appears, but scans never produce findings | The instance is self-managed — see `code_scanning_reachable` and the limitation below | Connect a GitLab.com namespace for code scanning, or use the inventory and posture only |
+| The inventory stops refreshing and the provider status says the token "cannot enumerate the namespace" | The connection's secret was rotated to a token without `read_api` after the connection was created. The existing repositories and findings are kept, not deleted | Create a token with `read_api` and `read_repository` and update the secret |
 
 ## Known limitations
 
+- The access token must keep its two scopes for the lifetime of the connection: `read_api` is
+  re-checked on every inventory sweep and `read_repository` before every scan, so a secret
+  rotated to a narrower token stops the connection (without deleting anything) rather than
+  silently reporting a smaller estate. A **broader** token is accepted — because GitLab has
+  no way to narrow a token per repository, each scan clones with the connection's own token,
+  so how much authority that token carries is worth a deliberate decision.
 - The connection is the **repository estate** of one namespace. Group members, service
   accounts, deploy tokens, CI/CD variables and group settings posture are not collected.
 - Protected-branch and push-rule posture is not collected, so the branch-protection findings
   GitHub repositories raise do not apply.
+- **Code scanning is available for GitLab.com only.** A self-managed instance can be
+  connected and its projects are inventoried and assessed normally, but repository cloning
+  runs in an isolated, egress-restricted environment that reaches GitLab.com and does not
+  reach customer-run instances, so scans of those projects cannot complete. The connection
+  test reports this as `code_scanning_reachable`.
 - **Scans run on the schedule** of the `code_scanning` policy. Push-triggered rescans are not
   available for GitLab.
 - **Nothing is written to GitLab.** Merge-request checks, comments and dependency AutoFix pull

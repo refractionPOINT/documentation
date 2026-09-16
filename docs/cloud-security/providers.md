@@ -180,8 +180,10 @@ sandbox and filed as ordinary findings. It is opt-in per repository through a
 One **namespace** — a group with its subgroups, or a user namespace — on GitLab.com or a
 self-managed instance. Set `gitlab_namespace` to the full path and, for self-managed GitLab,
 `gitlab_base_url` to the https instance root. The credential is a group, project or personal
-access token with exactly `read_api` and `read_repository`: `{"token": "glpat-..."}`. Tokens
-carrying `api`, `admin_mode` or `sudo` are refused. Its projects become repositories that a
+access token with exactly `read_api` and `read_repository`: `{"token": "glpat-..."}`. A token
+missing either scope is refused; a broader one — a write scope, or `api`, `admin_mode` or
+`sudo` — still connects, and the connection test flags it as advisory. Its projects become
+repositories that a
 `code_scanning` policy can select for [Code Scanning](code-scanning.md).
 
 ### Bitbucket Cloud (`bitbucket`)
@@ -190,8 +192,10 @@ carrying `api`, `admin_mode` or `sudo` are refused. Its projects become reposito
 
 One **workspace** on Bitbucket Cloud. Set `bitbucket_workspace` to the slug. The credential is
 an Atlassian API token with `read:repository:bitbucket`, `read:workspace:bitbucket` and
-`read:user:bitbucket`: `{"token": "ATATT3..."}`. Tokens with `admin:` or `delete:` scopes are
-refused, and the token's account must be a member of the workspace. Its repositories become
+`read:user:bitbucket`: `{"token": "ATATT3..."}`. A token missing one of those is refused; a
+broader one — including an `admin:` or `delete:` scope — still connects, and the connection
+test flags it as advisory. The token's account must be a member of the workspace. Its
+repositories become
 repositories that a `code_scanning` policy can select for [Code Scanning](code-scanning.md).
 Bitbucket Data Center is not supported.
 
