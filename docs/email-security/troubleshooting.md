@@ -244,8 +244,9 @@ Two things to know about the numbers:
   start over — the provider expires the continuation we resume from if a walk is
   interrupted for long enough — the count starts over with it, so it always
   describes the walk that produced your current history rather than accumulating
-  across attempts. A mailbox whose walk has never finished a page reports
-  nothing at all rather than zero.
+  across attempts. A mailbox that has not yet finished a single page of history
+  contributes to neither number — it has not been measured, which is not the
+  same as having lost nothing.
 
 Skipped history does **not** hold `backfill.complete` open. A page containing a
 message the provider refuses has still been walked, and waiting on mail that
