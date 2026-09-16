@@ -655,23 +655,21 @@ respond:
       prev_base_sha: '{{ .event.changes.base.sha.from }}'
 ```
 
-A new check then runs against the new base and replaces the conclusion on the
-same head commit. Nothing else changes: the pull request is still re-read from
+A new check then runs against the new base, and that newer check run on the same
+head commit supersedes the old one. Nothing else changes: the pull request is still re-read from
 GitHub, and the base that is scanned is the one GitHub reports, not the one in
 the rule.
 
-!!! warning "Why the retarget is a second rule, and why `prev_base_sha` belongs only on it"
-    GitHub reports a base change, a title change and a description change with the
-    same `edited` action, and a D&R rule's list of actions is an *or* — so a rule
-    cannot say "`edited` **and** the base moved" in one condition block. Adding
-    `edited` to the rule above would therefore re-scan on every title edit: two
-    scans and two writes into your repository per saved keystroke, against a daily
-    limit.
+!!! warning "Why the retarget is its own rule, and why `prev_base_sha` belongs only on it"
+    A rule has one response. A retarget has to send `prev_base_sha`, and the
+    `opened`, `synchronize` and `reopened` events do not have that field, so the two
+    cannot share a response — see the last paragraph of this warning.
 
-    `changes.base.sha.from` is the field that tells the two apart, which is why the
-    retarget rule both **matches on it** and forwards it. Matching matters: without
-    that condition the rule still fires on a title edit, the request still travels,
-    and it is rejected at the door — quietly, but on every edit.
+    GitHub also reports a base change, a title change and a description change with
+    the same `edited` action. `changes.base.sha.from` is the field that tells them
+    apart, which is why the retarget rule both **matches on it** and forwards it.
+    Matching matters: without that condition the rule still fires on every title
+    edit, and each of those requests is refused before it reaches Cloud Security.
 
     Do **not** copy `prev_base_sha` onto the `cloudsec-code-pr-check` rule. A
     `{{ ... }}` template over a field the event does not have renders to the literal
@@ -695,6 +693,10 @@ In order, stopping at the first thing that is wrong:
    limacharlie replay run --name cloudsec-code-pr-check \
        --start 1750000000 --end 1750000600
    ```
+
+   For a base-branch change, replay `cloudsec-code-pr-retarget` instead. No match
+   there most often means the edit was not a base change: a title or description
+   edit carries no `changes.base`.
 
    Replay does not send the extension request, it shows you what the rule *would*
    have sent — which is the fastest way to see whether `pr` came out as a number
@@ -721,7 +723,10 @@ In order, stopping at the first thing that is wrong:
      requests: Read and write**, and accept them on the organization's
      installation page;
    - the repository is not in the collected inventory, or is archived;
-   - the connection has spent its daily source-control write budget.
+   - the connection has spent its daily source-control write budget;
+   - for a base-branch change: the new base is the same commit as the old one, so
+     what the pull request introduces did not change and there is nothing to
+     re-check.
 
 ### What the check says
 
