@@ -523,6 +523,8 @@ to a pull request being opened, and the feature is silently inert.
        - op: exists
          path: event/pull_request/number
        - op: exists
+         path: event/repository/full_name
+       - op: exists
          path: event/pull_request/head/sha
        - op: exists
          path: event/pull_request/base/sha
