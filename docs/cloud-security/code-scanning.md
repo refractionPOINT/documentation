@@ -376,6 +376,7 @@ GitHub App webhook ──push──▶ LimaCharlie webhook adapter ──▶ D&R
    itself, never carries it.
 
    <!-- generated from the code lane's canonical webhook recipe definition; rule=cloudsec-code-push-rescan; sha256=0fc818b70646d3d42101331dd0011354e0cf14bbd06a8f67d847276873467c9c; do not edit -->
+
    ```yaml
    detect:
      event: json
@@ -405,6 +406,7 @@ GitHub App webhook ──push──▶ LimaCharlie webhook adapter ──▶ D&R
          repo: '{{ .event.repository.full_name }}'
          ref: '{{ .event.ref }}'
    ```
+
    <!-- end generated: cloudsec-code-push-rescan -->
 
 Pushes are coalesced: the first push arms a 10-minute window, everything inside
@@ -526,6 +528,7 @@ to a pull request being opened, and the feature is silently inert.
    delivery whose signature LimaCharlie verified.
 
    <!-- generated from the code lane's canonical webhook recipe definition; rule=cloudsec-code-pr-check; sha256=d345295d2d6219ac9308b7a033b749ff502483c2b7464da314f60114a785fb57; do not edit -->
+
    ```yaml
    detect:
      event: json
@@ -569,6 +572,7 @@ to a pull request being opened, and the feature is silently inert.
          head_ref: '{{ .event.pull_request.head.ref }}'
          action: '{{ .event.action }}'
    ```
+
    <!-- end generated: cloudsec-code-pr-check -->
 
 !!! warning "`pr` is a path, and the other fields are templates"
@@ -638,6 +642,7 @@ request moved away from — is a template, safely, because this rule only fires
 when the event has that field at all.
 
 <!-- generated from the code lane's canonical webhook recipe definition; rule=cloudsec-code-pr-retarget; sha256=031e394f79a92e2ad0d7313d2e19a8f3880bafbf898980c8f114b4b6523a4258; do not edit -->
+
 ```yaml
 detect:
   event: json
@@ -676,6 +681,7 @@ respond:
       action: '{{ .event.action }}'
       prev_base_sha: '{{ .event.changes.base.sha.from }}'
 ```
+
 <!-- end generated: cloudsec-code-pr-retarget -->
 
 A new check then runs against the new base, and that newer check run on the same

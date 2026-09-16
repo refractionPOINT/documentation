@@ -76,14 +76,26 @@ def _find_generated_blocks(doc_text):
         recorded_hash = m.group("hash")
         indent = m.group("indent")
 
+        # A single blank line is REQUIRED between the marker and the fence, and between the
+        # closing fence and the end marker -- not just permitted. Inside a numbered-list
+        # continuation, `md_in_html` + `pymdownx.superfences` treat an HTML comment directly
+        # adjacent to a fenced block as inline content of the same paragraph, which fuses the
+        # rendered `<div>`/`<pre>` into a `<p>` (illegal nesting, confirmed against a real
+        # `mkdocs build` of this site). The blank line is what keeps the fence a block-level
+        # sibling instead. Still tolerate zero blank lines when parsing, rather than only
+        # accepting the one required shape, so a malformed doc fails with THIS test's own
+        # assertion message instead of an opaque list-index error.
         fence_open = indent + "```yaml"
-        assert i + 1 < len(lines) and lines[i + 1] == fence_open, (
-            f"rule {rule}: marker at line {i + 1} is not immediately followed by "
-            f"{fence_open!r}"
+        after_marker = i + 1
+        if after_marker < len(lines) and lines[after_marker] == "":
+            after_marker += 1
+        assert after_marker < len(lines) and lines[after_marker] == fence_open, (
+            f"rule {rule}: marker at line {i + 1} is not followed (directly, or after one "
+            f"blank line) by {fence_open!r}"
         )
+        yaml_start = after_marker + 1
 
         fence_close = indent + "```"
-        yaml_start = i + 2
         yaml_end = None
         for j in range(yaml_start, len(lines)):
             if lines[j] == fence_close:
@@ -95,9 +107,12 @@ def _find_generated_blocks(doc_text):
         )
 
         end_marker = indent + f"<!-- end generated: {rule} -->"
-        assert yaml_end + 1 < len(lines) and lines[yaml_end + 1] == end_marker, (
+        after_fence = yaml_end + 1
+        if after_fence < len(lines) and lines[after_fence] == "":
+            after_fence += 1
+        assert after_fence < len(lines) and lines[after_fence] == end_marker, (
             f"rule {rule}: expected {end_marker!r} on the line after the closing fence "
-            f"(line {yaml_end + 2})"
+            f"(directly, or after one blank line, starting at line {yaml_end + 2})"
         )
 
         yaml_lines = lines[yaml_start:yaml_end]
@@ -112,7 +127,7 @@ def _find_generated_blocks(doc_text):
         yaml_text = "\n".join(dedented)
 
         blocks.append((rule, recorded_hash, yaml_text))
-        i = yaml_end + 2
+        i = after_fence + 1
 
     return blocks
 
