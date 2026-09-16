@@ -295,6 +295,16 @@ without waiting for or restarting the estate-wide pass.
 GitHub App webhook ──push──▶ LimaCharlie webhook adapter ──▶ D&R rule ──▶ rescan
 ```
 
+!!! tip "The Code page can install the D&R rules for you"
+    The webhook adapter (step 1) is always created by hand — it is
+    organization-specific and carries secrets you generate. Once it exists,
+    the Code page's Overview tab has an **Install** action that writes all
+    three D&R rules below in one step (the push rescan and both pull-request
+    rules), with a per-rule status badge and a **Remove** action to take them
+    back out. The `limacharlie hive set` steps below remain the way to install
+    one rule at a time, read exactly what you are installing before you do,
+    or fork a rule with a change of your own.
+
 1. **Create a webhook adapter** in your organization — a `cloud_sensor` record
    with `sensor_type: webhook`. It carries two secrets, both long and random:
    `secret` goes in the hook URL, and `signature_secret` is the key GitHub signs
@@ -361,6 +371,12 @@ GitHub App webhook ──push──▶ LimaCharlie webhook adapter ──▶ D&R
        --key cloudsec-code-push-rescan --input-file push-rescan.yaml --enabled
    ```
 
+   `event/__lc_signature_verified` is set only on a delivery whose signature
+   LimaCharlie verified; any other adapter, or a body that includes the field
+   itself, never carries it.
+
+   <!-- generated from the code lane's canonical webhook recipe definition; rule=cloudsec-code-push-rescan; sha256=0fc818b70646d3d42101331dd0011354e0cf14bbd06a8f67d847276873467c9c; do not edit -->
+
    ```yaml
    detect:
      event: json
@@ -369,8 +385,6 @@ GitHub App webhook ──push──▶ LimaCharlie webhook adapter ──▶ D&R
        - op: is
          path: routing/hostname
          value: github-code-webhook
-       # Set only on a delivery whose signature LimaCharlie verified; any other
-       # adapter, or a body that includes the field itself, never carries it.
        - op: is
          path: event/__lc_signature_verified
          value: true
@@ -392,6 +406,8 @@ GitHub App webhook ──push──▶ LimaCharlie webhook adapter ──▶ D&R
          repo: '{{ .event.repository.full_name }}'
          ref: '{{ .event.ref }}'
    ```
+
+   <!-- end generated: cloudsec-code-push-rescan -->
 
 Pushes are coalesced: the first push arms a 10-minute window, everything inside
 it collapses into one scan of the head of the burst. **Every gate the schedule
@@ -508,6 +524,11 @@ to a pull request being opened, and the feature is silently inert.
        --key cloudsec-code-pr-check --input-file pr-check.yaml --enabled
    ```
 
+   As with the push rule, `event/__lc_signature_verified` is only set on a
+   delivery whose signature LimaCharlie verified.
+
+   <!-- generated from the code lane's canonical webhook recipe definition; rule=cloudsec-code-pr-check; sha256=d345295d2d6219ac9308b7a033b749ff502483c2b7464da314f60114a785fb57; do not edit -->
+
    ```yaml
    detect:
      event: json
@@ -516,7 +537,6 @@ to a pull request being opened, and the feature is silently inert.
        - op: is
          path: routing/hostname
          value: github-code-webhook
-       # Set only on a delivery whose signature LimaCharlie verified.
        - op: is
          path: event/__lc_signature_verified
          value: true
@@ -545,7 +565,6 @@ to a pull request being opened, and the feature is silently inert.
        extension action: code_pr_check
        extension request:
          repo: '{{ .event.repository.full_name }}'
-         # A path, not a '{{ ... }}' template -- see the warning below.
          pr: event.pull_request.number
          base_sha: '{{ .event.pull_request.base.sha }}'
          head_sha: '{{ .event.pull_request.head.sha }}'
@@ -553,6 +572,8 @@ to a pull request being opened, and the feature is silently inert.
          head_ref: '{{ .event.pull_request.head.ref }}'
          action: '{{ .event.action }}'
    ```
+
+   <!-- end generated: cloudsec-code-pr-check -->
 
 !!! warning "`pr` is a path, and the other fields are templates"
     This is not a typo in the rule. A D&R `extension request` value written as
@@ -613,6 +634,15 @@ limacharlie hive set --hive-name dr-general \
     --key cloudsec-code-pr-retarget --input-file pr-retarget.yaml --enabled
 ```
 
+The base actually having moved is what makes matching on
+`event/changes/base/sha/from` (not just forwarding it) free for a title or
+body edit: only a base change carries that field. `pr` is a path for the same
+reason as the check rule above, and `prev_base_sha` — the base the pull
+request moved away from — is a template, safely, because this rule only fires
+when the event has that field at all.
+
+<!-- generated from the code lane's canonical webhook recipe definition; rule=cloudsec-code-pr-retarget; sha256=031e394f79a92e2ad0d7313d2e19a8f3880bafbf898980c8f114b4b6523a4258; do not edit -->
+
 ```yaml
 detect:
   event: json
@@ -627,7 +657,6 @@ detect:
     - op: is
       path: event/action
       value: edited
-    # The base actually moved. Only a base change carries this field.
     - op: exists
       path: event/changes/base/sha/from
     - op: exists
@@ -644,16 +673,16 @@ respond:
     extension action: code_pr_check
     extension request:
       repo: '{{ .event.repository.full_name }}'
-      # A path, not a '{{ ... }}' template -- see the warning above.
       pr: event.pull_request.number
       base_sha: '{{ .event.pull_request.base.sha }}'
       head_sha: '{{ .event.pull_request.head.sha }}'
       base_ref: '{{ .event.pull_request.base.ref }}'
       head_ref: '{{ .event.pull_request.head.ref }}'
       action: '{{ .event.action }}'
-      # The base the pull request moved AWAY from.
       prev_base_sha: '{{ .event.changes.base.sha.from }}'
 ```
+
+<!-- end generated: cloudsec-code-pr-retarget -->
 
 A new check then runs against the new base, and that newer check run on the same
 head commit supersedes the old one. Nothing else changes: the pull request is still re-read from
