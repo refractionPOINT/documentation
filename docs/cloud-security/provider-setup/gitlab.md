@@ -110,7 +110,7 @@ limacharlie cloudsec provider test --input-file provider.yaml
 | `token_scopes` | ✅ | The token lacks `read_api`, so the namespace cannot be listed. Re-checked on every sweep. |
 | `token_read_repository` | ✅ | The token lacks `read_repository`, so scans cannot clone. Re-checked before every scan. |
 | `token_read_only` | — | The token is broader than the connection uses — a write scope, or `api`/`admin_mode`/`sudo`. Advisory: the connection still saves. |
-| `token_expiry` | — | The token is inactive or close to expiry. |
+| `token_expiry` | — | The token is inactive or close to expiry. Advisory here, but a revoked or expired token is refused before every scan. |
 | `namespace` | ✅ | The namespace path does not exist, or the token cannot see it. |
 | `namespace_membership` | ✅ | The token's account is not confirmed as able to see the whole namespace (Reporter or above). A public or internal group answers a non-member with its **public** projects only, so an unconfirmed listing cannot be trusted as the estate. Checked again on every sweep. |
 | `projects` | ✅ | The project listing is not readable. |

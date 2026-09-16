@@ -111,7 +111,7 @@ limacharlie cloudsec provider test --input-file provider.yaml
 | `auth` | ✅ | The token was rejected (wrong, revoked or expired). Nothing else is probed. |
 | `token_scopes` | ✅ | The token lacks `read:workspace:bitbucket`. Re-checked on every sweep. Passes with a note when the API reports no scopes at all — a token created without any is bounded by none, so it is not missing anything. |
 | `token_read_repository` | ✅ | The token lacks `read:repository:bitbucket`, so scans cannot clone. Re-checked before every scan. |
-| `token_read_only` | — | The token is broader than the connection uses — a `write:`, `admin:` or `delete:` scope. Advisory: the connection still saves. |
+| `token_read_only` | — | The token is broader than the connection uses — a `write:`, `admin:` or `delete:` scope. Advisory: the connection still saves. Not reported at all when the API does not report the token's scopes. |
 | `workspace` | ✅ | The slug does not exist, or the token cannot see it. |
 | `workspace_membership` | ✅ | The token's account is not a member of the workspace. |
 | `repositories` | ✅ | The repository listing is not readable. |
