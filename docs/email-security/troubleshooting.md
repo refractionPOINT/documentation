@@ -202,6 +202,55 @@ rows that have been recorded but not yet shipped to your telemetry and
 count, its parse-degradation rate and its emission backlog. See
 [Events & Automation](automation.md#watching-your-own-coverage).
 
+## Some of the history never arrives
+
+The historical backfill walks the mail already in a mailbox when you connect it.
+Some of that mail is simply not retrievable, and that is normal rather than a
+fault:
+
+- a message deleted between the moment the provider listed it and the moment we
+  asked for it;
+- a message whose raw size is above the provider's own transport ceiling for the
+  API we read it through.
+
+**These do not produce `EMAIL_INGEST_ERROR`, on purpose.** That event means "this
+message will never be ingested" and exists so that a mailbox quietly falling out
+of coverage is visible to you. A first connection over a large estate produces
+routine unretrievable history in the thousands, and putting those on the same
+feed would bury every real coverage loss under mail that was never going to be
+readable by anyone.
+
+They are counted instead. `coverage` reports them in its `backfill` block:
+
+| Field | |
+|---|---|
+| `messages_skipped` | Historical messages the provider would not give us, across the organization |
+| `mailboxes_skipped` | How many mailboxes lost at least one |
+
+Read the pair together, because the same total means different things:
+
+- **Spread thin** — a few hundred over a few hundred mailboxes is the provider's
+  size ceiling doing its job, and needs nothing from you.
+- **Concentrated** — a few hundred in one mailbox is that mailbox, and is worth
+  looking at. Very large mail, a mailbox being emptied while the first walk ran,
+  or an archive being moved during onboarding all produce it.
+
+Two things to know about the numbers:
+
+- **They cover history, not live mail.** Live delivery failures are
+  `EMAIL_INGEST_ERROR`, above. A mailbox can have zero skipped history and still
+  be losing live mail, and the two blocks are read together for that reason.
+- **They count the walk that is current.** If a mailbox's history walk has to
+  start over — the provider expires the continuation we resume from if a walk is
+  interrupted for long enough — the count starts over with it, so it always
+  describes the walk that produced your current history rather than accumulating
+  across attempts. A mailbox whose walk has never finished a page reports
+  nothing at all rather than zero.
+
+Skipped history does **not** hold `backfill.complete` open. A page containing a
+message the provider refuses has still been walked, and waiting on mail that
+cannot be retrieved would leave the progress bar short of 100% forever.
+
 ## A short gap right after a platform update
 
 Each mail connection is owned by exactly one worker at a time, and that ownership
@@ -280,6 +329,7 @@ one immediately is a [tenant purge](cli.md#the-tenant-purge-is-irreversible).
 | A connection in error | `mailsec connection test <record>` — each requirement, independently |
 | Mailboxes found but not watched | `coverage.mailboxes.discovered`, plus `mailbox_cap` where one applies |
 | Individual messages missing | `EMAIL_INGEST_ERROR`, `coverage` parse-degradation rate |
+| History incomplete after onboarding | `coverage.backfill.messages_skipped` and `mailboxes_skipped` — read as a pair |
 | Judged but not emitted | `coverage` emission backlog |
 | Slow verdicts | `coverage.overview.processing_latency_p95` — and its `basis`, which includes your provider's own notification delay |
 | Automations decided but nothing moved | Action `result: alert_only` — see [`automations`](policy.md#automations) |
