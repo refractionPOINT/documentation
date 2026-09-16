@@ -43,7 +43,7 @@ All duration fields below are parsed with [`time.ParseDuration`](https://pkg.go.
 
 #### When a cloud service can't be read
 
-`events.cloud_services` defaults to the full Harmony suite, so a tenant licensed for only part of it will be queried for products it cannot read. Set `events.cloud_services` to just the products the tenant is licensed for and the rest of this section stops applying.
+`events.cloud_services` defaults to the full Harmony suite, so a tenant licensed for only part of it will be queried for products it cannot read. Setting `events.cloud_services` to just the products the tenant is licensed for is the fix for that, and for the warnings it produces — but not for the two cases further down that survive it: an API key without the *Logs as a Service* service, and a misspelled service name.
 
 The gateway refuses a product it won't serve in one of two ways — the query comes back in state `Canceled`, or its submission is refused with HTTP 403 carrying `Unauthorized to perform operations on the given Cloud Service` in `error.details`. Each is treated as a soft failure for that cloud service alone: one warning per poll, that window skipped, the other cloud services unaffected.
 
@@ -247,13 +247,15 @@ harmony:
         - Correct: `https://cloudinfra-gw-eu.portal.checkpoint.com`
         - Incorrect: `https://cloudinfra-gw-eu.portal.checkpoint.com/auth/external`
 
-        Get this wrong and the adapter fails on its very first call, authentication, with the segment repeated:
+        Get this wrong and the adapter refuses to start, with an error naming the value to use instead:
 
         ```
-        Cannot POST /auth/external/auth/external
+        url: must be the gateway base URL, but "https://cloudinfra-gw-eu.portal.checkpoint.com/auth/external"
+        already contains the API path "/auth/external", which the adapter appends itself —
+        use "https://cloudinfra-gw-eu.portal.checkpoint.com" instead
         ```
 
-        That is the only symptom you will see — authentication runs before anything else, so the data calls never get far enough to fail on their own mangled paths.
+        On an adapter released before that check the value is accepted instead, and authentication — the first call made — fails with the segment repeated as `Cannot POST /auth/external/auth/external`.
 
 ### Setting up the Adapter
 
