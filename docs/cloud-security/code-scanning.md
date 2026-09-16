@@ -566,9 +566,16 @@ to a pull request being opened, and the feature is silently inert.
     the first thing to look at.
 
 Everything else that happens on a pull request — labels, assignments, reviews,
-edits, closing — leaves the diff untouched, so the rule ignores it and a busy
-repository's chatter never becomes scan traffic. The three actions above are also
-the only ones the service accepts, so widening the rule alone changes nothing.
+closing — leaves the code under review untouched, so the rule ignores it and a
+busy repository's chatter never becomes scan traffic. The three actions above are
+also the only ones the service accepts, so widening the rule alone changes
+nothing.
+
+!!! note "Retargeting a pull request's base branch does not re-run the check"
+    Changing the base branch changes what the pull request introduces, but GitHub
+    reports it as an `edited` action rather than a `synchronize`, and the check
+    already on the head commit is not recomputed. Push a commit, or close and
+    reopen the pull request, to get a check against the new base.
 
 Nothing in the rule is trusted. LimaCharlie re-reads the pull request from GitHub
 and uses **GitHub's** commits, refuses one that is not open or whose head does not
@@ -601,16 +608,21 @@ In order, stopping at the first thing that is wrong:
    Deliveries** tab. A `pull_request` delivery should be there with a `200`. A
    `401` means the signature did not verify — the webhook's **Secret** and the
    adapter's `signature_secret` are not the same value.
-2. **The rule matched.** Replay it over the minutes around the delivery:
+2. **The rule matched.** Replay it over a short window around the delivery.
+   `--start` and `--end` are Unix seconds, so keep the window to a few minutes:
+   replay reads Insight and is billed on the volume it processes.
 
    ```bash
    limacharlie replay run --name cloudsec-code-pr-check \
-       --start $(date -d '15 minutes ago' +%s) --end $(date +%s)
+       --start 1750000000 --end 1750000600
    ```
 
-   No match means a condition did not hold — most often the `action`, or a
-   delivery whose signature was not verified (a rule that also matches nothing
-   for a *push* points at the signature rather than at this rule).
+   Replay does not send the extension request, it shows you what the rule *would*
+   have sent — which is the fastest way to see whether `pr` came out as a number
+   or as text. No match at all means a condition did not hold, most often the
+   `action`, or a delivery whose signature was not verified (a rule that also
+   matches nothing for a *push* points at the signature rather than at this
+   rule).
 3. **The request was accepted.** A rule that matched but sent a malformed field
    is reported against the extension rather than on the pull request — see the
    warning about `pr` above, whose symptom is
@@ -619,11 +631,18 @@ In order, stopping at the first thing that is wrong:
    is about scheduled scans, not pull requests; the pull request's **Checks** tab
    is where a pull-request check appears. Expect one named **LimaCharlie Code
    Security**, `in_progress` within seconds and completed within a few minutes.
-5. **It was refused.** If the check never appears, the refusal names the reason:
-   `pr_checks_disabled` (the policy switch is off for that repository),
-   `write_app_not_configured` (the App cannot publish — grant the permissions
-   above and accept them on the installation), `pr_write_budget_exhausted` or
-   `pr_write_budget_unavailable` (the daily source-control write budget).
+5. **It was refused.** A pull-request check that is declined before it starts
+   leaves nothing behind — no check run, and no message on the pull request. If
+   everything above looks right and no check appears, work through the causes,
+   which are the only ones:
+
+   - the policy switch is off for **that** repository (`pr_checks`, and the
+     repository has to be selected by an enabled `code_scanning` record);
+   - the App cannot publish — grant **Checks: Read and write** and **Pull
+     requests: Read and write**, and accept them on the organization's
+     installation page;
+   - the repository is not in the collected inventory, or is archived;
+   - the connection has spent its daily source-control write budget.
 
 ### What the check says
 
