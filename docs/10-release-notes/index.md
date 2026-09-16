@@ -18,6 +18,50 @@ Release notes for LimaCharlie platform components, organized by date.
 
     For discussion and email notification of the same releases, set the [Platform Updates category](https://community.limacharlie.com/c/platform-updates/5) in the community forum to Watching. For service availability rather than releases, subscribe on the [status page](https://status.limacharlie.io/).
 
+## 2026-09-16
+
+### Web App 6.4.0
+
+A personal LimaCharlie Bots workspace, a Code Security overview backed by real scan coverage, and GitLab and Bitbucket source-control connections.
+
+#### New Features
+
+- (Bots) **LimaCharlie Bots workspace**: a personal workspace at `/sessions/workspace` where you switch between named bots, build groups, and watch them hand work to one another. It carries a persistent roster, direct and group conversations, `@mentions`, saved drafts and read state, published files, questions and approvals, pause and stop, and explicit review and continuation. Each bot shows live progress: elapsed time, the tool it is running, what it is waiting on, and what is queued behind it. Handoffs between bots play as a compact bubble row above the composer, so an exchange is readable rather than gone before you see it. For users in the rollout, the AI Terminal button opens the workspace; the legacy terminal is one click away.
+- (Bots) **Start a fresh chat and browse history**: a New chat action gives a bot a clean runtime while keeping its configuration, saved memory, routines, and readable history. Past chats open read-only, with artifact downloads still available. Drafts and scroll positions stay separate per chat. Group conversations get the same New chat button, history picker, and read-only history view.
+- (Bots) **Bot memories**: a Memories browser in conversation details lists a bot's saved notes with names and timestamps. You can read, edit, and delete them. In a group you pick whose bank to open. Changes apply to new sessions and never touch chat history.
+- (Bots) **Routines**: scheduled routines move out of conversation details into their own destination at `/sessions/workspace/routines`, linked from the roster, the conversation header, and the quick switcher. Search every routine, filter by upcoming, paused, or needs attention, manage schedules, and inspect run history. A "Make this recurring" action on a bot's result builds the routine from the original request instead of asking you to retype it.
+- (Bots) **Bot avatars**: the free-text avatar field becomes a searchable gallery of 24 illustrations with live preview and a deterministic default. Existing initials, emoji, and icon names still render.
+- (Bots) **Auto-approve is on by default**: every eligible bot in a chat starts with auto-approve on. Per-bot opt-outs are kept, persist across a reload, and survive a change of group membership.
+- (Bots) **A starter team that knows the platform**: the generic Lead, Hunter, Response, and Reviewer roster is replaced by six LimaCharlie specialists — Sensor Fleet Operator, D&R Rulesmith, LCQL Hunter, CloudSec Cartographer, MailSec Investigator, and Automation Fabric Engineer. Each has focused operating instructions that route through the LimaCharlie AI skills.
+- (Cloud Security) **Code Security overview**: Code Security opened on a repository table, which hid most of what it does. A new default Overview tab leads with a prioritized fix queue — one dependency upgrade, and how many findings and repositories it clears — plus scanner coverage across active repositories, the capabilities your connected GitHub Apps actually hold, and a code to image to running-workload evidence strip. Repository, image, and registry inventories keep their tabs.
+- (Cloud Security) **Code Security's controls follow detected App permissions**: the UI used to infer what it could do from connection settings, and told orgs whose App already held the permission to go install a second one. It now reads the App's real capabilities. Available shows no notice, unavailable names the missing permissions and links to the install page, and unknown says the check could not be made and will be retried. Where an org has several connections, the ones that cannot publish are named. Capabilities are asked per repository, so a repository outside an App's selection is no longer told a check is available. Every answer states how fresh it is.
+- (Cloud Security) **GitLab and Bitbucket Cloud connections**: both can now be added and edited from the Cloud Security provider wizard like every other provider, with inline validation that matches the backend, the exact token scopes named on the permissions step, repository badges, and "Open on provider" links.
+- (Cloud Security) **Pull-request checks from the Code page**: Code Security can scan what a pull request introduces and publish the result as a check run a team can make required, but nothing reacted to a `pull_request` delivery, so that check never fired. Three webhook rules now cover it — rescan a repository after a push, check a pull request, and re-check one whose base branch moved. That last case GitHub reports without any push, so the check kept the conclusion it had and left a green gate on a diff nobody scanned. The Code page installs and removes the rules, with a badge per rule; previously they had to be written by hand with `limacharlie hive set`.
+- (Sensors) **Event Collection reads its event types from the extension**: the Event Types picker was built from a bundled list that had fallen behind and was missing 40 real events, so a recently added event could not be selected at all. It now reads the list from the Exfil extension, so new events appear as the platform adds them. A rule naming an event the extension no longer reports keeps that value instead of being written back truncated.
+- (Platform Logs) **Audit log detail panel**: selecting a log used to squeeze the table into a narrow split. The detail now opens as a drawer over the table, with the event type and time in its header, the payload below, and Escape to dismiss.
+- (Extensions) **Varist scan paths**: an "Online only" checkbox on the sensor picker. An offline sensor is dropped rather than queued, so listing every sensor in the org was inviting a scan that would never run.
+- (Outputs) **Elastic output**: the `is_compress_request` parameter is described, so the gzip toggle renders as an optional checkbox.
+- (Platform) **Startup animation**: app startup shows one of three security animations — radar, shield, or secure stream — in place of a generic spinner. It follows the theme and respects reduced motion.
+
+#### Bug Fixes
+
+- (Cloud Security) Static analysis runs unless you turn it off, but the policy form only ever wrote engines that were on, so unticking it produced a record identical to one that never mentioned it and the engine kept running. The denial is now written, and the policy form, the Code setup checklist, and the repository drawer stop reporting the engine off on every record written before it was named.
+- (Cloud Security) A failed connection preflight blocks the save instead of decorating it. A required check that a source-control token is missing a scope is where an unusable connection is turned away, and "saved anyway" meant the refusal surfaced hours later in a scan status. Sync now in the edit flow is blocked on the same condition. An optional failure still saves, and a provider type with no tester is never blocked.
+- (Cloud Security) The push-rescan recipe keyed on routing and hostname alone, which any adapter in the org could reuse. It now requires a signature-verified webhook delivery.
+- (Cloud Security) Code Security's SBOM download accepts only https URLs, so a backend-supplied link can no longer carry another scheme into an anchor.
+- (Cloud Security) Scan Diagnostics showed the last pass's targets, which drop to zero whenever no repository is due. An org with hundreds of scanned repositories read as empty. It now shows standing tracked-repository coverage, with last-pass activity as its own labelled section.
+- (Cloud Security) The Code Actions setup step linked a file in a private repository. It now links the public setup guide.
+- (Bots) Routines render and edit correctly when the API omits zero clock fields, and a timezone alias such as the default `Etc/UTC` validates.
+- (Bots) A failed turn can start a new chat. New chat was disabled on a failed conversation with a tooltip asking you to finish work that had already released its runtime, and a provider-level failure such as a usage limit reproduced on every retry, so the conversation could never leave that state. A refused new chat now says why instead of showing the word "conflict".
+- (Bots) Avatars are visually distinct and color selection is its own control, a stale prompt closes when its task stops, the message composer grows to fit a multiline draft, chat follows new messages while you are at the bottom, and duplicate approvals, answers, and sends are prevented.
+- (Platform) The app no longer stays on an older deployment. "Update now" requested service-worker activation and reloaded immediately, which could interrupt the handoff and serve the old cache. The reload now waits for the new worker to take control, and unversioned files and SPA routes revalidate instead of sitting in the browser cache.
+- (Add-ons) Logged-out visitors opening an Add-ons marketplace page saw a blank screen. The public route now renders inside a layout, so the page has height and the marketplace sidebar appears.
+- (Extensions) Varist scan results showed a blank Status badge, and picking any Risk Level emptied the list, because the scan result often omits the rating flag. The flag is derived from the numeric rating when it is absent, and the Status column sorts on that value.
+- (Platform) Light-mode warning colors are darkened for readable contrast, including investigation lane indicators and event markers.
+- (Organizations) The Organizations list no longer shows a second spinner from the New Organization dialog while it loads plans and templates.
+
+---
+
 ## 2026-09-08
 
 ### Endpoint Agent 5.3.9
