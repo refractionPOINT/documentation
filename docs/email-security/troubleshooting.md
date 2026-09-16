@@ -220,12 +220,17 @@ routine unretrievable history in the thousands, and putting those on the same
 feed would bury every real coverage loss under mail that was never going to be
 readable by anyone.
 
+Mail the walk deliberately does not take — drafts, and sent mail on a connection
+configured not to observe outbound — is not in these numbers either. That is your
+policy, not a loss.
+
 They are counted instead. `coverage` reports them in its `backfill` block:
 
 | Field | |
 |---|---|
 | `messages_skipped` | Historical messages the provider would not give us, across the organization |
 | `mailboxes_skipped` | How many mailboxes lost at least one |
+| `mailboxes_skipped_unmeasured` | How many mailboxes these numbers cannot speak for |
 
 Read the pair together, because the same total means different things:
 
@@ -244,9 +249,12 @@ Two things to know about the numbers:
   start over — the provider expires the continuation we resume from if a walk is
   interrupted for long enough — the count starts over with it, so it always
   describes the walk that produced your current history rather than accumulating
-  across attempts. A mailbox that has not yet finished a single page of history
-  contributes to neither number — it has not been measured, which is not the
-  same as having lost nothing.
+  across attempts.
+- **Zero is only zero next to `mailboxes_skipped_unmeasured`.** A mailbox whose
+  history walk began before this count existed is not measured, and is reported
+  there instead of being folded into the zeroes. If most of your mailboxes are
+  unmeasured, `messages_skipped: 0` means "we cannot tell you", not "nothing was
+  lost".
 
 Skipped history does **not** hold `backfill.complete` open. A page containing a
 message the provider refuses has still been walked, and waiting on mail that
