@@ -28,7 +28,7 @@ Adapter Type: `harmony`
 
 - `client_id`: Infinity Portal Client ID. Create under *Global Settings → API Keys*. For Infinity Events the key must include the *Logs as a Service* service; for the Entities source it must include the *Harmony Email & Collaboration* service. A single key with both services attached is supported.
 - `access_key`: Infinity Portal Access Key paired with the Client ID above.
-- `url` *(optional)*: Infinity Portal gateway base URL. Defaults to `https://cloudinfra-gw.portal.checkpoint.com`. Use the regional variant (for example `https://cloudinfra-gw-us.portal.checkpoint.com`) if your tenant lives in a regional data center. Both `/app/laas-logs-api` and `/app/hec-api` share the same hostname per region.
+- `url` *(optional)*: Infinity Portal gateway base URL — **scheme and host only**, with no path. Defaults to `https://cloudinfra-gw.portal.checkpoint.com`. Use the regional variant (for example `https://cloudinfra-gw-us.portal.checkpoint.com`) if your tenant lives in a regional data center. Both `/app/laas-logs-api` and `/app/hec-api` share the same hostname per region. Do not paste the Infinity Portal's **Authentication URL** here: it ends in `/auth/external`, which the adapter appends itself. A `url` with a path is rejected at startup.
 
 All duration fields below are parsed with [`time.ParseDuration`](https://pkg.go.dev/time#ParseDuration) — for example `"60s"`, `"5m"`, `"1h30m"`, `"360h"`.
 
@@ -41,7 +41,12 @@ All duration fields below are parsed with [`time.ParseDuration`](https://pkg.go.
 - `events.page_limit` *(optional)*: page size for the records-retrieval API. Defaults to `100`. The gateway rejects values below `10` with HTTP 400.
 - `events.limit` *(optional)*: cap on records returned per cloud service per poll. Defaults to `5000`.
 
-If a configured `cloud_service` is not provisioned for the tenant the gateway returns the query in state `Canceled`; the adapter logs one warning per poll and keeps going (it does not surface as an error). Remove the service from `cloud_services` to silence the warning.
+`events.cloud_services` defaults to the **full** Harmony suite, so a tenant licensed for only part of it will be queried for products it cannot read. The gateway reports that in one of two ways, and the adapter treats both as a per-service soft failure — one warning per poll, that window skipped, the other cloud services unaffected:
+
+- the query comes back in state `Canceled`; or
+- the query is rejected with `HTTP 403: Unauthorized to perform operations on the given Cloud Service`, meaning the tenant is not licensed for that product, or the API key is missing the *Logs as a Service* service.
+
+Neither surfaces as an error. Set `events.cloud_services` to just the products the tenant is licensed for to silence the warnings.
 
 **`entities` block — HEC entity-query source:**
 
@@ -219,7 +224,17 @@ harmony:
     - *Harmony Email & Collaboration* for the Entities source.
     - A single key with both services attached is fine.
 4. Copy the resulting **Client ID** and **Access Key**. The Access Key is shown only once — save it somewhere safe.
-5. Note the **Authentication URL** shown next to the key. If it points at a regional gateway (`cloudinfra-gw-us.portal.checkpoint.com`, `cloudinfra-gw-eu.portal.checkpoint.com`, etc.) you will need to supply that hostname as the adapter's `url` value.
+5. Note the **Authentication URL** shown next to the key. If it points at a regional gateway (`cloudinfra-gw-us.portal.checkpoint.com`, `cloudinfra-gw-eu.portal.checkpoint.com`, etc.) you will need to supply that gateway as the adapter's `url` value.
+
+    !!! warning "Use only the scheme and host — drop the `/auth/external` suffix"
+        The Authentication URL is shown in full, ending in `/auth/external`, but the adapter's `url` field takes only the part before that. The adapter appends `/auth/external` (and the other API paths) itself, so pasting the whole value makes every request double the suffix:
+
+        ```
+        Cannot POST /auth/external/auth/external
+        ```
+
+        - Correct: `https://cloudinfra-gw-eu.portal.checkpoint.com`
+        - Incorrect: `https://cloudinfra-gw-eu.portal.checkpoint.com/auth/external`
 
 ### Setting up the Adapter
 
