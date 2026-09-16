@@ -42,7 +42,10 @@ Nothing else is needed.
     everything the account can reach, and `admin_mode`/`sudo` are the instance
     administrator's reach. Create a token with exactly `read_api` and `read_repository`.
 
-    A token **missing** one of the two required scopes *is* refused — see below.
+    What *is* refused is a token that can do **neither** job: no scope that can enumerate, or
+    no scope that can clone. The check is the capability, not the scope's name — `api` counts
+    as both, and `write_repository` counts as the clone — so an `api`-only token connects and
+    sweeps, with the advisory note above.
 
 !!! info "A missing scope is refused wherever the token is used"
     The credential test is not the only gate, because a token can be rotated after a
@@ -50,6 +53,10 @@ Nothing else is needed.
     `read_repository` before **every scan**. A sweep that refuses leaves the inventory
     **unchanged** — the repositories and their findings stay exactly as they were, and the
     provider's status carries the reason — rather than reporting an empty estate.
+
+    The one exception is a self-managed instance that does not serve token introspection
+    (`GET /personal_access_tokens/self`): there the scopes cannot be read at all, so nothing
+    is refused on them and the clone itself remains the authoritative check.
 
 ## Create the token
 
@@ -107,8 +114,8 @@ limacharlie cloudsec provider test --input-file provider.yaml
 | Check | Required | Meaning if it fails |
 |---|:--:|---|
 | `auth` | ✅ | The token was rejected (wrong, revoked or expired), or the instance URL is wrong. Nothing else is probed. |
-| `token_scopes` | ✅ | The token lacks `read_api`, so the namespace cannot be listed. Re-checked on every sweep. |
-| `token_read_repository` | ✅ | The token lacks `read_repository`, so scans cannot clone. Re-checked before every scan. |
+| `token_scopes` | ✅ | The token holds no scope that can enumerate — neither `read_api` nor `api` — so the namespace cannot be listed. Re-checked on every sweep. |
+| `token_read_repository` | ✅ | The token holds no scope that can clone — neither `read_repository` nor `write_repository` nor `api` — so scans cannot clone. Re-checked before every scan. |
 | `token_read_only` | — | The token is broader than the connection uses — a write scope, or `api`/`admin_mode`/`sudo`. Advisory: the connection still saves. |
 | `token_expiry` | — | The token is inactive or close to expiry. Advisory here, but a revoked or expired token is refused before every scan. |
 | `namespace` | ✅ | The namespace path does not exist, or the token cannot see it. |

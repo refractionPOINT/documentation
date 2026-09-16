@@ -26,7 +26,7 @@ reads: every API call is a `GET`, and a scan's clone is a fetch.
 |---|---|---|
 | `read:workspace:bitbucket` | Resolve the workspace and confirm membership | `token_scopes`, `workspace`, `workspace_membership` |
 | `read:repository:bitbucket` | List repositories and let the scan clone them | `token_read_repository`, `repositories` |
-| `read:user:bitbucket` | Identify the token's account | `auth` |
+| `read:user:bitbucket` | Identify the token's account — enforced by the `GET /2.0/user` call itself, not by a scope check | `auth` |
 
 !!! warning "Use a narrow token — a broad one is accepted, but it is yours to justify"
     A token carrying more than the three scopes above still connects, and the credential test
@@ -45,7 +45,11 @@ reads: every API call is a `GET`, and a scan's clone is a fetch.
     reading. That is reported, not refused; the first sweep and the first scan are then the
     authoritative check that the token can read.
 
-    A token **missing** one of the three required scopes *is* refused — see below.
+    What *is* refused is a token that can do **neither** job: no scope that can read the
+    workspace, or no scope that can clone. The check is the capability, not the scope's name —
+    `admin:workspace:bitbucket` counts as the workspace read, and
+    `admin:`/`write:repository:bitbucket` as the clone — so an admin-scoped token connects and
+    sweeps, with the advisory note above.
 
 !!! info "A missing scope is refused wherever the token is used"
     The credential test is not the only gate, because a token can be rotated after a
@@ -109,8 +113,8 @@ limacharlie cloudsec provider test --input-file provider.yaml
 | Check | Required | Meaning if it fails |
 |---|:--:|---|
 | `auth` | ✅ | The token was rejected (wrong, revoked or expired). Nothing else is probed. |
-| `token_scopes` | ✅ | The token lacks `read:workspace:bitbucket`. Re-checked on every sweep. Passes with a note when the API reports no scopes at all — a token created without any is bounded by none, so it is not missing anything. |
-| `token_read_repository` | ✅ | The token lacks `read:repository:bitbucket`, so scans cannot clone. Re-checked before every scan. |
+| `token_scopes` | ✅ | The token holds no scope that can read the workspace — `read:workspace:bitbucket`, its `admin:` form or the legacy `account`. Re-checked on every sweep. Passes with a note when the API reports no scopes at all — a token created without any is bounded by none, so it is not missing anything. |
+| `token_read_repository` | ✅ | The token holds no scope that can clone — `read:repository:bitbucket`, its `write:`/`admin:` forms or the legacy `repository` spellings. Re-checked before every scan. |
 | `token_read_only` | — | The token is broader than the connection uses — a `write:`, `admin:` or `delete:` scope. Advisory: the connection still saves. Not reported at all when the API does not report the token's scopes. |
 | `workspace` | ✅ | The slug does not exist, or the token cannot see it. |
 | `workspace_membership` | ✅ | The token's account is not a member of the workspace. |
