@@ -100,6 +100,14 @@ read access, the webhook that drives [push rescans](#rescanning-on-every-push) a
 [pull-request checks](#pull-request-checks-and-merge-gating), and its D&R rules.
 Nobody adds a webhook to a repository.
 
+The choice is only available when your LimaCharlie user or API key holds
+`cloudsec.get`, `cloudsec.set`, `secret.get`, `secret.set`, `cloudsensor.get`,
+`cloudsensor.set`, `ikey.list` and `ikey.set`: it reads and writes the App's private
+key and webhook secret, the connection's webhook adapter, its installation key and the
+connection itself. Without all of them the wizard opens on **I already have a GitHub
+App** and names the permissions that are missing. Installing the webhook rules also
+needs `dr.list` and `dr.set`, but the connection completes without them.
+
 1. **Cloud Security → Settings → Providers → Add provider → GitHub**, and choose
    **Create a GitHub App for me (recommended)**. The other choice, **I already have
    a GitHub App**, connects an App you made yourself, as described in
@@ -129,9 +137,10 @@ What the App is created with:
 
 | Setting | Value | Why |
 |---|---|---|
-| **Actions**, **Administration**, **Members**, **Metadata**, **Organization administration**, **Organization hooks**, **Repository hooks**, **Secrets**, **Secret scanning alerts**, **Code scanning alerts** (`security_events`), **Dependabot alerts** | Read-only | Collection: the inventory and posture described in [GitHub provider setup](provider-setup/github.md), and GitHub's own alerts |
-| **Contents** | Read-only, or **Read and write** with AutoFix | Read to clone for scanning; write only to push AutoFix branches |
-| **Checks**, **Pull requests** | Read and write | Pull-request checks and comments. Nothing is published until the `code_scanning` policy turns them on |
+| Repository: **Actions**, **Administration**, **Code scanning alerts**, **Dependabot alerts**, **Metadata**, **Secret scanning alerts**, **Secrets**, **Webhooks** | Read-only | Collection: the inventory and posture described in [GitHub provider setup](provider-setup/github.md), and GitHub's own alerts |
+| Organization: **Administration**, **Members**, **Secrets**, **Webhooks** | Read-only | Collection, as above |
+| Repository: **Contents** | Read-only, or **Read and write** with AutoFix | Read to clone for scanning; write only to push AutoFix branches |
+| Repository: **Checks**, **Pull requests** | Read and write | Pull-request checks and comments. Nothing is published until the `code_scanning` policy turns them on |
 | Webhook | Active, subscribed to **Push** and **Pull request** | Push rescans and pull-request checks |
 | Webhook URL and secret | this connection's own LimaCharlie webhook, with a secret GitHub generates | Deliveries are signed, and LimaCharlie refuses any delivery whose signature does not match |
 
@@ -146,10 +155,19 @@ permissions include `dr.list` and `dr.set`, installs the
       credentials to enter.
     - GitHub gives you an hour to create the App after you leave LimaCharlie. After
       that, start again from Settings.
-    - If a step fails after the App was created, the page says which step, and
-      **Retry** continues from there in the same browser session. If the webhook or
-      the rules could not be set, the connection is still saved: use **Fix webhook**
-      or **Install the webhook rules** on the **Code** page afterwards.
+    - **Do not close or reload the page until the App's private key is saved.**
+      GitHub hands the key over once, and until it is saved it exists only in that
+      page. If saving it fails, keep the page open and choose **Retry**. If the page
+      is closed or reloaded before the key is saved, or while GitHub is still
+      handing the App over, the setup cannot be finished there: the App may already
+      exist on GitHub, so either generate a new private key for it and connect it with
+      **I already have a GitHub App**, or delete it and start again.
+    - Once the key is saved, the setup can be resumed for up to 7 days in the same
+      browser session: if a later step fails, the page says which one, and **Retry**,
+      or coming back to the page, continues from there.
+    - If the webhook or the rules could not be set, the connection is still saved:
+      use the **GitHub webhooks** section or **Install the webhook rules** on the
+      **Code** page afterwards.
 
 #### The default policy
 
@@ -412,65 +430,91 @@ The adapters use an installation key with the description
 
 Nothing needs doing by hand for a connection created with
 [**Create a GitHub App for me**](#github-let-limacharlie-create-the-app): the App is
-created subscribed to **Push** and **Pull request**, already pointing at its adapter.
-For a connection whose App you created yourself, use **Fix webhook** on the **Code**
-page, below.
+created with an active webhook, subscribed to **Push** and **Pull request**, already
+pointing at its adapter. For a connection whose App you created yourself, the **Code**
+page shows what is missing and walks you through it, below.
 
 The `code_scanning` policy stays the only scope control. The webhook delivers events
 for every repository the App is installed on, and a repository the policy does not
 select is not scanned or checked.
 
-### Webhook status and Fix webhook
+### Webhook status on the Code page
 
 The **Code** page's **GitHub webhooks** section lists every GitHub connection and
 whether its App delivers push and pull-request events to this organization.
 LimaCharlie reads this from GitHub with the App's own credentials; it is re-checked
-every few minutes and immediately after **Fix webhook**.
+every few minutes, immediately after **Fix webhook**, and when you choose **Check
+again**.
+
+GitHub's API can change an App's existing webhook, but it **cannot create a webhook,
+activate one, or change which events an App is subscribed to**. Those steps are done
+by an owner of the GitHub organization in the App's settings on GitHub, and the page
+tells you when they are needed.
 
 | Status | What it means | What to do |
 |---|---|---|
 | **Receiving events** | The App's webhook points at this organization's LimaCharlie webhook, and the App is subscribed to push and pull request events. | Nothing. |
-| **Not connected**: the App has no webhook | The App has no webhook URL. | **Fix webhook**. |
-| **Not connected**: the webhook points to another address | The URL is not this organization's LimaCharlie webhook for code scanning. Also shown when the URL is right but the webhook does not send JSON or does not verify TLS, and **Fix webhook** corrects both. | **Fix webhook**. It asks for confirmation first (see below). |
-| **Missing events** | The URL is right, but the App is not subscribed to push and/or pull request events, or its webhook is not **Active**. GitHub reports an inactive webhook as having no events. | An owner of the GitHub organization changes the App's settings on GitHub (see below). |
+| **Not connected**: the App has no active webhook | The App has no webhook URL, or its webhook is not **Active**. | **Set up webhook**, then add the webhook on GitHub (see below). |
+| **Not connected**: the webhook points to another address | The webhook is active, but its URL is not this organization's LimaCharlie webhook for code scanning. Also shown when the URL is right but the webhook does not send JSON or does not verify TLS, which **Fix webhook** corrects. | **Fix webhook**. It asks for confirmation first (see below). |
+| **Missing events** | The URL is right, but the App is not subscribed to push and/or pull request events. | An owner ticks **Push** and **Pull request** under the App's **Permissions & events** on GitHub. |
 | **Not verified** | GitHub could not be read, for example because it timed out, rate-limited the App, or rejected its credentials. | Nothing to fix here. It is checked again automatically; if it persists, check the App's private key. |
 
 The section shows a warning when any connection is **Not connected** or **Missing
 events**: for those connections, push rescans and pull-request checks do not run.
 
-**Fix webhook** creates the connection's webhook adapter and signing secret if they
-are missing (reusing them if they exist), installs any of the three D&R rules that
-are missing when you hold `dr.list` and `dr.set`, and then updates the GitHub App's
-webhook to point at the adapter, with content type JSON, TLS verification on and the
-signing secret. It needs `cloudsec.set`, `secret.get`, `secret.set`,
-`cloudsensor.get`, `cloudsensor.set`, `ikey.list` and `ikey.set`; without them the
-page shows the status and names what is missing.
+#### Set up webhook
 
-- **The App's webhook points somewhere else.** A GitHub App has only one webhook.
-  Before replacing it, the page asks you to confirm with **Replace webhook**:
-  whatever receives those deliveries today stops receiving them, and the previous
-  secret cannot be restored.
+For an App with no active webhook, **Set up webhook** prepares everything on the
+LimaCharlie side: it creates the connection's webhook adapter and signing secret if
+they are missing (reusing them if they exist) and installs any of the three D&R rules
+that are missing when you hold `dr.list` and `dr.set`. It then shows the **Payload
+URL** and **Secret** to paste into GitHub. It needs `secret.get`, `secret.set`,
+`cloudsensor.get`, `cloudsensor.set`, `ikey.list` and `ikey.set`.
+
+An owner of the GitHub organization then opens **Organization → Settings → Developer
+settings → GitHub Apps → the App** and:
+
+1. on **General**, under **Webhook**, ticks **Active**;
+2. pastes the **Payload URL** into **Webhook URL**;
+3. sets **Content type** to `application/json`;
+4. pastes the **Secret** into **Webhook secret**;
+5. keeps **SSL verification** enabled;
+6. on **Permissions & events**, under **Subscribe to events**, ticks **Push** and
+   **Pull request**. GitHub only offers **Push** once the App has the **Contents**
+   permission, and **Pull request** once it has **Pull requests**;
+7. saves the changes, then chooses **Check again** on the **Code** page.
+
+The Secret is shown only in that panel, and only to someone who holds the
+permissions above.
+
+#### Fix webhook
+
+For an App whose active webhook points somewhere else, **Fix webhook** prepares the
+adapter, secret and rules the same way, then updates the App's webhook through
+GitHub's API to point at the adapter, with content type JSON, TLS verification on and
+the signing secret. It needs `cloudsec.set` in addition to the permissions of **Set
+up webhook**; without them the page shows the status and names what is missing.
+
+- **Confirmation.** A GitHub App has only one webhook. Before replacing it, the page
+  asks you to confirm with **Replace webhook**: whatever receives those deliveries
+  today stops receiving them, and the previous secret cannot be restored.
 - **The App is used by another LimaCharlie organization.** If the App's webhook
   already delivers to a *different* LimaCharlie organization, for example one GitHub
   App reused across several organizations, **Fix webhook** refuses and changes
   nothing. Overwriting it would silently stop that organization's push rescans and
   pull-request checks. Connect this organization with its own GitHub App.
-- **Missing events cannot be fixed through the API.** GitHub does not let an App's
-  event subscriptions be changed through its API, so this is the one step a person
-  does. An owner of the GitHub organization opens **Organization → Settings →
-  Developer settings → GitHub Apps → the App** (the status row links to that list),
-  then:
-    1. on **General**, under **Webhook**, ticks **Active**;
-    2. on **Permissions & events**, under **Subscribe to events**, ticks **Push** and
-       **Pull request**, and saves. GitHub only offers **Push** once the App has the
-       **Contents** permission, and **Pull request** once it has **Pull requests**.
+- **The webhook was deactivated in the meantime.** If GitHub reports that the App no
+  longer has an active webhook, nothing is changed and the page switches to the
+  **Set up webhook** steps above.
 
-An App created with **Create a GitHub App for me** is subscribed from the start.
+An App created with **Create a GitHub App for me** has an active webhook subscribed
+to both events from the start.
 
 ### The API
 
 The console's **Fix webhook** calls a public route you can call yourself, for example
-from automation:
+from automation. Like **Fix webhook**, it can only update an App's **active** webhook:
+it cannot create or activate one.
 
 ```text
 POST https://api.limacharlie.io/v1/cloudsec/{oid}/code/webhook
@@ -488,12 +532,16 @@ by this route):
 }
 ```
 
-- `url` must be exactly this organization's hook URL for a
+- `url` must be exactly this organization's hook URL for a **per-connection**
   `github-code-webhook-<name>` adapter: `https`, this organization's hooks domain (the
   `url.hooks` value of `GET /v1/orgs/{oid}/url`), this organization's ID as the first
   path segment, three path segments, and no credentials, port, query, fragment or
   percent-encoding. Anything else is refused, so the route cannot point your App at
-  an address outside LimaCharlie.
+  an address outside LimaCharlie. The URL of an adapter named just
+  `github-code-webhook`, from an older version of the manual recipe, is refused with
+  `invalid_url`: create a per-connection adapter first (see
+  [Manual setup](#manual-setup-advanced)), or set that App's webhook by hand on
+  GitHub.
 - `secret` is 20 to 256 characters with no whitespace, and must be the value the
   adapter's `signature_secret` verifies.
 
@@ -518,6 +566,7 @@ A refusal carries a machine-readable `reason` at the top level of the error body
 | 400 | `invalid_connection`, `invalid_url`, `invalid_secret` | The body is malformed, or the URL is not this organization's hook URL. |
 | 400 | `connection_not_found`, `provider_not_github` | The connection does not exist in this organization, or is not a GitHub connection. |
 | 400 | `credential_unavailable` | The connection's App credentials are missing or cannot be read. |
+| 400 | `webhook_not_active` | The App has no active webhook, and GitHub's API cannot create one. Nothing was changed. An owner must enable it in the App's settings (the [Set up webhook](#set-up-webhook) steps); retrying before that will not help. |
 | 400 | `webhook_in_use_by_other_org` | The App's webhook delivers to another LimaCharlie organization. Nothing was changed; retrying will not help. Use a separate GitHub App. |
 | 502 | `github_unavailable` | GitHub could not be reached or rate-limited the request. Retry later. |
 | 502 | `github_credential_rejected` | GitHub rejected the App's credentials. Check the App's private key. |
@@ -533,7 +582,7 @@ as the `webhook` object of each GitHub connection.
 
 Use this only when the console path does not suit you: an organization managed
 entirely from the CLI or infrastructure-as-code, or a forked rule. It produces the
-same result as **Fix webhook**.
+same result as **Set up webhook** or **Fix webhook**.
 
 !!! tip "The Code page can install the D&R rules for you"
     The Code page's Overview tab has a **Webhook automation** panel whose
@@ -593,14 +642,17 @@ same result as **Fix webhook**.
 
    An adapter from an older version of this recipe, named just
    `github-code-webhook`, keeps working for a single connection, and its URL is
-   reported as **Receiving events**. **Fix webhook** always uses the per-connection
-   name.
+   reported as **Receiving events**. **Set up webhook**, **Fix webhook** and
+   [the API](#the-api) only work with the per-connection name: the API refuses a
+   legacy adapter's URL with `invalid_url`. To use them, create the per-connection
+   adapter first, or keep maintaining the legacy App webhook by hand on GitHub.
 
-2. **Point the GitHub App's webhook at that URL**: either call
-   [the API](#the-api) above with the URL and `$SIGNATURE_SECRET`, or edit the App on
-   GitHub and set the webhook URL, content type `application/json` and **Secret**
-   `$SIGNATURE_SECRET`. Either way, make sure the webhook is **Active** and the App
-   is subscribed to **Push** and **Pull request** on GitHub. A delivery
+2. **Point the GitHub App's webhook at that URL.** On GitHub, edit the App: tick
+   **Active**, set the webhook URL, content type `application/json` and **Secret**
+   `$SIGNATURE_SECRET`, keep SSL verification on, and subscribe to **Push** and **Pull
+   request**. If the App already has an active webhook, you can instead call
+   [the API](#the-api) with the URL and `$SIGNATURE_SECRET`; the API cannot create or
+   activate a webhook, or subscribe events. A delivery
    without a valid signature is refused with `401`, and the rules only fire
    on deliveries whose signature was verified. GitHub's **Redeliver** of a
    delivery that was already accepted within the last 24 hours is acknowledged
@@ -673,7 +725,7 @@ the permissions and the webhook are already in place, so the policy switch is th
 part left. If you also let it create [the default policy](#the-default-policy), checks
 are already on. For any other App, the **GitHub webhooks** status on the **Code** page
 tells you whether the webhook part is done (see
-[Webhook status and Fix webhook](#webhook-status-and-fix-webhook)).
+[Webhook status on the Code page](#webhook-status-on-the-code-page)).
 
 Pull-request checks, pull-request comments and [AutoFix](#dependency-autofix-pull-requests)
 are **GitHub-only**. They are the one part of the lane that writes to your organization,
@@ -754,8 +806,8 @@ to a pull request being opened, and the feature is silently inert.
 
 When the connection's webhook status is **Receiving events** and the rules are installed,
 this is already done. An App created for you is subscribed to pull requests from the start,
-and [automatic setup](#how-the-webhook-is-set-up) and **Fix webhook** install all three
-rules when you hold `dr.list` and `dr.set`. The steps below are the
+and [automatic setup](#how-the-webhook-is-set-up), **Set up webhook** and **Fix webhook**
+install all three rules when you hold `dr.list` and `dr.set`. The steps below are the
 [manual](#manual-setup-advanced) equivalent, and the reference for what the rules do.
 
 !!! warning "A pull-request check needs the webhook, not just `pr_checks: true`"
@@ -882,7 +934,7 @@ commit stays exactly as it was, green or red, measured against a base that is
 no longer the base. If you made the check **required**, that is a merge gate
 satisfied by a scan of a diff that no longer exists.
 
-Automatic setup and **Fix webhook** install this rule too (with `dr.list` and `dr.set`). To install it by hand, add
+Automatic setup, **Set up webhook** and **Fix webhook** install this rule too (with `dr.list` and `dr.set`). To install it by hand, add
 `cloudsec-code-pr-retarget` alongside the rule above — same webhook, same
 adapter, same signing secret. Save the YAML below as `pr-retarget.yaml`, then:
 
@@ -970,17 +1022,18 @@ In order, stopping at the first thing that is wrong:
 1. **The webhook is connected.** On the **Code** page, the connection's row under
    **GitHub webhooks** should read **Receiving events**, and the **Webhook
    automation** panel should show all three rules installed. **Not connected** is
-   fixed with **Fix webhook**; **Missing events** needs an owner to tick **Push**,
-   **Pull request** and **Active** on the App (see
-   [Webhook status and Fix webhook](#webhook-status-and-fix-webhook)). The status
+   fixed with **Set up webhook** (no active webhook) or **Fix webhook** (it points
+   elsewhere); **Missing events** needs an owner to tick **Push** and **Pull
+   request** on the App (see
+   [Webhook status on the Code page](#webhook-status-on-the-code-page)). The status
    is re-checked every few minutes, so a change made on GitHub can take that long to
    show.
 2. **GitHub delivered it.** On GitHub, the App's settings have an **Advanced** tab
    with **Recent Deliveries**. A `pull_request` delivery should be there with a
    `200`. A `401` means the signature did not verify — the App's webhook **Secret**
-   and the adapter's `signature_secret` are not the same value. Calling
-   [the API](#the-api) with the adapter's URL and signing secret sets the App's
-   secret back to match. No delivery at all, for a repository you
+   and the adapter's `signature_secret` are not the same value. Paste the secret
+   again on GitHub, or call [the API](#the-api) with the adapter's URL and signing
+   secret to set the App's secret back to match (per-connection adapters only). No delivery at all, for a repository you
    expected, usually means the App is not installed on that repository.
 3. **The rule matched.** Replay it over a short window around the delivery.
    `--start` and `--end` are Unix seconds, so keep the window to a few minutes:
@@ -1408,14 +1461,17 @@ Named here so their absence is not mistaken for a clean result:
 | A repository or image reports `free_tier_code_repos_cap` or `free_tier_code_images_cap` | The organization is on the free tier, which covers the first 10 repositories per connected source-control organization and the 5 most-referenced container images per organization. The covered set is stable rather than rotating, so findings do not appear and disappear between passes. Narrow the policy to the repositories you care about, or move off the free tier. A `_report` suffix means the limit is not being applied: everything was scanned, and the message reports what the limit would have done. |
 | A pull-request check or AutoFix does nothing, reporting `write_app_not_configured` or `write_app_lacks_contents` | Only the write was refused. Scanning and existing findings are unaffected. The App that writes — the connection's App, or a separate Code Actions App if the record names one — lacks the permission the message names: `Checks` and `Pull requests: Read and write` for checks and comments, `Contents: Read and write` for AutoFix. The **Code** page shows which is missing per connection. Grant it and approve the permission request on the installation page. |
 | An AutoFix pull request reports `lockfile_stale` | The pull request is real and correct; the lockfile still has to be regenerated. npm: `npm install --package-lock-only --ignore-scripts`. Go: `go mod tidy`. This is expected for Go whenever a `go.sum` exists, and for npm only under `autofix_registry_access: false`, a `yarn.lock`/`pnpm-lock.yaml`, or an entry that could not be rewritten safely. |
-| Pushes are not rescanned and pull requests get no check | Open the **Code** page's **GitHub webhooks** section. **Not connected** means the App has no webhook or it points elsewhere: use **Fix webhook**. **Missing events** means an owner of the GitHub organization must tick **Push** and **Pull request** under the App's **Permissions & events**, and **Active** under **General → Webhook**; GitHub offers no API for this. **Receiving events** means the webhook is fine: check that the three rules are installed under **Webhook automation**, then work through [Is it firing?](#is-it-firing). Never add webhooks to individual repositories: the App's one webhook covers every repository it is installed on. |
+| Pushes are not rescanned and pull requests get no check | Open the **Code** page's **GitHub webhooks** section. **Not connected** with no active webhook: use **Set up webhook** and have an owner add the Payload URL and Secret on GitHub, then **Check again**. **Not connected** pointing elsewhere: use **Fix webhook**. **Missing events** means an owner of the GitHub organization must tick **Push** and **Pull request** under the App's **Permissions & events**; GitHub offers no API for this. **Receiving events** means the webhook is fine: check that the three rules are installed under **Webhook automation**, then work through [Is it firing?](#is-it-firing). Never add webhooks to individual repositories: the App's one webhook covers every repository it is installed on. |
 | A connection's webhook shows **Not verified** | GitHub could not be read with the App's credentials: a timeout, a rate limit, or a rejected private key. Nothing is wrong with the webhook as far as LimaCharlie knows, and it is checked again automatically. If it stays that way, check that the App and its private key still exist on GitHub. |
 | **Fix webhook** asks to **Replace webhook** | The App's webhook currently delivers to another address. A GitHub App has only one webhook, so replacing it stops those deliveries, and the previous secret cannot be restored. If another tool relies on that webhook, connect LimaCharlie with its own GitHub App instead. |
 | **Fix webhook** fails with `webhook_in_use_by_other_org` | The App's webhook already delivers to a different LimaCharlie organization, so nothing was changed. One App can only deliver to one organization. Create a separate GitHub App for this organization, for example with **Create a GitHub App for me**. |
 | **Fix webhook** fails with `github_credential_rejected` or `credential_unavailable` | The connection's App credentials are missing or GitHub rejected them. Generate a new private key for the App on GitHub and update the connection's credentials secret. |
+| **Fix webhook** fails with `webhook_not_active`, or switches to the Set up webhook steps | The App's webhook was deactivated after its status was read. GitHub's API cannot create or activate a webhook, so an owner must follow the [Set up webhook](#set-up-webhook) steps on GitHub. Nothing was changed. |
+| The API refuses a webhook URL with `invalid_url` | The route only accepts this organization's per-connection adapter URL, `https://<hooks domain>/<oid>/github-code-webhook-<connection>/<secret>`. A legacy adapter named just `github-code-webhook` is refused: create a per-connection adapter first. |
+| **Create a GitHub App for me** says "GitHub App … was created, but this setup ended before its private key was saved", or that setup was interrupted while GitHub was creating the App | The page was closed or reloaded before the App's private key was saved, and GitHub hands the key over only once. The App may exist on GitHub. Generate a new private key for it on GitHub and connect it with **I already have a GitHub App**, or delete the App and start again. |
 | **Fix webhook** reports a timeout | The change may already be applied. The status is re-checked automatically; look at it again before retrying. |
 | **Create a GitHub App for me** ends with "The installation was requested" | The person who installed the App is not an owner of the GitHub organization, so GitHub only requested the installation. Once an owner approves it on GitHub, add the connection with **I already have a GitHub App**, using the App ID and credentials the page showed. |
-| **Create a GitHub App for me** says the setup expired | GitHub requires the App to be created within an hour of leaving LimaCharlie. If the App was created on GitHub anyway, delete it or connect it manually with a newly generated private key, then start again from Settings. |
+| **Create a GitHub App for me** says the setup expired | GitHub requires the App to be created within an hour of leaving LimaCharlie. After the App's key is saved, the setup stays resumable for 7 days in the same browser session. If the App was created on GitHub anyway, delete it or connect it manually with a newly generated private key, then start again from Settings. |
 | A finding you expected is absent entirely | Check the policy's `severity_floor`. A finding under the floor is never recorded, so it has no row to filter for. `LOW`, `INFO` and an empty value mean no floor. |
 
 ## See also

@@ -89,10 +89,10 @@ for a setting nobody could see.
 2. Name it (e.g. `LimaCharlie Cloud Security`), set a homepage URL, and
    **uncheck Webhook → Active** (the collector polls; it needs no callback).
    If you plan to use Code Scanning's push rescans or pull-request checks, the
-   webhook is needed after all: once connected, use **Fix webhook** on the
-   **Code** page, then tick **Active** and subscribe to **Push** and **Pull
-   request** (see
-   [Webhook status and Fix webhook](../code-scanning.md#webhook-status-and-fix-webhook)).
+   webhook is needed after all: once connected, use **Set up webhook** on the
+   **Code** page, which shows the URL and secret to add here, then tick
+   **Active** and subscribe to **Push** and **Pull request** (see
+   [Set up webhook](../code-scanning.md#set-up-webhook)).
 3. Under **Permissions**, set each permission above to **Read-only**.
 4. Under **Where can this GitHub App be installed?**, choose **Only on this
    account**.
