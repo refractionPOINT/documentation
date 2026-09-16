@@ -28,7 +28,7 @@ Adapter Type: `harmony`
 
 - `client_id`: Infinity Portal Client ID. Create under *Global Settings → API Keys*. For Infinity Events the key must include the *Logs as a Service* service; for the Entities source it must include the *Harmony Email & Collaboration* service. A single key with both services attached is supported.
 - `access_key`: Infinity Portal Access Key paired with the Client ID above.
-- `url` *(optional)*: Infinity Portal gateway base URL — **scheme and host only**, with no path. Defaults to `https://cloudinfra-gw.portal.checkpoint.com`. Use the regional variant (for example `https://cloudinfra-gw-us.portal.checkpoint.com`) if your tenant lives in a regional data center. Both `/app/laas-logs-api` and `/app/hec-api` share the same hostname per region. Do not paste the Infinity Portal's **Authentication URL** here: it ends in `/auth/external`, which the adapter appends itself. A `url` with a path is rejected at startup.
+- `url` *(optional)*: Infinity Portal gateway **base** URL — the API paths are appended to it. Defaults to `https://cloudinfra-gw.portal.checkpoint.com`. Use the regional variant (for example `https://cloudinfra-gw-us.portal.checkpoint.com`) if your tenant lives in a regional data center. Both `/app/laas-logs-api` and `/app/hec-api` share the same hostname per region. Do not paste the Infinity Portal's **Authentication URL** here: it ends in `/auth/external`, which the adapter appends itself. A `url` that already contains one of the adapter's own API paths (`/auth/external`, `/app/laas-logs-api`, `/app/hec-api`), or that carries a query or fragment, is rejected at startup. An unrelated path prefix is fine — if you reach the gateway through a reverse proxy, `https://proxy.example.com/checkpoint` is a valid value.
 
 All duration fields below are parsed with [`time.ParseDuration`](https://pkg.go.dev/time#ParseDuration) — for example `"60s"`, `"5m"`, `"1h30m"`, `"360h"`.
 
@@ -41,20 +41,23 @@ All duration fields below are parsed with [`time.ParseDuration`](https://pkg.go.
 - `events.page_limit` *(optional)*: page size for the records-retrieval API. Defaults to `100`. The gateway rejects values below `10` with HTTP 400.
 - `events.limit` *(optional)*: cap on records returned per cloud service per poll. Defaults to `5000`.
 
-`events.cloud_services` defaults to the **full** Harmony suite, so a tenant licensed for only part of it will be queried for products it cannot read. The gateway reports that in one of two ways, and the adapter treats both as a per-service soft failure — one warning per poll, that window skipped, the other cloud services unaffected:
+`events.cloud_services` defaults to the **full** Harmony suite, so a tenant licensed for only part of it will be queried for products it cannot read. The gateway reports that in one of two ways, and each is treated as a per-service soft failure — one warning per poll, that window skipped, the other cloud services unaffected:
 
 - the query comes back in state `Canceled`; or
-- the query is refused with HTTP 403, whose body carries `Unauthorized to perform operations on the given Cloud Service` in `error.details`.
+- the query submission is refused with HTTP 403, whose body carries `Unauthorized to perform operations on the given Cloud Service` in `error.details`.
 
 Set `events.cloud_services` to just the products the tenant is licensed for to silence the warnings.
 
 A 403 has two quite different causes, and they are worth telling apart before narrowing the list:
 
 - **The tenant is not licensed for that product.** Only that cloud service is refused; the rest keep ingesting normally.
-- **The API key is missing the *Logs as a Service* service.** *Every* cloud service is refused, so the Infinity Events source ships nothing at all. If all of the configured services warn at once, suspect the key rather than the licensing, and check the key's attached services in the Infinity Portal.
+- **The API key is missing the *Logs as a Service* service.** *Every* cloud service is refused, so the Infinity Events source ships nothing at all. Rather than let that pass as a handful of warnings, the adapter raises a single error saying every configured cloud service was refused. Check the key's attached services in the Infinity Portal — and if the key is right, the configured products are ones this tenant has none of.
 
-!!! note "Only a refused query submission is soft-failed"
-    A 403 on the *submission* of a query is treated as a warning, as described above. A 403 that arrives later, while the adapter is polling the query's status or retrieving its records, is reported as an error instead — records from that window may already have been shipped, so the adapter must not quietly skip past the remainder.
+!!! note "When a 403 is *not* treated as a warning"
+    Only a 403 refusing the **submission** of a query, and only one whose body names the cloud service, is soft-failed.
+
+    - A 403 arriving later, while the adapter polls the query's status or retrieves its records, is reported as an error — records from that window may already have been shipped, so the adapter must not quietly skip past the remainder.
+    - A 403 that does not name the cloud service is reported as an error too. It is not the gateway declining one product but something else refusing the request: an IP restriction, or a corporate proxy or WAF in front of the gateway.
 
 **`entities` block — HEC entity-query source:**
 
@@ -234,13 +237,13 @@ harmony:
 4. Copy the resulting **Client ID** and **Access Key**. The Access Key is shown only once — save it somewhere safe.
 5. Note the **Authentication URL** shown next to the key. If it points at a regional gateway (`cloudinfra-gw-us.portal.checkpoint.com`, `cloudinfra-gw-eu.portal.checkpoint.com`, etc.) you will need to supply that gateway as the adapter's `url` value.
 
-    !!! warning "Use only the scheme and host — drop the `/auth/external` suffix"
+    !!! warning "Drop the `/auth/external` suffix"
         The Authentication URL is shown in full, ending in `/auth/external`, but the adapter's `url` field takes only the part before that — the adapter appends `/auth/external` and the other API paths itself.
 
         - Correct: `https://cloudinfra-gw-eu.portal.checkpoint.com`
         - Incorrect: `https://cloudinfra-gw-eu.portal.checkpoint.com/auth/external`
 
-        A `url` carrying a path is refused when the adapter starts, with an error naming the value to use instead. On adapter builds predating that check the value is accepted and every request doubles the suffix, which fails as `Cannot POST /auth/external/auth/external`.
+        A `url` that already contains one of those API paths is refused when the adapter starts, with an error naming the value to use instead. On adapter builds predating that check it is accepted and every request doubles the suffix, which fails as `Cannot POST /auth/external/auth/external`.
 
 ### Setting up the Adapter
 
