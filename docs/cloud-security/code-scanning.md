@@ -352,9 +352,14 @@ GitHub App webhook ──push──▶ LimaCharlie webhook adapter ──▶ D&R
    `pull_request` to this same hook rather than creating a second one.
 
 3. **Install the D&R rule.** It ships as a recipe rather than being installed for
-   you, so you can read what it does and fork it. The Cloud Security **Code**
-   page offers to write it under the name `cloudsec-code-push-rescan`; the
-   equivalent YAML is:
+   you, so you can read what it does and fork it. Save the YAML below as
+   `push-rescan.yaml` and write it into the `dr-general` hive under the name
+   `cloudsec-code-push-rescan`:
+
+   ```bash
+   limacharlie hive set --hive-name dr-general \
+       --key cloudsec-code-push-rescan --input-file push-rescan.yaml --enabled
+   ```
 
    ```yaml
    detect:
@@ -493,8 +498,15 @@ to a pull request being opened, and the feature is silently inert.
    the same URL and the same signing secret — a second adapter would only mean a
    second secret to get wrong.
 
-2. **Install `cloudsec-code-pr-check`** into `dr-general`. The Cloud Security
-   **Code** page offers to write it; the equivalent YAML is:
+2. **Install `cloudsec-code-pr-check`** into `dr-general`, the same way as the
+   push rule:
+
+   Save the YAML below as `pr-check.yaml`, then:
+
+   ```bash
+   limacharlie hive set --hive-name dr-general \
+       --key cloudsec-code-pr-check --input-file pr-check.yaml --enabled
+   ```
 
    ```yaml
    detect:
