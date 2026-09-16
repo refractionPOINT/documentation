@@ -41,27 +41,27 @@ All duration fields below are parsed with [`time.ParseDuration`](https://pkg.go.
 - `events.page_limit` *(optional)*: page size for the records-retrieval API. Defaults to `100`. The gateway rejects values below `10` with HTTP 400.
 - `events.limit` *(optional)*: cap on records returned per cloud service per poll. Defaults to `5000`.
 
-`events.cloud_services` defaults to the **full** Harmony suite, so a tenant licensed for only part of it will be queried for products it cannot read. The gateway reports that in one of two ways, and each is treated as a per-service soft failure — one warning per poll, that window skipped, the other cloud services unaffected:
+#### When a cloud service can't be read
 
-- the query comes back in state `Canceled`; or
-- the query submission is refused with HTTP 403, whose body carries `Unauthorized to perform operations on the given Cloud Service` in `error.details`.
+`events.cloud_services` defaults to the full Harmony suite, so a tenant licensed for only part of it will be queried for products it cannot read. Set `events.cloud_services` to just the products the tenant is licensed for and the rest of this section stops applying.
 
-A skipped window is not retried: the adapter advances past it and moves on, so a refusal that turns out to be transient costs that cloud service the events in that window. That is the deliberate trade for not pinning the cursor and re-querying an ever-growing window on a product the tenant will never be able to read.
+The gateway refuses a product it won't serve in one of two ways — the query comes back in state `Canceled`, or its submission is refused with HTTP 403 carrying `Unauthorized to perform operations on the given Cloud Service` in `error.details`. Each is treated as a soft failure for that cloud service alone: one warning per poll, that window skipped, the other cloud services unaffected.
 
-Set `events.cloud_services` to just the products the tenant is licensed for to silence the warnings.
+A skipped window is not retried. The adapter advances past it, so a refusal that turns out to be transient costs that cloud service the events in that window — the deliberate trade for not pinning the cursor and re-querying an ever-growing window on a product the tenant will never be able to read.
 
-A *soft-failed* 403 has two quite different causes, and they are worth telling apart before narrowing the list:
+Two causes are worth telling apart:
 
 - **The tenant is not licensed for that product.** Only that cloud service is refused; the rest keep ingesting normally.
-- **The API key is missing the *Logs as a Service* service.** *Every* cloud service is refused, so the Infinity Events source ships nothing at all. Rather than let that pass as a handful of warnings, the adapter raises a single error saying every configured cloud service was refused. Check the key's attached services in the Infinity Portal — and if the key is right, the configured products are ones this tenant has none of.
+- **The API key is missing the *Logs as a Service* service.** *Every* cloud service is refused, so the source ships nothing at all. Rather than let that pass as a handful of warnings, the adapter raises a single error naming that condition. Check the key's attached services in the Infinity Portal — and if the key is right, the configured products are ones this tenant has none of.
 
-!!! note "When a 403 is *not* treated as a warning"
-    Only a 403 refusing the **submission** of a query, and only one whose body carries the gateway's exact phrase `Unauthorized to perform operations on the given Cloud Service` (matched case-insensitively), is soft-failed.
+!!! note "When a 403 is reported as an error instead"
+    Only a 403 refusing the **submission** of a query, and only one carrying the gateway's exact phrase `Unauthorized to perform operations on the given Cloud Service` (matched case-insensitively), is soft-failed. Everything below is reported as an error.
 
-    - A 403 arriving later, while the adapter polls the query's status or retrieves its records, is reported as an error — records from that window may already have been shipped, so the adapter must not quietly skip past the remainder.
-    - Any other 403 is reported as an error: an IP restriction, or a corporate proxy or WAF in front of the gateway. Should Check Point ever reword its message, refusals fall back to being reported as errors rather than being skipped silently.
+    - **A 403 arriving later**, while the adapter polls the query's status or retrieves its records. Records from that window may already have been shipped, so the adapter must not quietly skip past the remainder.
+    - **Any other 403** — an IP restriction, or a corporate proxy or WAF in front of the gateway. Should Check Point ever reword its message, refusals fall back to being reported as errors rather than skipped silently.
+    - **Every configured cloud service being refused at once**, as above. Each service still warns individually; the error is raised on top of those warnings, once, and again if the condition recurs after a recovery.
 
-    A **misspelled cloud service name** is refused separately, with `The provided Cloud Service is unknown` — this is what the ampersand warning above is about. It is not a licensing gap and will not resolve on its own: that service ingests nothing and reports an error every poll until the spelling in `events.cloud_services` is corrected.
+    Separately, a **misspelled cloud service name** is refused with `The provided Cloud Service is unknown` — this is what the ampersand warning above is about. It is not a licensing gap and will not resolve on its own: that service ingests nothing and reports an error every poll until the spelling in `events.cloud_services` is corrected.
 
 **`entities` block — HEC entity-query source:**
 
@@ -247,7 +247,13 @@ harmony:
         - Correct: `https://cloudinfra-gw-eu.portal.checkpoint.com`
         - Incorrect: `https://cloudinfra-gw-eu.portal.checkpoint.com/auth/external`
 
-        A `url` that already contains one of those API paths is refused when the adapter starts, with an error naming the value to use instead. On adapter builds predating that check it is accepted and every request doubles the suffix, which fails as `Cannot POST /auth/external/auth/external`.
+        Get this wrong and the adapter fails on its very first call, authentication, with the segment repeated:
+
+        ```
+        Cannot POST /auth/external/auth/external
+        ```
+
+        That is the only symptom you will see — authentication runs before anything else, so the data calls never get far enough to fail on their own mangled paths.
 
 ### Setting up the Adapter
 
