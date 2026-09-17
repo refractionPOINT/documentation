@@ -233,9 +233,9 @@ tier. See
     is not something you asked for. The drawer says so on each such message
     (`judged_via: backfill`).
 
-    It is also **paced**, so it cannot compete with live ingestion: a large
-    estate's fortnight fills in over hours rather than all at once. Progress is
-    reported in `coverage`.
+    It is also **paced**, so it cannot compete with live ingestion: a small
+    tenant's fortnight fills in over hours, a very large estate's over days,
+    rather than all at once. Progress is reported in `coverage`.
 
 ## 7. Read the first judged message
 

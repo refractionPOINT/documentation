@@ -296,11 +296,12 @@ attacking you last week is not treated as a stranger this week) and **campaign
 clustering** — a campaign that spans the fortnight is shown as one campaign
 rather than as its last two messages.
 
-**It is paced.** The walk is bounded per connection per cycle and per collector
-pod, so it can never take ingest capacity from live mail; a large estate's
-fortnight fills in over hours rather than in one burst. Progress is in
-`coverage.backfill`, and mail that arrives *during* the walk is ordinary live
-mail and is judged, emitted and acted on normally.
+**It is paced.** The walk is bounded both per connection per cycle and per
+collector pod, so it can never take ingest capacity from live mail. The
+trade-off is time: a small tenant's fortnight fills in over hours, and a very
+large estate's over days. Progress is in `coverage.backfill`, and mail that
+arrives *during* the walk is ordinary live mail and is judged, emitted and acted
+on normally.
 
 The drawer labels each such message `judged_via: backfill` — see
 [Messages & Triage](messages.md#which-lane-judged-it). A backfilled message can
@@ -366,9 +367,12 @@ An empty population is never reported as zero. `status` is `not_recorded` and
 zero denominator and a large one mean opposite things about whether to worry.
 
 !!! note "Backfilled and re-driven mail is excluded on purpose"
-    The [historical backfill](#the-historical-backfill) emits nothing at all, so
-    it never enters this population. An incident backfill and the emission
-    sweeper's repairs *do* go back through the same ingest path — one path,
+    The [historical backfill](#the-historical-backfill) runs outside the ingest
+    path entirely, so it never enters this population — not because it emits
+    nothing, but because the walk never passes through the stage that takes the
+    measurement. An incident backfill, the emission sweeper's repairs, and the
+    mail the walk hands to the live lane because it turned out to be newer than
+    the backfill cutoff *do* go back through the same ingest path — one path,
     deliberately — so such a message can be a week old by the time its event
     ships. Those samples would not widen the tail, they would *define* it, and
     one recovery would report a time to verdict measured in days. They are
