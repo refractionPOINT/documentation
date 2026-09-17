@@ -69,7 +69,7 @@ those, are queued to be asked again.
 | **What is queued** | A message another message agreed with, on at least two cluster keys, and did not take into the campaign it made. Not "anything that could conceivably cluster" — most mail satisfies the two-key rule and is in no campaign, and queueing all of it would leave the messages that matter waiting behind it |
 | **How long it stays queued** | 24 hours from delivery. Past that it is dropped: mail arriving later still finds it through the ordinary lookup, since it remains a candidate |
 | **How often it is asked** | At most once every ten minutes, and only while it is still ungrouped and inside that window |
-| **What you see** | The message's `campaign_id` and `cluster_reason` fill in, `member_count` grows, and a campaign-wide sweep from that point reaches it. An [`EMAIL_VERDICT` with `campaign_joined_late: true`](automation.md#a-message-that-joins-a-campaign-late) is emitted so a rule can respond to the change |
+| **What you see** | The message's `campaign_id` and `cluster_reason` fill in, and a campaign-wide sweep from that point reaches it — the sweep and the member list read the members directly, so neither ever misses a late joiner. `member_count` catches up within about a minute, because it is folded on its own schedule rather than written by the join. An [`EMAIL_VERDICT` with `campaign_joined_late: true`](automation.md#a-message-that-joins-a-campaign-late) is emitted so a rule can respond to the change |
 
 Nothing is queued for an organization whose mail is not clustering, and a message
 that agreed with nothing is never re-asked — there is no answer waiting to change.

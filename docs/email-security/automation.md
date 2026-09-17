@@ -89,7 +89,7 @@ Nothing was re-judged — the verdict is exactly what it was — so:
 | Path | On a late join |
 |---|---|
 | `revision/seq` | The message's *current* revision sequence: `0` when the engine's verdict has never been overridden, which is the usual case, and `1…` when it has. A consumer de-duplicating on `(msg_uuid, seq)` therefore reads this as a decision it already holds, now carrying a campaign |
-| `revision/decided_at` | The clock of the decision being restated. On a message whose engine verdict was never overridden — the usual case — that is when the **join** happened, because the join is the only thing this event reports as new. On an already-overridden message it is the **original** override's timestamp, because restating an analyst's decision under a clock they did not choose would be worse. So match late joins on `campaign_joined_late`, never on a time window |
+| `revision/decided_at` | The clock of the decision being restated. On a message whose engine verdict was never overridden — the usual case — that is when the **join** happened, because the join is the only thing this event reports as new. On an already-overridden message it is the timestamp of the override being restated — the message's **current** one, which is the original when there has only ever been one — because restating an analyst's decision under a clock they did not choose would be worse. So match late joins on `campaign_joined_late`, never on a time window |
 | `revision/verdict`, `revision/mode`, `revision/actor` | Whatever the message already carried. An overridden message restates its analyst's or agent's decision verbatim, attribution included |
 
 The original `EMAIL_MESSAGE` is never rewritten, here as everywhere: it stands as
