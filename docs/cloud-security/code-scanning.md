@@ -168,6 +168,9 @@ permissions include `dr.list` and `dr.set`, installs the
     - If the webhook or the rules could not be set, the connection is still saved:
       use the **GitHub webhooks** section or **Install the webhook rules** on the
       **Code** page afterwards.
+    - If LimaCharlie could not confirm that the App signs deliveries with the secret
+      LimaCharlie verifies, the setup ends by asking you to use **Sync webhook
+      secret** on the **Code** page. See [Secret not synced](#sync-webhook-secret).
 
 #### The default policy
 
@@ -425,6 +428,12 @@ Each connection has its own:
   App's webhook secret. Each App signs with its own secret, which is why the adapters
   are not shared.
 
+Because the adapter name is lowercased, two connections whose names differ **only in
+letter case** (for example `Acme` and `acme`) would share one adapter and one signing
+secret. The **Add provider** wizard refuses such a name for a new GitHub connection.
+Connections that already exist with such names are marked **Name conflict** on the
+**Code** page (see below).
+
 The adapters use an installation key with the description
 `cloudsec-github-code-webhook`, which is created if it does not exist.
 
@@ -442,9 +451,15 @@ select is not scanned or checked.
 
 The **Code** page's **GitHub webhooks** section lists every GitHub connection and
 whether its App delivers push and pull-request events to this organization.
-LimaCharlie reads this from GitHub with the App's own credentials; it is re-checked
-every few minutes, immediately after **Fix webhook**, and when you choose **Check
-again**.
+LimaCharlie reads this from GitHub with the App's own credentials.
+
+- A status that is not a working webhook is re-checked within about **30 seconds**,
+  so a fix made on GitHub shows within about 30 seconds (the page says up to a minute).
+  Choose **Check again** to refresh it.
+- A working webhook (**Receiving events**) is re-checked every **5 minutes**, so a
+  webhook that breaks on GitHub can take up to 5 minutes to show.
+- **Fix webhook**, **Sync webhook secret** and **Re-sync webhook secret** show the new
+  status as soon as they succeed, because a successful change clears the cached one.
 
 GitHub's API can change an App's existing webhook, but it **cannot create a webhook,
 activate one, or change which events an App is subscribed to**. Those steps are done
@@ -458,9 +473,13 @@ tells you when they are needed.
 | **Not connected**: the webhook points to another address | The webhook is active, but its URL is not this organization's LimaCharlie webhook for code scanning. Also shown when the URL is right but the webhook does not send JSON or does not verify TLS, which **Fix webhook** corrects. | **Fix webhook**. It asks for confirmation first (see below). |
 | **Missing events** | The URL is right, but the App is not subscribed to push and/or pull request events. | An owner ticks **Push** and **Pull request** under the App's **Permissions & events** on GitHub. |
 | **Not verified** | GitHub could not be read, for example because it timed out, rate-limited the App, or rejected its credentials. | Nothing to fix here. It is checked again automatically; if it persists, check the App's private key. |
+| **Secret not synced** | The App may sign deliveries with a different secret than LimaCharlie verifies, so they would be rejected. Shown in place of the status above, even **Receiving events**, because GitHub never reveals an App's secret, so the status check cannot see a mismatch. | **Sync webhook secret** (see below). |
+| **Name conflict** | This connection's name differs from another connection's only by letter case, so both would share one webhook adapter and signing secret. No webhook actions are offered for these connections. | Delete one of the connections and add it again under a distinct name. A connection cannot be renamed in place. |
+| **Needs attention** | GitHub reported a webhook problem this page does not recognise. The row shows the detail LimaCharlie received. | Follow the detail shown. |
 
-The section shows a warning when any connection is **Not connected** or **Missing
-events**: for those connections, push rescans and pull-request checks do not run.
+The section shows a warning when any connection is **Not connected**, **Missing
+events**, **Secret not synced** or **Name conflict**: for those connections, push
+rescans and pull-request checks may not run.
 
 #### Set up webhook
 
@@ -506,6 +525,31 @@ up webhook**; without them the page shows the status and names what is missing.
 - **The webhook was deactivated in the meantime.** If GitHub reports that the App no
   longer has an active webhook, nothing is changed and the page switches to the
   **Set up webhook** steps above.
+
+#### Sync webhook secret
+
+**Secret not synced** is shown when LimaCharlie holds a signing secret that the App
+may not be using: for example, when a setup with **Create a GitHub App for me** could
+not set LimaCharlie's secret on the App. The flag is kept **only in the browser that
+ran that setup**; another browser shows the detected status instead. It clears when a
+sync succeeds.
+
+**Sync webhook secret** sets the webhook URL and signing secret LimaCharlie already
+holds on the GitHub App, through GitHub's API, so the App signs deliveries with the
+secret LimaCharlie verifies. Nothing is changed on the LimaCharlie side. It asks for
+confirmation, **Re-sync the webhook secret of …?**, unless the connection is already
+**Receiving events**, because the App's current secret is replaced and cannot be
+restored.
+
+**Re-sync webhook secret** does the same for a connection that is **Receiving
+events**, after the same confirmation. Use it when GitHub's **Recent Deliveries** show
+deliveries rejected with `401`, which means the App and LimaCharlie hold different
+secrets.
+
+Both need `cloudsec.set`, `secret.get` and `cloudsensor.get`; without them the page
+names what is missing. Both need the connection's webhook adapter and secret to exist
+already, and an App with an active webhook: they are not offered while the status is
+**Not connected**. For the API route they use, see [The API](#the-api).
 
 An App created with **Create a GitHub App for me** has an active webhook subscribed
 to both events from the start.
@@ -1025,15 +1069,15 @@ In order, stopping at the first thing that is wrong:
    fixed with **Set up webhook** (no active webhook) or **Fix webhook** (it points
    elsewhere); **Missing events** needs an owner to tick **Push** and **Pull
    request** on the App (see
-   [Webhook status on the Code page](#webhook-status-on-the-code-page)). The status
-   is re-checked every few minutes, so a change made on GitHub can take that long to
-   show.
+   [Webhook status on the Code page](#webhook-status-on-the-code-page)). A change
+   made on GitHub shows within about 30 seconds; choose **Check again** to refresh.
 2. **GitHub delivered it.** On GitHub, the App's settings have an **Advanced** tab
    with **Recent Deliveries**. A `pull_request` delivery should be there with a
    `200`. A `401` means the signature did not verify — the App's webhook **Secret**
-   and the adapter's `signature_secret` are not the same value. Paste the secret
-   again on GitHub, or call [the API](#the-api) with the adapter's URL and signing
-   secret to set the App's secret back to match (per-connection adapters only). No delivery at all, for a repository you
+   and the adapter's `signature_secret` are not the same value. Use **Re-sync webhook
+   secret** on the **Code** page (see [Sync webhook secret](#sync-webhook-secret)).
+   Otherwise paste the secret again on GitHub, or call [the API](#the-api) with the
+   adapter's URL and signing secret (per-connection adapters only). No delivery at all, for a repository you
    expected, usually means the App is not installed on that repository.
 3. **The rule matched.** Replay it over a short window around the delivery.
    `--start` and `--end` are Unix seconds, so keep the window to a few minutes:
@@ -1463,6 +1507,9 @@ Named here so their absence is not mistaken for a clean result:
 | An AutoFix pull request reports `lockfile_stale` | The pull request is real and correct; the lockfile still has to be regenerated. npm: `npm install --package-lock-only --ignore-scripts`. Go: `go mod tidy`. This is expected for Go whenever a `go.sum` exists, and for npm only under `autofix_registry_access: false`, a `yarn.lock`/`pnpm-lock.yaml`, or an entry that could not be rewritten safely. |
 | Pushes are not rescanned and pull requests get no check | Open the **Code** page's **GitHub webhooks** section. **Not connected** with no active webhook: use **Set up webhook** and have an owner add the Payload URL and Secret on GitHub, then **Check again**. **Not connected** pointing elsewhere: use **Fix webhook**. **Missing events** means an owner of the GitHub organization must tick **Push** and **Pull request** under the App's **Permissions & events**; GitHub offers no API for this. **Receiving events** means the webhook is fine: check that the three rules are installed under **Webhook automation**, then work through [Is it firing?](#is-it-firing). Never add webhooks to individual repositories: the App's one webhook covers every repository it is installed on. |
 | A connection's webhook shows **Not verified** | GitHub could not be read with the App's credentials: a timeout, a rate limit, or a rejected private key. Nothing is wrong with the webhook as far as LimaCharlie knows, and it is checked again automatically. If it stays that way, check that the App and its private key still exist on GitHub. |
+| GitHub's **Recent Deliveries** show deliveries rejected with `401` | The App signs with a different secret than LimaCharlie verifies. On the **Code** page, use **Re-sync webhook secret** (or **Sync webhook secret** if the row says **Secret not synced**), which sets LimaCharlie's secret on the App. Without the console, call [the API](#the-api) with the per-connection adapter's URL and signing secret, or paste the secret on GitHub. |
+| A connection shows **Secret not synced** | The setup could not confirm that the App uses the secret LimaCharlie verifies, so deliveries may be rejected. Use **Sync webhook secret**. This flag exists only in the browser that ran the setup. |
+| A connection shows **Name conflict** | Its name differs from another connection's only by letter case, so both would share one webhook adapter and signing secret, and no webhook actions are offered. Delete one of the connections and add it again under a distinct name; a connection cannot be renamed in place. The **Add provider** wizard refuses such names for new connections. |
 | **Fix webhook** asks to **Replace webhook** | The App's webhook currently delivers to another address. A GitHub App has only one webhook, so replacing it stops those deliveries, and the previous secret cannot be restored. If another tool relies on that webhook, connect LimaCharlie with its own GitHub App instead. |
 | **Fix webhook** fails with `webhook_in_use_by_other_org` | The App's webhook already delivers to a different LimaCharlie organization, so nothing was changed. One App can only deliver to one organization. Create a separate GitHub App for this organization, for example with **Create a GitHub App for me**. |
 | **Fix webhook** fails with `github_credential_rejected` or `credential_unavailable` | The connection's App credentials are missing or GitHub rejected them. Generate a new private key for the App on GitHub and update the connection's credentials secret. |
