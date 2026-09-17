@@ -210,6 +210,39 @@ quoted threads, hidden-text detection), `links`, `attachments`, `auth` (parsed
 SPF / DKIM / DMARC / ARC results with alignment) and `hops` (the parsed `Received`
 chain).
 
+!!! note "`body/current_thread/text` covers every rendering of the message"
+    A message usually carries its content twice — once as `text/plain` and once as
+    `text/html` — and nothing in the mail standards makes the two agree. A sender
+    who writes a decoy into one part and the real message into the other would
+    otherwise choose what your rules get to read.
+
+    So `body/current_thread/text` is the newest segment of **both** renderings: the
+    plain one first, then the text a reader would see rendered from the HTML,
+    separated by a blank line. The HTML half is left out only when it already
+    appears word for word in the plain part, which is the case for most ordinary
+    mail. Two consequences for a rule author:
+
+    - Match with substring or regex patterns rather than whole-value equality. On a
+      message whose two renderings differ, this field says the same thing twice.
+    - It is a matching surface, not a display one. To show a person the message,
+      read `body/html/display_text` or `body/plain/raw`.
+
+    The quoted history is still excluded from it — that is the point of
+    `current_thread` — and it is available separately under `body/previous_threads`.
+
+!!! warning "A clause that switches a rule OFF must read `body/current_thread/visible_text`"
+    Covering both renderings is the right answer for a clause that looks for
+    something, and the wrong one for a clause that calls a rule off. A rule of the
+    shape "fire on X **unless** the message also says Y" reading `text` can be
+    switched off by a sender who writes X into the part you read and Y into the
+    part you do not — a suppressor the recipient is never shown.
+
+    `body/current_thread/visible_text` is the same newest segment narrowed to the
+    rendering a reader is actually shown: the text extracted from the HTML when the
+    message has an HTML part, the plain part when it does not. Write positive
+    clauses against `body/current_thread/text` and any `not: true` clause against
+    `body/current_thread/visible_text`.
+
 ### Enrichments
 
 | Path | What it carries |
