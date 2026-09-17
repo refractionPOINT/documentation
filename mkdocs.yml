@@ -497,6 +497,7 @@ nav:
           - Python SDK: 6-developer-guide/sdks/python-sdk.md
           - Python SDK v4: 6-developer-guide/sdks/python-sdk-v4.md
           - Go SDK: 6-developer-guide/sdks/go-sdk.md
+      - CLI Quick Start: 6-developer-guide/cli-quickstart.md
       - Command Line Interface: 6-developer-guide/sdk-overview.md
       - CLI Extension: 6-developer-guide/cli.md
       - Connecting AI Assistants: 6-developer-guide/mcp-server.md
