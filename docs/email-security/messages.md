@@ -33,9 +33,10 @@ Repeatable filters **OR within a key and AND across keys**: `verdict=suspicious`
 plus `verdict=malicious` plus `mailbox=cfo@corp.example` means "suspicious or
 malicious, delivered to that mailbox".
 
-The processing-lane filter is available on time-window, verdict, and IOC-pivot
-queries. It cannot be combined with `mailbox`, `sender_email`, or `campaign_id`
-because those indexes do not carry the lane dimension. The API refuses such a
+The processing-lane filter is available on time-window, verdict, IOC-pivot and
+`sender_root_domain` queries. It cannot be combined with `mailbox`,
+`sender_email`, or `campaign_id` because those indexes do not carry the lane
+dimension. The API refuses such a
 combination with the typed, non-retryable `lane_unsupported` error and names the
 conflicting dimension; the console clears and disables the lane control while
 one of those filters is active.

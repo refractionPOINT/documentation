@@ -63,8 +63,9 @@ Shared behaviours:
 
 `lane` selects where a message was judged: `live` for ordinary incoming mail or
 `backfill` for the initial history walk. Omit it to include either. It works with
-time-window, verdict, `link_domain`, and `attachment_sha256` queries. A lane
-cannot be combined with `mailbox`, `sender_email`, or `campaign_id`; those
+time-window, verdict, `sender_root_domain`, `link_domain` and
+`attachment_sha256` queries. A lane cannot be combined with `mailbox`,
+`sender_email`, or `campaign_id`; those
 combinations return a non-retryable typed refusal with
 `error_code: "lane_unsupported"` and name the `conflicting_dimension` rather
 than returning an unfiltered page.
