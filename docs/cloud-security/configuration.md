@@ -1,6 +1,6 @@
 # Configuration Reference
 
-Cloud Security is configured entirely through three Hive types. Anything the
+Cloud Security is configured entirely through four Hive types. Anything the
 console can configure, `limacharlie hive set` can configure — which makes
 tenant onboarding and fleet-wide policy a script, not a UI workflow (see
 [Automation & IaC](automation.md) for recipes).
@@ -10,11 +10,12 @@ tenant onboarding and fleet-wide policy a script, not a UI workflow (see
 | `cloudsec_provider` | one per cloud / IdP / SaaS / AI connection | what to collect and with which credential |
 | `cloudsec_policy` | many, discriminated by `policy_type` | classification, coverage, emission, exclusions, suppression, compliance assignments, custom posture rules, remediation SLAs |
 | `cloudsec_query` | one per saved query | shared saved graph queries |
+| `cloudsec_code_rule` | one per static-analysis rule file | the rules code scanning runs, LimaCharlie's defaults included |
 
 !!! info "Permissions"
     `cloudsec_provider` records are gated by the dedicated
-    `cloudsec_provider.get/set/del` permissions; `cloudsec_policy` and
-    `cloudsec_query` follow `cloudsec.get`/`cloudsec.set`.
+    `cloudsec_provider.get/set/del` permissions; `cloudsec_policy`,
+    `cloudsec_query` and `cloudsec_code_rule` follow `cloudsec.get`/`cloudsec.set`.
 
 ## cloudsec_provider
 
@@ -369,6 +370,27 @@ other Cloud Security event.
 
 The `detection` block is still **reserved**: it is validated for shape so
 infrastructure-as-code written today keeps working, but nothing consumes it yet.
+
+## cloudsec_code_rule
+
+One Semgrep/Opengrep rule file per record, stored as JSON — `{"rules": [ ... ]}`,
+exactly what the YAML `rules:` document parses to — holding up to 100 rules in at
+most 256 KB. Code scanning's static analysis runs **exactly the enabled records**.
+
+LimaCharlie's default rules are installed here, one rule per record, when the
+organization subscribes to `ext-cloud-security`. They are ordinary records: edit,
+disable or delete any of them, and use **Restore defaults** (or the extension's
+`restore_default_code_rules` action) to bring them back. A YAML rule file can be
+saved as-is:
+
+```bash
+limacharlie hive set --hive-name cloudsec_code_rule --key acme.python.my-rule \
+    --input-file my-rule.yaml --enabled
+```
+
+The rule format, what a save validates, the per-organization limits (5,000
+enabled rules, 20 MB) and how a rule that fails to load is reported are in
+[Code rules](code-security/code-rules.md).
 
 ## Previewing policies
 

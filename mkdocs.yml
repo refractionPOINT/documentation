@@ -617,6 +617,7 @@ nav:
           - Get Started: cloud-security/code-security/getting-started.md
           - Working with Results: cloud-security/code-security/results.md
           - Scan Policy: cloud-security/code-security/policy.md
+          - Code Rules: cloud-security/code-security/code-rules.md
           - Pull-Request Checks & Push Rescans: cloud-security/code-security/pull-requests.md
           - AutoFix Pull Requests: cloud-security/code-security/autofix.md
           - Bring Your Own Scanner: cloud-security/code-security/bring-your-own-scanner.md

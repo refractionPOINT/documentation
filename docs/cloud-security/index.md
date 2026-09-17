@@ -26,7 +26,7 @@ rules, Cases, and Outputs you already use.
 | **CAASM** | A merged third-party asset inventory (EDR / IdP / MDM / scanner sources, including LimaCharlie's own sensors) with coverage-gap and device-posture findings — "seen by the identity provider, no EDR". |
 | **Security graph & topology** | An explorable graph of resources, identities, and their relationships (`can_reach`, `exposed_to`, `has_permission_on`, `can_assume`, …) plus an aggregated estate topology view, with a query language and saved queries. |
 | **Runtime fusion** | Bidirectional resolution between LimaCharlie sensors and the cloud assets they run on — pivot from a cloud finding to the live endpoint and back. |
-| **Code security** | Scan connected repositories in the hosted service, run the LimaCharlie scanner inside your own environment, or push existing SARIF and CycloneDX results into the same findings worklist. |
+| **Code security** | Scan connected repositories in the hosted service, run the LimaCharlie scanner inside your own environment, or push existing SARIF and CycloneDX results into the same findings worklist. Static analysis runs LimaCharlie's default rules and your own, all editable. |
 | **Your own detections** | Author your own CSPM rules — in the same detection format as the built-in pack — and disable, re-severity, or replace any built-in rule for your organization. |
 | **Remediation SLAs** | Declare how long a finding may stay open, per severity, class, account, or owner, and work the worklist by deadline as well as by risk. |
 | **MSSP fleet** | A cross-tenant fleet board that rolls up risk across every organization you manage. |
@@ -93,7 +93,7 @@ map onto the capabilities above:
 | **Inventory** | The estate itself, in four views: **Topology** (the landing view — an aggregated diagram of the estate), **Resources** (the resource system-of-record), **Third-party assets**, and **Sensor coverage** (CAASM). |
 | **Compliance** | Per-control framework assessment and scoped assignments. |
 | **Report** | A print-optimized posture report over the current estate, also reachable from **Overview → View report**. |
-| **Policies** | Data classification (crown jewels), coverage, asset coverage, agent vulnerabilities, code scanning, exclusions, suppression, VEX, and SLAs. |
+| **Policies** | Data classification (crown jewels), coverage, asset coverage, agent vulnerabilities, code scanning, code rules, exclusions, suppression, VEX, and SLAs. |
 | **Settings** | Provider connections and the Cases integration. |
 
 A separate cross-tenant **Cloud Security Fleet** board rolls risk up across every
@@ -140,7 +140,7 @@ organization you manage.
 - [Custom Posture Rules](custom-rules.md) — author your own CSPM detections and
   retune the built-in ones.
 - [Configuration Reference](configuration.md) — the `cloudsec_provider`,
-  `cloudsec_policy`, and `cloudsec_query` Hive records.
+  `cloudsec_policy`, `cloudsec_query`, and `cloudsec_code_rule` Hive records.
 - [Command Line Interface](cli.md) — the `limacharlie cloudsec` command
   group.
 - [API Reference](api-reference.md) — the `/cloudsec` REST surface.

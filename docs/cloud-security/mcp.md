@@ -138,7 +138,10 @@ explicitly, so a scan that found plenty is not misread as a clean estate.
 Because it runs a container locally, it is available only when the server is running in stdio mode.
 A hosted MCP deployment refuses it.
 
-`scanners` defaults to `sca,iac,licenses`; `sast` and `images` also run locally. **Secret scanning
+`scanners` defaults to `sca,iac,licenses`; `sast` and `images` also run locally. Local `sast` never
+applies your organization's code rules. It runs the rules built into the scanner image the CLI uses by
+default, and reports `sast_no_rules` with a scanner that has no built-in rules (see
+[Scan locally or in CI](code-security/bring-your-own-scanner.md#scan-locally-or-in-ci)). **Secret scanning
 does not**, and asking for it is an error rather than a silent omission: a credential's identity in
 this pipeline is a digest keyed by a value only the hosted lane holds, so locally-found secrets
 would neither deduplicate against a hosted scan's nor be accepted by the ingest. Use the hosted lane

@@ -13,7 +13,11 @@ if it is shown. It names what is not set up and links to the fix. From the CLI,
 | A repository shows `free_tier_code_repos_cap` | The free tier covers the first 10 repositories per source-control organization. Narrow the policy to the repositories you care about, or upgrade. A code ending in `_report` means the limit is not enforced: everything was scanned. |
 | `github_app_missing_contents_permission` | The GitHub App cannot read code. Add **Repository → Contents: Read-only** to the App, then have a GitHub organization owner **approve the permission request** on the installation page. Editing the App alone is not enough. |
 | A repository shows `partial` | A limit cut the scan short, and the limit is listed on the repository. Its findings are incomplete, not clean. |
-| `partial` with `sast_ruleset_unresolved` in its limits | The policy names a static-analysis rule pack that is not available. Clear `sast_ruleset`. Other engines are unaffected. |
+| `partial` with `sast_no_rules` in its limits | No code rule is enabled, so static analysis ran no rules. Enable rules under **Cloud Security → Policies → Code rules**, or use **Restore defaults** there. Other engines are unaffected. |
+| `partial` with `sast_rules_over_cap:rules` or `sast_rules_over_cap:bytes` | More than 5,000 rules, or more than 20 MB of rules, are enabled, so static analysis did not run. Disable rules. |
+| `partial` with `sast_rule_errors` | Some code rules failed to load and were skipped. The repository's **Details** drawer names each one. Fix or disable them. See [When rules cannot run](code-rules.md#when-rules-cannot-run). |
+| Saving a code rule is rejected | The error names the rule. Usual causes: a missing `severity` or `languages`, an unsupported language, or two matchers in one rule. See [Writing a rule](code-rules.md#writing-a-rule). |
+| A repository still shows `sast_ruleset_unresolved` | That result predates code rules, and `sast_ruleset` is now ignored. The next scan replaces it. |
 | GitLab projects are listed but never scanned | The connection is to a self-managed GitLab instance. Only GitLab.com projects can be scanned. The connection test reports `code_scanning_reachable`. |
 | The repository drawer says it is outside the App's installation | The GitHub App is installed on selected repositories only. Add the repository on GitHub's installation page. |
 | A finding you expected is missing entirely | Check `severity_floor`. Findings below it are never recorded, so there is nothing to filter for. |
@@ -65,3 +69,4 @@ if it is shown. It names what is not set up and links to the fix. From the CLI,
 | Fixed findings from a SARIF push never close | Pass `--scanner-succeeded`. Many tools do not record whether the run succeeded. |
 | Secret findings from a push do not appear | Secrets are only accepted from the hosted scan. |
 | The document is too large | Keep it under 20 MiB, or split it. |
+| A local scan with `sast` reports `sast_no_rules` | The scanner has no built-in rules and was not started with `--default-rules`. See [Scan locally or in CI](bring-your-own-scanner.md#scan-locally-or-in-ci). |

@@ -26,12 +26,12 @@ imported, and for some advisories whether the vulnerable function is called.
 
 ### Static analysis (SAST)
 
-JavaScript and TypeScript, Python, Go, Java, C#, Ruby and Rust. Rules are mapped
-to CWE.
+LimaCharlie's [default code rules](code-rules.md#the-default-rules) cover
+JavaScript and TypeScript, Python, Go, Java, C#, Ruby and Rust, and are mapped to
+CWE. Rules you write can target any language the engine supports.
 
-Set `sast_ruleset` in the policy to choose the rule pack: empty (the default,
-the full curated pack) or `gitlab` (a subset based on GitLab's open-source SAST
-rules).
+Static analysis runs exactly the organization's enabled
+[code rules](code-rules.md). The policy's `sast_ruleset` is deprecated and ignored.
 
 A low-confidence static-analysis finding is recorded as `INFO`.
 
@@ -78,6 +78,7 @@ not rotate, so findings do not appear and disappear between passes.
 | Repository download | 4 GiB. A larger repository fails with `source_too_large` |
 | Container image size | 1 GiB compressed |
 | File size read by static analysis | 1 MiB (larger files are counted, not read) |
+| Enabled [code rules](code-rules.md#limits-on-the-rule-set) per organization | 5,000 rules and 20 MB |
 | Report size | 20 MiB compressed |
 | Container images per pass | 50 |
 | Triggered scans (pushes and rescans) per repository | 50 per day |
@@ -97,7 +98,7 @@ counted, but do not make the scan partial.
 | `scan_status` | `scan_status_reason` | Meaning |
 |---|---|---|
 | `scanned` | | The last scan completed. |
-| `partial` | | A limit or unavailable engine cut the scan short. The limits are listed in `scan_limits`, for example `sast_ruleset_unresolved` when the policy names a rule pack that does not exist. |
+| `partial` | | A limit or unavailable engine cut the scan short. The limits are listed in `scan_limits`, for example `sast_no_rules` when no code rule is enabled. See [When rules cannot run](code-rules.md#when-rules-cannot-run) for the static-analysis reasons. |
 | `unknown` | `repo_not_scanned` | Not scanned yet. |
 | `unknown` | `repo_archived` | Archived repositories are not scanned. |
 | `unknown` | `free_tier_code_repos_cap` | Outside the free-tier repository limit. |
@@ -172,9 +173,6 @@ filtered by `repo`.
 
 ## Not available yet
 
-- **Custom static-analysis rule packs.** `sast_ruleset: custom:<ref>` is accepted
-  by the policy but not by the scanner. Static analysis on those repositories
-  reports `sast_ruleset_unresolved`, and every other engine runs normally.
 - **Scanning images from container registries.** `image_sources: ["registries"]`
   is accepted but does nothing yet.
 - **Pull-request checks, push rescans and AutoFix on GitLab and Bitbucket.**

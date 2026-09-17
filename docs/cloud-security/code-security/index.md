@@ -21,7 +21,7 @@ pull requests that upgrade vulnerable dependencies.
 | **Malicious packages** | The same dependencies, matched against known malicious-package advisories | `malware` |
 | **Secrets** | Credentials in the current files and, if you turn it on, in the full git history | `secret` |
 | **Infrastructure as code** | Terraform, CloudFormation, Kubernetes manifests, Helm charts, Dockerfiles | `misconfig` |
-| **Static analysis (SAST)** | Source code, against a curated rule pack mapped to CWE | `code_weakness` |
+| **Static analysis (SAST)** | Source code, against your organization's [code rules](code-rules.md): LimaCharlie's CWE-mapped defaults plus your own | `code_weakness` |
 | **Container images** | Images your repositories build from, and optionally images your workloads run | `vulnerability` on the image |
 | **Licenses** | Dependency licenses with copyleft or unknown terms | `license_risk` |
 | **End-of-life runtimes** | Language runtimes and base images past their vendor support date | `eol_runtime` |
@@ -81,6 +81,7 @@ source** filters narrow the list.
 - [Get started](getting-started.md): connect GitHub, GitLab or Bitbucket and run your first scan.
 - [Working with results](results.md): the console, the CLI, SBOMs, and how code findings connect to your cloud.
 - [Scan policy](policy.md): which repositories are scanned, which engines run and how often.
+- [Code rules](code-rules.md): the static-analysis rules scans run, LimaCharlie's defaults and your own.
 - [Pull-request checks and push rescans](pull-requests.md): scan every push and gate merges on GitHub.
 - [AutoFix pull requests](autofix.md): let LimaCharlie open dependency upgrade pull requests.
 - [Bring your own scanner](bring-your-own-scanner.md): scan in your own CI, or push SARIF and CycloneDX results.
