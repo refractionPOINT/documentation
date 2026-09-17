@@ -10,47 +10,139 @@ You need:
 
 - A LimaCharlie account. [Create one for free](https://app.limacharlie.io/signup)
   if you do not already have one.
-- Python 3.10 or newer. Check with `python3 --version` on macOS or Linux, or
-  `py --version` on Windows.
-- Access to a terminal (Terminal on macOS or Linux, or PowerShell on Windows).
+- Permission to install software on your computer.
 
 ## 1. Install the CLI
 
-We recommend [pipx](https://pipx.pypa.io/stable/installation/) because it keeps
-the CLI isolated from other Python packages while making the `limacharlie`
-command available everywhere.
+The CLI requires Python 3.10 or newer. The steps below use
+[pipx](https://pipx.pypa.io/latest/how-to/install-pipx.html), which keeps the
+CLI isolated from other Python packages while making the `limacharlie` command
+available everywhere.
 
-=== "pipx (recommended)"
+=== "macOS"
 
-    ```bash
-    pipx install limacharlie
-    ```
+    1. Open **Terminal**. Find it with Spotlight Search by pressing
+        ++command+space++ and typing `Terminal`.
 
-=== "uv"
+    2. Check whether [Homebrew](https://brew.sh/) is installed:
 
-    ```bash
-    uv tool install limacharlie
-    ```
+        ```bash
+        brew --version
+        ```
 
-=== "pip"
+        If `brew` is not found, install Homebrew by following the instructions
+        on its website, then open a new Terminal window.
 
-    ```bash title="macOS or Linux"
-    python3 -m pip install --user limacharlie
-    ```
+    3. Install pipx and add its commands to your shell's search path:
 
-    ```powershell title="Windows PowerShell"
-    py -m pip install --user limacharlie
-    ```
+        ```bash
+        brew install pipx
+        pipx ensurepath
+        ```
 
-Confirm that the command is available:
+    4. Close and reopen Terminal, then install the LimaCharlie CLI:
+
+        ```bash
+        pipx install limacharlie
+        ```
+
+=== "Linux"
+
+    1. Open your terminal. On many Linux desktops, press ++ctrl+alt+t++.
+
+    2. Install pipx using your distribution's package manager.
+
+        On Ubuntu 23.04 or newer and Debian 12 or newer:
+
+        ```bash
+        sudo apt update
+        sudo apt install pipx
+        ```
+
+        On Fedora:
+
+        ```bash
+        sudo dnf install pipx
+        ```
+
+        For another distribution, follow the
+        [pipx Linux instructions](https://pipx.pypa.io/latest/how-to/install-pipx.html#on-linux).
+
+    3. Add pipx commands to your shell's search path:
+
+        ```bash
+        pipx ensurepath
+        ```
+
+    4. Close and reopen the terminal, then install the LimaCharlie CLI:
+
+        ```bash
+        pipx install limacharlie
+        ```
+
+=== "Windows"
+
+    1. Install Python 3.10 or newer from
+        [python.org](https://www.python.org/downloads/windows/) if it is not
+        already installed. During setup, select **Add python.exe to PATH**.
+
+    2. Open **PowerShell** from the Start menu and confirm Python is available:
+
+        ```powershell
+        py --version
+        ```
+
+        If you installed Python from the Microsoft Store and `py` is not found,
+        use `python3` in place of `py` in the next commands.
+
+    3. Install pipx and add its commands to your search path:
+
+        ```powershell
+        py -m pip install --user pipx
+        py -m pipx ensurepath
+        ```
+
+    4. Close and reopen PowerShell, then install the LimaCharlie CLI:
+
+        ```powershell
+        pipx install limacharlie
+        ```
+
+If you already use [uv](https://docs.astral.sh/uv/), you can use it instead of
+pipx:
+
+```bash
+uv tool install limacharlie
+```
+
+### Confirm the installation
+
+Run:
 
 ```bash
 limacharlie --version
 ```
 
-If your shell reports that `limacharlie` is not found, follow the installer
-message about adding its binary directory to your `PATH`. For pipx, run
-`pipx ensurepath`, restart your terminal, and try again.
+The output should start with `limacharlie, version` followed by the installed
+version number.
+
+If your terminal reports that `limacharlie` is not found, make sure you closed
+and reopened it after running `pipx ensurepath`. Then try the install command
+again.
+
+To upgrade the CLI later, run:
+
+=== "pipx"
+
+    ```bash
+    pipx upgrade limacharlie
+    ```
+
+=== "uv"
+
+    ```bash
+    uv tool upgrade limacharlie
+    ```
 
 ## 2. Sign in
 
@@ -67,8 +159,10 @@ run:
 limacharlie auth login --oauth --provider microsoft
 ```
 
-On a remote computer without a browser, add `--no-browser`. Open the printed
-URL on a computer with a browser and complete the sign-in there.
+If the CLI cannot open your browser automatically, add `--no-browser`, then
+open the printed URL in a browser on the same computer. On a remote or headless
+computer, use an API key instead; the OAuth flow waits for a callback on the
+computer running the CLI.
 
 ### Sign in with an API key
 
@@ -201,5 +295,15 @@ permissions, then ask an organization administrator for the required access.
 ```bash
 limacharlie config show-paths
 ```
+
+### Sign out of the CLI
+
+```bash
+limacharlie auth logout
+```
+
+This removes the locally stored credentials, but it does not revoke an API key.
+Revoke a key separately from **Access Management > REST API** if it should no
+longer work anywhere.
 
 For more commands and examples, continue to the [CLI reference](sdk-overview.md).
