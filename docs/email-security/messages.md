@@ -26,7 +26,7 @@ about the rows a browser happened to have loaded.
 | `attachment_sha256` | Messages carrying an attachment with this hash |
 | `user_reported` | Tri-state — see below |
 | `min_score` | Messages scoring at least this much |
-| `q` | Free-text over the message's subject and sender address, up to 512 characters. It is matched row by row rather than looked up, so it must be accompanied by something that bounds the read: a `since`, or one of `mailbox` / `sender_email` / `campaign_id` / `link_domain` / `attachment_sha256`, or a **single** `verdict`. On its own it is refused — see [Free text needs a window](#free-text-needs-a-window) |
+| `q` | Free-text over the message's subject and sender address, up to 512 characters. The subject is matched in both its raw and its normalized form, so a hit can be on text the row does not display. It is matched row by row rather than looked up, so it must be accompanied by something that bounds the read: a `since`, or one of `mailbox` / `sender_email` / `campaign_id` / `link_domain` / `attachment_sha256`, or a **single** `verdict`. On its own it is refused — see [Free text needs a window](#free-text-needs-a-window) |
 | `since` / `until` | RFC3339 or unix seconds |
 
 Repeatable filters **OR within a key and AND across keys**: `verdict=suspicious`
@@ -56,10 +56,10 @@ limacharlie mailsec message list --verdict suspicious --verdict malicious \
 Most of the filters in the table above are a **lookup**: `mailbox`,
 `sender_email`, `campaign_id`, `link_domain`, `attachment_sha256` and a *single*
 `verdict` each pick the read index, so the backend seeks straight to the matching
-rows. `q` is not one of them. It is matched
-against the subject and sender of each candidate row as the index is walked, so
-its cost follows how much of the index gets read rather than how many rows come
-back — and the most expensive `q` is the one that matches **nothing**, because
+rows. `q` is not one of them. It is matched literally and case-insensitively
+against each candidate row's sender address and subject as the index is walked,
+so its cost follows how much of the index gets read rather than how many rows
+come back — and the most expensive `q` is the one that matches **nothing**, because
 nothing fills the page and the walk runs to the end of your retention.
 
 So a `q` on its own is refused, and it has to name something that bounds the
@@ -86,6 +86,11 @@ GET /v1/mailsec/$OID/messages?q=invoice&since=1757116800
 # bounded by a lookup, any time
 GET /v1/mailsec/$OID/messages?q=invoice&mailbox=cfo@corp.example
 ```
+
+The subject is matched in two forms: as received, and in the normalized form
+campaign clustering derives from it — reply and forward prefixes stripped, digit
+runs collapsed. A row can therefore match on a subject that is not the one shown
+in the result.
 
 `q` is also capped at **512 characters**. A search bounded only by time is
 counted against a per-organization

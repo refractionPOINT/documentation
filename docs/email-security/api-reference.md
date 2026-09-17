@@ -122,8 +122,9 @@ no live mail connection to ship the event on. Expand the `action_id` through
     `EMAIL_ACTION` with `refused_reason: quota_exceeded`.
 
     These budgets **fail closed**: if they cannot be evaluated, the download is
-    refused with a `503` and `refused_reason: quota_unavailable` rather than
-    served. A budget that cannot be counted is not a budget, and this is the one
+    refused with a `503` rather than served, and the refusal is recorded against
+    the organization as `refused_reason: quota_unavailable` — in the audit trail,
+    not in the response body, which carries only `error`. A budget that cannot be counted is not a budget, and this is the one
     route that hands original message bytes out of the platform.
 
     Two reads are bounded as well — see [Read budgets](#read-budgets) — but in the
@@ -214,9 +215,9 @@ Two reads recompute a query rather than serving a cached or seekable answer.
   from scratch, which is a grouped scan of everything in it plus a bounded
   latency sample.
 - **`GET /messages` with `q`, when the search is a *walk*** — the free-text
-  filter is matched row by row against the subject and sender of every
-  candidate, so its cost follows how much of the index is walked rather than how
-  many rows come back. A `q` accompanied by `mailbox`, `sender_email`,
+  filter is matched row by row against the subject (raw and normalized) and the
+  sender of every candidate, so its cost follows how much of the index is walked
+  rather than how many rows come back. A `q` accompanied by `mailbox`, `sender_email`,
   `campaign_id`, `link_domain` or `attachment_sha256` is an index lookup instead
   and is **not counted at all**. A bare `verdict` does not exempt it: the verdict
   index is keyed by verdict then time, so `verdict=benign` looks up a partition
