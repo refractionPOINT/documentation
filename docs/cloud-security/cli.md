@@ -11,7 +11,7 @@ a server-rendered CSV straight through, so the output, filter, and field
 options do not apply to it.
 
 ```bash
-pip install 'limacharlie>=5.5.3'   # Python 3.10 or newer
+pip install --upgrade limacharlie   # Python 3.10 or newer
 limacharlie cloudsec --help
 ```
 
@@ -20,8 +20,9 @@ standard `limacharlie hive` commands — see
 [Configuration](configuration.md); this group is the query and triage
 surface.
 
-For the complete local-scanning, SARIF/CycloneDX ingest, and CI workflow, see
-[Code Scanning & Pushed Results](code-scanning.md).
+For Code Security (repositories, SBOMs, AutoFix, local scans and pushed results), see
+[Code Security](code-security/results.md#from-the-cli) and
+[Bring your own scanner](code-security/bring-your-own-scanner.md).
 
 ## At a glance
 
@@ -88,8 +89,14 @@ limacharlie cloudsec caasm ingest --source okta --records-file users.json
 limacharlie cloudsec provider test --input-file provider.json
 limacharlie cloudsec provider manifest --type gcp        # "what you get" for a provider
 
-# Code scanning and pushed results (requires a CLI release newer than 5.6.2)
+# Code Security
 limacharlie cloudsec code repos --with-findings --all
+limacharlie cloudsec code status
+limacharlie cloudsec code fixes
+limacharlie cloudsec code capabilities
+limacharlie cloudsec code sbom --repo acme/api -o api-sbom.json.gz
+limacharlie cloudsec code rescan acme/api
+limacharlie cloudsec code autofix fnd_...
 limacharlie cloudsec code scan . --repo acme/api --ingest
 limacharlie cloudsec code ingest --repo acme/api --source sarif --file results.sarif
 
@@ -128,11 +135,10 @@ it spans every organization your credentials can see. It carries
 the one command that does not resolve a single `--oid`.
 
 !!! note "What lives outside this command group"
-    Three read routes have no `cloudsec` command of their own: the shared-fix
-    cause rollup (`GET /findings/causes`), the filtered identity list behind
-    the Access page (`GET /ciem/identities`), and the paginated data-store
-    list (`GET /data-security/stores`). Call them over the REST API, or with
-    the generic `limacharlie api <path>` escape hatch — see the
+    The shared-fix cause rollup, the filtered identity list and the paginated
+    data-store list are `finding causes`, `ciem identities` and
+    `data-security stores`. For any route without a command, use the generic
+    `limacharlie api <path>` escape hatch — see the
     [API Reference](api-reference.md).
 
     Some things that look like missing commands are really something else.

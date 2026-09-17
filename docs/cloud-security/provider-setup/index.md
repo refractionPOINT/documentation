@@ -23,7 +23,7 @@ extension (step 1 of
 | [1Password](onepassword.md) | Identity | SCIM bridge URL + bearer token (optionally a Connect server) |
 | [Auth0](auth0.md) | Identity | M2M application authorized on the Management API with read scopes |
 | [Cloudflare](cloudflare.md) | SaaS | One scoped read-only API token + the account ID |
-| [GitHub](github.md) | SaaS | A GitHub App installed on the org, read-only permission set |
+| [GitHub](github.md) | Source control | A GitHub App installed on the org, read-only by default (write access optional, for pull-request checks and AutoFix) |
 | [GitLab](gitlab.md) | Source control | A group/project access token with `read_api` + `read_repository` |
 | [Bitbucket Cloud](bitbucket.md) | Source control | An Atlassian API token with three read scopes; the account must be a workspace member |
 | [OpenAI](openai.md) | AI | An Admin API key created with `api.management.read` |
@@ -110,7 +110,7 @@ limacharlie hive set --hive-name cloudsec_provider --key <name> \
 ### The two checks every provider reports first
 
 Before any provider-specific probe runs, the report always contains these two
-**required** checks. They are identical for all thirteen connectors, which is
+**required** checks. They are identical for every connector, which is
 why the per-provider tables in this section start at `auth`:
 
 | Check | Required | Meaning if it fails |
@@ -144,7 +144,9 @@ Only once both pass does `auth` actually reach the platform.
 
 - **Read-only.** Every credential documented here is read-only, except where a
   platform offers no read-only surface for something — those cases are called
-  out explicitly on the provider's page.
+  out explicitly on the provider's page. The one opt-in exception is GitHub, whose
+  App can be granted write access for Code Security's pull-request checks and
+  AutoFix pull requests.
 - **Least privilege.** Grant the required set first, confirm with
   `provider test`, then add optional grants only for the surfaces you want.
 - **Nothing is stored inline.** Credentials live in the `secret` hive and are

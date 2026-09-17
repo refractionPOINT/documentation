@@ -168,10 +168,15 @@ webhooks / deploy keys / Actions secrets (non-human identities), and the Actions
 OIDC subject configuration.
 
 With the **Contents → Read-only** permission added, the same connection also
-drives [Code Scanning](code-scanning.md) — dependencies, secrets,
-infrastructure-as-code, container images and licenses, scanned in an ephemeral
-sandbox and filed as ordinary findings. It is opt-in per repository through a
-`code_scanning` policy; nothing is scanned until you write one.
+drives [Code Security](code-security/index.md) — dependencies, secrets,
+infrastructure-as-code, static analysis, container images and licenses, scanned in an
+ephemeral sandbox and filed as ordinary findings. It is opt-in per repository through a
+`code_scanning` policy; nothing is scanned until you write one. Granting the App
+**Checks**, **Pull requests** or **Contents** write access additionally enables
+[pull-request checks](code-security/pull-requests.md) and
+[AutoFix pull requests](code-security/autofix.md); nothing is written until you grant it.
+The fastest way to set all of this up is
+[**Create a GitHub App for me**](code-security/getting-started.md#github-let-limacharlie-create-the-app).
 
 ### GitLab (`gitlab`)
 
@@ -184,7 +189,9 @@ access token with exactly `read_api` and `read_repository`: `{"token": "glpat-..
 missing either scope is refused; a broader one — a write scope, or `api`, `admin_mode` or
 `sudo` — still connects, and the connection test flags it as advisory. Its projects become
 repositories that a
-`code_scanning` policy can select for [Code Scanning](code-scanning.md).
+`code_scanning` policy can select for [Code Security](code-security/index.md). Code scanning
+works for GitLab.com only: a self-managed instance is inventoried but its projects cannot be
+scanned.
 
 ### Bitbucket Cloud (`bitbucket`)
 
@@ -196,7 +203,7 @@ an Atlassian API token with `read:repository:bitbucket`, `read:workspace:bitbuck
 broader one — including an `admin:` or `delete:` scope — still connects, and the connection
 test flags it as advisory. The token's account must be a member of the workspace. Its
 repositories become
-repositories that a `code_scanning` policy can select for [Code Scanning](code-scanning.md).
+repositories that a `code_scanning` policy can select for [Code Security](code-security/index.md).
 Bitbucket Data Center is not supported.
 
 ## AI security (AISPM)

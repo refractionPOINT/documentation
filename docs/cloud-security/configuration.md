@@ -27,7 +27,7 @@ Common fields (all provider types):
 
 | Field | Meaning |
 |---|---|
-| `provider_type` | `gcp` \| `aws` \| `azure` \| `okta` \| `entra` \| `google_workspace` \| `1password` \| `auth0` \| `cloudflare` \| `github` \| `openai` \| `anthropic` \| `limacharlie` |
+| `provider_type` | `gcp` \| `aws` \| `azure` \| `okta` \| `entra` \| `google_workspace` \| `1password` \| `auth0` \| `cloudflare` \| `github` \| `gitlab` \| `bitbucket` \| `openai` \| `anthropic` \| `limacharlie` |
 | `credentials` | A `hive://secret/<name>` reference. The credential itself lives in the secret Hive — it is **not** stored inline. |
 | `compliance_credentials` | Optional second `hive://secret/<name>` reference for providers with a second credential plane (today: Anthropic's compliance/analytics key). |
 | `internal_domains` | Your own email domains (bare domains, no `@`) beyond the discoverable primary — human identities outside this set are classified external. |
@@ -48,7 +48,7 @@ Per-provider scope fields:
 | `1password` | `onepassword_scim_url` — the SCIM bridge URL; the credential is the SCIM bearer token |
 | `auth0` | `auth0_domain` — the canonical tenant domain (`*.auth0.com`); the credential is an M2M app authorized for the Management API |
 | `cloudflare` | `cloudflare_account_id` — the 32-hex account id |
-| `github` | `github_org`, `github_app_id`, `github_installation_id` — a GitHub App installed on the org; the App private key is the credential |
+| `github` | `github_org`, `github_app_id`, `github_installation_id` — a GitHub App installed on the org; the App private key is the credential. Optional `github_actions_app_id`, `github_actions_installation_id` and `actions_credentials`, set together, name a separate GitHub App for Code Security's writes (pull-request checks and AutoFix); without them the connection's own App is used |
 | `gitlab` | `gitlab_namespace` — the group's full path (or a user namespace); optional `gitlab_base_url` — the https root of a self-managed instance. The credential is an access token with `read_api` + `read_repository` |
 | `bitbucket` | `bitbucket_workspace` — the Bitbucket Cloud workspace slug. The credential is an Atlassian API token with `read:repository:bitbucket`, `read:workspace:bitbucket` and `read:user:bitbucket` |
 | `openai` | optional `openai_org_id` (`org-...`); the credential is an Admin API key with `api.management.read` |
@@ -223,7 +223,7 @@ Controls which Cloud Security events reach the organization's event stream:
 |---|---|---|
 | `resource_events` | `cloud_resource.*` inventory change events | off |
 | `finding_events` | `cloud_finding.*` lifecycle events | on |
-| `ops_events` | operational events — `cloudsec.sweep_failed` | off |
+| `ops_events` | operational events — `cloudsec.sweep_failed` and the [Code Security events](code-security/reference.md#events) | off |
 | `severity_floor` | drop finding events below this severity (`CRITICAL` … `INFO`); the first-sync summary still counts the whole estate | none |
 | `suppress_first_sync` | emit one summary instead of a per-finding flood on the first / rebuild sweep | on |
 
@@ -268,6 +268,12 @@ is `kind` (`accepted`/`false_positive`), `reason` (required), `ttl_days`.
 A named framework assignment over a scoped subset of the estate — see
 [Compliance](compliance.md#scoped-assignments). Fields: `framework_id`
 (required, lowercase slug), `description`, `scope` (the account/name matchers).
+
+### `code_scanning` — Code Security
+
+Which repositories are scanned, which engines run, how often, and the
+pull-request check settings. See [Scan policy](code-security/policy.md) for
+every field.
 
 ### `rules` — your own posture rules
 

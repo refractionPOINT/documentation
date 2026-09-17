@@ -4,7 +4,11 @@ Connects one **GitLab namespace** — a group with every subgroup below it, or a
 namespace — on GitLab.com or a self-managed GitLab instance. Its projects become repositories
 in the inventory, and the namespace itself becomes the account they belong to.
 
-The connection exists to drive [Code Scanning](../code-scanning.md): once a `code_scanning`
+!!! warning "Code scanning is GitLab.com only"
+    A self-managed instance can be connected and its projects are inventoried, but they
+    cannot be scanned. See [Known limitations](#known-limitations).
+
+The connection exists to drive [Code Security](../code-security/index.md): once a `code_scanning`
 policy selects its projects, they are scanned exactly like GitHub repositories and their
 findings land in the same worklist.
 
