@@ -47,7 +47,7 @@ limacharlie hive set --hive-name cloudsec_policy --key code-scanning \
 | `scanners` | Which engines run. See [Engines](#engines). |
 | `schedule` | `daily` (the default), `weekly`, or `manual` (only when you ask for a rescan). |
 | `severity_floor` | Drop findings below this severity. See [Severity floor](#severity-floor). |
-| `sast_ruleset` | The static-analysis rule pack: empty or `default` for the full curated pack, or `gitlab` for a subset based on GitLab's open-source rules. |
+| `sast_ruleset` | **Deprecated and ignored.** Old values (`default`, `gitlab`, `custom:<ref>`) are still accepted so existing records save, but static analysis always runs the organization's enabled [code rules](code-rules.md). Leave it out of new records. |
 | `image_sources` | Where the image engine finds images. See [Container images](#container-images). |
 | `pr_checks`, `pr_comments`, `gating.fail_on` | Pull-request checks on GitHub. `fail_on` is `CRITICAL`, `HIGH`, `MEDIUM`, `LOW` or `NONE` (the default). See [Pull-request checks](pull-requests.md#turn-on-pull-request-checks). |
 | `autofix_registry_access` | Whether AutoFix may look up package registry metadata to update lockfiles. Default `true`. See [AutoFix](autofix.md#lockfiles). |
@@ -71,7 +71,8 @@ everything that does not match", which cancels your include list.
 | `licenses` | Dependency licenses | off |
 
 Every engine except `sast` runs only when set to `true`. Static analysis runs
-unless a policy sets `sast: false`. The console's policy form starts with
+unless a policy sets `sast: false`, and it runs the organization's enabled
+[code rules](code-rules.md). The console's policy form starts with
 dependencies, secrets, infrastructure as code, static analysis and licenses
 turned on.
 

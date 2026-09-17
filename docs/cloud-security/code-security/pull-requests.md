@@ -116,6 +116,11 @@ reflects the default branch.
 Findings below the policy's `severity_floor` are not counted, and `INFO`
 findings never fail a check.
 
+Both commits are checked with the same [code rules](code-rules.md). If the rules
+could not be used, or different rules failed to load on the two commits, code
+weaknesses are left out and the check cannot be `success`. See
+[Pull-request checks](code-rules.md#pull-request-checks) on the Code rules page.
+
 The check shows the full counts and up to 50 annotations, which is GitHub's
 limit per update. Pushes within about 20 seconds produce one check, on the
 newest commit.

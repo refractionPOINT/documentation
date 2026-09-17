@@ -98,6 +98,13 @@ limacharlie cloudsec code scan ~/src/payments --repo acme/payments --ingest
 - `--scanners` defaults to `sca,iac,licenses`. `sast` and `images` can also run
   locally. Locally, `images` lists the images your Dockerfiles use but does not
   scan them.
+- Local static analysis **never applies your organization's
+  [code rules](code-rules.md)**. With the CLI's default container image, it runs
+  the default rules built into that scanner image. Scanner releases that support
+  code rules have no built-in rules. They run static analysis only when started
+  with their `--default-rules` flag (LimaCharlie's default set) or `--rules-file`,
+  and the CLI does not pass either one. So pointing `--image` or `--binary` at one
+  of those releases gives a report with `sast_no_rules` and no code weaknesses.
 - A scan must use `--ingest`, `-o`, or both, so the report is never thrown away.
 - `--repo` is read from the checkout's git remote when possible. Pass it
   explicitly in CI.

@@ -15,7 +15,7 @@ pip install --upgrade limacharlie   # Python 3.10 or newer
 limacharlie cloudsec --help
 ```
 
-Configuration (providers, policies, saved queries) is managed with the
+Configuration (providers, policies, saved queries, code rules) is managed with the
 standard `limacharlie hive` commands — see
 [Configuration](configuration.md); this group is the query and triage
 surface.
