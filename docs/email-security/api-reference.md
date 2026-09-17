@@ -318,7 +318,11 @@ A campaign sweep returns `attempted`, `succeeded`, `skipped` (a subset of
 `succeeded`: members already in the target state, which cost no provider write),
 `alert_only`, a per-member `failed` map, and `action_id` — the sweep's own audit
 row, readable through `GET /actions/{action_id}`, carrying the operator's
-justification and the counts. It does not abort on the first error.
+justification and the counts. It does not abort on the first error. If the
+collector begins shutting down mid-sweep (or the caller's request ends), the
+sweep stops between members and returns a retryable error carrying `attempted`,
+`selected`, `action_id` and `interrupted_by` (`drain` or `caller`); the audit row
+settles `pending`, and re-running the same confirmation finishes it.
 
 ## Telemetry event contract
 
