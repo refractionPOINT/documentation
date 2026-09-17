@@ -60,13 +60,17 @@ Pages are keyset-paginated. `next_cursor` is opaque and is passed back verbatim;
 an empty one is the last page.
 
 A message cursor is **bound to the complete filter set that minted it**: the
-token carries a digest of your organization, the sort order and every filter —
-`q`, verdict, state, direction, mailbox, sender, campaign, score floor, time
+token carries the chosen read index and a digest of your organization, the sort
+order and *every* filter — `q`, verdict, state, direction, lane, mailbox,
+sender address, sender root domain, campaign, user-reported, score floor, time
 window, link domain and attachment hash — so changing any of them mid-walk fails
 the next page (`400`, `error_code: cursor_filter_changed`, `restart_walk: true`)
-rather than silently resuming at the previous search's position. Filter values
-are not readable from the token. Restart the walk from the first page instead;
-a cursor minted before this binding existed is refused the same way once.
+rather than silently resuming at the previous search's position. Filter *values*
+are not readable from the token; it is a hash, not a serialization. Restart the
+walk from the first page instead; a cursor minted before this binding existed is
+refused the same way once. A token that is structurally invalid — truncated,
+edited, from another endpoint — answers `error_code: cursor_malformed` with the
+same `restart_walk: true`, and the repair is identical.
 
 ### Retention
 
