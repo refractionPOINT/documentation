@@ -26,8 +26,8 @@ ACLs are opt-in. An organization with no `acl:` tags behaves exactly as before.
 
 A few details:
 
-- A restricted hive record comes back with its metadata intact and `data` replaced by `{"acl_restricted": true}`. Writing that marker back as data is rejected, so a sync from a restricted view cannot erase the real content.
-- Fetching a restricted record for execution (playbooks, secrets resolved with `hive://secret/...`) is refused instead of redacted.
+- A restricted hive record comes back with its metadata intact and `data` replaced by `{"acl_restricted": true}`. Its `etag` is computed over that redacted view. Writing the marker back as data, or a conditional write using the redacted `etag`, is rejected, so a sync from a restricted view cannot erase the real content.
+- Fetching a restricted record for execution, such as a playbook or AI agent, is refused instead of redacted. A `hive://secret/...` reference to a restricted secret is left unresolved for callers outside its scope.
 - Tasking a restricted sensor is refused for every command.
 - A detection is hidden when its sensor, or any sensor that contributed to a stateful detection, is restricted for the caller.
 
@@ -38,7 +38,7 @@ A few details:
 | `acl.get` | Read scope records and list the resources tagged with a scope |
 | `acl.set` | Create, change and delete scope records, and add or remove any `acl:` tag |
 
-The `Owner` and `Administrator` roles include both. Existing Owners and Administrators need their role re-applied to receive them. Both can be granted individually to users and API keys.
+The `Owner` and `Administrator` roles include both. Permissions are stored when a role is assigned, so users who already had one of these roles, and the user who created the org, do not have `acl.get` or `acl.set` until the role is assigned again or the permissions are granted directly. Both can be granted individually to users and API keys.
 
 `acl.set` does **not** grant read access. An administrator who can edit scopes still sees nothing restricted until they add themselves as a member. Since an `acl.set` holder can add themselves to any scope, treat `acl.set` as equivalent to seeing everything and grant it accordingly.
 
@@ -92,7 +92,7 @@ Hive records, such as secrets and extension configs:
 limacharlie hive set --hive-name secret --key mail-imap-password --tag-add acl:mailsec
 ```
 
-Each of these requires `acl.set` in addition to the usual permission (`sensor.tag`, `ikey.set`, or the hive's own set permission).
+Each of these requires `acl.set` in addition to the usual permission (`sensor.tag`, `ikey.set`, or the hive's own `set` or `set.mtd` permission).
 
 ### 3. Check the result, then enforce
 
@@ -115,27 +115,29 @@ This returns metadata only, grouped by hive, and requires `acl.get`. Use `limach
 | `members[].id` | For `user`, the user's UID or email. For `api_key`, the org API key's name. For `group`, the organization group ID. |
 | `warn_only` | `true` to report instead of enforce. Defaults to `false`. |
 
-Scope names are case-insensitive and stored lowercase. They cannot be empty or contain `,`, `/`, spaces, tabs, line breaks or control characters.
+Scope record names must be lowercase. `acl:` tags and `acl_scopes` entries are lowercased automatically, so `acl:MailSec` refers to the `mailsec` record. Names cannot be empty or contain `,`, `/`, spaces, tabs, line breaks or control characters.
 
 Record `usr_mtd` works as in any hive, with one difference in effect: disabling or expiring a scope record **locks** its resources rather than releasing them.
 
 Notes on members:
 
-- Prefer the UID for users. A member listed by email matches the user's web and CLI sessions, but not the user's personal API keys. A UID member covers both.
+- Prefer the UID for users. A member listed by email matches web app sessions and `limacharlie auth login` sessions, but not the user's personal API keys. A UID member covers both.
 - A `user` member never matches an org API key, even one named after the user.
 - Records are limited to 64 KiB.
 
 ## Warn-only mode
 
-With `warn_only: true`, a scope is not enforced. Every caller is treated as a member, so tagged resources behave as if the tag was absent. Every access the scope would have denied is reported as an organization error under the component `acl/<scope>`, naming the user or key and the resource.
+With `warn_only: true`, a scope is not enforced on reads and tasking. Every caller is treated as a member there, so tagged resources behave as if the tag was absent. Every access the scope would have denied is reported as an organization error under the component `acl/<scope>`, naming the user or key and the resource.
 
 Use it to roll out a scope without locking out analysts or cutting a SIEM feed by surprise.
 
 - The org keeps one error entry per scope, holding the most recent violation. Reports are throttled to about one per scope every 15 minutes.
 - Members of the scope are never reported.
 - Warn-only does not relax tag writes. `acl.set` is still required to add or remove `acl:` tags.
+- Warn-only does not relax D&R rules. `service request`, `extension request` and `start ai agent` are still refused on tagged events unless the rule lists the scope in `acl_scopes`.
+- Setting `acl_scopes` on an output or D&R rule still requires real membership or `acl.set`.
 - Warn-only does not apply to a disabled or expired record. Those still lock.
-- Outputs are covered too. A record that would have been withheld from an output is delivered and reported.
+- Outputs are covered too. A record that would have been withheld from an output is normally delivered and reported. The first records after a platform restart may still be withheld for a short time.
 
 ## Outputs
 
@@ -185,7 +187,7 @@ acl_scopes:
 
 - The action is allowed only when every `acl:` scope on the event's sensor is in `acl_scopes`.
 - Changing `acl_scopes` requires `acl.set` or membership in every scope in the new list. Removing all scopes requires `acl.set`.
-- Editing other parts of the rule does not require membership, as long as `acl_scopes` is unchanged.
+- Editing other parts of the rule does not require membership, as long as `acl_scopes` is unchanged. Include `acl_scopes` whenever you rewrite the whole rule. `limacharlie dr set --detect ... --respond ...` writes only `detect` and `respond`, which counts as removing every scope.
 - The rule's scopes are forwarded to the extension, which uses them to decide what the request may reach.
 - `report` and `task` actions are not affected. Their results go through channels that are already gated.
 
@@ -208,15 +210,17 @@ The Infrastructure extension includes the `acl` hive only when its identity hold
 | Code | Meaning |
 | --- | --- |
 | `ACL_CONTENT_RESTRICTED` | HTTP 403. The caller is not a member of every scope on the resource. |
-| `UNAUTHORIZED_ACL_TAG` | HTTP 401. Adding or removing an `acl:` tag without `acl.set`. |
+| `UNAUTHORIZED_ACL_TAG` | HTTP 401. Adding or removing an `acl:` tag on a sensor or installation key without `acl.set`. |
+| `UNAUTHORIZED` | HTTP 400. The same refusal for a hive record's `acl:` tags or a D&R rule's `acl_scopes`, and a refused fetch of a restricted record for execution. |
 | `ACL_TAG_TTL_NOT_ALLOWED` | `acl:` tags cannot have a TTL. |
-| `ACL_SCOPE_UNAVAILABLE`, `ACL_SCOPES_UNAVAILABLE` | Scope membership could not be resolved. Retry. |
+| `ACL_SCOPE_UNAVAILABLE` | HTTP 400, retriable. Membership could not be resolved while saving an output. |
+| `ACL_SCOPES_UNAVAILABLE` | HTTP 400, retriable. Membership could not be resolved while saving a D&R rule's `acl_scopes`. |
 
-When membership cannot be resolved, restricted content stays locked. Unrestricted content is not affected.
+When membership cannot be resolved on other paths, the API returns a generic retriable error, or a 403 for output samples. Restricted content stays locked and unrestricted content is not affected.
 
 ## Limits and behavior to know
 
-- **Propagation.** Tag changes usually apply within seconds. Membership changes also usually apply within seconds, and at most within about 5 minutes.
+- **Propagation.** Tag changes usually apply within seconds. Membership changes also usually apply within seconds. Both apply within about 6 minutes at most.
 - **Enrollment.** Tags from an installation key are applied right after enrollment, not atomically with it. A new sensor can be briefly unrestricted.
 - **Deleting is not gated.** Deleting a sensor, a hive record or an installation key does not require `acl.set` or membership. Deletion destroys content instead of exposing it. Deleting an installation key does not remove tags from sensors already enrolled.
 - **Tag TTLs.** `acl:` tags cannot expire, so a restriction is never removed silently.
