@@ -13,7 +13,7 @@ if it is shown. It names what is not set up and links to the fix. From the CLI,
 | A repository shows `free_tier_code_repos_cap` | The free tier covers the first 10 repositories per source-control organization. Narrow the policy to the repositories you care about, or upgrade. A code ending in `_report` means the limit is not enforced: everything was scanned. |
 | `github_app_missing_contents_permission` | The GitHub App cannot read code. Add **Repository → Contents: Read-only** to the App, then have a GitHub organization owner **approve the permission request** on the installation page. Editing the App alone is not enough. |
 | A repository shows `partial` | A limit cut the scan short, and the limit is listed on the repository. Its findings are incomplete, not clean. |
-| `sast_ruleset_unresolved` | The policy names a static-analysis rule pack that is not available. Clear `sast_ruleset`. Other engines are unaffected. |
+| `partial` with `sast_ruleset_unresolved` in its limits | The policy names a static-analysis rule pack that is not available. Clear `sast_ruleset`. Other engines are unaffected. |
 | GitLab projects are listed but never scanned | The connection is to a self-managed GitLab instance. Only GitLab.com projects can be scanned. The connection test reports `code_scanning_reachable`. |
 | The repository drawer says it is outside the App's installation | The GitHub App is installed on selected repositories only. Add the repository on GitHub's installation page. |
 | A finding you expected is missing entirely | Check `severity_floor`. Findings below it are never recorded, so there is nothing to filter for. |
@@ -34,7 +34,7 @@ if it is shown. It names what is not set up and links to the fix. From the CLI,
 | **Fix webhook** fails with `webhook_not_active` | The webhook was turned off on GitHub. Follow [Set up webhook](pull-requests.md#set-up-webhook). |
 | **Fix webhook** times out | The change may have been applied. Choose **Check again** before retrying. |
 | Checks stopped appearing after editing a rule | The `pr` field must stay a bare path, not a `{{ }}` template. See [If you fork these rules](pull-requests.md#3-install-the-rules). |
-| A pull-request check reports `write_app_not_configured` | The App lacks **Checks** or **Pull requests: Read and write**, or is not installed on the repository. Grant them and approve on the installation page. |
+| Checks never appear, but the webhook and rules look fine | Declined checks leave no trace. Run `limacharlie cloudsec code capabilities --repo <owner>/<name>` to confirm the App can publish on that repository, and check the policy selects it with `pr_checks: true`. See the list of reasons in [Is it firing?](pull-requests.md#is-it-firing). |
 
 ## GitHub App setup
 
@@ -50,7 +50,7 @@ if it is shown. It names what is not set up and links to the fix. From the CLI,
 
 | Problem | What to check |
 |---|---|
-| No pull request appears | Refusals are reported as `cloudsec.code_autofix_refused` events, once `ops_events` is on. See [When no pull request appears](autofix.md#when-no-pull-request-appears). |
+| No AutoFix pull request appears | Refusals are reported as `cloudsec.code_autofix_refused` events, once `ops_events` is on. See [When no pull request appears](autofix.md#when-no-pull-request-appears). |
 | `write_app_lacks_contents` | Grant **Contents: Read and write** to the App and approve on the installation page. |
 | The pull request warns that the lockfile is stale | Run the command in the pull request on its branch before merging. See [Lockfiles](autofix.md#lockfiles). |
 

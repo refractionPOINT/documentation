@@ -74,8 +74,9 @@ not rotate, so findings do not appear and disappear between passes.
 
 | Limit | Value |
 |---|---|
-| Scan duration | 30 minutes per repository |
-| Repository download | 4 GiB |
+| Scan duration | 30 minutes per repository, including about 20 minutes of scanning |
+| Repository download | 4 GiB. A larger repository fails with `source_too_large` |
+| Container image size | 1 GiB compressed |
 | File size read by static analysis | 1 MiB (larger files are counted, not read) |
 | Report size | 20 MiB compressed |
 | Container images per pass | 50 |
@@ -85,8 +86,9 @@ not rotate, so findings do not appear and disappear between passes.
 | Pushed document size | 20 MiB |
 
 When a limit cuts a scan short, the repository reports `scan_status: partial`
-and lists the limit. A partial scan **never closes** findings it did not get to
-check again.
+and lists the limit in `scan_limits`. A partial scan **never closes** findings it
+did not get to check again. Files skipped by the static-analysis size limit are
+counted, but do not make the scan partial.
 
 ## Status and reason codes
 
@@ -95,10 +97,14 @@ check again.
 | `scan_status` | `scan_status_reason` | Meaning |
 |---|---|---|
 | `scanned` | | The last scan completed. |
-| `partial` | | A limit or unavailable engine cut the scan short. The limits are listed in `scan_limits`. |
+| `partial` | | A limit or unavailable engine cut the scan short. The limits are listed in `scan_limits`, for example `sast_ruleset_unresolved` when the policy names a rule pack that does not exist. |
 | `unknown` | `repo_not_scanned` | Not scanned yet. |
 | `unknown` | `repo_archived` | Archived repositories are not scanned. |
 | `unknown` | `free_tier_code_repos_cap` | Outside the free-tier repository limit. |
+
+`repo_archived` and `free_tier_code_repos_cap` can also appear on a `scanned`
+repository that was scanned before it was archived or held back. Its last
+results are kept.
 
 ### SBOM
 
@@ -113,7 +119,12 @@ check again.
 | Code | Meaning |
 |---|---|
 | `github_app_missing_contents_permission` | The GitHub App lacks **Contents: Read-only**, so nothing could be downloaded. |
-| `sast_ruleset_unresolved` | The policy names a static-analysis rule pack that does not exist. Only static analysis is affected. |
+| `gitlab_token_missing_read_repository`, `bitbucket_token_missing_read_repository` | The connection's token cannot clone repositories. |
+| `gitlab_token_inactive` | The GitLab token is revoked or expired. |
+| `source_too_large` | The repository is over the 4 GiB download limit. |
+| `job_timeout` | The scan ran past its time limit. |
+| `fetch_failed` | The repository could not be downloaded. |
+| `mirror_stale` | The vulnerability database mirror was out of date, so the scan did not run. |
 
 ## Events
 
@@ -129,6 +140,8 @@ stream. They are off by default. Turn them on with `ops_events: true` in the
 | `cloudsec.code_pr_check_failed` | A pull-request check could not be completed. |
 | `cloudsec.code_autofix_opened` | An AutoFix pull request was opened. |
 | `cloudsec.code_autofix_refused` | An AutoFix request did not produce a pull request. |
+| `cloudsec.code_scan_closure_held` | A scan would have closed a large share of a repository's findings, so closing waits for a second scan. |
+| `cloudsec.code_scan_claim_refused` | One engine's result could not be trusted, so that engine's findings were left unchanged. |
 
 Code findings themselves emit the standard `cloud_finding.*` events, which are
 on by default. See [Events](../api-reference.md#events).

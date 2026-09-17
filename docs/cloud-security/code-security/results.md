@@ -110,7 +110,9 @@ limacharlie cloudsec finding list --repo acme/payments --source ingest
 
 Each finding also records the producer in `code.detected_via`:
 `lc-code-scanner` (hosted scan), `lc-code-scanner-byo` (a local scan you
-pushed), `sarif-ingest` or `cyclonedx-ingest`.
+pushed), `sarif-ingest:<tool>` (a SARIF push, with the tool's name),
+`cyclonedx-ingest`, or `dependabot`, `code_scanning` and `secret_scanning` for
+GitHub's own alerts.
 
 ## Scan status
 
@@ -121,6 +123,17 @@ Each repository has a `scan_status`:
 | `scanned` | The last scan completed. |
 | `partial` | A limit or an unavailable engine cut the scan short. The findings are a **lower bound**, not a clean result. The limits that were hit are listed on the repository. |
 | `unknown` | No scan state yet. `scan_status_reason` says why, for example `repo_not_scanned`. |
+
+### Why a finding closed
+
+A finding closes when a complete scan no longer sees it. Its `closed_reason`
+tells you when a policy change closed it instead: `below_severity_floor` (the
+floor was raised), `scanner_disabled` (the engine was turned off) or
+`repo_out_of_scope` (the repository was excluded).
+
+If one scan would close a large share of a repository's findings at once,
+nothing closes until a second scan agrees. This protects against a broken scan
+wiping out a repository's findings, so a big fix can take one extra scan to show.
 
 See [Status and reason codes](reference.md#status-and-reason-codes) for every
 reason.
@@ -133,6 +146,9 @@ Repositories tab, or:
 ```bash
 limacharlie cloudsec code sbom --repo acme/payments -o payments-sbom.json.gz
 ```
+
+For GitLab and Bitbucket repositories, add `--provider gitlab` or
+`--provider bitbucket` to `code sbom` and `code rescan`. They default to GitHub.
 
 The SBOM is kept as a downloadable file, not as inventory rows, so a repository
 with thousands of packages does not add thousands of rows to your estate. A
@@ -157,17 +173,16 @@ own. These queries ship in the [query pack](../graph.md):
 | `secrets_in_repos_with_cloud_oidc` | Which federated identities can assume a cloud identity? This is the blast radius of a leaked repository credential. |
 | `eol_runtimes_in_production_images` | Which end-of-life runtimes reach a running workload? |
 
-!!! note "An empty result is not always good news"
-    The image queries need the `runs-image` link, and it only exists for the
-    image sources the policy enables. `dockerfile` (the default) links images
-    your repositories declare. `workloads` links digest-pinned images your cloud
-    inventory reports running. An empty result can mean the link was not
-    collected. See [`image_sources`](policy.md#container-images).
+!!! note "These queries need image scanning of running workloads"
+    The `runs-image` link (workload to image) only exists when the policy has
+    `scanners.images: true` and `workloads` in `image_sources`. With the default
+    `dockerfile` source alone, the three image queries return nothing, which does
+    not mean nothing is affected. See [Container images](policy.md#container-images).
 
 ## Compliance
 
-Two frameworks are graded from code findings. Both apply only when a
-source-control provider is connected.
+Two frameworks are graded from code findings. Both apply only when a GitHub
+organization is connected, and grade GitHub repositories.
 
 - **`owasp-top10`**: OWASP Top 10:2021, mapped by CWE. Five categories depend on
   static analysis and report **NOT_ASSESSED** until a static-analysis scan has

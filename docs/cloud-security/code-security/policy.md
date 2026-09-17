@@ -47,12 +47,14 @@ limacharlie hive set --hive-name cloudsec_policy --key code-scanning \
 | `scanners` | Which engines run. See [Engines](#engines). |
 | `schedule` | `daily` (the default), `weekly`, or `manual` (only when you ask for a rescan). |
 | `severity_floor` | Drop findings below this severity. See [Severity floor](#severity-floor). |
-| `sast_ruleset` | The static-analysis rule pack. Leave empty for the default pack. |
+| `sast_ruleset` | The static-analysis rule pack: empty or `default` for the full curated pack, or `gitlab` for a subset based on GitLab's open-source rules. |
 | `image_sources` | Where the image engine finds images. See [Container images](#container-images). |
-| `pr_checks`, `pr_comments`, `gating.fail_on` | Pull-request checks on GitHub. See [Pull-request checks](pull-requests.md#turn-on-pull-request-checks). |
+| `pr_checks`, `pr_comments`, `gating.fail_on` | Pull-request checks on GitHub. `fail_on` is `CRITICAL`, `HIGH`, `MEDIUM`, `LOW` or `NONE` (the default). See [Pull-request checks](pull-requests.md#turn-on-pull-request-checks). |
 | `autofix_registry_access` | Whether AutoFix may look up package registry metadata to update lockfiles. Default `true`. See [AutoFix](autofix.md#lockfiles). |
 
-Globs support `*`, `?`, `[…]` and `{a,b}`. A leading `!` negates within a list.
+Globs support `*`, `?`, `[…]`, `{a,b}` and `**`. `*` does not cross a `/`, so
+`acme/*` does not select a GitLab subgroup project such as `acme/platform/api`.
+Use `acme/**` for that. A leading `!` negates within a list.
 Write negations in `include`. A `!` pattern in `exclude` means "exclude
 everything that does not match", which cancels your include list.
 
@@ -102,11 +104,12 @@ by severity.
 
 | Value | Scans |
 |---|---|
-| `dockerfile` | Images your repositories reference, such as a Dockerfile's base image. The default. |
-| `workloads` | Images your connected cloud accounts report running, when pinned by digest. |
+| `dockerfile` | Images your repositories reference, such as a Dockerfile's base image. The default. Links each image to the repository that builds it. |
+| `workloads` | Images your connected cloud accounts report running, when pinned by digest. Links each workload to the image it runs. |
 | `registries` | Accepted, but not built yet. It currently adds nothing. |
 
-Only digest-pinned image references are scanned. A reference by tag alone is
+Images are scanned only when `scanners.images` is `true`, and only when they are
+referenced by digest. A reference by tag alone is
 counted and skipped, because a tag can point at a different image tomorrow.
 
 Image sources also decide what the [code-to-runtime queries](results.md#how-code-connects-to-your-cloud)
@@ -136,6 +139,7 @@ the **Repositories** tab, or:
 limacharlie cloudsec code rescan acme/payments
 ```
 
-The rescan is accepted immediately and runs within minutes. Requests for the
-same repository in a short window are combined into one scan. Check the result
-on the repository's row, not in the rescan response.
+The rescan is accepted immediately and starts after a 10-minute window, so that
+several requests or pushes for the same repository become one scan. Check the
+result on the repository's row, not in the rescan response. For GitLab and
+Bitbucket, add `--provider gitlab` or `--provider bitbucket`.

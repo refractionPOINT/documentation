@@ -23,11 +23,12 @@ limacharlie cloudsec code ingest --repo acme/payments --source sarif \
 | `--source` | Format |
 |---|---|
 | `sarif` | SARIF 2.1.0, which most scanners can produce |
-| `cyclonedx` | A CycloneDX bill of materials (1.5 to 1.7), with or without a `vulnerabilities` section |
+| `cyclonedx` | A CycloneDX bill of materials, with or without a `vulnerabilities` section |
 | `report` | The LimaCharlie scanner's own report, as produced by [`code scan`](#scan-locally-or-in-ci) |
 
 Pass `--commit` with the commit that was scanned. Documents can be up to
-**20 MiB**. A file ending in `.gz` is sent compressed.
+**20 MiB** as sent, and may be gzip-compressed. Each API key can push up to 600
+documents an hour.
 
 !!! warning "Pass `--scanner-succeeded` for SARIF"
     A SARIF push only closes findings when the document says the scanner run
@@ -42,9 +43,14 @@ Pass `--commit` with the commit that was scanned. Documents can be up to
   and the manifest. When both see the same issue there is one finding, and its
   age and triage state are kept. Pushing the same document twice changes
   nothing.
-- **A push only closes what it reported.** Fix a dependency, push again, and that
-  finding closes. A push never closes a hosted finding, and a hosted scan never
-  closes a pushed one.
+- **A push only closes what the same tool reported.** Fix a dependency, push
+  again from the same tool, and that finding closes. A push never closes a hosted
+  finding, and one SARIF tool never closes another tool's findings. If the hosted
+  scan later finds the same issue, the hosted scan takes it over and closes it
+  when it is fixed.
+- **A push closes findings only when it is complete:** a SARIF document must say
+  its run succeeded (see above), and a CycloneDX document needs a
+  `vulnerabilities` section.
 - **Secrets are refused from third-party documents**
   (`secrets_not_ingestable`). LimaCharlie identifies a secret by a keyed hash
   that foreign formats cannot carry, and those documents often contain the
@@ -70,8 +76,9 @@ limacharlie cloudsec code ingest \
 ```
 
 The repository must still match an enabled code-scanning policy, and it counts
-toward the same repository limits. It is removed with its findings after 30 days
-without a push for a new commit.
+toward the same repository limits. Pushes can create up to 500 repositories per
+provider. A repository created this way is removed with its findings after 30
+days without a push for a new commit.
 
 ## Scan locally or in CI
 
@@ -153,8 +160,8 @@ To push results from a scanner you already run instead, replace the last step:
             -f results.sarif
 ```
 
-The console shows the same instructions under **Cloud Security → Settings →
-Integrations**.
+**Cloud Security → Settings → Integrations** also shows ready-to-copy CLI and
+`curl` examples for pushing results.
 
 ## In your IDE
 

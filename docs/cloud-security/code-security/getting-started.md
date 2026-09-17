@@ -193,7 +193,8 @@ limacharlie cloudsec code status
 # Repositories with their scan status and open findings.
 limacharlie cloudsec code repos --with-findings
 
-# Scan one repository now instead of waiting.
+# Scan one repository without waiting for the schedule. It starts within about
+# 10 minutes. For GitLab or Bitbucket, add --provider gitlab or --provider bitbucket.
 limacharlie cloudsec code rescan acme/payments
 ```
 
