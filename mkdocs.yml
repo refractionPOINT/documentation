@@ -65,6 +65,7 @@ plugins:
         # Extension landing pages (linked from emails)
         'docs/lc-extensions.md': '5-integrations/extensions/limacharlie/index.md'
         'docs/third-party-extensions.md': '5-integrations/extensions/third-party/index.md'
+        'cloud-security/code-scanning.md': 'cloud-security/code-security/index.md'
         # Extension website fields (old Readme.io /docs/<slug> format)
         'docs/binlib.md': '5-integrations/extensions/limacharlie/binlib.md'
         'docs/ext-artifact.md': '5-integrations/extensions/limacharlie/artifact.md'
@@ -611,7 +612,16 @@ nav:
       - Overview: cloud-security/index.md
       - Getting Started: cloud-security/getting-started.md
       - Connecting Providers: cloud-security/providers.md
-      - Code Scanning: cloud-security/code-scanning.md
+      - Code Security:
+          - Overview: cloud-security/code-security/index.md
+          - Get Started: cloud-security/code-security/getting-started.md
+          - Working with Results: cloud-security/code-security/results.md
+          - Scan Policy: cloud-security/code-security/policy.md
+          - Pull-Request Checks & Push Rescans: cloud-security/code-security/pull-requests.md
+          - AutoFix Pull Requests: cloud-security/code-security/autofix.md
+          - Bring Your Own Scanner: cloud-security/code-security/bring-your-own-scanner.md
+          - Reference: cloud-security/code-security/reference.md
+          - Troubleshooting: cloud-security/code-security/troubleshooting.md
       - Provider Setup:
           - Overview: cloud-security/provider-setup/index.md
           - Google Cloud: cloud-security/provider-setup/gcp.md

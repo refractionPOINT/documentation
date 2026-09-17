@@ -1,4 +1,4 @@
-"""Guards the generated D&R rule blocks on docs/cloud-security/code-scanning.md.
+"""Guards the generated D&R rule blocks on docs/cloud-security/code-security/pull-requests.md.
 
 The three webhook recipe rules quoted on this page (the push-rescan rule, the
 pull-request check, and the base-branch retarget) used to be typed by hand,
@@ -33,7 +33,7 @@ import re
 import textwrap
 
 DOC_PATH = os.path.join(
-    os.path.dirname(__file__), "..", "docs", "cloud-security", "code-scanning.md"
+    os.path.dirname(__file__), "..", "docs", "cloud-security", "code-security", "pull-requests.md"
 )
 
 # The marker line may be indented (these blocks sit inside numbered list items in the
@@ -143,7 +143,7 @@ def test_finds_exactly_the_expected_generated_blocks():
 
 def test_generated_blocks_match_their_recorded_hash():
     blocks = _find_generated_blocks(_read_doc())
-    assert blocks, "no generated blocks found in docs/cloud-security/code-scanning.md"
+    assert blocks, "no generated blocks found in docs/cloud-security/code-security/pull-requests.md"
 
     for rule, recorded_hash, yaml_text in blocks:
         actual_hash = hashlib.sha256(yaml_text.encode("utf-8")).hexdigest()

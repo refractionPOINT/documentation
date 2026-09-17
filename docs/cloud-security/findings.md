@@ -51,7 +51,7 @@ Each finding carries:
 
     `secret`, `malware`, `license_risk`, `eol_runtime` and `code_weakness`, and
     the `misconfig` findings whose rule id is an infrastructure-as-code check,
-    come from [Code Scanning](code-scanning.md). Those carry a `repo` key and a
+    come from [Code Security](code-security/index.md). Those carry a `repo` key and a
     `code` block with the file, the line range, the package and the fixed
     version where one applies — and the **Repository** filter narrows the
     worklist to one repository.

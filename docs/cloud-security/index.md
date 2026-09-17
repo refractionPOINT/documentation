@@ -33,13 +33,17 @@ rules, Cases, and Outputs you already use.
 
 ## Supported providers
 
-Thirteen connectors across five surfaces, all agentless and read-only:
+Fifteen connectors across six surfaces, all agentless and read-only by default:
 
 - **Cloud infrastructure** — Google Cloud (`gcp`, including folders/organizations),
   AWS (`aws`, including multi-account AWS Organizations), Azure (`azure`).
 - **Identity** — Okta (`okta`), Microsoft Entra ID (`entra`), Google Workspace
   (`google_workspace`), 1Password (`1password`), Auth0 (`auth0`).
-- **SaaS** — Cloudflare (`cloudflare`), GitHub (`github`).
+- **SaaS** — Cloudflare (`cloudflare`).
+- **Source control** — GitHub (`github`), GitLab.com and self-managed GitLab
+  (`gitlab`), Bitbucket Cloud (`bitbucket`). These drive
+  [Code Security](code-security/index.md). A GitHub App can optionally be granted
+  write access for pull-request checks and AutoFix pull requests.
 - **AI** — OpenAI (`openai`), Anthropic (`anthropic`).
 - **LimaCharlie** — your own LimaCharlie tenancy as a self-inventoried estate
   (`limacharlie`), including the MSSP fleet case.
@@ -85,11 +89,11 @@ map onto the capabilities above:
 | **Attack Surface** | The toxic-combination paths, grouped by shared fix, on an interactive graph canvas — plus a **Query console** tab for ad-hoc graph queries and saved queries. |
 | **Identity & Access** | CIEM — who can reach what, with a per-identity drill-down (**Grants** and **Access map** tabs). |
 | **Data Security** | DSPM — data-store posture and exposure. |
-| **Code** | Repository scan status, code findings, SBOM downloads, and results from hosted or customer-run scanners. |
+| **Code security** | [Code Security](code-security/index.md): repository scan status, the priority fix queue, container images, SBOM downloads, GitHub webhook status, and results from hosted or customer-run scanners. |
 | **Inventory** | The estate itself, in four views: **Topology** (the landing view — an aggregated diagram of the estate), **Resources** (the resource system-of-record), **Third-party assets**, and **Sensor coverage** (CAASM). |
 | **Compliance** | Per-control framework assessment and scoped assignments. |
 | **Report** | A print-optimized posture report over the current estate, also reachable from **Overview → View report**. |
-| **Policies** | Data classification (crown jewels), coverage, asset coverage, exclusions, and suppression. |
+| **Policies** | Data classification (crown jewels), coverage, asset coverage, agent vulnerabilities, code scanning, exclusions, suppression, VEX, and SLAs. |
 | **Settings** | Provider connections and the Cases integration. |
 
 A separate cross-tenant **Cloud Security Fleet** board rolls risk up across every
@@ -118,9 +122,9 @@ organization you manage.
 
 - [Getting Started](getting-started.md) — enable the product, connect a
   provider, run your first sweep.
-- [Connecting Providers](providers.md) — the thirteen connectors, their
+- [Connecting Providers](providers.md) — the fifteen connectors, their
   credentials, and what each collects.
-- [Code Scanning & Pushed Results](code-scanning.md) — scan a local checkout,
+- [Code Security](code-security/index.md) — scan repositories, check pull requests,
   ingest SARIF or CycloneDX, and run the workflow in GitHub Actions.
 - [Provider Setup](provider-setup/index.md) — onboarding walkthrough for every
   platform: exact scopes, how to create the credential, credential-secret

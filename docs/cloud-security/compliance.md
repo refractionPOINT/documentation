@@ -22,7 +22,7 @@ and `owasp-llm` are AI frameworks: they assess the OpenAI and Anthropic estate
 connected through the [AI providers](providers.md#ai-security-aispm).
 `owasp-top10` (OWASP Top 10:2021, mapped by CWE) and `cis-supply-chain` (the CIS
 Software Supply Chain Security Guide's *Source Code* and *Dependencies*
-sections) are graded off [Code Scanning](code-scanning.md) and apply only when a
+sections) are graded off [Code Security](code-security/results.md#compliance) and apply only when a
 source-code provider is connected. `cis-m365` is graded off the
 Microsoft Entra directory, so it covers the benchmark's Entra chapter and reports
 NOT_ASSESSED for the admin centers that are not collected (Defender, Purview,

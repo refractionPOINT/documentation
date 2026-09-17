@@ -2,11 +2,11 @@
 
 The [LimaCharlie MCP server](https://github.com/refractionPOINT/lc-mcp-server) exposes Cloud
 Security to any [Model Context Protocol](https://modelcontextprotocol.io/) client — Claude Code,
-Cursor, and others — so an AI assistant can read your cloud posture, triage findings, and, for the
-AppSec code lane, scan the working copy on your own machine before anything is pushed.
+Cursor, and others — so an AI assistant can read your cloud posture, triage findings, and, for
+[Code Security](code-security/index.md), scan the working copy on your own machine before anything is pushed.
 
-This page covers the setup and the four code-lane tools. The rest of the Cloud Security tool surface
-mirrors the [command line interface](cli.md) one-for-one.
+This page covers the setup and the Code Security tools. Most of the other Cloud Security tools
+match a [command line interface](cli.md) command.
 
 ## Setup — Claude Code
 
@@ -66,29 +66,31 @@ only needs to read posture is both cheaper and safer with `cloud_security_readon
 
 ## Permissions
 
-Reads need `cloudsec.get`; the triage writes and the code ingest need `cloudsec.set`. The whole
+Reads need `cloudsec.get`. The triage writes, code ingest and AutoFix need `cloudsec.set`. The whole
 surface also requires the organization to be subscribed to the `ext-cloud-security` extension — a
 403 saying cloud security is not enabled means exactly that, and the tools say so in their errors.
 
-## The code-lane tools
+## The Code Security tools
 
 | Tool | What it does |
 |---|---|
 | `cloudsec_code_repos` | The repositories the code lane sees, with scan state and the open-finding rollup |
 | `cloudsec_code_findings` | Findings for one or more repositories, or the cross-filtered facet counts |
+| `cloudsec_code_fixes` | The dependency upgrades that close the most findings, each with a finding id to pass to `cloudsec_code_autofix` |
+| `cloudsec_code_capabilities` | What each GitHub connection can do: scanning, pull-request checks, comments and AutoFix |
 | `cloudsec_code_scan_local` | Scans a working copy on your machine with the same scanner the hosted lane runs |
 | `cloudsec_code_autofix` | Opens the dependency fix pull request for an SCA finding |
 
 ### Before they can return anything
 
-Code scanning is opt-in per organization, and two things must be true:
+Code scanning is opt-in, and two things must be true:
 
 1. A source-control provider is connected (a `cloudsec_provider` record).
 2. A `code_scanning` record exists in the `cloudsec_policy` hive, naming the repositories in scope
    and the engines that run.
 
-Both are hive records — see [Code Scanning](code-scanning.md#turning-it-on) for the policy's
-fields. **An empty answer from a code tool
+Both are hive records — see [Get started](code-security/getting-started.md) and
+[Scan policy](code-security/policy.md). **An empty answer from a code tool
 usually means one of those two is missing, not that your code is clean**, and the tools say so
 rather than implying an all-clear.
 
@@ -128,7 +130,7 @@ the inventory.
 cloudsec_code_scan_local { "path": "/home/me/src/api" }
 ```
 
-This runs on **your** machine, not in LimaCharlie: it needs Docker and the
+This runs on **your** machine, not in LimaCharlie: it needs Docker and a current
 [`limacharlie` CLI](cli.md) on PATH, and it takes minutes rather than seconds. Nothing about the
 checkout leaves the machine, and without `ingest` nothing leaves it at all — the result says so
 explicitly, so a scan that found plenty is not misread as a clean estate.
@@ -166,8 +168,8 @@ backend resolves it against the dependency rows its own scan produced and raises
 that package to that advisory's fixed version, so there is no way to name a
 package or a version. `repo` and `provider` are optional search hints.
 
-It needs the separate, opt-in **Code Actions** App on the connection — the
-read-only collection App never gains write access.
+It needs the connection's GitHub App to hold **Contents: Read and write** and **Pull requests:
+Read and write**. `cloudsec_code_capabilities` shows whether it does.
 
 The tool answers as soon as the request is **accepted**; the clone, the edit and
 the pull request happen minutes later in a sandbox, so **the pull request is the
@@ -175,21 +177,21 @@ result**. Read it in the repository rather than in the tool's reply.
 
 !!! warning "A refusal does not come back on this call"
     Because the call has already answered, every reason a fix does not happen is
-    a quiet no-op here: no Code Actions App (`write_app_not_configured`) or one
-    lacking `Contents: Read and write` (`write_app_lacks_contents`), a package
+    a quiet no-op here: an App that is not installed on the repository or cannot write
+    (`write_app_not_configured`), one lacking `Contents: Read and write`
+    (`write_app_lacks_contents`), a package
     flagged malicious, no published fixed version, an unsupported ecosystem, a
     repository outside the policy scope or over the free-tier quota, a pull
     request already open for that package, or the daily limit.
 
     None of these appear in the reply. They surface as the
-    `cloudsec.code_autofix_refused` operational event — that is where to look
-    when no pull request appears.
+    `cloudsec.code_autofix_refused` operational event, once operational events
+    are turned on with the `emission` policy's `ops_events`.
 
-See [Code Scanning](code-scanning.md#dependency-autofix-pull-requests) for the
-setup, the npm registry-metadata policy, and the Go lockfile caveat that decide
-whether the pull request is complete on its own.
+See [AutoFix pull requests](code-security/autofix.md) for the setup and the
+lockfile behavior that decides whether the pull request is complete on its own.
 
 ## See also
 
-- [Code Scanning](code-scanning.md) — the lane these tools read
+- [Code Security](code-security/index.md) — the product these tools read
 - [Command Line Interface](cli.md) — the same surface, without an assistant

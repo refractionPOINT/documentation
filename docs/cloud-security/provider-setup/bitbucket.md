@@ -3,7 +3,7 @@
 Connects one **Bitbucket Cloud workspace**. Its repositories become repositories in the
 inventory, and the workspace itself becomes the account they belong to.
 
-The connection exists to drive [Code Scanning](../code-scanning.md): once a `code_scanning`
+The connection exists to drive [Code Security](../code-security/index.md): once a `code_scanning`
 policy selects its repositories, they are scanned exactly like GitHub repositories and their
 findings land in the same worklist.
 

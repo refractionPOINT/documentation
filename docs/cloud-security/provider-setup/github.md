@@ -33,11 +33,11 @@ Create the App with **read-only** access on the following. All are
 | **Secrets** | Organization | Organization Actions-secret inventory (**names only**, never values) | `org_secrets` |
 | **Administration** | Repository | Branch-protection posture and deploy-key inventory (deploy keys are also the one activity signal — see [Known limitations](#known-limitations)) | *(collected during the sweep)* |
 | **Secrets** | Repository | Whether a repository has Actions secrets at all — an existence flag, not a name list (org-level secrets are the ones inventoried by name) | *(collected during the sweep)* |
-| **Contents** | Repository | [Code Scanning](../code-scanning.md) — dependencies, secrets, infrastructure-as-code, container images, code weaknesses and licenses. Without it the connector inventories repositories but cannot read them | `code_contents` |
+| **Contents** | Repository | [Code Security](../code-security/index.md) — dependencies, secrets, infrastructure-as-code, container images, code weaknesses and licenses. Without it the connector inventories repositories but cannot read them | `code_contents` |
 | **Dependabot alerts** | Repository | GitHub's own **Dependabot** alerts, ingested as findings and deduplicated against LimaCharlie's own dependency scanning; and whether each repository has Dependabot alerts **enabled** | `dependabot_alerts` |
 | **Code scanning alerts**, **Secret scanning alerts** | Repository | GitHub's own **code-scanning** and **secret-scanning** alerts, ingested as findings and deduplicated against LimaCharlie's own analysis | `security_events` |
-| **Checks**, **Pull requests** (Read and write) | Repository | [Pull-request checks and comments](../code-scanning.md#pull-request-checks-and-merge-gating). Write access, granted only if you want these | *(reported on the **Code** page)* |
-| **Contents** (Read and write) | Repository | [Dependency AutoFix pull requests](../code-scanning.md#dependency-autofix-pull-requests), together with **Pull requests: Read and write**. Write access, granted only if you want it | *(reported on the **Code** page)* |
+| **Checks**, **Pull requests** (Read and write) | Repository | [Pull-request checks and comments](../code-security/pull-requests.md). Write access, granted only if you want these | *(reported on the **Code security** page)* |
+| **Contents** (Read and write) | Repository | [AutoFix pull requests](../code-security/autofix.md), together with **Pull requests: Read and write**. Write access, granted only if you want it | *(reported on the **Code security** page)* |
 
 ### GitHub's own alerts, and what happens to them
 
@@ -80,7 +80,7 @@ for a setting nobody could see.
     (recommended)** creates this App in your GitHub organization from a manifest,
     with the permissions already set, and saves the connection once an owner has
     installed it. It also sets up the App's webhook for
-    [Code Scanning](../code-scanning.md#github-let-limacharlie-create-the-app) push
+    [Code Security](../code-security/getting-started.md#github-let-limacharlie-create-the-app) push
     rescans and pull-request checks. The steps below are for creating the App by
     hand.
 
@@ -88,11 +88,11 @@ for a setting nobody could see.
    App.**
 2. Name it (e.g. `LimaCharlie Cloud Security`), set a homepage URL, and
    **uncheck Webhook → Active** (the collector polls; it needs no callback).
-   If you plan to use Code Scanning's push rescans or pull-request checks, the
+   If you plan to use Code Security's push rescans or pull-request checks, the
    webhook is needed after all: once connected, use **Set up webhook** on the
-   **Code** page, which shows the URL and secret to add here, then tick
+   **Code security** page, which shows the URL and secret to add here, then tick
    **Active** and subscribe to **Push** and **Pull request** (see
-   [Set up webhook](../code-scanning.md#set-up-webhook)).
+   [Set up webhook](../code-security/pull-requests.md#set-up-webhook)).
 3. Under **Permissions**, set each permission above to **Read-only**.
 4. Under **Where can this GitHub App be installed?**, choose **Only on this
    account**.
@@ -201,7 +201,7 @@ limacharlie cloudsec provider test --input-file provider.yaml
 
 ## Scanning repository contents
 
-Granting **Contents → Read-only** turns on [Code Scanning](../code-scanning.md)
+Granting **Contents → Read-only** turns on [Code Security](../code-security/index.md)
 for the repositories a `code_scanning` policy selects. The permission is an
 increase on an existing installation, so GitHub requires an organization owner to
 **approve the permission request** on the installation page before it takes
@@ -223,7 +223,7 @@ you grant them the App stays read-only, and granting a permission only makes a f
 available — the `code_scanning` policy switches are what turn it on.
 
 Each write mints a token for only the permissions that one action needs, so publishing a
-check never carries the ability to change source. The **Code** page reports, per
+check never carries the ability to change source. The **Code security** page reports, per
 connection, what the App can currently do and which permission to add.
 
 A **separate write App** is still supported for teams that prefer to keep write access on a
@@ -232,4 +232,4 @@ second App: name it with `github_actions_app_id`, `github_actions_installation_i
 points at the same App, or the same secret, as the read connection.
 
 The permissions, the policy switches and the webhook wiring are in
-[Code Scanning](../code-scanning.md#pull-request-checks-and-merge-gating).
+[Pull-request checks and push rescans](../code-security/pull-requests.md).
