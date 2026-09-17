@@ -13,6 +13,10 @@ The Config Hive is LimaCharlie's hierarchical configuration store. It provides a
 - [SOPs](../../9-ai-sessions/sops.md) - Standard Operating Procedures that AI agents read and follow
 - [Organization Notes](../../9-ai-sessions/org-notes.md) - Free-form reference documents about the organization, read by analysts and AI agents
 
+## Restricting Records
+
+Tag a record `acl:<scope>` to restrict its `data` to members of that scope. Other users still see the record's name and metadata. See [Resource ACLs](../access/resource-acls.md).
+
 ## Usage
 
 Hive records can be:
