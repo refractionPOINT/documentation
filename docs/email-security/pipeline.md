@@ -41,10 +41,10 @@ message has already landed in the mailbox by the time we hear about it.
 | Provider | Mechanism |
 |---|---|
 | Microsoft 365 | A Microsoft Graph change-notification subscription per protected mailbox. Subscriptions are renewed well before Graph's ceiling, and lifecycle notifications are handled on their own endpoint |
-| Google Workspace | A Gmail `users.watch` per mailbox publishing to **your own** Pub/Sub topic, which the collector consumes with a pull subscription. Renewed daily. A history-based poll is the fallback for small tenants and for outages |
+| Google Workspace | A Gmail `users.watch` per mailbox publishing to **your own** Pub/Sub topic, which the collector consumes with a pull subscription. Renewed daily; recovery resumes from the stored Gmail history watermark |
 
-Both are push. Polling exists as a safety net, not as the normal path. See
-[Connecting Providers](providers.md).
+Both are push, and provider-record validation refuses delivery modes the
+collector does not run. See [Connecting Providers](providers.md).
 
 ### 2-3. Fetch and parse
 
