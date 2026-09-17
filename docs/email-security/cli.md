@@ -179,6 +179,23 @@ An action's `result` can come back as `alert_only`, meaning the action was
 enforce mode. Do not treat it as an error — it is the product doing what you
 configured, reported honestly rather than dressed up as `ok`.
 
+It applies to your own commands too. With no automation in `enforce`, a
+`message action`, `message bulk-action` or `campaign action` you run is withheld
+the same way: the response carries `force_required: true` and the CLI says so on
+stderr. Re-run it with `--force` to perform it:
+
+```bash
+limacharlie mailsec message action <msg_uuid> \
+  --action quarantine_message --reason "confirmed credential phish" --force
+```
+
+On `bulk-action` and `campaign action`, `--force` belongs on the **execute**
+(with `--confirm`); it is not part of the confirmation token, so the token you
+already hold still works, and a preview ignores it with a note. A forced bulk
+execute runs as a **new** job with its own `bulk_id`. The override is recorded in
+the audit trail. `--force` needs a recent `limacharlie` release — see
+[Forcing an action in alert-only mode](remediation.md#forcing-an-action-in-alert-only-mode).
+
 ### Filters are tri-state
 
 Leaving a boolean filter unset means the dimension is *unconstrained*, which is

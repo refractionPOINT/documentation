@@ -49,7 +49,7 @@ Shared behaviours:
 | `GET /messages/{msg_uuid}` | `{message, mdm, mdm_source}` — the index row, the full signal rationale, the action timeline, and the Message Data Model. `mdm_source` is `stored` (the model the collector judged with, enrichments included) or `eml_reparse` (a fresh parse of the original bytes, no enrichments). `mdm_unavailable_reason` replaces the model when neither is available |
 | `GET /messages/{msg_uuid}/similar` | `{messages, since}` — recent messages sharing at least one clustering key, each with the `matched_keys` that matched, plus the lookback window that was searched. Candidates, not a cluster |
 | `GET /messages/{msg_uuid}/revisions` | `{revisions, revisions_truncated}` — one message's whole verdict-revision history, oldest first: who decided (`actor`, `mode`), when, the structured rationale, and the `prior` state each one displaced. The first revision's `prior` is the engine's own verdict and the pack version that produced it. Not paginated — revisions are few by nature — but an optional `limit` is accepted and `revisions_truncated` reports the pathological history that exceeded the backend's ceiling. Gated on `mailsec.get`: a revision is the product's structured record of a decision about a message you can already open |
-| `GET /actions/bulk/{bulk_id}` | The running truth of a bulk remediation — see [Bulk Remediation](remediation.md). An unknown bulk id, or an ordinary `action_id` passed here, returns a typed not-found rather than a partial answer |
+| `GET /actions/bulk/{bulk_id}` | The running truth of a bulk remediation — see [Bulk Remediation](remediation.md). Carries `force` (the job was forced) and `force_required` (`counts.alert_only` is above zero). An unknown bulk id, or an ordinary `action_id` passed here, returns a typed not-found rather than a partial answer |
 | `GET /campaigns` | `{campaigns, next_cursor}`. Filters: `state[]`, `verdict[]`, `min_members`, `since`, `until`, `cursor`, `limit`. Every campaign has at least two members, so `min_members` only narrows past that; values below `2` have no effect |
 | `GET /campaigns/{campaign_id}` | `{campaign}` — span, membership, verdict, and the keys that bound the messages together |
 | `GET /reports` | The user-report queue. Params: `status[]` (`open`, `triaging`, `resolved`), `oldest_first`, `cursor`, `limit` |
@@ -182,9 +182,9 @@ organization is deleted. See
 
 | Route | Does |
 |---|---|
-| `POST /messages/{msg_uuid}/actions` | Perform a typed action on one message. Body: `action` (`quarantine_message`, `trash_message`, `move_to_spam`, `restore_message`, `banner_message`, `unbanner_message`), optional `reason`, optional `attempt` (idempotency token — omit to collapse onto the existing attempt). `banner_message` uses the organization's own banner, rendered from its `mailsec_policy` record of type `banners`; the body's `banner` field is **deprecated and ignored** and will be removed. Requires `mailsec.act` |
-| `POST /campaigns/{campaign_id}/actions` | Sweep a campaign. Same body plus `confirm`. **Without `confirm` this previews** and changes nothing, returning the member ids, the distinct mailboxes, the counts and a `confirm` token derived from that exact member set. With `confirm` it executes exactly that set; a campaign that grew since the preview is refused. Capped at 500 members. `reason` is recorded on **every member's** audit row and on the sweep's own row (`action_id` in the response); `attempt` (bounded at 128 characters, refused not truncated) mints a new row per member, so a deliberate retry is recorded beside what it retried instead of over it. Neither is part of the `confirm` token. Requires `mailsec.act` |
-| `POST /actions/bulk/execute` | Execute a previewed bulk remediation. Returns a `bulk_id` immediately and the provider work proceeds in the background. Requires `mailsec.act`. See [Bulk Remediation](remediation.md) |
+| `POST /messages/{msg_uuid}/actions` | Perform a typed action on one message. Body: `action` (`quarantine_message`, `trash_message`, `move_to_spam`, `restore_message`, `banner_message`, `unbanner_message`), optional `reason`, optional `attempt` (idempotency token — omit to collapse onto the existing attempt), optional `force` (boolean — see [Action results](#action-results)). `banner_message` uses the organization's own banner, rendered from its `mailsec_policy` record of type `banners`; the body's `banner` field is **deprecated and ignored** and will be removed. Requires `mailsec.act` |
+| `POST /campaigns/{campaign_id}/actions` | Sweep a campaign. Same body plus `confirm`. **Without `confirm` this previews** and changes nothing, returning the member ids, the distinct mailboxes, the counts and a `confirm` token derived from that exact member set. With `confirm` it executes exactly that set; a campaign that grew since the preview is refused. Capped at 500 members. `reason` is recorded on **every member's** audit row and on the sweep's own row (`action_id` in the response); `attempt` (bounded at 128 characters, refused not truncated) mints a new row per member, so a deliberate retry is recorded beside what it retried instead of over it. Neither is part of the `confirm` token. `force` applies to the execute only, and is not part of the token either. Requires `mailsec.act` |
+| `POST /actions/bulk/execute` | Execute a previewed bulk remediation. Returns a `bulk_id` immediately and the provider work proceeds in the background. Optional `force` (boolean), echoed in the response; it is not part of the `confirm` token, and a forced execute of the same confirmation runs as a **new** job with a new `bulk_id`. Requires `mailsec.act`. See [Bulk Remediation](remediation.md) |
 | `POST /reports/{report_id}/resolve` | Record a triage outcome. Body: `disposition` — one of `true_positive`, `false_positive`, `benign`. Resolving an already-resolved report succeeds and reports `already_resolved`, so two analysts clicking at once is not an error. Requires `mailsec.set` |
 | `POST /reports/{report_id}/reopen` | Put a resolved report back in the queue — see [`POST /reports/{report_id}/reopen`](#post-reportsreport_idreopen). Requires `mailsec.set` |
 | `POST /messages/{msg_uuid}/verdict` | Re-judge one message — see [`POST /messages/{msg_uuid}/verdict`](#post-messagesmsg_uuidverdict). Requires `mailsec.act` |
@@ -316,9 +316,34 @@ success/failure:
 
 A campaign sweep returns `attempted`, `succeeded`, `skipped` (a subset of
 `succeeded`: members already in the target state, which cost no provider write),
-`alert_only`, a per-member `failed` map, and `action_id` — the sweep's own audit
-row, readable through `GET /actions/{action_id}`, carrying the operator's
-justification and the counts. It does not abort on the first error.
+`alert_only`, `force_required`, a per-member `failed` map, and `action_id` — the
+sweep's own audit row, readable through `GET /actions/{action_id}`, carrying the
+operator's justification and the counts. It does not abort on the first error.
+
+### Forcing an action
+
+An organization with no automation in `enforce` mode withholds **every** action,
+whoever sends it. A single-message action that comes back `alert_only` carries
+`force_required: true`, as does a campaign sweep execution with `alert_only`
+above zero; a bulk job reports it on its status. Repeat the same request with
+`"force": true` to perform it:
+
+```json
+{
+  "action": "quarantine_message",
+  "reason": "confirmed credential phish",
+  "force": true
+}
+```
+
+| Field | |
+|---|---|
+| `force` (request) | Boolean, on `POST /messages/{msg_uuid}/actions`, `POST /campaigns/{campaign_id}/actions` (execute, with `confirm`) and `POST /actions/bulk/execute`. Only a real `true` forces. Not part of any confirmation token; previews do not take it |
+| `force_required` (response) | `true` when the action was withheld by alert-only mode, so repeating it with `force` would perform it |
+
+A forced action is recorded as its own audit row beside the withheld one, with
+`force: true` in its `request`, and its `EMAIL_ACTION` carries `forced: true`.
+See [Forcing an action in alert-only mode](remediation.md#forcing-an-action-in-alert-only-mode).
 
 ## Telemetry event contract
 

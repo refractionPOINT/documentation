@@ -149,7 +149,7 @@ you named.
 |---|---|
 | `ok` | The provider was changed |
 | `skipped` | The desired state already held, so nothing was written. Recording this as success would make the audit claim a provider write that never happened |
-| `alert_only` | The action was **decided and deliberately not performed**, because the organization is not in enforce mode. Not an error |
+| `alert_only` | The action was **decided and deliberately not performed**, because the organization is not in enforce mode. Not an error. The response carries `force_required: true` — see [Enforcement](#enforcement) |
 | `failed` | The provider refused or errored; `error` carries the reason |
 | `pending` | In flight |
 
@@ -168,12 +168,22 @@ provider outage — pass a new `attempt` token.
 
 ### Enforcement
 
-Analyst-initiated actions from the console, CLI or API **always execute**.
-`alert_only` withholds *automation*, not people: a human clicking quarantine has
-already made the decision the mode exists to withhold from a rule, and refusing
-them would make the product unusable during the incident it was bought for.
+Whether an action is performed is decided by [policy](policy.md#automations).
+An organization with no automation in `enforce` mode is in **alert-only mode**,
+and that covers **every** action — one you start from the console, the CLI or
+the API, or one an AI agent asks for, is withheld exactly like a rule's and
+reports `result: alert_only`.
 
-Automated actions are governed by [policy](policy.md#automations).
+To act anyway, repeat the same request with `force`. The console asks
+*"Quarantine anyway?"*; the CLI takes `--force`:
+
+```bash
+limacharlie mailsec message action <msg_uuid> \
+  --action quarantine_message --reason "confirmed credential phish" --force --oid $OID
+```
+
+The forced action is recorded as its own audit row beside the withheld one. See
+[Forcing an action in alert-only mode](remediation.md#forcing-an-action-in-alert-only-mode).
 
 ## The audit trail
 
