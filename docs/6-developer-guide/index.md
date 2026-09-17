@@ -12,6 +12,7 @@ Programmatic access to LimaCharlie:
 
 ## Command Line Interface
 
+- [CLI Quick Start](cli-quickstart.md) - Install, authenticate, and run your first commands
 - [CLI](sdk-overview.md) - Command line tool for managing LimaCharlie
 - [CLI Extension](cli.md) - Run CLI commands from D&R rule response actions
 
