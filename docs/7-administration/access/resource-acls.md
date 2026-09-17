@@ -22,7 +22,7 @@ ACLs are opt-in. An organization with no `acl:` tags behaves exactly as before.
 | Hive record name, `usr_mtd` (tags, enabled, expiry, comment), `sys_mtd` | Hive record `data` |
 | Artifact metadata | Artifact content and original logs |
 | Output names | Tasking the sensor, output samples |
-| Detection counts, dashboards, tag search | Detections from restricted sensors (hidden, not redacted) |
+| Sensor counts, dashboards, tag search | Detections from restricted sensors (hidden, not redacted) |
 
 A few details:
 
@@ -30,6 +30,9 @@ A few details:
 - Fetching a restricted record for execution, such as a playbook or AI agent, is refused instead of redacted. A `hive://secret/...` reference to a restricted secret is left unresolved for callers outside its scope.
 - Tasking a restricted sensor is refused for every command.
 - A detection is hidden when its sensor, or any sensor that contributed to a stateful detection, is restricted for the caller.
+- Restricted records are dropped from results rather than reported as an error, so searches, timelines and detection lists return fewer rows. Two analysts running the same query can legitimately get different totals.
+- Enforcement on investigation expansion and on what an extension is told about a request only starts once the org has at least one sensor carrying an `acl:` tag. Direct reads of a restricted hive record are gated either way.
+- Never tag a record that sensors or adapters fetch through the public (unauthenticated) endpoint, such as an external adapter config. That path has no caller to resolve, so it refuses the record and the affected adapters keep running on their last known-good configuration.
 
 ## Permissions
 
@@ -160,7 +163,9 @@ limacharlie output create --name siem --module syslog --type event --input-file 
 - To set `acl_scopes`, the caller needs `acl.set` or membership in every listed scope. The check runs when the output is saved. Later membership changes do not affect an existing output.
 - Reading samples of an opted-in output requires membership in all of its scopes.
 - Records with no sensor, such as billing or some deployment events, are not affected.
-- Live streams in the web app only carry the scopes the viewer holds.
+- Live streams, which the web app and `limacharlie stream` open, carry only the scopes the viewer holds. `acl.set` is not a bypass there, since opening a stream is reading content.
+- Exporting query or Replay results to an output drops **every** restricted record, whatever scopes you hold and whatever the output names. An export is a shared org-level archive, so it is built the same way for everyone.
+- Long-term retention outputs keep everything, including restricted records, so that later searches still enforce correctly. Their samples are not readable through the sample view.
 
 ## D&R rules
 
@@ -201,7 +206,7 @@ An extension acts through its own org API key, named `_<extension name>-<uuid>`.
 
 ## Infrastructure as Code
 
-Scope records are ordinary hive records in the `acl` hive, so `limacharlie hive list|get|set --hive-name acl` and the SDK hive clients work on them.
+Scope records are ordinary hive records in the `acl` hive, so `limacharlie hive list|get|set --hive-name acl` and the SDK hive clients work on them. Recent CLI releases also add `--hive-acl` to `sync pull` and `sync push`; run `limacharlie sync pull --help` to check yours.
 
 The Infrastructure extension includes the `acl` hive only when its identity holds both `acl.get` and `acl.set`. Pushing any record or sensor change that adds or removes an `acl:` tag also requires `acl.set`.
 
@@ -212,20 +217,25 @@ The Infrastructure extension includes the `acl` hive only when its identity hold
 | `ACL_CONTENT_RESTRICTED` | HTTP 403. The caller is not a member of every scope on the resource. |
 | `UNAUTHORIZED_ACL_TAG` | HTTP 401. Adding or removing an `acl:` tag on a sensor or installation key without `acl.set`. |
 | `UNAUTHORIZED` | HTTP 400. The same refusal for a hive record's `acl:` tags or a D&R rule's `acl_scopes`, and a refused fetch of a restricted record for execution. |
-| `ACL_TAG_TTL_NOT_ALLOWED` | `acl:` tags cannot have a TTL. |
+| `ACL_TAG_TTL_NOT_ALLOWED` | HTTP 400. `acl:` tags cannot have a TTL. |
+| `INVALID` | HTTP 400. Writing a record whose data is the redaction marker, or writing with the etag of a redacted read. |
 | `ACL_SCOPE_UNAVAILABLE` | HTTP 400, retriable. Membership could not be resolved while saving an output. |
 | `ACL_SCOPES_UNAVAILABLE` | HTTP 400, retriable. Membership could not be resolved while saving a D&R rule's `acl_scopes`. |
 
-When membership cannot be resolved on other paths, the API returns a generic retriable error, or a 403 for output samples. Restricted content stays locked and unrestricted content is not affected.
+Only `ACL_CONTENT_RESTRICTED` and `UNAUTHORIZED_ACL_TAG` come back in a machine-readable `error_code` field. The others carry the code in the error message.
+
+When membership cannot be resolved on other paths, the API returns a generic retriable error, or a 403 for output samples. Restricted content stays locked and unrestricted content is not affected. On read paths this failure is silent: you get an empty result or a redacted record rather than an error.
 
 ## Limits and behavior to know
 
 - **Propagation.** Tag changes usually apply within seconds. Membership changes also usually apply within seconds. Both apply within about 6 minutes at most.
-- **Enrollment.** Tags from an installation key are applied right after enrollment, not atomically with it. A new sensor can be briefly unrestricted.
+- **Enrollment.** Tags from an installation key are applied right after enrollment, not atomically with it, so a new sensor can be briefly unrestricted. Sensors enrolled before you tagged the key keep the tags they were given then. Tag those individually.
 - **Deleting is not gated.** Deleting a sensor, a hive record or an installation key does not require `acl.set` or membership. Deletion destroys content instead of exposing it. Deleting an installation key does not remove tags from sensors already enrolled.
 - **Tag TTLs.** `acl:` tags cannot expire, so a restriction is never removed silently.
 - **IOC search.** Object and IOC searches still list the sensors that saw a value, including restricted ones. Only event content is gated.
-- **Audit logs** are not restricted.
+- **Audit logs** are not restricted, and every ACL change is audited: `acl:` tag writes on sensors and installation keys, and scope record writes as ordinary hive changes.
+- **Billing and quota.** Restricted telemetry counts like any other telemetry.
+- **LimaCharlie operations** hold a separate org-wide permission that ACLs never gate, which is what makes support possible.
 
 ## Troubleshooting
 
@@ -235,6 +245,9 @@ If a user reports that data disappeared:
 2. Check that each `acl:` tag in use has a matching `acl` hive record that is enabled and not expired. A tag without one locks its resources.
 3. Check that the user or key is a member of **every** scope on the missing resources. For personal API keys, the member must be listed by UID.
 4. Check the outputs. Existing outputs stop receiving a sensor's data once it is tagged, until they list the scope in `acl_scopes`.
+5. If you removed a member and they can still read, allow up to six minutes. Beyond that, remove their platform access and contact support.
+
+To un-restrict a resource, remove the `acl:` tag from it. Deleting or disabling the scope record does the opposite and locks it.
 
 ## See also
 
@@ -242,4 +255,5 @@ If a user reports that data disappeared:
 - [API Keys](api-keys.md)
 - [Sensor Tags](../../2-sensors-deployment/sensor-tags.md)
 - [Config Hive](../config-hive/index.md)
+- [Designing Access](designing-access.md)
 - [Reference: Permissions](../../8-reference/permissions.md)
