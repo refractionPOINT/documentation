@@ -30,6 +30,10 @@ LimaCharlie uses a granular permission system that controls access to all platfo
 | apikey.ctrl | Create, delete, and modify API keys |
 | user.ctrl | Manage user accounts and permissions |
 | billing.ctrl | Access and modify billing information |
+| acl.get | View [Resource ACL](../7-administration/access/resource-acls.md) scopes and the resources tagged with them |
+| acl.set | Manage Resource ACL scopes and add or remove `acl:` tags. Does not grant read access to restricted content |
+
+Unlike most hive permissions, these have no per-record form: `acl.set.<scope>` grants nothing.
 
 ### Sensor Management
 
