@@ -250,15 +250,26 @@ Two things to know about the numbers:
   interrupted for long enough — the count starts over with it, so it always
   describes the walk that produced your current history rather than accumulating
   across attempts.
-- **Zero is only zero next to `mailboxes_skipped_unmeasured`.** A mailbox whose
-  history walk began before this count existed is not measured, and is reported
-  there instead of being folded into the zeroes. If most of your mailboxes are
-  unmeasured, `messages_skipped: 0` means "we cannot tell you", not "nothing was
-  lost".
+- **Zero is only zero next to `mailboxes_skipped_unmeasured`.** Three
+  populations cannot be spoken for and are reported there rather than folded
+  into the zeroes: a mailbox whose walk finished before this count existed
+  (nothing restarts a finished walk, so it stays unmeasured for good), a walk
+  that was already under way when the count arrived (until it restarts), and
+  every mailbox of a connection with `backfill_days: 0`, which is marked done
+  without ever being walked. If most of your mailboxes are unmeasured,
+  `messages_skipped: 0` means "we cannot tell you", not "nothing was lost".
 
 Skipped history does **not** hold `backfill.complete` open. A page containing a
 message the provider refuses has still been walked, and waiting on mail that
 cannot be retrieved would leave the progress bar short of 100% forever.
+
+!!! note "A mailbox we cannot read is a different number, and it *does* hold `complete` open"
+    `messages_skipped` is history the provider refused one message at a time. A
+    protected mailbox whose history *page* fails three walks in a row is parked
+    instead, counted in `backfill.mailboxes_unreadable` — a subset of
+    `mailboxes_pending` — and retried after a cooldown. Parking does not make
+    history covered, so `complete` stays false while one exists. A backfill that
+    is stuck short of 100% is this number, not the skipped one.
 
 ## A short gap right after a platform update
 
@@ -338,7 +349,7 @@ one immediately is a [tenant purge](cli.md#the-tenant-purge-is-irreversible).
 | A connection in error | `mailsec connection test <record>` — each requirement, independently |
 | Mailboxes found but not watched | `coverage.mailboxes.discovered`, plus `mailbox_cap` where one applies |
 | Individual messages missing | `EMAIL_INGEST_ERROR`, `coverage` parse-degradation rate |
-| History incomplete after onboarding | `coverage.backfill.messages_skipped` and `mailboxes_skipped` — read as a pair |
+| History incomplete after onboarding | `coverage.backfill.messages_skipped` and `mailboxes_skipped` — read as a pair; `mailboxes_unreadable` for a walk that is stuck |
 | Judged but not emitted | `coverage` emission backlog |
 | Slow verdicts | `coverage.overview.processing_latency_p95` — and its `basis`, which includes your provider's own notification delay |
 | Automations decided but nothing moved | Action `result: alert_only` — see [`automations`](policy.md#automations) |
