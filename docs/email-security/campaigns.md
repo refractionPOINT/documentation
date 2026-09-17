@@ -243,6 +243,12 @@ Every member goes through the same remediation path as a single-message action,
 so `alert_only`, the audit row and idempotency all apply unchanged. A sweep is
 many ordinary actions, never a bulk write that skips them.
 
+That includes alert-only mode, which withholds a sweep you run as much as one an
+automation would. When any member comes back `alert_only`, the result carries
+`force_required: true`; re-send the execute with `force` (`--force` on the CLI,
+beside the same `--confirm` token — previews do not take it) to perform it. See
+[Forcing an action in alert-only mode](remediation.md#forcing-an-action-in-alert-only-mode).
+
 Members are routed **per message**, so a campaign that spans a Microsoft 365
 connection and a Google Workspace connection sweeps correctly across both.
 
@@ -255,6 +261,7 @@ attempted: 38
 succeeded: 36
 skipped: 4
 alert_only: 0
+force_required: false
 failed:
   <msg_uuid>: "<provider error>"
 action_id: <action_id>

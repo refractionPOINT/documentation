@@ -47,8 +47,10 @@ limacharlie hive set --hive-name dr-mail --key custom-vendor-bank-change \
 | `class` | — | `signal` (default), `detection` or `graymail` |
 | `weight` | ✅ for `signal` and `detection` | 0–100. Must be **0** for `graymail`, because the graymail lane bypasses the score entirely and a weight there would never be read |
 | `confidence` | — | 0–100, **default 100**. An author who does not express a confidence means "when this fires, it is right" |
+| `name` | ✅ | Shown beside the rule in every verdict it contributes to. A rule without one is refused at save |
+| `fp_notes` | ✅ | A sentence on what benign mail the rule is known to fire on — what the analyst who sees its first false positive reads. A rule without it is **refused at save** (`hive set` and `hive validate`), because a rule set containing one would not compile |
 | `respond` | — | `post_verdict` only |
-| `name`, `tags`, `attack_types`, `fp_notes` | — | Documentation and grouping. `fp_notes` is not required of your own rules — that discipline is ours, for the pack we ship |
+| `tags`, `attack_types` | — | Documentation and grouping |
 
 ### The two phases
 
@@ -61,13 +63,17 @@ limacharlie hive set --hive-name dr-mail --key custom-vendor-bank-change \
 
 | Action | |
 |---|---|
-| `extension request` naming `ext-email-security` | The way a rule reaches remediation. The typed action goes to the same executor every other action uses, which is where `alert_only` / `enforce` is decided |
+| `extension request` naming `ext-email-security` | The way a rule reaches remediation. The typed action goes to the same executor every other action uses, which is where `alert_only` / `enforce` is decided. Add `force: true` to act even in alert-only mode — see below |
 | `report` | Raise a detection into the platform's detection stream |
 
 ```yaml
+name: Quarantine malicious mail to the CFO
 phase: post_verdict
 class: signal
 weight: 1
+fp_notes: >
+  Acts on the verdict, so it inherits the verdict's false positives; a
+  misjudged message to this mailbox is quarantined and must be restored.
 detect:
   op: and
   rules:
@@ -83,6 +89,22 @@ respond:
     extension action: quarantine_message
     extension request:
       msg_uuid: "{{ .msg_uuid }}"
+```
+
+To have the rule act even while the organization is in alert-only mode, add
+`force: true` to the `extension request`. Only a real boolean `true` forces — a
+quoted `"true"` does not. The action is recorded as forced, and its
+`EMAIL_ACTION` carries `forced: true`; see
+[Forcing an action in alert-only mode](remediation.md#forcing-an-action-in-alert-only-mode).
+
+```yaml
+respond:
+  - action: extension request
+    extension name: ext-email-security
+    extension action: quarantine_message
+    extension request:
+      msg_uuid: "{{ .msg_uuid }}"
+      force: true
 ```
 
 Everything sensor-shaped — task, tag, isolate, seal, re-enroll, set variable —

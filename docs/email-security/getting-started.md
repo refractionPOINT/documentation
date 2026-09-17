@@ -240,16 +240,18 @@ controls. See [Messages & Triage](messages.md).
 
 Everything up to here is read-only. Automations ship in `alert_only`, which
 means a rule is evaluated, its intent is recorded, and **the mailbox is not
-touched**. Analyst-initiated actions from the console, CLI or API always execute
-— `alert_only` withholds automation, not people.
+touched**. While no automation is in `enforce`, that holds for actions people
+start too — from the console, the CLI, the API or an AI agent. Each one is
+recorded and withheld, and can be performed on purpose with
+[`force`](remediation.md#forcing-an-action-in-alert-only-mode).
 
 Turning enforcement on is a deliberate edit to a `mailsec_policy/automations`
 record. Read [Policy Reference](policy.md#automations) before you do, in
 particular this consequence:
 
 !!! danger "Enforcement is currently an organization-level switch"
-    The remediation executor authorizes automated action when **any** automation
-    rule in the organization is in `enforce` mode. Which rule dispatches an
+    The remediation executor authorizes action — automated or not — when **any**
+    automation rule in the organization is in `enforce` mode. Which rule dispatches an
     action is still decided per rule, but the executor's consent check is not
     per rule — so putting one rule into `enforce` enables automated action for
     the organization's automated paths generally. Enable it when you mean the

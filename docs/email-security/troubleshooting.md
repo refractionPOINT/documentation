@@ -272,6 +272,34 @@ their own, is in
 [Data retention and deletion](policy.md#data-retention-and-deletion). Asking for
 one immediately is a [tenant purge](cli.md#the-tenant-purge-is-irreversible).
 
+## Actions report `alert_only` and nothing moves
+
+An organization with no automation in `enforce` mode is in alert-only mode, and
+that withholds **every** action — including one a person starts from the console,
+the CLI or the API. The response carries `force_required: true`. Either repeat
+the action with `force` (the console asks *"Quarantine anyway?"*, the CLI takes
+`--force`) — see
+[Forcing an action in alert-only mode](remediation.md#forcing-an-action-in-alert-only-mode)
+— or, if the organization should act on its own, put an automation into
+[`enforce`](policy.md#mode).
+
+## A policy record has no effect
+
+A `mailsec_policy` record that is **disabled** in the Hive is not applied — very
+often it was written without `--enabled`. The organization's error stream says so,
+under component `mailsec/policy`, about once a day while the record stays
+disabled:
+
+```text
+mailsec_policy record "<name>" is DISABLED and is NOT in force. If that is not intended, enable the record; the organization's other policy records are still applied.
+```
+
+If you disabled it on purpose, nothing is wrong. Otherwise enable it:
+
+```bash
+limacharlie hive enable --hive-name mailsec_policy --key <name> --oid $OID
+```
+
 ## Quick reference
 
 | Symptom | Where it is reported |
@@ -283,5 +311,7 @@ one immediately is a [tenant purge](cli.md#the-tenant-purge-is-irreversible).
 | Judged but not emitted | `coverage` emission backlog |
 | Slow verdicts | `coverage.overview.processing_latency_p95` — and its `basis`, which includes your provider's own notification delay |
 | Automations decided but nothing moved | Action `result: alert_only` — see [`automations`](policy.md#automations) |
+| A person's action reports `alert_only` | Alert-only mode withholds every action — [force it](remediation.md#forcing-an-action-in-alert-only-mode) |
+| A policy record has no effect | A `mailsec/policy` error naming the record as `DISABLED` — see [above](#a-policy-record-has-no-effect) |
 | A verdict you disagree with | [`message revisions`](detections.md#revising-a-verdict), and the `top_signals` on the message |
 | Data scheduled for deletion | `coverage.entitlement.purge_scheduled_at` |

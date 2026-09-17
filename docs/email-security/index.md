@@ -40,7 +40,9 @@ deploy it:
   Online Protection / Defender or Gmail's own filters and judges what they let
   through.
 - **It does not modify mail by default.** Automations ship in `alert_only` mode,
-  banners are off, and reporter replies are off. See
+  banners are off, and reporter replies are off. Until an automation is in
+  `enforce`, an action a person starts is recorded and withheld too, unless it is
+  [forced](remediation.md#forcing-an-action-in-alert-only-mode). See
   [Policy Reference](policy.md).
 
 ## How it works

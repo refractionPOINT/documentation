@@ -122,6 +122,7 @@ The response is an acceptance, not a completion:
 | `accepted`, `started` | Whether the job was taken, and whether this call started it |
 | `already_running` / `already_complete` | The idempotent answers — the confirmation re-derives to a fixed `bulk_id`, so re-sending the same request **adopts the same job rather than acting twice** |
 | `member_count`, `state`, `counts` | The job as it stands at acceptance |
+| `force` | Whether this execute was [forced](#forcing-an-action-in-alert-only-mode) |
 
 Partial failure is a normal, honestly-reported outcome, **never a rollback**.
 Provider actions are not transactional and there is no undo.
@@ -154,7 +155,7 @@ Each member appears in `items[]`:
 | `ok` | A provider write that happened |
 | `skipped` | The provider found the message already where the action would put it |
 | `failed` | `items[].reason` carries the executor's bounded explanation |
-| `alert_only` | The organization's policy declined to act — see [`automations`](policy.md#automations) |
+| `alert_only` | The organization's policy declined to act — see [`automations`](policy.md#automations), and [forcing](#forcing-an-action-in-alert-only-mode) to act anyway |
 | `not_found` | No row in the index for that member |
 | `pending` | Not attempted yet |
 
@@ -165,6 +166,10 @@ through `GET /actions/{action_id}` like any other action.
 `ok`, `skipped`, `failed`, `alert_only`, `not_found`. `alert_only` is counted
 separately from `ok` on purpose: one is a provider write and the other is a
 decision the organization's policy withheld.
+
+The status also carries `force` — the job was
+[forced](#forcing-an-action-in-alert-only-mode) — and `force_required`, which is
+`true` when `counts.alert_only` is above zero.
 
 **Read `state` to know whether to keep polling, and `counts` to know what
 happened.** They answer different questions and can disagree in the one way that
@@ -261,7 +266,9 @@ A batch that completes with no failures and no successes — every member
 member `alert_only` because the organization is not in enforce mode, or every
 member `not_found` — exits **`0`**. Nothing broke. If "at least one provider
 write actually happened" is what your runbook needs, read `counts.ok` rather
-than relying on the exit code.
+than relying on the exit code. A batch withheld by alert-only mode is re-run
+with `--force` to act — see
+[Forcing an action](#forcing-an-action-in-alert-only-mode).
 
 The `bulk_id` is announced on stderr *before* the first poll, so a poll that
 fails still leaves you holding the handle. With `--quiet`, the exit code and
@@ -293,6 +300,67 @@ bannered row's timeline, not a sweep. The API accepts all six.
 | Everything the engine attributed to one attack | [Campaign sweep](campaigns.md#sweeping-a-campaign) — the member set is the engine's, and the token is derived from it |
 | A set you chose | Bulk remediation, this page |
 
-All three end in the same executor, so `alert_only` / `enforce`, the audit row,
+All three end in the same executor, so `alert_only` / `enforce`, `force`, the audit row,
 the `EMAIL_ACTION` event and idempotency apply identically. There is exactly one
 remediation path in this product.
+
+## Forcing an action in alert-only mode
+
+An organization with no [automation](policy.md#automations) in `enforce` mode is
+in **alert-only mode**, and that applies to **every** remediation, not only
+automated ones. An action a person starts from the console, the CLI or the API,
+or one an AI agent asks for, is decided, audited and withheld exactly like a
+rule's: `result: alert_only`, and no mail moves.
+
+A withheld action says so. Its response carries `force_required: true`. To
+perform it, repeat the **same** request with `force: true`. That is an explicit
+consent for that one action: it does not change the organization's mode, and the
+next action without it is withheld again.
+
+| Caller | How to force |
+|---|---|
+| Console | A withheld action asks *"Quarantine anyway?"* (or the action's own name); confirming re-sends it forced |
+| CLI | `--force` on `mailsec message action`, and on the **execute** (with `--confirm`) of `mailsec message bulk-action` and `mailsec campaign action` |
+| Python SDK | `force=True` on `act_on_message()`, `act_on_campaign()` and `bulk_action_execute()` |
+| REST API | `force` (boolean) on `POST /messages/{msg_uuid}/actions`, `POST /campaigns/{campaign_id}/actions` and `POST /actions/bulk/execute` — see [Writes](api-reference.md#writes) |
+| AI agents | Through the CLI, like any other caller |
+| D&R rules | `force: true` in the `extension request` — in a `dr-mail` [`post_verdict` rule](custom-rules.md#what-a-post_verdict-rule-may-respond-with) or an ordinary [D&R rule](automation.md#acting-on-mail-from-a-dr-rule) |
+
+```bash
+limacharlie mailsec message action <msg_uuid> \
+  --action quarantine_message --reason "confirmed credential phish" \
+  --force --oid $OID
+```
+
+- **Only a real boolean `true` forces.** Anything else — `false`, the string
+  `"true"`, `1`, or no field at all — does not.
+- **`force` is not part of any confirmation token, and previews do not take
+  it.** Preview as usual, then send `force` on the execute with the token you
+  already hold.
+- **A forced bulk execute is a new job.** Re-sending a confirmation that was
+  withheld, now with `force`, starts a job with a **new `bulk_id`** rather than
+  adopting the withheld one. The bulk status reports `force` (this job was forced)
+  and `force_required` (`counts.alert_only` is above zero).
+- **A campaign sweep** reports `force_required: true` when any member came back
+  `alert_only`.
+- **The override is audited beside the refusal, not over it.** A forced action
+  is its own action row, next to the withheld one; its `request` carries
+  `force: true`, and its `EMAIL_ACTION` event carries `forced: true`. The field
+  is absent on every action that was not forced, so a rule can alert on
+  overrides alone:
+
+```yaml
+# Detect
+op: and
+rules:
+  - op: is
+    path: routing/event_type
+    value: EMAIL_ACTION
+  - op: is
+    path: event/forced
+    value: true
+```
+
+`force` needs a `limacharlie` release that includes it; an older CLI refuses
+`--force` as unknown, and the field can be sent directly to the API in the
+meantime.

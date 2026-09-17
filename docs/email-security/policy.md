@@ -47,6 +47,16 @@ visible; an ignored field is not.
 The validator's own wording is what you get back — in the CLI, in the API, and
 verbatim in the console's Policy page.
 
+### A disabled record is not applied
+
+A record's Hive `enabled` flag is your off switch, and a disabled record
+contributes nothing to the resolved policy. A record written without
+`--enabled` is stored disabled, which is an easy way to write an `enforce`
+automation that never takes effect. So a disabled record is reported to the
+organization's error stream, under component `mailsec/policy`, and repeated about
+once a day while it stays disabled — see
+[Troubleshooting](troubleshooting.md#a-policy-record-has-no-effect).
+
 ### Editing preserves what you did not touch
 
 The console's **Policy** page edits every record type, and saves are
@@ -260,14 +270,14 @@ same enforcement check as everything else, and deliberately so: a detonation
 opens a connection to attacker-controlled infrastructure, which confirms to the
 sender that the mail landed in a monitored mailbox. An organization in
 `alert_only` has said "do not do things on my behalf", and that is such a thing.
-An analyst asking always executes. Where detonation is not deployed, the action
-records a failed result naming that rather than pretending to have queued it.
+Where detonation is not deployed, the action records a failed result naming that
+rather than pretending to have queued it.
 
 ### `mode`
 
 | Mode | |
 |---|---|
-| `alert_only` | **The default.** The rule is evaluated and its intent recorded; the mailbox is not touched. Actions report `alert_only` as their result |
+| `alert_only` | **The default.** The rule is evaluated and its intent recorded; the mailbox is not touched. Actions report `alert_only` as their result — including actions a person starts, until some rule is in `enforce` |
 | `enforce` | The action is performed at the provider |
 
 The default is load-bearing. A rule whose mode is missing, misspelled, or written
@@ -277,15 +287,18 @@ save, and anything that ever slipped past decoding still behaves as
 `alert_only`.
 
 !!! danger "Enforcement is currently organization-wide at the executor"
-    The remediation executor authorizes *automated* action when **any** resolved
+    The remediation executor authorizes action when **any** resolved
     automation rule is in `enforce` mode. Which rule dispatches which action is
     still decided per rule, but the executor's consent check is not per rule — so
     putting one rule into `enforce` enables the organization's automated paths
     generally. Treat the first `enforce` as the decision that this organization
     now moves mail automatically.
 
-    Analyst-initiated actions are unaffected: a human clicking quarantine always
-    executes.
+    The same check covers actions people start. With no rule in `enforce`, a
+    quarantine clicked in the console, sent from the CLI or the API, or asked for
+    by an AI agent is withheld too (`result: alert_only`, `force_required: true`).
+    Repeat it with `force` to perform that one action — see
+    [Forcing an action in alert-only mode](remediation.md#forcing-an-action-in-alert-only-mode).
 
 **Default:** subscribing seeds a recommended preset entirely in `alert_only` —
 malicious → quarantine and graymail → move to spam among them. Nobody is
@@ -477,8 +490,12 @@ off, an automation, a D&R rule or the AI triage agent asking for
 console, the API or the CLI — because the switch exists to stop the product
 rewriting mail on its own, not to stop an operator from acting on a message in
 front of them. An organization that has never written this record still has
-working `banner_message` from the console; it simply has no automated
-bannering, and the wording is the packaged sentence.
+working `banner_message` from the console, subject to the organization's
+[`mode`](#mode) like every other action; it simply has no automated bannering,
+and the wording is the packaged sentence. A
+[forced](remediation.md#forcing-an-action-in-alert-only-mode) `banner_message` —
+including one from a D&R rule that sets `force: true` — is performed regardless
+of this switch.
 
 Bannering also needs the provider capability: `Mail.ReadWrite` is enough on
 Microsoft 365 (edited in place), while Google Workspace additionally needs the
