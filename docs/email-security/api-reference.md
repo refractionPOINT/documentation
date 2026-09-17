@@ -45,7 +45,7 @@ Shared behaviours:
 | Route | Returns |
 |---|---|
 | `GET /coverage` | Mailboxes discovered / protected / excluded / in error, message volume and the verdict funnel over the window, the parse-degradation rate, backfill progress, the emission backlog, per-connection health, and the `overview` block (open reports, active campaigns, resolved automation mode, and `processing_latency_p95` — see [Time to verdict](pipeline.md#time-to-verdict)). Params: `since`, `until`, `window_days`. With no window at all the default period is served from a short-lived server-side memo; naming an explicit range or a `window_days` always computes that exact period. `window_days` is the whole-days shorthand the CLI's `--window-days` uses (1-35, counted back from now); it cannot be combined with `since`/`until`, and its ceiling is the platform's maximum message retention. A window reaching past the organization's own retention horizon returns `volume.truncated`: the counts are of what is really stored, and the flag says the period asked about is longer than the period kept |
-| `GET /messages` | `{messages, next_cursor}` — the message index. Filters: `mailbox`, `sender_email`, `sender_root_domain`, `campaign_id`, `link_domain`, `attachment_sha256`, `verdict[]`, `state[]`, `direction[]`, `user_reported`, `min_score`, `q`, `since`, `until`, `cursor`, `limit` |
+| `GET /messages` | `{messages, next_cursor}` — the message index. Filters: `mailbox`, `sender_email`, `sender_root_domain`, `campaign_id`, `link_domain`, `attachment_sha256`, `verdict[]`, `state[]`, `direction[]`, `lane`, `user_reported`, `min_score`, `q`, `since`, `until`, `cursor`, `limit` |
 | `GET /messages/{msg_uuid}` | `{message, mdm, mdm_source}` — the index row, the full signal rationale, the action timeline, and the Message Data Model. `mdm_source` is `stored` (the model the collector judged with, enrichments included) or `eml_reparse` (a fresh parse of the original bytes, no enrichments). `mdm_unavailable_reason` replaces the model when neither is available |
 | `GET /messages/{msg_uuid}/similar` | `{messages, since}` — recent messages sharing at least one clustering key, each with the `matched_keys` that matched, plus the lookback window that was searched. Candidates, not a cluster |
 | `GET /messages/{msg_uuid}/revisions` | `{revisions, revisions_truncated}` — one message's whole verdict-revision history, oldest first: who decided (`actor`, `mode`), when, the structured rationale, and the `prior` state each one displaced. The first revision's `prior` is the engine's own verdict and the pack version that produced it. Not paginated — revisions are few by nature — but an optional `limit` is accepted and `revisions_truncated` reports the pathological history that exceeded the backend's ceiling. Gated on `mailsec.get`: a revision is the product's structured record of a decision about a message you can already open |
@@ -60,6 +60,15 @@ Shared behaviours:
 | `GET /tenant` | `{confirmation, expires_in_seconds, warning}` — the tenant-purge preview. Returns the warning describing exactly what a purge removes, and mints the single-use `confirmation` token that [`DELETE /tenant`](#delete-tenant) requires. **It changes nothing.** The token expires after `expires_in_seconds` (300). Requires Owner-level authority, not `mailsec.get` |
 
 **Numeric and boolean parameters are validated.** `limit` is 1-1000 (the backend serves 200 by default), `min_score` is 0-100, `min_members` is 0 or more, and `user_reported` and `oldest_first` take `true`/`false`. A value that is unparseable, out of range, or given more than once is refused with **400** and a response body naming the parameter, for example `{"parameter": "limit", "error": "limit: \"all\" is not an integer"}`. It is not silently dropped, so a filter you sent is always a filter that was applied.
+
+`lane` selects where a message was judged: `live` for ordinary incoming mail or
+`backfill` for the initial history walk. Omit it to include either. It works with
+time-window, verdict, `sender_root_domain`, `link_domain` and
+`attachment_sha256` queries. A lane cannot be combined with `mailbox`,
+`sender_email`, or `campaign_id`; those
+combinations return a non-retryable typed refusal with
+`error_code: "lane_unsupported"` and name the `conflicting_dimension` rather
+than returning an unfiltered page.
 
 ### `GET /messages/{msg_uuid}/eml`
 
