@@ -183,7 +183,7 @@ limacharlie mailsec connection test gws-prod --include-watch --oid $OID --output
 | `mail_full` | — | `https://mail.google.com/` not delegated; banners and reporter replies are unavailable. Reported as `skipped`, and `ok` stays true |
 | `mailbox_read` | ✅ | Delegation is in place but the directory returned nothing, or the impersonated admin cannot list users |
 | `pubsub_pull` | ✅ | The service account lacks `roles/pubsub.subscriber` on the subscription, or the subscription name is wrong |
-| `pubsub_watch` | ✅ | Gmail cannot publish to the topic — usually the missing publisher binding, or a topic outside the service account's project |
+| `pubsub_watch` | ✅ (with `--include-watch`) | Gmail cannot publish to the topic — usually the missing publisher binding, or a topic outside the service account's project. Without the flag it is reported as `skipped` and is not required, because it is the one probe with a side effect |
 
 `--include-watch` establishes a real Gmail watch and requires a real Pub/Sub pull
 before lifecycle can pass. It is idempotent and the watch expires on its own.
