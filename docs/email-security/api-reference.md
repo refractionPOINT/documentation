@@ -296,22 +296,22 @@ branch on.** All three answer a **`400`** carrying the same typed, non-retryable
 
 ```json
 {
-  "error": "get_hunt is not implemented until M7 (needs: the replay/retro-hunt engine (plan §6.14))",
+  "error": "get_hunt is not implemented until M7 (needs: the replay/retro-hunt engine)",
   "retry": false,
   "data": {
     "error_code": "not_implemented",
     "rpc": "get_hunt",
     "milestone": "M7",
-    "needs": "the replay/retro-hunt engine (plan §6.14)"
+    "needs": "the replay/retro-hunt engine"
   }
 }
 ```
 
 `error_code` is the only field to branch on. `rpc` names the route that refused
 and differs per route; `needs` is prose and also differs — the remediation route
-names the remediation executor as well. The `error` text is meant for a human
-reading a log and is free to change; the code is not. `milestone` and the `§`
-reference are internal build-order identifiers, not a published schedule or a
+answers `the replay/retro-hunt engine + the remediation executor`. The `error`
+text is meant for a human reading a log and is free to change; the code is not.
+`milestone` is an internal build-order label, not a published schedule or a
 commitment to a date.
 
 `retry` is `false` and means it: an unimplemented route does not become
