@@ -105,6 +105,7 @@ All writes are `POST` with a JSON body and require `cloudsec.set`.
 | `/chokepoints/restore` | `{urn}` | `{ok}` |
 | `/caasm/policy` | `{policy: {expect: [{label, capability, kinds}]}}` — validated before storing. | `{ok}` |
 | `/caasm/ingest` | `{source, records?: [...], record?: {...}, policy?: {...}}` — `source` required; a single `record` is treated as a one-element batch. Body capped at 1 MiB; ingestion is idempotent. | `{result: {received, normalized, skipped, assets, created, updated, deleted, policy_set}}` |
+| `/code/webhook` | `{connection, url, secret}` — point a GitHub connection's App webhook at this organization's `github-code-webhook-<connection>` adapter. `url` must be this organization's own hook URL, and the App must already have an active webhook (`webhook_not_active` otherwise). See [Code Scanning](code-scanning.md#the-api) for the rules and refusal reasons. | The connection's re-checked webhook status: `{state, reason, missing_events, detail}`. |
 | `/providers/test` | `{provider: <cloudsec_provider record>}` — credential inline (ephemeral, never stored) or a `hive://secret/<name>` reference. | `{supported, report: {provider, ok, checks: [{id, name, required, ok, detail}]}}`. A provider type with no preflight implemented answers `{supported: false, report: null}` rather than an error — treat it as "cannot verify", not "credential bad". |
 
 Example — disposition a finding:
