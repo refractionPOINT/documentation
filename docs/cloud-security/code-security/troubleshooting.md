@@ -20,6 +20,9 @@ if it is shown. It names what is not set up and links to the fix. From the CLI,
 | A repository still shows `sast_ruleset_unresolved` | That result predates code rules, and `sast_ruleset` is now ignored. The next scan replaces it. |
 | GitLab projects are listed but never scanned | The connection is to a self-managed GitLab instance. Only GitLab.com projects can be scanned. The connection test reports `code_scanning_reachable`. |
 | The repository drawer says it is outside the App's installation | The GitHub App is installed on selected repositories only. Add the repository on GitHub's installation page. |
+| An image shows `registry_permission_denied`, or the status shows `image_registry_permission` | The registry refused to let us pull the image. For Google Cloud, grant the connection's service account `roles/artifactregistry.reader` on the project that hosts the image. See [Container image scanning](../provider-setup/gcp.md#container-image-scanning-by-code-security). The image is retried automatically, at most once a day after repeated failures. **Sync now** on the source-control connection retries it immediately. |
+| An image shows `image_not_found` | The registry has no image with that digest, usually because it was deleted or cleaned up. After two such answers the image is no longer retried. It is dropped when nothing references it. If you pushed it again, use **Sync now** on the source-control connection. |
+| An image shows `failure_backoff` | Recent attempts failed. The image's error says why and when it will next be tried. |
 | A finding you expected is missing entirely | Check `severity_floor`. Findings below it are never recorded, so there is nothing to filter for. |
 | No findings, and you expected some | Check the repository's engine states in its **Details** drawer. An engine that is off, partial or has no result has not proven the repository clean. |
 

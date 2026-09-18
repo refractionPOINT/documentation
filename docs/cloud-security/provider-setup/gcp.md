@@ -75,6 +75,11 @@ inherited down the hierarchy, so an org-level grant covers every project.
     `provider test` to confirm the result — it names every surface that is
     still denied.
 
+    If you use [Code Security](../code-security/index.md) to scan container
+    images, add `roles/artifactregistry.reader` to that list (see
+    [Container image scanning](#container-image-scanning-by-code-security)).
+    `roles/viewer` already includes it; the tighter set does not.
+
 ## Optional roles
 
 Each adds one inventory or analysis surface. Skipping one leaves that surface
@@ -86,6 +91,7 @@ Each adds one inventory or analysis surface. Skipping one leaves that surface
 | `roles/osconfig.vulnerabilityReportViewer` | Agentless workload vulnerabilities from VM Manager | `osconfig_vuln` |
 | `roles/osconfig.inventoryViewer` | The OS-inventory join that attaches package name + installed/fixed version to each CVE | *(not probed — exercised during the sweep)* |
 | `roles/containeranalysis.occurrences.viewer` | **Container image** vulnerabilities from Artifact Analysis, for images in Artifact Registry and Container Registry | `artifact_analysis` |
+| `roles/artifactregistry.reader` | [Code Security](../code-security/index.md) pulling your **private container images** to scan them. Already included in `roles/viewer`; add it if you use the tighter set of roles | *(not probed — exercised when an image is scanned)* |
 | `roles/recommender.iamViewer` | Unused-privilege findings (activity-based CIEM) | `activity_ciem` |
 | `roles/policyanalyzer.activityAnalysisViewer` | Dormant-identity / last-authentication findings | `activity_ciem` |
 | `roles/aiplatform.viewer` | Vertex AI endpoint and model inventory | `vertex_ai` |
@@ -114,6 +120,41 @@ Each adds one inventory or analysis surface. Skipping one leaves that surface
       truncated set would look like a shrinking estate. A busy CI project that
       keeps every historical build image is the case that hits this. The
       results are not lost on Google's side; we simply do not ingest them yet.
+
+### Container image scanning by Code Security
+
+[Code Security](../code-security/index.md) scans the container images your
+repositories and workloads reference by digest. To scan a **private** image in
+Artifact Registry (`*-docker.pkg.dev`) or `gcr.io`, it pulls the image using
+this connection's service account. That service account needs
+`roles/artifactregistry.reader` on **the project that hosts the image**. That
+is often not the project where the image runs. `gcr.io` is served by Artifact
+Registry, so the same role covers it.
+
+- With `roles/viewer` at the organization or folder, you already have it.
+- With the tighter set of roles, grant it at the same node (variables as in
+  [Create the service account](#create-the-service-account)):
+
+    ```bash
+    gcloud organizations add-iam-policy-binding "$ORG_ID" \
+      --member "serviceAccount:${SA}" \
+      --role roles/artifactregistry.reader
+    ```
+
+- Images kept in a **separate project**, such as a shared build or artifact
+  project, need the grant there too if that project is outside the connected
+  scope.
+- A project still on legacy **Container Registry** serves `gcr.io` images from
+  Cloud Storage. There the service account needs `roles/storage.objectViewer`
+  on the project's `artifacts.<project>.appspot.com` bucket instead.
+
+Without the role, the image is not scanned and its status reads
+`registry_permission_denied`, naming the registry and this role. The code
+security status shows `image_registry_permission`. A refused image is retried
+less and less often, down to once a day. It keeps being retried, so granting
+the role fixes it without any other change. To retry right away, use
+**Sync now** on the source-control connection (for example GitHub) whose
+scans reference the image.
 
 !!! note "Serverless already works on the required baseline"
     The required `roles/viewer` + `roles/iam.securityReviewer` pair **already**
@@ -195,7 +236,9 @@ for ROLE in roles/viewer roles/iam.securityReviewer; do
     --member "serviceAccount:${SA}" --role "$ROLE"
 done
 
-# Optional surfaces
+# Optional surfaces. roles/viewer above already lets Code Security pull private
+# container images; if you replace it with a tighter set, add
+# roles/artifactregistry.reader here.
 for ROLE in roles/secretmanager.viewer \
             roles/osconfig.vulnerabilityReportViewer \
             roles/osconfig.inventoryViewer \
