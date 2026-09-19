@@ -26,7 +26,9 @@ An IAM **user** whose only permission is `sts:AssumeRole` on a read-only
 LimaCharlie stores the user's access key, assumes the role, and reads. The
 user itself can do nothing but assume that one role.
 
-## Create the identity (CLI, single account)
+<span id="create-the-identity-cli-single-account"></span>
+
+## Create the identity (single account)
 
 Use a dedicated test account for your first connection if you have one. Ask an
 AWS administrator who can create IAM users, roles, policies, and access keys
@@ -34,62 +36,110 @@ to run the steps below. The created user is the application's identity, not a
 human login. The role grants the read permissions, and the external ID is a
 value that must match between the role's trust policy and LimaCharlie.
 
-1. Sign in to the AWS console with that administrator identity (not root).
-2. Open **CloudShell** from the console toolbar and use its Bash shell. The AWS
-   CLI is already installed and uses your console identity. See
-   [AWS CloudShell setup](https://docs.aws.amazon.com/cloudshell/latest/userguide/getting-started.html).
-3. Run `aws sts get-caller-identity` and confirm the **Account** is the one you
-   intend to connect.
-4. Run the commands below in that same shell. Stop if a command fails rather
-   than continuing with an incomplete role.
-5. Keep the generated external ID and the access key's **AccessKeyId** and
-   **SecretAccessKey**. They are used in different fields, as shown below.
+Choose one tab; both create the same user, role, and access key.
 
-```bash
-ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
-EXTERNAL_ID=$(openssl rand -hex 16)          # save this
+=== "Web console"
 
-aws iam create-user --user-name lc-cloudsec
+    1. Sign in to the AWS console as an administrator, open **IAM → Users → Create user**,
+       and name the user `lc-cloudsec`. Leave console access off. Create the user
+       without attaching policies; its permission is added below.
+    2. Copy your 12-digit account ID from the account menu. Generate and save a unique
+       alphanumeric external ID (for example, using a password manager). Replace
+       `<ACCOUNT_ID>` and `<EXTERNAL_ID>` in the following policy with those values.
+    3. Open **IAM → Roles → Create role → Custom trust policy** and paste:
 
-cat > trust.json <<EOF
-{ "Version": "2012-10-17", "Statement": [{
-  "Effect": "Allow",
-  "Principal": { "AWS": "arn:aws:iam::${ACCOUNT_ID}:user/lc-cloudsec" },
-  "Action": "sts:AssumeRole",
-  "Condition": { "StringEquals": { "sts:ExternalId": "${EXTERNAL_ID}" } }
-}] }
-EOF
-aws iam create-role --role-name LimaCharlieCloudSecRO \
-  --assume-role-policy-document file://trust.json
-aws iam attach-role-policy --role-name LimaCharlieCloudSecRO \
-  --policy-arn arn:aws:iam::aws:policy/SecurityAudit
-aws iam attach-role-policy --role-name LimaCharlieCloudSecRO \
-  --policy-arn arn:aws:iam::aws:policy/job-function/ViewOnlyAccess
+        ```json
+        {
+          "Version": "2012-10-17",
+          "Statement": [{
+            "Effect": "Allow",
+            "Principal": {"AWS": "arn:aws:iam::<ACCOUNT_ID>:user/lc-cloudsec"},
+            "Action": "sts:AssumeRole",
+            "Condition": {"StringEquals": {"sts:ExternalId": "<EXTERNAL_ID>"}}
+          }]
+        }
+        ```
 
-cat > assume.json <<EOF
-{ "Version": "2012-10-17", "Statement": [{
-  "Effect": "Allow", "Action": "sts:AssumeRole",
-  "Resource": "arn:aws:iam::${ACCOUNT_ID}:role/LimaCharlieCloudSecRO"
-}] }
-EOF
-aws iam put-user-policy --user-name lc-cloudsec \
-  --policy-name lc-assume-ro --policy-document file://assume.json
+    4. Continue to permissions and select both `SecurityAudit` and `ViewOnlyAccess`.
+       Name the role `LimaCharlieCloudSecRO`, create it, and copy its **ARN** from
+       the role details. Keep the external ID for the LimaCharlie wizard.
+    5. Open **IAM → Users → lc-cloudsec → Permissions → Add permissions → Create
+       inline policy**. Select the **JSON** editor and paste this policy, replacing
+       `<ACCOUNT_ID>` with the same account ID:
 
-aws iam create-access-key --user-name lc-cloudsec   # capture AccessKeyId + SecretAccessKey
-```
+        ```json
+        {
+          "Version": "2012-10-17",
+          "Statement": [{
+            "Effect": "Allow",
+            "Action": "sts:AssumeRole",
+            "Resource": "arn:aws:iam::<ACCOUNT_ID>:role/LimaCharlieCloudSecRO"
+          }]
+        }
+        ```
 
-!!! note "In the web app (AWS console)"
-    IAM → Users → create `lc-cloudsec`; IAM → Roles → create
-    `LimaCharlieCloudSecRO` (custom trust policy → the user plus the
-    external-ID condition; attach `SecurityAudit` + `ViewOnlyAccess`); add an
-    inline policy on the user allowing `sts:AssumeRole` on the role; then
-    create an access key.
+    6. Name the policy `lc-assume-ro` and create it. The user now has permission to
+       assume this role; the read permissions belong to the role.
+    7. On the user's **Security credentials** tab, choose **Create access key**.
+       Review the use-case guidance, select **Other**, continue through the prompts,
+       and save the **Access key ID** and **Secret access key**. AWS shows the
+       secret only at creation; keep it for the credential step below.
+
+    AWS documents [custom trust policies](https://aws.amazon.com/blogs/security/iam-access-analyzer-makes-it-simpler-to-author-and-validate-role-trust-policies/)
+    and [access key creation](https://docs.aws.amazon.com/IAM/latest/UserGuide/access-keys-admin-managed.html).
+
+=== "Cloud Shell / CLI"
+
+    1. Sign in to the AWS console with that administrator identity (not root).
+    2. Open **CloudShell** from the console toolbar and use its Bash shell. The AWS
+       CLI is already installed and uses your console identity. See
+       [AWS CloudShell setup](https://docs.aws.amazon.com/cloudshell/latest/userguide/getting-started.html).
+    3. Run `aws sts get-caller-identity` and confirm the **Account** is the one you
+       intend to connect.
+    4. Run the commands below in that same shell. Stop if a command fails rather
+       than continuing with an incomplete role.
+    5. Keep the generated external ID and the access key's **AccessKeyId** and
+       **SecretAccessKey**. They are used in different fields, as shown below.
+
+    ```bash
+    ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+    EXTERNAL_ID=$(openssl rand -hex 16)          # save this
+
+    aws iam create-user --user-name lc-cloudsec
+
+    cat > trust.json <<EOF
+    { "Version": "2012-10-17", "Statement": [{
+      "Effect": "Allow",
+      "Principal": { "AWS": "arn:aws:iam::${ACCOUNT_ID}:user/lc-cloudsec" },
+      "Action": "sts:AssumeRole",
+      "Condition": { "StringEquals": { "sts:ExternalId": "${EXTERNAL_ID}" } }
+    }] }
+    EOF
+    aws iam create-role --role-name LimaCharlieCloudSecRO \
+      --assume-role-policy-document file://trust.json
+    aws iam attach-role-policy --role-name LimaCharlieCloudSecRO \
+      --policy-arn arn:aws:iam::aws:policy/SecurityAudit
+    aws iam attach-role-policy --role-name LimaCharlieCloudSecRO \
+      --policy-arn arn:aws:iam::aws:policy/job-function/ViewOnlyAccess
+
+    cat > assume.json <<EOF
+    { "Version": "2012-10-17", "Statement": [{
+      "Effect": "Allow", "Action": "sts:AssumeRole",
+      "Resource": "arn:aws:iam::${ACCOUNT_ID}:role/LimaCharlieCloudSecRO"
+    }] }
+    EOF
+    aws iam put-user-policy --user-name lc-cloudsec \
+      --policy-name lc-assume-ro --policy-document file://assume.json
+
+    aws iam create-access-key --user-name lc-cloudsec   # capture AccessKeyId + SecretAccessKey
+    ```
 
 ## Create the credentials secret
 
 In the LimaCharlie wizard's **Permissions** step, select **New secret**. Choose
 a name such as `aws-credentials`, then paste this JSON with the two values
-returned by `create-access-key`. Do not paste the entire AWS command output.
+from AWS: the access key ID and secret access key. If you used the CLI, do not
+paste the entire command output.
 
 ```json
 {"access_key_id": "AKIA...", "secret_access_key": "..."}

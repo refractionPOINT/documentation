@@ -51,7 +51,13 @@ you do not have to run its LimaCharlie CLI examples to use the web app.
 6. Save, wait for collection, and confirm a resource you recognize in Inventory.
    An accepted credential alone does not prove the intended account was scanned.
 
-### If a guide uses commands
+### Choose browser steps or commands
+
+Where a guide offers tabs, **Web console** walks through browser setup;
+**Cloud Shell / CLI** keeps the command alternative. Complete one method per
+step. You do not need to install a CLI to follow the browser instructions.
+
+### If you choose commands
 
 The provider's CLI creates access in that provider. The `limacharlie` CLI
 configures LimaCharlie. They are separate tools. If you use a provider command

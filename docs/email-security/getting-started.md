@@ -4,8 +4,9 @@
 
 Connect your organization's Microsoft 365 or Google Workspace mail to analyze
 messages for threats. You do not need to change mail routing or install software
-on employees' computers. This walkthrough uses the web app; no terminal is required
-for the Microsoft 365 path. Google Workspace setup also uses Google Cloud commands.
+on employees' computers. This walkthrough uses the web app. The provider guides offer **Web console**
+tabs for browser setup and **Cloud Shell / CLI** tabs if you prefer commands.
+No terminal is required for either provider.
 
 Your first goal is to **connect a small set of mailboxes, verify access, and open
 an analyzed message**. You can configure automated responses later.

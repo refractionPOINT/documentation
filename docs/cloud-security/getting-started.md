@@ -100,8 +100,9 @@ it in **Secrets Manager**, separately from the connection settings.
    Fix required failures before saving. For optional failures, read which data
    will be missing and decide whether you need it.
 
-The command tabs are an alternative for administrators comfortable with a
-terminal. Install and sign in to the provider's CLI before using them, select
+Choose **Web console** in the provider guides for browser instructions. The
+command tabs are an alternative for administrators comfortable with a terminal.
+Use Cloud Shell or install and sign in to the provider's CLI, select
 the intended account, and replace any remaining placeholders. Those commands
 create access credentials; collection itself reads provider data. Some provider
 keys allow broader access than the collector uses—the wizard and provider guide

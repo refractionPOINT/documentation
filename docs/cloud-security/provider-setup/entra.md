@@ -63,32 +63,51 @@ ARM/subscription setup at all.
 
 ## Create the app registration
 
-```bash
-TENANT_ID=$(az account show --query tenantId -o tsv)
+=== "Web console"
 
-APP_ID=$(az ad app create --display-name lc-entra --query appId -o tsv)
-az ad sp create --id "$APP_ID"
+    1. Sign in to the [Microsoft Entra admin center](https://entra.microsoft.com/)
+       and select the directory to inspect.
+    2. Open **Entra ID → App registrations → New registration**. Name the app
+       `LimaCharlie Cloud Security`, select accounts in this directory only, and
+       register it.
+    3. From **Overview**, copy **Application (client) ID** and **Directory (tenant)
+       ID**. These identify the app and the directory in LimaCharlie.
+    4. Open **Certificates & secrets → Client secrets → New client secret**. Set
+       an expiry per your organization's policy and copy the **Value** immediately,
+       not the Secret ID. Record the expiry for future rotation.
+    5. Open **API permissions → Add a permission → Microsoft Graph → Application
+       permissions**. Add **Directory.Read.All** and the optional permissions you
+       need from the table above.
+    6. Have an authorized administrator select **Grant admin consent** for the
+       directory. Confirm consent is granted, then save the credential below.
 
-az ad app credential reset --id "$APP_ID" --years 2 --append \
-  --display-name lc-entra --query password -o tsv      # capture this once
+    See Microsoft's [app registration guide](https://learn.microsoft.com/en-us/entra/identity-platform/quickstart-register-app).
+    No Azure subscription or subscription Reader assignment is needed for this provider.
 
-GRAPH=00000003-0000-0000-c000-000000000000
-az ad app permission add --id "$APP_ID" --api "$GRAPH" --api-permissions \
-  7ab1d382-f21e-4acd-a863-ba3e13f7da61=Role   # Directory.Read.All
-az ad app permission add --id "$APP_ID" --api "$GRAPH" --api-permissions \
-  b0afded3-3588-46d8-8b3d-9842eff778da=Role   # AuditLog.Read.All   (optional)
-az ad app permission add --id "$APP_ID" --api "$GRAPH" --api-permissions \
-  246dd0d5-5bd0-4def-940b-0421030a5b68=Role   # Policy.Read.All     (optional)
+=== "Cloud Shell / CLI"
 
-az ad app permission admin-consent --id "$APP_ID"
-```
+    Use Azure Cloud Shell with Bash, or sign in to the Azure CLI with `az login`.
+    Confirm the directory with `az account show`, then run:
 
-!!! note "In the portal"
-    **Microsoft Entra ID → App registrations → New registration** →
-    **Certificates & secrets → New client secret** (copy the *Value*) →
-    **API permissions → Add a permission → Microsoft Graph → Application
-    permissions** → add the permissions above → **Grant admin consent for
-    \<tenant\>**.
+    ```bash
+    TENANT_ID=$(az account show --query tenantId -o tsv)
+
+    APP_ID=$(az ad app create --display-name lc-entra --query appId -o tsv)
+    az ad sp create --id "$APP_ID"
+
+    az ad app credential reset --id "$APP_ID" --years 2 --append \
+      --display-name lc-entra --query password -o tsv      # capture this once
+
+    GRAPH=00000003-0000-0000-c000-000000000000
+    az ad app permission add --id "$APP_ID" --api "$GRAPH" --api-permissions \
+      7ab1d382-f21e-4acd-a863-ba3e13f7da61=Role   # Directory.Read.All
+    az ad app permission add --id "$APP_ID" --api "$GRAPH" --api-permissions \
+      b0afded3-3588-46d8-8b3d-9842eff778da=Role   # AuditLog.Read.All   (optional)
+    az ad app permission add --id "$APP_ID" --api "$GRAPH" --api-permissions \
+      246dd0d5-5bd0-4def-940b-0421030a5b68=Role   # Policy.Read.All     (optional)
+
+    az ad app permission admin-consent --id "$APP_ID"
+    ```
 
 !!! danger "`credential reset` clears existing secrets"
     Without `--append`, `az ad app credential reset` **removes every existing
@@ -100,6 +119,10 @@ az ad app permission admin-consent --id "$APP_ID"
     after consent.
 
 ## Create the credentials secret
+
+In the LimaCharlie wizard, use **New secret** under **Permissions** to save the
+following JSON with your client ID and secret value. The command below is an
+alternative for CLI setup.
 
 ```json
 {"client_id": "<application-client-id>", "client_secret": "<the-secret-value>"}

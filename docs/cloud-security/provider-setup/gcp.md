@@ -24,14 +24,6 @@ Find its **project ID** in the Google Cloud project selector; the display name
 and numeric project number are different values. In the LimaCharlie wizard,
 enter that ID in **Project** and leave the broader scope field empty.
 
-For command examples, open **Cloud Shell** in Google Cloud and define
-`SA_PROJECT` before enabling APIs. Replace the example with the project that
-will own your service account:
-
-```bash
-SA_PROJECT="your-service-account-project-id"
-```
-
 A service account is an identity for the collector, separate from your personal
 Google login. Its key proves its identity; IAM roles decide what it may read.
 
@@ -39,8 +31,33 @@ Google login. Its key proves its identity; IAM roles decide what it may read.
    does not have to be one being scanned).
 2. Permission to grant IAM roles at the scope you intend to connect
    (Organization Admin / Folder Admin / Project IAM Admin).
-3. The **APIs enabled** on the service account's own project — the client APIs
-   the collector calls:
+3. Permission to enable APIs in the service account's project, or an
+   administrator who can complete the following step.
+
+### Enable the APIs
+
+Enable these APIs in the **service account's own project**. Both tabs use the
+same list; you only need to follow one method.
+
+=== "Web console"
+
+    1. Select the service account's project in Google Cloud.
+    2. Open **APIs & Services → Library**, search for a service below, and select
+       **Enable**. Repeat for the full list; leave already enabled APIs on.
+    3. Check **Enabled APIs & services** in that project to confirm the list.
+
+    You need permission to enable services. If **Enable** is unavailable, ask your
+    Google Cloud administrator. Google's [API enablement guide](https://docs.cloud.google.com/service-usage/docs/enable-disable)
+    explains this console workflow.
+
+=== "Cloud Shell / CLI"
+
+    Open **Cloud Shell** in Google Cloud, or use an installed and authenticated
+    Google Cloud CLI. Set the project that owns the service account:
+
+    ```bash
+    SA_PROJECT="your-service-account-project-id"
+    ```
 
     ```bash
     gcloud services enable \
@@ -66,6 +83,29 @@ Google login. Its key proves its identity; IAM roles decide what it may read.
       cloudidentity.googleapis.com \
       --project "$SA_PROJECT"
     ```
+
+| API Library name | Service ID |
+|---|---|
+| Cloud Resource Manager API | `cloudresourcemanager.googleapis.com` |
+| Service Usage API | `serviceusage.googleapis.com` |
+| Identity and Access Management (IAM) API | `iam.googleapis.com` |
+| Compute Engine API | `compute.googleapis.com` |
+| Cloud Storage JSON API | `storage.googleapis.com` |
+| Secret Manager API | `secretmanager.googleapis.com` |
+| Cloud Key Management Service (KMS) API | `cloudkms.googleapis.com` |
+| BigQuery API | `bigquery.googleapis.com` |
+| Cloud SQL Admin API | `sqladmin.googleapis.com` |
+| Cloud Pub/Sub API | `pubsub.googleapis.com` |
+| API Keys API | `apikeys.googleapis.com` |
+| OS Config API | `osconfig.googleapis.com` |
+| Container Analysis API | `containeranalysis.googleapis.com` |
+| Cloud Run Admin API | `run.googleapis.com` |
+| Cloud Functions API | `cloudfunctions.googleapis.com` |
+| Vertex AI API | `aiplatform.googleapis.com` |
+| Notebooks API | `notebooks.googleapis.com` |
+| Recommender API | `recommender.googleapis.com` |
+| Policy Analyzer API | `policyanalyzer.googleapis.com` |
+| Cloud Identity API | `cloudidentity.googleapis.com` |
 
 !!! info "APIs must also be on in the projects being scanned"
     A scanned project with a service API disabled is **skipped for that
@@ -244,92 +284,102 @@ scans reference the image.
 
 ## Create the service account
 
-### Console path for one project
+Choose the same scope in the provider configuration and in the role grants.
+A project grant covers one project; a folder or organization grant covers its
+projects. The web-console steps support each scope. The retained CLI example
+below uses an organization and names the command substitutions for narrower scopes.
 
-1. Select the project that will own the credential. Open **IAM & Admin → Service
-   Accounts → Create service account** and create `lc-cloudsec`.
-2. Copy the service account's email address. In the project you want to scan,
-   open **IAM & Admin → IAM → Grant access**. Use that email as the principal
-   and grant the required roles listed above. Add optional roles only for the
-   data you want to collect.
-3. Return to the service account's project, open the account, then **Keys → Add
-   key → Create new key → JSON**. Download the key. If key creation is blocked
-   by organization policy, ask your Google Cloud administrator to resolve it.
-4. In the wizard's **Permissions** step, select **New secret**, give it a name,
-   and paste the complete downloaded JSON. Do not add another `secret` wrapper.
-5. Run **Test Provider**. Fix required failures and check which optional data is
-   unavailable. Save and verify a known resource in Inventory.
+<span id="console-path-for-one-project"></span>
+<span id="alternative-cli-for-organization-scope"></span>
 
-See Google's [service account key instructions](https://docs.cloud.google.com/iam/docs/keys-create-delete)
-for the console workflow. Complete the API prerequisites above as well as the
-role grants; a key alone does not enable collection.
+=== "Web console"
 
-### Alternative: CLI for organization scope
+    1. Select the project that will own the credential. Open **IAM & Admin → Service
+       Accounts → Create service account** and create `lc-cloudsec`.
+    2. Copy the service account's email address. Select the project, folder, or organization you want to scan, then open **IAM & Admin → IAM → Grant access**. Use that email as the principal
+       and grant **Viewer** (`roles/viewer`) and **Security Reviewer**
+       (`roles/iam.securityReviewer`), as listed above. Add optional roles only for the
+       data you want to collect.
+    3. Return to the service account's project, open the account, then **Keys → Add
+       key → Create new key → JSON**. Download the key. If key creation is blocked
+       by organization policy, ask your Google Cloud administrator to resolve it.
+    4. In the wizard's **Permissions** step, select **New secret**, give it a name,
+       and paste the complete downloaded JSON. Do not add another `secret` wrapper.
+    5. Run **Test Provider**. Fix required failures and check which optional data is
+       unavailable. Save and verify a known resource in Inventory.
 
-The following example grants access to an organization. Replace `ORG_ID` and
-`SA_PROJECT` with your values; do not use this wider scope for a one-project
-pilot unless you intend to grant organization-wide access.
+    See Google's [service account key instructions](https://docs.cloud.google.com/iam/docs/keys-create-delete)
+    for the console workflow. Complete the API prerequisites above as well as the
+    role grants; a key alone does not enable collection.
 
-```bash
-SA_PROJECT=my-security-project
-ORG_ID=123456789                     # or use --folder / --project instead
+=== "Cloud Shell / CLI"
 
-gcloud iam service-accounts create lc-cloudsec \
-  --display-name "LimaCharlie Cloud Security" \
-  --project "$SA_PROJECT"
+    Open **Cloud Shell**, or use an installed and authenticated `gcloud` CLI.
 
-SA="lc-cloudsec@${SA_PROJECT}.iam.gserviceaccount.com"
+    The following example grants access to an organization. Replace `ORG_ID` and
+    `SA_PROJECT` with your values; do not use this wider scope for a one-project
+    pilot unless you intend to grant organization-wide access.
 
-# Required
-for ROLE in roles/viewer roles/iam.securityReviewer; do
-  gcloud organizations add-iam-policy-binding "$ORG_ID" \
-    --member "serviceAccount:${SA}" --role "$ROLE"
-done
+    ```bash
+    SA_PROJECT=my-security-project
+    ORG_ID=123456789                     # organization ID, not project ID
 
-# Optional surfaces. roles/viewer above already lets Code Security pull private
-# container images; if you replace it with a tighter set, add
-# roles/artifactregistry.reader here.
-for ROLE in roles/secretmanager.viewer \
-            roles/osconfig.vulnerabilityReportViewer \
-            roles/osconfig.inventoryViewer \
-            roles/recommender.iamViewer \
-            roles/policyanalyzer.activityAnalysisViewer \
-            roles/aiplatform.viewer \
-            roles/containeranalysis.occurrences.viewer \
-            roles/run.viewer \
-            roles/cloudfunctions.viewer; do
-  gcloud organizations add-iam-policy-binding "$ORG_ID" \
-    --member "serviceAccount:${SA}" --role "$ROLE"
-done
+    gcloud iam service-accounts create lc-cloudsec \
+      --display-name "LimaCharlie Cloud Security" \
+      --project "$SA_PROJECT"
 
-gcloud iam service-accounts keys create sa-key.json \
-  --iam-account "$SA" --project "$SA_PROJECT"
-```
+    SA="lc-cloudsec@${SA_PROJECT}.iam.gserviceaccount.com"
 
-For a folder scope use `gcloud resource-manager folders add-iam-policy-binding
-<FOLDER_ID>`; for a single project use `gcloud projects add-iam-policy-binding
-<PROJECT_ID>`.
+    # Required
+    for ROLE in roles/viewer roles/iam.securityReviewer; do
+      gcloud organizations add-iam-policy-binding "$ORG_ID" \
+        --member "serviceAccount:${SA}" --role "$ROLE"
+    done
 
-!!! note "In the console"
-    **IAM & Admin → Service Accounts → Create service account**, then
-    **IAM & Admin → IAM → Grant access** at the organization/folder/project and
-    add the roles above. Create the key under the service account's **Keys →
-    Add key → Create new key → JSON**.
+    # Optional surfaces. roles/viewer above already lets Code Security pull private
+    # container images; if you replace it with a tighter set, add
+    # roles/artifactregistry.reader here.
+    for ROLE in roles/secretmanager.viewer \
+                roles/osconfig.vulnerabilityReportViewer \
+                roles/osconfig.inventoryViewer \
+                roles/recommender.iamViewer \
+                roles/policyanalyzer.activityAnalysisViewer \
+                roles/aiplatform.viewer \
+                roles/containeranalysis.occurrences.viewer \
+                roles/run.viewer \
+                roles/cloudfunctions.viewer; do
+      gcloud organizations add-iam-policy-binding "$ORG_ID" \
+        --member "serviceAccount:${SA}" --role "$ROLE"
+    done
+
+    gcloud iam service-accounts keys create sa-key.json \
+      --iam-account "$SA" --project "$SA_PROJECT"
+    ```
+
+    For a folder scope use `gcloud resource-manager folders add-iam-policy-binding
+    <FOLDER_ID>`; for a single project use `gcloud projects add-iam-policy-binding
+    <PROJECT_ID>`.
 
 ## Create the credentials secret
 
 The secret value is the **service-account key JSON itself** — no wrapper.
 
-```bash
-python3 -c 'import json,sys;print(json.dumps({"secret":open("sa-key.json").read()}))' \
-  > gcp-secret.json
+=== "Web console"
 
-limacharlie hive set --hive-name secret --key gcp-collector-sa \
-    --input-file gcp-secret.json --enabled
-```
+    In LimaCharlie, open **Organization Settings → Secrets Manager → Add**.
+    Name the secret `gcp-collector-sa` and paste the complete downloaded key JSON
+    into its value. Save it enabled. Do not paste the example JSON from a guide or
+    add an outer `secret` property.
 
-Or in the web app: **Organization Settings → Secrets Manager → Add**, name it
-`gcp-collector-sa`, and paste the key JSON.
+=== "LimaCharlie CLI"
+
+    ```bash
+    python3 -c 'import json,sys;print(json.dumps({"secret":open("sa-key.json").read()}))' \
+      > gcp-secret.json
+
+    limacharlie hive set --hive-name secret --key gcp-collector-sa \
+        --input-file gcp-secret.json --enabled
+    ```
 
 ## Create the provider record
 

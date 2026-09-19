@@ -56,23 +56,48 @@ project; they do not replace or reroute email.
 
 ## Setup steps
 
-!!! tip "Let the console render these with your values"
-    The wizard serves the same steps with your project id and service-account
-    address already substituted, and every command in order as a single paste.
-    `limacharlie mailsec onboarding --provider gworkspace --oid $OID` returns
-    the same thing headless. The steps below are the narrative.
+Choose **Web console** to use browser forms or **Cloud Shell / CLI** to run
+commands. Complete each step once; the tabs are alternative ways to create the
+same resources. Step 3 requires the Workspace Admin console whichever path you
+choose.
+
+For command tabs, open **Cloud Shell** in Google Cloud (the terminal icon).
+It includes `gcloud`. Replace `<YOUR_PROJECT_ID>` with the project ID shown in
+the Google Cloud project selector. After downloading the key, replace
+`<SERVICE_ACCOUNT_EMAIL>` with its `client_email` value. The LimaCharlie
+wizard can also fill these values into its setup commands for you.
 
 ### 1. Create a service account and download its JSON key
 
-1. In Google Cloud, select the project you want to use for Email Security.
-2. Open **IAM & Admin → Service Accounts → Create service account**, choose a
-   name such as `limacharlie-mail`, and create it. You do not need a broad project
-   role for mail access; the scoped Pub/Sub grant is added in step 7.
-3. Open the service account, then **Keys → Add key → Create new key → JSON**.
-   Download the key. If your organization's policy blocks key creation, ask
-   your Google Cloud administrator to resolve that before continuing.
-4. In the service account details, find its **OAuth 2 client ID** for domain-wide
-   delegation. This is a number, not the service account's email address.
+=== "Web console"
+
+    1. In Google Cloud, select the project you want to use for Email Security.
+    2. Open **IAM & Admin → Service Accounts → Create service account**, choose a
+       name such as `limacharlie-mail`, and create it. You do not need a broad project
+       role for mail access; the scoped Pub/Sub grant is added in step 7.
+    3. Open the service account, then **Keys → Add key → Create new key → JSON**.
+       Download the key. If your organization's policy blocks key creation, ask
+       your Google Cloud administrator to resolve that before continuing.
+    4. In the service account details, find its **OAuth 2 client ID** for domain-wide
+       delegation. This is a number, not the service account's email address.
+
+=== "Cloud Shell / CLI"
+
+    In Cloud Shell, select your project and run:
+
+    ```bash
+    gcloud iam service-accounts create limacharlie-mail \
+      --display-name="LimaCharlie Email Security" --project=<YOUR_PROJECT_ID>
+
+    gcloud iam service-accounts keys create mailsec-key.json \
+      --iam-account=limacharlie-mail@<YOUR_PROJECT_ID>.iam.gserviceaccount.com \
+      --project=<YOUR_PROJECT_ID>
+    ```
+
+    Use Cloud Shell's **Download file** action to download `mailsec-key.json`.
+    If key creation is blocked by organization policy, ask your Google Cloud
+    administrator to resolve it. The key includes the numeric `client_id` needed
+    in step 3.
 
 The downloaded JSON contains `project_id`, `client_email`, and `client_id`.
 You will use the first two in the LimaCharlie wizard and the numeric client ID
@@ -82,17 +107,24 @@ provides the current console steps.
 
 ### 2. Enable the APIs
 
-In Google Cloud, select the same project and open **Cloud Shell** (the terminal
-icon in the top toolbar). It includes `gcloud`, so you do not need to install it
-on your computer. Replace `<YOUR_PROJECT_ID>` in every command with `project_id`
-from the key; replace `<SERVICE_ACCOUNT_EMAIL>` with `client_email`. These are
-placeholders, not literal values. Run each command and check for errors before
-continuing.
+=== "Web console"
 
-```bash
-gcloud services enable gmail.googleapis.com admin.googleapis.com \
-  pubsub.googleapis.com --project=<YOUR_PROJECT_ID>
-```
+    1. In Google Cloud, select the project that owns the service account.
+    2. Open **APIs & Services → Library**. Search for and open **Gmail API**, then
+       select **Enable**. If it is already enabled, leave it enabled.
+    3. Repeat for **Admin SDK API** and **Cloud Pub/Sub API**.
+    4. Under **APIs & Services → Enabled APIs & services**, confirm all three are
+       listed for this project.
+
+    API IDs: `gmail.googleapis.com`, `admin.googleapis.com`, and
+    `pubsub.googleapis.com`. See Google's [API enablement guide](https://docs.cloud.google.com/service-usage/docs/enable-disable).
+
+=== "Cloud Shell / CLI"
+
+    ```bash
+    gcloud services enable gmail.googleapis.com admin.googleapis.com \
+      pubsub.googleapis.com --project=<YOUR_PROJECT_ID>
+    ```
 
 ### 3. Authorize the service account in the Workspace admin console
 
@@ -108,44 +140,96 @@ replies.
 It **must** be in the same project as the service account — Gmail refuses a
 topic in any other project.
 
-```bash
-gcloud pubsub topics create mailsec-gmail-push --project=<YOUR_PROJECT_ID>
-```
+=== "Web console"
+
+    1. In that Google Cloud project, open **Pub/Sub → Topics → Create topic**.
+    2. Set **Topic ID** to `mailsec-gmail-push`.
+    3. Clear **Add a default subscription**; you will create the named subscription
+       with the required settings in step 6. Leave the other optional features off.
+    4. Select **Create** and confirm the topic appears in the list.
+
+    See Google's [topic creation guide](https://docs.cloud.google.com/pubsub/docs/create-topic).
+
+=== "Cloud Shell / CLI"
+
+    ```bash
+    gcloud pubsub topics create mailsec-gmail-push --project=<YOUR_PROJECT_ID>
+    ```
 
 ### 5. Let Gmail publish to the topic
 
-```bash
-gcloud pubsub topics add-iam-policy-binding mailsec-gmail-push \
-  --project=<YOUR_PROJECT_ID> \
-  --member="serviceAccount:gmail-api-push@system.gserviceaccount.com" \
-  --role="roles/pubsub.publisher"
-```
+=== "Web console"
 
-`gmail-api-push@system.gserviceaccount.com` is a Google-owned account, so the
-console will warn that it is outside your organization. That is expected — it is
-how Gmail delivers notifications.
+    1. In **Pub/Sub → Topics**, select `mailsec-gmail-push`. Open **Show info panel**
+       if needed, then **Permissions → Add principal**.
+    2. Enter `gmail-api-push@system.gserviceaccount.com` as the principal.
+    3. Select **Pub/Sub Publisher** (`roles/pubsub.publisher`) and save. Apply this
+       grant to the topic, not the entire project.
+    4. Confirm this principal and role appear in the topic's permissions.
+
+=== "Cloud Shell / CLI"
+
+    ```bash
+    gcloud pubsub topics add-iam-policy-binding mailsec-gmail-push \
+      --project=<YOUR_PROJECT_ID> \
+      --member="serviceAccount:gmail-api-push@system.gserviceaccount.com" \
+      --role="roles/pubsub.publisher"
+    ```
+
+`gmail-api-push@system.gserviceaccount.com` is a Google-owned account outside
+your organization. If a domain restriction blocks it, ask your Google Cloud
+administrator to allow this publisher; do not substitute your service account.
 
 *Verified by the `pubsub_watch` check.*
 
 ### 6. Create the subscription we read from
 
-A **pull** subscription on that topic.
+Create a **pull** subscription on the topic from step 4.
 
-```bash
-gcloud pubsub subscriptions create mailsec-gmail-push-sub \
-  --topic=mailsec-gmail-push --project=<YOUR_PROJECT_ID> --ack-deadline=60
-```
+=== "Web console"
+
+    1. Open **Pub/Sub → Subscriptions → Create subscription** in the same project.
+    2. Set **Subscription ID** to `mailsec-gmail-push-sub` and choose the topic
+       `mailsec-gmail-push` from this project.
+    3. Select **Pull** as the delivery type. Set **Acknowledgement deadline** to
+       **60 seconds** and leave the other settings at their defaults.
+    4. Select **Create**. Confirm the subscription's topic and delivery type on
+       its details page. If this subscription already exists, edit and verify it
+       rather than creating a second subscription with a different name.
+
+    See Google's [pull subscription guide](https://docs.cloud.google.com/pubsub/docs/create-subscription).
+
+=== "Cloud Shell / CLI"
+
+    ```bash
+    gcloud pubsub subscriptions create mailsec-gmail-push-sub \
+      --topic=mailsec-gmail-push --project=<YOUR_PROJECT_ID> --ack-deadline=60
+    ```
 
 ### 7. Let us read the subscription
 
-Granted to the **same** service account you already created.
+Grant access to the **same** service account you created in step 1.
 
-```bash
-gcloud pubsub subscriptions add-iam-policy-binding mailsec-gmail-push-sub \
-  --project=<YOUR_PROJECT_ID> \
-  --member="serviceAccount:<SERVICE_ACCOUNT_EMAIL>" \
-  --role="roles/pubsub.subscriber"
-```
+=== "Web console"
+
+    1. Open **Pub/Sub → Subscriptions** and select `mailsec-gmail-push-sub`.
+    2. Open its information panel and **Permissions → Add principal**.
+    3. Paste `client_email` from your JSON key, for example
+       `limacharlie-mail@your-project.iam.gserviceaccount.com`.
+    4. Select **Pub/Sub Subscriber** (`roles/pubsub.subscriber`) and save. Apply
+       this grant to the subscription, not the entire project.
+    5. Confirm the service account and role appear in the subscription's permissions.
+
+    See Google's [Pub/Sub access-control instructions](https://docs.cloud.google.com/pubsub/docs/access-control#controlling_access_through_the_google_cloud_console).
+
+=== "Cloud Shell / CLI"
+
+    ```bash
+    gcloud pubsub subscriptions add-iam-policy-binding mailsec-gmail-push-sub \
+      --project=<YOUR_PROJECT_ID> \
+      --member="serviceAccount:<SERVICE_ACCOUNT_EMAIL>" \
+      --role="roles/pubsub.subscriber"
+    ```
 
 *Verified by the `pubsub_pull` check.*
 

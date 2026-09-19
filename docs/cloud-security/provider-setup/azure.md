@@ -88,73 +88,68 @@ unobserved while everything else still collects.
 
 ## Create the app registration
 
-### Console path
+<span id="console-path"></span>
 
-1. Sign in to [Microsoft Entra](https://entra.microsoft.com/) and select the
-   directory that owns your Azure subscription. Open **App registrations →
-   New registration**, give the application a name, and choose single tenant.
-2. Copy **Application (client) ID** and **Directory (tenant) ID** from its
-   Overview. The app is the collector's identity; it is separate from your login.
-3. Under **Certificates & secrets**, create a client secret. Copy its **Value**
-   immediately, not the Secret ID. Record its expiry for future rotation.
-4. Under **API permissions**, add the required Microsoft Graph **Application
-   permissions** listed above. Add optional ones for the data you need, and
-   have the authorized administrator **Grant admin consent**.
-5. In the Azure portal, open **Subscriptions**, select the subscription to scan,
-   and copy its **Subscription ID**. Open **Access control (IAM) → Add role
-   assignment**, select **Reader**, and assign it to your application.
-6. In LimaCharlie's **Configuration** step, enter the tenant, subscription, and
-   client IDs. In **Permissions**, use **New secret** to save the credential
-   JSON shown below, then test and save the connection.
+<span id="alternative-azure-cli"></span>
 
-The subscription's Reader role and the directory's Graph permissions are
-separate grants. One does not replace the other. Microsoft's
-[role assignment guide](https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-steps)
-explains the access needed to assign a role.
+=== "Web console"
 
-### Alternative: Azure CLI
+    1. Sign in to [Microsoft Entra](https://entra.microsoft.com/) and select the
+       directory that owns your Azure subscription. Open **App registrations →
+       New registration**, give the application a name, and choose single tenant.
+    2. Copy **Application (client) ID** and **Directory (tenant) ID** from its
+       Overview. The app is the collector's identity; it is separate from your login.
+    3. Under **Certificates & secrets**, create a client secret. Copy its **Value**
+       immediately, not the Secret ID. Record its expiry for future rotation.
+    4. Under **API permissions**, add the required Microsoft Graph **Application
+       permissions** listed above. Add optional ones for the data you need, and
+       have the authorized administrator **Grant admin consent**.
+    5. In the Azure portal, open **Subscriptions**, select the subscription to scan,
+       and copy its **Subscription ID**. Open **Access control (IAM) → Add role
+       assignment**, select **Reader**, and assign it to your application.
+    6. In LimaCharlie's **Configuration** step, enter the tenant, subscription, and
+       client IDs. In **Permissions**, use **New secret** to save the credential
+       JSON shown below, then test and save the connection.
 
-Use Azure Cloud Shell with Bash, or install the Azure CLI and sign in using
-`az login`. Confirm the intended tenant with `az account show` before running
-these commands. Replace the subscription placeholder with its actual ID.
+    The subscription's Reader role and the directory's Graph permissions are
+    separate grants. One does not replace the other. Microsoft's
+    [role assignment guide](https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-steps)
+    explains the access needed to assign a role.
 
-```bash
-TENANT_ID=$(az account show --query tenantId -o tsv)
-SUB_ID=<your-subscription-id>
+=== "Cloud Shell / CLI"
 
-# 1. App registration + service principal
-APP_ID=$(az ad app create --display-name lc-cloudsec --query appId -o tsv)
-az ad sp create --id "$APP_ID"
+    Use Azure Cloud Shell with Bash, or install the Azure CLI and sign in using
+    `az login`. Confirm the intended tenant with `az account show` before running
+    these commands. Replace the subscription placeholder with its actual ID.
 
-# 2. Client secret (note the expiry you choose; --append preserves existing ones)
-az ad app credential reset --id "$APP_ID" --years 2 --append \
-  --display-name lc-cloudsec --query password -o tsv     # capture this once
+    ```bash
+    TENANT_ID=$(az account show --query tenantId -o tsv)
+    SUB_ID=<your-subscription-id>
 
-# 3. RBAC Reader on the subscription (repeat per subscription)
-az role assignment create --assignee "$APP_ID" --role Reader \
-  --scope "/subscriptions/${SUB_ID}"
+    # 1. App registration + service principal
+    APP_ID=$(az ad app create --display-name lc-cloudsec --query appId -o tsv)
+    az ad sp create --id "$APP_ID"
 
-# 4. Microsoft Graph application permissions
-GRAPH=00000003-0000-0000-c000-000000000000
-az ad app permission add --id "$APP_ID" --api "$GRAPH" --api-permissions \
-  7ab1d382-f21e-4acd-a863-ba3e13f7da61=Role   # Directory.Read.All
-az ad app permission add --id "$APP_ID" --api "$GRAPH" --api-permissions \
-  246dd0d5-5bd0-4def-940b-0421030a5b68=Role   # Policy.Read.All
-az ad app permission add --id "$APP_ID" --api "$GRAPH" --api-permissions \
-  b0afded3-3588-46d8-8b3d-9842eff778da=Role   # AuditLog.Read.All
+    # 2. Client secret (note the expiry you choose; --append preserves existing ones)
+    az ad app credential reset --id "$APP_ID" --years 2 --append \
+      --display-name lc-cloudsec --query password -o tsv     # capture this once
 
-# 5. Tenant-wide admin consent (needs a privileged admin)
-az ad app permission admin-consent --id "$APP_ID"
-```
+    # 3. RBAC Reader on the subscription (repeat per subscription)
+    az role assignment create --assignee "$APP_ID" --role Reader \
+      --scope "/subscriptions/${SUB_ID}"
 
-!!! note "In the portal"
-    **Microsoft Entra ID → App registrations → New registration** → then
-    **Certificates & secrets → New client secret** (copy the *Value*, not the
-    ID) → **API permissions → Add a permission → Microsoft Graph →
-    Application permissions** → add the permissions above → **Grant admin
-    consent for \<tenant\>** (the status column must read *Granted*) →
-    finally **Subscriptions → \<sub\> → Access control (IAM) → Add role
-    assignment → Reader → your app**.
+    # 4. Microsoft Graph application permissions
+    GRAPH=00000003-0000-0000-c000-000000000000
+    az ad app permission add --id "$APP_ID" --api "$GRAPH" --api-permissions \
+      7ab1d382-f21e-4acd-a863-ba3e13f7da61=Role   # Directory.Read.All
+    az ad app permission add --id "$APP_ID" --api "$GRAPH" --api-permissions \
+      246dd0d5-5bd0-4def-940b-0421030a5b68=Role   # Policy.Read.All
+    az ad app permission add --id "$APP_ID" --api "$GRAPH" --api-permissions \
+      b0afded3-3588-46d8-8b3d-9842eff778da=Role   # AuditLog.Read.All
+
+    # 5. Tenant-wide admin consent (needs a privileged admin)
+    az ad app permission admin-consent --id "$APP_ID"
+    ```
 
 !!! danger "`credential reset` clears existing secrets"
     Without `--append`, `az ad app credential reset` **removes every existing
