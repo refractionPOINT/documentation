@@ -268,7 +268,8 @@ They are ordinary D&R rules over the Message Data Model, not a separate engine.
 See [Mail Rules](custom-rules.md) for the format, IaC and explicit restoration.
 
 A verdict's `engine_version` is a SHA-256 fingerprint of the scoring rules,
-resolved thresholds and exclusions, and linked parsing/enrichment library build.
+resolved thresholds, exclusions, VIPs, threat-feed references and clustering policy,
+and linked parsing/enrichment library build.
 Changing rule content or scoring policy changes the fingerprint. It identifies
 the decision configuration; it is not a promise that an external lookup feed
 or other message enrichment is unchanged.
