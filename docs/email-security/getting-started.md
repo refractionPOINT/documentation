@@ -61,15 +61,11 @@ Follow the guide for the service that hosts your mail:
   account, authorize it in Workspace, and set up notification delivery in Google
   Cloud. The guide explains which console to use at each step.
 
-Each guide shows the exact credential to save under **Organization Settings →
-Secrets Manager**. Keep that console page in another browser tab so you can
-return to the wizard. Save only the credential JSON in the secret's value field;
-do not add an outer `secret` property. Remember the name you gave it, such as
-`mailsec-primary`.
+Each guide shows the credential JSON you will save in the wizard. You can also
+use an existing secret from **Organization Settings → Secrets Manager**.
 
-**Checkpoint:** you have a saved secret and have completed the provider's access
-grants. Knowing the secret's name alone does not prove that access works; you
-will test it after connecting.
+**Checkpoint:** you have the provider credential and have completed its access
+grants. You will save or select the secret while connecting, then test access.
 
 <span id="4-connect-the-mail-tenant"></span>
 
@@ -84,13 +80,20 @@ connection details come first so the checklist can use your project ID.
 | Field | What to enter |
 |---|---|
 | Connection name | A label you choose, such as `company-mail`. This is not a Microsoft or Google ID. |
-| Saved secret name | The name from Secrets Manager, such as `mailsec-primary`. Do not paste the credential itself here. |
+| Credential | Select an existing secret, or choose **Add New**, give it a name, paste the provider credential JSON into **Secret**, and select **Create**. The wizard selects the new secret automatically. |
 | Service account project ID (Google only) | The `project_id` in your downloaded key. It identifies the project containing the notification topic and subscription. |
 | Service account email (Google only) | The `client_email` in that key. This fills in the setup commands; it is different from the Workspace administrator address. |
 | Mailboxes to include | For a pilot, enter the mailbox email addresses separated by commas. Leaving this blank includes all discovered mailboxes, subject to other scope restrictions and your plan limit. |
 | Reports mailbox (optional) | An existing mailbox where employees forward suspicious messages. Leaving it blank is fine; the User reports queue will stay empty. |
 | Existing mail to analyze (days) | Keep 14 to analyze recent history, or enter 0 to start with new mail only. Historical analysis does not move old messages. |
 | Observe outbound mail | Whether to analyze sent messages for signs of compromised accounts. Sent mail is observation-only. |
+
+Creating a secret saves it immediately, even if you later cancel the connection
+wizard. Keep the secret enabled and paste only the credential JSON, without an
+outer `secret` property. Creating a Google secret also fills the project ID and
+service account email from its key; confirm those values before continuing.
+If **Add New** is unavailable, ask your organization administrator to check your
+Secrets Manager permissions or resolve the displayed loading error.
 
 For a trial, keep your selected mailboxes within the 25-mailbox cap. If you use a
 reports mailbox, include it in your pilot selection too. A selection in
