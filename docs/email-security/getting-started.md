@@ -2,276 +2,168 @@
 
 --8<-- "includes/email-security-beta.md"
 
-This guide takes an organization from zero to a populated Email Security queue:
-enable the product, connect a mail tenant, verify the connection, and read the
-first judged message. You can do all of it in the console or entirely as code —
-both are shown.
+Connect your organization's Microsoft 365 or Google Workspace mail to analyze
+messages for threats. You do not need to change mail routing or install software
+on employees' computers. This walkthrough uses the web app; no terminal is required
+for the Microsoft 365 path. Google Workspace setup also uses Google Cloud commands.
+
+Your first goal is to **connect a small set of mailboxes, verify access, and open
+an analyzed message**. You can configure automated responses later.
+
+## Before you start
+
+Have these ready before enabling the trial:
+
+| What you need | Where to get it |
+|---|---|
+| A LimaCharlie account and organization | Sign in to the console and select the organization that should hold the email data. An organization is your team's workspace. |
+| Permission to enable Email Security and configure it | Ask your LimaCharlie organization administrator if you cannot subscribe, save a secret, add a connection, or run its test. |
+| Administrator access to your mail provider | For Microsoft 365, someone must create an app registration and grant Microsoft Graph application permissions. For Google Workspace, you need a Workspace Super Admin and an administrator of a Google Cloud project. |
+| A few mailbox addresses for a first test | Choose mailboxes you administer and can send an ordinary test message to. Personal Gmail and Outlook.com accounts are not this setup path. |
+
+A **credential** is the key the product uses to access your mail provider. A
+**secret** is the securely stored copy of that credential in LimaCharlie. A
+**connection** combines that secret with your provider and mailbox choices.
+
+!!! info "Trial limits"
+    Free-tier organizations can try Email Security for **14 days**, with up to
+    **25 mailboxes**. The clock starts when you subscribe, and resubscribing does
+    not restart it. Prepare your administrator access first. At expiry ingestion
+    pauses; data is removed 30 days later unless the organization moves off the
+    free tier. See [trial details](policy.md#plans-the-free-trial-and-the-mailbox-cap).
 
 ## 1. Enable Email Security
 
-Email Security is enabled per organization by subscribing to the
-`ext-email-security` extension. The subscription is the enable gate: without it
-every `/v1/mailsec/*` route is refused, and the console shows a subscribe screen
-instead of the product.
+In your LimaCharlie organization, open **Extensions**, find **Email Security**,
+and subscribe. Then open **Email Security → Settings**.
 
-```bash
-limacharlie extension subscribe --name ext-email-security --oid $OID
-```
+If an action is unavailable, ask your organization administrator for access.
+Connection management uses `mailsec_provider.get` and `mailsec_provider.set`;
+saving credentials uses Secrets Manager permissions, and testing a connection
+requires `mailsec.act`. Reading results requires `mailsec.get`.
 
-Confirm it:
+New subscriptions start with **alert-only** automation: automatic rules record
+what they would do without moving or modifying messages. The provider credential
+still grants the access required for response actions. Actions you explicitly
+run yourself can change mail even in alert-only mode.
 
-```bash
-limacharlie extension list --oid $OID
-```
+<span id="2-grant-the-permissions"></span>
+<span id="3-prepare-the-provider-credential"></span>
 
-Subscribing also seeds the recommended policy records — all in `alert_only`
-mode, so nothing moves mail until you say so. See [Policy Reference](policy.md).
+## 2. Prepare your mail provider and save its credential
 
-!!! info "Free trial: 14 days, 25 mailboxes"
-    An organization on the LimaCharlie free tier gets Email Security in full for
-    **14 days** and protects up to **25 mailboxes** while it does. Every feature
-    is the same as on a paid plan; only the duration and the mailbox count
-    differ. The clock starts the day you subscribe and **does not restart if you
-    unsubscribe and resubscribe**, so point the 25 at the mailboxes that matter
-    — start with the executives, finance and the abuse mailbox.
+Follow the guide for the service that hosts your mail:
 
-    When the trial ends, ingestion pauses and nothing is deleted; the data is
-    removed 30 days later unless the organization moves off the free tier, and
-    you are told before that happens. The full rules, and the exact fields to
-    read the countdown from, are in
-    [Plans, the free trial, and the mailbox cap](policy.md#plans-the-free-trial-and-the-mailbox-cap).
+- [Microsoft 365 setup](provider-setup/microsoft-365.md): create an application,
+  grant access, and copy its tenant ID, client ID, and secret value.
+- [Google Workspace setup](provider-setup/google-workspace.md): create a service
+  account, authorize it in Workspace, and set up notification delivery in Google
+  Cloud. The guide explains which console to use at each step.
 
-## 2. Grant the permissions
+Each guide shows the exact credential to save under **Organization Settings →
+Secrets Manager**. Keep that console page in another browser tab so you can
+return to the wizard. Save only the credential JSON in the secret's value field;
+do not add an outer `secret` property. Remember the name you gave it, such as
+`mailsec-primary`.
 
-Email Security ships four permissions. A user or API key that will triage mail
-typically needs `mailsec.get`, `mailsec.set` and `mailsec.act`; a read-only
-analyst needs only `mailsec.get`. `mailsec.get.eml` is an escalation on top of
-`mailsec.get` and should be granted deliberately — see
-[Overview → Permissions](index.md#permissions).
+**Checkpoint:** you have a saved secret and have completed the provider's access
+grants. Knowing the secret's name alone does not prove that access works; you
+will test it after connecting.
 
-Managing the connection itself additionally needs the Hive permissions for
-`mailsec_provider` and `secret`.
+<span id="4-connect-the-mail-tenant"></span>
 
-## 3. Prepare the provider credential
+## 3. Add the connection
 
-The credential is created in your mail provider's admin console and stored in
-the LimaCharlie [secret](../7-administration/config-hive/secrets.md) Hive. It is
-always referenced, never inlined into the connection record.
+Back in **Email Security → Settings**, select **Add connection** (or **Start
+setup wizard** on an empty page), then select your provider.
 
-| Provider | What you create | Full walkthrough |
-|---|---|---|
-| Microsoft 365 | An Entra ID app registration with **application** permissions and a client secret | [Microsoft 365](provider-setup/microsoft-365.md) |
-| Google Workspace | A Google Cloud service account with **domain-wide delegation**, plus a Pub/Sub topic and subscription in the same project | [Google Workspace](provider-setup/google-workspace.md) |
+The wizard includes the provider's access checklist. For Google Workspace,
+connection details come first so the checklist can use your project ID.
 
-!!! tip "The console renders your own setup guide"
-    The setup steps, OAuth scopes and `gcloud` commands are served by the
-    product rather than transcribed here, so they cannot go stale: the
-    connection wizard renders them with **your** project id and service-account
-    address already substituted, and each step names the connection-test check
-    that proves it was done. These pages carry the narrative — what each grant
-    buys and what breaks without it — and the wizard carries the values.
+| Field | What to enter |
+|---|---|
+| Connection name | A label you choose, such as `company-mail`. This is not a Microsoft or Google ID. |
+| Saved secret name | The name from Secrets Manager, such as `mailsec-primary`. Do not paste the credential itself here. |
+| Service account project ID (Google only) | The `project_id` in your downloaded key. It identifies the project containing the notification topic and subscription. |
+| Service account email (Google only) | The `client_email` in that key. This fills in the setup commands; it is different from the Workspace administrator address. |
+| Mailboxes to include | For a pilot, enter the mailbox email addresses separated by commas. Leaving this blank includes all discovered mailboxes, subject to other scope restrictions and your plan limit. |
+| Reports mailbox (optional) | An existing mailbox where employees forward suspicious messages. Leaving it blank is fine; the User reports queue will stay empty. |
+| Existing mail to analyze (days) | Keep 14 to analyze recent history, or enter 0 to start with new mail only. Historical analysis does not move old messages. |
+| Observe outbound mail | Whether to analyze sent messages for signs of compromised accounts. Sent mail is observation-only. |
 
-    The same guide is available headless:
+For a trial, keep your selected mailboxes within the 25-mailbox cap. If you use a
+reports mailbox, include it in your pilot selection too. A selection in
+LimaCharlie does not narrow the permissions granted to the application at your
+mail provider. See [provider scope](providers.md) for domain, group, and exclusion
+rules.
 
-    ```bash
-    limacharlie mailsec onboarding --provider gworkspace --oid $OID
-    limacharlie mailsec onboarding --provider m365 --oid $OID
-    ```
+Review the summary and select **Save connection**. Saving starts setup and
+collection; it does **not** prove the credential works.
 
-## 4. Connect the mail tenant
+<span id="5-verify-the-connection"></span>
 
-### In the console
+## 4. Test access
 
-Open **Email Security → Settings** and add a connection. The wizard collects the
-provider, the credential, the mailbox scope and — for Google Workspace — the
-Pub/Sub topic and subscription, shows the personalized setup guide alongside,
-and runs **Test Connection** against the real provider before you finish.
-Failed saves are reported inline on the review step, with the validator's own
-wording rather than a generic error.
+The connection diagnostic opens after saving if you have permission. Select
+**Run connection test**. You can reopen it using **Test connection** in Settings.
 
-Editing an existing connection is patch-preserving: fields the form does not
-manage are left exactly as they were.
+- **Required check failed:** read **How to fix it**, correct the provider grant
+  or saved credential, then run the test again.
+- **Optional check skipped or unavailable:** the connection may still work.
+  Read which feature will be unavailable before deciding to add that permission.
+- **Required checks passed:** access checks succeeded. Next, verify that mail is
+  actually being collected.
 
-### As code
+For Google Workspace, enable **Verify notification delivery** to test the path
+Gmail uses to announce new mail. This creates a real, temporary Gmail watch;
+passing only credential checks does not verify notification delivery.
 
-One `mailsec_provider` Hive record per connection. The record's existence (and
-its Hive `enabled` flag) *is* the connection — there is no separate on switch.
+<span id="6-watch-coverage-fill-in"></span>
+<span id="7-read-the-first-judged-message"></span>
 
-```bash
-cat > m365-credential.json <<'JSON'
-{"tenant_id": "<tenant-id>", "client_id": "<application-client-id>", "client_secret": "<the-secret-value>"}
-JSON
+## 5. Confirm mail is arriving
 
-limacharlie secret set --key m365-mail \
-  --value "$(cat m365-credential.json)" --enabled --oid $OID
-```
+Open **Email Security → Overview** and check mailbox coverage counts and connection
+health. Compare the protected count with the number you intended to include.
+These are summary counts, not a per-mailbox checklist; verify individual pilot
+mailboxes by sending test messages to them.
 
-`secret set` wraps the value into the secret record's `{"secret": "..."}`
-envelope for you.
+| State | What it means / what to do |
+|---|---|
+| Protected | The mailbox is being watched. Send it an ordinary new test message. |
+| Discovered | The mailbox was found but is not yet protected. Check setup progress and the trial cap. |
+| Excluded | The mailbox is outside the configured scope. Check your selection if this is unexpected. |
+| Error | The mailbox could not be protected. Check the connection diagnostic and provider permissions. |
 
-```yaml
-# m365.yaml
-provider: m365
-credentials: hive://secret/m365-mail
-ingest:
-  mode: auto  # Microsoft 365 auto is Graph notification push
-  backfill_days: 14
-features:
-  outbound_observation: true
-  reports_mailbox: phishing@corp.example
-```
+Then open **Email Security → Messages** and locate your test message. Open the
+row to see its verdict (the analysis result), the signals behind it, and the
+action history. A normal message need not produce a threat alert to prove that
+collection works. See [Messages & Triage](messages.md) for interpreting results.
 
-```bash
-limacharlie hive set --hive-name mailsec_provider --key m365-prod \
-  --input-file m365.yaml --enabled --oid $OID
-```
+Recent historical mail also appears as it is analyzed. This **backfill** runs in
+the background and can take hours, or days for a large environment. It does not
+perform response actions or emit the live-mail automation events. You do not
+need to wait for all history to finish before checking a new message.
 
-!!! warning "New Hive records are created disabled"
-    `hive set` creates a record disabled unless you pass `--enabled`. A
-    disabled `mailsec_provider` record is not a connection — nothing is
-    discovered, subscribed or ingested — so a first connection that appears to
-    do nothing is usually this.
+## If you get stuck
 
-The full field reference — scope, provider-specific delivery mode, features — is in
-[Connecting Providers](providers.md).
+| Problem | Next step |
+|---|---|
+| Cannot create the credential or grant access | Send your mail administrator the provider setup guide above. LimaCharlie access does not grant Microsoft or Google administrator access. |
+| Connection saved but tests fail | Recheck the secret's contents and required grants. Saving checks configuration, not working access. |
+| Tests pass but Messages is empty | Check Overview coverage counts, mailbox selection, the trial cap, and notification delivery. Send a new message to a protected mailbox. |
+| User reports is empty | Confirm an existing reports mailbox is configured, included in scope, and receiving forwarded messages. |
 
-## 5. Verify the connection
+More fixes: [Troubleshooting](troubleshooting.md).
 
-The connection test uses the credential the only way a credential can be
-verified: by using it. Each requirement is reported independently, so a failure
-names the step to fix rather than saying "connection failed".
+<span id="8-decide-whether-the-product-may-act"></span>
 
-```bash
-limacharlie mailsec connection test m365-prod --oid $OID --output yaml
-```
+## After your first successful test
 
-```yaml
-ok: true
-summary: Connection is fully configured.
-checks:
-  - id: credential
-    name: Authenticate to Microsoft Graph
-    required: true
-    status: passed
-  - id: mailbox_read
-    name: List mailboxes in the tenant (24 found)
-    required: true
-    status: passed
-  - id: mail_write
-    name: "Modify mail (Mail.ReadWrite): quarantine, restore, banner"
-    required: true
-    status: passed
-  - id: mail_send
-    name: "Send mail (Mail.Send): reporter auto-replies"
-    required: false
-    status: skipped
-    detail: Mail.Send is not granted; reporter auto-replies will be refused by name until it is
-```
+Review a few messages before enabling automated responses. Read
+[Policy → Automations](policy.md#automations): enforcement currently has an
+organization-wide consent effect, so enabling one rule can authorize other
+automated paths to act too. Expand mailbox coverage when you are ready.
 
-A failed **optional** check is not an error and `ok` stays `true`: a tenant that
-deliberately declined the optional grant has a working connection, and the
-product tells you by name which capability it does not have rather than
-pretending it does. Every failed check carries a `remediation` string naming the
-exact fix.
-
-For Google Workspace, add `--include-watch` to verify notification delivery end
-to end. It is the one probe with a side effect: it establishes a real Gmail
-watch, which is idempotent and expires on its own.
-
-## 6. Watch coverage fill in
-
-```bash
-limacharlie mailsec coverage --oid $OID --output yaml
-```
-
-Coverage is the product's honesty surface. It reports mailboxes in four separate
-states — `protected`, `discovered`, `excluded`, `error` — and never collapses
-them, because a broken subscription hiding behind a deliberate exclusion is
-exactly how a coverage number starts lying. `connections.state` summarizes to
-the **worst** connection, and an organization with no connection at all reads
-`unconfigured`, never `ok`.
-
-The same call reports message volume and the verdict funnel over a window, the
-parse-degradation rate, backfill progress, the emission backlog, open reports,
-active campaigns, and the effective automation mode.
-
-It also carries an `entitlement` block: which plan the organization is on, when
-a trial ends, how many mailboxes it may protect against how many it is
-protecting, and — if one is scheduled — the date its Email Security data will be
-deleted and what cancels it. On a trial organization this is where you check
-that the 25 mailboxes are the 25 you meant:
-
-```yaml
-entitlement:
-  plan: trial
-  trial_ends_at: "2026-09-20T14:02:11Z"
-  trial_days_remaining: 12
-  mailbox_cap: 25
-  mailboxes_active: 25
-  mailboxes_over_cap: 118        # discovered, not protected
-  mailbox_cap_reached: true
-```
-
-`mailboxes_over_cap` is the number that matters: those mailboxes were found and
-are not being watched. Narrow the connection's `scope`, or move off the free
-tier. See
-[Plans, the free trial, and the mailbox cap](policy.md#plans-the-free-trial-and-the-mailbox-cap).
-
-!!! note "Backfill is judged, and acts on nothing"
-    On connection, the collector walks up to `ingest.backfill_days` (14 by
-    default) of existing mail. It judges that history with the same rules it
-    judges live mail with, so the queue has real verdicts on your first day and
-    a hunt or a rule backtest has something to run against — and it seeds sender
-    profiles and campaign statistics, so "we have never heard from this sender"
-    is a true statement on day two instead of day ninety.
-
-    It **takes no actions and emits no telemetry** on that history. No
-    `EMAIL_MESSAGE`, no `EMAIL_VERDICT`, no policy automation and no
-    remediation: mail delivered eleven days ago has already been read and filed
-    by the person it was addressed to, and quarantining it now — or replaying a
-    fortnight of it into your D&R rules on the day you switch the product on —
-    is not something you asked for. The drawer says so on each such message
-    (`judged_via: backfill`).
-
-    It is also **paced**, so it cannot compete with live ingestion: a small
-    tenant's fortnight fills in over hours, a very large estate's over days,
-    rather than all at once. Progress is reported in `coverage`.
-
-## 7. Read the first judged message
-
-```bash
-limacharlie mailsec message list --oid $OID --limit 10 --output table
-limacharlie mailsec message get <msg_uuid> --oid $OID --output yaml
-```
-
-In the console, **Email Security → Messages** is the queue and the row opens a
-drawer with the verdict, the signals that produced it, authentication results,
-links, attachments, the sender profile, the action timeline and the remediation
-controls. See [Messages & Triage](messages.md).
-
-## 8. Decide whether the product may act
-
-Everything up to here is read-only. Automations ship in `alert_only`, which
-means a rule is evaluated, its intent is recorded, and **the mailbox is not
-touched**. Analyst-initiated actions from the console, CLI or API always execute
-— `alert_only` withholds automation, not people.
-
-Turning enforcement on is a deliberate edit to a `mailsec_policy/automations`
-record. Read [Policy Reference](policy.md#automations) before you do, in
-particular this consequence:
-
-!!! danger "Enforcement is currently an organization-level switch"
-    The remediation executor authorizes automated action when **any** automation
-    rule in the organization is in `enforce` mode. Which rule dispatches an
-    action is still decided per rule, but the executor's consent check is not
-    per rule — so putting one rule into `enforce` enables automated action for
-    the organization's automated paths generally. Enable it when you mean the
-    organization to start moving mail.
-
-## Next steps
-
-- Tune what is judged: [Detections & Verdicts](detections.md)
-- Write your own rules: [Custom Rules](custom-rules.md)
-- Turn the abuse mailbox into an SLA queue: [User Reports](user-reports.md)
-- Correlate mail with the rest of your telemetry:
-  [Events & Automation](automation.md)
+For scripted setup, use [Setup with the CLI](setup-cli.md). The
+[provider reference](providers.md) covers advanced configuration.

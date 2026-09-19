@@ -40,6 +40,20 @@ impersonating a Workspace admin.
     [Cloud Security](../../cloud-security/provider-setup/google-workspace.md),
     which collects it as posture findings. Email Security owns the *messages*.
 
+## Which console does what?
+
+Keep these tabs open:
+
+| Console | What you do there |
+|---|---|
+| [Google Cloud](https://console.cloud.google.com/) | Create the service account (the application's identity), download its key, and configure notifications. |
+| [Google Admin](https://admin.google.com/) | Authorize that identity to access Workspace users' mail. This is called **domain-wide delegation**. |
+| LimaCharlie | Store the key securely and configure the connection. |
+
+A **Pub/Sub topic** receives Gmail's new-mail notifications. A **pull subscription**
+lets LimaCharlie retrieve those notifications. Both belong to your Google Cloud
+project; they do not replace or reroute email.
+
 ## Setup steps
 
 !!! tip "Let the console render these with your values"
@@ -50,14 +64,30 @@ impersonating a Workspace admin.
 
 ### 1. Create a service account and download its JSON key
 
-In any Google Cloud project you control. It needs **no IAM roles on the
-project** — its mail access comes entirely from domain-wide delegation. Note its
-**numeric OAuth2 client ID**; the Workspace console needs the number, not the
-email address.
+1. In Google Cloud, select the project you want to use for Email Security.
+2. Open **IAM & Admin → Service Accounts → Create service account**, choose a
+   name such as `limacharlie-mail`, and create it. You do not need a broad project
+   role for mail access; the scoped Pub/Sub grant is added in step 7.
+3. Open the service account, then **Keys → Add key → Create new key → JSON**.
+   Download the key. If your organization's policy blocks key creation, ask
+   your Google Cloud administrator to resolve that before continuing.
+4. In the service account details, find its **OAuth 2 client ID** for domain-wide
+   delegation. This is a number, not the service account's email address.
+
+The downloaded JSON contains `project_id`, `client_email`, and `client_id`.
+You will use the first two in the LimaCharlie wizard and the numeric client ID
+in Google Admin. Keep the key intact, including the private key's escaped line
+breaks. Google's [credential creation guide](https://developers.google.com/workspace/guides/create-credentials)
+provides the current console steps.
 
 ### 2. Enable the APIs
 
-In the same project as the service account.
+In Google Cloud, select the same project and open **Cloud Shell** (the terminal
+icon in the top toolbar). It includes `gcloud`, so you do not need to install it
+on your computer. Replace `<YOUR_PROJECT_ID>` in every command with `project_id`
+from the key; replace `<SERVICE_ACCOUNT_EMAIL>` with `client_email`. These are
+placeholders, not literal values. Run each command and check for errors before
+continuing.
 
 ```bash
 gcloud services enable gmail.googleapis.com admin.googleapis.com \
@@ -121,6 +151,14 @@ gcloud pubsub subscriptions add-iam-policy-binding mailsec-gmail-push-sub \
 
 ## Store the credential
 
+In LimaCharlie, open **Organization Settings → Secrets Manager**, add a secret
+named `gws-mail`, and paste the **complete downloaded JSON key** in the value
+field. Add an `admin_email` property containing the Workspace administrator's
+address, as shown below. Save the secret and keep it enabled. Do not replace the
+real private key with the abbreviated example, and do not wrap the JSON in an
+extra `secret` property.
+
+
 The secret is the service-account JSON key **plus** the Workspace administrator
 address to impersonate:
 
@@ -137,12 +175,30 @@ address to impersonate:
 }
 ```
 
+Alternatively, save the edited JSON as `gws-credential.json` and use the
+configured LimaCharlie CLI:
+
 ```bash
 limacharlie secret set --key gws-mail \
   --value "$(cat gws-credential.json)" --enabled --oid $OID
 ```
 
 ## Create the connection
+
+Open **Email Security → Settings → Add connection → Google Workspace**. Enter
+`gws-mail` as **Saved secret name**, `project_id` as the project ID, and
+`client_email` as the service account email. Choose the mailboxes for your pilot.
+The wizard uses `mailsec-gmail-push` and `mailsec-gmail-push-sub`, matching the
+resources created above. Complete the checklist, review, and save.
+
+Run the connection diagnostic after saving. Enable **Verify notification
+delivery** to test Gmail notifications as well as access. Then follow
+[verify your first message](../getting-started.md#5-confirm-mail-is-arriving).
+Google's [notification setup guide](https://developers.google.com/workspace/gmail/api/guides/push)
+explains the topic, subscription, and Gmail publisher grant.
+
+### Alternative: LimaCharlie CLI
+
 
 ```yaml
 # gws.yaml

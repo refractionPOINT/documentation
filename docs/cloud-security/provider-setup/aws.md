@@ -1,5 +1,13 @@
 # Amazon Web Services
 
+!!! tip "Connecting from the web app?"
+    Follow the prerequisites and credential creation instructions below, then
+    return to **Cloud Security → Settings → Providers → Add provider**. Enter
+    the provider IDs under **Configuration** and save the credential using
+    **New secret** under **Permissions**. Run **Test Provider**, fix required
+    failures, and save. The LimaCharlie CLI examples below are an alternative.
+    [First-time setup and verification](../getting-started.md) explains the full journey.
+
 Read-only inventory via an IAM identity that **assumes a read-only role**.
 Two topologies:
 
@@ -20,7 +28,23 @@ user itself can do nothing but assume that one role.
 
 ## Create the identity (CLI, single account)
 
-Run as an IAM admin (never the root user):
+Use a dedicated test account for your first connection if you have one. Ask an
+AWS administrator who can create IAM users, roles, policies, and access keys
+to run the steps below. The created user is the application's identity, not a
+human login. The role grants the read permissions, and the external ID is a
+value that must match between the role's trust policy and LimaCharlie.
+
+1. Sign in to the AWS console with that administrator identity (not root).
+2. Open **CloudShell** from the console toolbar and use its Bash shell. The AWS
+   CLI is already installed and uses your console identity. See
+   [AWS CloudShell setup](https://docs.aws.amazon.com/cloudshell/latest/userguide/getting-started.html).
+3. Run `aws sts get-caller-identity` and confirm the **Account** is the one you
+   intend to connect.
+4. Run the commands below in that same shell. Stop if a command fails rather
+   than continuing with an incomplete role.
+5. Keep the generated external ID and the access key's **AccessKeyId** and
+   **SecretAccessKey**. They are used in different fields, as shown below.
+
 
 ```bash
 ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
@@ -64,6 +88,11 @@ aws iam create-access-key --user-name lc-cloudsec   # capture AccessKeyId + Secr
 
 ## Create the credentials secret
 
+In the LimaCharlie wizard's **Permissions** step, select **New secret**. Choose
+a name such as `aws-credentials`, then paste this JSON with the two values
+returned by `create-access-key`. Do not paste the entire AWS command output.
+
+
 ```json
 {"access_key_id": "AKIA...", "secret_access_key": "..."}
 ```
@@ -88,6 +117,14 @@ limacharlie secret set --key aws-credentials \
 as a string>"}`.
 
 ## Create the provider record
+
+In the wizard's **Configuration** step, enter the role ARN from IAM → Roles →
+`LimaCharlieCloudSecRO` and the external ID you generated. An ARN is AWS's full
+identifier for a resource. Leave the member role field empty for a single-account
+setup; it is for collecting across an AWS Organization. Then test and save.
+
+The equivalent CLI configuration is below.
+
 
 `provider.yaml`:
 

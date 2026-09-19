@@ -49,12 +49,35 @@ consent.
 
 ## Create the app registration
 
-In the portal: **Microsoft Entra ID → App registrations → New registration**
-(single tenant) → **Certificates & secrets → New client secret** (copy the
-*Value*, not the *Secret ID*) → **API permissions → Add a permission →
-Microsoft Graph → Application permissions** → add `Mail.ReadWrite` and
-`User.Read.All` (and `Mail.Send` if you want reporter replies) → **Grant admin
-consent**.
+An app registration gives Email Security its own identity in Microsoft 365, so
+it can connect without using your personal password.
+
+1. Sign in to the [Microsoft Entra admin center](https://entra.microsoft.com/).
+   Check that you are in the directory that owns the mailboxes.
+2. Open **Entra ID → App registrations → New registration**. Enter a name such
+   as `LimaCharlie Email Security` and select accounts in this directory only
+   (single tenant). Register the app.
+3. On the app's **Overview** page, copy **Application (client) ID** and
+   **Directory (tenant) ID**. Keep both for the credential below.
+4. Open **Certificates & secrets → Client secrets → New client secret**.
+   Choose an expiry in line with your organization's policy. Copy the **Value**
+   immediately; the **Secret ID** is not the credential. Record its expiry so
+   your administrator can replace it before access stops.
+5. Open **API permissions → Add a permission → Microsoft Graph → Application
+   permissions**. Add the required permissions listed above and any optional
+   permissions you intend to use.
+6. Select **Grant admin consent** for your directory. If you cannot, ask a
+   Privileged Role Administrator or Global Administrator to grant it. Confirm
+   that the permissions show consent granted before continuing.
+
+Microsoft's [app registration guide](https://learn.microsoft.com/en-us/entra/identity-platform/quickstart-register-app)
+and [admin consent guide](https://learn.microsoft.com/en-us/entra/identity/enterprise-apps/grant-admin-consent)
+explain the portal steps and administrator roles.
+
+### Alternative: Azure CLI
+
+Use this only if you already use the Azure CLI. Sign in with `az login`, confirm
+the intended tenant, and have an administrator available to grant consent.
 
 With the Azure CLI:
 
@@ -96,9 +119,18 @@ az ad app permission admin-consent --id "$APP_ID"
 
 ## Store the credential
 
+In LimaCharlie, open **Organization Settings → Secrets Manager** in a second
+tab and add a secret named `m365-mail`. In the value field, paste the JSON below,
+replacing all three placeholders with the values you copied. Save the secret
+and keep it enabled. Do not add another `secret` property around this JSON.
+
+
 ```json
 {"tenant_id": "<tenant-id>", "client_id": "<application-client-id>", "client_secret": "<the-secret-value>"}
 ```
+
+Alternatively, save the same JSON as `m365-credential.json` and use the configured
+LimaCharlie CLI:
 
 ```bash
 limacharlie secret set --key m365-mail \
@@ -108,8 +140,13 @@ limacharlie secret set --key m365-mail \
 ## Create the connection
 
 In the console: **Email Security → Settings → add a connection → Microsoft 365**.
-The wizard renders the setup guide with your own values, stores the credential
-as a secret if you paste one, and runs **Test Connection** before you finish.
+Use `m365-mail` for **Saved secret name** and choose a small set of mailboxes for
+your first test. Review and save. The diagnostic opens after saving if you have
+permission; select **Run connection test**. You can also open it from Settings.
+The wizard references the secret you already saved; it does not store a pasted
+credential for you.
+
+Continue with [verify access and your first message](../getting-started.md#4-test-access).
 
 As code:
 

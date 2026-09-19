@@ -1,7 +1,6 @@
 # Provider Setup
 
-[Getting Started](../getting-started.md) walks the end-to-end flow with a
-Google Cloud example. This section is the per-provider companion: for **every**
+[Getting Started](../getting-started.md) walks the end-to-end console flow. This section is the per-provider companion: for **every**
 supported platform, the exact scopes and permissions the collector needs, the
 click-by-click steps to create the credential in that platform, the
 credential-secret format, and the first-run failures with their fixes.
@@ -33,7 +32,39 @@ extension (step 1 of
 [Connecting Providers](../providers.md) is the conceptual overview of the same
 fifteen connectors — what each collects and why.
 
-## The common model
+## Use these guides with the wizard
+
+Choose the service above and keep its guide open in a second browser tab.
+Each guide contains both setup instructions and technical reference material;
+you do not have to run its LimaCharlie CLI examples to use the web app.
+
+1. Check **Prerequisites** with your provider administrator. A read-only login
+   for you personally may not be enough to create the application's credential.
+2. Follow the credential creation steps. Record the account/project/tenant IDs
+   separately from the credential itself.
+3. In **Cloud Security → Settings → Providers → Add provider**, choose that
+   service and enter those IDs under **Configuration**.
+4. Under **Permissions**, select **New secret** to store the credential, or select
+   an existing saved secret. Follow the credential format for that service.
+5. Run **Test Provider**. Fix required failures; optional failures mean some
+   data or capabilities will be unavailable.
+6. Save, wait for collection, and confirm a resource you recognize in Inventory.
+   An accepted credential alone does not prove the intended account was scanned.
+
+### If a guide uses commands
+
+The provider's CLI creates access in that provider. The `limacharlie` CLI
+configures LimaCharlie. They are separate tools. If you use a provider command
+block, install and sign in to that provider's CLI first and select the intended
+account. Replace placeholders and define variables before running commands;
+`$SA_PROJECT`, for example, means the project that owns a service account.
+
+For Google Cloud you can use Cloud Shell in the Google Cloud console. For Azure,
+you can use Azure Cloud Shell. If you cannot create identities or grant roles,
+ask the provider administrator to perform those steps, then return to the wizard.
+
+## Advanced: the stored configuration
+
 
 Every provider connection is **two Hive records**:
 
