@@ -1,9 +1,10 @@
 # Google Cloud
 
 Collects the Google Cloud estate across every project in scope — compute,
-serverless (Cloud Run and Cloud Functions), storage, networking, IAM, KMS,
-databases, secrets, Pub/Sub — plus CIEM (who can reach what), Vertex AI
-inventory, and agentless workload vulnerabilities from VM Manager.
+serverless (Cloud Run and Cloud Functions), Kubernetes (GKE clusters and the
+workloads running inside them), storage, networking, IAM, KMS, databases,
+secrets, Pub/Sub — plus CIEM (who can reach what), Vertex AI inventory, and
+agentless workload vulnerabilities from VM Manager.
 
 **Auth model:** a **service-account key** (JSON) granted read-only roles at the
 **organization**, **folder**, or **project** you want enumerated. The collector
@@ -35,6 +36,7 @@ discovers every active project underneath that node by itself.
       containeranalysis.googleapis.com \
       run.googleapis.com \
       cloudfunctions.googleapis.com \
+      container.googleapis.com \
       aiplatform.googleapis.com \
       notebooks.googleapis.com \
       recommender.googleapis.com \
@@ -92,6 +94,7 @@ Each adds one inventory or analysis surface. Skipping one leaves that surface
 | `roles/run.viewer` | Cloud Run service inventory **and its public-access verdict** (`run.services.list` + `run.services.getIamPolicy`) | `serverless` |
 | `roles/cloudfunctions.viewer` | Cloud Functions inventory (1st and 2nd gen) plus their invoker policies (`cloudfunctions.functions.list` + `cloudfunctions.functions.getIamPolicy`) | `serverless` |
 | `roles/cloudidentity.groups.readonly` | Google-group **membership expansion**, so `group:` IAM bindings resolve to real people | `cloud_identity` |
+| `roles/container.viewer` | Only needed to reach a cluster through its **DNS-based control-plane endpoint** (`container.clusters.connect`). In-cluster collection itself already works on the required roles — see the Kubernetes notes below | *(not probed — exercised during the sweep)* |
 
 !!! note "What container image scanning gives you, and what it does not"
     With `roles/containeranalysis.occurrences.viewer` granted **and** Artifact
@@ -149,6 +152,80 @@ Each adds one inventory or analysis surface. Skipping one leaves that surface
     reports each separately, so it will tell you if one half is missing rather
     than leaving you to reason about role contents.
 
+!!! note "Kubernetes needs no in-cluster setup"
+    Reading what runs inside a GKE cluster needs **nothing installed in the
+    cluster**: no kubeconfig, no ClusterRoleBinding, no agent, no manifest to
+    apply. GKE's API server authorizes a Google OAuth token against **Cloud
+    IAM** in addition to Kubernetes RBAC, so the same service-account key you
+    already connected reaches each cluster's Kubernetes API directly.
+
+    **Both required roles already cover it, independently.** `roles/viewer`
+    contains every permission this uses, and so does
+    `roles/iam.securityReviewer` — `container.pods.list`,
+    `container.namespaces.list`, `container.deployments.list`,
+    `container.statefulSets.list`, `container.daemonSets.list`,
+    `container.cronJobs.list`, `container.jobs.list`,
+    `container.replicaSets.list`. Since `roles/iam.securityReviewer` is
+    required anyway, **the least-privilege alternative works too, with nothing
+    added**.
+
+    `roles/container.viewer` is worth adding for exactly one case: it is the
+    only one of these that carries `container.clusters.connect`, which is
+    required to reach a cluster through its **DNS-based control-plane
+    endpoint**. If you are using that endpoint (see below), grant it.
+
+    The reads are **list-only, and metadata-only**. Secrets, ConfigMap values,
+    pod logs and `exec` are never read, and the credential has no permission to
+    write anything to a cluster.
+
+!!! warning "A cluster we cannot reach on the network is reported as partial, not empty"
+    The connection talks to each cluster's **control-plane endpoint**. Two
+    common configurations block that, and in both cases the cluster keeps its
+    cloud-side posture assessment but **nothing inside it is collected**:
+
+    - a **private control plane** with no externally reachable endpoint;
+    - **control-plane authorized networks** whose allowlist does not include us.
+
+    When that happens the project's Kubernetes workload inventory is marked
+    **partial** — whatever was collected before is preserved rather than deleted,
+    and the connection's notes name the cluster and the reason. It is never
+    reported as a cluster that runs nothing. The same is true of a cluster whose
+    API simply did not answer this pass: the view goes stale, it is never
+    emptied.
+
+    Two ways to open it, if you want in-cluster coverage on such a cluster:
+
+    - enable the cluster's **DNS-based control-plane endpoint** and allow
+      external traffic on it. It is served by Google's front end, so it works
+      for a private control plane and is not subject to authorized networks —
+      this is the option we recommend, and it needs no addresses from us. It
+      does need `roles/container.viewer` on the connection's service account,
+      because that endpoint additionally checks `container.clusters.connect`;
+    - or allowlist our egress in the cluster's **authorized networks**. Ask
+      support for the current addresses for your region rather than inferring
+      them: they are per-datacenter and they change.
+
+!!! note "What in-cluster collection gives you, and what it does not"
+    Collected: **namespaces** (including their Pod Security Admission labels)
+    and **workloads** — Deployments, StatefulSets, DaemonSets, CronJobs and
+    standalone Jobs — with their replica counts, service accounts, pod-security
+    settings, and the **image digest their pods are actually running**. That
+    last one is what populates **Running On** in the image browser, so a
+    vulnerable image can be traced to the Kubernetes workloads running it.
+
+    Not collected: **Services**, **RBAC objects** (Roles, ClusterRoles and their
+    bindings), **NetworkPolicies** and **admission webhooks**. Kubernetes RBAC
+    therefore does not appear in identity or attack-path analysis.
+
+    Two deliberate modelling choices worth knowing:
+
+    - a **Job created by a CronJob** and a **ReplicaSet created by a
+      Deployment** are not listed as workloads of their own; their pods are
+      attributed to the CronJob or Deployment that owns them, which is the
+      object you actually operate;
+    - a workload **scaled to zero** is inventoried with no image link. That is
+      "nothing is running", not "no image".
+
 !!! note "`osconfig_vuln` does not prove the inventory join"
     The `osconfig_vuln` check probes the vulnerability-report read only, so it
     passes with `roles/osconfig.vulnerabilityReportViewer` alone. If
@@ -204,7 +281,8 @@ for ROLE in roles/secretmanager.viewer \
             roles/aiplatform.viewer \
             roles/containeranalysis.occurrences.viewer \
             roles/run.viewer \
-            roles/cloudfunctions.viewer; do
+            roles/cloudfunctions.viewer \
+            roles/container.viewer; do
   gcloud organizations add-iam-policy-binding "$ORG_ID" \
     --member "serviceAccount:${SA}" --role "$ROLE"
 done
