@@ -128,12 +128,52 @@ provides the current console steps.
 
 ### 3. Authorize the service account in the Workspace admin console
 
-**Security → Access and data control → API controls → Domain-wide delegation →
-Add new.** Paste the numeric client ID and the scopes as one comma-separated
-line. Include `https://mail.google.com/` only if you want banners and reporter
-replies.
+!!! important "Required even if you used Cloud Shell"
+    Enabling Google Cloud APIs, running the setup script, and saving the JSON key
+    do **not** grant access to Workspace mailboxes. Complete this manual step in
+    **Google Admin**, using a Workspace **Super Admin** account.
 
-*Verified by the `directory` check in the connection test.*
+1. Open [Google Admin](https://admin.google.com/) → **Security → Access and data
+   control → API controls → Manage Domain Wide Delegation**.
+2. Select **Add new**. For **Client ID**, copy the numeric `client_id` from the
+   **same JSON key saved for this connection**. Do not use `client_email`, your
+   administrator's address, or the Google Cloud project ID. If the client ID
+   already has an entry, select **Edit** on that entry instead.
+3. Paste **both required scopes together** into **OAuth scopes (comma-delimited)**:
+
+    ```text
+    https://www.googleapis.com/auth/admin.directory.user.readonly,https://www.googleapis.com/auth/gmail.modify
+    ```
+
+4. Select **Authorize**. Open **View details** on the entry and verify that both
+   scopes are listed under the intended client ID. When editing, retain any
+   existing scopes you still need; adding one must not remove the other.
+
+**Optional — warning banners and reporter replies:** if you want these features,
+use this combined list instead. It includes both required scopes plus broader
+mail access:
+
+```text
+https://www.googleapis.com/auth/admin.directory.user.readonly,https://www.googleapis.com/auth/gmail.modify,https://mail.google.com/
+```
+
+The `https://mail.google.com/` scope is **not required** for mailbox discovery,
+analysis, quarantine, or restore. Leaving it out can produce an optional
+`mail_full` failure in the connection test; that alone does not block collection.
+
+**Checkpoint:** the entry shows your key's numeric client ID and every scope you
+intended to authorize. If your organization requires another Super Admin to
+approve the change, complete that approval. Then run the connection test again.
+Authorization changes can take up to 24 hours to propagate, although they usually
+apply sooner. See Google's [domain-wide delegation instructions](https://knowledge.workspace.google.com/admin/apps/control-api-access-with-domain-wide-delegation).
+
+If the test still reports missing scopes, compare the saved credential's
+`client_id` with the authorized entry and check the provider error details.
+Also confirm `admin_email` names a real Workspace administrator. These messages
+are remediation suggestions: a token error can have causes other than a
+missing scope, so do not grant broader access just to clear every optional check.
+
+*Verified by the `directory`, `mail_modify`, and optional `mail_full` checks.*
 
 ### 4. Create the notification topic
 
@@ -364,7 +404,7 @@ before lifecycle can pass. It is idempotent and the watch expires on its own.
 | Symptom | Cause | Fix |
 |---|---|---|
 | `credential` fails | Key JSON malformed, or `admin_email` missing from the secret | Re-store the secret with `admin_email` included |
-| `directory` fails | Delegation authorized against the service-account **email** instead of its **numeric client ID**, or a scope typo | Re-add the delegation with the numeric client ID and the exact scope strings |
+| `directory` or `mail_modify` fails with a request to add a scope | Required delegation missing, an incorrect client ID, a scope typo, or a change not yet applied | [Complete step 3](#3-authorize-the-service-account-in-the-workspace-admin-console) with both required scopes on the same client ID; verify the saved key and administrator if it still fails |
 | `mail_full` fails and banners are refused | `https://mail.google.com/` is not in the delegated scope list | Add it to the same delegation entry, or accept that banners and reporter replies are unavailable |
 | `pubsub_watch` fails | Missing publisher binding for `gmail-api-push@system.gserviceaccount.com`, or the topic is in a different project | Add the binding; move the topic into the service account's project |
 | `pubsub_pull` fails or times out | Missing `roles/pubsub.subscriber`, wrong subscription name, or the subscription is push rather than pull | Grant the role; recreate as a pull subscription |

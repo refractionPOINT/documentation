@@ -59,7 +59,8 @@ Follow the guide for the service that hosts your mail:
   grant access, and copy its tenant ID, client ID, and secret value.
 - [Google Workspace setup](provider-setup/google-workspace.md): create a service
   account, authorize it in Workspace, and set up notification delivery in Google
-  Cloud. The guide explains which console to use at each step.
+  Cloud. The guide explains which console to use at each step. **The Workspace
+  Admin delegation step is required even if you run every Cloud Shell command.**
 
 Each guide shows the credential JSON you will save in the wizard. You can also
 use an existing secret from **Organization Settings → Secrets Manager**.
