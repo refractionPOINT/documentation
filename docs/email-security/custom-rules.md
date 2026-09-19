@@ -7,7 +7,7 @@ per record. **Email Security → Rules** shows the complete set: search and filt
 inspect the full YAML/JSON, edit, enable, disable or delete any rule. Reading takes
 `mailsec.get`; changing or deleting takes `mailsec.set`.
 
-### Default rules and ownership
+## Default rules and ownership
 
 The first subscription installs LimaCharlie's defaults as ordinary enabled records.
 After installation they are yours. There is no hidden pack, reserved record-name
@@ -25,7 +25,7 @@ Deleted rules never return on a background refresh or a later subscription callb
 If the initial installation was interrupted or partially failed, use **Restore
 defaults** to complete it.
 
-### Restore defaults
+## Restore defaults
 
 **Restore defaults** creates missing default records and leaves every existing
 record untouched, including disabled or edited defaults. Select **Also reset
@@ -42,7 +42,7 @@ The extension performs writes with its own identity. `ext.request` authorizes
 calling the action; the console additionally requires `mailsec.set`. Records
 outside the extension's segment cannot be overwritten and are reported as failed.
 
-### Infrastructure as code
+## Infrastructure as code
 
 The UI, Hive API and CLI edit the same records. Use `limacharlie hive list`,
 `get`, `set`, `enable`, `disable`, `delete` or `validate` with `--hive-name dr-mail`.
