@@ -52,56 +52,58 @@ consent.
 An app registration gives Email Security its own identity in Microsoft 365, so
 it can connect without using your personal password.
 
-1. Sign in to the [Microsoft Entra admin center](https://entra.microsoft.com/).
-   Check that you are in the directory that owns the mailboxes.
-2. Open **Entra ID → App registrations → New registration**. Enter a name such
-   as `LimaCharlie Email Security` and select accounts in this directory only
-   (single tenant). Register the app.
-3. On the app's **Overview** page, copy **Application (client) ID** and
-   **Directory (tenant) ID**. Keep both for the credential below.
-4. Open **Certificates & secrets → Client secrets → New client secret**.
-   Choose an expiry in line with your organization's policy. Copy the **Value**
-   immediately; the **Secret ID** is not the credential. Record its expiry so
-   your administrator can replace it before access stops.
-5. Open **API permissions → Add a permission → Microsoft Graph → Application
-   permissions**. Add the required permissions listed above and any optional
-   permissions you intend to use.
-6. Select **Grant admin consent** for your directory. If you cannot, ask a
-   Privileged Role Administrator or Global Administrator to grant it. Confirm
-   that the permissions show consent granted before continuing.
+<span id="alternative-azure-cli"></span>
 
-Microsoft's [app registration guide](https://learn.microsoft.com/en-us/entra/identity-platform/quickstart-register-app)
-and [admin consent guide](https://learn.microsoft.com/en-us/entra/identity/enterprise-apps/grant-admin-consent)
-explain the portal steps and administrator roles.
+=== "Web console"
 
-### Alternative: Azure CLI
+    1. Sign in to the [Microsoft Entra admin center](https://entra.microsoft.com/).
+       Check that you are in the directory that owns the mailboxes.
+    2. Open **Entra ID → App registrations → New registration**. Enter a name such
+       as `LimaCharlie Email Security` and select accounts in this directory only
+       (single tenant). Register the app.
+    3. On the app's **Overview** page, copy **Application (client) ID** and
+       **Directory (tenant) ID**. Keep both for the credential below.
+    4. Open **Certificates & secrets → Client secrets → New client secret**.
+       Choose an expiry in line with your organization's policy. Copy the **Value**
+       immediately; the **Secret ID** is not the credential. Record its expiry so
+       your administrator can replace it before access stops.
+    5. Open **API permissions → Add a permission → Microsoft Graph → Application
+       permissions**. Add the required permissions listed above and any optional
+       permissions you intend to use.
+    6. Select **Grant admin consent** for your directory. If you cannot, ask a
+       Privileged Role Administrator or Global Administrator to grant it. Confirm
+       that the permissions show consent granted before continuing.
 
-Use this only if you already use the Azure CLI. Sign in with `az login`, confirm
-the intended tenant, and have an administrator available to grant consent.
+    Microsoft's [app registration guide](https://learn.microsoft.com/en-us/entra/identity-platform/quickstart-register-app)
+    and [admin consent guide](https://learn.microsoft.com/en-us/entra/identity/enterprise-apps/grant-admin-consent)
+    explain the portal steps and administrator roles.
 
-With the Azure CLI:
+=== "Cloud Shell / CLI"
 
-```bash
-TENANT_ID=$(az account show --query tenantId -o tsv)
+    Use this only if you already use the Azure CLI. Sign in with `az login`, confirm
+    the intended tenant, and have an administrator available to grant consent.
 
-APP_ID=$(az ad app create --display-name lc-email-security --query appId -o tsv)
-az ad sp create --id "$APP_ID"
+    ```bash
+    TENANT_ID=$(az account show --query tenantId -o tsv)
 
-az ad app credential reset --id "$APP_ID" --years 2 --append \
-  --display-name lc-email-security --query password -o tsv   # capture this once
+    APP_ID=$(az ad app create --display-name lc-email-security --query appId -o tsv)
+    az ad sp create --id "$APP_ID"
 
-GRAPH=00000003-0000-0000-c000-000000000000
+    az ad app credential reset --id "$APP_ID" --years 2 --append \
+      --display-name lc-email-security --query password -o tsv   # capture this once
 
-# Resolve each app-role id from Graph itself rather than pasting a GUID.
-for PERM in Mail.ReadWrite User.Read.All Mail.Send; do   # Mail.Send is optional
-  ROLE_ID=$(az ad sp show --id "$GRAPH" \
-    --query "appRoles[?value=='$PERM'].id | [0]" -o tsv)
-  az ad app permission add --id "$APP_ID" --api "$GRAPH" \
-    --api-permissions "$ROLE_ID=Role"
-done
+    GRAPH=00000003-0000-0000-c000-000000000000
 
-az ad app permission admin-consent --id "$APP_ID"
-```
+    # Resolve each app-role id from Graph itself rather than pasting a GUID.
+    for PERM in Mail.ReadWrite User.Read.All Mail.Send; do   # Mail.Send is optional
+      ROLE_ID=$(az ad sp show --id "$GRAPH" \
+        --query "appRoles[?value=='$PERM'].id | [0]" -o tsv)
+      az ad app permission add --id "$APP_ID" --api "$GRAPH" \
+        --api-permissions "$ROLE_ID=Role"
+    done
+
+    az ad app permission admin-consent --id "$APP_ID"
+    ```
 
 !!! danger "`credential reset` clears existing secrets"
     Without `--append`, `az ad app credential reset` **removes every existing

@@ -34,6 +34,39 @@ and Gemini-in-Workspace usage — via the Admin SDK and Cloud Identity APIs.
 3. A real **Workspace Super Admin** account to impersonate
    (e.g. `admin@example.com`) — DWD setup only.
 
+### Create the service account if you do not have one
+
+In Google Cloud, select the project that will own the credential. Open
+**IAM & Admin → Service Accounts → Create service account**, name it
+`lc-workspace`, and create it. Open its **Keys → Add key → Create new key → JSON**
+to download the key. No broad Google Cloud project role is needed for directory
+access; you authorize the Workspace scopes below. If key creation is blocked,
+ask your Google Cloud administrator to resolve it.
+
+### Enable the APIs
+
+=== "Web console"
+
+    1. In Google Cloud, select the project that owns the service account.
+    2. Open **APIs & Services → Library**. Enable **Admin SDK API**
+       (`admin.googleapis.com`), **Cloud Identity API** (`cloudidentity.googleapis.com`),
+       and **Gmail API** (`gmail.googleapis.com`), one at a time.
+    3. Confirm all three under **Enabled APIs & services**. Leave any that are
+       already enabled on.
+
+    See Google's [API enablement guide](https://docs.cloud.google.com/service-usage/docs/enable-disable).
+
+=== "Cloud Shell / CLI"
+
+    Open **Cloud Shell** in Google Cloud or use an authenticated `gcloud` CLI.
+    Replace the project ID with `project_id` from the service-account key:
+
+    ```bash
+    SA_PROJECT="your-service-account-project-id"
+    gcloud services enable admin.googleapis.com cloudidentity.googleapis.com \
+      gmail.googleapis.com --project="$SA_PROJECT"
+    ```
+
 ## OAuth scopes
 
 Only the user and group scopes are required. Each remaining scope unlocks one
@@ -167,18 +200,26 @@ service-account key:
     pointing the Workspace record at it lands in exactly this case. Give
     Workspace its own secret.
 
-Store it:
+=== "Web console"
 
-```bash
-limacharlie secret set --key gw-credentials \
-    --value "$(cat gw-secret.json)" --enabled
-```
+    In LimaCharlie, open **Organization Settings → Secrets Manager → Add**, name
+    the secret `gw-credentials`, and paste the wrapper JSON described above. Place
+    the **whole downloaded key object** under `service_account_json` and your
+    Workspace Super Admin's address under `admin_email`. Save it enabled.
 
-`secret set` wraps the value into the secret record's `{"secret": "..."}`
-envelope for you.
+    Use a local text editor to assemble the JSON if needed. Keep the key's escaped
+    line breaks unchanged. No terminal command is required to create this wrapper.
 
-Or in the web app: **Organization Settings → Secrets Manager → Add**, name it
-`gw-credentials`, and paste the JSON.
+=== "LimaCharlie CLI"
+
+    Save the wrapper JSON above as `gw-secret.json`, then run:
+
+    ```bash
+    limacharlie secret set --key gw-credentials \
+        --value "$(cat gw-secret.json)" --enabled
+    ```
+
+    `secret set` supplies the outer secret-record envelope for you.
 
 ### Alternative: no delegation
 
