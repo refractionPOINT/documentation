@@ -235,12 +235,13 @@ Grant access to the **same** service account you created in step 1.
 
 ## Store the credential
 
-In LimaCharlie, open **Organization Settings → Secrets Manager**, add a secret
-named `gws-mail`, and paste the **complete downloaded JSON key** in the value
-field. Add an `admin_email` property containing the Workspace administrator's
-address, as shown below. Save the secret and keep it enabled. Do not replace the
-real private key with the abbreviated example, and do not wrap the JSON in an
-extra `secret` property.
+In the setup wizard's **Connection details**, choose **Credential → Add New**
+and name the secret `gws-mail`. Paste the **complete downloaded JSON key** into
+**Secret**, adding an `admin_email` property containing your Workspace
+administrator's address as shown below. Select **Create**. The wizard saves and
+selects the secret, then fills in the project ID and service account email from
+the key. Keep the secret enabled. Do not replace the real private key with the
+abbreviated example or wrap the JSON in an extra `secret` property.
 
 The secret is the service-account JSON key **plus** the Workspace administrator
 address to impersonate:
@@ -268,9 +269,11 @@ limacharlie secret set --key gws-mail \
 
 ## Create the connection
 
-Open **Email Security → Settings → Add connection → Google Workspace**. Enter
-`gws-mail` as **Saved secret name**, `project_id` as the project ID, and
-`client_email` as the service account email. Choose the mailboxes for your pilot.
+Open **Email Security → Settings → Add connection → Google Workspace**. Select
+`gws-mail` under **Credential**. If you selected an existing secret, copy
+`project_id` and `client_email` from its original key into the project ID and
+service account email fields. If you just created the secret here, these fields
+are filled automatically. Choose the mailboxes for your pilot.
 The wizard uses `mailsec-gmail-push` and `mailsec-gmail-push-sub`, matching the
 resources created above. Complete the checklist, review, and save.
 

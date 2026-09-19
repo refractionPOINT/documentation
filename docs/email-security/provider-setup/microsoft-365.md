@@ -121,10 +121,11 @@ it can connect without using your personal password.
 
 ## Store the credential
 
-In LimaCharlie, open **Organization Settings → Secrets Manager** in a second
-tab and add a secret named `m365-mail`. In the value field, paste the JSON below,
-replacing all three placeholders with the values you copied. Save the secret
-and keep it enabled. Do not add another `secret` property around this JSON.
+In the setup wizard's **Connection details**, find **Credential → Add New**.
+Name the secret `m365-mail`. In **Secret**, paste the JSON below, replacing all
+three placeholders with the values you copied. Select **Create** to save it
+immediately and select it for the connection. Keep it enabled and do not add an
+outer `secret` property. You can also select an existing secret from the picker.
 
 ```json
 {"tenant_id": "<tenant-id>", "client_id": "<application-client-id>", "client_secret": "<the-secret-value>"}
@@ -141,11 +142,11 @@ limacharlie secret set --key m365-mail \
 ## Create the connection
 
 In the console: **Email Security → Settings → add a connection → Microsoft 365**.
-Use `m365-mail` for **Saved secret name** and choose a small set of mailboxes for
+Select `m365-mail` under **Credential** and choose a small set of mailboxes for
 your first test. Review and save. The diagnostic opens after saving if you have
 permission; select **Run connection test**. You can also open it from Settings.
-The wizard references the secret you already saved; it does not store a pasted
-credential for you.
+The connection stores a reference to the selected secret, not a second copy of
+the credential.
 
 Continue with [verify access and your first message](../getting-started.md#4-test-access).
 
