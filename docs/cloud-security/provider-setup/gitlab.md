@@ -1,5 +1,13 @@
 # GitLab
 
+!!! tip "Connecting from the web app?"
+    Follow the prerequisites and credential creation instructions below, then
+    return to **Cloud Security → Settings → Providers → Add provider**. Enter
+    the provider IDs under **Configuration** and save the credential using
+    **New secret** under **Permissions**. Run **Test Provider**, fix required
+    failures, and save. The LimaCharlie CLI examples below are an alternative.
+    [First-time setup and verification](../getting-started.md) explains the full journey.
+
 Connects one **GitLab namespace** — a group with every subgroup below it, or a user
 namespace — on GitLab.com or a self-managed GitLab instance. Its projects become repositories
 in the inventory, and the namespace itself becomes the account they belong to.

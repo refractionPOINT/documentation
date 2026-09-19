@@ -1,5 +1,13 @@
 # Google Cloud
 
+!!! tip "Connecting from the web app?"
+    Follow the prerequisites and credential creation instructions below, then
+    return to **Cloud Security → Settings → Providers → Add provider**. Enter
+    the provider IDs under **Configuration** and save the credential using
+    **New secret** under **Permissions**. Run **Test Provider**, fix required
+    failures, and save. The LimaCharlie CLI examples below are an alternative.
+    [First-time setup and verification](../getting-started.md) explains the full journey.
+
 Collects the Google Cloud estate across every project in scope — compute,
 serverless (Cloud Run and Cloud Functions), storage, networking, IAM, KMS,
 databases, secrets, Pub/Sub — plus CIEM (who can reach what), Vertex AI
@@ -10,6 +18,22 @@ inventory, and agentless workload vulnerabilities from VM Manager.
 discovers every active project underneath that node by itself.
 
 ## Prerequisites
+
+For a first connection, choose one project containing resources you recognize.
+Find its **project ID** in the Google Cloud project selector; the display name
+and numeric project number are different values. In the LimaCharlie wizard,
+enter that ID in **Project** and leave the broader scope field empty.
+
+For command examples, open **Cloud Shell** in Google Cloud and define
+`SA_PROJECT` before enabling APIs. Replace the example with the project that
+will own your service account:
+
+```bash
+SA_PROJECT="your-service-account-project-id"
+```
+
+A service account is an identity for the collector, separate from your personal
+Google login. Its key proves its identity; IAM roles decide what it may read.
 
 1. A GCP **project** to own the service account (any project you control — it
    does not have to be one being scanned).
@@ -219,6 +243,32 @@ the role fixes it without any other change. To retry right away, use
 scans reference the image.
 
 ## Create the service account
+
+### Console path for one project
+
+1. Select the project that will own the credential. Open **IAM & Admin → Service
+   Accounts → Create service account** and create `lc-cloudsec`.
+2. Copy the service account's email address. In the project you want to scan,
+   open **IAM & Admin → IAM → Grant access**. Use that email as the principal
+   and grant the required roles listed above. Add optional roles only for the
+   data you want to collect.
+3. Return to the service account's project, open the account, then **Keys → Add
+   key → Create new key → JSON**. Download the key. If key creation is blocked
+   by organization policy, ask your Google Cloud administrator to resolve it.
+4. In the wizard's **Permissions** step, select **New secret**, give it a name,
+   and paste the complete downloaded JSON. Do not add another `secret` wrapper.
+5. Run **Test Provider**. Fix required failures and check which optional data is
+   unavailable. Save and verify a known resource in Inventory.
+
+See Google's [service account key instructions](https://docs.cloud.google.com/iam/docs/keys-create-delete)
+for the console workflow. Complete the API prerequisites above as well as the
+role grants; a key alone does not enable collection.
+
+### Alternative: CLI for organization scope
+
+The following example grants access to an organization. Replace `ORG_ID` and
+`SA_PROJECT` with your values; do not use this wider scope for a one-project
+pilot unless you intend to grant organization-wide access.
 
 ```bash
 SA_PROJECT=my-security-project

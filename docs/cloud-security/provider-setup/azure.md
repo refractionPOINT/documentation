@@ -1,5 +1,13 @@
 # Microsoft Azure
 
+!!! tip "Connecting from the web app?"
+    Follow the prerequisites and credential creation instructions below, then
+    return to **Cloud Security → Settings → Providers → Add provider**. Enter
+    the provider IDs under **Configuration** and save the credential using
+    **New secret** under **Permissions**. Run **Test Provider**, fix required
+    failures, and save. The LimaCharlie CLI examples below are an alternative.
+    [First-time setup and verification](../getting-started.md) explains the full journey.
+
 Collects the Azure estate — VMs and scale sets, storage, Key Vault, SQL/Cosmos,
 AKS, networking and NSGs, Azure OpenAI — plus the tenant's Entra ID directory
 (users, groups, service principals, app registrations, roles) and, where
@@ -79,6 +87,36 @@ unobserved while everything else still collects.
     **no MFA-registration information** rather than a failing check.
 
 ## Create the app registration
+
+### Console path
+
+1. Sign in to [Microsoft Entra](https://entra.microsoft.com/) and select the
+   directory that owns your Azure subscription. Open **App registrations →
+   New registration**, give the application a name, and choose single tenant.
+2. Copy **Application (client) ID** and **Directory (tenant) ID** from its
+   Overview. The app is the collector's identity; it is separate from your login.
+3. Under **Certificates & secrets**, create a client secret. Copy its **Value**
+   immediately, not the Secret ID. Record its expiry for future rotation.
+4. Under **API permissions**, add the required Microsoft Graph **Application
+   permissions** listed above. Add optional ones for the data you need, and
+   have the authorized administrator **Grant admin consent**.
+5. In the Azure portal, open **Subscriptions**, select the subscription to scan,
+   and copy its **Subscription ID**. Open **Access control (IAM) → Add role
+   assignment**, select **Reader**, and assign it to your application.
+6. In LimaCharlie's **Configuration** step, enter the tenant, subscription, and
+   client IDs. In **Permissions**, use **New secret** to save the credential
+   JSON shown below, then test and save the connection.
+
+The subscription's Reader role and the directory's Graph permissions are
+separate grants. One does not replace the other. Microsoft's
+[role assignment guide](https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-steps)
+explains the access needed to assign a role.
+
+### Alternative: Azure CLI
+
+Use Azure Cloud Shell with Bash, or install the Azure CLI and sign in using
+`az login`. Confirm the intended tenant with `az account show` before running
+these commands. Replace the subscription placeholder with its actual ID.
 
 ```bash
 TENANT_ID=$(az account show --query tenantId -o tsv)

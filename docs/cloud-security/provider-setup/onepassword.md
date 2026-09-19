@@ -1,5 +1,13 @@
 # 1Password
 
+!!! tip "Connecting from the web app?"
+    Follow the prerequisites and credential creation instructions below, then
+    return to **Cloud Security → Settings → Providers → Add provider**. Enter
+    the provider IDs under **Configuration** and save the credential using
+    **New secret** under **Permissions**. Run **Test Provider**, fix required
+    failures, and save. The LimaCharlie CLI examples below are an alternative.
+    [First-time setup and verification](../getting-started.md) explains the full journey.
+
 Collects the 1Password account directory — users and groups with membership —
 into the identity graph, unified by email with your cloud and IdP identities.
 Optionally, a **1Password Connect** server adds vault (secret-store) inventory.

@@ -592,6 +592,7 @@ nav:
       - Overview: email-security/index.md
       - How a Message Is Processed: email-security/pipeline.md
       - Getting Started: email-security/getting-started.md
+      - Setup with the CLI: email-security/setup-cli.md
       - Connecting Providers: email-security/providers.md
       - Provider Setup:
           - Microsoft 365: email-security/provider-setup/microsoft-365.md
@@ -613,6 +614,7 @@ nav:
   - Cloud Security:
       - Overview: cloud-security/index.md
       - Getting Started: cloud-security/getting-started.md
+      - Setup with the CLI: cloud-security/setup-cli.md
       - Connecting Providers: cloud-security/providers.md
       - Code Security:
           - Overview: cloud-security/code-security/index.md

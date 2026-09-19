@@ -1,224 +1,175 @@
 # Getting Started with Cloud Security
 
-This guide takes an organization from zero to a populated Cloud Security
-dashboard: enable the product, connect a provider, run the first sweep, and
-declare what matters. You can do all of it in the console or entirely as code —
-both are shown.
+Connect an account you administer to discover resources, identities, and security
+findings. This guide uses the web app. Your first goal is to **connect one
+provider, confirm that resources appear, and inspect a finding**.
+
+A **provider** is a service such as AWS, Google Cloud, Microsoft Azure, or GitHub.
+A **connection** gives LimaCharlie access to a specific account, project, tenant,
+or organization in that service. **Scope** means the part of that service you
+want to collect. A **finding** is a potential security issue identified in the
+collected data; an empty findings list does not by itself prove collection worked.
+
+## Before you start
+
+- Sign in to LimaCharlie and select the organization that should hold the data.
+  An organization is your team's workspace.
+- Choose one account or project you administer and know contains resources.
+  Starting small makes it easier to recognize whether collection worked.
+- Have an administrator of that provider available to create the credential and
+  grant access. Being an administrator in LimaCharlie does not grant access to
+  AWS, Microsoft, Google, or another provider.
+- Ask your LimaCharlie administrator for permission to subscribe and configure
+  connections if those actions are unavailable. Subscribing requires
+  `billing.ctrl` and `user.ctrl`; testing requires `cloudsec.set`.
+
+!!! info "Free trial"
+    Free-tier organizations can connect up to **2 providers** for a **14-day**
+    collection trial, starting when Cloud Security is enabled. Prepare provider
+    access first. At trial expiry, or when exceeding the connection limit,
+    affected collection pauses. Review the status in **Settings → Providers**
+    and the trial information in Overview before expanding your setup.
 
 ## 1. Enable Cloud Security
 
-Cloud Security is enabled per organization by subscribing to the
-`ext-cloud-security` extension — the subscription is both the enable gate and
-the billing hook.
+Open **Extensions → Cloud Security** and select **Subscribe**. Then open
+**Cloud Security** from your organization's sidebar. You may also arrive here
+through Cloud Security signup after creating your organization.
 
-Subscribe from the console with the **Subscribe** button on
-**Extensions → Cloud Security**, or in one command:
+Before a provider has data, the workspace directs you to Settings. This is
+expected; other pages become available as you connect and collect data.
 
-```bash
-limacharlie extension subscribe --name ext-cloud-security --oid $OID
-```
+<span id="2-connect-a-provider"></span>
 
-Subscribing requires the `billing.ctrl` and `user.ctrl` permissions.
+## 2. Choose your provider and prepare access
 
-Confirm the organization is enabled:
+Open **Cloud Security → Settings → Providers → Add provider**. Give the
+connection a recognizable name, such as `test-aws` or `company-directory`,
+and choose the service you want to connect.
 
-```bash
-limacharlie extension list --oid $OID
-```
+For GitHub, use **Create a GitHub App for me (recommended)** when offered.
+The wizard prepares the app and stores its credential after an organization
+owner installs it; you do not need to create and paste a key manually on that
+path. Review the requested access before approving.
 
-Until the organization is subscribed, every Cloud Security API route returns
-`403`. The **Cloud Security** workspace is always listed in the organization
-sidebar, but its pages show an "enable Cloud Security" screen — with a link to
-**Extensions** — rather than the product.
+Open its [provider setup guide](provider-setup/index.md) in another tab. It
+lists administrator prerequisites, where to find IDs, how to create credentials,
+and how to fix provider-specific errors. Common starting points:
 
-!!! tip "The workspace opens gradually"
-    Before the first provider is connected there is nothing to show, so the
-    workspace deliberately exposes only **Settings** (and **Give Feedback**);
-    the other pages redirect there. The full set of pages appears once a
-    provider exists and its first sweep has data.
+| What you want to inspect | Guide |
+|---|---|
+| AWS resources in an account | [AWS](provider-setup/aws.md) |
+| Resources in a Google Cloud project | [Google Cloud](provider-setup/gcp.md) |
+| Resources in an Azure subscription | [Azure](provider-setup/azure.md) |
+| Microsoft directory users and access, without an Azure subscription | [Microsoft Entra ID](provider-setup/entra.md) |
+| Google Workspace users and configuration | [Google Workspace](provider-setup/google-workspace.md) |
+| GitHub repositories and organization | [GitHub](provider-setup/github.md) |
+| Another supported service | [All provider guides](provider-setup/index.md) |
 
-### Free tier and trial
+Google Workspace Cloud Security inspects configuration and identity. To analyze
+individual email messages, use [Email Security](../email-security/getting-started.md).
 
-Organizations on the free tier (a configured sensor quota of 2 or fewer) can
-trial Cloud Security without upgrading: up to **2 provider connections**, with
-collection running for **14 days** from the day Cloud Security was enabled.
-The Overview page shows the trial banner, and
-[`GET /free-tier`](api-reference.md) reports the standing and limits.
+## 3. Complete the wizard
 
-When the trial ends (or a third provider is added), the affected collection
-pauses rather than erroring: the reason appears as the provider's status in
-**Settings → Providers** and in `scan-status`. Nothing is deleted immediately
-and none of your configuration is touched — provider records, credentials, and
-policies all survive — so upgrading resumes collection where it left off within
-minutes. Trial data does age out eventually if the organization stays on the
-free tier.
+### Configuration: choose what to inspect
 
-## 2. Connect a provider
+Enter the account, tenant, project, or organization identifiers from the provider
+guide. These are IDs from that service, not your LimaCharlie organization ID.
+For Google Cloud, a single project is a useful starting scope; use the project
+ID, not its display name. Wider folder/organization access requires corresponding
+grants.
 
-A provider connection is one `cloudsec_provider` record. Each provider needs a
-scope (which account/tenant/org to enumerate) and a read-only credential. The
-[Connecting Providers](providers.md) page has the full per-provider setup — the
-steps below use Google Cloud as the worked example.
+If you enter **internal domains**, list the email domains used by your own staff
+(for example, `example.com`). This helps distinguish staff from external users.
+The product can discover the primary cloud organization domain, but you should
+include secondary domains your staff use too.
 
-### In the console
+<span id="test-the-credential-before-saving"></span>
 
-Open **Cloud Security → Settings → Providers** and click **+ Add provider**.
-The wizard has five steps:
+### Permissions: grant access and store the credential
 
-1. **Name & type** — name the connection and pick the provider type.
-2. **Configuration** — the type-specific connection fields (for GCP, the
-   scope: a project, folder, or organization).
-3. **Permissions** — the credential, plus the list of grants the collector
-   needs and per-OS command-line tabs that create them in the target platform.
-   Reference an existing [secret](../7-administration/config-hive/secrets.md)
-   by `hive://secret/<name>`, or paste the credential to have the console store
-   it as a new secret for you. Credentials are always stored as a secret and
-   referenced — never inlined into the provider record.
-4. **Sync cadence** — how often to re-enumerate, from 30 minutes to daily, or
-   a custom interval.
-5. **Summary** — review, then click **Add provider**. Saving an enabled
-   connection starts collection, and the closing screen reports the status of
-   that first scan.
+A credential is a key or token used to access the provider. LimaCharlie stores
+it in **Secrets Manager**, separately from the connection settings.
 
-**Test Provider** sits in the wizard footer on every step, so you can run the
-read-only preflight (see below) as soon as the credential is in place rather
-than waiting until the end.
+1. Follow the selected provider's setup guide. The wizard lists required grants
+   and optional grants with the capabilities they enable.
+2. If the credential is already saved in LimaCharlie, select it. Otherwise,
+   select **New secret**, choose a name, and paste the credential in the format
+   shown. Do not wrap it in an extra `secret` property.
+3. Select **Test Provider** once the configuration and credential are ready.
+   Fix required failures before saving. For optional failures, read which data
+   will be missing and decide whether you need it.
 
-The provider list then shows one row per connection with its **Source**,
-**Connection**, **Scope**, **Status**, **Resources**, and **Last sync**, plus
-per-row actions: **Sync now**, **Edit**, **Delete**, and — once the connection
-has reported what it can collect — **What you're getting**.
+The command tabs are an alternative for administrators comfortable with a
+terminal. Install and sign in to the provider's CLI before using them, select
+the intended account, and replace any remaining placeholders. Those commands
+create access credentials; collection itself reads provider data. Some provider
+keys allow broader access than the collector uses—the wizard and provider guide
+explain those exceptions.
 
-### As code
+If **New secret** is unavailable, ask an administrator with Secrets Manager
+write access to save the credential for you. Never paste it into a connection
+name or account ID field.
 
-The credential lives in the secret Hive; the provider record references it:
+GitHub setup may also offer an optional **Code Actions App** step. Read its access
+requirements before enabling features that write checks or propose code changes.
+You can begin with the collection path and configure those features later.
 
-```bash
-# Store the collector credential as a secret (hive set reads the record
-# data from --input-file or piped stdin).
-echo '{"secret": "<service-account-key-json>"}' | \
-  limacharlie hive set --hive-name secret --key gcp-collector-sa \
-    --oid $OID --enabled
+### Sync cadence: choose how often to collect
 
-# Connect the provider.
-cat > provider.json <<EOF
-{
-  "provider_type": "gcp",
-  "gcp_scope": "organizations/123456789",
-  "credentials": "hive://secret/gcp-collector-sa",
-  "internal_domains": ["acme.com", "acme.io"]
-}
-EOF
+Keep the service default for a first connection. **Sync cadence** is the interval
+between collections, not a deadline for the first scan. You can change it later.
 
-limacharlie hive set --hive-name cloudsec_provider --key acme-gcp \
-  --oid $OID --input-file provider.json --enabled
-```
+### Summary: save and start collection
 
-The full field reference is in
-[Configuration](configuration.md#cloudsec_provider), and every provider's scope
-fields and credential shape are in [Connecting Providers](providers.md).
-[Provider Setup](provider-setup/index.md) has a full onboarding walkthrough for
-**every** supported platform — exact scopes, how to create the credential in
-that platform, credential-secret formats, and first-run troubleshooting.
+Review the scope, credential name, and optional features, then select **Add
+provider**. Saving an enabled connection starts collection. A saved connection
+is not proof of a successful scan.
 
-!!! tip "internal_domains matters for CIEM"
-    List every email domain your own people use. A human identity whose domain
-    is not in the internal set is classified *external*, and external access to
-    sensitive resources is one of the highest-signal finding classes. The
-    collector discovers the primary cloud-org domain on its own; secondary
-    domains must be declared.
+<span id="3-watch-the-first-sweep"></span>
 
-### Test the credential before saving
+## 4. Verify the first collection
 
-The provider test connects with the supplied credential and probes every
-permission surface a sweep needs, without storing anything — the same check the
-console's **Test Provider** button runs:
+The completion screen shows scan progress. Return to **Settings → Providers**
+to inspect **Status**, **Resources**, and **Last sync**.
 
-```bash
-limacharlie cloudsec provider test --input-file provider.json
-```
+| What you see | What to do |
+|---|---|
+| Queued or in progress | Allow time for collection. Large accounts take longer than small ones. |
+| Failed | Read the provider error, edit the connection or grants, and run Test Provider again. |
+| Trial/limit pause | Check your trial standing and provider count. Re-entering credentials will not remove a plan limit. |
+| Completed, with resources | Open Inventory and confirm a resource you recognize. |
+| Completed, but no expected resources | Check account/project IDs, scope, and optional permission failures. A successful credential check does not guarantee access to everything you intended. |
 
-The response is a per-check report: each check carries `id`, `name`,
-`required`, `ok`, and a human-readable `detail`. `report.ok` is the verdict
-over the *required* checks only — a failed optional check means that surface
-degrades gracefully (e.g. one inventory type missing) rather than the
-connection failing.
+Scan progress is reported by provider type: if you have multiple connections to
+the same service, it is not independent proof that each one collected correctly.
+Use the intended resource's account/project details to verify your scope.
 
-!!! info "Permissions"
-    The provider test requires `cloudsec.set` — testing a credential is as
-    sensitive as saving one. For the test (and only the test) the credential
-    may be passed inline instead of as a `hive://secret/` reference; it is
-    used ephemerally and never stored or logged.
+Use **Sync now** on the provider row after fixing access. See the provider's
+setup guide for common error messages and their fixes.
 
-## 3. Watch the first sweep
+<span id="4-declare-what-matters"></span>
+<span id="5-look-at-the-result"></span>
 
-Saving an enabled provider record starts collection. Check progress:
+## 5. Understand your first results
 
-```bash
-limacharlie cloudsec scan-status --provider gcp
-```
+Open **Inventory** and find something you recognize, such as a cloud resource or
+user. Then open **Risks**. Start with a high-severity finding, read the affected
+resource and evidence, and follow its remediation guidance. If no findings
+appear, check Inventory and collection status before concluding there are no
+issues. See [Findings & Triage](findings.md).
 
-The status carries whether a sweep is running, when the last one started and
-completed, the diff stats of the last run, and any error. To force an immediate
-re-enumeration later, change the record's `sync_now` value (any new value
-triggers a sweep) or use **Sync now** on the provider row; `refresh` sets the
-periodic cadence.
+You do not need to configure every policy before exploring your first results.
+When collection is working, open **Policies → Data classification** to identify
+sensitive resources, such as databases containing customer information. Nothing
+is classified sensitive by default. Classification lets the product prioritize
+access and attack paths involving that data; use **Simulate** to preview matches
+before saving. Classification currently uses resource attributes, not inspection
+of the contents of your databases.
 
-## 4. Declare what matters
+## Next steps
 
-Out of the box, **nothing is classified sensitive** — sensitivity is your
-declaration, made with a `classification`-typed `cloudsec_policy` record (your
-crown jewels). Rules match resources by account, name, resource type, label, or
-tag and assign classes:
-
-```bash
-cat > classification.json <<EOF
-{
-  "policy_type": "classification",
-  "classification": {
-    "data_stores": [
-      {"name_contains": ["customer", "pii"], "classes": ["pii"]}
-    ]
-  }
-}
-EOF
-
-limacharlie hive set --hive-name cloudsec_policy --key classification \
-  --oid $OID --input-file classification.json --enabled
-```
-
-Sensitivity drives the attack-path and CIEM analytics: "exposed workload that
-can reach *sensitive* data" and "external identity with access to *sensitive*
-store" both need to know what sensitive means in your estate.
-
-!!! note "Content-based classification is not yet available"
-    Classification rules accept a `content_class` dimension, intended to let
-    detected data content drive sensitivity, but content detection is not live
-    in the current release — declare your crown jewels by account, name,
-    resource type, label, or tag. (The former `auto_classify` boolean has been
-    retired in favour of these explicit, previewable rules.)
-
-In the console, the same policy is authored on **Cloud Security → Policies →
-Data classification**, where a live **Simulate** panel shows exactly which
-resources a rule matches before you save it.
-
-## 5. Look at the result
-
-In the console, the **Overview** page is the at-a-glance risk layer and
-**Risks** is the worklist. From the CLI:
-
-```bash
-# The composed risk overview: score, severity distribution, top paths.
-limacharlie cloudsec overview
-
-# The findings worklist, worst first.
-limacharlie cloudsec finding list --severity CRITICAL --severity HIGH
-
-# What you own.
-limacharlie cloudsec inventory facets
-```
-
-From here, continue with [Findings & Triage](findings.md) for the day-to-day
-workflow, [Connecting Providers](providers.md) to add more of your estate, or
-[Automation & IaC](automation.md) to wire findings into Cases and onboard more
-tenants as code.
+- Add a second account or service using [Provider Setup](provider-setup/index.md).
+- Learn the day-to-day workflow in [Findings & Triage](findings.md).
+- Use [Setup with the CLI](setup-cli.md) for scripted onboarding and the
+  [configuration reference](configuration.md) for advanced settings.

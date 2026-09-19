@@ -1,5 +1,15 @@
 # GitHub
 
+!!! tip "Start with the guided GitHub App setup"
+    Open **Cloud Security → Settings → Providers → Add provider → GitHub**
+    and choose **Create a GitHub App for me (recommended)** when available.
+    An owner of your GitHub organization must approve and install the app.
+    The wizard prepares the app and stores its credential for you. Review its
+    requested permissions before approving. Use the manual instructions below
+    if you already have an app or cannot use the guided option.
+    [First-time setup and verification](../getting-started.md) explains what
+    to check after connecting.
+
 Collects a GitHub organization: org settings, members (including outside
 collaborators) and teams (identities), repositories and their branch protection
 (data stores), installed GitHub Apps, deploy keys and Actions secrets (machine

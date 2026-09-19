@@ -1,5 +1,13 @@
 # LimaCharlie
 
+!!! tip "Connecting from the web app?"
+    Follow the prerequisites and credential creation instructions below, then
+    return to **Cloud Security → Settings → Providers → Add provider**. Enter
+    the provider IDs under **Configuration** and save the credential using
+    **New secret** under **Permissions**. Run **Test Provider**, fix required
+    failures, and save. The LimaCharlie CLI examples below are an alternative.
+    [First-time setup and verification](../getting-started.md) explains the full journey.
+
 Inventories your **own LimaCharlie tenancy** as an estate, like any other SaaS
 platform: org members as identities (with MFA state), API keys as machine
 identities, sensors as assets, installation keys, telemetry outputs, extension
