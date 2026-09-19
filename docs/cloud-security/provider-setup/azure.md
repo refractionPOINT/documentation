@@ -118,7 +118,6 @@ Use Azure Cloud Shell with Bash, or install the Azure CLI and sign in using
 `az login`. Confirm the intended tenant with `az account show` before running
 these commands. Replace the subscription placeholder with its actual ID.
 
-
 ```bash
 TENANT_ID=$(az account show --query tenantId -o tsv)
 SUB_ID=<your-subscription-id>

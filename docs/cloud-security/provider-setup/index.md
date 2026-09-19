@@ -65,7 +65,6 @@ ask the provider administrator to perform those steps, then return to the wizard
 
 ## Advanced: the stored configuration
 
-
 Every provider connection is **two Hive records**:
 
 | Piece | Hive | Holds |

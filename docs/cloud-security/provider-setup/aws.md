@@ -45,7 +45,6 @@ value that must match between the role's trust policy and LimaCharlie.
 5. Keep the generated external ID and the access key's **AccessKeyId** and
    **SecretAccessKey**. They are used in different fields, as shown below.
 
-
 ```bash
 ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
 EXTERNAL_ID=$(openssl rand -hex 16)          # save this
@@ -92,7 +91,6 @@ In the LimaCharlie wizard's **Permissions** step, select **New secret**. Choose
 a name such as `aws-credentials`, then paste this JSON with the two values
 returned by `create-access-key`. Do not paste the entire AWS command output.
 
-
 ```json
 {"access_key_id": "AKIA...", "secret_access_key": "..."}
 ```
@@ -124,7 +122,6 @@ identifier for a resource. Leave the member role field empty for a single-accoun
 setup; it is for collecting across an AWS Organization. Then test and save.
 
 The equivalent CLI configuration is below.
-
 
 `provider.yaml`:
 

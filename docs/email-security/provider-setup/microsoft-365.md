@@ -124,7 +124,6 @@ tab and add a secret named `m365-mail`. In the value field, paste the JSON below
 replacing all three placeholders with the values you copied. Save the secret
 and keep it enabled. Do not add another `secret` property around this JSON.
 
-
 ```json
 {"tenant_id": "<tenant-id>", "client_id": "<application-client-id>", "client_secret": "<the-secret-value>"}
 ```

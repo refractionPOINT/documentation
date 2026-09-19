@@ -35,7 +35,6 @@ SA_PROJECT="your-service-account-project-id"
 A service account is an identity for the collector, separate from your personal
 Google login. Its key proves its identity; IAM roles decide what it may read.
 
-
 1. A GCP **project** to own the service account (any project you control — it
    does not have to be one being scanned).
 2. Permission to grant IAM roles at the scope you intend to connect
@@ -270,7 +269,6 @@ role grants; a key alone does not enable collection.
 The following example grants access to an organization. Replace `ORG_ID` and
 `SA_PROJECT` with your values; do not use this wider scope for a one-project
 pilot unless you intend to grant organization-wide access.
-
 
 ```bash
 SA_PROJECT=my-security-project

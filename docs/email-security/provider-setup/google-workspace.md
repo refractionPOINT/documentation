@@ -158,7 +158,6 @@ address, as shown below. Save the secret and keep it enabled. Do not replace the
 real private key with the abbreviated example, and do not wrap the JSON in an
 extra `secret` property.
 
-
 The secret is the service-account JSON key **plus** the Workspace administrator
 address to impersonate:
 
@@ -198,7 +197,6 @@ Google's [notification setup guide](https://developers.google.com/workspace/gmai
 explains the topic, subscription, and Gmail publisher grant.
 
 ### Alternative: LimaCharlie CLI
-
 
 ```yaml
 # gws.yaml
