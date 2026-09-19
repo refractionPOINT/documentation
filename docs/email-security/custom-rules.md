@@ -17,8 +17,9 @@ keys with exactly the same permissions and behavior as names you choose.
 
 Only enabled records run. With no enabled `pre_verdict` rules, messages remain
 `unknown`. When scoring rules run but none matches, the verdict can be `benign`.
-Rule changes apply on the next rule reload, within ten minutes; existing verdicts
-are not rewritten by a configuration edit.
+Rule changes normally apply on the next rule reload, within ten minutes. If a
+reload fails, the collector keeps the last successfully loaded set and reports
+the failure. Existing verdicts are not rewritten by a configuration edit.
 
 The subscription's one-time installation marker survives unsubscribe/resubscribe.
 Deleted rules never return on a background refresh or a later subscription callback.
@@ -95,7 +96,8 @@ limacharlie hive set --hive-name dr-mail --key vendor-bank-change \
 | `confidence` | — | 0–100, **default 100**. An author who does not express a confidence means "when this fires, it is right" |
 | `shared_fact` | — | Optional group for overlapping scoring signals. Only the strongest weighted contribution in the group counts; not allowed on graymail or response rules |
 | `respond` | — | `post_verdict` only |
-| `name`, `tags`, `attack_types`, `fp_notes` | — | Documentation and grouping. `name` and `fp_notes` are required; explain the rule and expected false positives |
+| `name`, `fp_notes` | ✅ | Human-readable label and expected false positives |
+| `tags`, `attack_types` | — | Documentation and grouping |
 
 ### The two phases
 
@@ -112,6 +114,8 @@ limacharlie hive set --hive-name dr-mail --key vendor-bank-change \
 | `report` | Raise a detection into the platform's detection stream |
 
 ```yaml
+name: Quarantine malicious mail sent to the CFO
+fp_notes: A false malicious verdict can quarantine legitimate mail.
 phase: post_verdict
 class: signal
 weight: 1
@@ -306,30 +310,16 @@ the call out of the budget (the charge is the same whatever window you name), bu
 it does make the call itself faster, and a backtest over a wide window on a busy
 organization can take tens of seconds.
 
-### Two kinds of rule cannot be backtested
+### Response rules cannot be backtested
 
-Both are **refused by name**, and in neither case is the rule itself the problem:
-the backtest is what cannot be run, not the rule.
-
-**A rule using `lookup`.** The `lookup` operator resolves one of your
-organization's own `lookup` Hive records, and the service that answers a backtest
-cannot reach them. The refusal names the resource it could not resolve, and says
-what to do instead: the rule is otherwise valid, so save it and it evaluates
-normally in the pipeline, where the lookup **is** resolved.
-
-That is a real limitation, not a transient error to retry. The alternative would
-have been to report "0 messages matched" for a rule that in fact matches plenty,
-which is a claim about your mail that nothing looked at.
-
-To size an IOC rule before enabling it, either backtest the same rule with the
-`lookup` clause removed — which tells you how much the rest of the logic narrows
-— or save it and watch it live, which is safe because a `dr-mail` rule
-contributes to a verdict and your automations are in `alert_only` until you say
-otherwise. See [IOC & Reputation Feeds](ioc-feeds.md).
-
-**A `post_verdict` rule.** It runs against the verdict a pass would compute, and
-a backtest replays a message rather than re-scoring it. Backtest the
+A `post_verdict` rule is refused: it runs against the verdict a pass would compute,
+while a backtest replays a message rather than re-scoring it. Backtest the
 `pre_verdict` rules that produce the verdict instead.
+
+Rules using `lookup` can be backtested with your organization's current lookup
+records. This tests current lookup content, not a historical snapshot of the
+lookup at the time each message arrived. If the API's Hive resolver is unavailable,
+the backtest refuses the rule rather than reporting a misleading zero matches.
 
 ### Rules for `lookup` in a mail rule
 
@@ -337,21 +327,11 @@ a backtest replays a message rather than re-scoring it. Backtest the
 |---|---|
 | Form | The resource must be `hive://lookup/<name>` — nothing else is accepted |
 | Count | At most **four** `lookup` operators per rule. Each resolves a whole lookup record for your organization |
-| Existence | Checked **on save**, not by `rule validate` — see below |
+| Existence | Checked by both `rule validate` and Hive on save against your organization's lookup metadata |
 
-!!! warning "`rule validate` does not check that the lookup exists"
-    A `lookup` rule naming a record your organization does not have **passes
-    `rule validate` and then fails the save.** That is the one place where "valid
-    here means savable there" does not hold: the existence check needs to read
-    your `lookup` records, and the validate call cannot.
-
-    The check itself is worth having, and the Hive does run it: a dangling
-    `hive://lookup/` reference is the most common authoring mistake, it would
-    otherwise save cleanly and match nothing forever, and that reads as coverage.
-    The refusal names the record and tells you to create it first.
-
-    So: write the lookup before you write the rule that names it, and treat a
-    save failure after a clean validate as this, not as a mystery.
+Create the lookup before validating or saving a rule that names it. A missing
+lookup is reported by name. As with any validation preview, a record can change
+between validation and save; the save remains authoritative.
 
 ## Tuning rules
 
