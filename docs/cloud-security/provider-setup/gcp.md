@@ -183,16 +183,19 @@ Each adds one inventory or analysis surface. Skipping one leaves that surface
     When that happens the project's Kubernetes workload inventory is marked
     **partial** — whatever was collected before is preserved rather than deleted,
     and the connection's notes name the cluster and the reason. It is never
-    reported as a cluster that runs nothing.
+    reported as a cluster that runs nothing. The same is true of a cluster whose
+    API simply did not answer this pass: the view goes stale, it is never
+    emptied.
 
     Two ways to open it, if you want in-cluster coverage on such a cluster:
 
     - enable the cluster's **DNS-based control-plane endpoint** and allow
-      external traffic on it. It is served by Google's front end, works for a
-      private cluster, and is not subject to authorized networks. This is the
-      option we prefer when it is available;
-    - or add LimaCharlie's egress range to the cluster's **authorized
-      networks**.
+      external traffic on it. It is served by Google's front end, so it works
+      for a private control plane and is not subject to authorized networks —
+      this is the option we recommend, and it needs no addresses from us;
+    - or allowlist our egress in the cluster's **authorized networks**. Ask
+      support for the current addresses for your region rather than inferring
+      them: they are per-datacenter and they change.
 
 !!! note "What in-cluster collection gives you, and what it does not"
     Collected: **namespaces** (including their Pod Security Admission labels)
