@@ -26,7 +26,7 @@ The verdict object on a message carries:
 | `top_signals` | Up to five contributing rules, heaviest first, each with `rule_id`, `name` and `weight`. This is the "why this verdict" block |
 | `matched_signals` | Every rule id that matched, including suppressed ones — the hunting surface |
 | `tags` | The deduplicated, sorted tags of the rules that actually contributed |
-| `engine_version` | The engine that decided it: the rule-pack version plus the build of the parsing and enrichment library it ran with (`mailsec-pack-0.5.1+v0.1.55`). Two verdicts with the same value came from the same engine; a parser change alone changes it |
+| `engine_version` | SHA-256 fingerprint of the scoring rules, scoring policy and engine build |
 | `decided_at` | When |
 | `mode` | Who last decided: `auto` (the rule pack), `analyst` (a person), `ai` (a triage agent) or `detonation` ([link detonation](#link-detonation)). See [Revising a verdict](#revising-a-verdict) |
 | `campaign_id` | The campaign this message was clustered into, if any |
@@ -255,48 +255,23 @@ re-incrementing the counter that caused it, never decaying, and in enforce mode
 quarantining a legitimate sender silently. Counting only the independent lane
 makes a history rule an amplifier of *other* evidence and never of itself.
 
-## The managed rule pack
+## The default rules
 
-A packaged, versioned set of rules ships with the product and its version is
-the first half of every verdict's `engine_version` (the second half names the
-build of the parsing and enrichment library the rules ran with, because what a
-rule reads is decided there). The current pack:
+LimaCharlie's default rules are installed once into `dr-mail` when you subscribe.
+**Email Security → Rules** is the authoritative catalog for your organization:
+it shows the exact current conditions, weight, confidence, phase, tags and
+false-positive notes. Every default is editable, disableable and deletable.
 
-| Rule id | Class | Weight | What it says |
-|---|---|:--:|---|
-| `ms-sender-first-contact` | signal | 30 | First message ever from this sender (`prevalence: none`) |
-| `ms-sender-known-bad-history` | signal | 65 | This sender has been independently flagged before |
-| `ms-sender-domain-newly-registered` | signal | 45 | The sender's domain was registered in the last week |
-| `ms-auth-dmarc-fail` | signal | 50 | DMARC failed |
-| `ms-auth-spf-fail-inbound` | signal | 40 | SPF failed on inbound mail |
-| `ms-impersonation-vip-display-name` | signal | 55 | Display name matches a VIP but the address does not |
-| `ms-impersonation-org-domain-lookalike` | signal | 70 | Sender domain is one or two edits from one of your domains |
-| `ms-impersonation-exact-org-domain-external` | **detection** | 85 | Claims one of your domains but arrived from outside |
-| `ms-impersonation-reply-to-mismatch` | signal | 35 | `Reply-To` points at a different organization than `From` |
-| `ms-link-display-href-mismatch` | signal | 60 | A link's visible text names a different site than its destination |
-| `ms-link-credentials-in-url` | signal | 75 | A link embeds credentials before the host |
-| `ms-link-mixed-script-domain` | **detection** | 80 | A link's domain mixes writing systems within one label |
-| `ms-link-unranked-domain` | signal | 30 | A link points at a domain absent from the top-1M list |
-| `ms-link-known-malicious-url` | **detection** | 95 | A link matches the managed malicious-URL feed |
-| `ms-graymail-list-unsubscribe` | graymail | — | Bulk mail carrying `List-Unsubscribe` |
-| `ms-graymail-precedence-bulk` | graymail | — | The message declares itself bulk |
+Defaults cover impersonation, authentication and sender history, links,
+attachment threats, suspicious content, detonation evidence and graymail.
+They are ordinary D&R rules over the Message Data Model, not a separate engine.
+See [Mail Rules](custom-rules.md) for the format, IaC and explicit restoration.
 
-Rule ids are stable and are never renamed — that is the only reason an exclusion
-or a per-rule override can be persisted at all.
-
-You can disable a packaged rule or replace its weight for your organization
-without forking anything, through
-[`mailsec_policy/thresholds` → `rule_overrides`](policy.md#thresholds).
-
-!!! tip "Judge a message without ingesting it"
-    `POST /mailsec/{oid}/analyze` (`limacharlie mailsec analyze --file
-    suspect.eml`) parses a raw message you supply and runs the enrichers and the
-    packaged rules against default policy. **Nothing is ingested or stored**: no
-    index row is written, no raw copy is kept, and the organization's mail
-    history is unchanged. It is how you test a rule change, or analyze a sample
-    that was never in the tenant. The tenant-specific context it cannot have —
-    your sender history, your VIP list — is named explicitly in the response
-    rather than silently missing.
+A verdict's `engine_version` is a SHA-256 fingerprint of the scoring rules,
+resolved thresholds and exclusions, and linked parsing/enrichment library build.
+Changing rule content or scoring policy changes the fingerprint. It identifies
+the decision configuration; it is not a promise that an external lookup feed
+or other message enrichment is unchanged.
 
 ## Link detonation
 
@@ -396,8 +371,8 @@ blind detonation by padding a harvest page.
 
 ### `mode: detonation`
 
-When the evidence changes the class, the message is re-judged in full — both
-rule packs, your policy, your thresholds — and the new class is filed as a
+When the evidence changes the class, the message is re-judged in full — the enabled
+rule records, your policy, your thresholds — and the new class is filed as a
 revision in `mode: detonation`.
 
 It has the **lowest authority** of the three revising modes:

@@ -1,16 +1,62 @@
-# Custom Rules
+# Mail Rules
 
 --8<-- "includes/email-security-beta.md"
 
-Your own mail rules live in the `dr-mail` Hive. They are ordinary D&R detect
-blocks evaluated against the [Message Data Model](detections.md#what-the-rules-can-read),
-and they compound with the managed pack in the same scoring pass — so a custom
-rule is evidence in the same verdict, not a parallel opinion.
+Every mail detection rule lives in your organization's **`dr-mail` Hive**, one rule
+per record. **Email Security → Rules** shows the complete set: search and filter,
+inspect the full YAML/JSON, edit, enable, disable or delete any rule. Reading takes
+`mailsec.get`; changing or deleting takes `mailsec.set`.
+
+### Default rules and ownership
+
+The first subscription installs LimaCharlie's defaults as ordinary enabled records.
+After installation they are yours. There is no hidden pack, reserved record-name
+prefix, global managed-detection switch, or per-rule policy override. The record
+key is the rule ID. Default keys such as `ms-link-credentials-in-url` are ordinary
+keys with exactly the same permissions and behavior as names you choose.
+
+Only enabled records run. With no enabled `pre_verdict` rules, messages remain
+`unknown`. When scoring rules run but none matches, the verdict can be `benign`.
+Rule changes apply on the next rule reload, within ten minutes; existing verdicts
+are not rewritten by a configuration edit.
+
+The subscription's one-time installation marker survives unsubscribe/resubscribe.
+Deleted rules never return on a background refresh or a later subscription callback.
+If the initial installation was interrupted or partially failed, use **Restore
+defaults** to complete it.
+
+### Restore defaults
+
+**Restore defaults** creates missing default records and leaves every existing
+record untouched, including disabled or edited defaults. Select **Also reset
+existing default rules** to replace default-keyed records with the shipped body,
+enabled state, tags and comment. ACL tags are preserved. Keys outside the default
+set are never changed. Reset discards edits, and requires confirmation in the UI.
+
+The action is `ext-email-security` → `restore_default_rules`, with optional
+`overwrite` (default `false`). It returns `total`, `created`, `overwritten`,
+`skipped`, `failed`, and up to 50 `{key, error}` failures. A partial result is not
+success for every record. Retry the explicit restore to recover.
+
+The extension performs writes with its own identity. `ext.request` authorizes
+calling the action; the console additionally requires `mailsec.set`. Records
+outside the extension's segment cannot be overwritten and are reported as failed.
+
+### Infrastructure as code
+
+The UI, Hive API and CLI edit the same records. Use `limacharlie hive list`,
+`get`, `set`, `enable`, `disable`, `delete` or `validate` with `--hive-name dr-mail`.
+The record body is a single rule, not a `rules:` wrapper and not an `id` field.
+Pass `--enabled` when creating a rule that should run.
+
+`limacharlie sync pull` and `sync push` support `--hive-dr-mail` and
+`--hive-mailsec-policy`, and include both with `--all`. This lets version-controlled
+configuration own the exact same execution set visible in the console.
 
 ## A rule
 
 ```yaml
-# hive: dr-mail, record name: custom-vendor-bank-change
+# hive: dr-mail, record name: vendor-bank-change
 name: Payment-detail change from a first-contact sender
 phase: pre_verdict
 class: signal
@@ -33,7 +79,7 @@ detect:
 ```
 
 ```bash
-limacharlie hive set --hive-name dr-mail --key custom-vendor-bank-change \
+limacharlie hive set --hive-name dr-mail --key vendor-bank-change \
   --input-file rule.yaml --enabled --oid $OID
 ```
 
@@ -41,14 +87,15 @@ limacharlie hive set --hive-name dr-mail --key custom-vendor-bank-change \
 
 | Field | Required | Meaning |
 |---|:--:|---|
-| *(record name)* | ✅ | **The record name is the rule id.** It must start with `custom-`, which is what keeps your rules from ever colliding with a packaged one. It is also what an exclusion or a rule override names, which is why the id is the name rather than a field inside the body — a body field could be duplicated across two records |
+| *(record name)* | ✅ | **The record name is the rule ID.** Any non-empty Hive key up to 64 characters; no prefix is reserved. Exclusions and verdict signals name this key. |
 | `phase` | ✅ | `pre_verdict` or `post_verdict` — see below |
 | `detect` | ✅ | A standard D&R detect block over the MDM |
 | `class` | — | `signal` (default), `detection` or `graymail` |
 | `weight` | ✅ for `signal` and `detection` | 0–100. Must be **0** for `graymail`, because the graymail lane bypasses the score entirely and a weight there would never be read |
 | `confidence` | — | 0–100, **default 100**. An author who does not express a confidence means "when this fires, it is right" |
+| `shared_fact` | — | Optional group for overlapping scoring signals. Only the strongest weighted contribution in the group counts; not allowed on graymail or response rules |
 | `respond` | — | `post_verdict` only |
-| `name`, `tags`, `attack_types`, `fp_notes` | — | Documentation and grouping. `fp_notes` is not required of your own rules — that discipline is ours, for the pack we ship |
+| `name`, `tags`, `attack_types`, `fp_notes` | — | Documentation and grouping. `name` and `fp_notes` are required; explain the rule and expected false positives |
 
 ### The two phases
 
@@ -188,7 +235,7 @@ candidate before you save it — the check calls the *same* function the Hive ru
 on save, so "valid here" means "savable there":
 
 ```bash
-limacharlie mailsec rule validate --file rule.json --rule-id custom-vendor-bank-change --oid $OID
+limacharlie mailsec rule validate --file rule.json --rule-id vendor-bank-change --oid $OID
 ```
 
 An invalid rule is a **200 carrying `valid: false` and the reason**, not an error
@@ -196,7 +243,7 @@ response: you asked whether the rule is valid and found out that it is not. The
 reason is the validator's own wording, because an author acts on the message and
 not on a status code.
 
-Omitting `--rule-id` validates against a placeholder in the `custom-` namespace,
+Omitting `--rule-id` validates against the placeholder `unnamed`,
 so a rule you have not named yet does not fail on its name.
 
 `limacharlie hive validate --hive-name dr-mail --key <name> --input-file rule.yaml`
@@ -306,23 +353,17 @@ a backtest replays a message rather than re-scoring it. Backtest the
     So: write the lookup before you write the rule that names it, and treat a
     save failure after a clean validate as this, not as a mystery.
 
-## Tuning the managed pack
+## Tuning rules
 
-You do not need a custom rule to change a packaged one. Disable it, or replace
-its weight, for your organization:
+Edit `weight`, `confidence` or `detect` directly on the rule record. Use the
+record's enabled state to turn it off. This applies equally to seeded defaults
+and rules you wrote. The YAML and JSON editors preserve the complete rule body.
+Saves use the record's etag; a concurrent edit is reported as a conflict rather
+than overwritten.
 
-```yaml
-policy_type: thresholds
-rule_overrides:
-  ms-link-unranked-domain:
-    weight: 15
-  ms-sender-first-contact:
-    disabled: true
-```
-
-And to suppress a rule for a specific sender, domain or mailbox rather than
-everywhere, use an [exclusion](policy.md#exclusions) — which carries a reason and
-an optional expiry, so the hole in detection is reviewable.
+For a scoped suppression, use an [exclusion](policy.md#exclusions) with a reason
+and optional expiry. A suppressed match remains in `matched_signals` for auditing;
+a disabled rule does not run at all.
 
 ## Rules that act on emitted events
 
