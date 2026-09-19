@@ -94,7 +94,7 @@ Each adds one inventory or analysis surface. Skipping one leaves that surface
 | `roles/run.viewer` | Cloud Run service inventory **and its public-access verdict** (`run.services.list` + `run.services.getIamPolicy`) | `serverless` |
 | `roles/cloudfunctions.viewer` | Cloud Functions inventory (1st and 2nd gen) plus their invoker policies (`cloudfunctions.functions.list` + `cloudfunctions.functions.getIamPolicy`) | `serverless` |
 | `roles/cloudidentity.groups.readonly` | Google-group **membership expansion**, so `group:` IAM bindings resolve to real people | `cloud_identity` |
-| `roles/container.viewer` | GKE cluster posture **and** the workloads running inside each cluster — Deployments, StatefulSets, DaemonSets, CronJobs and Jobs, and the container image each one is actually running | *(not probed — exercised during the sweep)* |
+| `roles/container.viewer` | Only needed to reach a cluster through its **DNS-based control-plane endpoint** (`container.clusters.connect`). In-cluster collection itself already works on the required roles — see the Kubernetes notes below | *(not probed — exercised during the sweep)* |
 
 !!! note "What container image scanning gives you, and what it does not"
     With `roles/containeranalysis.occurrences.viewer` granted **and** Artifact
@@ -159,14 +159,20 @@ Each adds one inventory or analysis surface. Skipping one leaves that surface
     IAM** in addition to Kubernetes RBAC, so the same service-account key you
     already connected reaches each cluster's Kubernetes API directly.
 
-    The required `roles/viewer` baseline **already contains** every permission
-    this uses (`container.clusters.connect`, `container.pods.list`,
+    **Both required roles already cover it, independently.** `roles/viewer`
+    contains every permission this uses, and so does
+    `roles/iam.securityReviewer` — `container.pods.list`,
     `container.namespaces.list`, `container.deployments.list`,
     `container.statefulSets.list`, `container.daemonSets.list`,
     `container.cronJobs.list`, `container.jobs.list`,
-    `container.replicaSets.list`). Add `roles/container.viewer` only if you are
-    assembling the least-privilege alternative (`roles/browser` plus per-service
-    viewers) instead.
+    `container.replicaSets.list`. Since `roles/iam.securityReviewer` is
+    required anyway, **the least-privilege alternative works too, with nothing
+    added**.
+
+    `roles/container.viewer` is worth adding for exactly one case: it is the
+    only one of these that carries `container.clusters.connect`, which is
+    required to reach a cluster through its **DNS-based control-plane
+    endpoint**. If you are using that endpoint (see below), grant it.
 
     The reads are **list-only, and metadata-only**. Secrets, ConfigMap values,
     pod logs and `exec` are never read, and the credential has no permission to
@@ -192,7 +198,9 @@ Each adds one inventory or analysis surface. Skipping one leaves that surface
     - enable the cluster's **DNS-based control-plane endpoint** and allow
       external traffic on it. It is served by Google's front end, so it works
       for a private control plane and is not subject to authorized networks —
-      this is the option we recommend, and it needs no addresses from us;
+      this is the option we recommend, and it needs no addresses from us. It
+      does need `roles/container.viewer` on the connection's service account,
+      because that endpoint additionally checks `container.clusters.connect`;
     - or allowlist our egress in the cluster's **authorized networks**. Ask
       support for the current addresses for your region rather than inferring
       them: they are per-datacenter and they change.
