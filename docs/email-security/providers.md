@@ -61,7 +61,7 @@ Which mailboxes the connection covers.
 | `include_addresses` | Exact mailbox addresses to cover. **Empty means every discovered mailbox** — the intended default. |
 | `exclude_addresses` | Mailboxes never to cover. Excludes always win over includes. |
 | `include_groups` | Directory groups to expand into addresses before discovery. |
-| `domains` | Restrict to mailboxes in these domains. |
+| `domains` | Restrict to mailboxes in these domains. **Every listed domain is enumerated**, so an account hosting several domains can name as many as it needs. **Empty means every domain in the account** — the intended default, and what the setup wizard writes. |
 
 Addresses and domains are lowercased on save.
 
