@@ -20,7 +20,7 @@ afterwards is recorded as a *revision*, not as a late arrival.
 | 2 | **Fetch** | The raw MIME is pulled from the provider |
 | 3 | **Parse** | MIME becomes the Message Data Model |
 | 4 | **Enrich** | Sender history, lookalike, domain age, link features, attachment explosion |
-| 5 | **Score** | The managed pack and your `dr-mail` rules are matched and scored as one set |
+| 5 | **Score** | Enabled `dr-mail` rules are matched and scored as one set |
 | 6 | **Verdict** | One class, one score, and the signals that produced them |
 | 7 | **Cluster** | The message is attributed to a campaign, or not |
 | 8 | **Persist** | Index row, sealed raw message, sealed judged model |
@@ -74,7 +74,7 @@ shows exactly what the engine saw. An enrichment that could not be resolved is
 
 ### 5-6. Score and decide
 
-The managed rule pack and your own `dr-mail` `pre_verdict` rules are matched
+Your enabled `dr-mail` `pre_verdict` rules are matched
 separately and then **scored together as one set**. That matters more than it
 sounds: a custom rule is evidence in the same verdict rather than a second
 opinion sitting beside it, so two 50-weight signals from different sources
@@ -135,46 +135,12 @@ revision: a message nobody has overridden still reports zero revisions.
     the gaps named. A slow enrichment degrades one signal. A blocking one
     degrades coverage, which is the thing you bought.
 
-## Managed detections are optional
+## Rules are organization-owned
 
-The managed rule pack is on by default, and you can turn it off. Some
-organizations want to own detection entirely through their own `dr-mail` rules,
-and forcing our opinions into their verdicts would make that impossible.
-
-```yaml
-# managed-rules.yaml, saved as the mailsec_policy record named managed_rules
-policy_type: managed_rules
-enabled: false
-```
-
-```bash
-limacharlie hive set --hive-name mailsec_policy --key managed_rules \
-  --input-file managed-rules.yaml --enabled --oid $OID
-```
-
-The console carries the same switch on **Email Security → Settings**, and the
-`ext-email-security` extension exposes `get_managed_rules` and
-`set_managed_rules` for reading and flipping it without hand-writing a record.
-
-| | |
-|---|---|
-| **Default** | Enabled. An organization that has written no policy has the pack |
-| **When disabled** | The managed pack is not matched at all. Your own `dr-mail` rules still are, and they are still scored the same way |
-| **If nothing matches** | The verdict is `unknown`, never `benign`. "Nobody was looking" and "we looked and it was fine" are different facts and are reported differently |
-| **Time to take effect** | Seconds, over the policy change feed. Five minutes worst case — the resolved-policy cache's TTL, which is the backstop for a change the collector did not hear about |
-
-The record must state `enabled` explicitly. A `managed_rules` record that sets
-nothing is refused rather than read as "disable", because the failure mode of
-guessing wrong here is an organization with no detection that believes it has
-some.
-
-You do not need this switch to tune the pack. Disabling one packaged rule, or
-changing its weight, is a
-[`rule_overrides`](custom-rules.md#tuning-the-managed-pack) entry.
-
-The full record contract — composition, the three ways to write it, and what the
-console does when two records disagree — is in
-[Policy Reference](policy.md#managed_rules).
+The organization’s enabled `dr-mail` records are the complete rule set. Defaults
+are installed once on subscription and can be edited, disabled or deleted in
+**Email Security → Rules**. An empty scoring set leaves messages `unknown`;
+there is no embedded fallback. See [Mail Rules](custom-rules.md).
 
 ## The state model
 
@@ -268,8 +234,7 @@ fails. See [Messages & Triage](messages.md#downloading-the-original-message).
 
 When a connection is first made, the collector walks up to `ingest.backfill_days`
 (0–90, default **14**) of the mail already in each protected mailbox. That walk
-runs the **same** enrich and score stages live mail runs — the managed pack, your
-own `dr-mail` rules, your policy's thresholds and exclusions — so the queue has
+runs the **same** enrich and score stages live mail runs — your enabled `dr-mail` rules, your policy's thresholds and exclusions — so the queue has
 real verdicts on your first day, the raw copy and the judged model are stored on
 the same retention lanes, a flagged message gets the same 400-day evidence row,
 and a hunt or a [rule backtest](policy.md) has a fortnight of your own mail to
@@ -412,8 +377,8 @@ of them moved.
 | | |
 |---|---|
 | [Getting Started](getting-started.md) | Connect a tenant and see the first judged message |
-| [Detections & Verdicts](detections.md) | The scoring model, the managed pack, and what the rules can read |
-| [Custom Rules](custom-rules.md) | Writing `dr-mail` rules that compound with the pack |
+| [Detections & Verdicts](detections.md) | The scoring model, the installed rules, and what the rules can read |
+| [Custom Rules](custom-rules.md) | Writing `dr-mail` rules, including the installed defaults |
 | [Events & Automation](automation.md) | The `EMAIL_*` events and the D&R seat |
 | [Messages & Triage](messages.md) | The queue, the drawer, actions and the audit trail |
 | [Policy Reference](policy.md) | Every `mailsec_policy` record type |

@@ -9,8 +9,8 @@ fleet-wide policy are a script, not a UI workflow.
 | Hive | Records | Purpose |
 |---|---|---|
 | `mailsec_provider` | one per mail connection | which tenant to protect, with which credential — see [Connecting Providers](providers.md) |
-| `mailsec_policy` | many, discriminated by `policy_type` | managed detections, automations, exclusions, VIPs, thresholds, banners, retention, reporter replies, hunt defaults, clustering |
-| `dr-mail` | one per custom rule | your own mail detection rules — see [Custom Rules](custom-rules.md) |
+| `mailsec_policy` | many, discriminated by `policy_type` | automations, exclusions, VIPs, thresholds, banners, retention, reporter replies, hunt defaults, clustering |
+| `dr-mail` | one per rule | all mail rules, including installed defaults — see [Custom Rules](custom-rules.md) |
 
 ## How `mailsec_policy` records work
 
@@ -33,7 +33,7 @@ How each type composes:
 | `exclusions` | Concatenated — a set of independent suppressions |
 | `vips` | Union, deduplicated and sorted |
 | `thresholds` | Last writer wins per field, with the ordering invariant re-checked afterwards |
-| `managed_rules`, `banners`, `reporter_reply`, `hunt_defaults`, `clustering` | Last writer wins per field |
+| `banners`, `reporter_reply`, `hunt_defaults`, `clustering` | Last writer wins per field |
 | `retention` | **Maximum** wins — see [Retention](#retention) |
 
 ### Unknown fields are refused
@@ -59,112 +59,6 @@ through the API or through git-sync.
 An organization that has written no policy still has one. Every type below states
 its default, and the defaults are deliberately inert: nothing moves mail, nothing
 modifies mail, and nothing sends mail until you say so.
-
----
-
-## `managed_rules`
-
-The switch for the packaged detection pack. It is the first record in this
-reference because it is the only one that can turn detection off.
-
-```yaml
-policy_type: managed_rules
-enabled: false
-```
-
-| Field | Default | |
-|---|---|---|
-| `enabled` | `true` | Whether the managed rule pack is matched at all |
-
-**`enabled` must be stated.** A `managed_rules` record that sets nothing is
-refused rather than read as "disable": the failure mode of guessing wrong here is
-an organization with no detection that believes it has some.
-
-**Absent is enabled.** An organization that has never written this record has the
-pack. "No record" is the product default, not an opt-out, and nothing in the
-console or the API renders a missing record as off.
-
-**When it is off**, the managed pack is not matched at all. Your own `dr-mail`
-rules still are, and they are still scored the same way — so an organization that
-wants to own detection entirely can. A message that then matches nothing is
-`unknown`, never `benign`: "nobody was looking" and "we looked and it was fine"
-are different facts and are reported differently. See
-[Managed detections are optional](pipeline.md#managed-detections-are-optional).
-
-You do not need this switch to *tune* the pack. Disabling one packaged rule, or
-changing its weight, is a [`rule_overrides`](#thresholds) entry.
-
-### The three ways to flip it
-
-All three write the same record — same name, same `policy_type`, same field — and
-the collector cannot tell which one wrote it.
-
-=== "Console"
-
-    **Email Security → Settings** carries a managed-detection switch, and
-    **Overview** leads with a banner while the pack is off — that one fact
-    changes how every count below it should be read. Turning the pack **off**
-    asks for confirmation; turning it back on restores the product default and
-    does not.
-
-    When more than one `managed_rules` record exists, or the canonical one has
-    been disabled in the Hive, the switch is **replaced** by a status badge
-    showing the resolved value and a link to the **Policy** page. It does not
-    offer to write, because a write in that state would either be overridden by
-    a later-named record or silently do nothing — and a switch that reports a
-    state it did not produce is worse than no switch.
-
-=== "CLI"
-
-    ```bash
-    cat > managed-rules.yaml <<'YAML'
-    policy_type: managed_rules
-    enabled: false
-    YAML
-
-    limacharlie hive set --hive-name mailsec_policy --key managed_rules \
-      --input-file managed-rules.yaml --enabled --oid $OID
-    ```
-
-=== "Extension"
-
-    `ext-email-security` exposes two actions for reading and flipping this
-    without hand-writing a record — which is how a D&R rule or an automation
-    reaches it:
-
-    | Action | Body | Returns |
-    |---|---|---|
-    | `set_managed_rules` | `enabled` (**required** boolean), optional `reason` — recorded as the record's comment | `managed_rules_enabled` |
-    | `get_managed_rules` | — | `managed_rules_enabled`, and `configured` |
-
-    `configured` is the field that distinguishes **on by default** from **turned
-    on deliberately**: it is `false` when no record exists. `set_managed_rules`
-    needs `mailsec.set`; `get_managed_rules` needs `mailsec.get`.
-
-!!! note "`managed_rules` is the canonical record name"
-    The console and the extension both write the record **named**
-    `managed_rules`, and the CLI example above does too. Any record name works —
-    composition is last-writer-wins in record-name order over the records the
-    Hive has *enabled* — but a second record named later than `managed_rules`
-    wins over it, and a `managed_rules` record the Hive has disabled does not
-    count at all. Keep it to one record unless you mean to layer them.
-
-    Only the extension stamps the record with the `lc:system` tag. The console
-    and the CLI do not add it, and the console **preserves** it when it edits a
-    record the extension wrote — so the tag tells you how a record was first
-    created, and nothing more. Do not treat its absence as meaningful.
-
-### How fast a change takes effect
-
-| | |
-|---|---|
-| **Normally** | Seconds. A `mailsec_policy` write is broadcast on the Hive's change feed and the collector drops that organization's cached policy on the spot |
-| **If the broadcast is missed** | The next mailbox-lease renewal tick re-reads policy |
-| **Worst case** | **Five minutes** — the resolved-policy cache's TTL, which expires whether or not anything was heard |
-
-The broadcast is the fast path and never the guarantee: it is fire-and-forget, so
-a collector that was restarting can miss it. The bound you are promised is the
-five-minute TTL, and the broadcast is why you almost never wait for it.
 
 ---
 
@@ -296,7 +190,7 @@ of them to `enforce`.
     Automations are **compiled** from the resolved policy, and that compile
     happens on a ten-minute tick rather than per message. Everything the
     judgement path reads — [`thresholds`](#thresholds), [`exclusions`](#exclusions),
-    the [`managed_rules`](#managed_rules) switch — applies within five minutes and
+    applies within five minutes and
     usually within seconds. An edit here is the one with the longer bound.
 
     Plan a change to `enforce` accordingly: the switch is not instantaneous, and
@@ -422,26 +316,20 @@ The verdict cutoffs and per-rule overrides.
 policy_type: thresholds
 malicious_min: 80
 suspicious_min: 40
-rule_overrides:
-  ms-link-unranked-domain:
-    weight: 15
-  ms-graymail-precedence-bulk:
-    disabled: true
 ```
 
 | Field | Default | |
 |---|---|---|
 | `malicious_min` | 85 | 1–100 |
 | `suspicious_min` | 45 | 1–100 |
-| `rule_overrides` | — | Keyed by rule id: `disabled` to switch a packaged rule off for your organization, `weight` (0–100) to replace its packaged weight |
 
 `malicious_min` must remain **above** `suspicious_min`. Two records that are each
 individually sane can compose into an inversion — one lowers malicious, another
 raises suspicious — so the invariant is enforced after composition, not only per
 record. An inverted pair would make every suspicious message malicious.
 
-Rule ids are stable and are never renamed, which is the only reason an override
-can be persisted at all.
+Individual rule weights and enabled states are edited on the `dr-mail` record,
+through [Mail Rules](custom-rules.md).
 
 ---
 
