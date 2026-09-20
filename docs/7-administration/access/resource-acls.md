@@ -195,10 +195,35 @@ acl_scopes:
 - Editing other parts of the rule does not require membership, as long as `acl_scopes` is unchanged. Include `acl_scopes` whenever you rewrite the whole rule. `limacharlie dr set --detect ... --respond ...` writes only `detect` and `respond`, which counts as removing every scope.
 - The rule's scopes are forwarded to the extension, which uses them to decide what the request may reach.
 - `report` and `task` actions are not affected. Their results go through channels that are already gated.
+- A refused action does not disable the rule. The refusal shows up as a rate-limited org error naming the rule, the action and the scope, and the rule keeps running for the sensors it is allowed to act on.
+
+### Rules written by an API key: `*`
+
+A rule written by an org API key can list `*` instead of scope names:
+
+```yaml
+acl_scopes:
+  - '*'
+```
+
+`*` stands for the scopes that API key is a member of, looked up each time the rule fires. The rule follows the key's membership. Add the key to a scope and the rule can act on that scope's sensors within a few minutes. Remove it and the rule is refused again. No rule edit is needed either way.
+
+This is how rules installed by extensions work. An extension writes its rules with its own API key and cannot know your scope names ahead of time, so its rules list `*`. To let an extension's rules act on restricted sensors, add the extension's key to the scope, as described in [Extensions](#extensions).
+
+- `*` never grants more than the key holds. Every `acl:` scope on the event's sensor must still be covered, by a named scope or by the key's membership.
+- Only an org API key can write a rule that lists `*`, or change the content of one. A user session or a personal API key gets `UNAUTHORIZED`, whatever permissions it holds. Remove `*` from the list to take the rule over as a user.
+- Users can still enable, disable, tag, rename and set an expiry on such a rule. A configuration sync that re-applies the rule unchanged also works.
+- The platform records which key `*` stands for in the rule's `acl_scopes_author` field. It sets this field itself and ignores any value you send. If another API key rewrites the rule, that key becomes the author and the rule acts with its scopes from then on.
+- `*` can sit next to named scopes. The named scopes follow the rules above.
+- No scope record can be named `*`, so an `acl:*` tag locks a resource for everyone.
 
 ## Extensions
 
 An extension acts through its own org API key, named `_<extension name>-<uuid>`. To let an extension read or task restricted resources, add that key's name as an `api_key` member of the scope.
+
+Many extensions install their own D&R rules, for example to receive a sensor's reply or to run on a schedule. Those rules list `*` in `acl_scopes`, so the same membership covers them. Until the extension's key is a member of a sensor's scopes, its rules are refused for that sensor and the org error says so. After you add or remove the key, allow a few minutes for the change to apply.
+
+If LimaCharlie rotates an extension's key name, which happens when the extension's permissions change, add the new key name to the scope again.
 
 - A playbook tagged with a scope can only be run by the Playbook extension once its key is a member.
 - Extensions also receive the scopes held by the user or rule that made the request, and are expected to honor them.
@@ -216,7 +241,7 @@ The Infrastructure extension includes the `acl` hive only when its identity hold
 | --- | --- |
 | `ACL_CONTENT_RESTRICTED` | HTTP 403. The caller is not a member of every scope on the resource. |
 | `UNAUTHORIZED_ACL_TAG` | HTTP 401. Adding or removing an `acl:` tag on a sensor or installation key without `acl.set`. |
-| `UNAUTHORIZED` | HTTP 400. The same refusal for a hive record's `acl:` tags or a D&R rule's `acl_scopes`, and a refused fetch of a restricted record for execution. |
+| `UNAUTHORIZED` | HTTP 400. The same refusal for a hive record's `acl:` tags or a D&R rule's `acl_scopes`, including a user changing the content of a rule that lists `*`, and a refused fetch of a restricted record for execution. |
 | `ACL_TAG_TTL_NOT_ALLOWED` | HTTP 400. `acl:` tags cannot have a TTL. |
 | `INVALID` | HTTP 400. Writing a record whose data is the redaction marker, or writing with the etag of a redacted read. |
 | `ACL_SCOPE_UNAVAILABLE` | HTTP 400, retriable. Membership could not be resolved while saving an output. |
@@ -245,7 +270,8 @@ If a user reports that data disappeared:
 2. Check that each `acl:` tag in use has a matching `acl` hive record that is enabled and not expired. A tag without one locks its resources.
 3. Check that the user or key is a member of **every** scope on the missing resources. For personal API keys, the member must be listed by UID.
 4. Check the outputs. Existing outputs stop receiving a sensor's data once it is tagged, until they list the scope in `acl_scopes`.
-5. If you removed a member and they can still read, allow up to six minutes. Beyond that, remove their platform access and contact support.
+5. Check the org errors for `cannot run "extension request"`. An extension stopped working on a tagged sensor because its API key is not a member of the scope. Add the key named `_<extension name>-<uuid>` to the scope.
+6. If you removed a member and they can still read, allow up to six minutes. Beyond that, remove their platform access and contact support.
 
 To un-restrict a resource, remove the `acl:` tag from it. Deleting or disabling the scope record does the opposite and locks it.
 
