@@ -149,13 +149,17 @@ ships an [`EMAIL_VERDICT`](automation.md#email_verdict) at the next `seq`.
 
 ## Scoring
 
-Each matching rule carries a **weight** (0–100, how much this evidence is worth)
+Each matching scoring rule carries a **weight** (1–100, how much this evidence is worth)
 and a **confidence** (0–100, how often it is right when it fires). The score
 combines them with diminishing returns rather than a sum:
 
 ```text
 score = 100 × ( 1 − Π (1 − wᵢ/100 × cᵢ/100) )
 ```
+
+Rules with the same non-empty `shared_fact` contribute only their strongest
+weighted evidence to this formula. Rules without a group contribute separately;
+suppressed matches contribute nothing. Graymail rules use a separate lane.
 
 Each signal removes a fraction of the *remaining* headroom. A sum would let five
 weak signals outscore one strong one and would need clamping at 100, which makes
@@ -197,8 +201,11 @@ without anyone deleting them. See
 
 Rules are standard D&R detect blocks evaluated against the **Message Data
 Model** — the parsed message — plus the enrichments the pipeline stamped onto it.
-Because the enrichments are *in the message*, a rule reads them as ordinary paths
-and a re-evaluation later sees exactly what the pipeline saw.
+Enrichments are fields in the message, so a rule reads them as ordinary paths.
+A replay of the emitted event can read its original stamps; the MailSec
+[rule backtest](custom-rules.md#what-a-backtest-can-evaluate) instead re-parses
+stored EMLs and does not reconstruct those enrichments. See the
+[Rule Reference](rule-reference.md) for JSON fields, types, and presence rules.
 
 ### The parsed message
 

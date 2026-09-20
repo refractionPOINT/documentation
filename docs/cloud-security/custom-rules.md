@@ -91,7 +91,14 @@ as a no-op.
 
 `Account` · `AIService` · `Application` · `ComputeInstance` · `ConfigStore` ·
 `DataStore` · `DNSZone` · `EnrollmentKey` · `HasPermission` · `Identity` ·
-`Network` · `TelemetryOutput`
+`Registry` · `ImageRepository` · `KubeCluster` · `KubeNamespace` · `KubeWorkload` ·
+`KubeRole` · `KubeService` · `Mailbox` · `MailTransportRule` ·
+`MailboxForwardingRule` · `MailboxDelegation` · `MailConnector` · `DkimConfig` ·
+`SpfRecord` · `DmarcPolicy` · `Network` · `TelemetryOutput`.
+
+For mailbox forwarding, delegates, transport rules, and domain authentication,
+see [Mail Posture Rules](mail-posture-rules.md). Those rules evaluate collected
+configuration and require positive observation guards such as `inspected`.
 
 !!! note "Only two finding classes, on purpose"
     A custom rule may emit `misconfig` or `public_exposure` and nothing else. The
