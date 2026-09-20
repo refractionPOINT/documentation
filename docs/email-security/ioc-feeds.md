@@ -273,11 +273,11 @@ list, refreshed daily, is worth a detection and a human.
 Everything above runs *after* the verdict is decided, so a feed hit produces a
 detection alongside a message the engine may still have called benign. Feeding
 the match into the verdict itself is the other seat: a `dr-mail` signal rule,
-which compounds with the managed pack in the same scoring pass. Rules there
+which contributes alongside the organization's other enabled scoring rules. Rules there
 address the message model at the **root**, with no `event/` prefix:
 
 ```yaml
-# What this will look like. It is NOT accepted today; see the note below.
+# hive: dr-mail, record name: custom-ioc-link
 name: Link matches my IOC feed
 phase: pre_verdict
 class: detection
@@ -288,21 +288,26 @@ fp_notes: >
   Only as good as the feed. Review the feed's own false-positive rate before
   giving this a weight this high.
 detect:
-  op: lookup
-  path: links/?/href_url/domain/root
-  resource: hive://lookup/abusech-urlhaus-domains
+  op: scope
+  path: links
+  rule:
+    op: lookup
+    path: href_url/domain/root
+    resource: hive://lookup/abusech-urlhaus-domains
 ```
 
-!!! warning "Lookups in `dr-mail` are not available yet"
-    The `dr-mail` Hive validates a rule against a closed list of operators, and
-    `lookup` is not on it. A record using it is **refused at write time**, not
-    accepted and quietly ignored.
+Save the rule as `custom-ioc-link` in `dr-mail` after creating and populating the
+lookup. `lookup` is supported in both mail phases. Customer mail rules permit
+only `hive://lookup/<name>` resources and at most four lookup operators per rule.
+Use `scope` for an array: the `?` paths in the `dr-general` examples above are
+rejected by the `dr-mail` validator.
 
-    The reason is deliberate: the operator is service-backed, and enabling it
-    before the mail engine supplies it a lookup provider would mean a rule that
-    parses and never matches. The two land together or not at all. Until then,
-    use the `dr-general` rules above, which work today and give you the same
-    match with a detection instead of a score.
+`rule validate` checks that the named lookup exists when the API service has
+Hive metadata access configured. Backtesting also supports lookups when its
+resolver is configured, using the **current** feed contents. A service without
+that resolver refuses the backtest with the resource name. See
+[Custom Rules](custom-rules.md#rules-for-lookup-in-a-mail-rule) for validation and
+backtest limitations.
 
 ## Keeping it honest
 

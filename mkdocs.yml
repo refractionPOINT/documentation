@@ -602,7 +602,8 @@ nav:
       - Campaigns: email-security/campaigns.md
       - User Reports: email-security/user-reports.md
       - Detections & Verdicts: email-security/detections.md
-      - Custom Rules: email-security/custom-rules.md
+      - Mail Rules: email-security/custom-rules.md
+      - Rule Reference: email-security/rule-reference.md
       - IOC & Reputation Feeds: email-security/ioc-feeds.md
       - Policy Reference: email-security/policy.md
       - Events & Automation: email-security/automation.md
@@ -650,6 +651,7 @@ nav:
       - Compliance: cloud-security/compliance.md
       - CAASM: cloud-security/caasm.md
       - Custom Posture Rules: cloud-security/custom-rules.md
+      - Mail Posture Rules: cloud-security/mail-posture-rules.md
       - Configuration Reference: cloud-security/configuration.md
       - Command Line Interface: cloud-security/cli.md
       - IDE & MCP: cloud-security/mcp.md
