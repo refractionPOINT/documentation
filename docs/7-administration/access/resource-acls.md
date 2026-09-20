@@ -223,7 +223,7 @@ An extension acts through its own org API key, named `_<extension name>-<uuid>`.
 
 Many extensions install their own D&R rules, for example to receive a sensor's reply or to run on a schedule. Those rules list `*` in `acl_scopes`, so the same membership covers them. Until the extension's key is a member of a sensor's scopes, its rules are refused for that sensor and the org error says so. After you add or remove the key, allow a few minutes for the change to apply.
 
-If LimaCharlie rotates an extension's key name, which happens when the extension's permissions change, add the new key name to the scope again.
+Membership is matched on the key's name. If an extension's key name ever changes, add the new name to the scope again.
 
 - A playbook tagged with a scope can only be run by the Playbook extension once its key is a member.
 - Extensions also receive the scopes held by the user or rule that made the request, and are expected to honor them.
