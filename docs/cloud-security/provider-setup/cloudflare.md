@@ -86,12 +86,14 @@ Save the credential JSON as `cf-secret.json`:
 ```
 
 ```bash
-limacharlie secret set --key cloudflare-credentials \
-    --value "$(cat cf-secret.json)" --enabled
+jq -Rs '{secret: .}' cf-secret.json \
+  | limacharlie secret set --key cloudflare-credentials --enabled \
+  && rm -f cf-secret.json
 ```
 
-`secret set` wraps whatever you pass in `--value` into the secret record's
-`{"secret": "..."}` shape for you.
+`jq -Rs` reads the credential file as a string and builds the secret record's
+`{"secret": "..."}` envelope for stdin. Remove any other temporary copies after
+verifying the saved credential.
 
 ## Create the provider record
 

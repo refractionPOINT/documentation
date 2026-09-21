@@ -215,11 +215,18 @@ service-account key:
     Save the wrapper JSON above as `gw-secret.json`, then run:
 
     ```bash
-    limacharlie secret set --key gw-credentials \
-        --value "$(cat gw-secret.json)" --enabled
+    jq -Rs '{secret: .}' gw-secret.json \
+      | limacharlie secret set --key gw-credentials --enabled \
+      && rm -f gw-secret.json
     ```
 
-    `secret set` supplies the outer secret-record envelope for you.
+    `jq -Rs` supplies the outer secret-record envelope for stdin.
+
+!!! warning "Email Security uses a different credential shape"
+    [Email Security](../../email-security/provider-setup/google-workspace.md#store-the-credential)
+    expects the flat service-account key with `admin_email` at the top level.
+    For delegated Cloud Security collection, use the `service_account_json`
+    wrapper above instead; do not copy the Email Security credential shape.
 
 ### Alternative: no delegation
 
@@ -236,8 +243,9 @@ service-account key JSON** is accepted as the secret on its own — the file GCP
 hands you, stored verbatim with no wrapper and no `admin_email`:
 
 ```bash
-limacharlie secret set --key gw-credentials \
-    --value "$(cat sa-key.json)" --enabled
+jq -Rs '{secret: .}' sa-key.json \
+  | limacharlie secret set --key gw-credentials --enabled \
+  && rm -f sa-key.json
 ```
 
 In this form the service account calls the Admin SDK as itself instead of

@@ -92,19 +92,22 @@ limacharlie hive set --hive-name secret --key <name> \
 
 where `secret.json` is `{"secret": "<the credential JSON, as a string>"}`.
 
-The `secret set` shortcut does that wrapping for you, so you can hand it the
-credential itself — `credential.json` below is the provider's credential JSON,
-with no `{"secret": …}` envelope:
+For `secret set` on stdin, install `jq` and build the envelope with `jq -Rs`.
+`credential.json` below is the provider's credential JSON, with no outer
+`{"secret": …}` envelope:
 
 ```bash
-limacharlie secret set --key <name> --value "$(cat credential.json)" --enabled
+jq -Rs '{secret: .}' credential.json \
+  | limacharlie secret set --key <name> --enabled \
+  && rm -f credential.json
 ```
 
-!!! note "`--value` lands in your shell history"
-    Anything passed on the command line is visible in the process list and in
-    shell history. To avoid that, pipe the record on stdin instead —
-    `echo '{"secret": "…"}' | limacharlie secret set --key <name> --enabled` —
-    or use `--input-file`.
+!!! note "Keep credentials out of command arguments"
+    Use stdin as above, or `--input-file` with a prepared secret-record envelope.
+    `--value` exposes the expanded credential in process arguments; a literal
+    credential typed in the command also enters shell history. Remove temporary
+    credential copies after verifying the saved secret. File deletion is not a
+    guarantee of secure erasure on SSDs, snapshots, or backups.
 
 !!! tip "Bare keys are accepted for single-key providers"
     For [OpenAI](openai.md), [Anthropic](anthropic.md), and

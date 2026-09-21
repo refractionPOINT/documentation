@@ -30,6 +30,22 @@ standard `limacharlie hive` commands (`mailsec_provider`, `mailsec_policy`,
 [Policy Reference](policy.md) for the record contracts and
 [API Reference](api-reference.md) for the routes these commands call.
 
+## Actions in alert-only mode
+
+An action in an alert-only organization is audited but withheld, with
+`force_required: true`. The CLI prints a notice on stderr. Repeat with `--force`
+to perform it deliberately:
+
+```bash
+limacharlie mailsec message action <msg_uuid> --action quarantine_message --force
+```
+
+`message bulk-action` and `campaign action` also accept `--force`. Their preview
+and `--confirm` requirements still apply; `--force` does not bypass selection
+confirmation or permissions. The override applies only to the requested action
+or job and is audited separately from the withheld attempt. Inspect per-message
+outcomes for bulk jobs. See [enforcement](messages.md#enforcement).
+
 ## Permissions
 
 Four, rather than the usual get/set pair, because Email Security asks to be
@@ -160,7 +176,7 @@ job's own identity, so the attempt is part of what it names, while a sweep's
 token authorizes a member set and nothing else. Repeat a bulk `--attempt` on the
 execute; add or change a sweep's freely.
 
-`--attempt` on a campaign sweep needs a recent `limacharlie` release; an older
+`--attempt` on a campaign sweep needs the beta CLI from `master`; an older
 one refuses the flag as unknown, and the field can be sent directly to the API
 in the meantime (see
 [Campaigns](campaigns.md#repeating-a-sweep-and-asking-for-a-second-one-on-purpose)).

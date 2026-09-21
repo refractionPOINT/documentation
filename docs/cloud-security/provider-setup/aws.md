@@ -155,12 +155,15 @@ paste the entire command output.
     `InvalidClientTokenId`). Use the long-lived access key of the dedicated IAM
     user — the role it assumes is where the read permissions live.
 
+For CLI setup, save the credential JSON above as `aws-secret.json` and install `jq`.
+
 ```bash
-limacharlie secret set --key aws-credentials \
-    --value "$(cat aws-secret.json)" --enabled
+jq -Rs '{secret: .}' aws-secret.json \
+  | limacharlie secret set --key aws-credentials --enabled \
+  && rm -f aws-secret.json
 ```
 
-`secret set` wraps the value into the secret record for you — the equivalent of
+`jq -Rs` wraps the file contents into the secret record for stdin — the equivalent of
 `limacharlie hive set --hive-name secret` with `{"secret": "<the credential JSON
 as a string>"}`.
 

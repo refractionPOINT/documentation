@@ -217,8 +217,32 @@ topic in any other project.
     ```
 
 `gmail-api-push@system.gserviceaccount.com` is a Google-owned account outside
-your organization. If a domain restriction blocks it, ask your Google Cloud
-administrator to allow this publisher; do not substitute your service account.
+your organization; do not substitute your service account.
+
+!!! warning "Domain Restricted Sharing can block this grant"
+    `constraints/iam.allowedPolicyMemberDomains` can reject the binding with
+    `FAILED_PRECONDITION`. Do not assume a service-agent exemption covers this
+    publisher in `system.gserviceaccount.com`. Ask your organization policy
+    administrator to make a temporary exception at this project, apply the
+    publisher binding, then restore the restriction. Existing bindings survive
+    restoration, but later IAM edits may require another exception.
+
+    For `iam.managed.allowedPolicyMembers` or a custom constraint, have the
+    administrator allow this principal under the applicable policy. See
+    [Google's DRS guidance](https://docs.cloud.google.com/organization-policy/restrict-domains)
+    and [Gmail notification setup](https://developers.google.com/workspace/gmail/api/guides/push).
+    Workspace is push-only, so skipping the grant cannot be worked around by
+    choosing a polling mode.
+
+Verify the binding in the same project before continuing:
+
+```bash
+gcloud pubsub topics get-iam-policy mailsec-gmail-push --project=<YOUR_PROJECT_ID>
+```
+
+The output must list `serviceAccount:gmail-api-push@system.gserviceaccount.com`
+under `roles/pubsub.publisher`. A successful policy read alone is not proof
+that the binding exists.
 
 *Verified by the `pubsub_watch` check.*
 
@@ -299,13 +323,29 @@ address to impersonate:
 }
 ```
 
+Keep `project_id` in the stored key: Gmail quota is accounted to that credential
+project, and the connection requires it. `admin_subject` is accepted as a
+compatibility alias for `admin_email`; use `admin_email` for new credentials.
+
+!!! warning "Cloud Security uses a different credential shape"
+    This Email Security connection requires the flat key shown above, with
+    `admin_email` at the top level. The delegated
+    [Cloud Security Workspace credential](../../cloud-security/provider-setup/google-workspace.md#create-the-credentials-secret)
+    instead nests the key under `service_account_json`. Do not reuse that wrapper
+    here. The CLI's outer `secret` record envelope is separate from either
+    product's credential JSON.
+
 Alternatively, save the edited JSON as `gws-credential.json` and use the
 configured LimaCharlie CLI:
 
 ```bash
-limacharlie secret set --key gws-mail \
-  --value "$(cat gws-credential.json)" --enabled --oid $OID
+jq -Rs '{secret: .}' gws-credential.json \
+  | limacharlie secret set --key gws-mail --enabled --oid $OID \
+  && rm -f gws-credential.json
 ```
+
+Remove any remaining temporary copies of `mailsec-key.json` after the connection
+test succeeds, including the Cloud Shell download copy.
 
 ## Create the connection
 
@@ -329,6 +369,9 @@ explains the topic, subscription, and Gmail publisher grant.
 # gws.yaml
 provider: gworkspace
 credentials: hive://secret/gws-mail
+scope:
+  include_addresses:
+    - pilot@corp.example
 ingest:
   mode: push
   backfill_days: 14
@@ -338,6 +381,23 @@ features:
   pubsub_topic: projects/<YOUR_PROJECT_ID>/topics/mailsec-gmail-push
   pubsub_subscription: projects/<YOUR_PROJECT_ID>/subscriptions/mailsec-gmail-push-sub
 ```
+
+Replace `pilot@corp.example` with your pilot mailbox addresses. Omitting `scope`
+or leaving its include lists empty covers **every discovered mailbox**, subject
+to exclusions and any domain filter. `include_addresses` and `exclude_addresses`
+entries must contain `@`; `domains` entries must be bare domains containing a dot,
+with no `@` or slash. Exclusions win over inclusions.
+
+`ingest.backfill_days` accepts **0–90**, default **14**. `0` disables the initial
+connection-setup history pass; it does not delete already indexed mail and is
+not a privacy cutoff for recovery. If a Gmail history ID or Graph delta token
+expires, recovery can re-walk the default **14-day** window even when this value
+is `0`. See [backfill cleanup](../providers.md#cleaning-up-an-unwanted-backfill)
+before changing retention to remove indexed history.
+
+Read the [enforcement model](../policy.md#mode) before enabling actions:
+connections start with alert-only automation, and manual actions in an alert-only
+organization need an explicit `--force` override.
 
 ```bash
 limacharlie hive set --hive-name mailsec_provider --key gws-prod \
@@ -397,7 +457,7 @@ before lifecycle can pass. It is idempotent and the watch expires on its own.
 | `trash_message` | `TRASH` added. The product's own quarantine label is removed afterwards, so the message's placement reads as trashed rather than still quarantined |
 | `move_to_spam` | `SPAM` added, resolved through Gmail's own identifiers |
 | `restore_message` | The labels are inverted |
-| `banner_message` / `unbanner_message` | Gmail cannot edit a stored message, so the message is **replaced**: the banner-carrying copy is inserted before the original is deleted (so an interruption leaves a repairable duplicate rather than data loss), preserving thread, internal date and labels. **The provider message id changes**, and the new one is persisted. Requires `https://mail.google.com/`; without it the action is refused by name |
+| `banner_message` / `unbanner_message` | Gmail cannot edit a stored message, so the message is **replaced**: the banner-carrying copy is inserted before the original is deleted (so an interruption leaves a repairable duplicate rather than data loss), preserving thread, internal date and labels. **The provider message id changes**, and the new one is persisted. Requires `https://mail.google.com/`; without it the action is refused by name  Reapplying an existing banner leaves the message ID unchanged; removing an absent banner is also a no-op. Applying a banner refuses raw messages above **25 MiB**, malformed MIME, top-level base64/quoted-printable bodies, and unsupported content types. Multipart messages need an eligible unencoded text part; encoded parts are skipped, and no eligible part means refusal. A refusal is reported as a failed action. |
 
 ## Troubleshooting
 

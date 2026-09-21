@@ -92,12 +92,14 @@ Save the credential JSON as `op-secret.json`:
 | `org_domain` | — | The account's primary email domain. It is merged with the provider record's `internal_domains`, so directory members outside that set are classified as external collaborators. |
 
 ```bash
-limacharlie secret set --key onepassword-scim \
-    --value "$(cat op-secret.json)" --enabled
+jq -Rs '{secret: .}' op-secret.json \
+  | limacharlie secret set --key onepassword-scim --enabled \
+  && rm -f op-secret.json
 ```
 
-`secret set` wraps whatever you pass in `--value` into the secret record's
-`{"secret": "..."}` shape for you.
+`jq -Rs` reads the credential file as a string and builds the secret record's
+`{"secret": "..."}` envelope for stdin. Remove any other temporary copies after
+verifying the saved credential.
 
 ## Create the provider record
 

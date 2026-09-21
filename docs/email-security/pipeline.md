@@ -273,7 +273,9 @@ The drawer labels each such message `judged_via: backfill` — see
 therefore show a `malicious` verdict beside an empty action timeline; that is the
 lane working, not a fault.
 
-Setting `backfill_days: 0` disables the walk entirely.
+Setting `backfill_days: 0` disables the setup walk. Recovery after an expired
+provider watermark can still re-walk the default 14-day window; it is not a
+privacy cutoff. See [backfill cleanup](providers.md#cleaning-up-an-unwanted-backfill).
 
 ## Time to verdict
 

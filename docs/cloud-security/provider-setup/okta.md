@@ -120,12 +120,14 @@ domain. It is treated as an internal domain on top of the record's
 Store it:
 
 ```bash
-limacharlie secret set --key okta-credentials \
-    --value "$(cat okta-secret.json)" --enabled
+jq -Rs '{secret: .}' okta-secret.json \
+  | limacharlie secret set --key okta-credentials --enabled \
+  && rm -f okta-secret.json
 ```
 
-`secret set` wraps the value into the secret record's `{"secret": "..."}`
-envelope for you.
+`jq -Rs` builds the secret record's `{"secret": "..."}` envelope without
+putting the credential in process arguments. The temporary file is removed only
+after a successful write.
 
 ### Requesting extra scopes
 

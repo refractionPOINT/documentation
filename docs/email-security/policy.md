@@ -154,7 +154,8 @@ same enforcement check as everything else, and deliberately so: a detonation
 opens a connection to attacker-controlled infrastructure, which confirms to the
 sender that the mail landed in a monitored mailbox. An organization in
 `alert_only` has said "do not do things on my behalf", and that is such a thing.
-An analyst asking always executes. Where detonation is not deployed, the action
+An analyst in an alert-only organization must explicitly override with `force: true`
+(CLI `--force`); otherwise the response reports `force_required: true`. Where detonation is not deployed, the action
 records a failed result naming that rather than pretending to have queued it.
 
 ### `mode`
@@ -178,8 +179,9 @@ save, and anything that ever slipped past decoding still behaves as
     generally. Treat the first `enforce` as the decision that this organization
     now moves mail automatically.
 
-    Analyst-initiated actions are unaffected: a human clicking quarantine always
-    executes.
+    Analyst-initiated actions in an alert-only organization are also withheld
+    unless the caller explicitly supplies `force: true` (CLI `--force`). See
+    [manual overrides](messages.md#enforcement).
 
 **Default:** subscribing seeds a recommended preset entirely in `alert_only` —
 malicious → quarantine and graymail → move to spam among them. Nobody is
@@ -365,8 +367,9 @@ off, an automation, a D&R rule or the AI triage agent asking for
 console, the API or the CLI — because the switch exists to stop the product
 rewriting mail on its own, not to stop an operator from acting on a message in
 front of them. An organization that has never written this record still has
-working `banner_message` from the console; it simply has no automated
-bannering, and the wording is the packaged sentence.
+working `banner_message` from the console with explicit override consent when
+the organization is alert-only; it simply has no automated bannering, and the
+wording is the packaged sentence.
 
 Bannering also needs the provider capability: `Mail.ReadWrite` is enough on
 Microsoft 365 (edited in place), while Google Workspace additionally needs the
@@ -429,8 +432,11 @@ button you press.
 
 Two consequences worth knowing:
 
-- Lowering a value takes effect on the next sweep, and a large backlog drains
-  over several sweeps rather than all at once.
+- A changed retention window first receives a report-only sweep. Deletion on
+  subsequent sweeps requires the deployment's retention mode to be `enforce`;
+  `report` reports candidates without deleting, and `off` disables the sweeper.
+  During private beta, ask the MailSec team to confirm deletion is enabled and
+  check sweep completion. Large backlogs drain over several sweeps.
 - The horizons are independent. A flagged message's evidence can outlive its
   index entry (the usual case: 400 against 35), and if you set `flagged_days`
   *below* `message_days` the reverse happens — the index entry remains without a

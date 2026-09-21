@@ -312,7 +312,7 @@ faster, which is worth doing for its own sake.
 
 | Route | Does |
 |---|---|
-| `POST /messages/{msg_uuid}/actions` | Perform a typed action on one message. Body: `action` (`quarantine_message`, `trash_message`, `move_to_spam`, `restore_message`, `banner_message`, `unbanner_message`), optional `reason`, optional `attempt` (idempotency token — omit to collapse onto the existing attempt). `banner_message` uses the organization's own banner, rendered from its `mailsec_policy` record of type `banners`; the body's `banner` field is **deprecated and ignored** and will be removed. Requires `mailsec.act` |
+| `POST /messages/{msg_uuid}/actions` | Perform a typed action on one message. Body: `action` (`quarantine_message`, `trash_message`, `move_to_spam`, `restore_message`, `banner_message`, `unbanner_message`), optional `force` (boolean; see [alert-only overrides](#explicit-override-in-alert-only-mode)), optional `reason`, optional `attempt` (idempotency token — omit to collapse onto the existing attempt). `banner_message` uses the organization's own banner, rendered from its `mailsec_policy` record of type `banners`; the body's `banner` field is **deprecated and ignored** and will be removed. Requires `mailsec.act` |
 | `POST /campaigns/{campaign_id}/actions` | Sweep a campaign. Same body plus `confirm`. **Without `confirm` this previews** and changes nothing, returning the member ids, the distinct mailboxes, the counts and a `confirm` token derived from that exact member set. With `confirm` it executes exactly that set; a campaign that grew since the preview is refused. Capped at 500 members. `reason` is recorded on **every member's** audit row and on the sweep's own row (`action_id` in the response); `attempt` (bounded at 128 characters, refused not truncated) mints a new row per member, so a deliberate retry is recorded beside what it retried instead of over it. Neither is part of the `confirm` token. Requires `mailsec.act` |
 | `POST /actions/bulk/execute` | Execute a previewed bulk remediation. Returns a `bulk_id` immediately and the provider work proceeds in the background. Requires `mailsec.act`. See [Bulk Remediation](remediation.md) |
 | `POST /reports/{report_id}/resolve` | Record a triage outcome. Body: `disposition` — one of `true_positive`, `false_positive`, `benign`. Resolving an already-resolved report succeeds and reports `already_resolved`, so two analysts clicking at once is not an error. Requires `mailsec.set` |
@@ -459,6 +459,24 @@ Until they serve, mail hunting is
 [LCQL over `EMAIL_MESSAGE`](automation.md#querying-mail-with-lcql) — which is what
 the console's **Hunt** screen runs — and acting on what you find is
 [bulk remediation](remediation.md) over the message ids you selected.
+
+## Explicit override in alert-only mode
+
+For `POST /messages/{msg_uuid}/actions`, `POST /actions/bulk/execute`, and
+`POST /campaigns/{campaign_id}/actions`, send `force: true` to explicitly override
+an organization's alert-only mode. These paths use the MailSec organization
+prefix documented above. Without the override, execution is withheld and the
+response reports `force_required: true` when an action was withheld by the mode.
+For asynchronous bulk work, inspect job status and per-message outcomes.
+
+```json
+{"action": "quarantine_message", "force": true}
+```
+
+Only a JSON boolean `true` is accepted as consent. The override does not change
+policy, bypass `mailsec.act` or provider capability checks, or replace a bulk or
+campaign confirmation token. Withheld and forced attempts have separate audit
+identities, so the original refusal remains visible. See [enforcement](messages.md#enforcement).
 
 ## Action results
 

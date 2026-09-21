@@ -145,16 +145,16 @@ interface.
 ```
 
 A bare key string is also accepted and wrapped automatically, so the key can go
-in directly:
+in directly. The example below stores the JSON form.
+Save the credential JSON shown above as `lc-secret.json`, then upload it via stdin:
 
 ```bash
-limacharlie secret set --key limacharlie-collector \
-    --value '<the-api-key>' --enabled
+jq -Rs '{secret: .}' lc-secret.json \
+  | limacharlie secret set --key limacharlie-collector --enabled \
+  && rm -f lc-secret.json
 ```
 
-`secret set` wraps the value into the secret record's `{"secret": "..."}`
-envelope for you. To store the JSON object form instead, pass
-`--value "$(cat lc-secret.json)"`.
+`jq -Rs` builds the outer secret-record envelope for stdin.
 
 ## Create the provider record
 
