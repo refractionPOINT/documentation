@@ -1,6 +1,6 @@
 # Query Limits & Performance
 
-This page describes the operational limits that apply to Query Console and LCQL searches - how many queries you can run at once and how long a query may run - along with guidance on how large an aggregation can reasonably get and how to write efficient queries that stay within those limits and cost less. It also covers the different query types, since how a query executes determines how it behaves against these limits.
+This page describes the operational limits that apply to Query Console and LCQL searches - how many queries you can run at once and how long a query may run - along with guidance on how large an aggregation can reasonably get and how to write efficient queries that stay within those limits and cost less. It also covers the different query types, since how a query executes determines how it behaves against these limits, and the search modes that decide how a paginated query's pages are shaped.
 
 ## Query Types
 
@@ -26,6 +26,78 @@ Every query runs against one data *stream*, chosen with the Source dropdown in t
 | `audit` | Platform Audit | Platform audit records, such as configuration changes and user actions. |
 
 A query only sees data from the stream it targets - a query on the `event` stream will not match detections, and vice versa. When the `stream` parameter is omitted it defaults to `event`. If a query returns nothing you expected to see, confirm you are searching the intended stream.
+
+## Search Modes
+
+A paginated search returns its results a page at a time, and how large those pages are decides the shape of the whole run. Many small pages put the first rows in front of you quickly. Fewer large pages deliver the complete result set with far less back-and-forth. The optional `mode` field on `POST /v1/search` tells the server which of the two you want.
+
+| `mode` | Optimizes for | Page shape |
+|--------|---------------|------------|
+| `interactive` | Time to first results. This is the default when `mode` is omitted. | Smaller pages, so data starts arriving sooner. |
+| `batch` | Total throughput across the whole result set. | Fewer, larger pages, so the full result set arrives after fewer round trips. |
+
+`mode` declares how you intend to consume the search, not how much data you want. You never send a row count: the server decides the page size, and the mode tells it which way to lean. Results and their ordering are identical in both modes. The only thing that changes is where the page boundaries fall.
+
+The trade-off is worth stating plainly. In batch mode each individual page takes longer to come back, because each page carries more. The complete result set still arrives sooner, because there are far fewer round trips to make. Time to the first row within a page is unchanged.
+
+### When to Use Batch Mode
+
+Use `batch` for:
+
+- **Any API or script client.** CLI tooling, SDK scripts, scheduled jobs, automation: anything not driven by a person waiting at a screen.
+- **Any query you read all the way to the end,** meaning you keep fetching pages until there is no continuation token left. Exports, bulk retrieval, backfills, and feeding results into another system all have this shape.
+- **Any case where what you care about is how quickly the full result set arrives,** rather than how quickly the first rows appear.
+
+Keep the `interactive` default for:
+
+- **User-facing search in an interface,** where someone is waiting to see the first rows.
+- **Queries you sample rather than exhaust,** where you need only the first page and will not page to the end.
+- **Cases where a shorter per-page response time matters more than the total time.**
+
+### Requesting a Mode
+
+Send `mode` once, on the `POST` that starts the search. Continuation pages fetched with the pagination token inherit it automatically, so you neither resend it nor carry it yourself. It is not part of the token.
+
+```bash
+START=$(date -d '1 hour ago' +%s)
+END=$(date +%s)
+
+curl -s -X POST "https://$SEARCH_HOST/v1/search" \
+  -H "Authorization: Bearer $LC_JWT" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "oid": "YOUR_OID",
+    "query": "event/FILE_PATH ends with .exe",
+    "startTime": "'"$START"'",
+    "endTime": "'"$END"'",
+    "stream": "event",
+    "mode": "batch"
+  }'
+```
+
+The field is safe to send unconditionally. An unrecognized value, a differently-cased spelling such as `"Batch"`, and a value that is not a string are all ignored and treated as `interactive`, so a request never fails because of this field - including against a search endpoint that does not know the field at all.
+
+Two things make the mode a request rather than a setting:
+
+- **Batch mode is enabled per organization,** and the server may also select the mode itself, so the mode you asked for is not necessarily the mode you get.
+- **Batch mode applies only to a paginated search.** A non-paginated search is unaffected, and so is any query that must process all of the data before it can return anything: a `GROUP BY`, an `ORDER BY`, or an aggregation over all records. Those are the whole-timeline queries in [Query Types](#query-types) above, and they return a single response with no page boundaries to place.
+
+Treat batch mode as a hint, and read what actually happened off the page itself.
+
+### What Each Page Reports
+
+Every page reports the shape it actually ran as in its result stats, alongside the progress and billing fields described in [Query Progress and Cost Reporting](#query-progress-and-cost-reporting):
+
+| Field | Meaning |
+| --- | --- |
+| `searchMode` | The mode that was applied to this page. This is the authoritative answer to which mode you got, and the field to read if you care. |
+| `pageSize` | The soft per-page result cap this page ran under. |
+| `paginatedByteCap` | The reply-byte ceiling this page ran under. |
+
+All three are omitted for a search that ran without pagination, since no page limits applied to it. Their absence is itself informative: nothing was paged.
+
+!!! note "`pageSize` is not a promise about a row count"
+    A page can end **below** `pageSize` - a time limit, a byte limit, or simply the end of the data will finish a page early - and it can end slightly **above** it, because a page stops only once a whole batch of results has arrived. Read `pageSize` as the shape the server chose for the page, and use the continuation token, not the row count, to decide whether to keep paging.
 
 ## Concurrent Queries
 
