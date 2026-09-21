@@ -126,7 +126,7 @@ curl -s -X POST \
   }'
 ```
 
-Batch mode suits any client that pages a query all the way to the end: scripts, scheduled jobs, exports, and automation generally. Keep the `interactive` default when a person is waiting at a screen for the first rows. See [Search Modes](query-limits-and-performance.md#search-modes) for when each one applies, why the mode is a hint rather than a setting, and the stats each page reports about the mode it actually ran as.
+Batch mode suits any client that pages a query all the way to the end: scripts, scheduled jobs, exports, and automation generally. Keep the `interactive` default when a person is waiting at a screen for the first rows. See [Search Modes](query-limits-and-performance.md#search-modes) for when each one applies, why the mode is a hint rather than a setting, and the stats each page reports about the mode it ran as.
 
 ### Validate Query Syntax
 
