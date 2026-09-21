@@ -151,6 +151,32 @@ A map of action name to definition. The important fields:
 
 **Requests** — the actions users, D&R rules and other extensions invoke. One callback per action.
 
+## Rules your extension installs, and Resource ACLs
+
+If your extension writes D&R rules into the organization, for example a rule that sends a sensor's reply back to one of your actions, give those rules an `acl_scopes` list containing `*`:
+
+```yaml
+detect:
+  event: OS_PACKAGES_REP
+  op: exists
+  path: routing/sid
+respond:
+  - action: extension request
+    extension name: my-extension
+    extension action: process
+    extension request:
+      sid: routing.sid
+acl_scopes:
+  - '*'
+```
+
+Organizations can restrict sensors with [Resource ACLs](../../7-administration/access/resource-acls.md). On a restricted sensor the platform refuses `extension request`, `service request` and `start ai agent` unless the rule's `acl_scopes` covers the sensor's scopes. Your extension cannot know an organization's scope names, so it lists `*`, which stands for the scopes your extension's API key is a member of at the moment the rule fires. The organization's administrator decides what your extension can reach by adding its key to a scope, or removing it.
+
+- Write these rules with the organization client your callbacks receive, so the rule's author is your extension's key. `*` is only accepted from an org API key.
+- The platform adds an `acl_scopes_author` field to the stored rule. If you read your rules back and compare them with what you wrote, ignore that field.
+- The scopes your key holds are passed to your action in the request's `acl` block. Use them when you act on other sensors, so that a wide request still skips what the organization has not opened to you.
+- Rules without a gated action, such as `task` or `report`, do not need `acl_scopes`.
+
 ## Testing
 
 Both halves of an extension can be simulated locally — the platform calling in, and the LimaCharlie API being called out to — so a full lifecycle runs as a unit test with no cloud resources. See [Testing Extensions](testing.md).
