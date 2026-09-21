@@ -135,8 +135,9 @@ Alternatively, save the same JSON as `m365-credential.json` and use the configur
 LimaCharlie CLI:
 
 ```bash
-limacharlie secret set --key m365-mail \
-  --value "$(cat m365-credential.json)" --enabled --oid $OID
+jq -Rs '{secret: .}' m365-credential.json \
+  | limacharlie secret set --key m365-mail --enabled --oid $OID \
+  && rm -f m365-credential.json
 ```
 
 ## Create the connection
@@ -156,6 +157,9 @@ As code:
 # m365.yaml
 provider: m365
 credentials: hive://secret/m365-mail
+scope:
+  include_addresses:
+    - pilot@corp.example
 ingest:
   mode: auto
   backfill_days: 14
@@ -163,6 +167,23 @@ features:
   outbound_observation: true
   reports_mailbox: phishing@corp.example
 ```
+
+Replace `pilot@corp.example` with your pilot mailbox addresses. Omitting `scope`
+or leaving its include lists empty covers **every discovered mailbox**, subject
+to exclusions and any domain filter. `include_addresses` and `exclude_addresses`
+entries must contain `@`; `domains` entries must be bare domains containing a dot,
+with no `@` or slash. Exclusions win over inclusions.
+
+`ingest.backfill_days` accepts **0–90**, default **14**. `0` disables the initial
+connection-setup history pass; it does not delete already indexed mail and is
+not a privacy cutoff for recovery. If a Gmail history ID or Graph delta token
+expires, recovery can re-walk the default **14-day** window even when this value
+is `0`. See [backfill cleanup](../providers.md#cleaning-up-an-unwanted-backfill)
+before changing retention to remove indexed history.
+
+Read the [enforcement model](../policy.md#mode) before enabling actions:
+connections start with alert-only automation, and manual actions in an alert-only
+organization need an explicit `--force` override.
 
 ```bash
 limacharlie hive set --hive-name mailsec_provider --key m365-prod \

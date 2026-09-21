@@ -4,7 +4,7 @@
 
 Prefer the web app? Start with the [console walkthrough](getting-started.md).
 
-Before running commands, [install and configure the CLI](../6-developer-guide/cli.md) and select your organization. `$OID` below means your LimaCharlie organization ID.
+Install the beta CLI from `master` as shown above, then [configure authentication](../6-developer-guide/cli.md) and select your organization. `$OID` below means your LimaCharlie organization ID.
 
 This reference takes an organization from zero to a populated Email Security queue:
 enable the product, connect a mail tenant, verify the connection, and read the
@@ -106,17 +106,22 @@ cat > m365-credential.json <<'JSON'
 {"tenant_id": "<tenant-id>", "client_id": "<application-client-id>", "client_secret": "<the-secret-value>"}
 JSON
 
-limacharlie secret set --key m365-mail \
-  --value "$(cat m365-credential.json)" --enabled --oid $OID
+jq -Rs '{secret: .}' m365-credential.json \
+  | limacharlie secret set --key m365-mail --enabled --oid $OID \
+  && rm -f m365-credential.json
 ```
 
-`secret set` wraps the value into the secret record's `{"secret": "..."}`
-envelope for you.
+`jq -Rs` builds the secret record's `{"secret": "..."}` envelope without
+putting the credential in process arguments. The temporary file is removed only
+after a successful write.
 
 ```yaml
 # m365.yaml
 provider: m365
 credentials: hive://secret/m365-mail
+scope:
+  include_addresses:
+    - pilot@corp.example
 ingest:
   mode: auto  # Microsoft 365 auto is Graph notification push
   backfill_days: 14
@@ -124,6 +129,23 @@ features:
   outbound_observation: true
   reports_mailbox: phishing@corp.example
 ```
+
+Replace `pilot@corp.example` with your pilot mailbox addresses. Omitting `scope`
+or leaving its include lists empty covers **every discovered mailbox**, subject
+to exclusions and any domain filter. `include_addresses` and `exclude_addresses`
+entries must contain `@`; `domains` entries must be bare domains containing a dot,
+with no `@` or slash. Exclusions win over inclusions.
+
+`ingest.backfill_days` accepts **0–90**, default **14**. `0` disables the initial
+connection-setup history pass; it does not delete already indexed mail and is
+not a privacy cutoff for recovery. If a Gmail history ID or Graph delta token
+expires, recovery can re-walk the default **14-day** window even when this value
+is `0`. See [backfill cleanup](providers.md#cleaning-up-an-unwanted-backfill)
+before changing retention to remove indexed history.
+
+Read the [enforcement model](policy.md#mode) before enabling actions:
+connections start with alert-only automation, and manual actions in an alert-only
+organization need an explicit `--force` override.
 
 ```bash
 limacharlie hive set --hive-name mailsec_provider --key m365-prod \
@@ -257,8 +279,10 @@ controls. See [Messages & Triage](messages.md).
 
 Setup grants access to read and modify mail, and establishes notification subscriptions. Default automation does not change messages. Automations ship in `alert_only`, which
 means a rule is evaluated, its intent is recorded, and **the mailbox is not
-touched**. Analyst-initiated actions from the console, CLI or API always execute
-— `alert_only` withholds automation, not people.
+touched**. Manual actions are also withheld in an alert-only organization:
+`force_required: true` asks for explicit consent. Repeat with `--force` in the
+CLI or JSON `force: true` in the API to perform that action without enabling
+organization-wide automation. See [manual overrides](messages.md#enforcement).
 
 Turning enforcement on is a deliberate edit to a `mailsec_policy/automations`
 record. Read [Policy Reference](policy.md#automations) before you do, in

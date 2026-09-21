@@ -168,12 +168,15 @@ unobserved while everything else still collects.
 {"client_id": "<application-client-id>", "client_secret": "<the-secret-value>"}
 ```
 
+For CLI setup, save the credential JSON above as `azure-secret.json` and install `jq`.
+
 ```bash
-limacharlie secret set --key azure-sp \
-    --value "$(cat azure-secret.json)" --enabled
+jq -Rs '{secret: .}' azure-secret.json \
+  | limacharlie secret set --key azure-sp --enabled \
+  && rm -f azure-secret.json
 ```
 
-`secret set` wraps the value into the secret record for you — the equivalent of
+`jq -Rs` wraps the file contents into the secret record for stdin — the equivalent of
 `limacharlie hive set --hive-name secret` with `{"secret": "<the credential JSON
 as a string>"}`.
 

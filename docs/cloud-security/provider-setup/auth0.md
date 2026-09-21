@@ -91,13 +91,17 @@ checkboxes → **Update**.
 {"client_id": "<m2m-client-id>", "client_secret": "<m2m-client-secret>"}
 ```
 
+For CLI setup, save the credential JSON above as `auth0-secret.json` and install `jq`.
+
 ```bash
-limacharlie secret set --key auth0-m2m \
-    --value "$(cat auth0-secret.json)" --enabled
+jq -Rs '{secret: .}' auth0-secret.json \
+  | limacharlie secret set --key auth0-m2m --enabled \
+  && rm -f auth0-secret.json
 ```
 
-`secret set` wraps the value into the secret record's `{"secret": "..."}`
-envelope for you.
+`jq -Rs` builds the secret record's `{"secret": "..."}` envelope without
+putting the credential in process arguments. The temporary file is removed only
+after a successful write.
 
 ## Create the provider record
 

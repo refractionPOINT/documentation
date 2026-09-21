@@ -75,7 +75,7 @@ Addresses and domains are lowercased on save.
 | Field | Meaning |
 |---|---|
 | `mode` | Microsoft 365 accepts `auto` (the default, resolving to Graph notification push) or explicit `push`. Google Workspace requires explicit `push` plus both Pub/Sub fields. Other values are refused at save. |
-| `backfill_days` | Historical bootstrap window, 0–90, default **14**. That history is **judged** with the same rules live mail is judged with, and it seeds sender profiles and campaign statistics — but it **emits no telemetry and performs no actions** (no `EMAIL_MESSAGE`, no `EMAIL_VERDICT`, no automation, no remediation), and it is paced so it cannot compete with live ingestion. `0` disables it, at the cost of an empty queue on day one and first-contact signals being uninformative for the first weeks. |
+| `backfill_days` | Historical bootstrap window, 0–90, default **14**. That history is **judged** with the same rules live mail is judged with, and it seeds sender profiles and campaign statistics — but it **emits no telemetry and performs no actions** (no `EMAIL_MESSAGE`, no `EMAIL_VERDICT`, no automation, no remediation), and it is paced so it cannot compete with live ingestion. `0` disables the setup pass, but expired Gmail history IDs or Graph delta tokens can trigger a 14-day recovery walk even at `0`. It does not delete existing history. See [cleanup guidance](#cleaning-up-an-unwanted-backfill). Disabling setup comes at the cost of an empty queue on day one and first-contact signals being uninformative for the first weeks. |
 
 Push is the only implemented live-delivery path. During a notification-path
 outage, coverage reports the degradation and recovery resumes from the durable
@@ -159,3 +159,43 @@ over.
 | Save refused with an unknown-field error | A key that is not in the record contract, or a Workspace-only field on an M365 record | Fix the key; the refusal names it |
 | Second connection for the same provider refused | Only one enabled record per provider is supported | Edit the existing record instead |
 | `connections.state` is `unconfigured` | No connection record exists, or none has completed a pass | Create/enable the record; an empty list is never reported as healthy |
+
+## Cleaning up an unwanted backfill
+
+Setting `ingest.backfill_days: 0` disables the connection-setup history pass. It
+is not a deletion command, a way to reset a completed bootstrap, or a guaranteed
+cancellation of work already queued. It applies equally on create and update.
+Recovery after an expired provider watermark can still walk 14 days of history.
+Deleting the provider record offboards the connection; recreating it does not
+remove history already indexed.
+
+A [retention policy](policy.md#retention) can age out unwanted indexed history:
+choose `message_days` in **1–35** for the message index and transient raw copies.
+This is organization-wide and time-based: it also deletes live-ingested mail
+past the same horizon, cannot select one backfill or connection, and cannot
+immediately erase everything because the minimum is one day. Flagged evidence
+and its retained copy follow `flagged_days` (**1–400**, default **400**) separately.
+
+Deletion is asynchronous. The deployment must have retention deletion enabled;
+a changed retention window gets a report-only sweep before deletion, and large
+backlogs can take multiple sweeps. During private beta, coordinate with the
+MailSec team to confirm the sweep mode and completion before treating cleanup
+as complete. Restore your intended ongoing retention only after verifying it.
+This removes MailSec data, not messages from the provider's mailbox.
+
+Backfilled historical messages are judged but emit no `EMAIL_MESSAGE` or
+`EMAIL_VERDICT` telemetry and trigger no automation or remediation. An unwanted
+setup backfill therefore does not itself mean MailSec acted on those messages.
+
+### If a zero update appears not to stick
+
+There is no intended create/update difference. Keep the exact provider YAML or
+JSON used for the write, the organization ID, hive partition, and record name.
+Capture the `hive set --output json` response and `hive get --output json` before
+and after the write, comparing both `data.ingest.backfill_days` and
+`sys_mtd.etag`. Read back again if the first result appears stale, and check for
+another console session or infrastructure-as-code writer restoring the record.
+An unchanged readback etag alone does not prove the server took its no-op path;
+a changed etag alone does not prove the intended field was written. Send these
+provider-record captures to support if the discrepancy persists; do not include
+the referenced secret or service-account private key.

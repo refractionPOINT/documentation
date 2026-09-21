@@ -88,8 +88,12 @@ The secret holds the token, either bare or as a JSON document:
 {"token": "glpat-xxxxxxxxxxxxxxxxxxxx"}
 ```
 
+Save the credential JSON shown above as `gitlab-secret.json`, then upload it via stdin:
+
 ```bash
-limacharlie secret set --key gitlab-token --value '{"token": "glpat-..."}' --enabled
+jq -Rs '{secret: .}' gitlab-secret.json \
+  | limacharlie secret set --key gitlab-token --enabled \
+  && rm -f gitlab-secret.json
 ```
 
 ## Create the provider record

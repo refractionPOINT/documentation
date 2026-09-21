@@ -139,12 +139,17 @@ The key is a multi-line PEM, so JSON-escape it rather than pasting it by hand:
 python3 -c 'import json;print(json.dumps({"private_key":open("app.private-key.pem").read()}))' \
   > gh-key.json
 
-limacharlie secret set --key github-app-key \
-    --value "$(cat gh-key.json)" --enabled
+jq -Rs '{secret: .}' gh-key.json \
+  | limacharlie secret set --key github-app-key --enabled \
+  && rm -f gh-key.json
 ```
 
-`secret set` wraps whatever you pass in `--value` into the secret record's
-`{"secret": "..."}` shape for you.
+`jq -Rs` reads the credential file as a string and builds the secret record's
+`{"secret": "..."}` envelope for stdin. Remove any other temporary copies after
+verifying the saved credential.
+
+After verifying the provider connection, remove any temporary copy of
+`app.private-key.pem` as well.
 
 ## Create the provider record
 

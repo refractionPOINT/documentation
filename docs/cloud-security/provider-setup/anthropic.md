@@ -107,18 +107,20 @@ the Compliance API.
 ```
 
 Bare key strings are accepted for both and wrapped into these shapes
-automatically, so the simplest path is to store the key verbatim:
+automatically. Save the admin credential JSON above as `anthropic-admin.json`
+and the compliance credential JSON as `anthropic-compliance.json`, then run:
 
 ```bash
-limacharlie secret set --key anthropic-admin \
-    --value 'sk-ant-admin01-...' --enabled
-limacharlie secret set --key anthropic-compliance \
-    --value 'sk-ant-api01-...' --enabled
+jq -Rs '{secret: .}' anthropic-admin.json \
+  | limacharlie secret set --key anthropic-admin --enabled \
+  && rm -f anthropic-admin.json
+jq -Rs '{secret: .}' anthropic-compliance.json \
+  | limacharlie secret set --key anthropic-compliance --enabled \
+  && rm -f anthropic-compliance.json
 ```
 
-`secret set` wraps whatever you pass in `--value` into the secret record's
-`{"secret": "..."}` shape for you. Pass the JSON object above instead of a bare
-key when the secret needs a second field — see
+`jq -Rs` builds the outer secret-record envelope for stdin. Keep the JSON
+object form when the secret needs a second field — see
 [workload identity federation](#optional-workload-identity-federation-inventory).
 
 Keep the two planes in separate secrets — the provider record references them

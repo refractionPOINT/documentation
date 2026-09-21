@@ -129,12 +129,14 @@ alternative for CLI setup.
 ```
 
 ```bash
-limacharlie secret set --key entra-sp \
-    --value "$(cat entra-secret.json)" --enabled
+jq -Rs '{secret: .}' entra-secret.json \
+  | limacharlie secret set --key entra-sp --enabled \
+  && rm -f entra-secret.json
 ```
 
-`secret set` wraps the value into the secret record's `{"secret": "..."}`
-envelope for you.
+`jq -Rs` builds the secret record's `{"secret": "..."}` envelope without
+putting the credential in process arguments. The temporary file is removed only
+after a successful write.
 
 ## Create the provider record
 

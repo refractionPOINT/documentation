@@ -91,8 +91,12 @@ The secret holds the token, either bare or as a JSON document:
 {"token": "ATATT3xFfGF0..."}
 ```
 
+Save the credential JSON shown above as `bitbucket-secret.json`, then upload it via stdin:
+
 ```bash
-limacharlie secret set --key bitbucket-token --value '{"token": "ATATT3..."}' --enabled
+jq -Rs '{secret: .}' bitbucket-secret.json \
+  | limacharlie secret set --key bitbucket-token --enabled \
+  && rm -f bitbucket-secret.json
 ```
 
 ## Create the provider record

@@ -255,10 +255,19 @@ provider outage — pass a new `attempt` token.
 
 ### Enforcement
 
-Analyst-initiated actions from the console, CLI or API **always execute**.
-`alert_only` withholds *automation*, not people: a human clicking quarantine has
-already made the decision the mode exists to withhold from a rule, and refusing
-them would make the product unusable during the incident it was bought for.
+In an alert-only organization, actions from **every source**, including analysts,
+are recorded but withheld. The response reports `force_required: true`.
+To perform that action deliberately, repeat the request with JSON `force: true`,
+use the console's explicit override confirmation, or pass `--force` in the CLI:
+
+```bash
+limacharlie mailsec message action <msg_uuid> --action quarantine_message --force
+```
+
+Only a JSON boolean `true` overrides the mode; strings such as `"true"` do not.
+The override applies to this action, does not enable organization-wide automation,
+and is recorded separately from the withheld attempt in the audit trail. It
+still requires `mailsec.act` and the provider's required capabilities.
 
 Automated actions are governed by [policy](policy.md#automations).
 
