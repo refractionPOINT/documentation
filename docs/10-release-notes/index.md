@@ -20,6 +20,29 @@ Release notes for LimaCharlie platform components, organized by date.
 
 ## 2026-09-16
 
+### Endpoint Agent 5.3.10
+
+#### New Features
+
+- New `restart_core` command restarts the sensor on demand on Linux and macOS. The sensor shuts down exactly as it would for an administrative stop and its service manager starts it again; the command is refused on hosts where nothing would bring the sensor back.
+- New `repair_core_config` command checks an installed sensor's service configuration against what the installer should have written and repairs any drift, with a dry-run mode that reports without changing anything. It currently covers the Windows service recovery setting that lets the service manager restart a sensor that failed to start.
+
+#### Bug Fixes
+
+- Fixed the sensor deliberately terminating itself when the operating system refused a thread or another resource, rather than reporting the failure and carrying on. This accounted for a significant share of sensor crashes in the field.
+- On Windows, fixed the sensor terminating itself while reading the environment of a process whose environment block had grown large.
+- On Windows, fixed a crash when a USB key listing was requested on a host with removable USB storage attached.
+- On Linux, fixed the sensor permanently losing kernel acquisition after the service was force-killed. A process the sensor had started could keep the acquisition listener's address held across every later restart, leaving the sensor connected and reporting healthy while collecting no kernel telemetry.
+- The CPU usage the sensor reports now reflects its load across the reporting interval. A momentary burst was previously reported as sustained load, and a reading the sensor could not measure was reported as 255%.
+- On Windows, fixed event log collection writing its bookmarks into the sensor's upgrade log instead of its own file. Bookmarks are re-established once on upgrade to this release.
+- On Linux, kernel acquisition load failures now report why the load actually failed instead of an unrelated error code.
+
+#### Improvements
+
+- Cloud-delivered modules are now kept on disk and reused across restarts, so the sensor no longer re-downloads several megabytes every time a host boots. The cloud still decides what the sensor loads, and every module is verified before it runs exactly as it was when delivered over the network.
+- The macOS sensor download is substantially smaller — roughly 38% for the service binary and 35% for the Host Based Sensor module — and the Linux kernel acquisition module is smaller again on top of the previous release's reduction.
+- Linux `.deb` and `.rpm` packages now register the service through the sensor itself, so an upgrade restores the service definition when it has gone missing. Previously only Debian-family systemd hosts recovered from that, and RPM hosts never did.
+
 ### Web App 6.4.0
 
 A personal LimaCharlie Bots workspace, a Code Security overview backed by real scan coverage, and GitLab and Bitbucket source-control connections.
