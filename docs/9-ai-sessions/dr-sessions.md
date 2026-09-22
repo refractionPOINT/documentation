@@ -32,7 +32,7 @@ respond:
 | Parameter | Description |
 |-----------|-------------|
 | `prompt` | The instructions for Claude. Supports [template strings](../4-data-queries/template-transforms.md) to include event data. |
-| `anthropic_secret` | Your Anthropic API key. Use `hive://secret/<name>` to reference a [Hive Secret](../7-administration/config-hive/secrets.md). To route Claude through AWS Bedrock instead, use the manual environment-variable mode — see [Alternative AI Providers](alternative-providers.md). |
+| `anthropic_secret` | Your Anthropic API key. Use `hive://secret/<name>` to reference a [Hive Secret](../7-administration/config-hive/secrets.md). To route Claude through AWS Bedrock or Google Cloud Vertex AI instead, use a `bedrock:` or `vertex:` block in place of this field — see [Alternative AI Providers](alternative-providers.md). |
 
 #### Optional Parameters (Inline Mode)
 
@@ -486,9 +486,9 @@ This approach keeps D&R rules clean and lets you update the agent's behavior (pr
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
 | `prompt` | string | Yes | Instructions for Claude. |
-| `anthropic_secret` | string | Yes | Anthropic API key or `hive://secret/` reference. To route Claude through AWS Bedrock, keep a placeholder `anthropic_secret` and set the Bedrock variables under `environment:` — see [Alternative AI Providers](alternative-providers.md). |
-| `bedrock` | object | No | AWS Bedrock provider block (`region`, `access_key_id_secret`, `secret_access_key_secret`, `session_token_secret`, `bearer_token_secret`). Accepted and validated, but not applied to record-based launches yet — see [Alternative AI Providers](alternative-providers.md#amazon-bedrock). |
-| `vertex` | object | No | Google Cloud Vertex AI provider block (`project_id`, `region`, `service_account_json_secret`). Accepted and validated, but not applied to record-based launches yet — see [Alternative AI Providers](alternative-providers.md#google-cloud-vertex-ai). |
+| `anthropic_secret` | string | No | Anthropic API key or `hive://secret/` reference. Set exactly one credential source: `anthropic_secret`, `bedrock`, or `vertex`. |
+| `bedrock` | object | No | AWS Bedrock provider block (`region`, `access_key_id_secret`, `secret_access_key_secret`, `session_token_secret`, `bearer_token_secret`). Applied on record-based launches — see [Alternative AI Providers](alternative-providers.md#amazon-bedrock). |
+| `vertex` | object | No | Google Cloud Vertex AI provider block (`project_id`, `region`, `service_account_json_secret`). Applied on record-based launches — see [Alternative AI Providers](alternative-providers.md#google-cloud-vertex-ai). |
 | `lc_api_key_secret` | string | No | LimaCharlie API key or `hive://secret/` reference. |
 | `lc_uid_secret` | string | No | LimaCharlie User ID or `hive://secret/` reference. Required when `lc_api_key_secret` is a user API key. |
 | `name` | string | No | Session name. Supports template strings. |
