@@ -33,7 +33,7 @@ A paginated search returns its results a page at a time, and the size of those p
 
 | `mode` | Optimizes for | Page shape |
 |--------|---------------|------------|
-| `interactive` | Time to first results. This is the default when `mode` is omitted. | Smaller pages, so data starts arriving sooner. |
+| `interactive` | Time to first results. This is what a request defaults to when `mode` is omitted. | Smaller pages, so data starts arriving sooner. |
 | `batch` | Total throughput across the whole result set. | Fewer, larger pages, so the full result set arrives after fewer round trips. |
 
 `mode` declares how you intend to consume the search, not how much data you want. You never send a row count: the server decides the page size, and the mode tells it which to favor. Results and their ordering are identical in both modes. The only thing that changes is where the page boundaries fall.
@@ -77,14 +77,16 @@ curl -s -X POST "https://$SEARCH_HOST/v1/search" \
   }'
 ```
 
-The field is safe to send unconditionally. An unrecognized value, a differently-cased spelling such as `"Batch"`, and a value that is not a string are all ignored and treated as `interactive`, so a request never fails because of this field - including against a search endpoint that does not know the field at all.
+The field is safe to send unconditionally. An unrecognized value, a differently-cased spelling such as `"Batch"`, and a value that is not a string are all ignored and treated as though the field were omitted, so a request never fails because of this field - including against a search endpoint that does not know the field at all.
 
-Two things make the mode a request rather than a setting:
+`mode` is a hint, not an instruction. The server decides the mode each page runs in, and that decision can differ from what you asked for, in either direction:
 
-- **Batch mode is enabled per organization,** and the server may also select the mode itself, so the mode you asked for is not necessarily the mode you get.
+- **The server may select the mode itself.** A search can run in batch mode without asking for it, and a search that asked for batch mode can run as `interactive`. This applies whether you sent `mode` or omitted it.
+- **What that selection is based on is server-side, and can change.** It may take into account your organization's configuration, the shape of the query, and how much data the search scans, with the aim of returning your complete result set faster. Do not depend on a given search running in a given mode.
+- **Batch mode is enabled per organization.** Where it is not enabled, asking for it has no effect: the search runs in whatever mode the server would have chosen had you not asked, which is usually `interactive`.
 - **Batch mode applies only to a paginated search.** A non-paginated search is unaffected, and so is any query that must process all of the data before it can return anything: a `GROUP BY`, an `ORDER BY`, or an aggregation over all records. Those are the whole-timeline queries in [Query Types](#query-types) above, and they return a single response with no pages.
 
-Treat batch mode as a hint, and read the mode that was applied from the page itself.
+Asking for a mode you do not get is not an error. No response field explains why a mode was chosen, so read the mode that was applied from the page itself, as [What Each Page Reports](#what-each-page-reports) describes.
 
 ### What Each Page Reports
 
@@ -92,7 +94,7 @@ Every page reports what it actually ran as in its result stats, alongside the pr
 
 | Field | Meaning |
 | --- | --- |
-| `searchMode` | The mode that was applied to this page. Read this rather than assuming the mode you asked for was the mode you got. |
+| `searchMode` | The mode this page ran as, after any selection the server made. |
 | `pageSize` | The soft per-page result cap this page ran under. |
 | `paginatedByteCap` | The reply-byte ceiling this page ran under. |
 

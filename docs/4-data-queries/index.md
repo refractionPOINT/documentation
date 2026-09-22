@@ -104,7 +104,7 @@ The bootstrap API host `https://api.limacharlie.io` is the same for every region
 
 ### Choose a Search Mode
 
-A paginated search returns its results a page at a time, and the optional `mode` field tells the server how you intend to consume them. `interactive`, the default when the field is omitted, favors time to first results with smaller pages. `batch` favors total throughput over the whole result set with fewer, larger pages, so the complete set arrives after fewer round trips.
+A paginated search returns its results a page at a time, and the optional `mode` field tells the server how you intend to consume them. `interactive`, what a request defaults to when the field is omitted, favors time to first results with smaller pages. `batch` favors total throughput over the whole result set with fewer, larger pages, so the complete set arrives after fewer round trips.
 
 Send it once, on the `POST` that starts the search. Continuation pages inherit it automatically.
 
@@ -126,7 +126,7 @@ curl -s -X POST \
   }'
 ```
 
-Batch mode suits any client that pages a query all the way to the end: scripts, scheduled jobs, exports, and automation generally. Keep the `interactive` default when a person is waiting at a screen for the first rows. See [Search Modes](query-limits-and-performance.md#search-modes) for when each one applies, why the mode is a hint rather than a setting, and the stats each page reports about the mode it ran as.
+Batch mode suits any client that pages a query all the way to the end: scripts, scheduled jobs, exports, and automation generally. Keep the `interactive` default when a person is waiting at a screen for the first rows. The field is a hint either way: the server decides the mode each page runs in, and may put a search into batch mode on its own, with the aim of returning the complete result set faster. See [Search Modes](query-limits-and-performance.md#search-modes) for when each mode applies, what can override it, and the stats each page reports about the mode it ran as.
 
 ### Validate Query Syntax
 
