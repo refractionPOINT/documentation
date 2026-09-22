@@ -14,13 +14,13 @@ This page is about running **Claude** through your cloud agreement. To run user 
 
 There are two ways to point a session at Bedrock or Vertex:
 
-1. **Structured provider blocks** — a top-level `bedrock:` or `vertex:` block. On a direct `SessionRequest` (the org-scoped API), the block is validated and applied: the runner translates it into the correct environment variables for the Claude subprocess.
-2. **Manual environment variables** — set `CLAUDE_CODE_USE_BEDROCK` / `CLAUDE_CODE_USE_VERTEX` and the corresponding cloud-provider variables under the profile's `environment:` map. This is the original mechanism, and it is the one to use on `ai_agent` Hive records today.
+1. **Structured provider blocks** — a top-level `bedrock:` or `vertex:` block. The block is validated and applied on every launch path: a direct `SessionRequest` (the org-scoped API), and sessions launched from an `ai_agent` Hive record (D&R rules, UI actions, `ai start-session --definition`). The runner translates it into the correct environment variables for the Claude subprocess. **This is the recommended form.**
+2. **Manual environment variables** — set `CLAUDE_CODE_USE_BEDROCK` / `CLAUDE_CODE_USE_VERTEX` and the corresponding cloud-provider variables under the profile's `environment:` map. This is the original mechanism and still works, but the structured blocks above supersede it.
 
-!!! warning "Availability on `ai_agent` Hive records"
-    `bedrock:` and `vertex:` blocks on `ai_agent` Hive records are accepted and validated by the schema, but sessions launched **from a Hive record** (D&R rules, UI actions, `ai start-session --definition`) do not apply them yet. For those launches, use the manual environment-variable mode described below, which requires `anthropic_secret` to be set (a placeholder for Bedrock). The structured blocks work today on direct `SessionRequest` API calls.
+Pick exactly one credential source per session: `anthropic_secret`, the `bedrock:` block, or the `vertex:` block. They are mutually exclusive — a session cannot mix providers, and the schema rejects a record that sets more than one.
 
-Pick exactly one credential source per session: `anthropic_secret`, the `bedrock:` block, or the `vertex:` block. They are mutually exclusive — a session cannot mix providers.
+!!! warning "Records created before the mutual-exclusion rule"
+    Older `ai_agent` records could be saved with `anthropic_secret` **and** a `bedrock:` or `vertex:` block at the same time. On those records `anthropic_secret` takes precedence and the session runs against Anthropic's API — with no error to tell you it happened. The precedence is deliberate: it keeps an existing record from silently changing provider. If you have records predating the rule that are meant to run on Bedrock or Vertex, remove `anthropic_secret` from any record that also carries a provider block.
 
 ## Amazon Bedrock
 
@@ -64,9 +64,6 @@ The general format is `<region-prefix>.anthropic.<model-name>-v<version>:<minor>
 ### Configuration via the `bedrock:` block
 
 The `bedrock` block lives at the top of an `ai_agent` Hive record, alongside `prompt`. All credential fields end with `_secret` and accept either a literal value or a `hive://secret/<name>` reference.
-
-!!! warning
-    Records with a `bedrock:` block validate and store, but launches from Hive records do not apply the block yet — use the [manual environment-variable mode](#configuration-via-environment-variables-manual-mode) for record-based launches today. The equivalent [direct `SessionRequest` form](#direct-sessionrequest-api-and-integrations) works now.
 
 ```yaml
 ai_agent:
@@ -127,7 +124,7 @@ Validation enforces exactly one of `anthropic_key`, `bedrock`, or `vertex` per r
 
 The original mechanism — setting AWS variables under the profile's `environment:` map — still works. The runner forwards every entry of `environment:` to the Claude subprocess as-is, so the cloud-provider variables get picked up there.
 
-This is the mode to use for sessions launched from `ai_agent` Hive records today (D&R rules, UI actions, `ai start-session --definition`).
+Prefer the structured `bedrock:` block above, including on `ai_agent` Hive records. Reach for this mode only for existing configurations that already depend on it.
 
 ```yaml
 ai_agent:
@@ -175,9 +172,6 @@ Vertex uses Claude model IDs in the form Anthropic ships them on the platform �
 The region you set must be one that Anthropic publishes models to (commonly `global`, `us-east5`, or `europe-west1`). Cross-check with the [Anthropic on Vertex AI documentation](https://docs.anthropic.com/en/api/claude-on-vertex-ai) for current region availability.
 
 ### Configuration via the `vertex:` block
-
-!!! warning
-    Records with a `vertex:` block validate and store, but launches from Hive records do not apply the block yet. Because the manual environment-variable mode cannot carry the service-account JSON (see below), Claude-on-Vertex is currently only usable through the direct `SessionRequest` form, not from `ai_agent` Hive records.
 
 ```yaml
 ai_agent:
@@ -227,7 +221,7 @@ The runner writes the resolved service-account JSON to a per-session temporary f
 
 ### Configuration via environment variables (manual mode)
 
-If you must configure Vertex through the profile `environment:` map instead of the structured `vertex:` block, set the variables the runner would otherwise set on your behalf. Note that you cannot inline the service-account JSON as an environment variable — you have to mount it as a file at a known path inside the runner image and point `GOOGLE_APPLICATION_CREDENTIALS` at that path. Most users do not have a way to do that, which is why the structured `vertex:` block on a direct `SessionRequest` is the supported path.
+If you must configure Vertex through the profile `environment:` map instead of the structured `vertex:` block, set the variables the runner would otherwise set on your behalf. Note that you cannot inline the service-account JSON as an environment variable — you have to mount it as a file at a known path inside the runner image and point `GOOGLE_APPLICATION_CREDENTIALS` at that path. Most users do not have a way to do that, which is why the structured `vertex:` block is the supported path — on `ai_agent` Hive records as well as on a direct `SessionRequest`.
 
 | Variable | Description |
 |---|---|
@@ -244,7 +238,7 @@ The endpoint resolves `hive://secret/<name>` references just before sending the 
 
 ## Notes
 
-- On a direct `SessionRequest` with a `bedrock` or `vertex` block, you do **not** supply `anthropic_key`. The `ai_agent` schema likewise accepts a record with `bedrock:` or `vertex:` and no `anthropic_secret`, but since record-based launches do not apply the blocks yet, record-based Bedrock launches use the manual environment-variable mode, which requires a placeholder `anthropic_secret`.
+- With a `bedrock` or `vertex` block you do **not** supply `anthropic_key` (direct `SessionRequest`) or `anthropic_secret` (`ai_agent` record) — the block is the credential source. A placeholder `anthropic_secret` is needed only for the manual environment-variable mode.
 - Claude model availability varies by AWS region and Vertex region. Check the [Bedrock model availability page](https://docs.aws.amazon.com/bedrock/latest/userguide/models-regions.html) and [Vertex AI Model Garden](https://console.cloud.google.com/vertex-ai/model-garden) before picking a region.
 - Billing for Claude usage goes through your AWS or GCP account when using these providers, not through Anthropic directly.
 - The provider you choose only affects the Claude API path. LimaCharlie data, MCP servers, the LC CLI, tool execution, and session storage are unaffected.
