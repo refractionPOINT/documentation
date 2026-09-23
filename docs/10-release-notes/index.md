@@ -18,6 +18,22 @@ Release notes for LimaCharlie platform components, organized by date.
 
     For discussion and email notification of the same releases, set the [Platform Updates category](https://community.limacharlie.com/c/platform-updates/5) in the community forum to Watching. For service availability rather than releases, subscribe on the [status page](https://status.limacharlie.io/).
 
+## 2026-09-21
+
+### Endpoint Agent 5.3.11
+
+#### Bug Fixes
+
+- On Red Hat Enterprise Linux 9 and Oracle Linux 9 hosts running the stock Red Hat kernel, fixed kernel acquisition failing to start at all, leaving the host with no process, file, socket, network or DNS telemetry from the kernel.
+- Fixed the sensor diagnostic report returning an empty agent log section on healthy hosts, because it looked for the log in the location used before the sensor moved to its data directory. The report now also lists every location it searched when no log is found.
+
+#### Improvements
+
+- Linux kernel acquisition no longer floods the sensor log. Its DNS attribution status line was written on nearly every poll and accounted for the large majority of everything the sensor logged on a busy host; it is now reported when the status actually changes, and at most every five minutes otherwise.
+- When the sensor cannot keep up with kernel events and discards some, it now reports how many were lost in a single periodic summary instead of one log line per discarded record — more information, at a fraction of the log volume, and quietest exactly when the host is under load.
+
+---
+
 ## 2026-09-16
 
 ### Endpoint Agent 5.3.10

@@ -83,6 +83,17 @@ The `upgrade_core` command requires sensor version **5.3.3 or later**. Sensors r
 
 See the [endpoint commands reference](../../8-reference/endpoint-commands.md#upgrade_core) for more detail.
 
+## Repair the Service Configuration with `repair_core_config`
+
+An upgrade replaces the sensor's binary but leaves the service configuration written at install untouched. To bring that configuration up to what the current sensor expects on hosts that were installed earlier, task the `repair_core_config` command. Run it with `--dry-run` first to find the hosts that need it without changing anything:
+
+```bash
+limacharlie sensor task <SID> repair_core_config --dry-run
+limacharlie sensor task <SID> repair_core_config
+```
+
+The command requires sensor version **5.3.10 or later**. See the [endpoint commands reference](../../8-reference/endpoint-commands.md#repair_core_config) for the settings it covers and how to read its reply.
+
 ## Advanced: Forcing an Upgrade
 
 By default an in-place upgrade (`-u`) only replaces the installed service when the supplied binary is newer than what is installed. To re-apply or move to a build that is not strictly newer (for example to re-deploy a known-good version), set the `LC_UPGRADE_SKIP_VERSION_CHECK` environment variable to `1` (or `true`) on the upgrade process. This bypasses the version comparison and replaces the installed service unconditionally.
