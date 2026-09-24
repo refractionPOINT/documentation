@@ -6,7 +6,7 @@
 
 Audit logs from Sublime can be ingested cloud-to-cloud via the API.
 
-The adapter polls the [audit log API](https://docs.sublime.security/reference/listeventsinauditlog) every 30 seconds. It ships audit events created after the adapter starts; the existing audit history is not backfilled.
+The adapter polls the [audit log API](https://docs.sublime.security/reference/listeventsinauditlog) every 30 seconds. It ships audit events created after the adapter starts; the existing audit history is not backfilled. The adapter does not persist its position, so audit events created while it is stopped or restarting are not shipped either.
 
 ### Adapter-specific Options
 
