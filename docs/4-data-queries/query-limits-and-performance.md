@@ -1,6 +1,6 @@
 # Query Limits & Performance
 
-This page describes the operational limits that apply to Query Console and LCQL searches - how many queries you can run at once and how long a query may run - along with guidance on how large an aggregation can reasonably get and how to write efficient queries that stay within those limits and cost less. It also covers the different query types, since how a query executes determines how it behaves against these limits.
+This page describes the operational limits that apply to Query Console and LCQL searches - how many queries you can run at once and how long a query may run - along with guidance on how large an aggregation can reasonably get and how to write efficient queries that stay within those limits and cost less. It also covers the different query types, since how a query executes determines how it behaves against these limits, and the search modes that decide how a paginated query's pages are shaped.
 
 ## Query Types
 
@@ -26,6 +26,82 @@ Every query runs against one data *stream*, chosen with the Source dropdown in t
 | `audit` | Platform Audit | Platform audit records, such as configuration changes and user actions. |
 
 A query only sees data from the stream it targets - a query on the `event` stream will not match detections, and vice versa. When the `stream` parameter is omitted it defaults to `event`. If a query returns nothing you expected to see, confirm you are searching the intended stream.
+
+## Search Modes
+
+A paginated search returns its results a page at a time, and the size of those pages determines how the whole search behaves. Many small pages return the first rows sooner. Fewer large pages return the complete result set in fewer round trips. The optional `mode` field on `POST /v1/search` tells the server which of the two you want.
+
+| `mode` | Optimizes for | Page shape |
+|--------|---------------|------------|
+| `interactive` | Time to first results. This is what a request defaults to when `mode` is omitted. | Smaller pages, so data starts arriving sooner. |
+| `batch` | Total throughput across the whole result set. | Fewer, larger pages, so the full result set arrives after fewer round trips. |
+
+`mode` declares how you intend to consume the search, not how much data you want. You never send a row count: the server decides the page size, and the mode tells it which to favor. Results and their ordering are identical in both modes. The only thing that changes is where the page boundaries fall.
+
+In batch mode each individual page takes longer to come back, because each page carries more. The complete result set still arrives sooner, because there are far fewer round trips. Time to the first row within a page is unchanged.
+
+### When to Use Batch Mode
+
+Use `batch` for:
+
+- **Any API or script client.** CLI tooling, SDK scripts, scheduled jobs, automation: anything not driven by a person waiting at a screen.
+- **Any query you read all the way to the end,** meaning you keep fetching pages until there is no continuation token left. Exports, bulk retrieval, backfills, and feeding results into another system all have this shape.
+- **Any case where what you care about is how quickly the full result set arrives,** rather than how quickly the first rows appear.
+
+Keep the `interactive` default for:
+
+- **User-facing search in an interface,** where someone is waiting to see the first rows.
+- **Queries you sample rather than exhaust,** where you need only the first page and will not page to the end.
+- **Cases where a shorter per-page response time matters more than the total time.**
+
+[Fetch Large Result Sets in Batch Mode](#fetch-large-result-sets-in-batch-mode) below covers the same advice with the other efficiency practices.
+
+### Requesting a Mode
+
+Send `mode` once, on the `POST` that starts the search. Continuation pages fetched with the pagination token inherit it automatically, so you do not resend it. It is not part of the token.
+
+```bash
+START=$(date -d '1 hour ago' +%s)
+END=$(date +%s)
+
+curl -s -X POST "https://$SEARCH_HOST/v1/search" \
+  -H "Authorization: Bearer $LC_JWT" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "oid": "YOUR_OID",
+    "query": "event/FILE_PATH ends with .exe",
+    "startTime": "'"$START"'",
+    "endTime": "'"$END"'",
+    "stream": "event",
+    "mode": "batch"
+  }'
+```
+
+The field is safe to send unconditionally. An unrecognized value, a differently-cased spelling such as `"Batch"`, and a value that is not a string are all ignored and treated as though the field were omitted, so a request never fails because of this field - including against a search endpoint that does not know the field at all.
+
+`mode` is a hint, not an instruction. The server decides the mode each page runs in, and that decision can differ from what you asked for, in either direction:
+
+- **The server may select the mode itself.** A search can run in batch mode without asking for it, and a search that asked for batch mode can run as `interactive`. This applies whether you sent `mode` or omitted it.
+- **What that selection is based on is server-side, and can change.** It may take into account your organization's configuration, the shape of the query, and how much data the search scans, with the aim of returning your complete result set faster. Do not depend on a given search running in a given mode.
+- **Batch mode is enabled per organization.** Where it is not enabled, asking for it has no effect: the search runs in whatever mode the server would have chosen had you not asked, which is usually `interactive`.
+- **Batch mode applies only to a paginated search.** A non-paginated search is unaffected, and so is any query that must process all of the data before it can return anything: a `GROUP BY`, an `ORDER BY`, or an aggregation over all records. Those are the whole-timeline queries in [Query Types](#query-types) above, and they return a single response with no pages.
+
+Asking for a mode you do not get is not an error. No response field explains why a mode was chosen, so read the mode that was applied from the page itself, as [What Each Page Reports](#what-each-page-reports) describes.
+
+### What Each Page Reports
+
+Every page reports what it actually ran as in its result stats, alongside the progress and billing fields described in [Query Progress and Cost Reporting](#query-progress-and-cost-reporting):
+
+| Field | Meaning |
+| --- | --- |
+| `searchMode` | The mode this page ran as, after any selection the server made. |
+| `pageSize` | The soft per-page result cap this page ran under. |
+| `paginatedByteCap` | The reply-byte ceiling this page ran under. |
+
+All three are omitted for a search that ran without pagination, since no page limits applied to it. Their absence means the search was not paged.
+
+!!! note "`pageSize` is not a promise about a row count"
+    A page can end **below** `pageSize` - a time limit, a byte limit, or simply the end of the data will finish a page early - and it can end slightly **above** it, because a page stops only once a whole batch of results has arrived. Read `pageSize` as the size the server chose for the page, and use the continuation token, not the row count, to decide whether to keep paging.
 
 ## Concurrent Queries
 
@@ -444,6 +520,12 @@ When you only need counts or summaries, use `COUNT`, `COUNT_UNIQUE`, and `GROUP 
 
 If an aggregation over a wide time range is slow or times out, break it into smaller incremental time windows and combine the results, as described in [Working around whole-timeline timeouts](#query-timeouts) above.
 
+### Fetch Large Result Sets in Batch Mode
+
+When a search is not driven by a person waiting at a screen, ask for `batch` mode. Every page costs a fixed amount of work and one network round trip no matter how many rows it carries, so fewer and larger pages spend less of the run on that fixed cost and more of it on returning data. The saving grows with the number of pages you fetch, and it is largest when you page to the end of the result set. That makes the advice strongest for pulling a large result set out, where you page to the end.
+
+This changes throughput and the total time to complete the whole search, not the results. The rows and their order are identical; only the page boundaries move. See [Search Modes](#search-modes) for how to request the mode, when it applies, and what each page reports about the mode it ran as.
+
 ### Anti-patterns
 
 !!! warning "Avoid these patterns"
@@ -451,6 +533,7 @@ If an aggregation over a wide time range is slow or times out, break it into sma
     - Returning whole events when you only need a few fields - add a projection instead.
     - Grouping by a near-unique field such as a full command line, a raw timestamp, or a per-event identifier - this produces millions of groups and blows past the aggregation guardrails. Group by a coarser field.
     - Unbounded aggregations with no `LIMIT` - cap the output with `ORDER BY(...) LIMIT N`.
+    - Paging a large export to the end in the default `interactive` mode - every page pays the same fixed per-page cost, so a long pagination pays it far more often than it needs to. Ask for [batch mode](#search-modes) instead, where it is available.
 
 ## Troubleshooting
 

@@ -102,6 +102,32 @@ The bootstrap API host `https://api.limacharlie.io` is the same for every region
       --limit 100
     ```
 
+### Choose a Search Mode
+
+A paginated search returns its results a page at a time, and the optional `mode` field tells the server how you intend to consume them. `interactive`, what a request defaults to when the field is omitted, favors time to first results with smaller pages. `batch` favors total throughput over the whole result set with fewer, larger pages, so the complete set arrives after fewer round trips.
+
+Send it once, on the `POST` that starts the search. Continuation pages inherit it automatically.
+
+```bash
+START=$(date -d '1 hour ago' +%s)
+END=$(date +%s)
+
+curl -s -X POST \
+  "https://$SEARCH_HOST/v1/search" \
+  -H "Authorization: Bearer $LC_JWT" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "oid": "YOUR_OID",
+    "query": "event/FILE_PATH ends with .exe",
+    "startTime": "'"$START"'",
+    "endTime": "'"$END"'",
+    "stream": "event",
+    "mode": "batch"
+  }'
+```
+
+Batch mode suits any client that pages a query all the way to the end: scripts, scheduled jobs, exports, and automation generally. Keep the `interactive` default when a person is waiting at a screen for the first rows. The field is a hint either way: the server decides the mode each page runs in, and may put a search into batch mode on its own, with the aim of returning the complete result set faster. See [Search Modes](query-limits-and-performance.md#search-modes) for when each mode applies, what can override it, and the stats each page reports about the mode it ran as.
+
 ### Validate Query Syntax
 
 === "REST API"
