@@ -164,6 +164,8 @@ generated `gcloud` script grant. Each is a read-only predefined role.
       scope. Add `roles/browser`.
     - `bigquery.tables.get`, which the table encryption check needs. Add
       `roles/bigquery.metadataViewer`.
+    - `storage.buckets.get`, which the log sink destination bucket check
+      needs. Add `roles/storage.bucketViewer`.
 
     `roles/viewer` already includes the Access Approval, App Engine and
     Organization Policy reads listed under [optional roles](#optional-roles).
@@ -184,6 +186,7 @@ Each adds one inventory or analysis surface. Skipping one leaves that surface
 | `roles/accessapproval.viewer` | Whether Access Approval is enrolled, at the project, folder and organization (`accessapproval.settings.get`) | `access_approval` |
 | `roles/appengine.appViewer` | App Engine application and version configuration, used to check HTTPS enforcement (`appengine.applications.get`, `appengine.versions.get`) | `app_engine` |
 | `roles/orgpolicy.policyViewer` | Organization policy constraints such as public access prevention and service-account key creation (`orgpolicy.policy.get`) | `constraint_org_policies` |
+| `roles/storage.bucketViewer` | The retention policy and lock of the Cloud Storage buckets your log sinks export to (`storage.buckets.get`). Bucket metadata only: it cannot list or read objects. Without it, only the sink bucket retention lock check reads as not assessed; the check that a sink exports every log entry still runs | `log_sink_destinations` |
 | `roles/secretmanager.viewer` | Secret **metadata** inventory (names/rotation posture — never secret values) | `secret_manager` |
 | `roles/osconfig.vulnerabilityReportViewer` | Agentless workload vulnerabilities from VM Manager | `osconfig_vuln` |
 | `roles/osconfig.inventoryViewer` | The OS-inventory join that attaches package name + installed/fixed version to each CVE | *(not probed — exercised during the sweep)* |
@@ -376,6 +379,7 @@ below uses an organization and names the command substitutions for narrower scop
                 roles/accessapproval.viewer \
                 roles/appengine.appViewer \
                 roles/orgpolicy.policyViewer \
+                roles/storage.bucketViewer \
                 roles/secretmanager.viewer \
                 roles/osconfig.vulnerabilityReportViewer \
                 roles/osconfig.inventoryViewer \
@@ -466,6 +470,7 @@ the GCP-specific checks follow.
 | `audit_config` | — | Audit logging configuration cannot be read at every level (project, and the folder or organization of a hierarchy scope). |
 | `essential_contacts` *(organization scope only)* | — | Organization essential contacts cannot be assessed. Skipped for project and folder scopes, where the controls read as not assessed. |
 | `log_sinks` | — | Log sinks cannot be read at the project or the scope's folder or organization. |
+| `log_sink_destinations` | — | The Cloud Storage buckets that log sinks export to cannot be read, so their retention lock cannot be assessed. Add `roles/storage.bucketViewer`. |
 | `log_metrics_alerts` | — | Log-based metrics and alert policies cannot be read, so the change-alerting controls cannot be assessed. |
 | `dns` | — | DNSSEC and Cloud DNS logging cannot be assessed. |
 | `network_config` | — | Default and legacy networks, VPC flow logs, load-balancer logging, SSL policies and project-wide OS Login cannot be assessed. |
