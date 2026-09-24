@@ -86,18 +86,29 @@ and it can read LimaCharlie data on your behalf. Three things keep that safe.
 
 ## Who can use apps
 
-Access is governed by a small set of organization permissions:
+Access to apps is governed by a small, dedicated set of organization
+permissions — the `app.*` set. They follow LimaCharlie's standard config-hive
+pattern: a plain permission grants access to the **whole record** (including the
+app's HTML and its name, description, and icon), while its `.mtd` ("metadata")
+counterpart grants access only to the record's metadata envelope — its
+enabled/disabled status, tags, and timestamps — never the app's contents.
 
-| To… | You need |
-| --- | --- |
-| See and open apps | `app.get` |
-| Create or edit apps | `app.set` |
-| Delete apps | `app.del` |
-| Turn an app on or off | `app.set.mtd` |
+| Permission | Grants | What it's for |
+| --- | --- | --- |
+| `app.get` | Read the full app record — its HTML, name, description, and icon | **View and run** an app, view its source, and see it in the launcher |
+| `app.get.mtd` | Read only the record's metadata envelope — enabled/disabled status, tags, timestamps, last editor — **not** the app's HTML, name, or description | Check whether apps exist and are turned on, without being able to open, run, or read them |
+| `app.set` | Create and modify app records, including their HTML and configuration | Build a new app or edit an existing one |
+| `app.set.mtd` | Modify only the record's metadata, most notably its enabled/disabled status | Turn an app on or off without the ability to change what it does |
+| `app.del` | Delete app records | Remove an app from the organization |
 
-These permissions control who can *manage app records*. They are separate from the
-permissions an individual app requests to do its job. See
-[Permissions](../8-reference/permissions.md) for the full model.
+!!! note "These gate managing apps, not what an app can do"
+    The `app.*` permissions decide who can **manage app records**. They are
+    entirely separate from the permissions an individual app requests in its
+    `required_permissions` to do its job — those are minted into the app's
+    scoped, per-viewer key. Don't conflate the two. See
+    [Permissions](../8-reference/permissions.md) for the full catalog and
+    [Reference: Permissions and consent](reference.md#permissions-and-consent)
+    for how an app's own permissions work.
 
 ## Your first app in two minutes
 
