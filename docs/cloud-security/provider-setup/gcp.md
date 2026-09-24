@@ -81,6 +81,14 @@ same list; you only need to follow one method.
       recommender.googleapis.com \
       policyanalyzer.googleapis.com \
       cloudidentity.googleapis.com \
+      orgpolicy.googleapis.com \
+      logging.googleapis.com \
+      monitoring.googleapis.com \
+      dns.googleapis.com \
+      essentialcontacts.googleapis.com \
+      accessapproval.googleapis.com \
+      appengine.googleapis.com \
+      dataproc.googleapis.com \
       --project "$SA_PROJECT"
     ```
 
@@ -106,6 +114,14 @@ same list; you only need to follow one method.
 | Recommender API | `recommender.googleapis.com` |
 | Policy Analyzer API | `policyanalyzer.googleapis.com` |
 | Cloud Identity API | `cloudidentity.googleapis.com` |
+| Organization Policy API | `orgpolicy.googleapis.com` |
+| Cloud Logging API | `logging.googleapis.com` |
+| Cloud Monitoring API | `monitoring.googleapis.com` |
+| Cloud DNS API | `dns.googleapis.com` |
+| Essential Contacts API | `essentialcontacts.googleapis.com` |
+| Access Approval API | `accessapproval.googleapis.com` |
+| App Engine Admin API | `appengine.googleapis.com` |
+| Cloud Dataproc API | `dataproc.googleapis.com` |
 
 !!! info "APIs must also be on in the projects being scanned"
     A scanned project with a service API disabled is **skipped for that
@@ -114,13 +130,15 @@ same list; you only need to follow one method.
     passing check with an explanatory note, precisely so you do not mistake it
     for a missing grant.
 
-!!! warning "Only some of these surfaces have a preflight check"
-    The preflight probes the surfaces listed in the
-    [check table](#verify) below. The rest — KMS, BigQuery, Cloud SQL, Pub/Sub,
-    API keys, Workbench notebooks — are exercised only during the sweep. If one
-    of their APIs is disabled, that inventory type simply comes back **empty**
-    while the provider test stays green, so enable the full list above rather
-    than trimming it to what the test covers.
+!!! warning "The preflight checks grants, not every API"
+    The preflight checks that the roles are in place for every surface in the
+    [check table](#verify) below. For the configuration surfaces (KMS, BigQuery,
+    Cloud SQL, API keys, logging, DNS and the others added for the CIS
+    benchmark) it asks IAM about the grant, so it does **not** tell you whether
+    their APIs are enabled. Pub/Sub and Workbench notebooks are exercised only
+    during the sweep. If an API is disabled, that inventory type comes back
+    **empty** while the provider test stays green, so enable the full list above
+    rather than trimming it to what the test covers.
 
 ## Required roles
 
@@ -129,20 +147,31 @@ inherited down the hierarchy, so an org-level grant covers every project.
 
 | Role | Why | Preflight check |
 |---|---|---|
-| `roles/viewer` | The read surface for every resource type (compute, storage, networking, databases, Pub/Sub, KMS, …) | `compute`, `storage`, `projects` |
-| `roles/iam.securityReviewer` | `*.getIamPolicy` across services — the CIEM graph (who can access what) | `iam` |
+| `roles/browser` | Resolve the organization or folder and enumerate its folders and projects | `auth`, `projects` |
+| `roles/compute.viewer` | Compute, network, subnetwork, load-balancer, SSL-policy and project-metadata reads, plus which services are enabled | `compute`, `network_config`, `service_usage` |
+| `roles/iam.securityReviewer` | `*.getIamPolicy` across services for the CIEM graph (who can access what), plus the list reads for storage, service accounts and keys, KMS, Cloud SQL, API keys, Pub/Sub, secrets, log sinks, log-based metrics, alert policies, Cloud DNS, Dataproc and essential contacts | `storage`, `iam`, `sa_keys`, `audit_config`, `kms`, `cloud_sql`, `api_keys`, `log_sinks`, `log_metrics_alerts`, `dns`, `dataproc`, `essential_contacts` |
 
-!!! tip "Prefer a tighter grant?"
-    `roles/viewer` is the simple, well-understood baseline. A least-privilege
-    alternative is `roles/browser` (hierarchy traversal) plus the per-service
-    viewer roles you care about, still with `roles/iam.securityReviewer`. Use
-    `provider test` to confirm the result — it names every surface that is
-    still denied.
+These are the same roles the web app's **Permissions required** list and its
+generated `gcloud` script grant. Each is a read-only predefined role.
+
+!!! tip "Using `roles/viewer` instead?"
+    `roles/viewer` with `roles/iam.securityReviewer` also works, but it grants
+    much more than the collector reads, and it still lacks some permissions
+    the collector uses:
+
+    - `resourcemanager.organizations.get` and `resourcemanager.folders.get`,
+      which the preflight's `auth` check needs for an organization or folder
+      scope. Add `roles/browser`.
+    - `bigquery.tables.get`, which the table encryption check needs. Add
+      `roles/bigquery.metadataViewer`.
+
+    `roles/viewer` already includes the Access Approval, App Engine and
+    Organization Policy reads listed under [optional roles](#optional-roles).
 
     If you use [Code Security](../code-security/index.md) to scan container
-    images, add `roles/artifactregistry.reader` to that list (see
+    images, add `roles/artifactregistry.reader` to the least-privilege set (see
     [Container image scanning](#container-image-scanning-by-code-security)).
-    `roles/viewer` already includes it; the tighter set does not.
+    `roles/viewer` already includes it.
 
 ## Optional roles
 
@@ -151,11 +180,15 @@ Each adds one inventory or analysis surface. Skipping one leaves that surface
 
 | Role | Unlocks | Preflight check |
 |---|---|---|
+| `roles/bigquery.metadataViewer` | BigQuery dataset inventory, dataset sharing, and dataset and table encryption keys (`bigquery.datasets.get`, `bigquery.tables.get`). Metadata only: it cannot read table data | `bigquery_metadata` |
+| `roles/accessapproval.viewer` | Whether Access Approval is enrolled, at the project, folder and organization (`accessapproval.settings.get`) | `access_approval` |
+| `roles/appengine.appViewer` | App Engine application and version configuration, used to check HTTPS enforcement (`appengine.applications.get`, `appengine.versions.get`) | `app_engine` |
+| `roles/orgpolicy.policyViewer` | Organization policy constraints such as public access prevention and service-account key creation (`orgpolicy.policy.get`) | `constraint_org_policies` |
 | `roles/secretmanager.viewer` | Secret **metadata** inventory (names/rotation posture — never secret values) | `secret_manager` |
 | `roles/osconfig.vulnerabilityReportViewer` | Agentless workload vulnerabilities from VM Manager | `osconfig_vuln` |
 | `roles/osconfig.inventoryViewer` | The OS-inventory join that attaches package name + installed/fixed version to each CVE | *(not probed — exercised during the sweep)* |
 | `roles/containeranalysis.occurrences.viewer` | **Container image** vulnerabilities from Artifact Analysis, for images in Artifact Registry and Container Registry | `artifact_analysis` |
-| `roles/artifactregistry.reader` | [Code Security](../code-security/index.md) pulling your **private container images** to scan them. Already included in `roles/viewer`; add it if you use the tighter set of roles | *(not probed — exercised when an image is scanned)* |
+| `roles/artifactregistry.reader` | [Code Security](../code-security/index.md) pulling your **private container images** to scan them. Already included in `roles/viewer`; add it if you use the required least-privilege roles | *(not probed — exercised when an image is scanned)* |
 | `roles/recommender.iamViewer` | Unused-privilege findings (activity-based CIEM) | `activity_ciem` |
 | `roles/policyanalyzer.activityAnalysisViewer` | Dormant-identity / last-authentication findings | `activity_ciem` |
 | `roles/aiplatform.viewer` | Vertex AI endpoint and model inventory | `vertex_ai` |
@@ -186,11 +219,11 @@ Each adds one inventory or analysis surface. Skipping one leaves that surface
       results are not lost on Google's side; we simply do not ingest them yet.
 
 !!! note "Serverless already works on the required baseline"
-    The required `roles/viewer` + `roles/iam.securityReviewer` pair **already**
-    grants both the list and the `getIamPolicy` reads for Cloud Run and Cloud
-    Functions, so you do not need to add anything for serverless coverage. The
-    two roles above exist for the least-privilege alternative (`roles/browser`
-    plus per-service viewers), where they are what turns serverless coverage on.
+    The required `roles/iam.securityReviewer` **already** grants both the list
+    and the `getIamPolicy` reads for Cloud Run and Cloud Functions (as does
+    `roles/viewer`), so you do not need to add anything for serverless coverage.
+    The two roles above exist for custom grants that leave out the Security
+    Reviewer role, where they are what turns serverless coverage on.
 
     Both halves of each grant matter, and the second is the one that gets
     missed: without `getIamPolicy` we can list a service but cannot tell whether
@@ -213,8 +246,8 @@ Each adds one inventory or analysis surface. Skipping one leaves that surface
     assessing a 2nd-gen function's public access reads the **Cloud Run** side,
     not the Cloud Functions side.
 
-    If you are assembling a least-privilege grant rather than using the required
-    baseline, grant both `roles/run.viewer` and `roles/cloudfunctions.viewer` and
+    If you are assembling a custom grant rather than using the required
+    roles, grant both `roles/run.viewer` and `roles/cloudfunctions.viewer` and
     let `provider test` confirm it: the `serverless` check exercises both APIs and
     reports each separately, so it will tell you if one half is missing rather
     than leaving you to reason about role contents.
@@ -237,8 +270,8 @@ Each adds one inventory or analysis surface. Skipping one leaves that surface
     Google's own walkthrough for *reviewing* role recommendations in the
     console also asks for `roles/iam.roleViewer` and a resource IAM-admin role.
     Those cover applying recommendations interactively; this connector only
-    **lists** them, and the `roles/viewer` baseline already covers the
-    role-metadata reads.
+    **lists** them, and the required `roles/iam.securityReviewer` already covers
+    the role-metadata reads.
 
 !!! note "Cloud Identity groups are granted elsewhere"
     `roles/cloudidentity.groups.readonly` (or the **Groups Reader** role) is
@@ -258,7 +291,7 @@ is often not the project where the image runs. `gcr.io` is served by Artifact
 Registry, so the same role covers it.
 
 - With `roles/viewer` at the organization or folder, you already have it.
-- With the tighter set of roles, grant it at the same node (variables as in
+- With the required least-privilege roles, grant it at the same node (variables as in
   [Create the service account](#create-the-service-account)):
 
     ```bash
@@ -297,7 +330,8 @@ below uses an organization and names the command substitutions for narrower scop
     1. Select the project that will own the credential. Open **IAM & Admin → Service
        Accounts → Create service account** and create `lc-cloudsec`.
     2. Copy the service account's email address. Select the project, folder, or organization you want to scan, then open **IAM & Admin → IAM → Grant access**. Use that email as the principal
-       and grant **Viewer** (`roles/viewer`) and **Security Reviewer**
+       and grant **Browser** (`roles/browser`), **Compute Viewer**
+       (`roles/compute.viewer`) and **Security Reviewer**
        (`roles/iam.securityReviewer`), as listed above. Add optional roles only for the
        data you want to collect.
     3. Return to the service account's project, open the account, then **Keys → Add
@@ -331,15 +365,18 @@ below uses an organization and names the command substitutions for narrower scop
     SA="lc-cloudsec@${SA_PROJECT}.iam.gserviceaccount.com"
 
     # Required
-    for ROLE in roles/viewer roles/iam.securityReviewer; do
+    for ROLE in roles/browser roles/compute.viewer roles/iam.securityReviewer; do
       gcloud organizations add-iam-policy-binding "$ORG_ID" \
         --member "serviceAccount:${SA}" --role "$ROLE"
     done
 
-    # Optional surfaces. roles/viewer above already lets Code Security pull private
-    # container images; if you replace it with a tighter set, add
-    # roles/artifactregistry.reader here.
-    for ROLE in roles/secretmanager.viewer \
+    # Optional surfaces. If you use Code Security to scan private container
+    # images, add roles/artifactregistry.reader here.
+    for ROLE in roles/bigquery.metadataViewer \
+                roles/accessapproval.viewer \
+                roles/appengine.appViewer \
+                roles/orgpolicy.policyViewer \
+                roles/secretmanager.viewer \
                 roles/osconfig.vulnerabilityReportViewer \
                 roles/osconfig.inventoryViewer \
                 roles/recommender.iamViewer \
@@ -425,6 +462,29 @@ the GCP-specific checks follow.
 | `vertex_ai` | — | Vertex AI endpoint inventory unavailable. |
 | `serverless` | — | Cloud Run / Cloud Functions inventory unavailable, and with it the "invocable by anyone on the internet" verdict for that tier. Reported per API, so a partial grant names the half that is missing. |
 | `cloud_identity` | — | Group membership is not expanded; `group:` bindings do not resolve to people. |
+| `sa_keys` | — | Service-account key presence and age cannot be assessed. |
+| `audit_config` | — | Audit logging configuration cannot be read at every level (project, and the folder or organization of a hierarchy scope). |
+| `essential_contacts` *(organization scope only)* | — | Organization essential contacts cannot be assessed. Skipped for project and folder scopes, where the controls read as not assessed. |
+| `log_sinks` | — | Log sinks cannot be read at the project or the scope's folder or organization. |
+| `log_metrics_alerts` | — | Log-based metrics and alert policies cannot be read, so the change-alerting controls cannot be assessed. |
+| `dns` | — | DNSSEC and Cloud DNS logging cannot be assessed. |
+| `network_config` | — | Default and legacy networks, VPC flow logs, load-balancer logging, SSL policies and project-wide OS Login cannot be assessed. |
+| `service_usage` | — | Enabled services (for example the Cloud Asset API) cannot be read. |
+| `access_approval` | — | Access Approval enrollment cannot be assessed. |
+| `app_engine` | — | App Engine HTTPS enforcement cannot be assessed. |
+| `cloud_sql` | — | Cloud SQL flags, SSL mode, backups and public IP cannot be assessed. |
+| `kms` | — | KMS key rotation and public key access cannot be assessed. |
+| `api_keys` | — | API key age and restrictions cannot be assessed. |
+| `bigquery_metadata` | — | BigQuery datasets are not inventoried, and dataset and table encryption cannot be assessed. |
+| `dataproc` | — | Dataproc cluster encryption cannot be assessed. |
+
+The checks from `sa_keys` onward cover the configuration that the CIS Google
+Cloud Foundation Benchmark checks rely on. Each asks IAM whether the service
+account holds the permissions, using `testIamPermissions`: one call on the
+probed project, plus one on the folder or organization for a hierarchy scope.
+That works even when the project has no such resource (no App Engine app, for
+example). When a permission is missing, the check names it, the level it is
+missing on, and the role to add.
 
 !!! tip "Org-scope tests probe one representative project"
     For a folder/organization scope the preflight picks the first active
@@ -437,10 +497,11 @@ the GCP-specific checks follow.
 
 | `provider test` result | Cause | Fix |
 |---|---|---|
-| `auth` fails: `PERMISSION_DENIED` on the scope | The service account has no binding at that org/folder/project | Grant `roles/viewer` at the scope node (not just on the SA's own project) |
+| `auth` fails: `PERMISSION_DENIED` on the scope | The service account has no binding at that org/folder/project, or (for an org/folder scope) it holds `roles/viewer` without `roles/browser` | Grant `roles/browser` at the scope node (not just on the SA's own project) |
 | `auth` fails: *"Cloud Resource Manager API has not been used in project `<number>`"* on an **organization** or **folder** scope | An org/folder has no project of its own, so the API-enablement check is billed to the **caller's** project — `<number>` is the **service account's** project, not a project being scanned. The console only offers to enable APIs per project, which makes this look unresolvable at the org level | `gcloud services enable cloudresourcemanager.googleapis.com --project "$SA_PROJECT"` (see [Prerequisites](#prerequisites)) |
 | `projects` fails | Missing `resourcemanager.projects.list` | `roles/viewer` or `roles/browser` at the scope node |
 | `iam` fails on `getIamPolicy` | `roles/viewer` alone does not cover every `getIamPolicy` | Add `roles/iam.securityReviewer` |
+| A configuration check (`log_sinks`, `bigquery_metadata`, `access_approval`, …) fails with *"lacks …"* | The named permission is not granted at the named level | Grant the role the message names at the scope node |
 | A check passes with *"API not enabled on the probed project"* | Benign — the sweep skips API-disabled projects | Enable the named API if you want that surface; otherwise ignore |
 | `activity_ciem` fails with *Recommender API not enabled* | Recommender / Policy Analyzer not enabled on the probed project | Enable `recommender.googleapis.com` and `policyanalyzer.googleapis.com` |
 | `serverless` fails on `run` only | The grant reaches Cloud Functions but not Cloud Run | Add `roles/run.viewer`. 2nd-gen functions are authorized as Cloud Run services, so without that read they list with no public-access verdict |
