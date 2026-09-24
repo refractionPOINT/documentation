@@ -6,11 +6,16 @@
 
 Audit logs from Sublime can be ingested cloud-to-cloud via the API.
 
+The adapter polls the [audit log API](https://docs.sublime.security/reference/listeventsinauditlog) every 30 seconds. It ships audit events created after the adapter starts; the existing audit history is not backfilled. The adapter does not persist its position, so audit events created while it is stopped or restarting are not shipped either.
+
 ### Adapter-specific Options
 
 Adapter Type: `sublime`
 
-- `api_key`: your Okta API key/token
+- `api_key`: your Sublime Security API key.
+- `base_url` (optional): the base URL of your Sublime Security API. Defaults to `https://platform.sublime.security` (North America). If your Sublime Security instance is hosted in a different region, or is self-hosted, set this to the API base URL of that instance.
+
+Use `sublime` as the `client_options.platform`. LimaCharlie then takes the event type from each audit event's `type` field and the event time from its `created_at` field, so no `mapping` is needed.
 
 ### CLI Deployment
 
@@ -27,9 +32,11 @@ client_options.hostname=$SENSOR_NAME \
 api_key=$API_KEY
 ```
 
+Add `base_url=$BASE_URL` if your instance is not on the default North America API.
+
 ### Infrastructure as Code Deployment
 
-```python
+```yaml
 # For cloud sensor deployment, store credentials as hive secrets:
 
 #   api_key: "hive://secret/sublime-api-key"
@@ -37,19 +44,21 @@ api_key=$API_KEY
 sensor_type: "sublime"
 sublime:
   api_key: "hive://secret/sublime-api-key"
+  # base_url: "https://platform.sublime.security"  # optional, defaults to North America
   client_options:
     identity:
       oid: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
       installation_key: "YOUR_LC_INSTALLATION_KEY_SUBLIME"
     hostname: "sublime-security-adapter"
-    platform: "json"
+    platform: "sublime"
     sensor_seed_key: "sublime-audit-sensor"
-    mapping:
-      sensor_hostname_path: "user.email"
-      event_type_path: "type"
-      event_time_path: "created_at"
-    indexing: []
 ```
+
+### Troubleshooting
+
+- The adapter identifies itself to LimaCharlie by its `sensor_seed_key` and installation key. If you run the same Sublime Security integration both as a cloud sensor and as a binary adapter with a different `sensor_seed_key`, they show up as two separate sensors, and each sensor's timeline only shows the events that adapter shipped.
+- Deleting a sensor does not stop its adapter. A cloud sensor that is still configured reconnects and re-enrolls; remove or disable the cloud sensor configuration to stop it.
+- If you use the `json` platform instead of `sublime`, set `mapping.event_type_path: "type"` and `mapping.event_time_path: "created_at"` so events get the audit event type and the time the audited action happened.
 
 ## API Doc
 
