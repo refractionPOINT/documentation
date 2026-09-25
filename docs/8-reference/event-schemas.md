@@ -46,7 +46,9 @@ The value is generally the Event Type except for Detections where it is the `cat
 
 ### Retrieveing Schema Definition
 
-Retrieving a specific schema definition can be done by doing a `GET` on `api.limacharlie.io/v1/orgs/YOUR-OID/schema/EVENT-TYPE`, where the `EVENT-TYPE` is one of the exact keys returned by the listing API above.
+Retrieving a specific schema definition can be done by doing a `GET` on `api.limacharlie.io/v1/orgs/YOUR-OID/schema?name=EVENT-TYPE`, where the `EVENT-TYPE` is one of the exact keys returned by the listing API above.
+
+URL-encode the `name` query value. Omitting `name` lists available schemas; an empty value is invalid. A prefix such as `name=evt:` returns all matching schemas under a `schemas` map. The legacy `/schema/EVENT-TYPE` path remains available for compatibility.
 
 The returned data looks like:
 

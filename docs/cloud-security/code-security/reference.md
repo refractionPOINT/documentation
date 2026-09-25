@@ -159,7 +159,7 @@ subscribed to `ext-cloud-security`.
 | `GET /code/status` | `code status` | Run status per connection. |
 | `GET /code/capabilities` | `code capabilities` | What each GitHub connection can do, and its webhook status. Optional `repo`. |
 | `GET /code/fixes` | `code fixes` | Open dependency findings grouped by the upgrade that fixes them. |
-| `GET /code/repos/{repo}/sbom` | `code sbom` | A short-lived download link for the repository's SBOM. |
+| `GET /code/sbom?repo={repo}` | `code sbom` | A short-lived download link for the repository's SBOM. |
 | `GET /code/images`, `GET /code/images/{digest}` | | Container images and one image's detail. |
 | `GET /code/image-repos`, `GET /code/image-repos/facets` | | Image repositories and their filter counts. |
 | `POST /code/scan` | `code rescan` | Rescan one repository. Body: `{repo, ref?, provider?}`. |
