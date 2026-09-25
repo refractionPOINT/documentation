@@ -15,24 +15,71 @@ limacharlie cloudsec compliance report --framework cis-gcp
 limacharlie cloudsec compliance frameworks
 ```
 
-Thirteen frameworks ship today — `cis-aws`, `cis-azure`, `cis-gcp` (the
-default), `cis-m365`, `soc2`, `pci-dss`, `hipaa`, `iso-27001`, `nist-csf`,
-`nist-ai-rmf`, `owasp-llm`, `owasp-top10`, and `cis-supply-chain`. `nist-ai-rmf`
+Fifteen frameworks ship today: `cis-aws`, `cis-azure`, `cis-gcp` (the
+default), `cis-gcp-v5`, `cis-m365`, `cis-m365-v7`, `soc2`, `pci-dss`, `hipaa`,
+`iso-27001`, `nist-csf`, `nist-ai-rmf`, `owasp-llm`, `owasp-top10`, and
+`cis-supply-chain`. `nist-ai-rmf`
 and `owasp-llm` are AI frameworks: they assess the OpenAI and Anthropic estate
 connected through the [AI providers](providers.md#ai-security-aispm).
 `owasp-top10` (OWASP Top 10:2021, mapped by CWE) and `cis-supply-chain` (the CIS
 Software Supply Chain Security Guide's *Source Code* and *Dependencies*
 sections) are graded off [Code Security](code-security/results.md#compliance) and apply only when a
-GitHub organization is connected. `cis-m365` is graded off the
-Microsoft Entra directory, so it covers the benchmark's Entra chapter and reports
-NOT_ASSESSED for the admin centers that are not collected (Defender, Purview,
-Exchange, SharePoint, Teams) — read each control's description for what it
-assesses and why. It applies to a tenant connected as an `entra` provider, or as
-the Entra half of an `azure` one. The set
+GitHub organization is connected. The set
 grows over time, so `limacharlie cloudsec compliance frameworks`
 (`GET /compliance/frameworks`) — which carries each framework's `id`, `name`,
 `version`, and control counts — is the source of truth for valid
 `--framework` values.
+
+### CIS benchmark versions
+
+Two CIS benchmarks ship in two versions, side by side. Each version is its own
+framework id, so an assignment or report on the older id keeps working
+unchanged, and you move to the newer one when you are ready:
+
+| Framework | Benchmark | Controls |
+|---|---|---|
+| `cis-gcp` | CIS Google Cloud Platform Foundation Benchmark (v2.0 subset) | 21 |
+| `cis-gcp-v5` | CIS Google Cloud Platform Foundation Benchmark v5.0.0 | 93: 76 automated, 8 partly automated, 9 manual |
+| `cis-m365` | CIS Microsoft 365 Foundations Benchmark (v4.0 subset) | 26 |
+| `cis-m365-v7` | CIS Microsoft 365 Foundations Benchmark v7.0.0 | 160: 143 automated, 17 manual |
+
+The newer versions carry the full benchmark. Each control carries its CIS
+recommendation number (`external_id`, for example `5.1.2.3`) with a title and a
+description of what LimaCharlie checks, written by LimaCharlie. The benchmark
+text itself is published by CIS at
+[cisecurity.org](https://www.cisecurity.org/cis-benchmarks).
+
+- **`cis-gcp-v5`** reads project and organization configuration (IAM, logging and
+  alerting, networking, compute, Cloud SQL, storage, BigQuery). Several of these
+  reads need optional roles or APIs on the service account; without them, the
+  controls they feed report NOT_ASSESSED and name the missing read. See
+  [Google Cloud provider setup](provider-setup/gcp.md). A partly automated control
+  can FAIL from what LimaCharlie reads, but a PASS also needs your attestation,
+  so without one it reports NOT_ASSESSED.
+- **`cis-m365-v7`** covers Entra ID, Exchange Online, Defender for Office 365,
+  Purview, SharePoint and OneDrive, Teams, Intune, Microsoft Forms and
+  Power BI / Fabric. It applies to a tenant connected as an
+  [`entra` provider](provider-setup/entra.md). Its Microsoft Graph reads work with
+  either credential type. Exchange Online, Defender for Office 365, Purview and
+  the SharePoint advanced settings need the connection's
+  [certificate mode](provider-setup/entra.md#authentication-modes). The Entra half of
+  an `azure` connection reads the Microsoft Graph settings only; Exchange Online,
+  Purview, Teams and Power BI / Fabric are read through an `entra` connection.
+- **`cis-m365`** (v4.0) is graded off the Microsoft Entra directory. It covers the
+  benchmark's Entra chapter and reports NOT_ASSESSED for the admin centers it does
+  not collect (Defender, Purview, Exchange, SharePoint, Teams). It applies to a
+  tenant connected as an `entra` provider, or as the Entra half of an `azure` one.
+
+!!! note "Licence-gated Microsoft 365 controls"
+    37 `cis-m365-v7` controls grade a feature that exists only with a specific
+    Microsoft licence: Entra ID P1 or P2, Entra ID Governance, Intune, Defender for
+    Office 365 Plan 1 or 2, Safe Documents, Customer Lockbox, or Purview
+    Communications DLP. LimaCharlie reads the tenant's licences. When a tenant does
+    not hold the licence a control needs, that control reports **NOT_ASSESSED** and
+    its reason names the licence, for example `no licence was observed for the
+    feature this control grades: Microsoft Entra ID P1`. It never reports PASS
+    for a feature the tenant cannot turn on. It does not report FAIL either,
+    because the fix is a purchase, not a setting.
 
 The report is per-control, and each control lands in one of four states:
 

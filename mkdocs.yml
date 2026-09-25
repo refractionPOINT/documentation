@@ -633,7 +633,7 @@ nav:
           - Google Cloud: cloud-security/provider-setup/gcp.md
           - Amazon Web Services: cloud-security/provider-setup/aws.md
           - Microsoft Azure: cloud-security/provider-setup/azure.md
-          - Microsoft Entra ID: cloud-security/provider-setup/entra.md
+          - Microsoft Entra ID / Microsoft 365: cloud-security/provider-setup/entra.md
           - Okta: cloud-security/provider-setup/okta.md
           - Google Workspace: cloud-security/provider-setup/google-workspace.md
           - 1Password: cloud-security/provider-setup/onepassword.md
