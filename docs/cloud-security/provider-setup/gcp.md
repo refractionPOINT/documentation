@@ -87,6 +87,7 @@ same list; you only need to follow one method.
       dns.googleapis.com \
       essentialcontacts.googleapis.com \
       accessapproval.googleapis.com \
+      accesscontextmanager.googleapis.com \
       appengine.googleapis.com \
       dataproc.googleapis.com \
       --project "$SA_PROJECT"
@@ -120,8 +121,52 @@ same list; you only need to follow one method.
 | Cloud DNS API | `dns.googleapis.com` |
 | Essential Contacts API | `essentialcontacts.googleapis.com` |
 | Access Approval API | `accessapproval.googleapis.com` |
+| Access Context Manager API | `accesscontextmanager.googleapis.com` |
 | App Engine Admin API | `appengine.googleapis.com` |
 | Cloud Dataproc API | `dataproc.googleapis.com` |
+
+!!! warning "Some APIs are checked in the service account's project, not the scanned one"
+    For some Google Cloud APIs, Google checks whether the API is enabled in the
+    project that owns the calling service account, not only in the project or
+    organization being read. If one of these is off in the service account's
+    project, every read of that API fails, for every project in scope, with a
+    `SERVICE_DISABLED` error that names the **service account's** project.
+    LimaCharlie cannot tell from that error what the scanned projects contain,
+    so it does not treat them as empty. The benchmark controls that depend on
+    the API read as **not assessed**, and the related findings are missing.
+
+    We have confirmed this behaviour for these APIs:
+
+    | API | What depends on it |
+    |---|---|
+    | `apikeys.googleapis.com` | API key age and restrictions |
+    | `essentialcontacts.googleapis.com` | Organization essential contacts |
+    | `accessapproval.googleapis.com` | Access Approval enrollment |
+    | `orgpolicy.googleapis.com` | Organization policy constraints |
+    | `accesscontextmanager.googleapis.com` | VPC Service Controls perimeters |
+    | `policyanalyzer.googleapis.com` | Dormant-identity and last-authentication findings |
+
+    They are all in the list above. If you trimmed that list, make sure at least
+    these are on in the service account's project:
+
+    ```bash
+    gcloud services enable \
+      apikeys.googleapis.com \
+      essentialcontacts.googleapis.com \
+      accessapproval.googleapis.com \
+      orgpolicy.googleapis.com \
+      accesscontextmanager.googleapis.com \
+      policyanalyzer.googleapis.com \
+      --project "$SA_PROJECT"
+    ```
+
+    Enabling them only in the scanned projects does not fix this.
+
+    `provider test` catches this for Organization Policy, Access Context
+    Manager (organization scope) and Policy Analyzer: the check fails and its
+    message names the project to enable the API in. The API Keys, Essential
+    Contacts and Access Approval checks only ask IAM about the grant, so they
+    stay green even when the API is off in the service account's project.
 
 !!! info "APIs must also be on in the projects being scanned"
     A scanned project with a service API disabled is **skipped for that
@@ -508,7 +553,7 @@ missing on, and the role to add.
 | `iam` fails on `getIamPolicy` | `roles/viewer` alone does not cover every `getIamPolicy` | Add `roles/iam.securityReviewer` |
 | A configuration check (`log_sinks`, `bigquery_metadata`, `access_approval`, …) fails with *"lacks …"* | The named permission is not granted at the named level | Grant the role the message names at the scope node |
 | A check passes with *"API not enabled on the probed project"* | Benign — the sweep skips API-disabled projects | Enable the named API if you want that surface; otherwise ignore |
-| `activity_ciem` fails with *Recommender API not enabled* | Recommender / Policy Analyzer not enabled on the probed project | Enable `recommender.googleapis.com` and `policyanalyzer.googleapis.com` |
+| A check fails with *"… has not been used in project … (enable this API in the project this message names)"* | The API is off in a project other than the one probed. For the Organization Policy, Access Context Manager and Policy Analyzer checks, that is usually the **service account's** project (see [Enable the APIs](#enable-the-apis)) | Enable the named API in the project the message names: `gcloud services enable <api> --project <that project>` |
 | `serverless` fails on `run` only | The grant reaches Cloud Functions but not Cloud Run | Add `roles/run.viewer`. 2nd-gen functions are authorized as Cloud Run services, so without that read they list with no public-access verdict |
 | Cloud Run services appear but none is ever flagged public | `getIamPolicy` is denied on Cloud Run, so the invoker verdict is unobserved rather than negative | Add `roles/iam.securityReviewer` (or `roles/run.viewer`) and re-run the sweep |
 | Inventory is missing whole projects | Those projects are not `ACTIVE`, or the grant is on a narrower node | Confirm project state, and that the binding is at the scope you configured |
