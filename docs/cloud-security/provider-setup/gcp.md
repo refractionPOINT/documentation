@@ -338,6 +338,23 @@ this connection's service account. That service account needs
 is often not the project where the image runs. `gcr.io` is served by Artifact
 Registry, so the same role covers it.
 
+- With `roles/viewer` at the organization or folder, you already have it.
+- With the required least-privilege roles, grant it at the same node (variables as in
+  [Create the service account](#create-the-service-account)):
+
+    ```bash
+    gcloud organizations add-iam-policy-binding "$ORG_ID" \
+      --member "serviceAccount:${SA}" \
+      --role roles/artifactregistry.reader
+    ```
+
+- Images kept in a **separate project**, such as a shared build or artifact
+  project, need the grant there too if that project is outside the connected
+  scope.
+- A project still on legacy **Container Registry** serves `gcr.io` images from
+  Cloud Storage. There the service account needs `roles/storage.objectViewer`
+  on the project's `artifacts.<project>.appspot.com` bucket instead.
+
 To verify Google Cloud Build provenance for those images, also grant this
 connection's service account `roles/containeranalysis.occurrences.viewer` on
 the **project that stores the image and its Artifact Analysis occurrences**.
@@ -359,23 +376,6 @@ gcloud projects add-iam-policy-binding "IMAGE_PROJECT_ID" \
 Enable `containeranalysis.googleapis.com` in the project that owns the service
 account, as described under [Enable the APIs](#enable-the-apis), and in the
 image project if it is disabled there.
-
-- With `roles/viewer` at the organization or folder, you already have it.
-- With the required least-privilege roles, grant it at the same node (variables as in
-  [Create the service account](#create-the-service-account)):
-
-    ```bash
-    gcloud organizations add-iam-policy-binding "$ORG_ID" \
-      --member "serviceAccount:${SA}" \
-      --role roles/artifactregistry.reader
-    ```
-
-- Images kept in a **separate project**, such as a shared build or artifact
-  project, need the grant there too if that project is outside the connected
-  scope.
-- A project still on legacy **Container Registry** serves `gcr.io` images from
-  Cloud Storage. There the service account needs `roles/storage.objectViewer`
-  on the project's `artifacts.<project>.appspot.com` bucket instead.
 
 Without the role, the image is not scanned and its status reads
 `registry_permission_denied`, naming the registry and this role. The code
