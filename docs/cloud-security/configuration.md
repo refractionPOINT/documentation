@@ -261,8 +261,9 @@ How a `collection` rule is judged:
 
 - **One account per row.** A row is matched on its own account when it has one,
   otherwise on the account the collector ran for. A tenant-wide collector (an
-  Azure tenant, for example) is excluded wholesale only by a rule that names
-  that tenant; a rule with a negated account pattern is applied row by row.
+  Azure tenant, for example) is excluded wholesale by a rule whose account or
+  provider matches it. A rule with a negated account pattern is applied row by
+  row instead.
 - **`provider`, `region` and `resource_types` are checked on each row.** A
   provider rule never matches another cloud's account.
 - **A row that does not state a fact the rule needs is kept.** For example, a

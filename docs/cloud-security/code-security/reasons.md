@@ -2,8 +2,9 @@
 
 Code Security never turns missing evidence into a reassuring answer. When it
 cannot prove something, it says `unknown` or `partial` and returns a closed
-reason code, plus an `action` code that names the next step. This page lists
-every code and what to do about it.
+reason code. Evidence-chain stages and coverage lines also give an `action` code
+that names the next step. This page lists the codes for the generally available
+workflows and what to do about each.
 
 For scan-lane problems (repositories not scanned, webhooks, the GitHub App), see
 [Troubleshooting](troubleshooting.md). For what the guarantees behind these codes
@@ -11,15 +12,17 @@ are, see [What Code Security guarantees](guarantees.md).
 
 ## Reading a reason
 
-Evidence-chain stages, coverage lines, runtime checks and remediation runs carry
-the same fields:
+Evidence-chain stages and coverage lines carry these fields. Runtime checks
+return `status`, `reason`, `level`, `observed_at` and `stale_at`. Remediation
+runs carry `state`, `failure`, `failure_reason` and `playbook_reason` instead.
+The action for those codes is listed in each table below.
 
 | Field | Meaning |
 |---|---|
 | `status` | `proven`, `partial`, `unknown` or `not_applicable`. `proven` says the stage is evidenced, not that the news is good. Read `outcome` for that. |
 | `level` | How strong the evidence is: `verified` (cryptographically checked), `asserted` (a claim from you or a tool), `observed` (LimaCharlie saw it), `derived` (a join of the above), or `unknown`. |
-| `reason_domain`, `reason` | The closed reason code, and the feature it belongs to. |
-| `reason_recognised` | `false` when the server sent a code this client version does not know. The code is shown as is. |
+| `reason_domain`, `reason` | The feature the reason belongs to, and the closed reason code. |
+| `reason_recognised` | `false` when the code is not in the server's catalog. The code is shown as is, with the action `review_reason`. Report it to LimaCharlie support. |
 | `action` | The suggested next step, from the table below. |
 | `observed_at`, `stale_at` | When the evidence was observed, and when it stops counting. |
 
@@ -294,7 +297,7 @@ A run in state `failed` or `expired` carries `failure`:
 | `executor_error`, `callback_failed` | `contact_support` | The executor reported an error. See `playbook_reason` or `failure_reason`. |
 | `dispatch_exhausted` | `retry_later` | The executor could not be reached. |
 | `deadline` | `request_remediation` | The run's deadline passed. |
-| `window_ended` | `request_remediation` | The monitoring window ended. The finding is not verified as fixed. |
+| `window_ended` | `request_remediation` | The run's window ended. The finding is not verified as fixed. |
 | `pr_closed` | `request_remediation` | The fix pull request was closed without merging. |
 | `pr_merged_unverifiable` | `review_finding` | The pull request merged, but the fix could not be verified. |
 | `invalid_run` | `contact_support` | The run was invalid. |

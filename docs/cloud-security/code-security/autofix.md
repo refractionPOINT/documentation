@@ -53,8 +53,10 @@ You can only ask for a fix by finding: the package and target version come from
 LimaCharlie's own scan, never from the request.
 
 The finding closes once the pull request is merged and the next scan of the
-default branch no longer sees the vulnerable version. That closure is what moves
-the run to `verified`. A merged pull request alone is not a fix.
+default branch no longer sees the vulnerable version. A merged pull request
+alone is not a fix. The run becomes `verified` only when every in-scope
+deployment also runs the fixed build. When no deployment is in scope, it ends
+`expired` with `pr_merged_unverifiable`.
 
 ## What gets edited
 

@@ -11,30 +11,37 @@ reason codes it returns when a rule is not met are listed in
 
 ## The rules
 
-**A fix is `verified` only when it runs everywhere in scope.** For an image
-fix, the fixed digest must be running on every in-scope deployment, nothing in
-scope may still run the vulnerable digest, and the fixed digest must have a
-completed scan, against vulnerability data at least as fresh as the finding,
-that no longer reports the issue. An image that was never scanned is never
-treated as clean. For other fixes, detection must close the finding. A merged
-pull request is progress, not a fix. If the vulnerable digest runs again within
-30 days of verification, the run becomes `regressed`. You do not have to delete
-the old image from your registry; while it exists, its own finding stays open.
+**A fix is `verified` only when it runs everywhere in scope.** Every in-scope
+deployment must have fresh, complete evidence. Every digest it runs must be a
+proven build of the fix, and nothing in scope may still run the vulnerable
+digest. For an image fix, each running fixed digest also needs a completed scan
+that does not report the issue. The scan must come from a scanner that reported
+the original vulnerability, using vulnerability data at least as fresh as the
+finding. An image that was never scanned is never treated as clean. For a
+dependency fix in a repository, detection must also close the finding. A fix
+with no deployment in scope ends as unverifiable, not `verified`. A merged pull
+request is progress, not a fix. If the vulnerable digest runs again within 30
+days of verification, the run becomes `regressed`. You do not have to delete the
+old image from your registry. While it exists, its own finding stays open.
 
 **Every image-to-source link says how it was established.** `inferred` means
-the image's build steps and files match a repository you connected. `asserted`
-means a label or build record names the source without a trusted signature.
-`verified` means a Google Cloud Build or GitHub Actions artifact attestation
-signature checks out for that exact digest. Conflicting evidence is
-`ambiguous`, never resolved by picking one. Public vendor images that match
+the image's build steps and files match a repository you connected. It names the
+repository, never the exact build commit. `asserted` means a label or build
+record names the source without a trusted signature. `verified` means a
+signature was checked for that exact digest. The signature can come from a
+Google Cloud Build or GitHub Actions artifact attestation, or from a statement
+you pushed that matches a signing identity you trust in your `provenance_trust`
+policy. Conflicting evidence is `ambiguous`, never resolved by picking one. Public vendor images that match
 none of your connections are reported separately as third-party and do not
 count against your coverage. None of this requires a change to your build
 pipeline.
 
 **"Not observed" needs a complete telemetry window.** A runtime check says
-`not_observed` only when every relevant sensor reported for the whole window.
-Missing, late or partial telemetry gives `unknown`. Runtime evidence never
-changes a finding's risk score.
+`not_observed` only when every sensor on the resource reported a complete window.
+Missing, late or partial telemetry never gives `not_observed`. The answer is
+`present` or `unknown`, with a reason. A package already seen loaded or running
+stays `loaded` or `executing`. Runtime evidence never changes a finding's risk
+score.
 
 **Every change to your systems has a named approver and a confirmed outcome.**
 Fix pull requests (AutoFix included), notifications, tickets, temporary
@@ -62,8 +69,9 @@ pull-request check shows counts and yes/no facts, with no resource names,
 account IDs, IP addresses or sensor IDs. When the live lookup fails, the check
 publishes its normal scan verdict unchanged.
 
-**Your data stays separate, and leaves when you do.** Every stored record is
-keyed to your organization, and every API route checks the caller against it.
+**Your data stays separate, and leaves when you do.** Every record that holds
+your data is keyed to your organization, and every API route checks the caller
+against it.
 When an organization is deleted or unsubscribes, Code Security data is removed
 from the live databases after a 7-day grace period, and remaining backup copies
 expire within 7 days after that. Scan result files expire within 30 days of

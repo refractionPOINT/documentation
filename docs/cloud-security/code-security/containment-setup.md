@@ -15,7 +15,7 @@ policies control them. For what these features promise, see
 
 | Permission | Allows |
 |---|---|
-| `cloudsec.get` | Reading findings, the evidence chain, coverage, live impact, image lineage and remediation runs. Running a runtime check, which only reads. |
+| `cloudsec.get` | Reading findings, the evidence chain, coverage, live impact, image lineage and remediation runs. Running a runtime check, which starts collecting package evidence on the finding's sensors and changes nothing else. |
 | `cloudsec.set` | Writing policies, pushing Terraform maps and build provenance, rescans. |
 | `cloudsec.respond` | Requesting, approving, rejecting and cancelling remediation runs, pressing **Open AutoFix PR**, and writing a `response` policy. |
 
@@ -57,19 +57,19 @@ with `401`, and refuses a repeated delivery for 24 hours.
 
 ## Image lineage
 
-Code Security links each running image digest to the repository and commit that
-built it, without any change to your build pipeline. Every link carries a
-`status`:
+Code Security tries to link each running image digest to the source it was built
+from, without any change to your build pipeline. Every link carries a `status`:
 
 | Status | How it is established |
 |---|---|
-| `inferred` | The image's build steps and file paths match a Dockerfile in a repository you connected. It names a repository and a commit range, never an exact build commit. |
+| `inferred` | The image's build steps and file paths match a Dockerfile in a repository you connected. It names the repository and the scanned commit whose Dockerfile matched. It does not identify the build commit. |
 | `asserted` | The image carries OCI `org.opencontainers.image.source` and `revision` labels, or an unsigned build record, pointing at a connected repository. Anyone who can build the image can write these. |
-| `verified` | A signature from Google Cloud Build or from GitHub Actions artifact attestations checks out for that exact digest and a repository in your connections. |
+| `verified` | A signature checks out for that exact digest and a repository in your connections. It comes from Google Cloud Build, from GitHub Actions artifact attestations, or from a statement you pushed that matches a trusted signing identity in your `provenance_trust` policy. |
 | `ambiguous` | More than one source matches, or two sources disagree. Neither is used. |
 | `unknown` | No usable evidence, or the evidence is past its window. |
 
-Nobody else's signature makes a link `verified`. A label or an unsigned build
+Among the evidence Code Security collects itself, only Google Cloud Build and
+GitHub Actions signatures make a link `verified`. A label or an unsigned build
 claim stays `asserted` however it is written.
 
 The lineage coverage line counts only your own images: images in your own
@@ -138,7 +138,7 @@ much:
 |---|---|
 | `off` (default) | Nothing about live resources. The check is exactly what it was without this feature. |
 | `risk_summary` | Counts, the environment, yes/no exposure, privilege and sensitivity facts, the highest severity, and a link that needs a LimaCharlie login. No resource names, account IDs, IP addresses or sensor IDs. |
-| `resource_details` | The above plus display names of the affected resources. |
+| `resource_details` | The above plus per-declaration impact details. Resource names are still left out of the pull request. The authenticated impact view can show them. |
 
 When several policies select one repository, the one that discloses least wins.
 The impact lookup has a 2-second budget. If it fails or runs out of time, the

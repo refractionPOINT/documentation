@@ -9,11 +9,12 @@ that involves a remediation.
 | Situation | What Code Security does |
 |---|---|
 | The security graph is slow or down during a pull-request check | The check publishes its normal scan verdict, unchanged, with a note that the live context is missing. Impact reads give `graph_unavailable` or `deadline`. |
-| A sensor stops reporting | Runtime answers for that resource become `unknown`. A lapse never turns into `not_observed`. |
+| A sensor stops reporting | A lapse never turns into `not_observed`. The answer becomes `present` or `unknown`, with a reason. A package already seen loaded or running stays so. |
 | Deployment or scan evidence goes stale | The affected stage or coverage line reads `stale` or `coverage_stale`. Verification waits. |
 | A fix is merged but not deployed everywhere | The run stays in `monitoring` with `old_digest_running` or `deployment_partial`. It is not `verified`. |
 | The fixed image has no completed scan | The run stays in `monitoring` with `fix_digest_unscanned`. |
-| A run's monitoring window ends without proof | The run ends `expired` with `window_ended`. The finding is not marked fixed. |
+| A fix run's deadline passes without proof | If the old digest is still running, the run ends `persists`. Otherwise it ends `expired` with `deadline`. The finding is not marked fixed. |
+| A repository fix is merged but nothing in scope runs it | The run ends `expired` with `pr_merged_unverifiable`. It is never marked `verified`. |
 | The vulnerable digest runs again after verification | Within 30 days of verification, the run becomes `regressed` and the evidence chain says so. |
 | A temporary control reaches its expiry | It is removed. Detection rules also carry their own expiry, so they are deleted even if Code Security is unavailable. Isolation is released at most 4 hours after it is applied. |
 | A temporary control cannot be removed on time | After three failed removals, or 15 minutes past expiry, a HIGH `code-response-cleanup-failed` finding opens. It closes once the control is confirmed gone. |
@@ -44,8 +45,8 @@ that involves a remediation.
 4. An isolation it applied is released at its expiry, after at most 4 hours.
    To release it earlier, rejoin the sensor to the network as you would any
    isolated sensor.
-5. A pull request it opened stays open for you to close. Closing it ends the
-   run with `pr_closed`.
+5. A pull request it opened stays open for you to close. The run keeps
+   monitoring until its deadline and then ends `expired`.
 
 ### Stop all Code Security actions in your organization
 
