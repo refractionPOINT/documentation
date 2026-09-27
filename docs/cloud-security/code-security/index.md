@@ -50,7 +50,9 @@ keep it.
   jobs use the connection's token. That is why those connections ask for
   read-only scopes.
 - **Only the results leave the sandbox:** findings, the software bill of
-  materials and hashes. File contents, diffs and secret values are never stored.
+  materials and hashes. Findings never hold file contents, diffs or secret
+  values. The commit package the scan reads, and the files AutoFix edits, are
+  deleted when the job ends. See [Data handling and privacy](data-handling.md).
 - **Secrets are stored as a salted hash.** No field on a finding can hold the
   credential itself.
 - **Nothing is written to your repositories unless you allow it.** Pull-request
@@ -85,5 +87,10 @@ source** filters narrow the list.
 - [Pull-request checks and push rescans](pull-requests.md): scan every push and gate merges on GitHub.
 - [AutoFix pull requests](autofix.md): let LimaCharlie open dependency upgrade pull requests.
 - [Bring your own scanner](bring-your-own-scanner.md): scan in your own CI, or push SARIF and CycloneDX results.
+- [What Code Security guarantees](guarantees.md): the rules behind `verified`, image lineage, runtime evidence and remediation.
+- [Configure evidence, lineage and remediation](containment-setup.md): permissions, connections, pull-request disclosure, remediation runs and playbooks.
+- [Automatic behavior and incident response](incident-response.md): what happens on its own, and how to stop or undo a remediation.
+- [Data handling and privacy](data-handling.md): what is read, what is kept, retention and purge.
 - [Reference](reference.md): languages, limits, status codes and API routes.
 - [Troubleshooting](troubleshooting.md): common problems and how to fix them.
+- [Unknown, partial and refusal reasons](reasons.md): every reason code and what to do about it.

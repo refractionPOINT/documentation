@@ -16,7 +16,9 @@ AutoFix needs:
   AutoFix to open fix pull requests**. For any other App, add the permissions
   under the App's **Permissions & events** on GitHub, then have an organization
   owner approve the change on the installation page;
-- an enabled code-scanning policy that selects the repository.
+- an enabled code-scanning policy that selects the repository;
+- the `cloudsec.respond` permission for whoever asks for the fix. `cloudsec.set`
+  does not include it. See [Permissions](containment-setup.md#permissions).
 
 There is no separate policy switch. Once the permissions are granted, the
 **Code security** Overview tab stops showing **Automated fixes** as needing
@@ -37,8 +39,13 @@ as `available`.
     limacharlie cloudsec code autofix fnd_2290bab86c1b4d0374d1e2666f64aeca
     ```
 
-The request is accepted immediately. The pull request appears a few minutes
-later, on a branch named `limacharlie/autofix/<ecosystem>-<package>` (for
+Each request creates a remediation run of type `open_fix_pr`. The person who
+asks is recorded as both requester and approver, and the pull request comes back
+to the run through an authenticated callback. Asking again before the pull
+request is open returns the same run. See
+[Remediation runs](containment-setup.md#remediation-runs).
+
+The pull request appears a few minutes later, on a branch named `limacharlie/autofix/<ecosystem>-<package>` (for
 example `limacharlie/autofix/npm-babel-core` for `@babel/core`). There is at most
 one open AutoFix pull request per repository and package.
 
@@ -46,7 +53,8 @@ You can only ask for a fix by finding: the package and target version come from
 LimaCharlie's own scan, never from the request.
 
 The finding closes once the pull request is merged and the next scan of the
-default branch no longer sees the vulnerable version.
+default branch no longer sees the vulnerable version. That closure is what moves
+the run to `verified`. A merged pull request alone is not a fix.
 
 ## What gets edited
 
@@ -91,10 +99,14 @@ Maven versions inherited from a parent POM, and pip pins other than `==`, `===`,
 
 ## When no pull request appears
 
-The request is accepted before the work runs, so a refusal is not returned by
-the CLI or the console. It is reported as a `cloudsec.code_autofix_refused`
-operational event in the organization's event stream, with the reason in its
-`error` field. Operational events are off by default: turn them on with
+The request is accepted before the work runs, so most refusals are not
+returned by the CLI or the console. The run records the reason in its
+`failure_reason` (`limacharlie cloudsec remediation get <run_id>`). It is also
+reported as a `cloudsec.code_autofix_refused` operational event in the
+organization's event stream, with a sentence in `error`, a reason code in
+`reason`, and the run in `remediation_id`. The table below lists the codes that
+appear in `error`. The `reason` field and the run's `failure_reason` use the
+[fix pull request codes](reasons.md#fix-pull-requests-and-autofix). Operational events are off by default: turn them on with
 `ops_events: true` in the [`emission` policy](../configuration.md#emission-the-event-feed).
 
 Common reasons:
@@ -110,3 +122,15 @@ Common reasons:
 | `autofix_pr_already_open` | A pull request for that package is already open. |
 | `autofix_budget_exhausted` | The daily limit of 20 AutoFix requests was reached. Requests count when they start, even if they later fail. The limit resets at midnight UTC. |
 | `autofix_job_failed`, `autofix_pr_failed` | The job or the pull request creation failed. Try again later. |
+
+Some requests are refused immediately, with an HTTP error:
+
+| Error | Meaning |
+|---|---|
+| `403 missing_permission` | You lack `cloudsec.respond`. |
+| `422 action_unavailable` | The finding is not a dependency finding AutoFix can raise, or fix pull requests are not enabled for your organization. |
+| `429 capacity` | Your organization already has 100 active remediation runs, or this finding has 10. |
+| `503 disabled` | Remediation is not enabled for your organization yet. |
+
+See [Unknown, partial and refusal reasons](reasons.md#remediation-runs) for
+every code.

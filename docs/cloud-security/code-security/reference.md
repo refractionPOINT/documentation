@@ -150,8 +150,9 @@ on by default. See [Events](../api-reference.md#events).
 ## API routes
 
 All routes are under `https://api.limacharlie.io/v1/cloudsec/{oid}`. Reads need
-`cloudsec.get`, writes need `cloudsec.set`, and the organization must be
-subscribed to `ext-cloud-security`.
+`cloudsec.get` and writes need `cloudsec.set`, except AutoFix and remediation
+decisions, which need `cloudsec.respond`. The organization must be subscribed to
+`ext-cloud-security`.
 
 | Route | CLI | Purpose |
 |---|---|---|
@@ -163,13 +164,30 @@ subscribed to `ext-cloud-security`.
 | `GET /code/images`, `GET /code/images/{digest}` | | Container images and one image's detail. |
 | `GET /code/image-repos`, `GET /code/image-repos/facets` | | Image repositories and their filter counts. |
 | `POST /code/scan` | `code rescan` | Rescan one repository. Body: `{repo, ref?, provider?}`. |
-| `POST /code/autofix` | `code autofix` | Open an AutoFix pull request. Body: `{finding_id, repo?}`. |
+| `POST /code/autofix` | `code autofix` | Open an AutoFix pull request as a remediation run. Needs `cloudsec.respond`. Body: `{finding_id, repo?}`. |
 | `POST /code/ingest` | `code ingest` | Push SARIF, CycloneDX or a scanner report. |
 | `POST /code/pr_check` | | Check a pull request. Used by the webhook rules. |
 | `POST /code/webhook` | | Point a GitHub App's webhook at LimaCharlie. See [the webhook API](pull-requests.md#the-webhook-api). |
 
 Findings are read with the standard [findings routes](../api-reference.md),
 filtered by `repo`.
+
+Evidence, lineage and remediation routes. See
+[Configure evidence, lineage and remediation](containment-setup.md) for the
+setup, and [Unknown, partial and refusal reasons](reasons.md) for the codes
+they return.
+
+| Route | Permission | Purpose |
+|---|---|---|
+| `GET /findings/{finding_id}/evidence-chain` | `cloudsec.get` | The finding's evidence chain. Optional `runtime=true`. |
+| `POST /findings/{finding_id}/runtime-check` | `cloudsec.get` | Check whether the finding's package was seen running. Reads only. |
+| `GET /code/coverage` | `cloudsec.get` | Coverage lines with their denominators. |
+| `GET /code/impact` | `cloudsec.get` | Live impact of a commit (`repo_urn`, `commit`) or a finding (`finding_id`). |
+| `GET /code/provenance`, `POST /code/provenance` | `cloudsec.get`, `cloudsec.set` | List or push build provenance. |
+| `POST /code/iac-map`, `GET /code/iac-map/status` | `cloudsec.set` | Push a Terraform map, and read its publication status. |
+| `POST /findings/{finding_id}/remediations` | `cloudsec.respond` | Request a remediation run. Body: `{action, idempotency_key}`. |
+| `GET /remediations`, `GET /remediations/{run_id}` | `cloudsec.get` | List runs, or read one run with its steps. |
+| `POST /remediations/{run_id}/approve`, `reject`, `cancel` | `cloudsec.respond` | Decide a run. |
 
 ## Not available yet
 
