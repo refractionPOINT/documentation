@@ -220,10 +220,22 @@ expiry most times, so it is not free either. It is simply not budgeted.
 
 ## Querying mail with LCQL
 
-`EMAIL_*` events are queryable like any other telemetry in the Query Console and
-through `limacharlie search`, over the platform's normal retention rather than
-the 35-day product index. That makes it the right tool for questions that reach
-further back than the queue does.
+The **Email Security → Hunt** screen runs ordinary LCQL search over
+`EMAIL_MESSAGE` events under your own organization permissions. Its guided
+filters can also be opened in the Query Console. Other emitted `EMAIL_*` events
+are searchable in the Query Console and through `limacharlie search`.
+
+These searches cover retained telemetry, independently of the Email Security
+message index and raw-message retention. They can find older emitted messages
+when telemetry is retained longer than the index. Initial historical backfill
+rows do not emit `EMAIL_MESSAGE` and are not included; inspect those through the
+message index. Search coverage is bounded by the organization's actual telemetry
+retention, not a promise that every organization has a year of searchable mail.
+
+To act on matches, select the messages and use
+[bulk remediation](remediation.md). Review its read-only preview and confirm the
+exact selection. The preview uses current indexed state, so an event that is
+still searchable may no longer have a retained message available for action.
 
 Use `limacharlie ai generate-query` to build the query and
 `limacharlie search validate` before running it — LCQL is validated against

@@ -258,16 +258,12 @@ index lookup rather than a walk and takes it out of the budget entirely.
 
 ### The replay budget
 
-Two `POST` routes are reads as well, and they are the most expensive ones here.
+`POST /rules/backtest` re-reads stored originals, decrypts and decompresses them,
+parses them into the Message Data Model, and evaluates the candidate rule. Its
+cost follows **how many messages are in the window**, not how many match.
 
-- **`POST /rules/backtest`** — replaying a candidate rule does not query an
-  index, it re-reads your mail. For every message in the window it fetches the
-  stored original, decrypts it, decompresses it, parses it back into the Message
-  Data Model and evaluates the rule against it. Its cost therefore follows **how
-  many messages are in the window**, not how many the rule matches.
-- **`POST /hunts`** — a retro-hunt is the same shape over a wider window. It is
-  budgeted now, before it serves, so that the budget is not a change of contract
-  later. See [Registered, but not implemented yet](#registered-but-not-implemented-yet).
+Historical mail searches use the platform's ordinary LCQL search service, with
+its own search limits. See [Historical hunting](#historical-hunting).
 
 This budget is counted in **messages re-read** rather than in requests, and one
 call is charged the most it could re-read (2,000 — the backtest's own scan
@@ -296,7 +292,7 @@ Over the budget the request answers `429` with:
 `rate_bucket` is `mailsec_post_read` — **not** the `mailsec_read` above, and the
 difference matters to a client: the two budgets refill on different windows, so
 a client that treated them as one would retry a backtest on advice that does not
-apply to it. `route` is `rule_backtest` or `hunt_create`. `Retry-After` is `60`
+apply to it. `route` is `rule_backtest`. `Retry-After` is `60`
 (the decay step), and `X-RateLimit-Quota` / `X-RateLimit-Period` restate the
 budget as `6` and `600` seconds.
 
@@ -405,60 +401,26 @@ close a report must be able to reopen one, or a mis-click is permanent.
 | `POST /rules/validate` | Compile a candidate `dr-mail` rule and report its errors without saving it. Body: `rule` (object), optional `rule_id`. Runs the same validator the `dr-mail` Hive applies on save, including lookup existence checks when the API's Hive metadata access is configured. Response blocks receive shape and size checks; full response compilation happens in the collector. See [Custom Rules](custom-rules.md#validation). An invalid rule is a `200` carrying `valid: false` and the reason, not an error response. Requires `mailsec.get` |
 | `POST /rules/backtest` | Evaluate a candidate `pre_verdict` rule over re-parsed stored messages. Original pipeline enrichments are not reconstructed. Lookups use current records when the Hive resolver is configured; `post_verdict` rules are refused. See [backtest limitations](custom-rules.md#what-a-backtest-can-evaluate). Body: `rule`, optional `rule_id`, `since`, `until`. Every response carries a `coverage_note` and counts what it could not examine (`skipped_no_raw`, `skipped_unparse`, `truncated`). `precision` is `null` — not `0` — when nothing it matched has an analyst disposition yet. Every message in the window is re-read from storage, which makes this the most expensive read on the surface: it is subject to the [replay budget](#the-replay-budget). Requires `mailsec.get` |
 
-## Registered, but not implemented yet
+## Historical hunting
 
-Three retro-hunt routes appear in the public OpenAPI document. **None of them is
-served.**
+The console's **Email Security → Hunt** screen searches
+[LCQL over `EMAIL_MESSAGE`](automation.md#querying-mail-with-lcql) using your
+organization's ordinary historical-event search permissions. Use the guided
+filters or open the query in the Query Console. The supported API workflow is
+the platform's search API; there is no separate MailSec hunt job API.
 
-- `POST /hunts` — replay a detect block or an LCQL query over the message history
-- `GET /hunts/{hunt_id}` — a hunt's progress and its matches
-- `POST /hunts/{hunt_id}/remediate` — act across everything a hunt matched
+Search matches contain stable message UUIDs. To act on selected matches, use
+[bulk remediation](remediation.md): preview the exact selection, review the
+current message states and affected mailboxes, then explicitly confirm execution.
+The preview is read-only. A search result alone does not authorize remediation.
 
-They are registered now so that the URLs and their permission gates are frozen
-before any client ships against them, and so that calling one gives you a
-refusal rather than a `404` you cannot tell from a typo. The permission gates are
-live and are the same ones the served routes use; what is missing is the replay
-engine behind them.
-
-`POST /hunts` is already counted against the
-[replay budget](#the-replay-budget), even while it refuses. That is deliberate:
-the budget exists to bound what a hunt will cost when it serves, and adding it
-on the day the engine lands would be a change of contract for clients that had
-already shipped.
-
-**Do not build against them yet — but the refusal itself is a contract you can
-branch on.** All three answer a **`400`** carrying the same typed, non-retryable
-`not_implemented`. `GET /hunts/{hunt_id}` answers:
-
-```json
-{
-  "error": "get_hunt is not implemented until M7 (needs: the replay/retro-hunt engine)",
-  "retry": false,
-  "data": {
-    "error_code": "not_implemented",
-    "rpc": "get_hunt",
-    "milestone": "M7",
-    "needs": "the replay/retro-hunt engine"
-  }
-}
-```
-
-`error_code` is the only field to branch on. `rpc` names the route that refused
-and differs per route; `needs` is prose and also differs — the remediation route
-answers `the replay/retro-hunt engine + the remediation executor`. The `error`
-text is meant for a human reading a log and is free to change; the code is not.
-`milestone` is an internal build-order label, not a published schedule or a
-commitment to a date.
-
-`retry` is `false` and means it: an unimplemented route does not become
-implemented inside a retry budget, so a client that retries pays for the same
-answer again. Branch on `error_code` to hide the feature today, and the same
-check keeps working when the engine lands.
-
-Until they serve, mail hunting is
-[LCQL over `EMAIL_MESSAGE`](automation.md#querying-mail-with-lcql) — which is what
-the console's **Hunt** screen runs — and acting on what you find is
-[bulk remediation](remediation.md) over the message ids you selected.
+Historical events follow the organization's telemetry retention. The message
+index and raw EML follow [Email Security retention](policy.md#retention), which
+can be shorter. A historical match may therefore remain searchable after its
+current message row or raw copy has expired; the bulk preview reports whether
+that message can still be resolved for action. Messages processed only by the
+initial historical backfill have no `EMAIL_MESSAGE` event and are outside this
+LCQL search. Use the message index to inspect retained backfill rows.
 
 ## Explicit override in alert-only mode
 
