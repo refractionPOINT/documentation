@@ -377,11 +377,11 @@ Enable `containeranalysis.googleapis.com` in the project that owns the service
 account, as described under [Enable the APIs](#enable-the-apis), and in the
 image project if it is disabled there.
 
-Without the role, the image is not scanned and its status reads
-`registry_permission_denied`, naming the registry and this role. The code
+Without registry pull access, the image is not scanned and its status reads
+`registry_permission_denied`, naming the registry and missing pull role. The code
 security status shows `image_registry_permission`. A refused image is retried
 less and less often, down to once a day. It keeps being retried, so granting
-the role fixes it without any other change. To retry right away, use
+the image pull role fixes it without any other change. To retry right away, use
 **Sync now** on the source-control connection (for example GitHub) whose
 scans reference the image.
 
