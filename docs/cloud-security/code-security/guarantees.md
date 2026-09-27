@@ -2,8 +2,9 @@
 
 Code Security connects a code change to what runs in your cloud, lets you act
 on it through an approved LimaCharlie workflow, and checks afterwards whether
-the risk is gone. When the evidence is incomplete, it says `unknown` and gives
-the reason. It does not fill a gap with a guess.
+the risk is gone. When the evidence is incomplete, it says so, as `unknown`,
+`partial` or `present`, and gives the reason. It does not fill a gap with a
+guess.
 
 These are the rules it follows. Each one is enforced in the product, and the
 reason codes it returns when a rule is not met are listed in
@@ -12,14 +13,15 @@ reason codes it returns when a rule is not met are listed in
 ## The rules
 
 **A fix is `verified` only when it runs everywhere in scope.** Every in-scope
-deployment must have fresh, complete evidence. Every digest it runs must be a
-proven build of the fix, and nothing in scope may still run the vulnerable
-digest. For an image fix, each running fixed digest also needs a completed scan
+deployment must have fresh, complete evidence. Every digest it runs must carry
+an uncontested build record, asserted or verified, that names the fix commit.
+Nothing in scope may still run the vulnerable digest. For an image fix, each running fixed digest also needs a completed scan
 that does not report the issue. The scan must come from a scanner that reported
 the original vulnerability, using vulnerability data at least as fresh as the
 finding. An image that was never scanned is never treated as clean. For a
-dependency fix in a repository, detection must also close the finding. A fix
-with no deployment in scope ends as unverifiable, not `verified`. A merged pull
+dependency fix in a repository, detection must also close the finding. A merged
+repository fix with no deployment in scope ends as unverifiable, not
+`verified`. A merged pull
 request is progress, not a fix. If the vulnerable digest runs again within 30
 days of verification, the run becomes `regressed`. You do not have to delete the
 old image from your registry. While it exists, its own finding stays open.
@@ -33,8 +35,9 @@ Google Cloud Build or GitHub Actions artifact attestation, or from a statement
 you pushed that matches a signing identity you trust in your `provenance_trust`
 policy. Conflicting evidence is `ambiguous`, never resolved by picking one. Public vendor images that match
 none of your connections are reported separately as third-party and do not
-count against your coverage. None of this requires a change to your build
-pipeline.
+count against your coverage. Inferred and label-based links need no change to
+your build pipeline. A `verified` link needs a signed attestation, which your
+build has to produce.
 
 **"Not observed" needs a complete telemetry window.** A runtime check says
 `not_observed` only when every sensor on the resource reported a complete window.

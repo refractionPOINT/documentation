@@ -151,8 +151,9 @@ on by default. See [Events](../api-reference.md#events).
 
 All routes are under `https://api.limacharlie.io/v1/cloudsec/{oid}`. Reads need
 `cloudsec.get` and writes need `cloudsec.set`. The exceptions: AutoFix and
-remediation requests and decisions need `cloudsec.respond`, and a runtime check
-(`POST`) needs only `cloudsec.get`. See the table below. The organization must be subscribed to
+remediation requests and decisions need `cloudsec.respond`, a runtime check
+(`POST`) needs only `cloudsec.get`, and the map status read
+(`GET /code/iac-map/status`) needs `cloudsec.set`. See the table below. The organization must be subscribed to
 `ext-cloud-security`.
 
 | Route | CLI | Purpose |

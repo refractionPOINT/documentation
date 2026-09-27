@@ -16,7 +16,7 @@ that involves a remediation.
 | A fix run's deadline passes without proof | If the old digest is still running, the run ends `persists`. Otherwise it ends `expired` with `deadline`. The finding is not marked fixed. |
 | A repository fix is merged but nothing in scope runs it | The run ends `expired` with `pr_merged_unverifiable`. It is never marked `verified`. |
 | The vulnerable digest runs again after verification | Within 30 days of verification, the run becomes `regressed` and the evidence chain says so. |
-| A temporary control reaches its expiry | It is removed. Detection rules also carry their own expiry, so they are deleted even if Code Security is unavailable. Isolation is released at most 4 hours after it is applied. |
+| A temporary control reaches its expiry | It is removed. Detection rules also carry their own expiry, so they are deleted even if Code Security is unavailable. Isolation expires at most 4 hours after it is applied, and cleanup then releases it. |
 | A temporary control cannot be removed on time | After three failed removals, or 15 minutes past expiry, a HIGH `code-response-cleanup-failed` finding opens. It closes once the control is confirmed gone. |
 | An executor never reports back | The run retries, then fails with `dispatch_exhausted` or `deadline`. A late or repeated callback has no second effect. |
 | The playbook installation or the target changes after approval | The run stops before acting, with `installation_changed` or `target_changed`. |
@@ -42,8 +42,9 @@ that involves a remediation.
    for your organization.
 3. A temporary detection it installed expires on its own. To remove it now,
    delete its D&R rule, named `cloudsec-rem-*`.
-4. An isolation it applied is released at its expiry, after at most 4 hours.
-   To release it earlier, rejoin the sensor to the network as you would any
+4. An isolation it applied expires after at most 4 hours and cleanup releases
+   it. If release fails, cleanup keeps retrying and a HIGH finding opens. To
+   release it earlier, rejoin the sensor to the network as you would any
    isolated sensor.
 5. A pull request it opened stays open for you to close. The run keeps
    monitoring until its deadline and then ends `expired`.

@@ -323,7 +323,9 @@ A run in state `failed` or `expired` carries `failure`:
 
 ### Playbook actions
 
-`playbook_reason` on a notify, ticket, temporary-detection or isolation run:
+`playbook_reason` on a notify, ticket, temporary-detection or isolation run.
+The catalog also holds `consent_expired` and `claim_stale`, which apply only to
+validation templates that are not generally available.
 
 | `playbook_reason` | Action | Meaning |
 |---|---|---|

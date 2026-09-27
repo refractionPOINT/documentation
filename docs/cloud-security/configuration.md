@@ -245,7 +245,7 @@ has no effect on the others. At least one list must be non-empty:
 | List | Effect |
 |---|---|
 | `collection` | Matching scopes are skipped by the collection sweep. Only this list may add the `services` and `resource_types` narrowers on top of the shared resource matchers — an account-only rule excludes the whole account, while adding `services`/`resource_types` narrows the exclusion to those collector services or resource types inside the matched scope. |
-| `scanning` | Matching workloads are never scanned by the agentless snapshot scanner, even if the scanning policy's scope selects them. |
+| `scanning` | Accepted for the agentless workload snapshot scanner. That scanner is not available, so this list has no effect today. |
 | `emission` | Matching events are dropped before delivery to the event stream. Only account/name/provider matchers are honored here — an emission rule constrained on labels or tags can never be satisfied by a lean event and so never drops one. |
 
 !!! warning "A collection exclusion deletes the inventory it excludes"
@@ -267,8 +267,8 @@ How a `collection` rule is judged:
 - **`provider`, `region` and `resource_types` are checked on each row.** A
   provider rule never matches another cloud's account.
 - **A row that does not state a fact the rule needs is kept.** For example, a
-  `region` rule keeps rows with no region, and the sweep records a note saying
-  how many rows were kept for that reason.
+  `region` rule keeps rows with no region, and the sweep records a note that
+  those rows were kept.
 - **Relationships go with what they connect.** Removing a resource also removes
   its relationships, so a bucket-name rule removes that bucket's access grants.
   Containers are the exception: a project-name rule does not remove grants made

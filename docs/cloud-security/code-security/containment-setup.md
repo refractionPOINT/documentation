@@ -45,7 +45,7 @@ All of these are read-only unless the row says otherwise.
 | LimaCharlie sensors | A sensor on the host or node | Runtime checks. Without one the answer is `unknown` with `no_sensors`. |
 
 GitLab and Bitbucket connections are scanned with their read tokens. Pull-request
-checks, fixes and other writes on GitLab and Bitbucket are not available yet.
+checks, fixes and other writes on GitLab and Bitbucket are not enabled yet.
 
 ### Webhooks
 
