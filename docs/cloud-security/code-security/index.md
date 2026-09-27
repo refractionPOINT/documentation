@@ -29,6 +29,10 @@ pull requests that upgrade vulnerable dependencies.
 See [Supported languages and ecosystems](reference.md#supported-languages-and-ecosystems)
 for the full coverage of each engine.
 
+Dependency findings name the package, the installed version and the version
+that fixes it. They are ranked with EPSS and CISA KEV, so a known-exploited
+advisory sorts above a high CVSS score nobody exploits.
+
 ### Image lineage coverage
 
 The image lineage coverage percentage counts **your own distinct running image
@@ -47,10 +51,6 @@ When an image's ownership cannot be established, the breakdown reports
 `ownership_unknown` and withholds the percentage until the source or registry
 connection supplies enough evidence. Ordinary unsigned build metadata can
 identify a possible source but does not count as a verified signature.
-
-Dependency findings name the package, the installed version and the version
-that fixes it. They are ranked with EPSS and CISA KEV, so a known-exploited
-advisory sorts above a high CVSS score nobody exploits.
 
 ## How your code is handled
 
