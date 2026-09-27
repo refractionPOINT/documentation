@@ -662,36 +662,15 @@ Template keys must be verdicts. Values are plain text (no `<` or `>`), capped at
 
 ## `hunt_defaults`
 
-Starting values for retro-hunt requests.
+This legacy record type remains accepted for compatibility, but no current
+workflow consumes it. It does not control the Hunt screen, LCQL search limits,
+or remediation safety. New configurations do not need it.
 
-```yaml
-policy_type: hunt_defaults
-window_days: 7
-max_results: 1000
-dry_run: true
-```
-
-| Field | Default | Range |
-|---|---|---|
-| `window_days` | 7 | 1–365 |
-| `max_results` | 1000 | 1–100000 |
-| `dry_run` | `true` | An operation that can bulk-remediate defaults to "show me what this would match" |
-
-!!! warning "Nothing reads this record yet"
-    The record type validates and composes like every other one, and it is
-    documented here because it is savable and will be refused if you get it
-    wrong. But **no surface consumes it today.** The server-side retro-hunt
-    (`POST /hunts`, `GET /hunts/{hunt_id}`, `POST /hunts/{hunt_id}/remediate`)
-    is registered in the public OpenAPI document and answers a typed
-    `not_implemented` — the URLs and their permission gates are frozen ahead of
-    the engine that will serve them. The console's **Hunt** screen is a
-    different thing entirely: it compiles your criteria to
-    [LCQL](automation.md#querying-mail-with-lcql) and runs the ordinary
-    historical-event search over `EMAIL_MESSAGE`, with its own window control,
-    and it does not read this record.
-
-    Writing `hunt_defaults` now is harmless and changes nothing. Do not treat a
-    `dry_run: true` here as a safety control over anything.
+Use the Hunt screen's time-window and filter controls for
+[historical LCQL search](automation.md#querying-mail-with-lcql). Actions on the
+messages you select use [bulk remediation](remediation.md), with a read-only
+preview and explicit confirmation. A legacy `dry_run` value does not replace
+that confirmation.
 
 ---
 
