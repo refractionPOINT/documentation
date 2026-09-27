@@ -235,7 +235,7 @@ Each adds one inventory or analysis surface. Skipping one leaves that surface
 | `roles/secretmanager.viewer` | Secret **metadata** inventory (names/rotation posture — never secret values) | `secret_manager` |
 | `roles/osconfig.vulnerabilityReportViewer` | Agentless workload vulnerabilities from VM Manager | `osconfig_vuln` |
 | `roles/osconfig.inventoryViewer` | The OS-inventory join that attaches package name + installed/fixed version to each CVE | *(not probed — exercised during the sweep)* |
-| `roles/containeranalysis.occurrences.viewer` | **Container image** vulnerabilities from Artifact Analysis, for images in Artifact Registry and Container Registry | `artifact_analysis` |
+| `roles/containeranalysis.occurrences.viewer` | **Container image** vulnerability and signed Cloud Build provenance occurrences from Artifact Analysis, for images in Artifact Registry and Container Registry | `artifact_analysis` |
 | `roles/artifactregistry.reader` | [Code Security](../code-security/index.md) pulling your **private container images** to scan them. Already included in `roles/viewer`; add it if you use the required least-privilege roles | *(not probed — exercised when an image is scanned)* |
 | `roles/recommender.iamViewer` | Unused-privilege findings (activity-based CIEM) | `activity_ciem` |
 | `roles/policyanalyzer.activityAnalysisViewer` | Dormant-identity / last-authentication findings | `activity_ciem` |
@@ -337,6 +337,28 @@ this connection's service account. That service account needs
 `roles/artifactregistry.reader` on **the project that hosts the image**. That
 is often not the project where the image runs. `gcr.io` is served by Artifact
 Registry, so the same role covers it.
+
+To verify Google Cloud Build provenance for those images, also grant this
+connection's service account `roles/containeranalysis.occurrences.viewer` on
+the **project that stores the image and its Artifact Analysis occurrences**.
+It is a read-only role. A grant on the project where the workload runs is not
+enough when the image lives in a different project. The role appears in the
+optional permissions list above and in the web app's generated GCP grant list.
+Without it, Code Security can still scan an image when registry access is
+available, but its Cloud Build lineage cannot be verified.
+
+For a project-level grant, use the service account and image project you
+selected during setup:
+
+```bash
+gcloud projects add-iam-policy-binding "IMAGE_PROJECT_ID" \
+  --member "serviceAccount:COLLECTOR_SERVICE_ACCOUNT_EMAIL" \
+  --role roles/containeranalysis.occurrences.viewer
+```
+
+Enable `containeranalysis.googleapis.com` in the project that owns the service
+account, as described under [Enable the APIs](#enable-the-apis), and in the
+image project if it is disabled there.
 
 - With `roles/viewer` at the organization or folder, you already have it.
 - With the required least-privilege roles, grant it at the same node (variables as in
