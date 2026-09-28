@@ -88,6 +88,7 @@ connection details come first so the checklist can use your project ID.
 | Reports mailbox (optional) | An existing mailbox where employees forward suspicious messages. Leaving it blank is fine; the User reports queue will stay empty. |
 | Existing mail to analyze (days) | Keep 14 to analyze recent history, or enter 0 to start with new mail only. Historical analysis does not move old messages. |
 | Observe outbound mail | Whether to analyze sent messages for signs of compromised accounts. Sent mail is observation-only. |
+| Additional internal domains (optional) | Leave blank unless you send from a domain that has no mailbox or alias in this tenant. Your mailbox and alias domains are detected automatically. See [Internal Domains](internal-domains.md). |
 
 Creating a secret saves it immediately, even if you later cancel the connection
 wizard. Keep the secret enabled and paste only the credential JSON, without an

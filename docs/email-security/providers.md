@@ -30,6 +30,7 @@ scope:
   exclude_addresses: []
   include_groups: []
   domains: []
+  internal_domains: []
 
 ingest:
   mode: auto | push        # Workspace requires explicit push
@@ -62,6 +63,7 @@ Which mailboxes the connection covers.
 | `exclude_addresses` | Mailboxes never to cover. Excludes always win over includes. |
 | `include_groups` | Directory groups to expand into addresses before discovery. |
 | `domains` | Restrict to mailboxes in these domains. **Every listed domain is enumerated**, so an account hosting several domains can name as many as it needs. **Empty means every domain in the account** — the intended default, and what the setup wizard writes. |
+| `internal_domains` | Extra domains your organization sends from, used only to label mail from them as `internal`. It does not change which mailboxes are covered. Most organizations leave it empty, because your mailbox and alias domains are detected automatically. See [Internal Domains](internal-domains.md). |
 
 Addresses and domains are lowercased on save.
 
