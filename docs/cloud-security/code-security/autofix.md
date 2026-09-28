@@ -39,9 +39,10 @@ as `available`.
     limacharlie cloudsec code autofix fnd_2290bab86c1b4d0374d1e2666f64aeca
     ```
 
-Each request creates a remediation run of type `open_fix_pr`. The person who
-asks is recorded as both requester and approver, and the pull request comes back
-to the run through an authenticated callback. Asking again before the pull
+Each request creates a remediation run of type `open_fix_pr`. A person or API key
+with `cloudsec.respond` can request it. The same identity is recorded as both
+requester and approver, and the pull request comes back to the run through an
+authenticated callback. Asking again before the pull
 request is open returns the same run. See
 [Remediation runs](containment-setup.md#remediation-runs).
 

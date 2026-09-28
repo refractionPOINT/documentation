@@ -20,7 +20,7 @@ policies control them. For what these features promise, see
 | `cloudsec.respond` | Requesting, approving, rejecting and cancelling remediation runs, pressing **Open AutoFix PR**, and writing a `response` policy. |
 
 `cloudsec.respond` is separate on purpose. `cloudsec.set` does not include it,
-because it lets a person change your repositories, detection rules and
+because it lets a person or API key change your repositories, detection rules and
 endpoints. The **Owner** and **Administrator** roles include it. Operator,
 Viewer and Basic do not. A user or API key that got its permissions before
 `cloudsec.respond` existed does not receive it automatically: grant it
@@ -149,10 +149,10 @@ live context is missing.
 
 Every change Code Security makes to your systems is a remediation run. A run
 states its target, which the server derives from the finding. You cannot point
-a run at another target. It waits for a person with `cloudsec.respond` to
-approve it, and its outcome comes back through an authenticated callback that
-the run records. Pre-approval is not available: every run needs a human
-approval.
+a run at another target. It waits for a person or API key with
+`cloudsec.respond` to approve it, and its outcome comes back through an
+authenticated callback that the run records. Pre-approval is not available:
+every run needs an approval from one of those identities.
 
 | Action | What it does | Needs |
 |---|---|---|
@@ -177,10 +177,11 @@ most 72 hours for approval and is monitored for up to 7 days after it acts.
 
 ### AutoFix is a remediation run
 
-Pressing **Open AutoFix PR** creates an `open_fix_pr` run. The person who
-presses is recorded as both requester and approver, so the button needs
-`cloudsec.respond`. The pull request and its outcome come back through the same
-callback as any other run. See [AutoFix pull requests](autofix.md).
+Pressing **Open AutoFix PR** creates an `open_fix_pr` run. A person or API key
+with `cloudsec.respond` is recorded as both requester and approver.
+An API key can approve this run just like an interactive user. The pull request
+and its outcome come back through the same callback as any other run. See
+[AutoFix pull requests](autofix.md).
 
 ### Response playbooks
 

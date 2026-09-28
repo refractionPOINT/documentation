@@ -48,8 +48,8 @@ score.
 
 **Every change to your systems has a named approver and a confirmed outcome.**
 Fix pull requests (AutoFix included), notifications, tickets, temporary
-detections and endpoint isolation all run as remediation runs. A person with the
-`cloudsec.respond` permission approves each run, the server derives its target
+detections and endpoint isolation all run as remediation runs. A person or API key
+with `cloudsec.respond` approves each run, the server derives its target
 from the finding, and the outcome comes back through an authenticated callback
 that the run records. Temporary controls expire on their own, after at most 7
 days, or 4 hours for isolation. If a control cannot be removed on time, a HIGH

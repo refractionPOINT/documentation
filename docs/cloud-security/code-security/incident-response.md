@@ -26,7 +26,8 @@ that involves a remediation.
 
 - Nothing is merged, deployed or rolled back.
 - No credential is revoked.
-- No run acts without a human approval. There is no pre-approval.
+- No run acts without approval from a person or API key with `cloudsec.respond`.
+  There is no pre-approval.
 - No target is taken from a request. The server derives it from the finding.
 - Runtime and exposure evidence never lower a finding's risk score.
 
