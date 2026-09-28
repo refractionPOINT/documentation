@@ -234,3 +234,7 @@ the Azure-specific checks follow.
 | `signin_activity` fails with a licence error | Sign-in activity requires Entra ID P1/P2 | Either accept the degrade or add the licence |
 | Directory data appears twice | An `azure` **and** an `entra` record both cover the tenant | This is handled automatically: the Azure connection defers its tenant-global directory collectors to the standalone [Entra](entra.md) record |
 | A scale set / App Service is missing | The resource type may need quota or a supported SKU in that subscription | Confirm the resource is visible to the SP with `az resource list` under the same identity |
+
+## Private Azure Container Registry images
+
+To scan private images in Azure Container Registry, assign **AcrPull** on each registry to the **existing app registration** used by this connection. Subscription Reader alone does not grant image pull access. LimaCharlie exchanges the app's credential for a token limited to each image repository's `pull` action. No registry admin account is needed. See [Microsoft's service principal instructions](https://learn.microsoft.com/en-us/azure/container-registry/container-registry-auth-service-principal#use-an-existing-service-principal) and [private image scanning](../code-security/container-registries.md).
