@@ -59,7 +59,10 @@ Some domains are never internal, whatever the directory says:
 - **Shared mailbox providers**, such as `gmail.com`, `outlook.com` and
   `yahoo.com`, stay external even if one of your users has an alias there.
   Anyone can hold a mailbox on those domains, so treating one as internal would
-  exempt every stranger on it from the inbound rules.
+  exempt every stranger on it from the inbound rules. This applies to a
+  mailbox's primary address too: if a protected mailbox is on a shared provider
+  domain, that domain still does not count as yours, and adding it to
+  **Additional internal domains** is refused.
 - **Google routing aliases** under `test-google-a.com` are ignored. Every
   Workspace tenant shares that parent domain.
 
