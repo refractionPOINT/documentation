@@ -1,5 +1,8 @@
 # Troubleshooting Code Security
 
+For evidence-chain, lineage, runtime-check and remediation reason codes, see
+[Unknown, partial and refusal reasons](reasons.md).
+
 Start with the **Set up code security** checklist on the **Code security** page,
 if it is shown. It names what is not set up and links to the fix. From the CLI,
 `limacharlie cloudsec code status` shows whether scans run and what failed.
@@ -59,6 +62,8 @@ if it is shown. It names what is not set up and links to the fix. From the CLI,
 |---|---|
 | No AutoFix pull request appears | Refusals are reported as `cloudsec.code_autofix_refused` events, once `ops_events` is on. See [When no pull request appears](autofix.md#when-no-pull-request-appears). |
 | `write_app_lacks_contents` | Grant **Contents: Read and write** to the App and approve on the installation page. |
+| `403 missing_permission` when asking for a fix | You need `cloudsec.respond`. `cloudsec.set` does not include it. See [Permissions](containment-setup.md#permissions). |
+| `503 disabled` when asking for a fix | Remediation is not enabled for your organization yet. |
 | The pull request warns that the lockfile is stale | Run the command in the pull request on its branch before merging. See [Lockfiles](autofix.md#lockfiles). |
 
 ## Pushed results and local scans

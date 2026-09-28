@@ -626,8 +626,13 @@ nav:
           - Pull-Request Checks & Push Rescans: cloud-security/code-security/pull-requests.md
           - AutoFix Pull Requests: cloud-security/code-security/autofix.md
           - Bring Your Own Scanner: cloud-security/code-security/bring-your-own-scanner.md
+          - What Code Security Guarantees: cloud-security/code-security/guarantees.md
+          - Evidence, Lineage & Remediation Setup: cloud-security/code-security/containment-setup.md
+          - Automatic Behavior & Incident Response: cloud-security/code-security/incident-response.md
+          - Data Handling & Privacy: cloud-security/code-security/data-handling.md
           - Reference: cloud-security/code-security/reference.md
           - Troubleshooting: cloud-security/code-security/troubleshooting.md
+          - Unknown, Partial & Refusal Reasons: cloud-security/code-security/reasons.md
       - Provider Setup:
           - Overview: cloud-security/provider-setup/index.md
           - Google Cloud: cloud-security/provider-setup/gcp.md
