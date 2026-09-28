@@ -621,6 +621,7 @@ nav:
           - Overview: cloud-security/code-security/index.md
           - Get Started: cloud-security/code-security/getting-started.md
           - Working with Results: cloud-security/code-security/results.md
+          - Private Container Registries: cloud-security/code-security/container-registries.md
           - Scan Policy: cloud-security/code-security/policy.md
           - Code Rules: cloud-security/code-security/code-rules.md
           - Pull-Request Checks & Push Rescans: cloud-security/code-security/pull-requests.md

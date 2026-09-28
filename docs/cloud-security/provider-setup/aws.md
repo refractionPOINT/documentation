@@ -281,3 +281,12 @@ guardrails to account for.
 |---|---|---|
 | `auth` fails: `… no EC2 IMDS role found` | Secret used the wrong key names → no static creds → default chain → IMDS | Use `access_key_id` / `secret_access_key` (no `aws_` prefix) |
 | `AccessDenied` on `sts:AssumeRole` | External ID mismatch, wrong trust-policy principal, or propagation | Confirm `aws_external_id` matches the trust condition; retry after a few seconds |
+
+## Private ECR images
+
+To scan private images in Amazon ECR, add these permissions to the **assumed role** used by this connection:
+
+- `ecr:GetAuthorizationToken` (this action uses `Resource: "*"`).
+- `ecr:BatchGetImage` and `ecr:GetDownloadUrlForLayer` on each ECR repository you want scanned.
+
+For an AWS Organization connection, grant the same permissions to the member-account role in the account that owns each image, and allow the connected role `organizations:DescribeAccount` so LimaCharlie can confirm that the image's account is a member. Keep the base IAM user's permission limited to `sts:AssumeRole`. Each pull credential is limited by a session policy to the one repository being scanned. Images in AWS accounts outside the connected account and its organization are not pulled. See [AWS's ECR pull permission reference](https://docs.aws.amazon.com/AmazonECR/latest/userguide/ECR_on_ECS.html) and [private image scanning](../code-security/container-registries.md).
