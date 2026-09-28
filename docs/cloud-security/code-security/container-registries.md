@@ -17,7 +17,7 @@ For Docker Hub, Quay.io, and GHCR, store the token in a LimaCharlie secret and c
 
 For ECR and ACR, LimaCharlie uses your existing cloud connection. It exchanges that connection for a short-lived registry pull credential; no second long-lived credential is needed. Each pull credential can read only the one repository being scanned: ACR tokens request `repository:<name>:pull`, and ECR tokens come from a session whose policy allows reads on that single repository.
 
-ECR images are pulled only from the connected AWS account, or from member accounts that AWS Organizations confirms belong to the connected organization. Images in other AWS accounts are reported as not scanned; LimaCharlie does not request credentials for them.
+ECR images are pulled only from the connected AWS account, or from member accounts that AWS Organizations confirms belong to the connected organization. Images in other AWS accounts are reported as not scanned; LimaCharlie does not request credentials for them. Likewise, ACR images are pulled only from registries that LimaCharlie has inventoried through your connected Azure subscriptions.
 
 If one image cannot be pulled, the pass is **partial**, not a clean result. Open the image to see the registry and reason. `image_registry_credential` means a usable credential is missing; `image_registry_permission` means the registry refused the supplied credential. After fixing access, use **Sync now** on the source connection to retry immediately, or wait for the next scheduled attempt.
 
