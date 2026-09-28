@@ -81,9 +81,8 @@ connected tenant, add it yourself. Typical cases:
 - A brand domain you send from through a relay or marketing platform.
 - A newly acquired company whose mail has not been migrated yet.
 
-You can set this in the connection setup wizard or later in the connection's
-settings under **Email Security → Settings**, in the **Additional internal
-domains** field.
+Set it in the **Additional internal domains** field of the connection setup
+wizard, or later by editing the connection under **Email Security → Settings**.
 
 The setting affects direction only. It does not change which mailboxes the
 connection protects.
@@ -130,8 +129,9 @@ scope:
 
 ## See the effective list
 
-Open the connection in **Email Security → Settings**. Its settings and health
-view lists the internal domains currently in effect, each with its source:
+In **Email Security → Settings**, each connection card has an **Internal
+domains** section. Expand it to see the domains currently in effect for that
+connection, each with its source:
 
 | Source | Where the domain came from |
 |---|---|
