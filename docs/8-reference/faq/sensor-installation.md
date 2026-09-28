@@ -4,79 +4,65 @@
 
 The tables below show the hostnames and IPs used to connect to LimaCharlie. All connections use TCP port 443 and TLS 1.2+
 
+Each hostname has a primary IP and a **standby IP**. Allow **both** addresses for every hostname you use. The standby IPs are reserved for LimaCharlie and are not serving traffic yet; they will be brought into service after **2026-10-28**, and they let us make infrastructure changes later without asking you to update your allow list again. Add them now so nothing changes on your side when they become active.
+
 ## What Hostnames and IPs does LimaCharlie use for each region?
 
 ### Canada (Quebec)
 
-| Hostname | IP | Use |
-| --- | --- | --- |
-| aae67d7e76570ec1.lc.limacharlie.io | 35.203.33.203 | Windows, Mac, & Linux EDR Agent  Note: Pinned SSL certificates (SSL interception unsupported) |
-| aae67d7e76570ec1.edr.limacharlie.io | 35.201.82.57 | Windows, Mac, & Linux EDR Agent  Note: Non-Pinned SSL certificates (SSL interception supported) |
-| aae67d7e76570ec1.wss.limacharlie.io | 35.201.96.199 | Chrome, Edge and Adapters |
-| aae67d7e76570ec1.ingest.limacharlie.io | 34.149.216.238 | Logs and Artifacts |
-| aae67d7e76570ec1.replay.limacharlie.io | 142.250.115.121 | Replay |
-| aae67d7e76570ec1.live.limacharlie.io | 34.120.175.14 | Live feed |
-| aae67d7e76570ec1.hook.limacharlie.io | 142.250.115.121 | Webhooks |
+| Hostname | IP | Standby IP | Use |
+| --- | --- | --- | --- |
+| aae67d7e76570ec1.lc.limacharlie.io | 35.203.33.203 | 35.203.50.233 | Windows, Mac, & Linux EDR Agent  Note: Pinned SSL certificates (SSL interception unsupported) |
+| aae67d7e76570ec1.edr.limacharlie.io | 35.201.82.57 | 34.160.182.247 | Windows, Mac, & Linux EDR Agent  Note: Non-Pinned SSL certificates (SSL interception supported) |
+| aae67d7e76570ec1.wss.limacharlie.io | 35.201.96.199 | 136.69.18.7 | Chrome, Edge and Adapters |
+| aae67d7e76570ec1.ingest.limacharlie.io | 34.149.216.238 | 34.111.74.175 | Logs and Artifacts |
 
 ### US (Iowa)
 
-| Hostname | IP | Use |
-| --- | --- | --- |
-| 9157798c50af372c.lc.limacharlie.io | 35.194.62.236 | Windows, Mac, & Linux EDR Agent  Note: Pinned SSL certificates (SSL interception unsupported) |
-| 9157798c50af372c.edr.limacharlie.io | 34.149.165.165 | Windows, Mac, & Linux EDR Agent  Note: Non-Pinned SSL certificates (SSL interception supported) |
-| 9157798c50af372c.wss.limacharlie.io | 34.102.223.182 | Chrome, Edge and Adapters |
-| 9157798c50af372c.ingest.limacharlie.io | 34.120.157.194 | Logs and Artifacts |
-| 9157798c50af372c.replay.limacharlie.io | 142.250.115.121 | Replay |
-| 9157798c50af372c.live.limacharlie.io | 34.120.123.4 | Live feed |
-| 9157798c50af372c.hook.limacharlie.io | 142.250.115.121 | Webhooks |
+| Hostname | IP | Standby IP | Use |
+| --- | --- | --- | --- |
+| 9157798c50af372c.lc.limacharlie.io | 35.194.62.236 | 136.114.237.150 | Windows, Mac, & Linux EDR Agent  Note: Pinned SSL certificates (SSL interception unsupported) |
+| 9157798c50af372c.edr.limacharlie.io | 34.149.165.165 | 34.160.195.229 | Windows, Mac, & Linux EDR Agent  Note: Non-Pinned SSL certificates (SSL interception supported) |
+| 9157798c50af372c.wss.limacharlie.io | 34.102.223.182 | 34.36.103.38 | Chrome, Edge and Adapters |
+| 9157798c50af372c.ingest.limacharlie.io | 34.120.157.194 | 136.68.105.188 | Logs and Artifacts |
 
 ### India (Mumbai)
 
-| Hostname | IP | Use |
-| --- | --- | --- |
-| 4d897015b0815621.lc.limacharlie.io | 35.200.151.24 | Windows, Mac, & Linux EDR Agent  Note: Pinned SSL certificates (SSL interception unsupported) |
-| 4d897015b0815621.edr.limacharlie.io | 34.102.207.18 | Windows, Mac, & Linux EDR Agent  Note: Non-Pinned SSL certificates (SSL interception supported) |
-| 4d897015b0815621.wss.limacharlie.io | 34.98.108.101 | Chrome, Edge and Adapters |
-| 4d897015b0815621.ingest.limacharlie.io | 34.149.161.19 | Logs and Artifacts |
-| 4d897015b0815621.replay.limacharlie.io | 142.250.115.121 | Replay |
-| 4d897015b0815621.live.limacharlie.io | 35.244.221.119 | Live feed |
-| 4d897015b0815621.hook.limacharlie.io | 142.250.115.121 | Webhooks |
+| Hostname | IP | Standby IP | Use |
+| --- | --- | --- | --- |
+| 4d897015b0815621.lc.limacharlie.io | 35.200.151.24 | 34.93.106.31 | Windows, Mac, & Linux EDR Agent  Note: Pinned SSL certificates (SSL interception unsupported) |
+| 4d897015b0815621.edr.limacharlie.io | 34.102.207.18 | 136.82.51.246 | Windows, Mac, & Linux EDR Agent  Note: Non-Pinned SSL certificates (SSL interception supported) |
+| 4d897015b0815621.wss.limacharlie.io | 34.98.108.101 | 136.110.240.172 | Chrome, Edge and Adapters |
+| 4d897015b0815621.ingest.limacharlie.io | 34.149.161.19 | 136.82.51.223 | Logs and Artifacts |
 
 ### UK (London)
 
-| Hostname | IP | Use |
-| --- | --- | --- |
-| 70182cf634c346bd.lc.limacharlie.io | 35.242.152.114 | Windows, Mac, & Linux EDR Agent  Note: Pinned SSL certificates (SSL interception unsupported) |
-| 70182cf634c346bd.edr.limacharlie.io | 34.107.134.233 | Windows, Mac, & Linux EDR Agent  Note: Non-Pinned SSL certificates (SSL interception supported) |
-| 70182cf634c346bd.wss.limacharlie.io | 35.244.147.201 | Chrome, Edge and Adapters |
-| 70182cf634c346bd.ingest.limacharlie.io | 34.149.56.238 | Logs and Artifacts |
-| 70182cf634c346bd.replay.limacharlie.io | 142.250.115.121 | Replay |
-| 70182cf634c346bd.live.limacharlie.io | 35.244.146.102 | Live feed |
-| 70182cf634c346bd.hook.limacharlie.io | 142.250.115.121 | Webhooks |
+| Hostname | IP | Standby IP | Use |
+| --- | --- | --- | --- |
+| 70182cf634c346bd.lc.limacharlie.io | 35.242.152.114 | 34.142.55.54 | Windows, Mac, & Linux EDR Agent  Note: Pinned SSL certificates (SSL interception unsupported) |
+| 70182cf634c346bd.edr.limacharlie.io | 34.107.134.233 | 34.149.229.135 | Windows, Mac, & Linux EDR Agent  Note: Non-Pinned SSL certificates (SSL interception supported) |
+| 70182cf634c346bd.wss.limacharlie.io | 35.244.147.201 | 136.110.223.164 | Chrome, Edge and Adapters |
+| 70182cf634c346bd.ingest.limacharlie.io | 34.149.56.238 | 34.111.146.205 | Logs and Artifacts |
 
 ### Europe (Emshaven)
 
-| Hostname | IP | Use |
-| --- | --- | --- |
-| b76093c3662d5b4f.lc.limacharlie.io | 35.204.142.125 | Windows, Mac, & Linux EDR Agent  Note: Pinned SSL certificates (SSL interception unsupported) |
-| b76093c3662d5b4f.edr.limacharlie.io | 34.111.194.87 | Windows, Mac, & Linux EDR Agent  Note: Non-Pinned SSL certificates (SSL interception supported) |
-| b76093c3662d5b4f.wss.limacharlie.io | 130.211.22.248 | Chrome, Edge and Adapters |
-| b76093c3662d5b4f.ingest.limacharlie.io | 34.120.5.160 | Logs and Artifacts |
-| b76093c3662d5b4f.replay.limacharlie.io | 142.250.115.121 | Replay |
-| b76093c3662d5b4f.live.limacharlie.io | 34.120.64.23 | Live feed |
-| b76093c3662d5b4f.hook.limacharlie.io | 142.250.115.121 | Webhooks |
+| Hostname | IP | Standby IP | Use |
+| --- | --- | --- | --- |
+| b76093c3662d5b4f.lc.limacharlie.io | 35.204.142.125 | 34.91.48.243 | Windows, Mac, & Linux EDR Agent  Note: Pinned SSL certificates (SSL interception unsupported) |
+| b76093c3662d5b4f.edr.limacharlie.io | 34.111.194.87 | 8.233.103.9 | Windows, Mac, & Linux EDR Agent  Note: Non-Pinned SSL certificates (SSL interception supported) |
+| b76093c3662d5b4f.wss.limacharlie.io | 130.211.22.248 | 34.107.221.108 | Chrome, Edge and Adapters |
+| b76093c3662d5b4f.ingest.limacharlie.io | 34.120.5.160 | 136.68.118.4 | Logs and Artifacts |
 
 ### Australia (Sydney)
 
-| Hostname | IP | Use |
-| --- | --- | --- |
-| abc32764762fce67.lc.limacharlie.io | 34.151.84.52 | Windows, Mac, & Linux EDR Agent  Note: Pinned SSL certificates (SSL interception unsupported) |
-| abc32764762fce67.edr.limacharlie.io | 34.54.253.51 | Windows, Mac, & Linux EDR Agent  Note: Non-Pinned SSL certificates (SSL interception supported) |
-| abc32764762fce67.wss.limacharlie.io | 34.96.104.54 | Chrome, Edge and Adapters |
-| abc32764762fce67.ingest.limacharlie.io | 35.241.63.128 | Logs and Artifacts |
-| abc32764762fce67.replay.limacharlie.io | 34.49.249.16 | Replay |
-| abc32764762fce67.live.limacharlie.io | 34.8.102.215 | Live feed |
-| abc32764762fce67.hook.limacharlie.io | 34.49.185.177 | Webhooks |
+| Hostname | IP | Standby IP | Use |
+| --- | --- | --- | --- |
+| abc32764762fce67.lc.limacharlie.io | 34.151.84.52 | 34.40.205.246 | Windows, Mac, & Linux EDR Agent  Note: Pinned SSL certificates (SSL interception unsupported) |
+| abc32764762fce67.edr.limacharlie.io | 34.54.253.51 | 34.120.95.254 | Windows, Mac, & Linux EDR Agent  Note: Non-Pinned SSL certificates (SSL interception supported) |
+| abc32764762fce67.wss.limacharlie.io | 34.96.104.54 | 34.120.252.59 | Chrome, Edge and Adapters |
+| abc32764762fce67.ingest.limacharlie.io | 35.241.63.128 | 136.68.176.145 | Logs and Artifacts |
+| abc32764762fce67.replay.limacharlie.io | 34.49.249.16 | — | Replay |
+| abc32764762fce67.hook.limacharlie.io | 34.49.185.177 | — | Webhooks |
 
 ## How much data does the LimaCharlie Sensor produce per day?
 
@@ -124,7 +110,7 @@ The SHA-1 and SHA-256 fingerprints should match the values below that correspond
 If the SHA-1 and SHA-256 fingerprints you are seeing do not match what's listed below, that's an indicator of the SSL interception.
 
 | Region | SHA-256 Fingerprint | SHA-1 Fingerprint |
-| --- | --- | --- |
+| --- | --- | --- | --- |
 | US | 14 44 8C B6 A1 19 A5 BE 18 AE 28 07 E3 D6 BD 55 B8 7A 5E 0C 3F 2D 78 03 6E 7C 6A 2A AA 45 8F 60 | 1A 72 67 08 D0 83 7D A9 62 85 39 55 A1 12 1B 10 B0 F4 56 1A |
 | UK | 49 49 B0 41 D6 14 F3 3B 86 BF DF 14 24 F8 BD 2F E1 98 39 41 5A 99 E6 F1 C7 A2 C8 AB 34 0C FE 1D | 2E 49 00 DB F8 3A 2A 88 E0 15 76 D5 C5 4F 8F F3 7D 27 77 DD |
 | India | 68 6F 08 3D 53 3F 08 E0 22 EB F6 67 0C 3C 41 08 75 D6 0E 67 03 88 D9 B6 E1 F8 19 6B DA 54 5A A3 | 37 57 DD 4E CF 2B 25 0B CA EA E2 E6 E3 B2 98 48 29 19 F3 6B |
