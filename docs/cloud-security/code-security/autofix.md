@@ -63,14 +63,15 @@ deployment also runs the fixed build. When no deployment is in scope, it ends
 
 | Ecosystem | Edited | Lockfile |
 |---|---|---|
-| **npm** | The version in `package.json`, keeping its range operator (`^`, `~`) | `package-lock.json` or `npm-shrinkwrap.json` is updated too. A `yarn.lock` or `pnpm-lock.yaml` is not, and the pull request says so. |
+| **npm** | The version in `package.json`, keeping its range operator (`^`, `~`) | The lockfile beside the manifest is updated too: `package-lock.json`, `npm-shrinkwrap.json`, `yarn.lock` or `pnpm-lock.yaml`. A yarn or pnpm lockfile that cannot be rewritten safely is refused before any job runs (`autofix_not_applicable`, with the reason). |
 | **pip** | The pin in `requirements.txt` | None to update. Requirements pinned with `--hash`, compound specifiers such as `>=2.0,<3.0`, and projects locked with Poetry, Pipenv or PDM are refused. |
-| **Go** | The `require` line in `go.mod` | `go.sum` is never edited, so every Go pull request says to run `go mod tidy`. |
+| **Go** | The `require` line in `go.mod` | `go.sum` is written from the Go checksum database. A Go fix whose `go.sum` cannot be completed this way, or a repository with no `go.sum`, is refused before any job runs (`autofix_not_applicable`) instead of opening a pull request that does not build. |
 | **Maven** | The `<version>` in `pom.xml`, or the property it references | None to update. |
 
 ## Lockfiles
 
-When a lockfile could not be updated, the pull request carries a clear
+When a `package-lock.json` could not be regenerated (for example with
+`autofix_registry_access: false`), the pull request carries a clear
 stale-lockfile warning and the command to run on the branch before merging:
 
 | Lockfile | Command |
