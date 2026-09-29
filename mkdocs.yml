@@ -594,6 +594,7 @@ nav:
       - Getting Started: email-security/getting-started.md
       - Setup with the CLI: email-security/setup-cli.md
       - Connecting Providers: email-security/providers.md
+      - Internal Domains: email-security/internal-domains.md
       - Provider Setup:
           - Microsoft 365: email-security/provider-setup/microsoft-365.md
           - Google Workspace: email-security/provider-setup/google-workspace.md
