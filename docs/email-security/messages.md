@@ -6,6 +6,17 @@
 the ones that need a person. This page covers the queue, the drawer, the actions
 and the audit trail they leave.
 
+Where classification is available, the queue and drawer show the message's
+apparent purpose, such as **Correspondence**, **Transactional**, or **Marketing**.
+This is separate from its security verdict: a transactional message can still be
+malicious. **Not classified** means no classification is stored; **Unknown** means
+the classifier abstained. The drawer explains the reasons when present. Inspect
+the `mail_type` object, including its classifier version, with
+`limacharlie mailsec message get MESSAGE_UUID --output yaml --oid $OID`,
+`mailsec message list --output yaml`, or an `analyze` result. See the
+[purpose fields](rule-reference.md#mailtypeinfo) for API and rule paths; purpose is
+not a message-list filter.
+
 ## The queue
 
 Filtering is **entirely server-side** — every filter below narrows the query in

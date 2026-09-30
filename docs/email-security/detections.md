@@ -8,6 +8,13 @@ and how to tune it.
 
 ## The verdict
 
+The optional `mail_type` classification describes apparent purpose, such as
+marketing or correspondence, independently of this verdict. A purpose label
+does not establish safety or consent. `mail_type/type=unknown` is a classification
+abstention; an absent `mail_type` means not classified. See
+[Messages & Triage](messages.md) for viewing it and the
+[rule reference](rule-reference.md#mailtypeinfo) for its paths.
+
 | Verdict | Meaning |
 |---|---|
 | `malicious` | Score at or above the malicious threshold |

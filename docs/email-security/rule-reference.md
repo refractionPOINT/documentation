@@ -67,6 +67,8 @@ Scoring classes require `weight` from 1 to 100; graymail records must omit it.
 | Where would a reply go? | `headers/reply_to` (array of addresses), `sender/reply_to_mismatch` |
 | Did authentication fail? | `auth/spf/result`, `auth/dmarc/result`; scope `auth/dkim` for individual signatures |
 | What does the newest reply say? | `body/current_thread/text` or `body/current_thread/visible_text` |
+| Does it claim to be a reply to a known conversation? | `body/is_reply`, `enrichments/thread_verification/known`, `enrichments/thread_verification/unverified_reply` |
+| What kind of message does it appear to be? | `mail_type/type`; purpose classification is separate from the security verdict |
 | Does one link disguise its destination? | Scope `links`; compare `href_url/domain/root` and `mismatched` |
 | Is a link's domain new or suspicious? | Scope `enrichments/link_features`; read `domain`, `domain_age_days`, `popularity_bucket` |
 | Does an attachment match an IOC? | Scope `attachments`; read `sha256` or another hash |
@@ -161,7 +163,33 @@ subject to parser and analysis depth limits.
 | `hops` | array of [Hop](#hop) | Non-empty |
 | `enrichments` | [Enrichments](#enrichments) | When set |
 | `verdict` | [VerdictInfo](#verdictinfo) | When set |
+| `mail_type` | [MailTypeInfo](#mailtypeinfo) | When set |
 | `_meta` | [Meta](#meta) | When set |
+
+### MailTypeInfo
+
+| Field | Type | Presence |
+|---|---|---|
+| `type` | string | Always |
+| `reasons` | array of [MailTypeReason](#mailtypereason) | Always |
+| `classifier_version` | string | Always |
+
+`type` describes apparent purpose: `correspondence`, `transactional`,
+`notification`, `marketing`, `solicitation`, or `unknown`. It does not establish
+safety, authenticity, consent, or whether a recipient wants the message. Keep
+unfamiliar values when reading newer data. An absent `mail_type` means not
+classified, including historical messages; `unknown` is an explicit abstention.
+Neither should suppress threat evidence or authorize a response.
+
+Use `mail_type/type` in a `dr-mail` rule or `event/mail_type/type` in a platform
+D&R rule on `EMAIL_MESSAGE`. Message-list filtering does not accept `mail_type`.
+
+### MailTypeReason
+
+| Field | Type | Presence |
+|---|---|---|
+| `code` | string | Always |
+| `description` | string | Always |
 
 ### Mailbox
 
@@ -268,11 +296,16 @@ subject to parser and analysis depth limits.
 | `plain` | [PlainBody](#plainbody) | When set |
 | `current_thread` | [ThreadSegment](#threadsegment) | When set |
 | `previous_threads` | array of [PreviousThread](#previousthread) | Non-empty |
+| `is_reply` | boolean | Non-empty |
 | `ips` | array of string | Non-empty |
 | `has_remote_images` | boolean | Non-empty |
 | `hidden_text_present` | boolean | Non-empty |
 | `language` | string | Non-empty |
 | `truncated` | boolean | Non-empty |
+
+`is_reply` records an unauthenticated header claim. Check
+[ThreadVerification](#threadverification) before trusting the quoted history;
+the pipeline includes the whole body in `current_thread` for an unverified reply.
 
 ### HTMLBody
 
@@ -320,7 +353,14 @@ subject to parser and analysis depth limits.
 | `form_password_input` | boolean | Non-empty |
 | `rewritten_by` | string | Non-empty |
 | `rewritten_url` | string | Non-empty |
+| `unverified_hint` | boolean | Non-empty |
+| `hint_mismatch` | boolean | Non-empty |
 | `redirects_resolved` | array of string | Non-empty |
+
+`unverified_hint` marks a destination derived from an author-controlled hint,
+rather than decoded from a gateway wrapper. It is a lead to investigate, not
+proof of where a click goes. `hint_mismatch` marks disagreement between that hint
+and a decoded destination; when both links are emitted, it is set on both.
 
 ### URLInfo
 
@@ -467,6 +507,7 @@ subject to parser and analysis depth limits.
 | `sender_domain` | [SenderDomain](#senderdomain) | When set |
 | `link_features` | array of [LinkFeature](#linkfeature) | Non-empty |
 | `lookalike` | [Lookalike](#lookalike) | When set |
+| `thread_verification` | [ThreadVerification](#threadverification) | When set |
 | `password_in_body` | boolean | Non-empty |
 | `detonation` | [Detonation](#detonation) | When set |
 
@@ -478,9 +519,15 @@ subject to parser and analysis depth limits.
 | `days_known` | integer | Non-empty |
 | `msg_count_30d` | integer | Non-empty |
 | `flagged_count_180d` | integer | Non-empty |
+| `sparse_flagged_history` | boolean | Non-empty |
+| `established_high_volume` | boolean | Non-empty |
 | `flagged_count_other_addresses_180d` | integer | Non-empty |
 | `prevalence` | string | Non-empty |
 | `profile_key` | string | Non-empty |
+
+`established_high_volume` describes sustained sending history;
+`sparse_flagged_history` qualifies that history with a low historical flag count.
+Neither establishes safety or overrides content and authentication findings.
 
 ### SenderDomain
 
@@ -498,8 +545,28 @@ subject to parser and analysis depth limits.
 | `domain_age_days` | integer | When set |
 | `popularity_bucket` | string | Non-empty |
 | `in_urlhaus` | boolean | Non-empty |
+| `feed_lookup_skipped` | boolean | Non-empty |
 | `mixed_script` | boolean | Non-empty |
 | `credentials_in_url` | boolean | Non-empty |
+
+When `feed_lookup_skipped` is true, that URL exceeded the per-message lookup
+budget. An absent or false `in_urlhaus` then means it was not checked, rather than
+a completed lookup with no hit.
+
+### ThreadVerification
+
+| Field | Type | Presence |
+|---|---|---|
+| `checked` | integer | Non-empty |
+| `known` | boolean | Non-empty |
+| `unverified_reply` | boolean | Non-empty |
+
+This optional block checks inbound reply references against mail the organization
+participated in. `checked` counts bounded lookups; `known` means at least one
+qualifying referenced message was found. A message from the same external sender
+alone does not qualify. `unverified_reply` identifies an unsupported reply claim.
+An absent block, or an omitted false boolean, does not prove the thread is safe;
+lookup failure must not be treated as evidence against a message.
 
 ### Lookalike
 
@@ -617,4 +684,8 @@ subject to parser and analysis depth limits.
 | Field | Type | Presence |
 |---|---|---|
 | `stage` | string | Always |
+| `code` | string | Non-empty |
 | `message` | string | Always |
+
+When present, `code` is the stable identifier for a recovered failure. Prefer it
+over matching the human-readable `message`, which may change.
