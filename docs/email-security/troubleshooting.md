@@ -294,8 +294,9 @@ expected. A burst that does not decay is not.
 ## "Why does my organization have a `mailsec` installation key?"
 
 Email Security ships its telemetry the same way every other LimaCharlie data
-source does, so each connection appears as one cloud sensor on platform `email`
-and authenticates with an installation key tagged `mailsec`.
+source does. Each connection authenticates with an installation key tagged
+`mailsec`, and its mail appears as one sensor per mailbox on platform `email`,
+plus one connection-level sensor named `mailsec-<connection name>`.
 
 **One key per connection**, and it is *ensured* rather than minted: the id is
 derived, so the same connection reconnecting — after an update, a failover or a
