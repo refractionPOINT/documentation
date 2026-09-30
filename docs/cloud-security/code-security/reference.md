@@ -160,16 +160,25 @@ remediation requests and decisions need `cloudsec.respond`, a runtime check
 |---|---|---|
 | `GET /code/repos` | `code repos` | Repositories with scan status and open-finding counts. Params: `q`, `has_findings`, `provider`, `cursor`, `limit`. |
 | `GET /code/status` | `code status` | Run status per connection. |
-| `GET /code/capabilities` | `code capabilities` | What each GitHub connection can do, and its webhook status. Optional `repo`. |
+| `GET /code/capabilities` | `code capabilities` | What enabled source-control workflow connections can do, and their webhook status. Optional `repo`. |
 | `GET /code/fixes` | `code fixes` | Open dependency findings grouped by the upgrade that fixes them. |
 | `GET /code/sbom` | `code sbom` | A short-lived download link for one repository's SBOM. Params: `repo` (required, `<owner>/<name>` as `/code/repos` returns it), `provider`. |
-| `GET /code/images`, `GET /code/images/{digest}` | | Container images and one image's detail. |
-| `GET /code/image-repos`, `GET /code/image-repos/facets` | | Image repositories and their filter counts. |
+| `GET /code/images`, `GET /code/images/{digest}` | `image list`, `image get` | Container images and one image's detail. |
+| `GET /code/image-repos`, `GET /code/image-repos/facets` | `image repos`, `image repo-facets` | Image repositories and their filter counts. |
 | `POST /code/scan` | `code rescan` | Rescan one repository. Body: `{repo, ref?, provider?}`. |
 | `POST /code/autofix` | `code autofix` | Open an AutoFix pull request as a remediation run. Needs `cloudsec.respond`. Body: `{finding_id, repo?}`. |
 | `POST /code/ingest` | `code ingest` | Push SARIF, CycloneDX or a scanner report. |
-| `POST /code/pr_check` | | Check a pull request. Used by the webhook rules. |
-| `POST /code/webhook` | | Point a GitHub App's webhook at LimaCharlie. See [the webhook API](pull-requests.md#the-webhook-api). |
+| `POST /code/pr_check` | `code pr-check` | Check a pull request. Used by the webhook rules. |
+| `POST /code/webhook` | `code webhook` | Point a GitHub App's webhook at LimaCharlie. See [the webhook API](pull-requests.md#the-webhook-api). |
+
+Image reads accept repeatable `lineage_status` values: `verified`, `asserted`,
+`inferred`, `ambiguous`, `unknown`. Filtering is server-side; a stale lineage
+decision counts as `unknown` immediately. Image-repository facets can request
+`lineage_facet=true` for digest-level counts under `lineage_statuses`; repository
+placement filters do not narrow those lineage counts. An older server that
+cannot apply the filter refuses it instead of returning an unfiltered page.
+See [image lineage](containment-setup.md#image-lineage) for what each status
+proves.
 
 Findings are read with the standard [findings routes](../api-reference.md),
 filtered by `repo`.
@@ -195,6 +204,8 @@ they return.
 
 - **Scanning images from container registries.** `image_sources: ["registries"]`
   is accepted but does nothing yet.
-- **Pull-request checks, push rescans and AutoFix on GitLab and Bitbucket.**
+- **GitLab and Bitbucket workflows without the corresponding server capability.**
+  Support depends on rollout in your data region. Read `code capabilities`;
+  scheduled repository scans do not imply webhook, check or AutoFix support.
 - **Scanning self-managed GitLab instances.** They can be connected for inventory.
 - **Bitbucket Data Center** (self-hosted).

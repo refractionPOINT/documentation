@@ -377,12 +377,13 @@ ingest:
   backfill_days: 14
 features:
   outbound_observation: true
-  reports_mailbox: phishing@corp.example
   pubsub_topic: projects/<YOUR_PROJECT_ID>/topics/mailsec-gmail-push
   pubsub_subscription: projects/<YOUR_PROJECT_ID>/subscriptions/mailsec-gmail-push-sub
 ```
 
-Replace `pilot@corp.example` with your pilot mailbox addresses. Omitting `scope`
+Replace `pilot@corp.example` with your pilot mailbox addresses. If you later
+configure `features.reports_mailbox`, use an existing mailbox and include it
+in this scope too; otherwise user reports cannot arrive. Omitting `scope`
 or leaving its include lists empty covers **every discovered mailbox**, subject
 to exclusions and any domain filter. `include_addresses` and `exclude_addresses`
 entries must contain `@`; `domains` entries must be bare domains containing a dot,

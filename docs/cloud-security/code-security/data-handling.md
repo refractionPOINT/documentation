@@ -74,9 +74,24 @@ per-declaration detail, still without resource names. See
 
 ## AI
 
-AutoFix does not send your code to a language model. It is deterministic. It
-raises one dependency to one version and never runs a package manager. No
-AI-generated fix feature is available.
+Dependency AutoFix is deterministic: it raises a dependency to a fixed version
+and does not send code to a language model or run a package manager.
+
+[AI-proposed fixes](autofix.md#ai-proposed-fixes) are a separate, currently
+unavailable capability with explicit tenant opt-in. If LimaCharlie enables that
+capability for your organization and you approve a run, the service sends the
+finding's one target file (up to 64 KiB), its path and bounded finding context
+to Anthropic, using **your** API key. It sends neither the rest of the repository
+nor your cloud estate. Anthropic's processing location and retention are
+governed by your Anthropic agreement; the ordinary scan's LimaCharlie data-region
+guarantee does not describe that external model call.
+
+LimaCharlie does not retain the model prompt, response, source file or patch in
+findings, audit records or operational events. The run retains structured
+validation outcomes and model usage. Source and patch working files are deleted
+when the job ends. An approved patch that passes validation appears in the
+GitHub pull request, where it follows your repository's retention and access
+settings.
 
 ## Retention
 

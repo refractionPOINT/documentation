@@ -33,6 +33,10 @@ A **credential** is the key the product uses to access your mail provider. A
     pauses; data is removed 30 days later unless the organization moves off the
     free tier. See [trial details](policy.md#plans-the-free-trial-and-the-mailbox-cap).
 
+    During private beta, limits may be reported before enforcement is enabled.
+    Check the Overview trial/coverage information (or `coverage.entitlement`
+    from the API) for the standing actually in force in your organization.
+
 ## 1. Enable Email Security
 
 In your LimaCharlie organization, open **Extensions**, find **Email Security**,

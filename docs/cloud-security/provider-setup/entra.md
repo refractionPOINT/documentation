@@ -232,13 +232,31 @@ upload the new one.
 
 ### Without the web app
 
-The certificate comes from an API route:
+The CLI's API command generates the certificate without requiring you to
+manage a JWT yourself:
 
 ```bash
-curl -X POST -H "Authorization: Bearer $JWT" -H "Content-Type: application/json" \
-  "https://api.limacharlie.io/v1/cloudsec/$OID/providers/m365/certificate" \
-  -d '{"connection": "entra-prod"}'
+limacharlie api "/v1/cloudsec/$OID/providers/m365/certificate" \
+  --method POST --json --raw-field connection=entra-prod --output json \
+  > certificate-response.json
+
+# Only the public certificate is returned. Upload this .cer to Entra.
+jq -r .certificate certificate-response.json | base64 --decode > entra-prod.cer
 ```
+
+The dedicated CLI command writes the public certificate directly:
+
+```bash
+limacharlie cloudsec provider m365-certificate entra-prod \
+  --out entra-prod.cer --oid "$OID" --output yaml
+```
+
+Both forms require
+`cloudsec.set` and `secret.set`. A repeat returns the existing certificate.
+`--replace` (API `replace: true`) immediately replaces the stored private key;
+an existing connection may stop authenticating until you upload the new public
+certificate to its Entra app registration. Use the rotation process above for
+ordinary renewal.
 
 `connection` is the name of the provider record you are about to create. The
 optional `client_id` records the app registration's ID, and `"replace": true`

@@ -8,6 +8,13 @@ and how to tune it.
 
 ## The verdict
 
+The optional `mail_type` classification describes apparent purpose, such as
+marketing or correspondence, independently of this verdict. A purpose label
+does not establish safety or consent. `mail_type/type=unknown` is a classification
+abstention; an absent `mail_type` means not classified. See
+[Messages & Triage](messages.md) for viewing it and the
+[rule reference](rule-reference.md#mailtypeinfo) for its paths.
+
 | Verdict | Meaning |
 |---|---|
 | `malicious` | Score at or above the malicious threshold |
@@ -264,7 +271,11 @@ makes a history rule an amplifier of *other* evidence and never of itself.
 
 ## The default rules
 
-LimaCharlie's default rules are installed once into `dr-mail` when you subscribe.
+LimaCharlie's default rules are installed into `dr-mail` when you subscribe.
+Vendor-tagged defaults receive later pack updates, preserving enabled/disabled
+choices. Disable an unwanted default; deleting it can let the next pack release
+recreate it. Copy or untag a rule before maintaining your own version. See
+[default rule ownership](custom-rules.md#default-rules-and-ownership).
 **Email Security → Rules** is the authoritative catalog for your organization:
 it shows the exact current conditions, weight, confidence, phase, tags and
 false-positive notes. Every default is editable, disableable and deletable.

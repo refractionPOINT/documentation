@@ -60,6 +60,11 @@ keep it.
   the GitHub App, and each write uses a token limited to what that one action
   needs.
 
+These guarantees describe ordinary scans and deterministic dependency AutoFix.
+The separate, currently unavailable [AI-proposed fix capability](autofix.md#ai-proposed-fixes)
+has an additional opt-in for sending one target file to your model provider;
+see [AI data handling](data-handling.md#ai).
+
 ## Where to find it
 
 In the console, open **Cloud Security → Code security**. It has four tabs:

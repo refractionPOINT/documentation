@@ -58,6 +58,19 @@ installation, the drawer says so and links to the installation page.
 Select an image to open its findings in Risks. **Registries** groups images by
 image repository.
 
+From the CLI:
+
+```bash
+limacharlie cloudsec image repos
+limacharlie cloudsec image repo-facets
+limacharlie cloudsec image list --running --findings with
+limacharlie cloudsec image get "sha256:<full-image-digest>"
+```
+
+Read an image's lineage status alongside its findings. `verified`, `asserted`
+and `inferred` describe different strengths of source attribution; they do not
+say the image is safe. See [Image lineage](containment-setup.md#image-lineage).
+
 ### Risks
 
 Code findings appear in the main worklist on **Risks**. Use the **Repository**

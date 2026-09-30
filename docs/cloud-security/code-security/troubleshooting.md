@@ -71,7 +71,7 @@ if it is shown. It names what is not set up and links to the fix. From the CLI,
 
 | Problem | What to check |
 |---|---|
-| `No such command` for `cloudsec code` | Upgrade the `limacharlie` CLI. |
+| `No such command` for `cloudsec code` | Upgrade with `python -m pip install --upgrade limacharlie` and confirm [CLI setup](getting-started.md#cli-installation). |
 | The CLI cannot identify the repository | Pass `--repo <owner>/<repository>`. |
 | Docker is not found | Install and start Docker, or use `--binary`, or push results from your own scanner with `code ingest`. |
 | A pushed repository is not recorded | It must match an enabled code-scanning policy and fit within the repository limits. |
