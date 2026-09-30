@@ -694,10 +694,16 @@ numbering-plan shape, not an order number), distinct and bounded.
 |---|---|---|
 | `body` | [PhoneSource](#phonesource) | When a number was found |
 | `attachments` | [PhoneSource](#phonesource) | When a number was found |
+| `pdf` | [PhoneSource](#phonesource) | When a PDF carried a valid number |
 
 `body` reads the newest segment the sender wrote (quoted history never supplies a
 number). `attachments` unions the text recovered from images by OCR, the numbers
-the PDF scanner read, and the body of attached messages. A PDF contributes numbers
+the PDF scanner read, and the body of attached messages: its number fields
+(`count`, `numbers`, `toll_free`) are a union, while its context fields
+(`call_to_action`, `toll_free_call_to_action`, `lure_terms`, `text_chars`) all
+come from the one text that looks most like a callback lure, never a mixture of
+unrelated texts. `pdf` holds only the numbers read from PDF text layers, so a rule
+about a PDF is not satisfied by a number in an image. A PDF contributes numbers
 only, with no `call_to_action` or `lure_terms`, and only North American numbers can
 be recognised from it. Absent means no number was found in the sources that were
 available: an image that was not OCRed says nothing.
@@ -710,12 +716,15 @@ available: an image that was not OCRed says nothing.
 | `numbers` | array of string | Non-empty |
 | `toll_free` | boolean | Non-empty |
 | `call_to_action` | boolean | Non-empty |
+| `toll_free_call_to_action` | boolean | Non-empty |
 | `lure_terms` | integer | Non-empty |
 | `text_chars` | integer | Non-empty |
 
 `numbers` keeps at most five. `call_to_action` is true when a number sits within
 about 80 characters of a verb that tells the reader to use it (call, dial,
-contact, reach, helpline...). `lure_terms` counts distinct billing and support
+contact, reach, helpline...). `toll_free_call_to_action` is true when the same
+number is toll-free and has that call to action; `toll_free` and `call_to_action`
+alone can belong to two different numbers. `lure_terms` counts distinct billing and support
 words in the same text (purchase, subscription, invoice, refund, renew, charged,
 antivirus, ...); one is ordinary commerce, four beside a phone number is the
 callback-lure shape. The vocabulary is English. `text_chars` is the length of the
