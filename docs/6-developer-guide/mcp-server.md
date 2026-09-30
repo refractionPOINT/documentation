@@ -187,6 +187,14 @@ permissions. Prefer a product's read-only profile with a read-only key for a fir
 review. An unknown profile endpoint can return 404. Inspect the tool list because a server-wide
 configured profile can override the URL profile.
 
+`ai_agent.operate` must be granted to the API key or user authenticated to MCP,
+even for read-only investigation. Add it to each permission set below. It does
+not grant the operation-specific permissions by itself. `ai_agent.exec` is a
+separate permission for launching configured agent UI actions; it is not required
+merely to call MCP investigation tools. See the
+[AI agent permissions reference](../8-reference/permissions.md#ai_agentexec-launch-a-configured-agent)
+for examples and troubleshooting.
+
 ### Recommended Permissions by Use Case
 
 The MCP server organizes its tools into capability profiles. Grant permissions based on the operations you need:
