@@ -8,6 +8,20 @@ Every AI Session runs a Claude Agent SDK process inside a managed sandbox. What 
 
 These three settings map directly to the corresponding options on `ClaudeAgentOptions` in the Claude Agent SDK, so the matching semantics are exactly those documented in the upstream [Claude Code permissions reference](https://code.claude.com/docs/en/permissions). This page explains how LimaCharlie surfaces them, the full tool-name grammar, and how the bridge evaluates patterns at tool-call time.
 
+## Organization permissions versus tool approvals
+
+The settings on this page control which tools a session can execute and when it
+asks for approval. Organization permissions control which LimaCharlie data and
+actions those tools can access. Allowing `Bash` or using `bypassPermissions` does
+not grant additional LimaCharlie API permissions.
+
+The credentials used by an agent need `ai_agent.operate` on each organization it
+works with, plus the usual permissions for its tasks. Separately,
+`ai_agent.exec` authorizes a caller to launch an existing agent through a UI action.
+The caller and the agent can use different credentials. See
+[AI agent permissions](../8-reference/permissions.md#ai_agentexec-launch-a-configured-agent)
+for the distinction, example permission sets, and troubleshooting.
+
 ## Where these fields live
 
 The same three fields show up in every place an AI Session can be configured:
