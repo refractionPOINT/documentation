@@ -177,7 +177,16 @@ The MCP server enforces the same permission model as the LimaCharlie REST API. T
 
 ### Permission Enforcement
 
-The API enforces permissions strictly. Any operation attempted without the required permission will fail with a `401` error that specifies the missing privilege. The AI assistant will surface these errors and indicate which permission is needed.
+Organization-scoped MCP operations require `ai_agent.operate` by default, in
+addition to the API permission for the requested operation. The server or API
+reports missing privileges; an authentication failure and a permission denial
+are different problems. Read the returned error before changing credentials.
+
+Profiles select the tools offered and callable on an endpoint; they do not grant
+permissions. Prefer a product's read-only profile with a read-only key for a first
+review. New profiles require a server version that includes them; an unknown
+profile endpoint can return 404. Inspect the tool list because a server-wide
+configured profile can override the URL profile.
 
 ### Recommended Permissions by Use Case
 
@@ -239,6 +248,37 @@ For full platform management (includes all of the above, plus):
 | `cloudsensor.get`, `cloudsensor.set`, `cloudsensor.del` | Manage cloud sensor adapters |
 | `externaladapter.get`, `externaladapter.set`, `externaladapter.del` | Manage external adapters |
 
+#### CloudSec, CodeSec and MailSec
+
+Start with a small, read-only product review, then grant the particular write
+permission only when the workflow needs it:
+
+| Workflow | Profile | Permissions beyond `ai_agent.operate` |
+|---|---|---|
+| CloudSec posture and CodeSec findings | `cloud_security_readonly` | `cloudsec.get` |
+| CloudSec triage and code ingest | `cloud_security` | `cloudsec.get`, `cloudsec.set` |
+| Dependency AutoFix and remediation run creation/decision | `cloud_security` | `cloudsec.respond` (separate from `cloudsec.set`) |
+| MailSec coverage, messages, campaigns and histories | `email_security_readonly` | `mailsec.get` |
+| Raw email download | `email_security` | `mailsec.get` and `mailsec.get.eml` |
+| MailSec EML analysis, rule validation/backtest and selected bulk preview | `email_security_readonly` | `mailsec.get` |
+| MailSec provider diagnostics, campaign preview, verdict revision or remediation | `email_security` | `mailsec.act` |
+| MailSec report resolution/reopening | `email_security` | `mailsec.set` |
+| Product provider/policy/secret setup | `platform_admin` | Dedicated provider `.get/set`, product `.get/set` for policy, `secret.set` and required metadata-read access |
+
+CloudSec requires the `ext-cloud-security` subscription; MailSec requires
+`ext-email-security` and applicable beta access. Setup uses generic Hive and
+extension tools, the console or CLI; product read-only profiles exclude those
+writes. MailSec's read-only profile excludes raw EML and privileged diagnostics.
+Backend capability rollout remains independent of the client version.
+
+Use `https://mcp.limacharlie.io/mcp/cloud_security_readonly` or
+`https://mcp.limacharlie.io/mcp/email_security_readonly` for a supported hosted
+profile. With a local server, select the same name using `MCP_PROFILE`.
+Follow [CloudSec in your IDE](../cloud-security/mcp.md),
+[MailSec with an AI assistant](../email-security/mcp.md), or the
+[MCP source onboarding guide](https://github.com/refractionPOINT/lc-mcp-server/blob/master/docs/SECURITY-PRODUCTS.md)
+for pilot setup and first tools.
+
 ### Assigning Permissions
 
 **For users (OAuth/JWT):**
@@ -273,6 +313,8 @@ Once connected, AI assistants can:
 - **Take response actions** — Isolate endpoints, kill processes, manage tags
 - **Search threat intelligence** — Query IOCs and map to MITRE ATT&CK
 - **Configure the platform** — Manage outputs, adapters, secrets, and playbooks
+- **Review CloudSec and CodeSec** — Inspect posture, repositories, findings and coverage
+- **Triage MailSec** — Review coverage, messages, campaigns and action history
 
 ---
 

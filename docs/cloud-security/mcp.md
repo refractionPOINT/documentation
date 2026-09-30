@@ -5,7 +5,9 @@ Security to any [Model Context Protocol](https://modelcontextprotocol.io/) clien
 Cursor, and others — so an AI assistant can read your cloud posture, triage findings, and, for
 [Code Security](code-security/index.md), scan the working copy on your own machine before anything is pushed.
 
-This page covers the setup and the Code Security tools. Most of the other Cloud Security tools
+This page covers the setup and the Code Security tools. Tool availability depends
+on the MCP server version and backend rollout; check your client's tool list.
+Most of the other Cloud Security tools
 match a [command line interface](cli.md) command.
 
 ## Setup — Claude Code
@@ -15,20 +17,22 @@ git clone https://github.com/refractionPOINT/lc-mcp-server
 cd lc-mcp-server
 go build -o lc-mcp-server ./cmd/server
 
-claude mcp add limacharlie-cloudsec \
-  --env LC_OID=<your-organization-id> \
-  --env LC_API_KEY=<your-api-key> \
+claude mcp add \
+  --env LC_OID=YOUR_ORGANIZATION_UUID \
+  --env LC_API_KEY=YOUR_API_KEY \
   --env MCP_MODE=stdio \
-  --env MCP_PROFILE=cloud_security \
+  --env MCP_PROFILE=cloud_security_readonly \
+  --transport stdio limacharlie-cloudsec \
   -- /absolute/path/to/lc-mcp-server
 ```
 
-`/mcp` in a session lists the server and its tools.
+Build with the Go version required by the server's `go.mod` (currently 1.27.1).
+`/mcp` in a session lists the server and its tools. The command follows the
+[Claude Code MCP setup](https://code.claude.com/docs/en/mcp).
 
 ## Setup — Cursor
 
-Add the server to `~/.cursor/mcp.json`, or to `.cursor/mcp.json` inside a project to scope the
-credential to one repository:
+Add the server to your personal `~/.cursor/mcp.json`:
 
 ```json
 {
@@ -40,7 +44,7 @@ credential to one repository:
         "LC_OID": "<your-organization-id>",
         "LC_API_KEY": "<your-api-key>",
         "MCP_MODE": "stdio",
-        "MCP_PROFILE": "cloud_security",
+        "MCP_PROFILE": "cloud_security_readonly",
         "LOG_LEVEL": "warn"
       }
     }
@@ -58,17 +62,33 @@ stderr is noise in the client's transport log.
 | Profile | What it exposes |
 |---|---|
 | `cloud_security` | Every Cloud Security tool, including the triage writes |
-| `cloud_security_readonly` | The reads only — for a session that must not be able to change anything |
+| `cloud_security_readonly` | CloudSec reads, excluding local scan, ingest, triage and response writes |
 | `all` | The whole platform |
+
+Profiles select callable tools; they do not grant API permissions. Generic
+provider, secret and policy setup uses `platform_admin` tools or the
+[console/CLI setup](setup-cli.md). Keep your key's permissions scoped to the
+workflow even when changing profiles. The hosted profile endpoint is
+`https://mcp.limacharlie.io/mcp/cloud_security_readonly` when that deployment
+supports it; verify the returned tools and any server-wide profile override. An
+unrecognized profile endpoint can return 404.
 
 A narrow profile is not just tidiness. An assistant chooses from what it is shown, so a session that
 only needs to read posture is both cheaper and safer with `cloud_security_readonly`.
 
 ## Permissions
 
-Reads need `cloudsec.get`. The triage writes, code ingest and AutoFix need `cloudsec.set`. The whole
+Organization-scoped tools require `ai_agent.operate` by default. Reads need
+`cloudsec.get`. Triage writes and code ingest need
+`cloudsec.set`; dependency AutoFix, remediation run creation and decisions require the separate
+`cloudsec.respond` permission. The whole
 surface also requires the organization to be subscribed to the `ext-cloud-security` extension — a
-403 saying cloud security is not enabled means exactly that, and the tools say so in their errors.
+403 may indicate a missing subscription or permission. Check the error before
+changing configuration.
+
+For a first review, ask the assistant to use `cloudsec_get_scan_status`,
+`cloudsec_get_overview`, then `cloudsec_list_findings` for high-severity open
+findings. Read collection and scanner coverage before interpreting an empty list.
 
 ## The Code Security tools
 
@@ -77,9 +97,18 @@ surface also requires the organization to be subscribed to the `ext-cloud-securi
 | `cloudsec_code_repos` | The repositories the code lane sees, with scan state and the open-finding rollup |
 | `cloudsec_code_findings` | Findings for one or more repositories, or the cross-filtered facet counts |
 | `cloudsec_code_fixes` | The dependency upgrades that close the most findings, each with a finding id to pass to `cloudsec_code_autofix` |
-| `cloudsec_code_capabilities` | What each GitHub connection can do: scanning, pull-request checks, comments and AutoFix |
+| `cloudsec_code_capabilities` | Per-connection scanning and write capabilities; GitLab/Bitbucket workflow support depends on rollout |
 | `cloudsec_code_scan_local` | Scans a working copy on your machine with the same scanner the hosted lane runs |
 | `cloudsec_code_autofix` | Opens the dependency fix pull request for an SCA finding |
+
+Additional tools read build provenance (`cloudsec_code_provenance`), finding
+evidence (`cloudsec_get_finding_evidence_chain`), scanner coverage
+(`cloudsec_get_code_coverage`) and change impact (`cloudsec_get_code_impact`).
+Their availability depends on the backend capability; missing or stale evidence
+does not prove safety. Provenance pushes require `cloudsec.set` and contain
+metadata, not source code. Remediation run tools require `cloudsec.respond`.
+See the [server's product guide](https://github.com/refractionPOINT/lc-mcp-server/blob/master/docs/SECURITY-PRODUCTS.md)
+and the actual tool schema for selectors and confirmation requirements.
 
 ### Before they can return anything
 
@@ -130,17 +159,31 @@ the inventory.
 cloudsec_code_scan_local { "path": "/home/me/src/api" }
 ```
 
-This runs on **your** machine, not in LimaCharlie: it needs Docker and a current
-[`limacharlie` CLI](cli.md) on PATH, and it takes minutes rather than seconds. Nothing about the
-checkout leaves the machine, and without `ingest` nothing leaves it at all — the result says so
-explicitly, so a scan that found plenty is not misread as a clean estate.
+This runs on the machine hosting your local server: the default container path
+needs Docker and a
+development [`limacharlie` CLI with CodeSec support](code-security/getting-started.md#cli-installation)
+on PATH, and it takes minutes rather than seconds. PyPI 5.6.2 lacks the code scan
+command. Verify `limacharlie cloudsec code scan --help` before starting. The default
+scanner image also requires registry access; an anonymous pull is not sufficient.
+Newer MCP builds let the operator set `LC_CODE_SCANNER_IMAGE` or
+`LC_CODE_SCANNER_BINARY` for a compatible authorized image or local executable.
+These map to the CLI's `--image` / `--binary`; use a development CLI containing
+those flags until release. An MCP caller cannot select the executable. Inspect
+the server's [local scan guide](https://github.com/refractionPOINT/lc-mcp-server/blob/master/docs/CLOUD-SECURITY-CODE.md).
+
+Without `ingest`, the findings report is not uploaded to LimaCharlie. Image pulls,
+scanner dependency/intelligence lookups and optional rule downloads may still use
+the network. A local scan is not visible in the hosted estate until ingested.
 
 Because it runs a container locally, it is available only when the server is running in stdio mode.
 A hosted MCP deployment refuses it.
 
-`scanners` defaults to `sca,iac,licenses`; `sast` and `images` also run locally. Local `sast` never
-applies your organization's code rules. It runs the rules built into the scanner image the CLI uses by
-default, and reports `sast_no_rules` with a scanner that has no built-in rules (see
+`scanners` defaults to `sca,iac,licenses`; `sast` and `images` also run locally.
+By default SAST uses scanner-local rules and does not automatically load
+organization rules; the delegated local-only CLI has no organization credentials.
+Newer MCP builds let the operator set `LC_CODE_SCANNER_RULES_FILE` to a compatible
+exported code-rule JSON file, forwarding the CLI's `--rules-file`. An MCP caller
+cannot choose the rules file. A scanner with no usable rules reports `sast_no_rules` (see
 [Scan locally or in CI](code-security/bring-your-own-scanner.md#scan-locally-or-in-ci)). **Secret scanning
 does not**, and asking for it is an error rather than a silent omission: a credential's identity in
 this pipeline is a digest keyed by a value only the hosted lane holds, so locally-found secrets
@@ -171,28 +214,44 @@ backend resolves it against the dependency rows its own scan produced and raises
 that package to that advisory's fixed version, so there is no way to name a
 package or a version. `repo` and `provider` are optional search hints.
 
-It needs the connection's GitHub App to hold **Contents: Read and write** and **Pull requests:
-Read and write**. `cloudsec_code_capabilities` shows whether it does.
+For GitHub it needs **Contents: Read and write** and **Pull requests: Read and write**
+App permissions. GitLab.com/Bitbucket use separately configured write credentials
+when their workflow is available. `cloudsec_code_capabilities` reports configured
+capabilities; a tenant policy cannot enable an unavailable workflow.
 
-The tool answers as soon as the request is **accepted**; the clone, the edit and
-the pull request happen minutes later in a sandbox, so **the pull request is the
-result**. Read it in the repository rather than in the tool's reply.
+The tool creates a governed `open_fix_pr` remediation run and returns its
+`run_id` and `state`. It requires `cloudsec.respond`; the caller is recorded as
+requester and approver. Follow the run with `cloudsec_get_remediation` before
+reporting an outcome. The clone, edit and PR happen asynchronously; `accepted`
+does not mean a PR exists or the vulnerability is fixed. Repeating a request
+before the PR opens can return the same run with `replayed: true`.
 
-!!! warning "A refusal does not come back on this call"
-    Because the call has already answered, every reason a fix does not happen is
-    a quiet no-op here: an App that is not installed on the repository or cannot write
-    (`write_app_not_configured`), one lacking `Contents: Read and write`
-    (`write_app_lacks_contents`), a package
-    flagged malicious, no published fixed version, an unsupported ecosystem, a
-    repository outside the policy scope or over the free-tier quota, a pull
-    request already open for that package, or the daily limit.
-
-    None of these appear in the reply. They surface as the
-    `cloudsec.code_autofix_refused` operational event, once operational events
-    are turned on with the `emission` policy's `ops_events`.
+A disabled workflow is refused immediately. Later failures, such as missing
+write permissions, policy scope, unsupported edits, an existing PR or exhausted
+budgets, appear in the run's `failure_reason` and operational events. `change`
+records the PR; `verified` means the fix was observed in every in-scope
+deployment. Missing deployment evidence cannot establish a verified fix.
 
 See [AutoFix pull requests](code-security/autofix.md) for the setup and the
 lockfile behavior that decides whether the pull request is complete on its own.
+
+## Local IaC attribution
+
+Newer builds provide `cloudsec_code_iac_map_extract` in the full CloudSec profile
+for local STDIO sessions. The operator must explicitly set `LC_IAC_MAP_EXTRACTOR`
+to an installed extractor's path; there is no implicit executable selection.
+The tool reads a local Terraform/OpenTofu show-JSON file and returns sanitized
+identity/allowlisted desired metadata. Raw plans, state, source and credentials
+are not uploaded. Review the sanitized document before a separate
+`cloudsec_code_iac_map_push` call.
+
+Push and receipt status both require `cloudsec.set`, so
+`cloudsec_code_iac_map_status` is excluded from the read-only profile despite
+being a read. A `processing` receipt is not published evidence; check status
+until `published`, or resubmit the same document only for a retryable receipt.
+Publication is not proof of deployment or remediation. See
+[IaC source mapping](code-security/containment-setup.md#terraform-maps)
+and the tool schema for exact receipt fields and capability prerequisites.
 
 ## See also
 

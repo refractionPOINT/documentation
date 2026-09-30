@@ -609,6 +609,7 @@ nav:
       - Policy Reference: email-security/policy.md
       - Events & Automation: email-security/automation.md
       - Command Line Interface: email-security/cli.md
+      - AI Assistants (MCP): email-security/mcp.md
       - API Reference: email-security/api-reference.md
       - AI Triage: email-security/ai-triage.md
       - Troubleshooting: email-security/troubleshooting.md

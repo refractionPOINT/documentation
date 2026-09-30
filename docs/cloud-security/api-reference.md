@@ -96,7 +96,9 @@ One route sits outside the `{oid}` path — the MSSP cross-tenant board:
 
 ## Writes
 
-All writes are `POST` with a JSON body and require `cloudsec.set`.
+The writes below use `POST` with a JSON body. Ordinary configuration, triage and
+ingest writes require `cloudsec.set`; Code Security AutoFix instead requires
+`cloudsec.respond` and creates a governed remediation run.
 
 | Route | Body | Returns |
 |---|---|---|

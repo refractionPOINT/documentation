@@ -27,6 +27,7 @@ it at the provider.
 | **User reports** | An abuse mailbox becomes an SLA queue: reports are joined back to the original message across the whole tenant, robots that mail the abuse address are auto-resolved out of the queue, and reporters can be sent a templated acknowledgement. |
 | **Telemetry** | `EMAIL_MESSAGE`, `EMAIL_VERDICT` (every verdict decision — the engine's own at ingest, then each override), `EMAIL_ACTION`, `EMAIL_USER_REPORT` and `EMAIL_INGEST_ERROR` land in the same lake as your EDR, cloud and identity telemetry — so "phish delivered, then that user's endpoint ran a new binary" is one D&R rule. |
 | **Configuration as data** | Connections, policy and custom rules are Hive records, so everything is API-first and git-syncable from day one. |
+| **AI assistant access** | [MCP tools](mcp.md) for read-only coverage and triage, with separately permissioned diagnostics and responses. Requires a server version containing MailSec support. |
 
 ## What it does not do
 
