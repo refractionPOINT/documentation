@@ -1,5 +1,7 @@
 # Working with results
 
+--8<-- "includes/code-security-cli-version.md"
+
 Code findings are ordinary [Cloud Security findings](../findings.md). They share
 the worklist, the triage actions (mitigated, accepted, false positive), owners,
 tickets, [remediation SLAs](../remediation-sla.md) and the `cloud_finding.*`
@@ -57,6 +59,19 @@ installation, the drawer says so and links to the installation page.
 **Built from**, the workloads they are **Running on**, and their open findings.
 Select an image to open its findings in Risks. **Registries** groups images by
 image repository.
+
+From the development CLI:
+
+```bash
+limacharlie cloudsec image repos
+limacharlie cloudsec image repo-facets
+limacharlie cloudsec image list --running --findings with
+limacharlie cloudsec image get "sha256:<full-image-digest>"
+```
+
+Read an image's lineage status alongside its findings. `verified`, `asserted`
+and `inferred` describe different strengths of source attribution; they do not
+say the image is safe. See [Image lineage](containment-setup.md#image-lineage).
 
 ### Risks
 

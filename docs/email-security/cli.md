@@ -70,10 +70,14 @@ typing a justification to look at the queue.
 # Coverage
 limacharlie mailsec coverage --window-days 30
 
+# Explicit UTC window instead of window-days (development builds with these flags).
+limacharlie mailsec coverage --since "2026-09-01T00:00:00Z" --until "2026-09-02T00:00:00Z"
+
 # The triage queue
 limacharlie mailsec message list --verdict suspicious --verdict malicious
 limacharlie mailsec message list --mailbox cfo@corp.example --since 2026-08-01
 limacharlie mailsec message list --user-reported            # a human flagged these
+limacharlie mailsec message list --lane backfill            # historical analysis, not live actions
 limacharlie mailsec message list --link-domain evil.example # IOC pivot
 limacharlie mailsec message list --attachment-sha256 <sha>  # IOC pivot
 limacharlie mailsec message get <msg_uuid>
@@ -118,12 +122,24 @@ limacharlie mailsec rule backtest --file rule.json --since 2026-08-01
 limacharlie mailsec analyze --file suspect.eml --org-domain corp.example
 limacharlie mailsec connection test gws-exp
 limacharlie mailsec onboarding --provider gworkspace
+limacharlie mailsec onboarding --provider gworkspace \
+  --project-id "$GCP_PROJECT" --sa-email "$SERVICE_ACCOUNT_EMAIL" \
+  --topic mailsec-gmail-push --subscription mailsec-gmail-push-sub
 
 # Delete everything Email Security holds for this org — previews without --confirm
 limacharlie mailsec tenant purge
 ```
 
 `--window-days` accepts 1-35 (the platform's maximum message retention) and cannot be combined with an explicit `--since`/`--until`. Out-of-range values for `--limit`, `--min-score` and `--min-members` are refused with an error naming the flag rather than silently clamped or ignored.
+
+The `--lane`, explicit coverage-window and personalized-onboarding flags are
+development additions. Check the command's `--help`; an older development
+checkout may lack them. They are tracked in the
+[public SDK update](https://github.com/refractionPOINT/python-limacharlie/pull/408);
+until it is merged, `master` does not include every new flag. Use the equivalent query parameters in the
+[API reference](api-reference.md#reads) with `limacharlie api` until you update.
+`--lane` cannot be combined with `--mailbox`, `--sender-email` or `--campaign-id`;
+it filters where a message was judged, not its threat verdict.
 
 ## Things worth knowing before you script this
 

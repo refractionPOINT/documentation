@@ -46,6 +46,18 @@ limacharlie mailsec message list --verdict suspicious --verdict malicious \
   --mailbox cfo@corp.example --since "$(date -d '7 days ago' +%s)" --oid $OID
 ```
 
+To inspect historical analysis separately, a development CLI with `--lane`
+supports `mailsec message list --lane backfill`. For an older build, the stable
+CLI's API command can send the same filter:
+
+```bash
+limacharlie api "/v1/mailsec/$OID/messages" \
+  --raw-field lane=backfill --field limit=10 --output yaml
+```
+
+Historical messages are scored but do not trigger live-mail telemetry or
+automatic responses; an empty action history on one is expected.
+
 !!! warning "Tri-state booleans: absent is not `false`"
     Omitting `user_reported` means the dimension is *unconstrained*. Setting it
     to `false` selects mail **nobody reported**, which is a different and much

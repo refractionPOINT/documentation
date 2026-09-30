@@ -12,6 +12,12 @@ fleet-wide policy are a script, not a UI workflow.
 | `mailsec_policy` | many, discriminated by `policy_type` | automations, exclusions, VIPs, thresholds, banners, retention, reporter replies, hunt defaults, clustering |
 | `dr-mail` | one per rule | all mail rules, including installed defaults — see [Custom Rules](custom-rules.md) |
 
+<span id="managed_rules"></span>
+
+Mail rules are ordinary `dr-mail` records, not a `managed_rules` policy type.
+See [default rule ownership and updates](custom-rules.md#default-rules-and-ownership)
+before customizing the installed pack.
+
 ## How `mailsec_policy` records work
 
 Every record carries a `policy_type` discriminator. There may be **many records
@@ -34,7 +40,7 @@ How each type composes:
 | `vips` | Union, deduplicated and sorted |
 | `thresholds` | Last writer wins per field, with the ordering invariant re-checked afterwards |
 | `banners`, `reporter_reply`, `hunt_defaults`, `clustering` | Last writer wins per field |
-| `retention` | **Maximum** wins — see [Retention](#retention) |
+| `retention` | **Minimum** wins — the shortest horizon for each field; see [Retention](#retention) |
 
 ### Unknown fields are refused
 
@@ -549,7 +555,8 @@ re-sent for the new date.
 
 ## Plans, the free trial, and the mailbox cap
 
-Email Security is available to every organization. What differs between a
+Email Security is in private beta and must be available to your organization
+before you subscribe. For an enabled organization, what differs between a
 **trial** organization and a **paid** one is how long it runs and how many
 mailboxes it protects.
 
@@ -559,9 +566,15 @@ Security and Cloud Security at once gets one answer about what it is paying for.
 
 | | Trial | Paid |
 |---|---|---|
-| Duration | **14 days** from the day Email Security was enabled | No limit |
-| Protected mailboxes | **25** | No limit |
+| Duration | **14 days** from the day Email Security was enabled | No trial duration limit |
+| Protected mailboxes | **25** | No plan-imposed mailbox cap |
 | Everything else — detections, remediation, retention, API, telemetry | Identical | Identical |
+
+These are the trial terms. During beta, a deployment can report limits before
+enforcing them. Read `coverage.entitlement` for your actual standing and
+enforcement; a reported limit alone does not prove ingestion has paused. Contact
+LimaCharlie to confirm trial or scheduled-deletion enforcement in your data
+region. Policy records and a development CLI cannot enable server enforcement.
 
 ### The 14-day clock
 

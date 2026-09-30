@@ -9,7 +9,8 @@ standard `Authorization: Bearer <JWT>` header.
 
 !!! info "Permissions & enable gate"
     Every route requires the organization to be subscribed to
-    `ext-email-security` — a `403` on any route means subscribe first. The `oid`
+    `ext-email-security`. For a `403`, check both the subscription and the
+    permission named in the error. The `oid`
     is always taken from the authorized path.
 
     Reads and the read-only `POST`s (`analyze`, `rules/validate`,

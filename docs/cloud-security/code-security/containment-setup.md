@@ -1,5 +1,7 @@
 # Configure evidence, lineage and remediation
 
+--8<-- "includes/code-security-cli-version.md"
+
 This page covers the settings behind the evidence chain, image lineage, live
 pull-request impact, runtime checks and remediation runs. It lists the
 permissions each one needs, what to grant on each connection, and which
@@ -7,9 +9,13 @@ policies control them. For what these features promise, see
 [What Code Security guarantees](guarantees.md).
 
 !!! note "Availability"
-    These capabilities are enabled region by region. Until yours is on, the
+    These are conditional API contracts, not a promise that every capability
+    is available in your organization. Evidence and lineage are introduced
+    region by region; remediation and AI-proposed fixes are not generally
+    available. Confirm access with LimaCharlie before setting them up. Until a capability is on, the
     routes below answer `feature_disabled`, `disabled` or `codesec_disabled`.
-    Scanning, pull-request checks and the rest of Code Security are unaffected.
+    Tenant policies cannot enable it. A refusal does not disable ordinary scans
+    and pull-request checks that are already available to you.
 
 ## Permissions
 
@@ -45,7 +51,10 @@ All of these are read-only unless the row says otherwise.
 | LimaCharlie sensors | A sensor on the host or node | Runtime checks. Without one the answer is `unknown` with `no_sensors`. |
 
 GitLab and Bitbucket connections are scanned with their read tokens. Pull-request
-checks, fixes and other writes on GitLab and Bitbucket are not enabled yet.
+checks, fixes and other writes require the corresponding workflow capability to
+be enabled in your data region and a separately configured write token. Read
+`code capabilities` after setup; scheduled repository scanning alone does not
+establish write capability.
 
 ### Webhooks
 

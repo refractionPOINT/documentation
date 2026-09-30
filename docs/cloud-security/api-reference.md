@@ -8,9 +8,11 @@ Authentication is the standard `Authorization: Bearer <JWT>` header.
 !!! info "Permissions & enable gate"
     Reads — and the read-only preview `POST`s (`query`, `simulate/resources`,
     `simulate/findings`, `policy/suggest`) — require `cloudsec.get`; every
-    other write requires `cloudsec.set`. Every route requires the
-    organization to be subscribed to `ext-cloud-security` — a `403` on any
-    route means subscribe first. The `oid` is always taken from the
+    other ordinary write requires `cloudsec.set`. Code Security remediation and
+    AutoFix require `cloudsec.respond`; see [their route permissions](code-security/reference.md#api-routes).
+    Every route requires the organization to be subscribed to
+    `ext-cloud-security`. For a `403`, check both the subscription and the
+    permission named in the error. The `oid` is always taken from the
     authorized path. Provider *records* are not `/cloudsec` routes: their
     CRUD goes through Hive (`cloudsec_provider` hive, gated by
     `cloudsec_provider.get/set/del`).

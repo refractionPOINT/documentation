@@ -1,5 +1,7 @@
 # Code rules
 
+--8<-- "includes/code-security-cli-version.md"
+
 Static analysis runs **exactly your organization's enabled code rules** — nothing
 else. They are records in the `cloudsec_code_rule` Hive, and LimaCharlie's rules
 are records there too: there is no hidden built-in pack and no separate override

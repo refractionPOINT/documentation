@@ -1,5 +1,7 @@
 # Troubleshooting Code Security
 
+--8<-- "includes/code-security-cli-version.md"
+
 For evidence-chain, lineage, runtime-check and remediation reason codes, see
 [Unknown, partial and refusal reasons](reasons.md).
 
@@ -71,7 +73,7 @@ if it is shown. It names what is not set up and links to the fix. From the CLI,
 
 | Problem | What to check |
 |---|---|
-| `No such command` for `cloudsec code` | Upgrade the `limacharlie` CLI. |
+| `No such command` for `cloudsec code` | Stable 5.6.2 does not include this group. Use the [development CLI installation](getting-started.md#cli-installation), or the console / REST routes. |
 | The CLI cannot identify the repository | Pass `--repo <owner>/<repository>`. |
 | Docker is not found | Install and start Docker, or use `--binary`, or push results from your own scanner with `code ingest`. |
 | A pushed repository is not recorded | It must match an enabled code-scanning policy and fit within the repository limits. |

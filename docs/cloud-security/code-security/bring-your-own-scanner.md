@@ -1,5 +1,7 @@
 # Bring your own scanner
 
+--8<-- "includes/code-security-cli-version.md"
+
 You don't have to rely only on the hosted scan. You can:
 
 - **push results from a scanner you already run**, as SARIF or CycloneDX;
@@ -85,6 +87,14 @@ days without a push for a new commit.
 `code scan` runs the LimaCharlie scanner on a checkout. Your code never leaves
 the machine, only the report does.
 
+The default container requires Docker and access to the scanner image
+distribution; anonymous pulls are not currently available. Confirm image access
+with LimaCharlie before using it in CI, or provide an authorized scanner image
+with `--image` or an installed `scanner-agent` with `--binary`. The CLI does not
+install the scanner binary. If you already have another scanner, SARIF or
+CycloneDX ingestion above does not require LimaCharlie's scanner image. Hosted
+scanning is another option when it is available in your data region.
+
 ```bash
 # Scan and keep the report, without sending anything.
 limacharlie cloudsec code scan ~/src/payments -o report.json.gz
@@ -98,13 +108,13 @@ limacharlie cloudsec code scan ~/src/payments --repo acme/payments --ingest
 - `--scanners` defaults to `sca,iac,licenses`. `sast` and `images` can also run
   locally. Locally, `images` lists the images your Dockerfiles use but does not
   scan them.
-- Local static analysis **never applies your organization's
-  [code rules](code-rules.md)**. With the CLI's default container image, it runs
-  the default rules built into that scanner image. Scanner releases that support
-  code rules have no built-in rules. They run static analysis only when started
-  with their `--default-rules` flag (LimaCharlie's default set) or `--rules-file`,
-  and the CLI does not pass either one. So pointing `--image` or `--binary` at one
-  of those releases gives a report with `sast_no_rules` and no code weaknesses.
+- With `sast` in `--scanners`, the CLI supplies LimaCharlie's default static
+  analysis rules. Use `--org-rules` to read your organization's enabled
+  [code rules](code-rules.md), or `--rules-file rules.json` for a local rule-set
+  document (`{"version":1,"records":[...]}`). These two options are mutually
+  exclusive. `--org-rules` needs authentication and `cloudsec.get`; the local
+  default and file options do not. A custom scanner image or binary must be
+  version 0.16.0 or later to accept the rule flags.
 - A scan must use `--ingest`, `-o`, or both, so the report is never thrown away.
 - `--repo` is read from the checkout's git remote when possible. Pass it
   explicitly in CI.
@@ -112,6 +122,15 @@ limacharlie cloudsec code scan ~/src/payments --repo acme/payments --ingest
 **Secret scanning does not run locally.** `--scanners sca,iac,secrets` fails
 rather than skipping secrets quietly. Local findings could not be matched to the
 hosted scan's secret findings, so use the hosted scan for secrets.
+
+```bash
+# Offline static analysis using LimaCharlie's defaults.
+limacharlie cloudsec code scan . --scanners sast -o report.json.gz
+
+# Use the same enabled static-analysis records as a hosted scan of your org.
+limacharlie cloudsec code scan . --scanners sca,sast --org-rules \
+  --oid "$OID" -o report.json.gz
+```
 
 ### GitHub Actions
 
@@ -135,7 +154,10 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Install the LimaCharlie CLI
-        run: pipx install limacharlie
+        # Code Security commands are not in stable 5.6.2. This public SDK
+        # revision contains the commands and static-analysis rule options.
+        # Update the pin deliberately after testing your workflow.
+        run: pipx install 'git+https://github.com/refractionPOINT/python-limacharlie.git@e40d0889ff3271e2c5670fff8358b257b5cc404c'
 
       - name: Scan and push
         env:

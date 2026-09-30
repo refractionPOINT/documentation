@@ -20,6 +20,8 @@ standard `limacharlie hive` commands — see
 [Configuration](configuration.md); this group is the query and triage
 surface.
 
+--8<-- "includes/code-security-cli.md"
+
 For Code Security (repositories, SBOMs, AutoFix, local scans and pushed results), see
 [Code Security](code-security/results.md#from-the-cli) and
 [Bring your own scanner](code-security/bring-your-own-scanner.md).
@@ -167,7 +169,11 @@ limacharlie cloudsec finding list \
   --sort lc_risk --order desc \
   --limit 50
 # ...then pass the returned next_cursor back:
-limacharlie cloudsec finding list --cursor "<next_cursor>" --limit 50
+limacharlie cloudsec finding list \
+  --severity CRITICAL --severity HIGH \
+  --status open -q payment \
+  --sort lc_risk --order desc \
+  --cursor "<next_cursor>" --limit 50
 ```
 
 Boolean tri-state flags (`--kev/--no-kev`, `--reachable/--no-reachable`)
@@ -181,9 +187,9 @@ applies to `finding list`, `finding facets`, `finding causes`, and
 that defaults to **ascending** (soonest deadline first), keeping findings with
 no due date last rather than dropping them.
 
-!!! note "`--sla` needs a CLI newer than 5.6.1"
-    The SLA selector and the `due_at` sort key ship in the first `limacharlie`
-    release after 5.6.1. On an older CLI, use the `sla=` and `sort=due_at`
+!!! note "SLA filters require CLI 5.6.2 or later"
+    The SLA selector and the `due_at` sort key are available in `limacharlie`
+    5.6.2. On an older CLI, use the `sla=` and `sort=due_at`
     parameters on the [REST route](api-reference.md#reads) — the server-side
     feature is live either way.
 
@@ -215,19 +221,36 @@ the returned sample, and `simulate resources` takes a repeatable
 `--resource-type` to narrow the walked types the way an exclusions rule does.
 `policy suggest` takes `--limit` (default 20, cap 50).
 
+## Additional development CLI selectors
+
+The following additions are newer than stable 5.6.2. Use the development CLI
+installation above and check each command's `--help`; older development
+checkouts may not contain them yet. The corresponding REST selectors are in
+the [API reference](api-reference.md).
+
+The current additions are tracked in the
+[public SDK update](https://github.com/refractionPOINT/python-limacharlie/pull/408).
+Until that update is merged, installing `master` does not include every new
+selector in this table; use the REST route or wait for the updated development
+CLI before copying those flags.
+
+| Command | Additional selectors |
+|---|---|
+| `cloudsec image list` | Repeatable `--lineage-status` (`verified`, `asserted`, `inferred`, `ambiguous`, `unknown`). Stale lineage counts as unknown. |
+| `cloudsec image repo-facets` | `--lineage-facet` adds digest-level lineage counts; these counts are separate from registry placement counts. |
+| `cloudsec caasm assets` | Repeatable `--kind`, `--source`, `--encryption`, `--screen-lock`, `--compromised`, `--managed`, plus `--sort urn` or `--sort last_seen`. For a posture dimension, an empty value selects unreported state. |
+| `cloudsec export findings`, `cloudsec export inventory` | `--max-rows` bounds a CSV chunk; `--cursor` resumes it. A trailing `# next_cursor=...` comment carries the continuation token when more rows remain. Keep all selectors unchanged when resuming. |
+| `cloudsec provider m365-certificate` | Generates and stores an Entra connection key pair and returns only its public certificate. See [certificate setup](provider-setup/entra.md#without-the-web-app). |
+
+A CSV reader should skip `#` comment lines before treating the file as a table.
+Check for the continuation token before considering a bounded export complete.
+
 ## Scripting
 
 The SDK class behind the CLI is available directly:
 
 ```python
-from limacharlie.client import Client
-from limacharlie.sdk.organization import Organization
-from limacharlie.sdk.cloudsec import CloudSec
-
-cs = CloudSec(Organization(Client(oid="...")))
-page = cs.list_findings(severity=["CRITICAL"], kev=True, limit=100)
-for f in page["findings"]:
-    print(f["lc_risk"], f["title"], f["resource_urn"])
+--8<-- "snippets/python/cloudsec_findings.py"
 ```
 
 Each method mirrors one API route and returns the raw response dict; see the

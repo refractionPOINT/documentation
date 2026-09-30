@@ -1,5 +1,7 @@
 # Code Security
 
+--8<-- "includes/code-security-cli-version.md"
+
 Code Security scans the source repositories behind your cloud estate and puts
 what it finds into the same risk-ranked worklist as your cloud findings. You
 triage a leaked credential or a vulnerable dependency the same way you triage a
@@ -59,6 +61,11 @@ keep it.
   checks, comments and AutoFix pull requests need write permissions you grant to
   the GitHub App, and each write uses a token limited to what that one action
   needs.
+
+These guarantees describe ordinary scans and deterministic dependency AutoFix.
+The separate, currently unavailable [AI-proposed fix capability](autofix.md#ai-proposed-fixes)
+has an additional opt-in for sending one target file to your model provider;
+see [AI data handling](data-handling.md#ai).
 
 ## Where to find it
 

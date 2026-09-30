@@ -259,7 +259,7 @@ usual worklist fields.
     deadline column — and it places findings with **no** due date last rather than
     dropping them from the page.
 
-    `--sla` and `--sort due_at` require a `limacharlie` CLI newer than 5.6.1. On
+    `--sla` and `--sort due_at` require `limacharlie` 5.6.2 or later. On
     an older CLI, pass `sla=` and `sort=due_at` on the
     [REST route](api-reference.md#reads) directly.
 

@@ -139,10 +139,6 @@ Timestamps are RFC 3339 strings. `direction` is `inbound`, `outbound`, or
 only after scoring. Recursive attachment children and attached messages remain
 subject to parser and analysis depth limits.
 
-<!-- Field tables checked against go-mailsec v0.1.78, the
-legion_mailsec dependency at review time. Update from model JSON tags when that
-wire contract changes; do not infer presence from Go field names or comments. -->
-
 ### MDM
 
 | Field | Type | Presence |

@@ -1,5 +1,7 @@
 # Automatic behavior and incident response
 
+--8<-- "includes/code-security-cli-version.md"
+
 This page describes what Code Security does on its own when something goes
 wrong, what it never does on its own, and what you can do during an incident
 that involves a remediation.

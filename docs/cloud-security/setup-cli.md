@@ -2,7 +2,7 @@
 
 Prefer the web app? Start with the [console walkthrough](getting-started.md).
 
-Before running commands, [install and configure the CLI](../6-developer-guide/cli.md) and select your organization. `$OID` below means your LimaCharlie organization ID.
+Before running commands, [install and configure the CLI](../6-developer-guide/cli-quickstart.md) and select your organization. `$OID` below means your LimaCharlie organization UUID, not its display name. Use `limacharlie org list --output yaml` to find it and set `OID="<organization-uuid>"` for these examples.
 
 This reference takes an organization from zero to a populated Cloud Security
 dashboard: enable the product, connect a provider, run the first sweep, and
@@ -63,6 +63,16 @@ A provider connection is one `cloudsec_provider` record. Each provider needs a
 scope (which account/tenant/org to enumerate) and a read-only credential. The
 [Connecting Providers](providers.md) page has the full per-provider setup — the
 steps below use Google Cloud as the worked example.
+
+Creating a connection, including `--enabled` on the same data write, needs
+`cloudsec_provider.set`. A metadata-only enable/disable can instead use
+`cloudsec_provider.set.mtd`, with metadata read access to preserve other fields.
+Saving and enabling its credential secret in one write needs `secret.set`.
+Reading connection data uses
+`cloudsec_provider.get`, while reading findings uses `cloudsec.get`.
+Credential tests and policy edits require `cloudsec.set`. These are separate
+grants, so permission to triage a finding does not grant permission to connect
+a different provider account.
 
 ### In the console
 

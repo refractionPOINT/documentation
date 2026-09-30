@@ -264,7 +264,11 @@ makes a history rule an amplifier of *other* evidence and never of itself.
 
 ## The default rules
 
-LimaCharlie's default rules are installed once into `dr-mail` when you subscribe.
+LimaCharlie's default rules are installed into `dr-mail` when you subscribe.
+Vendor-tagged defaults receive later pack updates, preserving enabled/disabled
+choices. Disable an unwanted default; deleting it can let the next pack release
+recreate it. Copy or untag a rule before maintaining your own version. See
+[default rule ownership](custom-rules.md#default-rules-and-ownership).
 **Email Security → Rules** is the authoritative catalog for your organization:
 it shows the exact current conditions, weight, confidence, phase, tags and
 false-positive notes. Every default is editable, disableable and deletable.

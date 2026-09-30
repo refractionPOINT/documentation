@@ -1,11 +1,18 @@
 # AutoFix pull requests
 
+--8<-- "includes/code-security-cli-version.md"
+
 For a vulnerable dependency with a published fixed version, Code Security can
 open the GitHub pull request that upgrades it. You review and merge it like any
 other pull request.
 
-AutoFix is GitHub-only and supports **npm** (including yarn and pnpm projects),
-**pip**, **Go modules** and **Maven**.
+The walkthrough below uses GitHub. AutoFix supports **npm** (including yarn and
+pnpm projects), **pip**, **Go modules** and **Maven**. GitLab.com and Bitbucket
+Cloud workflow support is deployment-dependent: confirm workflow availability
+with LimaCharlie, configure the provider's separate write token, then use
+`code capabilities` to verify the connection can open fix pull requests. A
+connection missing from that workflow response may still support
+ordinary scheduled repository scanning.
 
 ## Turn it on
 
@@ -77,9 +84,11 @@ stale-lockfile warning and the command to run on the branch before merging:
 | Lockfile | Command |
 |---|---|
 | `package-lock.json` | `npm install --package-lock-only --ignore-scripts` |
-| `yarn.lock` | `yarn install --mode update-lockfile` |
-| `pnpm-lock.yaml` | `pnpm install --lockfile-only` |
-| `go.sum` | `go mod tidy` |
+| `npm-shrinkwrap.json` | `npm install --package-lock-only --ignore-scripts` |
+
+This warning applies to npm's JSON lockfiles. A yarn, pnpm or Go lockfile the
+service cannot complete safely is refused before the job runs, rather than
+opened with a stale-lockfile warning.
 
 AutoFix never runs a package manager, because that would run code from the very
 dependencies under suspicion. To update `package-lock.json`, it makes one
@@ -87,8 +96,9 @@ read-only request to the npm registry for the new version's download URL and
 integrity hash, and writes those into the lockfile.
 
 To forbid that registry request, set `autofix_registry_access: false` in the
-policy. npm pull requests then change `package.json` only and carry the
-stale-lockfile warning. If any policy selecting a repository sets it to `false`,
+policy. Projects using npm JSON lockfiles then change `package.json` only and
+carry the stale-lockfile warning. Other lockfile formats can instead be refused
+if safe completion needs registry metadata. If any policy selecting a repository sets it to `false`,
 that wins.
 
 Separately, LimaCharlie always confirms the fixed version exists on the public
@@ -97,7 +107,8 @@ request. Packages published only to a private registry cannot be fixed
 automatically.
 
 AutoFix also refuses changes it cannot make safely, and says why: transitive
-dependencies, Go upgrades across a major version, complex npm version ranges,
+dependencies, Go upgrades that require a module-path change for major versions
+above v1 (v0-to-v1 is allowed), complex npm version ranges,
 Maven versions inherited from a parent POM, and pip pins other than `==`, `===`,
 `~=` or `>=`.
 
@@ -138,3 +149,58 @@ Some requests are refused immediately, with an HTTP error:
 
 See [Unknown, partial and refusal reasons](reasons.md#remediation-runs) for
 every code.
+
+## AI-proposed fixes
+
+!!! warning "Not currently available"
+    AI-proposed fix pull requests are a separate capability from dependency
+    AutoFix. They are not currently enabled as an available service. The
+    configuration below describes the opt-in contract for organizations that
+    LimaCharlie enables in a future preview; saving it does not grant access.
+
+The `ai_fix_pr` action proposes a change to the single file named by a hosted
+static-analysis or infrastructure-as-code finding. It uses **your Anthropic
+API key**, sends that file and the finding context to Anthropic, and charges
+usage to your Anthropic account. Review [AI data handling](data-handling.md#ai)
+before opting in. Dependency upgrades continue to use deterministic AutoFix.
+
+When this capability is available, it needs the GitHub write grants above,
+`cloudsec.respond` for requesting and approving each run, and an `ai_fix` block
+on an enabled code-scanning policy that selects the repository:
+
+```yaml
+# Add this block INSIDE the code_scanning object in your existing policy.
+ai_fix:
+  enabled: true
+  model_secret: hive://secret/code-fix-anthropic-key
+  job_cap_usd: 2
+  jobs_per_day: 10
+  checks: [syntax]
+```
+
+Create the referenced enabled secret first, with your Anthropic API key as the
+secret value. The optional `model` selects a supported model; omit it to use the
+service default and confirm the available models with LimaCharlie during setup.
+
+| Field | Contract |
+|---|---|
+| `enabled` | Required inside the block. `false` denies AI fixes for every repository the policy selects. Absent `ai_fix` leaves AI fixes off unless another selecting policy enables them. |
+| `model_secret` | Required when enabled; a `hive://secret/<name>` reference, never an inline API key. |
+| `job_cap_usd` | Per-model-call budget, USD 0.10–10; default 2. A job that cannot fit its input and output budget makes no model call. |
+| `jobs_per_day` | Per-organization daily job cap, 1–50; default 10. Failed jobs count when they start. |
+| `checks` | `syntax` (default) or `none`. The service never accepts a command to execute. `none` skips only the optional syntax check; rescanning and the impact gate remain mandatory. |
+
+Across selecting policies, an explicit denial wins, caps take the lowest value,
+and required checks combine. Conflicting model or secret choices refuse the
+job. The default syntax check supports Go, JSON, YAML, Terraform and HCL files;
+unsupported file types are refused rather than treated as having passed.
+
+The model cannot choose a repository, target file, branch, commit or command.
+A proposed patch must remove the target finding in a sandboxed rescan, pass the
+configured checks, and pass the live-impact gate before a pull request opens.
+Missing or partial evidence refuses the job. Each run still needs explicit
+approval, and its pull request needs your normal review and merge process.
+
+To disable this opt-in, set `ai_fix.enabled: false` in a policy selecting the
+repository. Cancel any active run separately; changing a policy does not close
+pull requests already opened.

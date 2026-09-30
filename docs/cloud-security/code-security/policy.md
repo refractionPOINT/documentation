@@ -1,5 +1,7 @@
 # Scan policy
 
+--8<-- "includes/code-security-cli-version.md"
+
 A `code_scanning` policy decides which repositories are scanned, which engines
 run, how often, and what happens on pull requests. With no enabled policy,
 nothing is scanned.
@@ -11,25 +13,26 @@ store it as a record in the `cloudsec_policy` hive.
 
 ```yaml
 policy_type: code_scanning
-enabled: true
-repos:
-  include: ["acme/api-*", "acme/payments"]
-  exclude: ["acme/api-archive"]
-scanners:
-  sca: true
-  secrets: true
-  secrets_history: true
-  iac: true
-  images: true
-  licenses: true
-  # sast runs unless set to false
-schedule: daily
-severity_floor: ""
-image_sources: ["dockerfile", "workloads"]
-pr_checks: true
-pr_comments: false
-gating:
-  fail_on: HIGH
+code_scanning:
+  enabled: true
+  repos:
+    include: ["acme/api-*", "acme/payments"]
+    exclude: ["acme/api-archive"]
+  scanners:
+    sca: true
+    secrets: true
+    secrets_history: true
+    iac: true
+    images: true
+    licenses: true
+    # sast runs unless set to false
+  schedule: daily
+  severity_floor: ""
+  image_sources: ["dockerfile", "workloads"]
+  pr_checks: true
+  pr_comments: false
+  gating:
+    fail_on: HIGH
 ```
 
 ```bash
@@ -37,7 +40,15 @@ limacharlie hive set --hive-name cloudsec_policy --key code-scanning \
     --input-file code-policy.yaml --enabled
 ```
 
+Save the YAML above as `code-policy.yaml`. Both enable switches matter: the
+Hive record must be enabled (`--enabled`), and its nested
+`code_scanning.enabled` must be `true`. Put `repos`, `scanners` and every field
+below **inside `code_scanning`**, not beside `policy_type`. A flat record is
+refused because it has no code-scanning body.
+
 ## Fields
+
+These fields belong to the nested `code_scanning` object.
 
 | Field | Meaning |
 |---|---|
@@ -45,12 +56,14 @@ limacharlie hive set --hive-name cloudsec_policy --key code-scanning \
 | `repos.include` | Repositories to scan, as globs matched case-insensitively against `owner/name` and the bare name. **Empty means every repository the connections can see.** |
 | `repos.exclude` | Repositories to skip. Always wins over `include`. |
 | `scanners` | Which engines run. See [Engines](#engines). |
-| `schedule` | `daily` (the default), `weekly`, or `manual` (only when you ask for a rescan). |
+| `schedule` | `daily` (the default), `weekly`, or `manual` (no scheduled scan; an explicit rescan, provider sync or push webhook can still trigger one). |
 | `severity_floor` | Drop findings below this severity. See [Severity floor](#severity-floor). |
 | `sast_ruleset` | **Deprecated and ignored.** Old values (`default`, `gitlab`, `custom:<ref>`) are still accepted so existing records save, but static analysis always runs the organization's enabled [code rules](code-rules.md). Leave it out of new records. |
 | `image_sources` | Where the image engine finds images. See [Container images](#container-images). |
 | `pr_checks`, `pr_comments`, `gating.fail_on` | Pull-request checks on GitHub. `fail_on` is `CRITICAL`, `HIGH`, `MEDIUM`, `LOW` or `NONE` (the default). See [Pull-request checks](pull-requests.md#turn-on-pull-request-checks). |
+| `pr_live_context` | Live-impact disclosure on pull-request checks: `off` (default), `risk_summary` or `resource_details`. Least disclosure wins across policies. Requires the impact capability to be available. See [Pull-request disclosure](containment-setup.md#pull-request-disclosure). |
 | `autofix_registry_access` | Whether AutoFix may look up package registry metadata to update lockfiles. Default `true`. See [AutoFix](autofix.md#lockfiles). |
+| `ai_fix` | Reserved opt-in configuration for [AI-proposed fixes](autofix.md#ai-proposed-fixes). Currently unavailable. Saving this block does not enable the server capability. |
 
 Globs support `*`, `?`, `[…]`, `{a,b}` and `**`. `*` does not cross a `/`, so
 `acme/*` does not select a GitLab subgroup project such as `acme/platform/api`.
