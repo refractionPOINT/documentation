@@ -104,7 +104,7 @@ always referenced, never inlined into the connection record.
     limacharlie mailsec onboarding --provider m365 --oid $OID
     ```
 
-    Newer development builds can fill the Google commands in advance:
+    Fill the Google commands in advance with your project details:
 
     ```bash
     limacharlie mailsec onboarding --provider gworkspace \
@@ -114,9 +114,7 @@ always referenced, never inlined into the connection record.
     ```
 
     Set the two variables to the project and service-account email from your
-    downloaded key. If `--help` does not list these flags, send `project_id`,
-    `sa_email`, `topic` and `subscription` to `GET /onboarding` through the
-    [API command](api-reference.md#reads), or update the development CLI.
+    downloaded key. The CLI uses these values to populate the onboarding instructions.
 
 ## 4. Connect the mail tenant
 

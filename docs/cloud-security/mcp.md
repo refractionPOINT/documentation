@@ -5,8 +5,8 @@ Security to any [Model Context Protocol](https://modelcontextprotocol.io/) clien
 Cursor, and others — so an AI assistant can read your cloud posture, triage findings, and, for
 [Code Security](code-security/index.md), scan the working copy on your own machine before anything is pushed.
 
-This page covers the setup and the Code Security tools. Tool availability depends
-on the MCP server version and backend rollout; check your client's tool list.
+This page covers the setup and the Code Security tools. Check your client's tool
+list after connecting.
 Most of the other Cloud Security tools
 match a [command line interface](cli.md) command.
 
@@ -160,16 +160,14 @@ cloudsec_code_scan_local { "path": "/home/me/src/api" }
 ```
 
 This runs on the machine hosting your local server: the default container path
-needs Docker and a
-development [`limacharlie` CLI with CodeSec support](code-security/getting-started.md#cli-installation)
-on PATH, and it takes minutes rather than seconds. PyPI 5.6.2 lacks the code scan
-command. Verify `limacharlie cloudsec code scan --help` before starting. The default
-scanner image also requires registry access; an anonymous pull is not sufficient.
-Newer MCP builds let the operator set `LC_CODE_SCANNER_IMAGE` or
+needs Docker and the [`limacharlie` CLI](code-security/getting-started.md#cli-installation)
+on PATH, and it takes minutes rather than seconds. Install or upgrade with
+`python -m pip install --upgrade limacharlie`. The default scanner image requires
+registry access. The operator can set `LC_CODE_SCANNER_IMAGE` or
 `LC_CODE_SCANNER_BINARY` for a compatible authorized image or local executable.
-These map to the CLI's `--image` / `--binary`; use a development CLI containing
-those flags until release. An MCP caller cannot select the executable. Inspect
-the server's [local scan guide](https://github.com/refractionPOINT/lc-mcp-server/blob/master/docs/CLOUD-SECURITY-CODE.md).
+These map to the CLI's `--image` / `--binary`; an MCP caller cannot select the
+executable. Inspect the server's
+[local scan guide](https://github.com/refractionPOINT/lc-mcp-server/blob/master/docs/CLOUD-SECURITY-CODE.md).
 
 Without `ingest`, the findings report is not uploaded to LimaCharlie. Image pulls,
 scanner dependency/intelligence lookups and optional rule downloads may still use
@@ -181,7 +179,7 @@ A hosted MCP deployment refuses it.
 `scanners` defaults to `sca,iac,licenses`; `sast` and `images` also run locally.
 By default SAST uses scanner-local rules and does not automatically load
 organization rules; the delegated local-only CLI has no organization credentials.
-Newer MCP builds let the operator set `LC_CODE_SCANNER_RULES_FILE` to a compatible
+The operator can set `LC_CODE_SCANNER_RULES_FILE` to a compatible
 exported code-rule JSON file, forwarding the CLI's `--rules-file`. An MCP caller
 cannot choose the rules file. A scanner with no usable rules reports `sast_no_rules` (see
 [Scan locally or in CI](code-security/bring-your-own-scanner.md#scan-locally-or-in-ci)). **Secret scanning
@@ -237,7 +235,7 @@ lockfile behavior that decides whether the pull request is complete on its own.
 
 ## Local IaC attribution
 
-Newer builds provide `cloudsec_code_iac_map_extract` in the full CloudSec profile
+The server provides `cloudsec_code_iac_map_extract` in the full CloudSec profile
 for local STDIO sessions. The operator must explicitly set `LC_IAC_MAP_EXTRACTOR`
 to an installed extractor's path; there is no implicit executable selection.
 The tool reads a local Terraform/OpenTofu show-JSON file and returns sanitized

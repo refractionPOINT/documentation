@@ -184,8 +184,7 @@ are different problems. Read the returned error before changing credentials.
 
 Profiles select the tools offered and callable on an endpoint; they do not grant
 permissions. Prefer a product's read-only profile with a read-only key for a first
-review. New profiles require a server version that includes them; an unknown
-profile endpoint can return 404. Inspect the tool list because a server-wide
+review. An unknown profile endpoint can return 404. Inspect the tool list because a server-wide
 configured profile can override the URL profile.
 
 ### Recommended Permissions by Use Case

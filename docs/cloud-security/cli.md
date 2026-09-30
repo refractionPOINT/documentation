@@ -187,16 +187,10 @@ applies to `finding list`, `finding facets`, `finding causes`, and
 that defaults to **ascending** (soonest deadline first), keeping findings with
 no due date last rather than dropping them.
 
-!!! note "SLA filters require CLI 5.6.2 or later"
-    The SLA selector and the `due_at` sort key are available in `limacharlie`
-    5.6.2. On an older CLI, use the `sla=` and `sort=due_at`
-    parameters on the [REST route](api-reference.md#reads) — the server-side
-    feature is live either way.
-
 The other lists carry a subset, so check `--help` before assuming a flag is
 there. `caasm coverage` behaves like `finding list` (repeatable filters,
-`--sort`/`--order`, paging). `inventory list` and `caasm assets` page but do
-not sort, and inventory's `--type` / `--provider` / `--account` / `--region`
+`--sort`/`--order`, paging). `caasm assets` supports paging and `--sort urn` or `--sort last_seen`.
+`inventory list` pages without sorting, and inventory's `--type` / `--provider` / `--account` / `--region`
 each take a single value rather than repeating. `attack-path list` returns
 the headline set in one shot: repeatable filters and `-q`, but no sorting and
 no paging.
@@ -221,18 +215,10 @@ the returned sample, and `simulate resources` takes a repeatable
 `--resource-type` to narrow the walked types the way an exclusions rule does.
 `policy suggest` takes `--limit` (default 20, cap 50).
 
-## Additional development CLI selectors
+## Additional selectors
 
-The following additions are newer than stable 5.6.2. Use the development CLI
-installation above and check each command's `--help`; older development
-checkouts may not contain them yet. The corresponding REST selectors are in
-the [API reference](api-reference.md).
-
-The current additions are tracked in the
-[public SDK update](https://github.com/refractionPOINT/python-limacharlie/pull/408).
-Until that update is merged, installing `master` does not include every new
-selector in this table; use the REST route or wait for the updated development
-CLI before copying those flags.
+These selectors are available in the CLI. Check each command's `--help` for
+usage; the corresponding REST selectors are in the [API reference](api-reference.md).
 
 | Command | Additional selectors |
 |---|---|

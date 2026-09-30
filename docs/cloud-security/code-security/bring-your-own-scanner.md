@@ -154,10 +154,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Install the LimaCharlie CLI
-        # Code Security commands are not in stable 5.6.2. This public SDK
-        # revision contains the commands and static-analysis rule options.
-        # Update the pin deliberately after testing your workflow.
-        run: pipx install 'git+https://github.com/refractionPOINT/python-limacharlie.git@e40d0889ff3271e2c5670fff8358b257b5cc404c'
+        run: pipx install limacharlie
 
       - name: Scan and push
         env:

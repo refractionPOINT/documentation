@@ -232,7 +232,7 @@ upload the new one.
 
 ### Without the web app
 
-The stable CLI's API command generates the certificate without requiring you to
+The CLI's API command generates the certificate without requiring you to
 manage a JWT yourself:
 
 ```bash
@@ -244,18 +244,14 @@ limacharlie api "/v1/cloudsec/$OID/providers/m365/certificate" \
 jq -r .certificate certificate-response.json | base64 --decode > entra-prod.cer
 ```
 
-Development CLI builds with `cloudsec provider m365-certificate` offer the same
-operation and write the public certificate directly:
+The dedicated CLI command writes the public certificate directly:
 
 ```bash
 limacharlie cloudsec provider m365-certificate entra-prod \
   --out entra-prod.cer --oid "$OID" --output yaml
 ```
 
-Stable 5.6.2 does not include this dedicated command; use `api` above or check
-the development command's `--help` before running it. The dedicated command is
-in the [public SDK update](https://github.com/refractionPOINT/python-limacharlie/pull/408);
-use `api` while that update is pending. Both forms require
+Both forms require
 `cloudsec.set` and `secret.set`. A repeat returns the existing certificate.
 `--replace` (API `replace: true`) immediately replaces the stored private key;
 an existing connection may stop authenticating until you upload the new public

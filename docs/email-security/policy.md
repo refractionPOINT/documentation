@@ -574,7 +574,7 @@ These are the trial terms. During beta, a deployment can report limits before
 enforcing them. Read `coverage.entitlement` for your actual standing and
 enforcement; a reported limit alone does not prove ingestion has paused. Contact
 LimaCharlie to confirm trial or scheduled-deletion enforcement in your data
-region. Policy records and a development CLI cannot enable server enforcement.
+region. Policy records and a CLI installation cannot enable server enforcement.
 
 ### The 14-day clock
 

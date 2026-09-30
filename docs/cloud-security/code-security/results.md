@@ -60,7 +60,7 @@ installation, the drawer says so and links to the installation page.
 Select an image to open its findings in Risks. **Registries** groups images by
 image repository.
 
-From the development CLI:
+From the CLI:
 
 ```bash
 limacharlie cloudsec image repos

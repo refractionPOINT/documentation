@@ -57,13 +57,10 @@ limacharlie mailsec message list --verdict suspicious --verdict malicious \
   --mailbox cfo@corp.example --since "$(date -d '7 days ago' +%s)" --oid $OID
 ```
 
-To inspect historical analysis separately, a development CLI with `--lane`
-supports `mailsec message list --lane backfill`. For an older build, the stable
-CLI's API command can send the same filter:
+To inspect historical analysis separately:
 
 ```bash
-limacharlie api "/v1/mailsec/$OID/messages" \
-  --raw-field lane=backfill --field limit=10 --output yaml
+limacharlie mailsec message list --lane backfill --limit 10 --oid "$OID" --output yaml
 ```
 
 Historical messages are scored but do not trigger live-mail telemetry or

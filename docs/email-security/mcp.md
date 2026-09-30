@@ -4,11 +4,10 @@
 
 The [LimaCharlie MCP server](https://github.com/refractionPOINT/lc-mcp-server)
 lets an AI assistant review MailSec coverage, messages, campaigns and action
-history. Start with a read-only session and one pilot mailbox. New MailSec tools
-require a server build containing the `email_security` profiles; installed and
-hosted versions may not include them yet. Check your client's tool list before
-using the examples below. A newer client cannot enable an unavailable backend
-feature or grant product access.
+history. Start with a read-only session and one pilot mailbox. Select the
+`email_security_readonly` profile for your first review and inspect the client's
+tool list after connecting. Product access and backend capabilities are
+configured separately from the client.
 
 ## Connect a read-only session
 

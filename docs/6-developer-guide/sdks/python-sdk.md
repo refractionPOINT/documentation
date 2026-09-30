@@ -715,10 +715,9 @@ response = ext.request(
 
 ### Cloud Security
 
-The stable SDK exposes `CloudSec` through `limacharlie.sdk.cloudsec`. The
+The SDK exposes `CloudSec` through `limacharlie.sdk.cloudsec`. The
 organization must be subscribed to Cloud Security; reading findings requires
-`cloudsec.get`. This example targets SDK **5.6.2** and follows every page while
-keeping its filters unchanged:
+`cloudsec.get`. This example follows every page while keeping its filters unchanged:
 
 ```python
 --8<-- "snippets/python/cloudsec_findings.py"
@@ -733,14 +732,11 @@ fields.
 
 ### Code Security and Email Security availability
 
-Stable SDK 5.6.2 does **not** contain Code Security's SDK methods or the
-`Mailsec` wrapper. Those interfaces are available in the development version
-of the [public Python SDK](https://github.com/refractionPOINT/python-limacharlie).
-Use a separate environment and pin a tested commit for automation. Follow
-[Code Security CLI installation](../../cloud-security/code-security/getting-started.md#cli-installation)
-or [Email Security setup](../../email-security/setup-cli.md) before copying
-examples. Installing the development SDK does not enable server capabilities
-or grant beta access.
+Install or upgrade the SDK with `python -m pip install --upgrade limacharlie`.
+Use `CloudSec` for Cloud Security and Code Security, and `Mailsec` for Email
+Security. Follow [Code Security setup](../../cloud-security/code-security/getting-started.md)
+or [Email Security setup](../../email-security/setup-cli.md) to configure the
+product subscription, provider connection and permissions.
 
 Email Security requires its extension subscription and separates reading
 (`mailsec.get`), policy/triage edits (`mailsec.set`), provider actions
