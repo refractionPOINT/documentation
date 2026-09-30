@@ -39,7 +39,7 @@ How each type composes:
 | `exclusions` | Concatenated — a set of independent suppressions |
 | `vips` | Union, deduplicated and sorted |
 | `thresholds` | Last writer wins per field, with the ordering invariant re-checked afterwards |
-| `banners`, `reporter_reply`, `sample_submission`, `hunt_defaults`, `clustering` | Last writer wins per field |
+| `banners`, `reporter_reply`, `sample_sharing`, `hunt_defaults`, `clustering` | Last writer wins per field |
 | `retention` | **Minimum** wins — the shortest horizon for each field; see [Retention](#retention) |
 
 ### Unknown fields are refused
@@ -751,14 +751,14 @@ Template keys must be verdicts. Values are plain text (no `<` or `>`), capped at
 
 ---
 
-## `sample_submission`
+## `sample_sharing`
 
 Lets your analysts copy one message at a time to LimaCharlie so detection can
 improve. See [Sample Submission](sample-submission.md) for what is kept, where,
 for how long and how to withdraw.
 
 ```yaml
-policy_type: sample_submission
+policy_type: sample_sharing
 enabled: true
 ```
 
@@ -768,7 +768,7 @@ enabled: true
 
 The record is closed: `enabled` is the only field, unknown fields are refused, and
 a record that sets nothing is refused. A suggested record name is
-`sample-submission`. Nothing is ever submitted automatically, and D&R rules,
+`sample-sharing`. Nothing is ever submitted automatically, and D&R rules,
 automations and the AI agent cannot submit even when the record is on.
 
 ---

@@ -28,16 +28,16 @@ not change the verdict on your message.
 Sample submission is opt-in per organization. Until you opt in, submit requests
 are refused and nothing is ever copied.
 
-Opt in with a `mailsec_policy` record of type `sample_submission`:
+Opt in with a `mailsec_policy` record of type `sample_sharing`:
 
 ```yaml
-policy_type: sample_submission
+policy_type: sample_sharing
 enabled: true
 ```
 
 ```bash
-echo '{"policy_type": "sample_submission", "enabled": true}' > opt-in.json
-limacharlie hive set --hive-name mailsec_policy --key sample-submission \
+echo '{"policy_type": "sample_sharing", "enabled": true}' > opt-in.json
+limacharlie hive set --hive-name mailsec_policy --key sample-sharing \
   --input-file opt-in.json --enabled
 ```
 
@@ -48,7 +48,7 @@ limacharlie hive set --hive-name mailsec_policy --key sample-submission \
 The record has only that one field. Unknown fields are refused, and a record that
 sets nothing is refused. When several records set `enabled`, the last one in
 record-name order wins, as with [`reporter_reply`](policy.md#reporter_reply).
-See [Policy Reference](policy.md#sample_submission). Writing the record needs the
+See [Policy Reference](policy.md#sample_sharing). Writing the record needs the
 same permission as any other `mailsec_policy` record.
 
 ## Who can submit
@@ -122,8 +122,8 @@ submit it again.
 - Withdrawing by submission id: `DELETE /submissions/{submission_id}`, or
   `limacharlie mailsec submission withdraw <submission_id>`.
 
-Withdrawing a submission that was already withdrawn or has expired returns a 404
-on the submission routes. It never deletes anything a second time.
+Withdrawing a submission that was already withdrawn or has expired is harmless: the
+submission routes answer `withdrawn: false` and nothing is deleted a second time.
 
 ## If the organization is deleted
 
@@ -164,8 +164,8 @@ for the shared conventions.
 | `POST /messages/{msg_uuid}/actions` with `{"action": "submit_sample", "category": ..., "reason": ...}` | Submit one message. `category` and `reason` are required; `attempt` is an optional idempotency token. Requires `mailsec.act` |
 | `POST /messages/{msg_uuid}/actions` with `{"action": "withdraw_sample"}` | Withdraw the submission made from this message. `reason` (up to 1024 characters) and `attempt` are optional. Requires `mailsec.act` |
 | `GET /submissions` | `{enabled, available, submissions, next_cursor}`. Filters: `category`, `since`, `until` (RFC 3339), `limit` (1-200, default 50), `cursor`. Requires `mailsec.get` |
-| `GET /submissions/{submission_id}` | `{submission, reviews}`, where `reviews` is `[{ts}]`, one per time LimaCharlie staff opened the copy. A 404 means the id is unknown. Requires `mailsec.get` |
-| `DELETE /submissions/{submission_id}` | `{withdrawn, submission_id, action_id}`. Hard-deletes the stored copy and its metadata. A 404 means the id is unknown, already withdrawn or expired. Requires `mailsec.act` |
+| `GET /submissions/{submission_id}` | `{submission, reviews}`, where `reviews` is `[{ts}]`, one per time LimaCharlie staff opened the copy. An unknown id is not an error: it returns `{"submission": null, "reviews": []}`, so branch on `null`. Requires `mailsec.get` |
+| `DELETE /submissions/{submission_id}` | `{withdrawn: true, submission_id, action_id}`. Hard-deletes the stored copy and its metadata. An unknown, already-withdrawn or expired id is not an error: it returns `{withdrawn: false, submission_id}` with no `action_id`, and nothing is deleted. Requires `mailsec.act` |
 
 `GET /submissions` always returns two flags, so an empty list is never ambiguous:
 `enabled` says your organization has opted in, and `available` says your
@@ -203,7 +203,8 @@ omitted before that.
 A submission goes through the same action route as other message actions and
 returns the same result shape. `ok` and `skipped` carry a `submission_id`;
 `skipped` means the message already has an active submission, so submitting twice
-is safe. A refusal is an HTTP 200 with `result: failed` and one of these errors:
+is safe. A refusal is reported like any other failed action, with one of these
+texts in `error`:
 
 | Error | Meaning |
 |---|---|

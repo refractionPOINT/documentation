@@ -311,15 +311,17 @@ on. The full contract, including every `state`, `result` and count, is in
 ### Submitting a sample sends the message to LimaCharlie
 
 `message submit-sample` copies one message to LimaCharlie, so it is opt-in, explicit and
-one message per call. The organization must have opted in with a `sample_submission`
-[policy record](policy.md#sample_submission); `--category`
+one message per call. The organization must have opted in with a `sample_sharing`
+[policy record](policy.md#sample_sharing); `--category`
 (`missed_threat`, `false_positive`, `other`) and `--reason` (1 to 1024 characters) are
 both required and are checked before anything is sent. A refusal (not opted in, no store
-in the datacenter, raw copy no longer stored) is an HTTP 200 with `result: failed`; the
-command prints the reason and exits non-zero. `submission list` prints the `enabled` and
+in the datacenter, raw copy no longer stored) is reported like any other failed action, with the reason in
+`error`; the command prints the reason and exits non-zero. `submission list` prints the `enabled` and
 `available` flags, so an empty list can be told apart from a feature that is off, and
 pages with `--cursor`. `submission get` shows when LimaCharlie staff opened the copy, and
-`submission withdraw` (or `message withdraw-sample`) deletes it. See
+`submission withdraw` (or `message withdraw-sample`) deletes it. An unknown id is not an
+error: `submission get` returns `submission: null` and `submission withdraw` returns
+`withdrawn: false`, and the command says so on stderr. See
 [Sample Submission](sample-submission.md).
 
 ### Revising a verdict is `mailsec.act`, not `mailsec.set`
