@@ -9,7 +9,7 @@ fleet-wide policy are a script, not a UI workflow.
 | Hive | Records | Purpose |
 |---|---|---|
 | `mailsec_provider` | one per mail connection | which tenant to protect, with which credential — see [Connecting Providers](providers.md) |
-| `mailsec_policy` | many, discriminated by `policy_type` | automations, exclusions, VIPs, thresholds, banners, retention, reporter replies, hunt defaults, clustering |
+| `mailsec_policy` | many, discriminated by `policy_type` | automations, exclusions, VIPs, thresholds, banners, retention, reporter replies, sample submission, hunt defaults, clustering |
 | `dr-mail` | one per rule | all mail rules, including installed defaults — see [Custom Rules](custom-rules.md) |
 
 <span id="managed_rules"></span>
@@ -39,7 +39,7 @@ How each type composes:
 | `exclusions` | Concatenated — a set of independent suppressions |
 | `vips` | Union, deduplicated and sorted |
 | `thresholds` | Last writer wins per field, with the ordering invariant re-checked afterwards |
-| `banners`, `reporter_reply`, `hunt_defaults`, `clustering` | Last writer wins per field |
+| `banners`, `reporter_reply`, `sample_submission`, `hunt_defaults`, `clustering` | Last writer wins per field |
 | `retention` | **Minimum** wins — the shortest horizon for each field; see [Retention](#retention) |
 
 ### Unknown fields are refused
@@ -571,6 +571,8 @@ A tenant purge permanently deletes, for one organization:
 - user (abuse-mailbox) reports
 - stored raw messages and their parsed copies
 - link-detonation results
+- sample submissions: every message your analysts copied to LimaCharlie, and its
+  metadata (see [Sample Submission](sample-submission.md))
 - the organization's Email Security provider connection and policy configuration
 
 It also **stops the mail connections at Microsoft 365 and Google Workspace**, so
@@ -746,6 +748,28 @@ templates:
 
 Template keys must be verdicts. Values are plain text (no `<` or `>`), capped at
 4096 characters.
+
+---
+
+## `sample_submission`
+
+Lets your analysts copy one message at a time to LimaCharlie so detection can
+improve. See [Sample Submission](sample-submission.md) for what is kept, where,
+for how long and how to withdraw.
+
+```yaml
+policy_type: sample_submission
+enabled: true
+```
+
+| Field | Default | |
+|---|---|---|
+| `enabled` | `false` | Opt-in. Submitting copies a message to LimaCharlie, so without this record (or with `enabled: false`) every submit request is refused |
+
+The record is closed: `enabled` is the only field, unknown fields are refused, and
+a record that sets nothing is refused. A suggested record name is
+`sample-submission`. Nothing is ever submitted automatically, and D&R rules,
+automations and the AI agent cannot submit even when the record is on.
 
 ---
 

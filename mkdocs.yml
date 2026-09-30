@@ -603,6 +603,7 @@ nav:
       - Bulk Remediation: email-security/remediation.md
       - Campaigns: email-security/campaigns.md
       - User Reports: email-security/user-reports.md
+      - Sample Submission: email-security/sample-submission.md
       - Detections & Verdicts: email-security/detections.md
       - Mail Rules: email-security/custom-rules.md
       - Rule Reference: email-security/rule-reference.md

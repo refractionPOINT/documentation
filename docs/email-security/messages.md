@@ -260,6 +260,11 @@ limacharlie mailsec message action <msg_uuid> \
 
 Actions require `mailsec.act`.
 
+Two more actions, `submit_sample` and `withdraw_sample`, do not touch the message's
+placement: they copy it to LimaCharlie to help improve detection, or delete that copy.
+They are opt-in and only a person can run them. See
+[Sample Submission](sample-submission.md).
+
 To act on many messages at once — a filtered page of this queue, or a selection
 you built elsewhere — see [Bulk Remediation](remediation.md). It is the same
 executor and the same audit trail, with a preview and a confirmation over the set
