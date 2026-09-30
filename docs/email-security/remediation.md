@@ -281,7 +281,7 @@ route and renders each member's outcome by name.
 
 The console's bulk action list is a deliberate subset: `banner_message` is
 offered (a bulk banner still uses the organization's own
-[banner policy](policy.md#banners); no client supplies HTML), and
+[banner policy](policy.md#banners), and may carry one plain-text `text` that replaces the wording for the whole job; no client supplies HTML), and
 `unbanner_message` is not — un-bannering is a per-message follow-up taken from a
 bannered row's timeline, not a sweep. The API accepts all six.
 

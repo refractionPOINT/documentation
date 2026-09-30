@@ -158,8 +158,24 @@ idempotency all apply unchanged — there is exactly one remediation path in thi
 product.
 
 A rule does not supply banner HTML: `banner_message` uses the organization's own
-banner from its [`banners` policy record](policy.md#banners), rendered
-server-side into a fixed escaped template. Automated bannering also requires
+banner from its [`banners` policy record](policy.md#banners) (title, colour,
+logo and the wording for the message's verdict), rendered server-side into a
+fixed escaped template. A rule may add one plain-text `text` (at most 512
+characters, no `<` or `>`) that replaces the wording for that banner only, for
+example to name the reason the rule fired:
+
+```yaml
+respond:
+  - action: extension request
+    extension name: ext-email-security
+    extension action: banner_message
+    extension request:
+      msg_uuid: '{{ .event.msg_uuid }}'
+      text: "Payment details changed in this message. Confirm by phone before paying."
+```
+
+`text` is refused, with the reason in the rule's result, if it contains markup
+or control characters or is sent on any action other than `banner_message`. Automated bannering also requires
 `enabled` on the [`banners` record](policy.md#banners); without it a rule's
 `banner_message` is decided and audited but the mailbox is not touched
 (`alert_only`). Bannering asked for by a person — console, API, CLI — is not
