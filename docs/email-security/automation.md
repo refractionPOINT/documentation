@@ -20,6 +20,7 @@ is one sensor, not ten thousand.
 |---|---|
 | `EMAIL_MESSAGE` | Once per message, at ingest. Carries the whole parsed model — headers, sender, recipients, body, links, attachments, authentication, hops — plus the enrichments and the verdict. It is the record that this mail arrived |
 | `EMAIL_VERDICT` | On **every** verdict decision: the rule pack's own, at ingest right after the `EMAIL_MESSAGE` (`revision/seq: 0`, `revision/mode: auto`), and then once per override afterwards (`seq: 1…`, mode `analyst`, `ai` or `detonation`) |
+| `EMAIL_ANALYSIS_COMPLETE` | When the initial analysis window closes, including messages with nothing pending. Carries terminal outcomes, final verdict snapshot and timing |
 | `EMAIL_ACTION` | On every remediation outcome, including failures and skips, **and on every raw-message download** (`action: get_eml`), served or refused. Who asked, what was attempted, what happened |
 | `EMAIL_USER_REPORT` | When a message reaches the abuse mailbox and becomes a report |
 | `EMAIL_INGEST_ERROR` | When a message could not be fetched or processed. Coverage honesty: failures are visible, never silent |
@@ -56,6 +57,21 @@ of them.
 The MDM is deliberately *not* repeated here: it is already in the immutable
 `EMAIL_MESSAGE`, and copying it into every verdict change would multiply a year
 of telemetry by how often people change their minds.
+
+### `EMAIL_ANALYSIS_COMPLETE`
+
+This event uses the same identity and `revision` paths as `EMAIL_VERDICT`, so
+triage reads `event/revision/verdict`, not the MDM's `event/verdict/verdict`.
+`event/results` maps each armed analysis (`detonation`, `attachment_scan`) to
+`completed`, `changed_verdict`, `skipped`, `shed`, `failed`, or `timed_out`.
+`event/completed_at` and `event/timing` describe the completed window. Empty
+results mean no delayed work was needed. The completion payload does not include
+the seq-0 `analysis` snapshot or `after_complete`.
+
+Start an AI or analyst triage workflow on this event when it needs the initial
+analysis results. Continue handling later `EMAIL_VERDICT` escalations: analyses
+that finish beyond the deadline carry `event/after_complete: true`. Completion
+never means that a failed or timed-out analysis cleared the message.
 
 ### A message that joins a campaign late
 
@@ -285,3 +301,74 @@ Two conventions make this pleasant to keep in git:
 
 Onboarding a new tenant is then: subscribe the extension, write the secret, write
 the provider record, apply the policy directory, run the connection test.
+
+## Triage after initial analysis
+
+This platform D&R detection reports suspicious or malicious messages after the
+initial evidence window closes. The final verdict is a snapshot at completion;
+read `results` when your triage needs to distinguish an examined message from a
+deadline, capacity refusal or analysis failure. Use `msg_uuid` as the workflow's
+idempotency key when dispatching external work.
+
+```yaml
+# Detect
+event: EMAIL_ANALYSIS_COMPLETE
+op: and
+rules:
+- op: exists
+  path: event/revision/verdict
+  truthy: true
+- op: or
+  rules:
+  - op: is
+    path: event/revision/verdict
+    value: malicious
+    case sensitive: false
+  - op: is
+    path: event/revision/verdict
+    value: suspicious
+    case sensitive: false
+```
+
+```yaml
+# Respond
+- action: report
+  name: email-analysis-triage
+```
+
+The initial `EMAIL_MESSAGE` remains useful for immediate containment and
+content rules. Waiting for completion is a workflow choice; it does not prevent
+the existing ingest-time automations from containing an already malicious message.
+
+## Alerting on provider delivery delays
+
+This example reports a provider notification lag over five minutes. The
+existence guard excludes messages whose notification time is unknown. Adjust
+the threshold to your own operating expectations; this is an example rule,
+not a built-in alert.
+
+```yaml
+# Detect
+op: and
+rules:
+- op: is
+  path: routing/event_type
+  value: EMAIL_ANALYSIS_COMPLETE
+- op: exists
+  path: event/timing/provider_lag_ms
+- op: is greater than
+  path: event/timing/provider_lag_ms
+  value: 300000
+```
+
+```yaml
+# Respond
+- action: report
+  name: email-analysis-provider-lag
+```
+
+Compare `provider_lag_ms` with `queue_ms` and `processing_ms` to separate delay
+before notification from delay inside processing. The same pattern can alarm
+on another present timing field. `analysis_ms` includes the delayed analysis
+window; `end_to_end_ms` ends at the initial verdict. Check `clock_skew` before
+interpreting clamped measurements.

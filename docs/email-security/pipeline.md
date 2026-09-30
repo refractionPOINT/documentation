@@ -112,7 +112,7 @@ the message at the provider.
 | | |
 |---|---|
 | **Synchronous, one pass per message** | Fetch, parse, every enrichment including attachment explosion, matching, scoring, the verdict, campaign clustering, persistence, and the emission of `EMAIL_MESSAGE` followed by the engine's own `EMAIL_VERDICT` (`revision/seq: 0`) |
-| **Later, and recorded as such** | Verdict revisions, remediation outcomes, campaign membership added when a later message joins the cluster |
+| **Later, and recorded as such** | Link detonation, deferred attachment scans, analysis completion, verdict revisions, remediation outcomes, campaign membership added when a later message joins the cluster |
 
 A revision does **not** rewrite `EMAIL_MESSAGE`. The original event stands as the
 record of what the engine decided at ingest, a revision row is appended with its
@@ -134,6 +134,69 @@ revision: a message nobody has overridden still reports zero revisions.
     resolved", and the verdict is computed from whatever resolved in time with
     the gaps named. A slow enrichment degrades one signal. A blocking one
     degrades coverage, which is the thing you bought.
+
+## Knowing when initial analysis has finished
+
+The initial `EMAIL_VERDICT` (`revision/seq: 0`) includes
+`analysis: {pending: [...], complete: false}` when delayed work is outstanding.
+The closed set of pending kinds is `detonation` and `attachment_scan`. With
+nothing outstanding, it carries `pending: []` and `complete: true`.
+
+`EMAIL_ANALYSIS_COMPLETE` closes that initial window for every live ingested
+message, including messages with no delayed work. It carries the final
+`revision/verdict`, `revision/score`, `revision/seq`, and known message identity
+fields, plus `results` and `timing`. Use this event to start triage that needs the
+initial batch of evidence. A completion is a processing fact, **not a safety
+verdict**.
+
+| Result | Meaning |
+|---|---|
+| `completed` | The analysis finished without changing the verdict |
+| `changed_verdict` | The analysis committed a verdict revision |
+| `skipped` | The analysis was no longer applicable |
+| `shed` | Capacity admission refused the work |
+| `failed` | The analysis failed |
+| `timed_out` | The initial analysis deadline expired before a terminal result |
+
+Only armed kinds appear in `results`; `{}` means no delayed work was needed.
+Pending work is durable. A collector restart or lost in-memory task cannot leave
+the window open forever: unresolved work becomes `timed_out` at the configured
+deadline, which defaults to 20 minutes. Recovery publishes queued completion
+snapshots after a service interruption.
+
+Evidence that arrives after this boundary can still change the verdict. Its
+`EMAIL_VERDICT` carries `after_complete: true`; it does not rewrite the completion
+snapshot. Keep a revision handler alongside completion-based triage for those
+later changes. A later escalation re-runs post-verdict rules and automations;
+a downgrade does not automatically restore mail.
+
+## Processing latency
+
+The MDM's `timestamps` includes optional `notified`, the time the provider's
+notification reached LimaCharlie. Historical or periodically discovered mail
+may have no notification time. The seq-0 verdict and completion event include
+absolute `sent`, `received`, `notified`, `ingested`, `decided`, and `completed`
+instants where applicable, with these integer millisecond measurements:
+
+| Timing field | Interval |
+|---|---|
+| `provider_lag_ms` | Provider received → notification reached LimaCharlie |
+| `queue_ms` | Notification reached LimaCharlie → processing began |
+| `processing_ms` | Processing began → initial verdict decided |
+| `end_to_end_ms` | Provider received → initial verdict decided |
+| `analysis_ms` | Initial verdict decided → initial analysis window completed |
+
+`provider_lag_ms` and `queue_ms` are **absent** when `notified` is unknown. A
+measured zero is present as `0`. Negative intervals clamp to zero and set
+`clock_skew: true`; investigate clock differences before treating those zeros as
+fast processing. `sent` comes from the sender's untrusted Date header and is
+never used for these calculations. In coalesced Gmail notifications, `notified`
+is the batch's receiver observation, not a claim of one notification per message.
+
+The message drawer shows this timeline and each analysis outcome. The API and
+`limacharlie mailsec message get <UUID>` expose the same `analysis`
+and `timing` state. See [Events & Automation](automation.md#triage-after-initial-analysis)
+for completion triage and provider-delay alerts.
 
 ## Rules are organization-owned
 
