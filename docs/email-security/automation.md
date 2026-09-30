@@ -174,8 +174,11 @@ respond:
       text: "Payment details changed in this message. Confirm by phone before paying."
 ```
 
-`text` is refused, with the reason in the rule's result, if it contains markup
-or control characters or is sent on any action other than `banner_message`. Automated bannering also requires
+A `text` that contains markup, control characters or is over 512 characters is
+**dropped** and the banner goes out with the organization's own wording, because
+a rule's values are usually templated from the message and a sender must not be
+able to decide whether the warning appears. `text` on any action other than
+`banner_message` is refused as a rule error. Automated bannering also requires
 `enabled` on the [`banners` record](policy.md#banners); without it a rule's
 `banner_message` is decided and audited but the mailbox is not touched
 (`alert_only`). Bannering asked for by a person — console, API, CLI — is not
