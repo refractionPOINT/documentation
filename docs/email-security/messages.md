@@ -262,7 +262,7 @@ Actions require `mailsec.act`.
 
 Two more actions, `submit_sample` and `withdraw_sample`, do not touch the message's
 placement: they copy it to LimaCharlie to help improve detection, or delete that copy.
-They are opt-in and only a person can run them. See
+They are opt-in, only a person can run them, and alert-only mode does not withhold them. See
 [Sample Submission](sample-submission.md).
 
 To act on many messages at once — a filtered page of this queue, or a selection
@@ -295,8 +295,10 @@ provider outage — pass a new `attempt` token.
 
 ### Enforcement
 
-In an alert-only organization, actions from **every source**, including analysts,
-are recorded but withheld. The response reports `force_required: true`.
+In an alert-only organization, actions that change a mailbox, from **every
+source**, including analysts, are recorded but withheld. (`submit_sample` and
+`withdraw_sample` change no mailbox and are not withheld; see
+[Sample Submission](sample-submission.md#alert-only-mode-does-not-apply).) The response reports `force_required: true`.
 To perform that action deliberately, repeat the request with JSON `force: true`,
 use the console's explicit override confirmation, or pass `--force` in the CLI:
 

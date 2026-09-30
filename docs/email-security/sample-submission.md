@@ -64,6 +64,14 @@ submit_sample is an analyst action: automation, D&R rules and the AI agent may n
 
 Listing and reading submissions needs `mailsec.get`.
 
+## Alert-only mode does not apply
+
+[Alert-only mode](messages.md#enforcement) governs actions that write to a
+mailbox, and submitting or withdrawing a sample touches none. So an organization in
+alert-only mode can still submit and withdraw samples, and `--force` is not needed
+or used. What governs these two actions is the opt-in and the rule that only a
+person can run them.
+
 ## What you choose when you submit
 
 Every submission needs a **category** and a **reason**.
@@ -97,8 +105,12 @@ Only the one message you chose is copied.
 - **Where**: in a LimaCharlie-owned bucket in the **same datacenter and region**
   as your organization's Email Security data. It is a separate bucket from the
   one that holds your raw messages.
-- **How long**: 400 days from the submission, then deleted automatically.
-- **Earlier**: any time you withdraw it.
+- **How long**: a fixed 400 days from the submission, then deleted
+  automatically. Your organization's mail retention settings (`message_days` and
+  `flagged_days` in the [`retention`](policy.md#retention) record) do not apply to
+  submissions: they neither shorten nor extend that period.
+- **Earlier**: any time you withdraw it, or when your organization's Email
+  Security data is deleted (see below).
 
 ## Who can open it, and how you can tell
 
@@ -128,7 +140,8 @@ submission routes answer `withdrawn: false` and nothing is deleted a second time
 ## If the organization is deleted
 
 Deleting the organization (the Email Security tenant purge) deletes all of its
-submissions too. See
+submissions too. The automatic deletion that follows an unsubscribe or a trial
+lapse is the same tenant purge, so it deletes submissions as well. See
 [Data retention and deletion](policy.md#data-retention-and-deletion).
 
 ## From the command line
