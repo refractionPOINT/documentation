@@ -1,7 +1,5 @@
 # Configure evidence, lineage and remediation
 
---8<-- "includes/code-security-cli-version.md"
-
 This page covers the settings behind the evidence chain, image lineage, live
 pull-request impact, runtime checks and remediation runs. It lists the
 permissions each one needs, what to grant on each connection, and which

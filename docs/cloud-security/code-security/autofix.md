@@ -1,7 +1,5 @@
 # AutoFix pull requests
 
---8<-- "includes/code-security-cli-version.md"
-
 For a vulnerable dependency with a published fixed version, Code Security can
 open the GitHub pull request that upgrades it. You review and merge it like any
 other pull request.

@@ -1,7 +1,5 @@
 # Code Security reference
 
---8<-- "includes/code-security-cli-version.md"
-
 ## Supported languages and ecosystems
 
 ### Dependencies (SCA)

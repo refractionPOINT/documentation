@@ -1,7 +1,5 @@
 # Working with results
 
---8<-- "includes/code-security-cli-version.md"
-
 Code findings are ordinary [Cloud Security findings](../findings.md). They share
 the worklist, the triage actions (mitigated, accepted, false positive), owners,
 tickets, [remediation SLAs](../remediation-sla.md) and the `cloud_finding.*`

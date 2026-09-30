@@ -1,7 +1,5 @@
 # Bring your own scanner
 
---8<-- "includes/code-security-cli-version.md"
-
 You don't have to rely only on the hosted scan. You can:
 
 - **push results from a scanner you already run**, as SARIF or CycloneDX;

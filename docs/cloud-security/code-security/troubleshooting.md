@@ -1,7 +1,5 @@
 # Troubleshooting Code Security
 
---8<-- "includes/code-security-cli-version.md"
-
 For evidence-chain, lineage, runtime-check and remediation reason codes, see
 [Unknown, partial and refusal reasons](reasons.md).
 

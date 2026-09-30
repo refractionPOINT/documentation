@@ -1,7 +1,5 @@
 # Pull-request checks and push rescans
 
---8<-- "includes/code-security-cli-version.md"
-
 A scheduled scan tells you what a repository contains. On GitHub, Code Security
 can also:
 

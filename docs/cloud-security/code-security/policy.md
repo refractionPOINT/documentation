@@ -1,7 +1,5 @@
 # Scan policy
 
---8<-- "includes/code-security-cli-version.md"
-
 A `code_scanning` policy decides which repositories are scanned, which engines
 run, how often, and what happens on pull requests. With no enabled policy,
 nothing is scanned.

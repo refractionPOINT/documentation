@@ -1,7 +1,5 @@
 # Code Security
 
---8<-- "includes/code-security-cli-version.md"
-
 Code Security scans the source repositories behind your cloud estate and puts
 what it finds into the same risk-ranked worklist as your cloud findings. You
 triage a leaked credential or a vulnerable dependency the same way you triage a
