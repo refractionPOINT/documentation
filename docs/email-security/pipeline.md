@@ -222,7 +222,9 @@ Opening the drawer serves the **sealed judged model** where it exists, labelled
 included. The fallback re-parses the encrypted raw message with today's parser
 (`mdm_source: eml_reparse`) and carries no enrichments at all, and the response
 always says which one you are reading. Neither needs a justification: the model
-is the product's structured view of the message.
+is the product's structured view of the message. Each read is still recorded in the
+organization's audit log, see
+[Who read a message](messages.md#who-read-a-message-the-content-read-audit-event).
 
 The **original bytes** are gated separately. Downloading the EML requires the
 `mailsec.get.eml` permission on top of `mailsec.get`, plus a written

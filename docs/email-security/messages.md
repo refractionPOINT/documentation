@@ -228,7 +228,7 @@ provider, and audited.
 
 | Action | Effect |
 |---|---|
-| `quarantine_message` | Out of the inbox into a product-owned quarantine location — restorable, invisible to the user |
+| `quarantine_message` | Out of the inbox into a product-owned quarantine location, restorable. On Microsoft 365 the location is a hidden folder, so the user does not see the message. On Google Workspace it is a visible `LC Quarantine` label, so the user can still find the message under that label |
 | `trash_message` | To the provider's recoverable trash |
 | `move_to_spam` | To the provider's junk/spam location |
 | `restore_message` | Back to where it was before we moved it, falling back to the Inbox when that is unknown |
@@ -237,6 +237,16 @@ provider, and audited.
 
 The per-provider mechanics differ and are documented in
 [Connecting Providers](providers.md#capability-differences-between-providers).
+
+!!! warning "Quarantine is hidden from the user on Microsoft 365 only"
+    On Microsoft 365 the message moves to a hidden `LC Quarantine` folder that
+    the user does not see in Outlook. On Google Workspace, quarantine removes
+    the message from the inbox and adds an `LC Quarantine` label that is shown
+    in the label list and in message lists, so the user can open the label and
+    read the message. If your process assumes the recipient cannot reach a
+    quarantined message, that holds for Microsoft 365 mailboxes only. On
+    Workspace, treat quarantine as "out of the inbox", and use `trash_message`
+    if you need the message out of the user's normal view.
 
 ```bash
 limacharlie mailsec message action <msg_uuid> \
@@ -339,6 +349,119 @@ limacharlie mailsec message eml <msg_uuid> \
   which this returns a typed expiry error while the index row stays readable.
 
 Read a justification back with `mailsec action get <action_id>`.
+
+## Who read a message: the content-read audit event
+
+Reading a message's content is recorded, not only downloading it. Each time
+someone reads the body of a message, Email Security writes one
+**`mailsec_message_content_read`** event to the organization's
+[audit log](../7-administration/access/user-access.md#4-what-access-related-changes-have-been-made-and-by-whom),
+the same log that records configuration and user changes across the platform. It
+answers "who read this person's mail", which the action audit above does not: that
+trail records what was *done* to a message and who took the original bytes out, not
+who looked at the text.
+
+This is an audit log event, not an `EMAIL_*` event. It is not emitted on the mail
+connection's sensor, it does not reach D&R rules as a sensor event, and it is
+not part of the message index. You read it through the audit log, and you can
+forward the whole `audit` stream with an
+[Output](../5-integrations/outputs/stream-structures.md#3-audit-stream-structure).
+
+### What counts as a read
+
+There is one event type, and the `content` field says which kind of content was read.
+
+| `content` | What was served | Needs |
+|---|---|---|
+| `mdm` | The parsed message, including its HTML and plain-text body. This is what the drawer shows, and what `mailsec message get` and the matching API route return | `mailsec.get` |
+| `eml` | The original message bytes, through the [justified download](#downloading-the-original-message) | `mailsec.get` and `mailsec.get.eml`, plus a justification |
+
+Only a read that actually served content is recorded. A message whose raw copy has
+expired, an unknown `msg_uuid` and a refused download serve nothing and write
+nothing here. A refused download is still recorded in the action audit and as an
+`EMAIL_ACTION` event, as before.
+
+### Fields
+
+| Field | Meaning |
+|---|---|
+| `etype` | Always `mailsec_message_content_read` |
+| `ident` | Who read it: the authenticated identity the request ran as. `origin` carries the same value |
+| `time`, `ts` | When the read was recorded |
+| `msg` | A human-readable sentence naming the message and the mailbox |
+| `entity.msg_uuid` | The message that was read |
+| `entity.mailbox_address` | The mailbox the message was read from |
+| `mtd.content` | `mdm` or `eml` |
+| `mtd.actor_kind` | The kind of credential behind `ident`: `user` for an interactive session, `user_api_key` for a user's personal API key, `org_api_key` for an organization API key, or `unknown` when the request carried no identity |
+| `mtd.provider` | `m365` or `gworkspace`, as indexed for the message |
+| `mtd.verdict` | The message's verdict at the time of the read |
+| `mtd.mdm_source` | `mdm` reads only: `stored` for the model the engine judged with, `eml_reparse` for a fresh parse of the raw copy. See [Which model you are looking at](#which-model-you-are-looking-at) |
+| `mtd.bytes` | `eml` reads only: the size of the download |
+| `mtd.justification` | `eml` reads only: the justification that was supplied |
+
+The event never carries the subject, the sender or any of the message body. A
+record of who read mail must not become a second copy of it in a stream you may
+forward to a SIEM with its own retention. `ident` and `mtd.actor_kind` are what
+tell an analyst's console session apart from an automation or an
+[AI triage](ai-triage.md) agent working through an API key.
+
+### Finding the events
+
+Reading the audit log needs the `audit.get` permission. In the web console, open
+**Audit Logs** in the organization and filter on the event type. From the CLI:
+
+```bash
+limacharlie audit list --event-type mailsec_message_content_read \
+  --start $(date -d '7 days ago' +%s) --end $(date +%s) --oid $OID
+```
+
+An entry for a person reading a message in the console looks like this:
+
+```json
+{
+  "oid": "<your org id>",
+  "etype": "mailsec_message_content_read",
+  "msg": "read the parsed content of message 4f0c2b1e-9d7a-4c55-8a3e-6b1f2d9e7a10 in mailbox alice@example.com",
+  "ident": "analyst@example.com",
+  "origin": "analyst@example.com",
+  "time": 1790000000000,
+  "entity": {
+    "msg_uuid": "4f0c2b1e-9d7a-4c55-8a3e-6b1f2d9e7a10",
+    "mailbox_address": "alice@example.com"
+  },
+  "mtd": {
+    "content": "mdm",
+    "actor_kind": "user",
+    "provider": "m365",
+    "verdict": "suspicious",
+    "mdm_source": "stored"
+  }
+}
+```
+
+A download has `content: eml` and adds `bytes` and `justification` to `mtd`.
+
+### What to rely on
+
+- **One event per reader, message and kind, per hour.** The drawer re-fetches the
+  message on tab switches, and several screens open the same drawer, so recording
+  every request would report one analyst reading one message ten times. A second
+  read of the same message by the same identity inside the hour is not recorded
+  again. A different identity, including the same person through a personal API
+  key, is a different reader. A download with a different justification is
+  recorded separately, and so is an `eml` read after an `mdm` read of the same
+  message. This limits how often the event is written and never limits access:
+  nothing is refused because it was already recorded.
+- **The event is best effort.** If the audit log cannot be written at that moment,
+  the read is still served and the gap is recorded in the service's own logs. The
+  drawer must stay usable while the audit service restarts, so a failed audit write
+  does not block an `mdm` read.
+- **A download fails closed, on the action audit.** This is separate from the event
+  above. Before any byte of the original message is read, its record in the action
+  audit must be written. If it cannot be, the download is refused and recorded as
+  `refused_reason: audit_write_failed`; nothing is served. So a raw download never
+  happens without an audit record, even if the `mailsec_message_content_read` event
+  for it could not be written.
 
 ## Sender profiles
 

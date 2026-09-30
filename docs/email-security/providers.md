@@ -138,7 +138,7 @@ over.
 
 | | Microsoft 365 | Google Workspace |
 |---|---|---|
-| **Quarantine** | Move to a hidden `LC Quarantine` folder — restorable, invisible to the user | Remove `INBOX`, add an `LC Quarantine` label |
+| **Quarantine** | Move to a hidden `LC Quarantine` folder. Restorable, and the user does not see the folder | Remove `INBOX`, add a **visible** `LC Quarantine` label. Restorable, and the user can still find the message under that label |
 | **Trash** | Move to Recoverable Items — invisible to the user, recoverable by an admin. Distinct from Deleted Items | Add `TRASH` |
 | **Move to spam** | Move to the Junk Email folder | Add `SPAM` |
 | **Restore** | Move back to the folder we recorded, falling back to the Inbox | Invert the labels |

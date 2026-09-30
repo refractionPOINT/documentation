@@ -195,6 +195,120 @@ From there the detection flows into Cases, Outputs and everything else that
 consumes detections. A report is the highest-signal thing your users will ever
 hand you, so treating it as a first-class detection is usually right.
 
+## Counting events per mailbox or per user
+
+A rule that fires on one event is often not what you want. "One malicious message
+landed in a mailbox" is routine; "the same mailbox received five in an hour" is an
+attack on a person. LimaCharlie's D&R [suppression](../8-reference/response-actions.md#suppression)
+does the counting, and Email Security events carry the identity to count by, so no
+mail-specific feature is needed.
+
+The pattern is a `report` action whose suppression is **global** and whose `keys`
+include the mailbox or user. Global means the counter is shared across the
+organization, so it is scoped by the key alone. The action is skipped until the
+count reaches `min_count`, and then fires up to `max_count` times in the `period`.
+Setting both to the same number fires once, on the Nth event, and stays quiet for
+the rest of the window.
+
+| Parameter | Use for per-user counters |
+|---|---|
+| `is_global` | `true`. The counter is organization-wide and the key decides what is counted together |
+| `keys` | A constant label, so two rules never share a counter, then the field to count by, for example `'{{ .event.mailbox.address }}'` |
+| `min_count`, `max_count` | The threshold. Set both to `N` to fire once when the Nth event arrives |
+| `period` | The window: `s`, `m` or `h`, from 1 second to 720 hours |
+
+The window is fixed, not sliding: it starts at the first counted event for a key and
+the counter resets when it expires. See the platform's
+[Behavioral Detection](../3-detection-response/behavioral-detection.md) page for the
+full set of patterns and its limitations.
+
+The field to count by depends on the event:
+
+| Event | Field | Holds |
+|---|---|---|
+| `EMAIL_MESSAGE`, `EMAIL_VERDICT`, `EMAIL_ACTION` | `event/mailbox/address` (template `{{ .event.mailbox.address }}`) | The protected mailbox the event is about |
+| `EMAIL_USER_REPORT` | `event/reporter` (template `{{ .event.reporter }}`) | The address that sent the report to the abuse mailbox, or `unknown` when the report had no usable sender |
+
+### Example: five malicious messages to one mailbox in an hour
+
+```yaml
+# Detect
+op: and
+rules:
+  - op: is
+    path: routing/event_type
+    value: EMAIL_MESSAGE
+  - op: is
+    path: event/verdict/verdict
+    value: malicious
+  - op: is
+    path: event/direction
+    value: inbound
+```
+
+```yaml
+# Respond
+- action: report
+  name: email-mailbox-malicious-burst
+  priority: 3
+  suppression:
+    is_global: true
+    min_count: 5
+    max_count: 5
+    period: 1h
+    keys:
+      - 'email-malicious-per-mailbox'
+      - '{{ .event.mailbox.address }}'
+```
+
+The detection fires once, when a mailbox receives its fifth malicious inbound
+message inside the hour, and carries the triggering `EMAIL_MESSAGE` so the
+responder can see the mailbox and the message. It counts the verdict the rule pack
+gave at ingest. A message that only becomes malicious later, through an analyst, AI
+or detonation revision, arrives as an `EMAIL_VERDICT` and is not counted by this
+rule.
+
+### Example: three user reports from one person in a day
+
+```yaml
+# Detect
+op: and
+rules:
+  - op: is
+    path: routing/event_type
+    value: EMAIL_USER_REPORT
+  - op: exists
+    path: event/automated_sender
+    not: true
+```
+
+```yaml
+# Respond
+- action: report
+  name: email-reporter-repeat
+  priority: 2
+  suppression:
+    is_global: true
+    min_count: 3
+    max_count: 3
+    period: 24h
+    keys:
+      - 'email-reports-per-reporter'
+      - '{{ .event.reporter }}'
+```
+
+`automated_sender` is present, and `true`, only on reports that came from a
+machine, so the second condition leaves those out of the count. A person who
+reports three messages in a day is either being targeted or is the most alert
+member of your staff, and in both cases an analyst wants to know.
+
+!!! tip "Chain a counter onto a detection"
+    The same suppression can count detections instead of events, using the
+    `target: detection` chaining described in
+    [Behavioral Detection](../3-detection-response/behavioral-detection.md#cardinality-detection).
+    That is how you count *distinct* values, for example the number of different
+    senders that hit one mailbox, rather than the number of events.
+
 ## Watching your own coverage
 
 `EMAIL_INGEST_ERROR` is the event to alert on. A mail security product that

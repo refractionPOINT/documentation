@@ -102,6 +102,7 @@ that fires on volume. A refused attempt carries `result: refused` and a
 | `eml_never_stored` | The message exists but no raw copy was written at ingest |
 | `eml_expired` | The raw copy aged out of its retention lane |
 | `read_failed` | The object is there and could not be read |
+| `audit_write_failed` | The access record for this download could not be written (or an earlier record for it could not be read), so nothing was served |
 | `eml_store_not_configured` | This deployment has no raw-message store |
 | `internal_error` | The service could not complete the read (an index-store failure, not an object failure) |
 
