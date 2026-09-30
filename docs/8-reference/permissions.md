@@ -232,7 +232,6 @@ or [API Keys](../7-administration/access/api-keys.md). Session settings such as
 approval; they do not grant organization API permissions. See
 [Tool Permissions & Profiles](../9-ai-sessions/tool-permissions.md).
 
-
 ### Cloud Sensors
 
 | Permission | Description |
