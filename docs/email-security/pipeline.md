@@ -168,6 +168,9 @@ single "status" would lose every one of those distinctions.
 A mail security product holds the most sensitive data in the tenant, so it is
 worth being precise about what is kept, where, and who can read it.
 
+For where the data lives and what can leave the region, see
+[Data Residency, Encryption and Data Flows](data-residency.md).
+
 ### The raw message
 
 The full original message is stored, compressed and then encrypted with

@@ -612,6 +612,7 @@ nav:
       - AI Assistants (MCP): email-security/mcp.md
       - API Reference: email-security/api-reference.md
       - AI Triage: email-security/ai-triage.md
+      - Data Residency & Encryption: email-security/data-residency.md
       - Troubleshooting: email-security/troubleshooting.md
 
   - Cloud Security:
