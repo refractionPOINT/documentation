@@ -515,3 +515,13 @@ having if it names who really asked.
 The Python SDK exposes the same surface, and the CLI wraps it — see
 [Command Line Interface](cli.md). Both are generated against these routes, so
 anything documented here is reachable from either.
+
+## Provider quarantine and release activity
+
+`GET /provider-quarantine` and `GET /release-requests` require `mailsec.get`.
+They accept scalar `connection`, `status`, `since`, `until`, `cursor` and `limit`
+(1–1000). Delivery status values are `quarantined`, `filteredAsSpam` and `failed`;
+release status values are `requested`, `released` and `denied`. Responses include
+independent per-feed `coverage`; an empty list with `not_granted`, pending, stale
+or error coverage is not proof of zero blocked messages. See
+[Provider Quarantine](provider-quarantine.md#cli-and-api) for the row contract.

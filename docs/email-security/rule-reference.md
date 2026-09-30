@@ -932,3 +932,14 @@ historical backfill emits no `EMAIL_*` events and no completion event.
 Missing optional intervals are absent, never fabricated zero. A completion with
 `failed`, `shed`, or `timed_out` results does not classify the message as benign.
 See [completion triage and delay rules](automation.md#triage-after-initial-analysis).
+
+## Provider delivery and release events
+
+Provider visibility uses ordinary D&R events: match `routing/event_type` on
+`EMAIL_PROVIDER_QUARANTINE` or `EMAIL_RELEASE_REQUEST`. For delivery observations,
+`event/provider_status` is `quarantined`, `filteredAsSpam` or `failed`; a failure
+is not quarantine. Request events contain `event/audit_id`, `event/requested_at`
+and, when supplied, `event/network_message_id` and `event/recipient_address`.
+Deduplicate retried work using `event/event_id`. These events have no engine
+verdict and do not run `dr-mail` message analysis. See
+[Provider Quarantine](provider-quarantine.md) for coverage and correlation limits.
