@@ -23,6 +23,15 @@ online only while such an event is flowing, so do not use its online state to
 judge whether mail is being ingested. Watch `EMAIL_INGEST_ERROR` and the
 [coverage](getting-started.md#6-watch-coverage-fill-in) numbers for that.
 
+!!! warning "If you already have rules or queries that select the connection sensor"
+    Before per-mailbox sensors, every mail event came from the connection sensor
+    (`mailsec-<connection name>`). A sensor selector that names it by hostname or
+    sensor id, or a D&R rule scoped to it, no longer matches mailbox events; it
+    matches only the tenant-level events described above. Select on
+    `plat == email` instead. Per-sensor suppression and threshold state also
+    starts fresh and is now kept per mailbox, so a counter that used to be shared
+    by the whole tenant is now one counter per mailbox.
+
 Two things follow from mailboxes being sensors:
 
 - **Per-sensor state is per mailbox.** A D&R `suppression` that is not global
