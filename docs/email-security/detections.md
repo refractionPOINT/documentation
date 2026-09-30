@@ -285,6 +285,44 @@ attachment threats, suspicious content, detonation evidence and graymail.
 They are ordinary D&R rules over the Message Data Model, not a separate engine.
 See [Mail Rules](custom-rules.md) for the format, IaC and explicit restoration.
 
+### Callback phishing and HTML smuggling
+
+Two attack classes are invisible to a scanner that only looks at links and known-bad
+files, so the defaults read them from structure.
+
+**Callback phishing** (telephone-oriented attack delivery) is an invoice, renewal or
+"your device is infected" notice whose only action is a phone number. The defaults
+read the number as a fact ([PhoneNumbers](rule-reference.md#phonenumbers)) from the
+body, from the text of attached images, from numbers in a PDF, and from attached
+messages, and combine it with a call to action, billing vocabulary, how short the
+message is, and whether the sender looks odd (a free-mail address, a young domain, a
+failing DMARC result, a Reply-To elsewhere). A legitimate vendor's receipt carries the
+same words and a support number, which is why a sender oddity is required and an
+established sender is never read as a lure. The callback rules describe one
+observation and do not add up: a message that trips all of them scores as the
+strongest. A PDF's wording is not available to rules, so the PDF rule judges a short
+PDF by its shape and its numbers; numbers in a PDF are recognised for North American
+formats only.
+
+**HTML smuggling** is a web page, often an `.html` or `.svg` attachment, that builds
+the real payload in the victim's browser. The parser scans every HTML-like attachment
+and HTML body in full and reports encoded data, the type that data decodes to,
+decoding and download primitives, redirects and password forms
+([HTMLIndicators](rule-reference.md#htmlindicators)). Defaults flag a page that
+decodes encoded data and saves it, a page whose encoded data is an archive or
+executable, a page that builds its own decoder, an HTML sign-in page delivered as a
+file, a tiny redirect page, an SVG that carries script, and a message body that runs
+a decoder. A single-file report or export tool that embeds data and offers a download
+button matches the same facts as a smuggling page and is scored as suspicious, not
+malicious, unless its data also decodes to a recognisable payload.
+
+Display-name brand impersonation ("PayPal Support" over an unrelated address),
+advance-fee and extortion text, voicemail and fax lures, free-hosting and
+open-redirector links, internationalised look-alike domains, OneNote files, locked
+PDFs with the password in the message, and web pages hidden inside archives from a
+stranger are covered by further defaults. **Email Security → Rules** shows every rule's
+conditions and false-positive notes.
+
 A verdict's `engine_version` is a SHA-256 fingerprint of the scoring rules,
 resolved thresholds, exclusions, VIPs, threat-feed references and clustering policy,
 and linked parsing/enrichment library build.
