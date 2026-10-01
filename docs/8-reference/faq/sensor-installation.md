@@ -4,7 +4,7 @@
 
 The tables below show the hostnames and IPs used to connect to LimaCharlie. All connections use TCP port 443 and TLS 1.2+
 
-Each hostname has a primary IP and a **standby IP**. Allow **both** addresses for every hostname you use. The standby IPs are reserved for LimaCharlie and are not serving traffic yet; they will be brought into service after **2026-10-28**, and they let us make infrastructure changes later without asking you to update your allow list again. Add them now so nothing changes on your side when they become active.
+Each hostname has a primary IP and a **standby IP**. Allow **both** addresses for every hostname you use. The standby IPs are reserved for LimaCharlie and are not serving traffic yet; they will be brought into service after **2026-12-01**, and they let us make infrastructure changes later without asking you to update your allow list again. Add them now so nothing changes on your side when they become active.
 
 ## What Hostnames and IPs does LimaCharlie use for each region?
 
