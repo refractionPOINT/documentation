@@ -107,7 +107,6 @@ reports `error` instead of claiming coverage from the organization-wide mailbox 
 Use explicit `include_addresses` until group membership has been resolved. Ambiguous
 provider handles preserve the recipient observation without inventing a mailbox ID.
 
-
 ## Optional Microsoft quarantine target (beta)
 
 **Beta — requires Defender for Office 365 Plan 2; validated with early customers.**

@@ -289,7 +289,6 @@ limacharlie mailsec connection test m365-prod --oid $OID --output yaml
 | Attachment analysis looks incomplete | Defender **Safe Attachments in Dynamic Delivery mode** detaches the attachment from the delivered message | Use Block mode if you want attachments analyzed post-delivery |
 | Everything fails at `credential` after months of working | Client secrets expire | Re-mint before expiry and update the secret record; nothing else changes |
 
-
 ### Optional hosted quarantine permission
 
 The Microsoft target is off by default and separate from visibility. Grant the Graph
