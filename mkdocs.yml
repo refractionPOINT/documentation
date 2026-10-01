@@ -417,6 +417,7 @@ nav:
           - Using Extensions: 5-integrations/extensions/using-extensions.md
           - LimaCharlie:
               - Overview: 5-integrations/extensions/limacharlie/index.md
+              - Application Control: 5-integrations/extensions/limacharlie/app-control.md
               - Artifact: 5-integrations/extensions/limacharlie/artifact.md
               - BinLib: 5-integrations/extensions/limacharlie/binlib.md
               - Cases: 5-integrations/extensions/limacharlie/cases.md
