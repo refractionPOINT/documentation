@@ -78,6 +78,37 @@ permission. It records the decision through the ordinary disposition path,
 including history and disposition events, without changing engine verdicts or
 running remediation automations. Newly delivered copies keep their own disposition.
 
+## From the command line
+
+```bash
+limacharlie mailsec group list --severity high --severity critical --disposition none
+limacharlie mailsec group list --all --since 2026-09-01T00:00:00Z
+limacharlie mailsec group get <GROUP_ID>
+limacharlie mailsec message list --group-id <GROUP_ID>
+limacharlie mailsec group preview <GROUP_ID> --action quarantine_message --reason "Incident review"
+limacharlie mailsec group preview <GROUP_ID> --action set_disposition --disposition benign --note "Reviewed"
+limacharlie mailsec group status <JOB_ID>
+limacharlie mailsec group confirm <JOB_ID> --confirmation <TOKEN>
+```
+
+Preview and confirm wait for the job by default; `--no-wait` returns it at once.
+Reuse the printed `--preview-id` when retrying the same preview. A failed or
+withheld recipient outcome exits non-zero. See [Command Line Interface](cli.md).
+
+## Routes
+
+All routes are under `/v1/mailsec/{oid}`. See [API Reference](api-reference.md)
+for the shared conventions.
+
+| Route | Does |
+|---|---|
+| `GET /groups` | The flagged triage queue, newest last-seen first. Filters: `verdict`, `severity`, `disposition` (or `none`) repeatable, `user_reported`, `since`/`until` (last-seen time, RFC 3339 or Unix seconds), `all=true` for every group, `cursor`, `limit`. Values OR within a filter and AND across filters; the cursor is bound to the filter set. Requires `mailsec.get` |
+| `GET /groups/{group_id}` | One consistent aggregate of every indexed copy: first/last seen, counts, maximum verdict and severity, placement and disposition summaries, representative message and campaign. Requires `mailsec.get` |
+| `GET /messages?group_id={group_id}` | The group's recipient copies, paged like any message list |
+| `POST /groups/{group_id}/actions/preview` | Prepare a durable snapshot of every copy. Body: `preview_id` (caller UUID, reused on retry), `action` (a remediation action or `set_disposition`), optional `reason`, `text`, `force`; for `set_disposition`, `disposition` or `clear: true`, and optional `note`. Requires `mailsec.act`, plus `mailsec.set` for `set_disposition` |
+| `GET /group-actions/{job_id}` | Preparation or execution progress: phase, snapshot time, counts of succeeded, skipped, withheld and failed. The `confirmation` token appears only once the manifest is complete. Requires `mailsec.get` |
+| `POST /group-actions/{job_id}/confirm` | Execute the complete preview with `{"confirmation": ...}`, from the same authenticated actor that prepared it. Repeating it resumes the same job. Requires `mailsec.act` |
+
 ## Opt-in Cases detection pack
 
 In **Email Security → Protection setup**, install the Cases pack after enabling
