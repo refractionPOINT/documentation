@@ -318,7 +318,7 @@ both required and are checked before anything is sent. A refusal (not opted in, 
 in the datacenter, raw copy no longer stored) is reported like any other failed action, with the reason in
 `error`; the command prints the reason and exits non-zero. `submission list` prints the `enabled` and
 `available` flags, so an empty list can be told apart from a feature that is off, and
-pages with `--cursor`. `submission get` shows when LimaCharlie staff opened the copy, and
+pages with `--cursor`. `submission get` shows recorded access times for the copy, and
 `submission withdraw` (or `message withdraw-sample`) deletes it. An unknown id is not an
 error: `submission get` returns `submission: null` and `submission withdraw` returns
 `withdrawn: false`, and the command says so on stderr. See
