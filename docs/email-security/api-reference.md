@@ -519,8 +519,8 @@ anything documented here is reachable from either.
 | `POST /messages/{msg_uuid}/disposition` | `disposition` from the five-value vocabulary, optional `note`; or `clear: true`. Requires `mailsec.set`. |
 | `POST /messages/dispositions` | Same decision plus 1–500 unique `msg_uuids`. Returns per-message results, including partial failures. Requires `mailsec.set`. |
 | `GET /messages?disposition=<value>` | Filter by one disposition, or `none` for no current label. |
-| `POST /messages/{msg_uuid}/actions` with `action: release_message` | Restore, benign verdict revision, benign disposition, history repair. Optional `mode: analyst|ai`, `reason`, `force`, `attempt`. Requires `mailsec.act`. |
-| `POST /reports/{report_id}/resolve` | `disposition`; optional `remediation: {scope: message|campaign, action, confirm?, reason?, force?, attempt?}`. Without confirm, remediation is previewed and the report stays open. Pure resolution requires `mailsec.set`; remediation also requires `mailsec.act`. |
+| `POST /messages/{msg_uuid}/actions` with `action: release_message` | Restore, benign verdict revision, benign disposition, history repair. Optional `mode: analyst or ai`, `reason`, `force`, `attempt`. Requires `mailsec.act`. |
+| `POST /reports/{report_id}/resolve` | `disposition`; optional `remediation: {scope: message or campaign, action, confirm?, reason?, force?, attempt?}`. Without confirm, remediation is previewed and the report stays open. Pure resolution requires `mailsec.set`; remediation also requires `mailsec.act`. |
 
 The five dispositions are `malicious`, `spam`, `graymail`, `benign`, and
 `simulation`. Disposition is separate from verdict. Message detail includes
