@@ -493,8 +493,8 @@ Disposition records the security team's decision independently of the engine
 verdict: `malicious`, `spam`, `graymail`, `benign`, or `simulation`. Setting it
 preserves the verdict and runs no automations. The decision includes a note of up
 to 1024 characters, authenticated actor, source, and server timestamp. Message
-lists expose `disposition`; message detail includes `disposition_info` and
-`disposition_seq`.
+lists expose `disposition`, which is `null` when no decision is set or it was
+cleared; message detail includes `disposition_info` and `disposition_seq`.
 
 ```bash
 limacharlie mailsec message disposition <msg_uuid> --disposition spam --note "Reviewed" --oid $OID
@@ -504,8 +504,11 @@ limacharlie mailsec message bulk-disposition --msg-uuids <id1> --msg-uuids <id2>
 ```
 
 These writes require `mailsec.set`. Bulk input is limited to 500 unique IDs and
-returns a result for every message, including individual failures. The CLI exits
-with a failure status when any member fails. The `none` list filter selects
+returns one ordered result per message, including individual failures. A missing
+message fails alone without affecting the others. An error starting with `not
+confirmed, retry the same decision` means the outcome is unknown; repeating the same
+request is safe because an identical decision is a no-op. The CLI exits with a
+failure status when any member fails. The `none` list filter selects
 messages with no current disposition, including cleared decisions.
 
 A benign decision removes this message's credited sender-history flag; malicious
