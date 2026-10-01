@@ -506,12 +506,15 @@ this is everything a rule gets about a PDF's content.
 | `words` | integer | Non-empty |
 | `images` | integer | Non-empty |
 | `encrypted` | boolean | Non-empty |
+| `needs_password` | boolean | Non-empty |
 | `embedded_files` | integer | Non-empty |
 | `links` | integer | Non-empty |
 | `phones` | array of string | Non-empty |
 
-`encrypted` marks a PDF that needs a password. The analyzer stops there, so every
-other field is zero for a locked PDF: a locked PDF is unexamined, not empty.
+`encrypted` includes owner-password restrictions on a readable PDF.
+`needs_password` means opening requires a password; the analyzer stops without
+examining its content. A locked PDF is unexamined, not empty. An owner password
+alone does not make a PDF opaque.
 `phones` holds the telephone numbers the analyzer read from the text layer, digits
 only, exactly as it reported them (separators and any leading `+` are dropped), at
 most 16. They are raw evidence: read
@@ -728,6 +731,7 @@ numbering-plan shape, not an order number), distinct and bounded.
 | `body` | [PhoneSource](#phonesource) | When a number was found |
 | `attachments` | [PhoneSource](#phonesource) | When a number was found |
 | `pdf` | [PhoneSource](#phonesource) | When a PDF carried a valid number |
+| `pdf_documents` | array of [PDFPhoneDocument](#pdfphonedocument) | When a root PDF carried a valid number |
 
 `body` reads the newest segment the sender wrote (quoted history never supplies a
 number). `attachments` unions the text recovered from images by OCR, the numbers
@@ -738,8 +742,22 @@ come from the one text that looks most like a callback lure, never a mixture of
 unrelated texts. `pdf` holds only the numbers read from PDF text layers, so a rule
 about a PDF is not satisfied by a number in an image. A PDF contributes numbers
 only, with no `call_to_action` or `lure_terms`, and only North American numbers can
-be recognised from it. Absent means no number was found in the sources that were
+be recognised from it. `pdf_documents` binds validated numbers and shape to each
+root PDF separately; a number from one file cannot satisfy a rule about another
+file's page or word count. Absent means no number was found in the sources that were
 available: an image that was not OCRed says nothing.
+
+### PDFPhoneDocument
+
+One root PDF attachment, up to 128 records. Small candidates are retained first
+when the limit is reached. OCR, attached-message numbers and cross-document joins
+do not supply these facts.
+
+| Field | Type | Presence |
+|---|---|---|
+| `count` | integer | Always; distinct validated numbers in this PDF |
+| `pages` | integer | Always; analyzer-reported page count |
+| `words` | integer | Always; analyzer-reported word count |
 
 ### PhoneSource
 
