@@ -147,7 +147,9 @@ message, including messages with no delayed work. It carries the final
 `revision/verdict`, `revision/score`, `revision/seq`, and known message identity
 fields, plus `results` and `timing`. Use this event to start triage that needs the
 initial batch of evidence. A completion is a processing fact, **not a safety
-verdict**.
+verdict**. Its `completion_id` is the message's `msg_uuid` and stays the same
+for that immutable snapshot. Delivery retries after an interruption can repeat
+the snapshot; use `completion_id` for idempotent triage or duplicate suppression.
 
 | Result | Meaning |
 |---|---|

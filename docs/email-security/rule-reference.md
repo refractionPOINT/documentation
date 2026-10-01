@@ -699,6 +699,7 @@ use a platform `dr-general` rule on the emitted completion event.
 
 | Path | Available on | Meaning |
 |---|---|---|
+| `event/completion_id` | `EMAIL_ANALYSIS_COMPLETE` | Stable completion identity, equal to `msg_uuid`; use it to suppress retried delivery |
 | `event/analysis/pending` | Seq-0 `EMAIL_VERDICT` | Array of `detonation` and/or `attachment_scan`; empty when none outstanding |
 | `event/analysis/complete` | Seq-0 `EMAIL_VERDICT` | Whether there was no outstanding work in that snapshot |
 | `event/results/<kind>` | `EMAIL_ANALYSIS_COMPLETE` | `completed`, `changed_verdict`, `skipped`, `shed`, `failed`, or `timed_out` |
