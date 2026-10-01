@@ -35,6 +35,7 @@ consent.
 | Grant | Unlocks | Without it |
 |---|---|---|
 | **ExchangeMessageTrace.Read.All** (Microsoft Graph) | Provider quarantine, spam filtering and delivery-failure visibility | Message-trace coverage reports `not_granted`; ingestion continues |
+| **SecurityAnalyzedMessage.ReadWrite.All** (Microsoft Graph, optional beta) | Hosted quarantine and move-to-Inbox restore; requires Defender for Office 365 Plan 2 | Microsoft target reports `not_granted` and quarantine records its LC-folder fallback |
 | **ActivityFeed.Read** (Office 365 Management APIs) | Hosted-quarantine release requests and release/denial history from Audit.General | Release-activity coverage reports `not_granted`; ingestion continues |
 | **Mail.Send** | Reporter auto-replies — the templated acknowledgement sent to a person who reported a message | Reporter replies are **refused by name**, reported as an explicitly unavailable capability rather than silently skipped. Everything else is unaffected. Check `mail_send` reports `skipped`. |
 
@@ -287,3 +288,24 @@ limacharlie mailsec connection test m365-prod --oid $OID --output yaml
 | Some mailboxes never become `protected` | An Exchange application access policy denies the app for those mailboxes | Widen the policy, or exclude those mailboxes in the record's `scope` so coverage reflects a decision rather than a refusal |
 | Attachment analysis looks incomplete | Defender **Safe Attachments in Dynamic Delivery mode** detaches the attachment from the delivered message | Use Block mode if you want attachments analyzed post-delivery |
 | Everything fails at `credential` after months of working | Client secrets expire | Re-mint before expiry and update the secret record; nothing else changes |
+
+
+### Optional hosted quarantine permission
+
+The Microsoft target is off by default and separate from visibility. Grant the Graph
+**application** permission `SecurityAnalyzedMessage.ReadWrite.All` and admin consent
+only when opting into the [Microsoft quarantine beta](../provider-quarantine.md#optional-microsoft-quarantine-target-beta).
+It requires Defender for Office 365 Plan 2; consent and successful analyzed-email
+reads cannot prove licensing. A licensing or permission refusal records the LC-folder
+fallback rather than silently claiming Microsoft quarantine succeeded.
+
+For Azure CLI users, run this separately with the app registration's `APP_ID` and
+Graph resource ID from the setup above, then grant admin consent:
+
+```bash
+HOSTED_ROLE=$(az ad sp show --id "$GRAPH" \
+  --query "appRoles[?value=='SecurityAnalyzedMessage.ReadWrite.All'].id | [0]" -o tsv)
+az ad app permission add --id "$APP_ID" --api "$GRAPH" \
+  --api-permissions "$HOSTED_ROLE=Role"
+az ad app permission admin-consent --id "$APP_ID"
+```
