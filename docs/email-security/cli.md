@@ -465,7 +465,6 @@ Read `remediation_preview`, then repeat with `--confirm <token>` and, when neede
 `--force`. Pure resolution uses `mailsec.set`; remediation also needs `mailsec.act`.
 The report remains open during preview or when provider remediation fails.
 
-
 Group report remediation uses `--scope group` with an explicit UUID `--attempt`,
 reused through preview, confirmation and polling. Add `--wait` to wait up to
 300 seconds for a complete preview or resolution; timeouts exit with code 2 and
