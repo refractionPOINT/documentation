@@ -314,7 +314,14 @@ executable, a page that builds its own decoder, an HTML sign-in page delivered a
 file, a tiny redirect page, an SVG that carries script, and a message body that runs
 a decoder. A single-file report or export tool that embeds data and offers a download
 button matches the same facts as a smuggling page and is scored as suspicious, not
-malicious, unless its data also decodes to a recognisable payload.
+malicious, unless its data also decodes to a recognisable payload. Credential-page
+and tiny-redirect defaults require a browser-file extension; source templates and
+files with unconventional names can fall outside those two checks.
+
+In managed pack `0.6.0`, these 22 new rules carry explicit severity. Older managed
+rules currently use the informational fallback. Severity is independent of the
+verdict, so a malicious verdict from an older rule can still have informational
+severity.
 
 Display-name brand impersonation ("PayPal Support" over an unrelated address),
 advance-fee and extortion text, voicemail and fax lures, free-hosting and
