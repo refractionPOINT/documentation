@@ -363,7 +363,7 @@ Create an enabled `ai_agent` record named `cmdline-triage` with a system `prompt
 
 | Parameter | Required | Meaning |
 |-----------|----------|---------|
-| `definition` | Yes | Literal `hive://ai_agent/<name>` reference. Inline credentials and templated definitions are unsupported. |
+| `definition` | Yes | Literal `hive://ai_agent/<name>` reference. The name uses ASCII letters, digits, underscores, hyphens or dots; paths, percent encoding, `..` and a standalone `.` are rejected. Inline credentials and templated definitions are unsupported. |
 | `prompt` | No | User prompt, evaluated as a template against the event. |
 | `data` | No | Dictionary of event extraction mappings, with the same semantics as `start ai agent`. Rule keys override the record's extracted keys. |
 | `response_schema` | No | JSON Schema dictionary for structured output, passed through the provider's native structured-output API. Use a schema supported by your selected model/provider. |
@@ -374,9 +374,11 @@ Create an enabled `ai_agent` record named `cmdline-triage` with a system `prompt
 
 The record's `prompt` supplies the system message. The rule's rendered `prompt` and the merged extracted data supply the user message; data is appended as an **Event data:** fenced JSON block. The model is instructed to return a single JSON object. The operator makes no tool calls and starts no agent session.
 
-If the answer parses as a JSON object, that object is the metadata. Other answers become `{"text": "<answer>"}`, which you can inspect at `path: text`. Metadata paths are relative to this object, so use `verdict`, rather than `event/verdict`. On a match, the answer is attached to the detection's `mtd` under `ai_agent_<name>` (slashes in the name become underscores), like lookup metadata. Answers are bounded to 64 KiB; oversized replies produce an operator error. A nested metadata operator can contribute its own metadata using the same behavior as `lookup`.
+If the answer parses as a JSON object, that object is the metadata. Other answers become `{"text": "<answer>"}`, which you can inspect at `path: text`. Metadata paths are relative to this object, so use `verdict`, rather than `event/verdict`. On a match, the answer is attached to the detection's `mtd` under `ai_agent_<name>`, like lookup metadata. Answers are bounded to 64 KiB; oversized replies produce an operator error. A nested metadata operator can contribute its own metadata using the same behavior as `lookup`.
 
 With `metadata_rules`, the operator matches only when the call succeeds **and** the metadata rule matches. Without it, any successful call matches; that does not itself establish whether an event is malicious. `not: true` reverses a successful match decision. A timeout, provider/authentication error, unavailable definition, saturation or resource ACL refusal produces an operator error and no match, including with `not: true`.
+
+Treat event fields as untrusted input: they can contain instructions designed to influence the model. Keep classification instructions in the system prompt, combine model decisions with deterministic predicates, and validate behavior before using AI verdicts to trigger automated response actions.
 
 **Latency and cost:** `and` evaluates rules in order and short-circuits. Put `ask ai` last, after event type, platform and literal-field filters. An uncached evaluation waits for the model and consumes provider tokens. Choose a small output limit and extract only the data the model needs. Response caching is bounded and scoped to the organization and the effective request, including the agent definition; it is an optimization, so even within the TTL an evicted entry or another service instance can make a new call. Setting `cache_ttl: 0` increases calls and cost. In-flight limits fail fast instead of queueing excess calls.
 
