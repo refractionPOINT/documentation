@@ -487,7 +487,7 @@ The same record can also supply a one-shot model call from the [`ask ai` detecti
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| `prompt` | string | Yes | Instructions for Claude. |
+| `prompt` | string | Yes | Instructions for the configured model. |
 | `anthropic_secret` | string | No | Anthropic API key or `hive://secret/` reference. Set exactly one credential source: `anthropic_secret`, `bedrock`, `vertex`, or `provider` + `credentials`. |
 | `provider` | string | No | `anthropic`, `openai`, `google` or `openrouter`; use with `credentials`, without legacy credential blocks. |
 | `credentials` | map | No | Provider credential envelope. Values may be literals or `hive://secret/` references; `auth` selects the authentication mode (default `api_key`). |
@@ -500,7 +500,7 @@ The same record can also supply a one-shot model call from the [`ask ai` detecti
 | `allowed_tools` | list | No | Tools Claude can use. |
 | `denied_tools` | list | No | Tools Claude cannot use. |
 | `permission_mode` | string | No | `acceptEdits`, `plan`, or `bypassPermissions`. |
-| `model` | string | No | Claude model identifier. When routing through Bedrock, use the Bedrock model ID format (see [Alternative AI Providers](alternative-providers.md)). |
+| `model` | string | No | Provider model identifier. When routing through Bedrock, use the Bedrock model ID format (see [Alternative AI Providers](alternative-providers.md)). |
 | `max_tokens` | integer | No | Output token limit for `ask ai`, 1–32768. Omit to use the service default (512). A rule-level `max_tokens` overrides this value. Ignored by `start ai agent`. |
 | `max_turns` | integer | No | Maximum conversation turns. |
 | `max_budget_usd` | float | No | Maximum spend limit in USD. |
