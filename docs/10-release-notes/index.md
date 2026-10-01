@@ -18,6 +18,32 @@ Release notes for LimaCharlie platform components, organized by date.
 
     For discussion and email notification of the same releases, set the [Platform Updates category](https://community.limacharlie.com/c/platform-updates/5) in the community forum to Watching. For service availability rather than releases, subscribe on the [status page](https://status.limacharlie.io/).
 
+## 2026-09-30
+
+### Endpoint Agent 5.3.12
+
+#### New Features
+
+- Cloud virtual machines on AWS, Azure and Google Cloud now report their native cloud instance identity when the sensor connects, so a host can be matched to its cloud inventory.
+- Sensors on Google Kubernetes Engine nodes now also report the cluster they run in, so a sensor can be tied to its Kubernetes node.
+- Sensors running inside a Kubernetes pod can report the pod and container they belong to.
+
+#### Bug Fixes
+
+- Fixed a Windows sensor crash when a cloud message arrived while the Host Based Sensor was still starting, most often seen during an organization-wide version upgrade.
+- Linux kernel acquisition: hosts where it cannot load no longer reload the component every 20 minutes, which after several days crashed the sensor on older distributions such as CentOS 7.
+- Fixed a sensor crash when caching a document larger than the cache's size limit.
+- Fixed a crash when logging some event field types on Linux and macOS.
+- Network requests (uploads, downloads, cloud lookups) now honor their timeout even when the remote end sends data very slowly, so they can no longer hang indefinitely.
+- macOS: kernel acquisition now starts on a fresh install even when nobody is logged in, instead of staying off until a user logs in.
+- macOS: if Full Disk Access is still needed after an install at the login window, the prompt now appears once a user logs in.
+- macOS: the system extension no longer grows its memory use with every network flow seen.
+- macOS: fixed a resource leak each time the sensor read another process's memory.
+- macOS: fixed a reference-counting bug when matching disks to USB devices.
+- Fixed gradual memory growth in file type tracking on long-running macOS and Linux hosts.
+
+---
+
 ## 2026-09-21
 
 ### Endpoint Agent 5.3.11
