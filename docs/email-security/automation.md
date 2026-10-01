@@ -366,6 +366,18 @@ The **Email Security → Hunt** screen runs ordinary LCQL search over
 filters can also be opened in the Query Console. Other emitted `EMAIL_*` events
 are searchable in the Query Console and through `limacharlie search`.
 
+**Body contains** matches a case-insensitive phrase in any of the message's
+current authored thread, visible HTML text or plain-text part. The phrase is
+limited to 256 characters and cannot contain control characters or line breaks.
+It searches the body text retained in the event, subject to ingestion limits;
+it does not fetch the original EML. Narrow the time window and other filters
+before searching bodies, because the search reads message text across the window.
+
+Before running, Hunt estimates the search cost. Small priced searches can start
+immediately; larger searches ask you to confirm. If the estimate is unavailable
+or unpriced, Hunt says so and asks before running, rather than treating the
+search as free. The estimate is a guide; the final charge can differ.
+
 These searches cover retained telemetry, independently of the Email Security
 message index and raw-message retention. They can find older emitted messages
 when telemetry is retained longer than the index. Initial historical backfill
