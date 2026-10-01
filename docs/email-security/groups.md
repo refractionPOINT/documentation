@@ -3,8 +3,9 @@
 --8<-- "includes/email-security-beta.md"
 
 A message group represents one email delivered to several recipients. Open
-**Email Security → Groups**, or choose **Group by message** from Messages, to
-triage the copies together. A campaign relates similar messages and may contain
+**Email Security → Messages** and choose **Groups** in the **Messages | Groups**
+switch to triage the copies together. Groups is the default when no view has been
+chosen for the organization. A campaign relates similar messages and may contain
 several groups. Group membership is stricter than campaign similarity.
 
 ## Identity and the queue
@@ -22,12 +23,22 @@ medium-or-higher rule severity, or user-reported mail. An analyst benign revisio
 removes that copy's severity-only triage contribution while preserving its
 historical severity. Dispositions benign, graymail and simulation dismiss that
 copy's triage contribution; malicious and spam flag it. The historical user-report
-indicator stays visible. Other undismissed copies keep the group in the queue. **Show all groups** includes the remaining groups.
+indicator stays visible. Other undismissed copies keep the group in the queue.
+**Include unflagged groups** includes the remaining groups.
 
-Filter by verdict, severity, disposition, user-reported state and time. Omitted
-user-reported state leaves that dimension unrestricted. Filters combine across
-dimensions and allow alternatives within one dimension. Message-specific filters
-such as mailbox and free text are not carried into the Groups view.
+The shared [Messages filters](messages.md#the-queue) apply in both views, including
+mailbox, sender, free text, placement, direction, lane, score and IOC pivots.
+Switching views keeps the filters and their badges. Omitted user-reported state
+leaves that dimension unrestricted. Filters combine across dimensions and allow
+alternatives within one dimension. Unsupported combinations show an error instead
+of silently removing a filter.
+
+A copy filter includes a group when a copy matches the complete filter set.
+The row still describes the whole group: subject and sender, representative
+message, worst verdict and severity, recipient and copy counts, disposition
+summary, and first and last seen. When the response includes a matching-copy
+count, the row also shows **N of M copies match**. Its absence does not mean that
+every copy matched.
 
 The drawer shows first and last seen, message and recipient counts, maximum
 verdict and severity, placement and disposition counts, a representative message
@@ -37,6 +48,19 @@ unknown. Instances are paged: continue until there is no next cursor rather than
 assuming the first page contains every recipient.
 
 ## Preview, confirm and track
+
+Select groups in the queue to prepare remediation or disposition previews. The
+console accepts up to 50 groups per batch; each group has its own durable job and
+can contain more than 20,000 copies. Review the prepared jobs before confirming
+the batch. Preparation failures can be retried without recreating the successful
+previews. A failed or uncertain confirmation requires reviewing the job status;
+the console does not confirm automatically.
+
+!!! warning "Group actions cover all copies"
+    A mailbox, sender or other queue filter narrows which groups appear. Group
+    remediation and disposition still cover **every copy of each selected
+    group at the preview snapshot**, including copies that did not match the
+    filter. Inspect the preview before confirming.
 
 Group remediation prepares a durable snapshot of **every** member, including
 all-hands messages with more than 20,000 recipients. Preparation may need several

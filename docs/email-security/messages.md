@@ -2,9 +2,19 @@
 
 --8<-- "includes/email-security-beta.md"
 
-**Messages** is the queue: every message the product has seen, filtered down to
-the ones that need a person. This page covers the queue, the drawer, the actions
-and the audit trail they leave.
+**Email Security → Messages** is the shared queue for individual messages and
+[message groups](groups.md). Choose **Messages** or **Groups** with the switch
+beside the filter bar. Groups combines copies of the same email across recipients
+for triage; Messages shows each recipient copy separately. This page covers the
+queue, the drawer, the actions and the audit trail they leave.
+
+Groups is the default when no view is specified and you have not chosen one for
+the organization. The switch remembers your last choice separately for each
+organization. A URL's `view=groups` or `view=messages` takes precedence for that
+visit; opening a shared link does not change your saved choice. Filters and the
+selected view stay in the URL, so a shared link opens the same queue. The former
+`/email-security/groups` route redirects to Messages with `view=groups`, retaining
+its filters and drawer links.
 
 Where classification is available, the queue and drawer show the message's
 apparent purpose, such as **Correspondence**, **Transactional**, or **Marketing**.
@@ -24,7 +34,11 @@ is a separate rule signal from the security verdict and analyst disposition.
 
 Filtering is **entirely server-side** — every filter below narrows the query in
 the backend, so a filtered page is a statement about your whole mail history, not
-about the rows a browser happened to have loaded.
+about the rows a browser happened to have loaded. Both views use the same filter
+bar, filter modal, search and active-filter badges. Switching views keeps the
+filters. **Include unflagged groups** expands the default Groups triage queue; it
+does not change the individual Messages view. **Clear all** also resets that
+group scope to its default.
 
 | Filter | Notes |
 |---|---|
@@ -56,6 +70,8 @@ dimension. The API refuses such a
 combination with the typed, non-retryable `lane_unsupported` error and names the
 conflicting dimension; the console clears and disables the lane control while
 one of those filters is active.
+An incompatible combination in a shared URL displays an explanation and pauses
+the list until the combination is corrected.
 
 ```bash
 limacharlie mailsec message list --verdict suspicious --verdict malicious \
@@ -170,6 +186,11 @@ normal outcome and returns a null message rather than an error.
 
 ## The drawer
 
+In Messages, select a row to open its message drawer. In Groups, select a row to
+open the group drawer, then select a recipient copy to inspect that message.
+A `?message=<uuid>` link opens the message drawer in either view, even when that
+message is not in the currently filtered page.
+
 Opening a row shows what the engine decided and why:
 
 - **Why this verdict** — the top signals with their weights, from the same
@@ -269,6 +290,12 @@ To act on many messages at once — a filtered page of this queue, or a selectio
 you built elsewhere — see [Bulk Remediation](remediation.md). It is the same
 executor and the same audit trail, with a preview and a confirmation over the set
 you named.
+
+Bulk controls follow the selected view. Messages retains individual-message
+actions and disposition for up to 500 selected message IDs. Groups prepares a
+separate durable preview for each selected group and confirms only after review;
+see [Message Groups & Cases](groups.md#preview-confirm-and-track). Group actions
+cover all copies in the snapshot, including copies outside the active filters.
 
 ### Outcomes are reported honestly
 
