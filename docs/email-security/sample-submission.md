@@ -9,7 +9,7 @@ engine got wrong, so detection can improve. It is **off by default**, it is
 !!! warning "Submitting sends the message to LimaCharlie"
     When an analyst submits a message, LimaCharlie keeps a copy of the original
     message, including its attachments. The sections below state exactly what is
-    kept, where, for how long and who can open it. You can withdraw any submission
+    kept, where, for how long and how access to it is recorded. You can withdraw any submission
     at any time, which deletes the copy.
 
 ## Why it exists
@@ -85,7 +85,7 @@ Every submission needs a **category** and a **reason**.
 |---|---|
 | `missed_threat` | We called the message benign or unknown, and it is a threat |
 | `false_positive` | We flagged the message, and it is legitimate |
-| `other` | Anything else you want us to look at |
+| `other` | Any other detection issue with this message |
 
 The reason is free text, 1 to 1024 characters after trimming, and is kept with the
 submission. Unlike the other message actions, it is required.
@@ -257,9 +257,8 @@ runs the action on a message, and only after your organization has opted in.
 **Is it per message?** Yes. Each submission is one message. There is no bulk or
 campaign form.
 
-**Can I see who at LimaCharlie looked at it?** You can see whether and when: the
-access count and timestamps are shown on every submission. The accessing identity
-is not shown.
+**Can I see when the copy was accessed?** Yes: the access count and timestamps are
+shown on every submission. The accessing identity is not shown.
 
 **Can I take it back?** Yes, at any time. Withdrawing deletes LimaCharlie's copy
 and its metadata.
