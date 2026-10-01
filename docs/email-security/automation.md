@@ -682,6 +682,8 @@ The Email Security extension exposes `set_disposition`, `revise_verdict`,
 `release_message`, and `resolve_report` as typed actions. They use the caller's
 permissions and authenticated identity. A D&R rule may record disposition or
 request a release; releases obey alert-only/force and retain the action audit.
+Automated revisions and releases require explicit `mode: ai` and preserve the
+rule attribution. Report resolution requires an interactive analyst decision.
 The revise action takes `mode: analyst|ai`, a verdict, and a nonempty list of
 rationale strings. Resolve accepts the same five dispositions and optional
 message/campaign remediation with preview/confirm.
