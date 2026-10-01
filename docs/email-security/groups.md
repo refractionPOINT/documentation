@@ -26,22 +26,46 @@ copy's triage contribution; malicious and spam flag it. The historical user-repo
 indicator stays visible. Other undismissed copies keep the group in the queue.
 **Include unflagged groups** includes the remaining groups.
 
+Groups contain retained recipient copies from the past 35 days, consistent with
+the group drawer and remediation preview.
+
 The shared [Messages filters](messages.md#the-queue) apply in both views, including
 mailbox, sender, free text, placement, direction, lane, score and IOC pivots.
-Switching views keeps the filters and their badges. Omitted user-reported state
-leaves that dimension unrestricted. Filters combine across dimensions and allow
-alternatives within one dimension. Unsupported combinations show an error instead
+Switching views keeps the filters and their badges. Unsupported combinations show
+an error instead
 of silently removing a filter. When a filtered page comes back empty while more
 results remain, the queue shows **Still searching** and keeps loading, and after
 twenty empty pages in a row offers **Keep searching** rather than claiming that
 nothing matched.
 
-A copy filter includes a group when a copy matches the complete filter set.
-The row still describes the whole group: subject and sender, representative
+Each row describes the whole group: subject and sender, representative
 message, worst verdict and severity, recipient and copy counts, disposition
 summary, and first and last seen. When the response includes a matching-copy
 count, the row also shows **N of M copies match**. Its absence does not mean that
 every copy matched.
+
+Both views apply the same filters on the server: literal text search,
+mailbox, sender address or root domain, campaign, link domain, attachment SHA-256,
+placement state, direction, minimum score, lane, verdict, severity, disposition
+(including `none`), user-reported state and time. Omitted user-reported state leaves
+that dimension unrestricted. Alternatives within one filter use OR; different
+filters use AND **on one recipient copy**. For example, mailbox A plus malicious
+returns a group only if A's copy is malicious, even when another copy is malicious.
+The default flagged-group gate remains separate: **Include unflagged groups** removes it.
+
+Filtered ordering uses the newest **matching** copy's time. Summary badges and
+counts still describe the whole group, so a matching copy's verdict or disposition
+can differ from the aggregate. The group drawer and remediation preview include
+all copies, including recipients outside the list filters.
+
+The list uses bounded index reads and opaque cursors. A filtered cursor pins a
+snapshot for 50 minutes; restart pagination after it expires or after changing
+filters. Short or empty pages can still carry a `next_cursor`: continue until it
+is empty. If a canonical matching-copy lookup exceeds its bound, the explicit
+`group_filter_too_broad` error asks for narrower filters. Search and lane have the
+same supported combinations as message lists; unsupported combinations are
+refused, never ignored. Exact `matched_copies` counts are omitted because counting
+large fan-outs per row would exceed the predictable page cost.
 
 The drawer shows first and last seen, message and recipient counts, maximum
 verdict and severity, placement and disposition counts, a representative message
