@@ -377,9 +377,12 @@ strings, one colour *name*, and one image URL; nothing you write is ever
 interpreted as HTML or CSS. Text is escaped when the banner is rendered, and
 accepting markup here would turn a configuration field into stored HTML
 injection against your own users, so it is refused when the record is written
-and neutralized again at render time. Control characters, right-to-left
-overrides and zero-width characters are refused too, because they let a warning
-read differently from what it says. Tab and newline are allowed in the wording
+and neutralized again at render time. Control characters, bidirectional
+overrides and isolates, and characters that hide text (zero-width space, word
+joiner, byte-order mark, soft hyphen) are refused too, because they let a
+warning read differently from what it says. The joiners and the left-to-right,
+right-to-left and Arabic letter marks that Persian, Hebrew, Arabic and Indic
+writing need are allowed. Tab and newline are allowed in the wording
 and show as a space.
 
 The banner is placed **outside** the container that holds the sender's own HTML
