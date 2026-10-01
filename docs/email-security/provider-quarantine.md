@@ -70,15 +70,17 @@ The corresponding read routes are `GET /mailsec/{oid}/provider-quarantine` and
 
 `EMAIL_PROVIDER_QUARANTINE` carries `provider_status`, `trace_id`,
 `recipient_address`, `received_at`, `observed_at`, `connection` and `event_id`.
-Sender, subject and Internet Message-ID are included when available.
+Sender, subject and Internet Message-ID are included when available within fixed
+metadata limits; long subjects are clipped and oversized optional fields omitted.
 `EMAIL_RELEASE_REQUEST` carries `audit_id`, `requested_at`, `observed_at`,
 `connection` and `event_id`, plus provider-supplied recipient, actor and
 `network_message_id` when available. Actual releases and denials stay in the
 activity history; they do not produce new request events.
 
 A resolved recipient carries `mailbox: {id, address, upn?}`, using the stable
-provider handle and normalized primary SMTP address. An unresolved recipient or
-an audit record without a recipient uses the connection sensor. The audit actor
+provider handle and normalized primary SMTP address. An ambiguous known recipient or
+an audit record without a recipient uses the connection sensor. External or unknown
+recipients without a tenant mailbox record are omitted. The audit actor
 can be an administrator and is never guessed to be the recipient.
 
 Microsoft audit NetworkMessageId and message trace Internet Message-ID are
@@ -98,6 +100,8 @@ Recipient-bearing observations follow the connection's mailbox scope and exclusi
 For a restricted scope, an audit record without a recipient is omitted until it can be
 linked to an in-scope mailbox; the administrative actor is never used as that link.
 Only an unrestricted tenant connection can include recipient-less audit history.
+Catch-up across historical polling windows stays pending until it reaches the current
+polling interval; a finished old window does not claim current coverage.
 
 Visibility requires a resolved mailbox scope. An unresolved `include_groups` scope
 reports `error` instead of claiming coverage from the organization-wide mailbox index.
