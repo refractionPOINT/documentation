@@ -248,8 +248,8 @@ The field to count by depends on the event:
 
 | Event | Field | Holds |
 |---|---|---|
-| `EMAIL_MESSAGE`, `EMAIL_VERDICT`, `EMAIL_ACTION` | `event/mailbox/address` (template `{{ .event.mailbox.address }}`) | The protected mailbox the event is about |
-| `EMAIL_USER_REPORT` | `event/reporter` (template `{{ .event.reporter }}`) | The address that sent the report to the abuse mailbox, or `unknown` when the report had no usable sender |
+| Any event about a mailbox (`EMAIL_MESSAGE`, `EMAIL_VERDICT`, `EMAIL_ACTION`, and the other mailbox-scoped events) | `event/mailbox/address` (template `{{ .event.mailbox.address }}`) | The protected mailbox the event is about. The same `mailbox` object also carries `id` (the provider's stable handle) and `upn` (the sign-in name, which can differ from the address on Microsoft 365), so `{{ .event.mailbox.upn }}` can key a counter by sign-in identity |
+| `EMAIL_USER_REPORT` | `event/reporter` (template `{{ .event.reporter }}`) | The address that sent the report to the abuse mailbox, or `unknown` when the report had no usable sender. Its `mailbox` is the abuse mailbox the report arrived in, not the person who reported, so count reports per person with `reporter` |
 
 ### Example: five malicious messages to one mailbox in an hour
 
