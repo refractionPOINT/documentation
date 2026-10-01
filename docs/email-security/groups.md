@@ -58,6 +58,14 @@ explicit force request requires the same deliberate consent as individual
 remediation. Retention can remove a selected copy before execution, and provider
 failures can leave a partial outcome. Review those outcomes before retrying.
 
+Microsoft may accept quarantine or restore before completing it. The group job
+stays running while that provider result is pending; acceptance does not increase
+its succeeded or failed counts. Continue polling the same job instead of creating
+another intent. Each recipient has up to 90 minutes from its first recorded
+pending result to reach a terminal provider outcome. An unconfirmed result after
+that window counts as failed, even if Microsoft later completes the action.
+Inspect the provider state before retrying such a member.
+
 The console can resume a job from its URL. Paused browser polling does not cancel
 the durable server job; refresh its status. See [Bulk Remediation](remediation.md)
 for individual and campaign scopes.
