@@ -39,7 +39,10 @@ Visibility starts with the previous 24 hours. Recovery resumes stored progress
 rather than skipping unfinished pages. A gap beyond the provider's retention
 window is reported as an error. Indexed observation metadata is retained in the
 organization's evidence lane, up to 400 days; no message body, attachment or raw
-audit blob is retained by these feeds.
+audit blob is retained by these feeds. Unsent telemetry expires with the organization’s
+configured evidence retention; a long emission outage does not extend that retention.
+An invalid persisted event is marked `emission_rejected` and kept as provider history
+without blocking later valid events or claiming the rejected event was delivered.
 
 ## CLI and API
 
@@ -88,3 +91,15 @@ Events may be retried after interrupted delivery. Deduplicate automated work
 using `event_id`. Use ordinary D&R event matching for alerts and reporting; these
 feeds do not provide a hosted-quarantine release action. LimaCharlie's mailbox
 folder quarantine remains described in [remediation](remediation.md).
+
+## Mailbox scope limits
+
+Recipient-bearing observations follow the connection's mailbox scope and exclusions.
+For a restricted scope, an audit record without a recipient is omitted until it can be
+linked to an in-scope mailbox; the administrative actor is never used as that link.
+Only an unrestricted tenant connection can include recipient-less audit history.
+
+Visibility requires a resolved mailbox scope. An unresolved `include_groups` scope
+reports `error` instead of claiming coverage from the organization-wide mailbox index.
+Use explicit `include_addresses` until group membership has been resolved. Ambiguous
+provider handles preserve the recipient observation without inventing a mailbox ID.
