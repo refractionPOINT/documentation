@@ -372,9 +372,11 @@ Create an enabled `ai_agent` record named `cmdline-triage` with a system `prompt
 | `cache_ttl` | No | Integer seconds, 0–86400. Default: 3600. Set 0 to disable response caching. |
 | `metadata_rules` | No | Detection logic evaluated against the response metadata. Omit to match any successful call. |
 
+Schemas must be self-contained and are limited to 16 KiB, 256 JSON nodes and 16 levels of nesting. External references cannot fetch network or file resources. Responses are validated against the original schema even when provider-specific structured-output grammars need a transformed version.
+
 The record's `prompt` supplies the system message. The rule's rendered `prompt` and the merged extracted data supply the user message; data is appended as an **Event data:** fenced JSON block. The model is instructed to return a single JSON object. The operator makes no tool calls and starts no agent session.
 
-If the answer parses as a JSON object, that object is the metadata. Other answers become `{"text": "<answer>"}`, which you can inspect at `path: text`. Metadata paths are relative to this object, so use `verdict`, rather than `event/verdict`. On a match, the answer is attached to the detection's `mtd` under `ai_agent_<name>`, like lookup metadata. Answers are bounded to 64 KiB; oversized replies produce an operator error. A nested metadata operator can contribute its own metadata using the same behavior as `lookup`.
+If the answer parses as a JSON object, that object is the metadata. Without `response_schema`, other answers become `{"text": "<answer>"}`, which you can inspect at `path: text`. With a schema, non-object or schema-invalid answers produce an operator error and no match. Metadata paths are relative to this object, so use `verdict`, rather than `event/verdict`. On a match, the answer is attached to the detection's `mtd` under `ai_agent_<name>`, like lookup metadata. Answers are bounded to 64 KiB; oversized replies produce an operator error. A nested metadata operator can contribute its own metadata using the same behavior as `lookup`.
 
 With `metadata_rules`, the operator matches only when the call succeeds **and** the metadata rule matches. Without it, any successful call matches; that does not itself establish whether an event is malicious. `not: true` reverses a successful match decision. A timeout, provider/authentication error, unavailable definition, saturation or resource ACL refusal produces an operator error and no match, including with `not: true`.
 
