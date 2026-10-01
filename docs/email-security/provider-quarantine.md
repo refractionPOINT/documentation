@@ -139,7 +139,12 @@ never guessed. The message drawer and `mailsec message get` include up to twenty
 | `pending` | The durable request is queued or its placement is still being checked |
 | `succeeded` | Microsoft’s documented latest delivery reports the requested placement |
 | `unsupported` | Microsoft permission, licensing, identity or operation support prevented this request; inspect the separately recorded LC fallback |
-| `failed` | Placement or fallback failed, or completion could not be confirmed before the twenty-minute deadline |
+| `failed` | Placement or fallback failed, or completion could not be confirmed before its bounded stage deadline |
+
+Requests that wait more than thirty minutes expire before submission. The
+execution budget is twenty minutes from the first owner claim; a known provider
+refusal starts a separate twenty-minute LC fallback budget. Neither budget renews
+on retry. A restore waiting behind quarantine gets its own execution budget.
 
 A Microsoft `202` acknowledges acceptance. It does **not** prove completion.
 Its `tracking_url` is a human Action Center portal link, never a Graph status API.
