@@ -351,3 +351,50 @@ A key with no profile means **no history at all**, and the response says so
 explicitly rather than returning a zeroed profile that would read as a
 known-but-quiet sender. Keys are lowercased, and a bare address or domain is
 resolved for you.
+
+## Analyst disposition
+
+Disposition records the security team's decision independently of the engine
+verdict: `malicious`, `spam`, `graymail`, `benign`, or `simulation`. Setting it
+preserves the verdict and runs no automations. The decision includes a note of up
+to 1024 characters, authenticated actor, source, and server timestamp. Message
+lists expose `disposition`; message detail includes `disposition_info` and
+`disposition_seq`.
+
+```bash
+limacharlie mailsec message disposition <msg_uuid> --disposition spam --note "Reviewed" --oid $OID
+limacharlie mailsec message disposition <msg_uuid> --clear --oid $OID
+limacharlie mailsec message list --disposition none --oid $OID
+limacharlie mailsec message bulk-disposition --msg-uuids <id1> --msg-uuids <id2> --disposition malicious --oid $OID
+```
+
+These writes require `mailsec.set`. Bulk input is limited to 500 unique IDs and
+returns a result for every message, including individual failures. The CLI exits
+with a failure status when any member fails. The `none` list filter selects
+messages with no current disposition, including cleared decisions.
+
+A benign decision removes this message's credited sender-history flag; malicious
+credits it once. The message-count history remains intact. `EMAIL_DISPOSITION`
+reports each real decision change, including a clear (empty disposition), with
+its sequence and previous value. Event delivery may retry with the same `job_id`;
+consumers should deduplicate by that ID or message/sequence.
+
+## Release a message
+
+```bash
+limacharlie mailsec message release <msg_uuid> --reason "Reviewed as safe" --oid $OID
+```
+
+`release_message` restores provider placement and records both a benign verdict
+revision and a benign disposition. It repairs sender history and records one
+idempotent action. The revision mode is `analyst` by default; an AI caller can
+choose `--mode ai`. It requires `mailsec.act` and follows restore's enforcement
+rule: in alert-only mode it is recorded and withheld; `--force` is explicit consent
+to perform it. The withheld action changes neither verdict nor disposition.
+
+Use ordinary `restore_message` when you intend only to move the message back
+without deciding it is benign. Revising a verdict to benign alone does not restore
+mail automatically.
+
+Disposition writes require an indexed message within the message retention window.
+Retained evidence outside that window remains available for backtesting.

@@ -309,10 +309,10 @@ faster, which is worth doing for its own sake.
 
 | Route | Does |
 |---|---|
-| `POST /messages/{msg_uuid}/actions` | Perform a typed action on one message. Body: `action` (`quarantine_message`, `trash_message`, `move_to_spam`, `restore_message`, `banner_message`, `unbanner_message`), optional `force` (boolean; see [alert-only overrides](#explicit-override-in-alert-only-mode)), optional `reason`, optional `attempt` (idempotency token — omit to collapse onto the existing attempt). `banner_message` uses the organization's own banner, rendered from its `mailsec_policy` record of type `banners`; the body's `banner` field is **deprecated and ignored** and will be removed. Requires `mailsec.act` |
+| `POST /messages/{msg_uuid}/actions` | Perform a typed action on one message. Body: `action` (`quarantine_message`, `trash_message`, `move_to_spam`, `restore_message`, `release_message`, `banner_message`, `unbanner_message`), optional `force` (boolean; see [alert-only overrides](#explicit-override-in-alert-only-mode)), optional `reason`, optional `attempt` (idempotency token — omit to collapse onto the existing attempt). `banner_message` uses the organization's own banner, rendered from its `mailsec_policy` record of type `banners`; the body's `banner` field is **deprecated and ignored** and will be removed. Requires `mailsec.act` |
 | `POST /campaigns/{campaign_id}/actions` | Sweep a campaign. Same body plus `confirm`. **Without `confirm` this previews** and changes nothing, returning the member ids, the distinct mailboxes, the counts and a `confirm` token derived from that exact member set. With `confirm` it executes exactly that set; a campaign that grew since the preview is refused. Capped at 500 members. `reason` is recorded on **every member's** audit row and on the sweep's own row (`action_id` in the response); `attempt` (bounded at 128 characters, refused not truncated) mints a new row per member, so a deliberate retry is recorded beside what it retried instead of over it. Neither is part of the `confirm` token. Requires `mailsec.act` |
 | `POST /actions/bulk/execute` | Execute a previewed bulk remediation. Returns a `bulk_id` immediately and the provider work proceeds in the background. Requires `mailsec.act`. See [Bulk Remediation](remediation.md) |
-| `POST /reports/{report_id}/resolve` | Record a triage outcome. Body: `disposition` — one of `true_positive`, `false_positive`, `benign`. Resolving an already-resolved report succeeds and reports `already_resolved`, so two analysts clicking at once is not an error. Requires `mailsec.set` |
+| `POST /reports/{report_id}/resolve` | Record a triage outcome. Body: `disposition` — one of `malicious`, `spam`, `graymail`, `benign`, `simulation`. Resolving an already-resolved report succeeds and reports `already_resolved`, so two analysts clicking at once is not an error. Requires `mailsec.set` |
 | `POST /reports/{report_id}/reopen` | Put a resolved report back in the queue — see [`POST /reports/{report_id}/reopen`](#post-reportsreport_idreopen). Requires `mailsec.set` |
 | `POST /messages/{msg_uuid}/verdict` | Re-judge one message — see [`POST /messages/{msg_uuid}/verdict`](#post-messagesmsg_uuidverdict). Requires `mailsec.act` |
 | `POST /connections/{record}/test` | Probe a configured connection and report each requirement independently: the credential, each scope, a real directory read, and — for Google Workspace — the notification subscription and topic. Every check carries `id`, `name`, `required`, `status`, and on failure `detail` and `remediation`. A failed **optional** check leaves `ok` true. Body: `include_watch` (Workspace only; the one probe with a side effect — it establishes an idempotent, self-expiring push watch). Takes a **record name, not a credential**. Requires `mailsec.act` |
@@ -478,6 +478,8 @@ telemetry and every customer rule is keyed on them.
 | `EMAIL_VERDICT` | Once per verdict **decision**. `revision/seq: 0` with `revision/mode: auto` is the rule pack's own verdict, emitted at ingest immediately after that message's `EMAIL_MESSAGE`; `seq: 1…` is one per override (`analyst`, `ai`, `detonation`) |
 | `EMAIL_ACTION` | Once per remediation outcome, including failures and skips |
 | `EMAIL_USER_REPORT` | Once per message that reaches the abuse mailbox |
+| `EMAIL_DISPOSITION` | Independent analyst/SOAR disposition changed or cleared; carries actor, source, note, server timestamp, prior value, and sequence |
+| `EMAIL_REPORT_RESOLVED` | Report resolved; carries report/message identities, recorded disposition and resolver, and mailbox when available |
 | `EMAIL_INGEST_ERROR` | Once per message that could not be fetched or processed |
 
 Two consequences worth stating plainly:
@@ -509,3 +511,19 @@ having if it names who really asked.
 The Python SDK exposes the same surface, and the CLI wraps it — see
 [Command Line Interface](cli.md). Both are generated against these routes, so
 anything documented here is reachable from either.
+
+### Disposition and release
+
+| Route | Body and behavior |
+|---|---|
+| `POST /messages/{msg_uuid}/disposition` | `disposition` from the five-value vocabulary, optional `note`; or `clear: true`. Requires `mailsec.set`. |
+| `POST /messages/dispositions` | Same decision plus 1–500 unique `msg_uuids`. Returns per-message results, including partial failures. Requires `mailsec.set`. |
+| `GET /messages?disposition=<value>` | Filter by one disposition, or `none` for no current label. |
+| `POST /messages/{msg_uuid}/actions` with `action: release_message` | Restore, benign verdict revision, benign disposition, history repair. Optional `mode: analyst|ai`, `reason`, `force`, `attempt`. Requires `mailsec.act`. |
+| `POST /reports/{report_id}/resolve` | `disposition`; optional `remediation: {scope: message|campaign, action, confirm?, reason?, force?, attempt?}`. Without confirm, remediation is previewed and the report stays open. Pure resolution requires `mailsec.set`; remediation also requires `mailsec.act`. |
+
+The five dispositions are `malicious`, `spam`, `graymail`, `benign`, and
+`simulation`. Disposition is separate from verdict. Message detail includes
+`disposition_info: {disposition, note, actor, source, ts}` and `disposition_seq`.
+Source is `analyst`, `api`, `extension`, `report`, or `ai`; attribution and time
+are assigned by the service. Bodies cannot forge them.
