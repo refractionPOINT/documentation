@@ -68,18 +68,29 @@ as a gap so you can tell "we could not find it" from "we did not look".
 ## Resolving
 
 ```bash
-limacharlie mailsec report resolve <report_id> --disposition true_positive --oid $OID
+limacharlie mailsec report resolve <report_id> --disposition malicious --oid $OID
 ```
 
 | Disposition | Meaning |
 |---|---|
-| `true_positive` | It was malicious |
-| `false_positive` | We flagged it and it was fine |
-| `benign` | It was never a threat |
+| `malicious` | Confirmed threat |
+| `spam` | Unwanted spam |
+| `graymail` | Bulk or promotional mail |
+| `benign` | Reviewed as safe |
+| `simulation` | Authorized security simulation |
 
-Resolving requires `mailsec.set`, **not** `mailsec.act`: it changes triage state
-the product owns, and touches nobody's mailbox. That is the line `mailsec.act`
-draws.
+Resolving sets the linked message's independent disposition with `source: report`
+and emits `EMAIL_REPORT_RESOLVED`. It preserves the engine verdict. A report whose
+original is unavailable can still be resolved; its coverage gap remains visible.
+Pure resolution requires `mailsec.set`.
+
+To remediate as part of resolution, also hold `mailsec.act`. Choose `--scope
+message` or `--scope campaign` and an `--action`. The first request returns
+`remediation_preview` and leaves the report open. Read the affected messages and
+mailboxes, then repeat the same request with `--confirm <token>`. Failed, withheld,
+or interrupted remediation leaves the report open and returns the action outcome.
+Campaign remediation is bounded to the existing 500-message sweep limit. A missing
+original or campaign is refused rather than guessed.
 
 Resolving an already-resolved report succeeds and reports `already_resolved`, so
 two analysts clicking at once is not an error.
@@ -88,7 +99,9 @@ two analysts clicking at once is not an error.
     Resolving a report as `benign` subtracts that message's contribution from the
     sender's flagged-history counter. Without it, one wrong flag would keep
     weighing on every later message from a legitimate correspondent. The repair
-    runs once per report even if the resolution is retried.
+    is guarded per message across dispositions, resolutions, and releases, so retries
+    do not remove another message’s contribution. A `malicious` disposition credits
+    that message once; neither operation changes the engine verdict.
 
 ## Reopening
 
@@ -177,27 +190,31 @@ Off by default: it sends mail on your behalf, to your own staff.
 ```yaml
 policy_type: reporter_reply
 enabled: true
+acknowledgement: "Your report was received and is being reviewed."
+on_resolve: true
 templates:
-  malicious: "Thanks — you were right. We have removed that message from every mailbox it reached."
-  benign: "Thanks for checking. That message is legitimate; no action was needed."
+  malicious: "Your report has been reviewed and classified as malicious."
+  spam: "Your report has been reviewed and classified as spam."
+  graymail: "Your report has been reviewed and classified as graymail."
+  benign: "Your report has been reviewed and classified as benign."
+  simulation: "Your report was an authorized security simulation."
 ```
 
-- Templates are keyed by verdict, and a verdict with no template falls back to a
-  generic acknowledgement — enabling replies can never leave a reporter with
-  silence.
-- Templates are **plain text** (no `<` or `>`), capped in length. The rendering
-  is fixed in code.
-- Sending needs the optional provider capability: `Mail.Send` on Microsoft 365,
-  `https://mail.google.com/` on Google Workspace. Without it the reply is refused
-  **by name** rather than silently skipped.
-- Replies are **never** sent to an automated sender. A no-reply address either
-  blackholes it or bounces it straight back into the abuse mailbox, producing a
-  fresh report and another reply.
-- A reply is sent **once per report**, and the acknowledgement carries a marker so
-  it cannot be re-read as a new report. The loop guard requires both the marker
-  **and** that the sender is the abuse mailbox, because a header alone is
-  attacker-controlled — otherwise anyone who had ever received an
-  acknowledgement could forge one and keep a phish out of the abuse queue.
+- `enabled` controls the receipt acknowledgement. Its default wording is neutral;
+  it never claims a verdict, a resolution, or a completed provider action.
+- `on_resolve` controls a separate reply after resolution. Templates are keyed by
+  **disposition**, not engine verdict; missing templates fall back to the recorded
+  disposition. Customize wording to state only outcomes your workflow verifies.
+- Acknowledgement and templates are plain text, at most 4096 UTF-8 bytes, with no
+  `<` or `>`. Resolution replies use fixed, escaped rendering.
+- Sending needs `Mail.Send` on Microsoft 365 or `https://mail.google.com/` on
+  Google Workspace. Automated senders never receive either reply.
+- Resolution deliveries use a durable claim. A retry of one resolution does not
+  send another reply; reopening and resolving again records a new resolution.
+  If a provider-send outcome is uncertain, delivery is marked `ambiguous` and is
+  not automatically resent. The report detail exposes `resolution_reply_status`.
+- Replies carry a loop marker. The guard also checks that the sender is the abuse
+  mailbox, because a sender-controlled header alone cannot establish a real reply.
 
 ## Automating on reports
 

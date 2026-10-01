@@ -111,7 +111,7 @@ limacharlie mailsec action get <action_id>
 # Abuse-mailbox reports
 limacharlie mailsec report list --status open --oldest-first
 limacharlie mailsec report get <report_id>
-limacharlie mailsec report resolve <report_id> --disposition true_positive
+limacharlie mailsec report resolve <report_id> --disposition malicious
 limacharlie mailsec report reopen <report_id>
 
 # Custom rules
@@ -303,7 +303,7 @@ on. The full contract, including every `state`, `result` and count, is in
 
 ### Revising a verdict is `mailsec.act`, not `mailsec.set`
 
-`message revise` records a human disposition over the scorer's, appending to the
+`message revise` records a human verdict revision over the scorer's, appending to the
 message's history rather than overwriting it. `--rationale` is required and
 audited — at least one, at most ten, each 280 characters or fewer.
 
@@ -399,9 +399,35 @@ limacharlie mailsec campaign action "$CAMPAIGN" --action quarantine_message \
 # Resolve the oldest open report
 REPORT=$(limacharlie mailsec report list --status open --oldest-first --limit 1 \
   --output json | jq -r '.reports[0].report_id')
-limacharlie mailsec report resolve "$REPORT" --disposition true_positive
+limacharlie mailsec report resolve "$REPORT" --disposition malicious
 ```
 
 Because the CLI is the whole surface, it is also how an
 [AI triage agent](ai-triage.md) reaches Email Security — there is no separate
 integration for agents to learn.
+
+## Independent disposition and release
+
+```bash
+limacharlie mailsec message disposition <msg_uuid> --disposition benign --note "Reviewed"
+limacharlie mailsec message disposition <msg_uuid> --clear
+limacharlie mailsec message list --disposition none
+limacharlie mailsec message bulk-disposition --msg-uuids <id1> --msg-uuids <id2> --disposition spam
+limacharlie mailsec message release <msg_uuid> --reason "Reviewed as safe" --mode analyst
+```
+
+Disposition accepts `malicious`, `spam`, `graymail`, `benign`, or `simulation` and
+never changes the engine verdict. A bulk selection is limited to 500 unique IDs;
+individual failures are reported and cause a nonzero CLI exit. Release restores
+placement and records a benign verdict and disposition. It needs `mailsec.act`;
+`--force` supplies explicit consent in alert-only mode. See [Messages](messages.md).
+
+For report remediation, first preview:
+
+```bash
+limacharlie mailsec report resolve <report_id> --disposition malicious --scope message --action quarantine_message
+```
+
+Read `remediation_preview`, then repeat with `--confirm <token>` and, when needed,
+`--force`. Pure resolution uses `mailsec.set`; remediation also needs `mailsec.act`.
+The report remains open during preview or when provider remediation fails.
