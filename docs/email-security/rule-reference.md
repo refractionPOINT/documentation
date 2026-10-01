@@ -635,7 +635,7 @@ plausible values; they cannot establish that an account or identity exists.
 
 Scanning is bounded to 512 KiB per text, 2 MiB total and 1,000 distinct values per
 kind. `truncated: true` makes counts lower bounds, including an all-zero block
-when nothing was found before a limit. The entire `pii` block is omitted when
+when nothing was found before a limit, or attachment extraction was unavailable. The entire `pii` block is omitted when
 inspection completes without a finding. Text inside ordinary document, spreadsheet
 and PDF files is not inspected by this detector; OCR and attached-message text
 are covered. Missing findings are not assurance that all attachments were examined.

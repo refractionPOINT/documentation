@@ -349,6 +349,9 @@ for your organization rather than treating a match as proof of malicious intent.
 The detector covers message text, OCR and attached messages, but does not inspect
 text inside ordinary document, spreadsheet or PDF files. Incomplete inspection
 is marked `enrichments/pii/truncated`; the counts then describe only what was seen.
+Deferred attachment scans refresh the stored facts but do not replay the initial
+`EMAIL_MESSAGE` evaluation. A DLP match therefore describes evidence available
+when that event was emitted, rather than every later attachment result.
 
 ## Link detonation
 
