@@ -256,7 +256,7 @@ counter resets when it expires.
 Any field that takes a [sensor selector](../8-reference/sensor-selector-expressions.md),
 such as the Query Console's sensor field, can name a mailbox directly:
 
-```
+```text
 plat == email and hostname == "alice@example.com"
 ```
 
