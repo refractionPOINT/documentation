@@ -85,12 +85,40 @@ original is unavailable can still be resolved; its coverage gap remains visible.
 Pure resolution requires `mailsec.set`.
 
 To remediate as part of resolution, also hold `mailsec.act`. Choose `--scope
-message` or `--scope campaign` and an `--action`. The first request returns
+message`, `--scope group`, or `--scope campaign` and an `--action`. The first request returns
 `remediation_preview` and leaves the report open. Read the affected messages and
 mailboxes, then repeat the same request with `--confirm <token>`. Failed, withheld,
 or interrupted remediation leaves the report open and returns the action outcome.
 Campaign remediation is bounded to the existing 500-message sweep limit. A missing
 original or campaign is refused rather than guessed.
+
+### Remediate the same message across recipients
+
+`--scope group` targets copies of the reported original delivered to different
+recipients. A campaign targets similar messages; a group represents the same
+message. Group actions use a durable, paged job that scales beyond 500 messages.
+Only the reported original receives the resolution disposition.
+
+Choose a UUID attempt once, then reuse it through preview, confirmation and
+polling. Preparation freezes the recipient selection before returning a token;
+messages arriving afterwards are excluded. For example:
+
+```bash
+ATTEMPT=$(python3 -c 'import uuid; print(uuid.uuid4())')
+limacharlie mailsec report resolve "$REPORT" --disposition malicious --scope group --action quarantine_message --attempt "$ATTEMPT" --wait --oid "$OID" --output json
+# Read remediation_preview.job and take remediation_preview.confirmation as TOKEN.
+limacharlie mailsec report resolve "$REPORT" --disposition malicious --scope group --action quarantine_message --attempt "$ATTEMPT" --confirm "$TOKEN" --wait --oid "$OID" --output json
+```
+
+Keep the action, disposition, reason, force and attempt unchanged when confirming
+or resuming. Changing them needs a fresh preview. `--wait` polls for up to 300
+seconds; a timeout exits with code 2, retains the durable job in the response and
+leaves the job running. Repeat the same confirmed command to resume. The report
+stays open until every selected message succeeds or is already in the requested
+state. Failed or withheld members leave it open; retry them through a new attempt
+and confirmation. A force override also needs a fresh preview with `--force`.
+If you leave after confirming, remediation continues; finish resolution by
+resuming the same request.
 
 Resolving an already-resolved report succeeds and reports `already_resolved`, so
 two analysts clicking at once is not an error.
