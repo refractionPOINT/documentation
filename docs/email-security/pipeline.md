@@ -7,10 +7,10 @@ message from the moment your provider says it exists to the moment somebody
 decides what to do about it, and it is explicit about which parts happen in one
 pass and which parts can happen later.
 
-The short version: **everything that produces the first verdict happens
-synchronously, in one pass, per message.** There is no queue of half-judged mail
-and no second job that fills in the answer. Anything that changes a verdict
-afterwards is recorded as a *revision*, not as a late arrival.
+The first verdict uses the evidence available within the bounded initial pass.
+Delayed attachment scans and link detonation can add evidence afterwards; a
+changed verdict is recorded as a *revision*. Wait for `EMAIL_ANALYSIS_COMPLETE`
+when your workflow needs the initial analysis window to close.
 
 ## The stages
 
@@ -142,14 +142,17 @@ The initial `EMAIL_VERDICT` (`revision/seq: 0`) includes
 The closed set of pending kinds is `detonation` and `attachment_scan`. With
 nothing outstanding, it carries `pending: []` and `complete: true`.
 
-`EMAIL_ANALYSIS_COMPLETE` closes that initial window for every live ingested
-message, including messages with no delayed work. It carries the final
+`EMAIL_ANALYSIS_COMPLETE` closes that initial window for every message emitted
+through the live lane, including re-drives that emit and messages with no delayed
+work. Initial historical backfill emits no `EMAIL_*` events and has no completion
+event; a later live notification can promote that message into the live lane. It carries the final
 `revision/verdict`, `revision/score`, `revision/seq`, and known message identity
 fields, plus `results` and `timing`. Use this event to start triage that needs the
 initial batch of evidence. A completion is a processing fact, **not a safety
 verdict**. Its `completion_id` is the message's `msg_uuid` and stays the same
-for that immutable snapshot. Delivery retries after an interruption can repeat
-the snapshot; use `completion_id` for idempotent triage or duplicate suppression.
+for that immutable snapshot. Delivery is at least once: retries after an interruption can repeat
+the snapshot. Use `completion_id` for idempotent triage or the
+[completion suppression example](automation.md#triage-after-initial-analysis).
 
 | Result | Meaning |
 |---|---|

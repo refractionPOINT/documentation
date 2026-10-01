@@ -307,8 +307,9 @@ the provider record, apply the policy directory, run the connection test.
 This platform D&R detection reports suspicious or malicious messages after the
 initial evidence window closes. The final verdict is a snapshot at completion;
 read `results` when your triage needs to distinguish an examined message from a
-deadline, capacity refusal or analysis failure. Use `msg_uuid` as the workflow's
-idempotency key when dispatching external work.
+deadline, capacity refusal or analysis failure. Completion delivery is at least
+once. Use `completion_id` as the workflow's idempotency key when dispatching
+external work. Initial historical backfill emits no completion event.
 
 ```yaml
 # Detect
@@ -334,7 +335,19 @@ rules:
 # Respond
 - action: report
   name: email-analysis-triage
+  suppression:
+    max_count: 1
+    period: 720h
+    is_global: true
+    keys:
+      - email-analysis-triage
+      - '{{ .event.completion_id }}'
 ```
+
+The example suppresses repeated reports for the same completion for 30 days
+across sensors within the organization. After the suppression period expires,
+the same identity can report again. External workflows that require durable
+idempotency should retain their own completion identities for their retry horizon.
 
 The initial `EMAIL_MESSAGE` remains useful for immediate containment and
 content rules. Waiting for completion is a workflow choice; it does not prevent

@@ -716,6 +716,11 @@ use a platform `dr-general` rule on the emitted completion event.
 | `event/timing/analysis_ms` | Completion | Initial decided → completed, integer ms |
 | `event/timing/clock_skew` | When true | At least one negative interval was clamped to zero |
 
+Completion delivery is at least once; key response suppression on
+`event/completion_id`, as shown in the [triage example](automation.md#triage-after-initial-analysis).
+Completion covers emitted live messages, including emitting re-drives. Initial
+historical backfill emits no `EMAIL_*` events and no completion event.
+
 Missing optional intervals are absent, never fabricated zero. A completion with
 `failed`, `shed`, or `timed_out` results does not classify the message as benign.
 See [completion triage and delay rules](automation.md#triage-after-initial-analysis).
