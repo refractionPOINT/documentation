@@ -768,7 +768,11 @@ enabled: true
 
 The record is closed: `enabled` is the only field, unknown fields are refused, and
 a record that sets nothing is refused. A suggested record name is
-`sample-sharing`. Nothing is ever submitted automatically, and D&R rules,
+`sample-sharing`. Turning it on requires `mailsec.set` and the organization Owner's
+`billing.ctrl` and `user.ctrl` authority. Turning it off needs only `mailsec.set`:
+write `enabled: false` on an active record without expiry. Removing, disabling or
+expiring an override requires Owner authority because an earlier enabled record
+could become effective. Nothing is ever submitted automatically, and D&R rules,
 automations and the AI agent cannot submit even when the record is on.
 
 ---

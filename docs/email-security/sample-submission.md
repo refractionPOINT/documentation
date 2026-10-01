@@ -25,8 +25,8 @@ not change the verdict on your message.
 
 ## Turning it on
 
-Sample submission is opt-in per organization. Until you opt in, submit requests
-are refused and nothing is ever copied.
+Sample submission is opt-in per organization. Only the organization Owner can
+turn it on. Until you opt in, submit requests are refused and nothing is ever copied.
 
 Opt in with a `mailsec_policy` record of type `sample_sharing`:
 
@@ -43,13 +43,18 @@ limacharlie hive set --hive-name mailsec_policy --key sample-sharing \
 
 | Field | Default | |
 |---|---|---|
-| `enabled` | `false` | Without a record the feature is off. Set it to `false`, or delete the record, to turn it off again |
+| `enabled` | `false` | Without a record the feature is off. Set it to `false` on an active record without expiry to turn it off again |
 
 The record has only that one field. Unknown fields are refused, and a record that
 sets nothing is refused. When several records set `enabled`, the last one in
 record-name order wins, as with [`reporter_reply`](policy.md#reporter_reply).
-See [Policy Reference](policy.md#sample_sharing). Writing the record needs the
-same permission as any other `mailsec_policy` record.
+See [Policy Reference](policy.md#sample_sharing). Enabling sharing requires
+`mailsec.set` and Owner authority (`billing.ctrl` and `user.ctrl`) for the organization.
+Anyone with `mailsec.set` can turn it off by writing `enabled: false` on an active
+record without expiry. Deleting, expiring or disabling a sample-sharing record requires
+Owner authority because removing an override can reveal an earlier enabled record.
+Turning sharing off prevents new submissions; existing copies remain until withdrawal
+or retention expiry.
 
 ## Who can submit
 
