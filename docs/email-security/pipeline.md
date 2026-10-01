@@ -170,8 +170,10 @@ snapshot. Keep a revision handler alongside completion-based triage for those
 later changes. A later escalation re-runs post-verdict rules and automations;
 a downgrade does not automatically restore mail. An explicit operator re-judge
 that escalates a message also runs responses against its newly judged evidence,
-including a re-judge of historical mail. Dry runs do not act; initial historical
-ingestion still does not run automations.
+including a re-judge of historical mail. Re-judge responses run asynchronously
+after the stored correction: a changed count does not mean containment has
+finished. Dry runs do not act; initial historical ingestion still does not run
+automations.
 
 ## Processing latency
 
