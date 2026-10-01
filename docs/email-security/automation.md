@@ -8,11 +8,16 @@ cloud and identity data — which is what makes "a phish was delivered, and then
 that user's endpoint ran a new binary" one rule instead of two products and a
 spreadsheet.
 
-## The sensor
+## The sensors
 
-Each mail connection appears as **one cloud sensor** on platform `email`. The
-mailbox is a field on the event, not an identity: a ten-thousand-mailbox tenant
-is one sensor, not ten thousand.
+Each protected mailbox appears as its own sensor on platform `email`, keyed by
+the provider's stable mailbox id and named by its normalized primary address.
+Mailbox-scoped events carry `mailbox: {id, address, upn}`; `upn` is present when
+known and can differ from the address on Microsoft 365. Events without a mailbox
+use the connection's sensor (`mailsec-<connection name>`). The `email` platform
+does not count against the sensor quota. Watch coverage and `EMAIL_INGEST_ERROR`
+to assess ingestion health; the connection sensor's online state reflects only
+its own events.
 
 ## The events
 
