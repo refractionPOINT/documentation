@@ -76,6 +76,7 @@ Scoring classes require `weight` from 1 to 100; graymail records must omit it.
 | Is this a known sender? | `enrichments/sender_profile/prevalence` (`none`, `new`, `rare`, `common`) |
 | Is the sender impersonating an organization? | `enrichments/lookalike/org_domain_distance`, `enrichments/lookalike/vip_hit` |
 | Is the display name a well-known brand over an address that is not the brand's? | `enrichments/lookalike/display_name_brand` |
+| Does it contain validated payment cards, IBANs or US Social Security numbers? | `enrichments/pii/card_numbers`, `ibans`, `us_ssns`; counts only, with `truncated` for incomplete inspection. See [PIIFindings](#piifindings) |
 | Does the message tell the reader to call a number (callback phishing)? | `enrichments/phone_numbers/body` and `enrichments/phone_numbers/attachments`; read `call_to_action`, `lure_terms`, `toll_free`. See [PhoneNumbers](#phonenumbers) |
 | Is this attachment a web page that builds a file in the browser (HTML smuggling)? | Scope `attachments`; read `html/base64_bytes`, `html/payload_types`, `html/blob_download`, `html/atob`. See [HTMLIndicators](#htmlindicators) |
 | Is a PDF short, locked, or carrying phone numbers? | Scope `attachments`; read `explode/pdf`. See [PDFInfo](#pdfinfo) |
@@ -608,6 +609,38 @@ most 16. They are raw evidence: read
 | `password_in_body` | boolean | Non-empty |
 | `detonation` | [Detonation](#detonation) | When set |
 | `phone_numbers` | [PhoneNumbers](#phonenumbers) | When a number was found |
+| `pii` | [PIIFindings](#piifindings) | When a validated value was found or inspection was truncated |
+
+### PIIFindings
+
+Counts of distinct validated values across the subject, plain body, HTML text,
+attachment OCR and attached messages. Quoted and hidden body text count because
+that text was sent too. Repeating a value in two body renderings counts once.
+The facts contain no values, masked values, prefixes or hashes.
+
+| Field | Type | Presence |
+|---|---|---|
+| `card_numbers` | integer | Always inside `pii`, including zero |
+| `ibans` | integer | Always inside `pii`, including zero |
+| `us_ssns` | integer | Always inside `pii`, including zero |
+| `truncated` | boolean | Only when inspection was incomplete |
+
+Payment cards require a supported issuer prefix and length and a valid Luhn
+checksum. IBANs require registered country length and structure plus valid mod-97
+check digits. US Social Security numbers require valid area, group and serial
+shapes; common published placeholders are excluded. Dashed `NNN-NN-NNNN` values
+need no label, so similarly shaped internal IDs can match. Spaced or contiguous
+forms need a preceding SSN or social-security label. These validators recognize
+plausible values; they cannot establish that an account or identity exists.
+
+Scanning is bounded to 512 KiB per text, 2 MiB total and 1,000 distinct values per
+kind. `truncated: true` makes counts lower bounds, including an all-zero block
+when nothing was found before a limit. The entire `pii` block is omitted when
+inspection completes without a finding. Text inside ordinary document, spreadsheet
+and PDF files is not inspected by this detector; OCR and attached-message text
+are covered. Missing findings are not assurance that all attachments were examined.
+
+See [outbound PII detections](detections.md#outbound-pii-detections).
 
 ### SenderProfile
 

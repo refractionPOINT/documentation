@@ -330,6 +330,26 @@ Changing rule content or scoring policy changes the fingerprint. It identifies
 the decision configuration; it is not a promise that an external lookup feed
 or other message enrichment is unchanged.
 
+### Outbound PII detections
+
+The optional email DLP pack adds outbound detections for validated payment card
+numbers, IBANs and US Social Security numbers, plus a bulk detection when any
+one kind has at least ten distinct values. Bulk counts are per kind: four cards,
+four IBANs and four SSNs do not meet the bulk threshold. Bulk detections fire
+alongside the matching single-kind detection. These are platform D&R rules on
+`EMAIL_MESSAGE`, separate from the engine verdict; installing them does not
+change the verdict or automatically move mail.
+
+The rules read [PIIFindings](rule-reference.md#piifindings), which stores counts
+only. A detection still carries the originating email event, whose body can
+contain the actual sensitive values; the count facts do not redact that body.
+Plan detection access and outputs accordingly. IBANs commonly occur on ordinary
+invoices, and dashed SSN-shaped internal IDs can match. Tune the optional rules
+for your organization rather than treating a match as proof of malicious intent.
+The detector covers message text, OCR and attached messages, but does not inspect
+text inside ordinary document, spreadsheet or PDF files. Incomplete inspection
+is marked `enrichments/pii/truncated`; the counts then describe only what was seen.
+
 ## Link detonation
 
 Static link features answer what a URL *looks* like. Detonation answers where it
