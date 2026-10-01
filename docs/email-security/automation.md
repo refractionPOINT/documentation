@@ -290,7 +290,7 @@ the provider record, apply the policy directory, run the connection test.
 
 ### Feedback events and typed actions
 
-`EMAIL_DISPOSITION` and `EMAIL_REPORT_RESOLVED` carry top-level `disposition`,
+`EMAIL_DISPOSITION` and `EMAIL_REPORT_RESOLVED` carry `group_id` when the indexed original has a message group, alongside top-level `disposition`,
 `actor`, `source`, and `ts`. Disposition events also carry `seq` and `prior`.
 Resolution events carry `report_id`. Both carry `msg_uuid`, provider, and mailbox
 when an indexed message supplies it. An unlinked resolution retains its explicit
