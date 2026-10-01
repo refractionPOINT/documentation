@@ -68,14 +68,16 @@ as a gap so you can tell "we could not find it" from "we did not look".
 ## Resolving
 
 ```bash
-limacharlie mailsec report resolve <report_id> --disposition true_positive --oid $OID
+limacharlie mailsec report resolve <report_id> --disposition malicious --oid $OID
 ```
 
 | Disposition | Meaning |
 |---|---|
-| `true_positive` | It was malicious |
-| `false_positive` | We flagged it and it was fine |
-| `benign` | It was never a threat |
+| `malicious` | It was malicious |
+| `spam` | Unwanted mail |
+| `graymail` | Legitimate bulk or marketing mail |
+| `benign` | Legitimate, harmless mail |
+| `simulation` | A known training or simulation message |
 
 Resolving requires `mailsec.set`, **not** `mailsec.act`: it changes triage state
 the product owns, and touches nobody's mailbox. That is the line `mailsec.act`

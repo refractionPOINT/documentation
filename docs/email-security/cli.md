@@ -111,7 +111,7 @@ limacharlie mailsec action get <action_id>
 # Abuse-mailbox reports
 limacharlie mailsec report list --status open --oldest-first
 limacharlie mailsec report get <report_id>
-limacharlie mailsec report resolve <report_id> --disposition true_positive
+limacharlie mailsec report resolve <report_id> --disposition malicious
 limacharlie mailsec report reopen <report_id>
 
 # Custom rules
@@ -399,7 +399,7 @@ limacharlie mailsec campaign action "$CAMPAIGN" --action quarantine_message \
 # Resolve the oldest open report
 REPORT=$(limacharlie mailsec report list --status open --oldest-first --limit 1 \
   --output json | jq -r '.reports[0].report_id')
-limacharlie mailsec report resolve "$REPORT" --disposition true_positive
+limacharlie mailsec report resolve "$REPORT" --disposition malicious
 ```
 
 Because the CLI is the whole surface, it is also how an
