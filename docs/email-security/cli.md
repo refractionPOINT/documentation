@@ -326,7 +326,7 @@ error: `submission get` returns `submission: null` and `submission withdraw` ret
 
 ### Revising a verdict is `mailsec.act`, not `mailsec.set`
 
-`message revise` records a human disposition over the scorer's, appending to the
+`message revise` records a human verdict revision over the scorer's, appending to the
 message's history rather than overwriting it. `--rationale` is required and
 audited — at least one, at most ten, each 280 characters or fewer.
 
@@ -436,3 +436,31 @@ Microsoft delivery and hosted-quarantine activity. They support connection,
 status, time-window and cursor filters and return independent coverage. They
 require a CLI build containing these commands and `mailsec.get`. See
 [Provider Quarantine](provider-quarantine.md#cli-and-api) for examples and limits.
+
+## Independent disposition and release
+
+```bash
+limacharlie mailsec message disposition <msg_uuid> --disposition benign --note "Reviewed"
+limacharlie mailsec message disposition <msg_uuid> --clear
+limacharlie mailsec message list --disposition none
+limacharlie mailsec message bulk-disposition --msg-uuids <id1> --msg-uuids <id2> --disposition spam
+limacharlie mailsec message release <msg_uuid> --reason "Reviewed as safe" --mode analyst
+```
+
+Disposition accepts `malicious`, `spam`, `graymail`, `benign`, or `simulation` and
+never changes the engine verdict. A bulk selection is limited to 500 unique IDs;
+individual failures are reported and cause a nonzero CLI exit. Release restores
+placement and records a benign verdict and disposition. It needs `mailsec.act`;
+`--force` supplies explicit consent in alert-only mode. See [Messages](messages.md).
+
+For report remediation, first preview:
+
+```bash
+limacharlie mailsec report resolve <report_id> --disposition malicious --scope message --action quarantine_message
+# all recipient copies of the reported message's group (durable job)
+limacharlie mailsec report resolve <report_id> --disposition malicious --scope group --action quarantine_message --attempt $(uuidgen)
+```
+
+Read `remediation_preview`, then repeat with `--confirm <token>` and, when needed,
+`--force`. Pure resolution uses `mailsec.set`; remediation also needs `mailsec.act`.
+The report remains open during preview or when provider remediation fails.

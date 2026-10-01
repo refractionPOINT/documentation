@@ -15,6 +15,7 @@ have different wrappers and validation rules.
 | `dr-mail`, `post_verdict` only | `verdict/verdict` |
 | `dr-general` on `EMAIL_MESSAGE` | `event/sender/email/domain/root` |
 | `dr-general` on `EMAIL_VERDICT` or `EMAIL_ANALYSIS_COMPLETE` | `event/revision/verdict` |
+| `dr-general` on `EMAIL_DISPOSITION` or `EMAIL_REPORT_RESOLVED` | `event/disposition` |
 | Inside `scope` with `path: links` | `href_url/domain/root` |
 
 The MDM is the root of a mail rule. Do not add `mdm/` or `event/`. The Hive

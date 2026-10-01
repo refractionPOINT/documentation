@@ -312,7 +312,7 @@ faster, which is worth doing for its own sake.
 
 | Route | Does |
 |---|---|
-| `POST /messages/{msg_uuid}/actions` | Perform a typed action on one message. Body: `action` (`quarantine_message`, `trash_message`, `move_to_spam`, `restore_message`, `banner_message`, `unbanner_message`), optional `force` (boolean; see [alert-only overrides](#explicit-override-in-alert-only-mode)), optional `reason`, optional `attempt` (idempotency token — omit to collapse onto the existing attempt). `banner_message` uses the organization's own banner, rendered from its `mailsec_policy` record of type `banners`; its optional `text` (plain text, at most 512 characters; refused on any other action) replaces the wording for that one banner. No caller supplies HTML. Requires `mailsec.act` |
+| `POST /messages/{msg_uuid}/actions` | Perform a typed action on one message. Body: `action` (`quarantine_message`, `trash_message`, `move_to_spam`, `restore_message`, `release_message`, `banner_message`, `unbanner_message`), optional `force` (boolean; see [alert-only overrides](#explicit-override-in-alert-only-mode)), optional `reason`, optional `attempt` (idempotency token — omit to collapse onto the existing attempt). `banner_message` uses the organization's own banner, rendered from its `mailsec_policy` record of type `banners`; its optional `text` (plain text, at most 512 characters; refused on any other action) replaces the wording for that one banner. No caller supplies HTML. Requires `mailsec.act` |
 | `POST /messages/{msg_uuid}/actions` with `submit_sample` or `withdraw_sample` | Copy one message to LimaCharlie, or withdraw that copy. `submit_sample` requires `category` (`missed_threat`, `false_positive`, `other`) and a `reason` of 1-1024 characters; `withdraw_sample` takes an optional `reason`. Only a person can run either: D&R rules, automations and the AI agent are refused. Submission requires organization opt-in; withdrawal remains available after opt-out or provider disconnect. See [Sample Submission](sample-submission.md). Requires `mailsec.act` |
 | `DELETE /submissions/{submission_id}` | Withdraw a submission: hard-deletes the stored copy and its metadata and returns `{withdrawn: true, submission_id, action_id}`. An unknown or already-deleted id returns `{withdrawn: false, submission_id}` with no `action_id`; an expired id is still cleaned up if metadata remains. Requires `mailsec.act` |
 | `POST /campaigns/{campaign_id}/actions` | Sweep a campaign. Same body plus `confirm`. **Without `confirm` this previews** and changes nothing, returning the member ids, the distinct mailboxes, the counts and a `confirm` token derived from that exact member set. With `confirm` it executes exactly that set; a campaign that grew since the preview is refused. Capped at 500 members. `reason` is recorded on **every member's** audit row and on the sweep's own row (`action_id` in the response); `attempt` (bounded at 128 characters, refused not truncated) mints a new row per member, so a deliberate retry is recorded beside what it retried instead of over it. Neither is part of the `confirm` token. Requires `mailsec.act` |
@@ -484,6 +484,8 @@ telemetry and every customer rule is keyed on them.
 | `EMAIL_VERDICT` | Once per verdict **decision**. `revision/seq: 0` with `revision/mode: auto` is the rule pack's own verdict, emitted at ingest immediately after that message's `EMAIL_MESSAGE`; `seq: 1…` is one per override (`analyst`, `ai`, `detonation`) |
 | `EMAIL_ACTION` | Once per remediation outcome, including failures and skips |
 | `EMAIL_USER_REPORT` | Once per message that reaches the abuse mailbox |
+| `EMAIL_DISPOSITION` | Independent analyst/SOAR disposition changed or cleared; carries actor, source, note, server timestamp, prior value, and sequence |
+| `EMAIL_REPORT_RESOLVED` | Report resolved; carries report/message identities, recorded disposition and resolver, and mailbox when available |
 | `EMAIL_INGEST_ERROR` | Once per message that could not be fetched or processed |
 
 Two consequences worth stating plainly:
@@ -525,3 +527,19 @@ release status values are `requested`, `released` and `denied`. Responses includ
 independent per-feed `coverage`; an empty list with `not_granted`, pending, stale
 or error coverage is not proof of zero blocked messages. See
 [Provider Quarantine](provider-quarantine.md#cli-and-api) for the row contract.
+
+### Disposition and release
+
+| Route | Body and behavior |
+|---|---|
+| `POST /messages/{msg_uuid}/disposition` | `disposition` from the five-value vocabulary, optional `note`; or `clear: true`. Requires `mailsec.set`. |
+| `POST /messages/dispositions` | Same decision plus 1–500 unique `msg_uuids`. Returns per-message results, including partial failures. Requires `mailsec.set`. |
+| `GET /messages?disposition=<value>` | Filter by one disposition, or `none` for no current label. |
+| `POST /messages/{msg_uuid}/actions` with `action: release_message` | Restore, benign verdict revision, benign disposition, history repair. Optional `mode` (`analyst` or `ai`), `reason`, `force`, `attempt`. Requires `mailsec.act`. |
+| `POST /reports/{report_id}/resolve` | `disposition`; optional `remediation` with `scope` (`message`, `group` or `campaign`), `action` and optional `confirm`, `reason`, `force`, `attempt` (a required UUID for group scope, reused for preview, confirmation and polling; see [Message Groups](groups.md)). Without confirm, remediation is previewed and the report stays open. Pure resolution requires `mailsec.set`; remediation also requires `mailsec.act`. |
+
+The five dispositions are `malicious`, `spam`, `graymail`, `benign`, and
+`simulation`. Disposition is separate from verdict. Message detail includes
+`disposition_info: {disposition, note, actor, source, ts}` and `disposition_seq`.
+Source is `analyst`, `api`, `extension`, `report`, or `ai`; attribution and time
+are assigned by the service. Bodies cannot forge them.
