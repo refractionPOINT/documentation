@@ -20,8 +20,9 @@ copies into separate groups; inspect instances before applying remediation.
 The default queue shows groups needing triage: malicious or suspicious copies,
 medium-or-higher rule severity, or user-reported mail. An analyst benign revision
 removes that copy's severity-only triage contribution while preserving its
-historical severity. Other flagged copies or reports still keep the group in the
-queue. **Show all groups** includes the remaining groups.
+historical severity. Dispositions benign, graymail and simulation dismiss that
+copy's triage contribution; malicious and spam flag it. The historical user-report
+indicator stays visible. Other undismissed copies keep the group in the queue. **Show all groups** includes the remaining groups.
 
 Filter by verdict, severity, disposition, user-reported state and time. Omitted
 user-reported state leaves that dimension unrestricted. Filters combine across
@@ -61,6 +62,14 @@ The console can resume a job from its URL. Paused browser polling does not cance
 the durable server job; refresh its status. See [Bulk Remediation](remediation.md)
 for individual and campaign scopes.
 
+Group disposition uses the same preview and confirmation flow, requiring both
+`mailsec.act` and `mailsec.set`. Choose malicious, spam, graymail, benign or
+simulation, or clear the existing disposition, with an optional note of at most
+1,024 characters. Confirmation uses the frozen value and note and checks current
+permission. It records the decision through the ordinary disposition path,
+including history and disposition events, without changing engine verdicts or
+running remediation automations. Newly delivered copies keep their own disposition.
+
 ## Opt-in Cases detection pack
 
 In **Email Security → Protection setup**, install the Cases pack after enabling
@@ -74,6 +83,11 @@ The pack reports:
 - `EMAIL_ANALYSIS_COMPLETE` when the final verdict is malicious or suspicious,
   severity is at least medium, or the message was user-reported.
 - `EMAIL_USER_REPORT` from a human reporter. Automated senders are excluded.
+
+Copies classified benign, graymail or simulation are excluded from both triggers.
+Closing a Case alone does not dismiss its messages. Set the group disposition
+when dismissing a retained Case; future unclassified copies can still report and
+reopen it.
 
 | Severity | Detection priority |
 |---|---:|
