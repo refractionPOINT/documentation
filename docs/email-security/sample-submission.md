@@ -105,8 +105,8 @@ Only the one message you chose is copied.
 - **Where**: in a LimaCharlie-owned bucket in the **same datacenter and region**
   as your organization's Email Security data. It is a separate bucket from the
   one that holds your raw messages.
-- **How long**: a fixed 400 days from the submission, then deleted
-  automatically. Your organization's mail retention settings (`message_days` and
+- **How long**: a 400 days from the submission. After that the copy is no longer available for
+  review and is deleted automatically by background cleanup. Your organization's mail retention settings (`message_days` and
   `flagged_days` in the [`retention`](policy.md#retention) record) do not apply to
   submissions: they neither shorten nor extend that period.
 - **Earlier**: any time you withdraw it, or when your organization's Email
@@ -119,12 +119,16 @@ an internal tool that records every access. No other customer can see it.
 
 You can see that record. Each submission carries a `review_count` and a
 `last_reviewed_at`, and [`GET /submissions/{submission_id}`](#routes) returns the
-timestamp of every time the stored copy was opened. The record is a count and
+up to 200 review-access timestamps, oldest first; `reviews_truncated` says when
+more exist. The total `review_count` and latest `last_reviewed_at` stay accurate. Access is recorded before decryption,
+so the count can include attempts that failed to open the copy. The record is a count and
 timestamps only: it never names the person who opened it.
 
 ## Withdrawing
 
-You can withdraw at any time, from the console, the CLI or the API. Withdrawing
+You can withdraw at any time, from the console, the CLI or the API, even after
+turning sample sharing off, disconnecting the mailbox provider, or expiry of the
+message index. Withdrawing
 **deletes the stored copy and its metadata** (a hard delete), then writes the
 withdrawal to the audit trail. It cannot be undone; to share the message again,
 submit it again.
@@ -134,8 +138,10 @@ submit it again.
 - Withdrawing by submission id: `DELETE /submissions/{submission_id}`, or
   `limacharlie mailsec submission withdraw <submission_id>`.
 
-Withdrawing a submission that was already withdrawn or has expired is harmless: the
-submission routes answer `withdrawn: false` and nothing is deleted a second time.
+Withdrawing an unknown or already-deleted submission is harmless: the submission
+routes answer `withdrawn: false` and nothing is deleted a second time. An expired
+submission can still be withdrawn while background cleanup is pending; any
+surviving copy and metadata are deleted and the response says `withdrawn: true`.
 
 ## If the organization is deleted
 
@@ -177,8 +183,8 @@ for the shared conventions.
 | `POST /messages/{msg_uuid}/actions` with `{"action": "submit_sample", "category": ..., "reason": ...}` | Submit one message. `category` and `reason` are required; `attempt` is an optional idempotency token. Requires `mailsec.act` |
 | `POST /messages/{msg_uuid}/actions` with `{"action": "withdraw_sample"}` | Withdraw the submission made from this message. `reason` (up to 1024 characters) and `attempt` are optional. Requires `mailsec.act` |
 | `GET /submissions` | `{enabled, available, submissions, next_cursor}`. Filters: `category`, `since`, `until` (RFC 3339), `limit` (1-200, default 50), `cursor`. Requires `mailsec.get` |
-| `GET /submissions/{submission_id}` | `{submission, reviews}`, where `reviews` is `[{ts}]`, one per time LimaCharlie staff opened the copy. An unknown id is not an error: it returns `{"submission": null, "reviews": []}`, so branch on `null`. Requires `mailsec.get` |
-| `DELETE /submissions/{submission_id}` | `{withdrawn: true, submission_id, action_id}`. Hard-deletes the stored copy and its metadata. An unknown, already-withdrawn or expired id is not an error: it returns `{withdrawn: false, submission_id}` with no `action_id`, and nothing is deleted. Requires `mailsec.act` |
+| `GET /submissions/{submission_id}` | `{submission, reviews}`, where `reviews` is `[{ts}]`, up to 200 recorded staff review accesses. `reviews_truncated` identifies a partial history; count and latest time remain complete. An unknown id is not an error: it returns `{"submission": null, "reviews": []}`, so branch on `null`. Requires `mailsec.get` |
+| `DELETE /submissions/{submission_id}` | `{withdrawn: true, submission_id, action_id}`. Hard-deletes the stored copy and its metadata. An unknown or already-deleted id returns `{withdrawn: false, submission_id}` with no `action_id`. An expired id is still cleaned up if its metadata remains. Requires `mailsec.act` |
 
 `GET /submissions` always returns two flags, so an empty list is never ambiguous:
 `enabled` says your organization has opted in, and `available` says your
@@ -208,7 +214,7 @@ A submission looks like this:
 }
 ```
 
-`last_reviewed_at` is present once LimaCharlie staff have opened the copy and
+`last_reviewed_at` is present once a staff review access has been recorded and
 omitted before that.
 
 ### Action results and refusals
@@ -229,9 +235,10 @@ texts in `error`:
 A missing or unknown `category`, or a missing or over-long `reason`, is refused
 with an HTTP 400 before anything is sent.
 
-Every outcome is written to the action audit trail and emitted as an
-`EMAIL_ACTION` event, which carries `category` and `submission_id`. Submitting and
-withdrawing also write `mailsec_sample_submitted` and `mailsec_sample_withdrawn`
+Actions that reach execution are written to the action audit trail. While the
+mailbox connection is active, an `EMAIL_ACTION` event also carries `category` and
+`submission_id`. Withdrawal after disconnect remains in the action and platform
+audit trails. Submitting and withdrawing also write `mailsec_sample_submitted` and `mailsec_sample_withdrawn`
 platform audit events.
 
 ## FAQ
