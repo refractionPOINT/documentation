@@ -43,6 +43,8 @@ group scope to its default.
 | Filter | Notes |
 |---|---|
 | `verdict` | Repeatable: `malicious`, `suspicious`, `graymail`, `benign`, `unknown` |
+| `severity` | Repeatable rule severity: `informational`, `low`, `medium`, `high`, `critical` |
+| `disposition` | Repeatable analyst disposition: `malicious`, `spam`, `graymail`, `benign`, `simulation`; `none` selects copies without a disposition |
 | `state` | Repeatable: `delivered`, `quarantined`, `trashed`, `restored`, `bannered`, `spam` |
 | `direction` | Repeatable: `inbound`, `outbound`, `internal` |
 | `lane` | `live` for ordinary incoming mail or `backfill` for the initial history walk; omit for either |
@@ -164,7 +166,7 @@ an empty one is the last page.
 
 A message cursor is **bound to the complete filter set that minted it**: the
 token carries the chosen read index and a digest of your organization, the sort
-order and *every* filter — `q`, verdict, state, direction, lane, mailbox,
+order and *every* filter — `q`, verdict, severity, disposition, state, direction, lane, mailbox,
 sender address, sender root domain, campaign, user-reported, score floor, time
 window, link domain and attachment hash — so changing any of them mid-walk fails
 the next page (`400`, `error_code: cursor_filter_changed`, `restart_walk: true`)
