@@ -146,6 +146,9 @@ row still reads "previously resolved `benign` by `system:automated-sender`"
 rather than erasing the very thing being disputed — and `reopened_from` names the
 state it came out of.
 
+To remediate a group after reopening, start a new attempt and preview. The
+previous resolution's confirmation cannot adopt its completed recipient selection.
+
 Reopening a report that is already `open` or `triaging` succeeds and reports
 `already_open`, so two analysts clicking at once is not an error. An unknown
 report id **is** an error rather than a silent success, because this names one
