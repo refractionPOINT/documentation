@@ -142,6 +142,12 @@ The initial `EMAIL_VERDICT` (`revision/seq: 0`) includes
 The closed set of pending kinds is `detonation` and `attachment_scan`. With
 nothing outstanding, it carries `pending: []` and `complete: true`.
 
+`attachment_scan` is also pending when your organization's custom YARA rules were
+not yet loaded while the message was processed, for example just after a deploy or
+restart. The attachments are rescanned with your rules once they load, whatever the
+verdict or direction, and a match revises the verdict. If the rules cannot be loaded
+before the deadline, the result is `timed_out`, never a clean `completed`.
+
 `EMAIL_ANALYSIS_COMPLETE` closes that initial window for every message emitted
 through the live lane, including re-drives that emit and messages with no delayed
 work. Initial historical backfill emits no `EMAIL_*` events and has no completion
