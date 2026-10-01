@@ -599,6 +599,7 @@ nav:
           - Microsoft 365: email-security/provider-setup/microsoft-365.md
           - Google Workspace: email-security/provider-setup/google-workspace.md
       - Messages & Triage: email-security/messages.md
+      - Message Groups & Cases: email-security/groups.md
       - Bulk Remediation: email-security/remediation.md
       - Campaigns: email-security/campaigns.md
       - User Reports: email-security/user-reports.md

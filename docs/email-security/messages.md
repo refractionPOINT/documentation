@@ -17,6 +17,9 @@ the `mail_type` object, including its classifier version, with
 [purpose fields](rule-reference.md#mailtypeinfo) for API and rule paths; purpose is
 not a message-list filter.
 
+For recipient-wide triage, use [Message Groups & Cases](groups.md). Severity
+is a separate rule signal from the security verdict and analyst disposition.
+
 ## The queue
 
 Filtering is **entirely server-side** — every filter below narrows the query in
@@ -33,6 +36,8 @@ about the rows a browser happened to have loaded.
 | `sender_email` | One sender address |
 | `sender_root_domain` | One sender registrable domain |
 | `campaign_id` | The members of one campaign |
+| `group_id` | Every indexed recipient copy of one hardened message group |
+| `severity` | Repeatable rule severity: `informational`, `low`, `medium`, `high`, `critical` |
 | `link_domain` | Messages linking to this **registrable root** domain (`evil.example`, not `login.evil.example`) |
 | `attachment_sha256` | Messages carrying an attachment with this hash |
 | `user_reported` | Tri-state — see below |
