@@ -354,8 +354,10 @@ Plan detection access and outputs accordingly. IBANs commonly occur on ordinary
 invoices, and dashed SSN-shaped internal IDs can match. Tune the optional rules
 for your organization rather than treating a match as proof of malicious intent.
 The detector covers message text, OCR and attached messages, but does not inspect
-text inside ordinary document, spreadsheet or PDF files. Incomplete inspection
-is marked `enrichments/pii/truncated`; the counts then describe only what was seen.
+text inside ordinary document, spreadsheet or PDF files. Counts remain lower
+bounds for these excluded sources even when `enrichments/pii/truncated` is absent.
+Known incomplete extraction or parsing, and inspection limits, set that flag;
+the counts still describe only the available text.
 Deferred attachment scans refresh the stored facts but do not replay the initial
 `EMAIL_MESSAGE` evaluation. A DLP match therefore describes evidence available
 when that event was emitted, rather than every later attachment result.
