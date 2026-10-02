@@ -10,14 +10,61 @@ spreadsheet.
 
 ## The sensors
 
-Each protected mailbox appears as its own sensor on platform `email`, keyed by
-the provider's stable mailbox id and named by its normalized primary address.
-Mailbox-scoped events carry `mailbox: {id, address, upn}`; `upn` is present when
-known and can differ from the address on Microsoft 365. Events without a mailbox
-use the connection's sensor (`mailsec-<connection name>`). The `email` platform
-does not count against the sensor quota. Watch coverage and `EMAIL_INGEST_ERROR`
-to assess ingestion health; the connection sensor's online state reflects only
-its own events.
+Every protected mailbox is its own sensor on platform `email`. The sensor's
+hostname is the mailbox's primary address, and it appears in the sensor list the
+first time the mailbox produces an event. A ten-thousand-mailbox tenant is ten
+thousand sensors; the `email` platform does not count against your sensor quota.
+
+Events that are not about one mailbox land on the connection's own sensor,
+`mailsec-<connection name>`. That is where a tenant-level event such as a
+tenant data deletion request goes, and where everything the connection produced
+before per-mailbox sensors existed still lives. The connection sensor shows as
+online only while such an event is flowing, so do not use its online state to
+judge whether mail is being ingested. Watch `EMAIL_INGEST_ERROR` and the
+[coverage](getting-started.md#6-watch-coverage-fill-in) numbers for that.
+
+!!! warning "If you already have rules or queries that select the connection sensor"
+    Before per-mailbox sensors, every mail event came from the connection sensor
+    (`mailsec-<connection name>`). A sensor selector that names it by hostname or
+    sensor id, or a D&R rule scoped to it, no longer matches mailbox events; it
+    matches only the tenant-level events described above. Select on
+    `plat == email` instead. Per-sensor suppression and threshold state also
+    starts fresh and is now kept per mailbox, so a counter that used to be shared
+    by the whole tenant is now one counter per mailbox.
+
+Two things follow from mailboxes being sensors:
+
+- **Per-sensor state is per mailbox.** A D&R `suppression` that is not global
+  counts per sensor, so a rule that fires "once per sender per day" does so per
+  recipient without any extra key. See [State per mailbox](#state-per-mailbox).
+- **A mailbox's sensor is fixed by its provider id, not its address.** If a user
+  is renamed, the same sensor keeps receiving events and its hostname stays the
+  address it was created with. A mailbox deleted and re-created is a new
+  mailbox, with a new sensor.
+
+### The `mailbox` object
+
+Every event that concerns a mailbox carries the same top-level object, so a rule
+can key on it whichever event it reads:
+
+| Path | Holds |
+|---|---|
+| `event/mailbox/id` | The provider's stable handle for the mailbox: the user's object id on Microsoft 365, the address on Google Workspace. It is what the sensor is keyed on, and it is lower-case |
+| `event/mailbox/address` | The mailbox's primary SMTP address, lower-case. The sensor's hostname |
+| `event/mailbox/upn` | The user principal name, which is the sign-in identity that Entra ID and Okta events name the same person by. Google Workspace has no separate one, so it is the address. Absent until discovery has recorded it, which happens on the first discovery pass after a connection starts |
+
+`EMAIL_MESSAGE`, `EMAIL_VERDICT`, `EMAIL_ACTION`, `EMAIL_USER_REPORT` and
+`EMAIL_INGEST_ERROR` all carry it. An event that names no mailbox has no `mailbox`
+object and goes to the connection sensor: a tenant data deletion request, or a
+raw-message download attempt for a message that does not exist.
+
+On `EMAIL_USER_REPORT`, `mailbox` is the mailbox the report **arrived in**, which
+is your abuse mailbox. The person who sent the report is `event/reporter`.
+
+!!! tip "Joining mail to sign-ins"
+    `event/mailbox/upn` is indexed as a `user`, so an IOC search for a person's
+    UPN finds their mail events next to their identity telemetry, and a rule can
+    correlate a delivered phish with that user's next sign-in.
 
 ## The events
 
@@ -44,7 +91,7 @@ of them.
 | Path | |
 |---|---|
 | `event/msg_uuid` | The durable handle every typed action takes. A provider message id is folder-scoped and stops resolving the moment the message is quarantined; this does not |
-| `event/mailbox/address`, `event/provider` | Whose mail, from where |
+| `event/mailbox/{id,address,upn}`, `event/provider` | Whose mail, from where. See [the mailbox object](#the-mailbox-object) |
 | `event/internet_message_id` | The cross-mailbox join key: one message sent to forty people is forty `msg_uuid`s and one of these |
 | `event/sender_email`, `event/sender_root_domain`, `event/subject` | Enough to match on without a lookup |
 | `event/ts` | The message's delivery time. The **event's own** timestamp is when the decision was made, so a hunt can window on either |
@@ -142,6 +189,78 @@ afterwards.
 
 Events arrive on the **default D&R target**, so a rule matching them needs no
 `target:` line.
+
+## State per mailbox
+
+Because each mailbox is a sensor, D&R state that is scoped to the sensor is scoped
+to the mailbox. The [suppression](../8-reference/response-actions.md#suppression)
+action is per-sensor unless you set `is_global: true`, so the recipient does not
+have to appear in the key.
+
+### Example: one detection per recipient per sender domain per day
+
+```yaml
+# Detect
+op: and
+rules:
+  - op: is
+    path: routing/event_type
+    value: EMAIL_MESSAGE
+  - op: is
+    path: event/verdict/verdict
+    value: malicious
+  - op: is
+    path: event/direction
+    value: inbound
+```
+
+```yaml
+# Respond
+- action: report
+  name: email-malicious-delivered
+  suppression:
+    max_count: 1
+    period: 24h
+    keys:
+      - 'email-malicious-delivered'
+      - '{{ .event.sender.email.domain.root }}'
+```
+
+A sender domain that mails forty people produces forty detections, one per
+mailbox, and each mailbox is reported once for that domain in a day. Without the
+per-mailbox sensor the same rule would report the domain once for the whole
+organization and hide the other thirty-nine recipients.
+
+### Example: three malicious messages to one mailbox in an hour
+
+```yaml
+# Respond (same detect as above)
+- action: report
+  name: email-mailbox-malicious-burst
+  priority: 3
+  suppression:
+    min_count: 3
+    max_count: 3
+    period: 1h
+    keys:
+      - 'email-mailbox-malicious-burst'
+```
+
+The counter is per sensor, so it counts per mailbox. The action is skipped until
+the third event inside the hour and fires on it, then stays quiet for the rest of
+the window. The window is fixed: it starts at the first counted event and the
+counter resets when it expires.
+
+### Finding one mailbox's events
+
+Any field that takes a [sensor selector](../8-reference/sensor-selector-expressions.md),
+such as the Query Console's sensor field, can name a mailbox directly:
+
+```text
+plat == email and hostname == "alice@example.com"
+```
+
+`limacharlie sensor list` shows the mailbox sensors beside your other sensors.
 
 ## Acting on mail from a D&R rule
 
