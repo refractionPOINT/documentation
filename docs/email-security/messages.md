@@ -27,7 +27,7 @@ the `mail_type` object, including its classifier version, with
 [purpose fields](rule-reference.md#mailtypeinfo) for API and rule paths; purpose is
 not a message-list filter.
 
-For recipient-wide triage, use [Message Groups & Cases](groups.md). Severity
+For recipient-wide triage, select the Groups view on Messages; see [Message Groups & Cases](groups.md). Severity
 is a separate rule signal from the security verdict and analyst disposition.
 
 ## The queue
