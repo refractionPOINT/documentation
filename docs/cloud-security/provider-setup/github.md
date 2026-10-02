@@ -44,10 +44,25 @@ Create the App with **read-only** access on the following. All are
 | **Administration** | Repository | Branch-protection posture and deploy-key inventory (deploy keys are also the one activity signal — see [Known limitations](#known-limitations)) | *(collected during the sweep)* |
 | **Secrets** | Repository | Whether a repository has Actions secrets at all — an existence flag, not a name list (org-level secrets are the ones inventoried by name) | *(collected during the sweep)* |
 | **Contents** | Repository | [Code Security](../code-security/index.md) — dependencies, secrets, infrastructure-as-code, container images, code weaknesses and licenses. Without it the connector inventories repositories but cannot read them | `code_contents` |
+| **Attestations** | Repository | Verify GitHub Actions artifact attestations for container-image lineage. Without it, other scans continue, but GitHub-signed image lineage is unavailable | *(exercised during image lineage collection)* |
 | **Dependabot alerts** | Repository | GitHub's own **Dependabot** alerts, ingested as findings and deduplicated against LimaCharlie's own dependency scanning; and whether each repository has Dependabot alerts **enabled** | `dependabot_alerts` |
 | **Code scanning alerts**, **Secret scanning alerts** | Repository | GitHub's own **code-scanning** and **secret-scanning** alerts, ingested as findings and deduplicated against LimaCharlie's own analysis | `security_events` |
 | **Checks**, **Pull requests** (Read and write) | Repository | [Pull-request checks and comments](../code-security/pull-requests.md). Write access, granted only if you want these | *(reported on the **Code security** page)* |
 | **Contents** (Read and write) | Repository | [AutoFix pull requests](../code-security/autofix.md), together with **Pull requests: Read and write**. Write access, granted only if you want it | *(reported on the **Code security** page)* |
+
+### Enable image attestations on an existing App
+
+The guided setup requests **Repository permissions → Attestations: Read-only**
+for new Apps. For an App created earlier, an organization owner must open
+**Organization → Settings → Developer settings → GitHub Apps**, select the
+App, and set **Permissions & events → Repository permissions → Attestations**
+to **Read-only**. Save the change, then approve the new permission request on
+the App installation. Image lineage verification resumes on the next scan;
+the App's other reads do not require a new credential.
+
+Only a cryptographically verified GitHub Actions attestation for the exact
+image digest and a repository in this connection is trusted. A source label
+or an unsigned build claim remains an assertion.
 
 ### GitHub's own alerts, and what happens to them
 

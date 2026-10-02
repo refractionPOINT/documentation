@@ -33,6 +33,25 @@ Dependency findings name the package, the installed version and the version
 that fixes it. They are ranked with EPSS and CISA KEV, so a known-exploited
 advisory sorts above a high CVSS score nobody exploits.
 
+### Image lineage coverage
+
+The image lineage coverage percentage counts **your own distinct running image
+digests** that have a source-repository link. Its breakdown separates inferred,
+image-declared and verified links. Images identified as third-party are reported
+separately and do not enter that percentage.
+
+Connect the cloud project or registry that hosts your images and the source
+repositories that build them. On GitHub, grant the App **Attestations: Read-only**
+to verify GitHub Actions build signatures; on Google Cloud, grant the collection
+service account **Artifact Analysis Occurrences Viewer** on the image project to
+verify Cloud Build provenance. See the [GitHub](../provider-setup/github.md#enable-image-attestations-on-an-existing-app)
+and [Google Cloud](../provider-setup/gcp.md) setup steps.
+
+When an image's ownership cannot be established, the breakdown reports
+`ownership_unknown` and withholds the percentage until the source or registry
+connection supplies enough evidence. Ordinary unsigned build metadata can
+identify a possible source but does not count as a verified signature.
+
 ## How your code is handled
 
 Scanning code means reading it. What LimaCharlie guarantees is that it does not
