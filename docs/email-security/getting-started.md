@@ -26,16 +26,18 @@ A **credential** is the key the product uses to access your mail provider. A
 **secret** is the securely stored copy of that credential in LimaCharlie. A
 **connection** combines that secret with your provider and mailbox choices.
 
-!!! info "Trial limits"
-    Free-tier organizations can try Email Security for **14 days**, with up to
-    **25 mailboxes**. The clock starts when you subscribe, and resubscribing does
-    not restart it. Prepare your administrator access first. At expiry ingestion
-    pauses; data is removed 30 days later unless the organization moves off the
-    free tier. See [trial details](policy.md#plans-the-free-trial-and-the-mailbox-cap).
+!!! info "Trial and independent paid coverage"
+    New organizations receive **14 days** for up to **25 mailboxes**, starting
+    at the first protected mailbox. Resubscribing does not restart the trial.
+    Existing enabled organizations receive a fresh 14-day trial at enforcement
+    with their current protected set preserved. See
+    [Security product billing](../7-administration/billing/security-products.md).
 
-    During private beta, limits may be reported before enforcement is enabled.
-    Check the Overview trial/coverage information (or `coverage.entitlement`
-    from the API) for the standing actually in force in your organization.
+    Paid Email Security requires explicit pricing acceptance and protection
+    acknowledgement; endpoint security quota does not buy it. At effective trial
+    expiry unpaid ingestion may pause and data follows the product's retention
+    and scheduled-deletion policy. Check actual trial and coverage status rather
+    than assuming a configuration save establishes protection.
 
 ## 1. Enable Email Security
 
