@@ -285,12 +285,82 @@ attachment threats, suspicious content, detonation evidence and graymail.
 They are ordinary D&R rules over the Message Data Model, not a separate engine.
 See [Mail Rules](custom-rules.md) for the format, IaC and explicit restoration.
 
+### Callback phishing and HTML smuggling
+
+Two attack classes are invisible to a scanner that only looks at links and known-bad
+files, so the defaults read them from structure.
+
+**Callback phishing** (telephone-oriented attack delivery) is an invoice, renewal or
+"your device is infected" notice whose only action is a phone number. The defaults
+read the number as a fact ([PhoneNumbers](rule-reference.md#phonenumbers)) from the
+body, from the text of attached images, from numbers in a PDF, and from attached
+messages, and combine it with a call to action, billing vocabulary, how short the
+message is, and whether the sender looks odd (a free-mail address, a young domain, a
+failing DMARC result, a Reply-To elsewhere). A legitimate vendor's receipt carries the
+same words and a support number, which is why a sender oddity is required and an
+established sender is never read as a lure. The callback rules describe one
+observation and do not add up: a message that trips all of them scores as the
+strongest. A PDF's wording is not available to rules, so the PDF rule judges a short
+PDF by its shape and its numbers; numbers in a PDF are recognised for North American
+formats only.
+
+**HTML smuggling** is a web page, often an `.html` or `.svg` attachment, that builds
+the real payload in the victim's browser. The parser scans every HTML-like attachment
+and HTML body in full and reports encoded data, the type that data decodes to,
+decoding and download primitives, redirects and password forms
+([HTMLIndicators](rule-reference.md#htmlindicators)). Defaults flag a page that
+decodes encoded data and saves it, a page whose encoded data is an archive or
+executable, a page that builds its own decoder, an HTML sign-in page delivered as a
+file, a tiny redirect page, an SVG that carries script, and a message body that runs
+a decoder. A single-file report or export tool that embeds data and offers a download
+button matches the same facts as a smuggling page and is scored as suspicious, not
+malicious, unless its data also decodes to a recognisable payload. Credential-page
+and tiny-redirect defaults require a browser-file extension; source templates and
+files with unconventional names can fall outside those two checks.
+
+In managed pack `0.6.0`, these 22 new rules carry explicit severity. Older managed
+rules currently use the informational fallback. Severity is independent of the
+verdict, so a malicious verdict from an older rule can still have informational
+severity.
+
+Display-name brand impersonation ("PayPal Support" over an unrelated address),
+advance-fee and extortion text, voicemail and fax lures, free-hosting and
+open-redirector links, internationalised look-alike domains, OneNote files, locked
+PDFs with the password in the message, and web pages hidden inside archives from a
+stranger are covered by further defaults. **Email Security → Rules** shows every rule's
+conditions and false-positive notes.
+
 A verdict's `engine_version` is a SHA-256 fingerprint of the scoring rules,
 resolved thresholds, exclusions, VIPs, threat-feed references and clustering policy,
 and linked parsing/enrichment library build.
 Changing rule content or scoring policy changes the fingerprint. It identifies
 the decision configuration; it is not a promise that an external lookup feed
 or other message enrichment is unchanged.
+
+### Outbound PII detections
+
+The optional email DLP pack adds outbound detections for validated payment card
+numbers, IBANs and US Social Security numbers, plus a bulk detection when any
+one kind has at least ten distinct values. Bulk counts are per kind: four cards,
+four IBANs and four SSNs do not meet the bulk threshold. Bulk detections fire
+alongside the matching single-kind detection. These are platform D&R rules on
+`EMAIL_MESSAGE`, separate from the engine verdict; installing them does not
+change the verdict or automatically move mail.
+
+The rules read [PIIFindings](rule-reference.md#piifindings), which stores counts
+only. A detection still carries the originating email event, whose body can
+contain the actual sensitive values; the count facts do not redact that body.
+Plan detection access and outputs accordingly. IBANs commonly occur on ordinary
+invoices, and dashed SSN-shaped internal IDs can match. Tune the optional rules
+for your organization rather than treating a match as proof of malicious intent.
+The detector covers message text, OCR and attached messages, but does not inspect
+text inside ordinary document, spreadsheet or PDF files. Counts remain lower
+bounds for these excluded sources even when `enrichments/pii/truncated` is absent.
+Known incomplete extraction or parsing, and inspection limits, set that flag;
+the counts still describe only the available text.
+Deferred attachment scans refresh the stored facts but do not replay the initial
+`EMAIL_MESSAGE` evaluation. A DLP match therefore describes evidence available
+when that event was emitted, rather than every later attachment result.
 
 ## Link detonation
 
