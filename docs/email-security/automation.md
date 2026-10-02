@@ -77,6 +77,8 @@ is your abuse mailbox. The person who sent the report is `event/reporter`.
 | `EMAIL_USER_REPORT` | When a message reaches the abuse mailbox and becomes a report |
 | `EMAIL_PROVIDER_QUARANTINE` | Microsoft reports a quarantined, spam-filtered or failed delivery. `provider_status` distinguishes them; this is provider delivery metadata, not an engine verdict |
 | `EMAIL_RELEASE_REQUEST` | An end user requests release from Microsoft hosted quarantine. Releases/denials are retained as history and do not emit this event |
+| `EMAIL_DISPOSITION` | Independent analyst/SOAR disposition changed or cleared; carries actor, source, note, server timestamp, prior value, and sequence |
+| `EMAIL_REPORT_RESOLVED` | Report resolved; carries report/message identities, recorded disposition and resolver, and mailbox when available |
 | `EMAIL_INGEST_ERROR` | When a message could not be fetched or processed. Coverage honesty: failures are visible, never silent |
 
 `EMAIL_MESSAGE` is emitted once and is immutable. When a verdict changes, the
@@ -302,7 +304,7 @@ rules:
 
 The typed actions available to `extension request` are the same six the console
 and the CLI use: `quarantine_message`, `trash_message`, `move_to_spam`,
-`restore_message`, `banner_message`, `unbanner_message`. They route to the same
+`restore_message`, `release_message`, `banner_message`, `unbanner_message`. They route to the same
 executor, so the organization's `alert_only` / `enforce` mode, the audit row and
 idempotency all apply unchanged — there is exactly one remediation path in this
 product.
@@ -667,3 +669,21 @@ before notification from delay inside processing. The same pattern can alarm
 on another present timing field. `analysis_ms` includes the delayed analysis
 window; `end_to_end_ms` ends at the initial verdict. Check `clock_skew` before
 interpreting clamped measurements.
+
+### Feedback events and typed actions
+
+`EMAIL_DISPOSITION` and `EMAIL_REPORT_RESOLVED` carry `group_id` when the indexed original has a message group, alongside top-level `disposition`,
+`actor`, `source`, and `ts`. Disposition events also carry `seq` and `prior`.
+Resolution events carry `report_id`. Both carry `msg_uuid`, provider, and mailbox
+when an indexed message supplies it. An unlinked resolution retains its explicit
+report identity; it never invents a mailbox. Durable retries retain `job_id`.
+
+The Email Security extension exposes `set_disposition`, `revise_verdict`,
+`release_message`, and `resolve_report` as typed actions. They use the caller's
+permissions and authenticated identity. A D&R rule may record disposition or
+request a release; releases obey alert-only/force and retain the action audit.
+Automated revisions and releases require explicit `mode: ai` and preserve the
+rule attribution. Report resolution requires an interactive analyst decision.
+The revise action takes `mode: analyst|ai`, a verdict, and a nonempty list of
+rationale strings. Resolve accepts the same five dispositions and optional
+message/campaign remediation with preview/confirm.

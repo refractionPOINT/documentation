@@ -736,15 +736,19 @@ The templated acknowledgement sent to someone who reported a message. See
 ```yaml
 policy_type: reporter_reply
 enabled: true
+acknowledgement: "Your report was received and is being reviewed."
+on_resolve: true
 templates:
-  malicious: "Thanks — you were right. We removed that message from every mailbox it reached."
-  benign: "Thanks for checking. That message is legitimate; no action was needed."
+  malicious: "Your report has been reviewed and classified as malicious."
+  benign: "Your report has been reviewed and classified as benign."
 ```
 
 | Field | Default | |
 |---|---|---|
 | `enabled` | `false` | It sends mail on your behalf to your own staff; opt-in |
-| `templates` | — | Keyed by verdict. A verdict with no template falls back to a generic acknowledgement, so enabling replies can never leave a reporter with silence |
+| `acknowledgement` | Neutral receipt wording | Plain text for the receipt reply; at most 4096 UTF-8 bytes, no markup |
+| `on_resolve` | `false` | Send a separate reply after report resolution |
+| `templates` | — | Plain-text resolution templates keyed by malicious, spam, graymail, benign, simulation. Missing entries state the recorded disposition; each is at most 4096 UTF-8 bytes |
 
 Template keys must be verdicts. Values are plain text (no `<` or `>`), capped at
 4096 characters.
