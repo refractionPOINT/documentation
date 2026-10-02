@@ -14,7 +14,7 @@ have different wrappers and validation rules.
 | `dr-mail`, either phase | `sender/email/domain/root` |
 | `dr-mail`, `post_verdict` only | `verdict/verdict` |
 | `dr-general` on `EMAIL_MESSAGE` | `event/sender/email/domain/root` |
-| `dr-general` on `EMAIL_VERDICT` | `event/revision/verdict` |
+| `dr-general` on `EMAIL_VERDICT` or `EMAIL_ANALYSIS_COMPLETE` | `event/revision/verdict` |
 | Inside `scope` with `path: links` | `href_url/domain/root` |
 
 The MDM is the root of a mail rule. Do not add `mdm/` or `event/`. The Hive
@@ -220,6 +220,7 @@ D&R rule on `EMAIL_MESSAGE`. Message-list filtering does not accept `mail_type`.
 |---|---|---|
 | `sent` | timestamp | When set |
 | `received` | timestamp | Always |
+| `notified` | timestamp | When the provider notification reached LimaCharlie; absent for mail without a known notification |
 | `ingested` | timestamp | Always |
 
 ### Headers
@@ -897,3 +898,37 @@ text examined.
 
 When present, `code` is the stable identifier for a recovered failure. Prefer it
 over matching the human-readable `message`, which may change.
+
+## Analysis status and timing on platform events
+
+These fields belong to `EMAIL_VERDICT` and `EMAIL_ANALYSIS_COMPLETE`, rather
+than the MDM rule root. A `dr-mail` scoring rule cannot wait for completion;
+use a platform `dr-general` rule on the emitted completion event.
+
+| Path | Available on | Meaning |
+|---|---|---|
+| `event/completion_id` | `EMAIL_ANALYSIS_COMPLETE` | Stable completion identity, equal to `msg_uuid`; use it to suppress retried delivery |
+| `event/analysis/pending` | Seq-0 `EMAIL_VERDICT` | Array of `detonation` and/or `attachment_scan`; empty when none outstanding |
+| `event/analysis/complete` | Seq-0 `EMAIL_VERDICT` | Whether there was no outstanding work in that snapshot |
+| `event/results/<kind>` | `EMAIL_ANALYSIS_COMPLETE` | `completed`, `changed_verdict`, `skipped`, `shed`, `failed`, or `timed_out` |
+| `event/completed_at` | `EMAIL_ANALYSIS_COMPLETE` | When the initial analysis window was durably closed |
+| `event/revision/verdict`, `event/revision/score`, `event/revision/seq` | Both | Initial decision or final completion snapshot |
+| `event/after_complete` | Later `EMAIL_VERDICT` | True when a revision was decided after the completion boundary |
+| `event/timing/received`, `ingested`, `decided` | Both | Required absolute processing instants |
+| `event/timing/sent`, `notified` | Both, when known | Sender Date header and notification arrival; sent is untrusted |
+| `event/timing/completed` | Completion | Absolute completion instant |
+| `event/timing/provider_lag_ms` | Both, when notified known | Received → notified, integer ms |
+| `event/timing/queue_ms` | Both, when notified known | Notified → ingested, integer ms |
+| `event/timing/processing_ms` | Both | Ingested → initial decided, integer ms |
+| `event/timing/end_to_end_ms` | Both | Received → initial decided, integer ms |
+| `event/timing/analysis_ms` | Completion | Initial decided → completed, integer ms |
+| `event/timing/clock_skew` | When true | At least one negative interval was clamped to zero |
+
+Completion delivery is at least once; key response suppression on
+`event/completion_id`, as shown in the [triage example](automation.md#triage-after-initial-analysis).
+Completion covers emitted live messages, including emitting re-drives. Initial
+historical backfill emits no `EMAIL_*` events and no completion event.
+
+Missing optional intervals are absent, never fabricated zero. A completion with
+`failed`, `shed`, or `timed_out` results does not classify the message as benign.
+See [completion triage and delay rules](automation.md#triage-after-initial-analysis).
