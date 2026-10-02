@@ -8,11 +8,16 @@ cloud and identity data — which is what makes "a phish was delivered, and then
 that user's endpoint ran a new binary" one rule instead of two products and a
 spreadsheet.
 
-## The sensor
+## The sensors
 
-Each mail connection appears as **one cloud sensor** on platform `email`. The
-mailbox is a field on the event, not an identity: a ten-thousand-mailbox tenant
-is one sensor, not ten thousand.
+Each protected mailbox appears as its own sensor on platform `email`, keyed by
+the provider's stable mailbox id and named by its normalized primary address.
+Mailbox-scoped events carry `mailbox: {id, address, upn}`; `upn` is present when
+known and can differ from the address on Microsoft 365. Events without a mailbox
+use the connection's sensor (`mailsec-<connection name>`). The `email` platform
+does not count against the sensor quota. Watch coverage and `EMAIL_INGEST_ERROR`
+to assess ingestion health; the connection sensor's online state reflects only
+its own events.
 
 ## The events
 
@@ -158,8 +163,30 @@ idempotency all apply unchanged — there is exactly one remediation path in thi
 product.
 
 A rule does not supply banner HTML: `banner_message` uses the organization's own
-banner from its [`banners` policy record](policy.md#banners), rendered
-server-side into a fixed escaped template. Automated bannering also requires
+banner from its [`banners` policy record](policy.md#banners) (title, colour,
+logo and the wording for the message's verdict), rendered server-side into a
+fixed escaped template. A rule may add one plain-text `text` (at most 512
+characters, no `<` or `>`) that replaces the wording for that banner only, for
+example to name the reason the rule fired:
+
+```yaml
+respond:
+  - action: extension request
+    extension name: ext-email-security
+    extension action: banner_message
+    extension request:
+      msg_uuid: '{{ .event.msg_uuid }}'
+      text: "Payment details changed in this message. Confirm by phone before paying."
+```
+
+A `text` that contains markup, control characters or is over 512 characters is
+**dropped** and the banner goes out with the organization's own wording, because
+a rule's values are usually templated from the message and a sender must not be
+able to decide whether the warning appears. `text` on any action other than
+`banner_message` is ignored. Because `text` replaces the organization's
+wording, avoid templating sender-controlled fields (the display name, the
+subject) into it: whatever you put there is shown to the recipient as part of
+the warning. Automated bannering also requires
 `enabled` on the [`banners` record](policy.md#banners); without it a rule's
 `banner_message` is decided and audited but the mailbox is not touched
 (`alert_only`). Bannering asked for by a person — console, API, CLI — is not
@@ -195,6 +222,120 @@ From there the detection flows into Cases, Outputs and everything else that
 consumes detections. A report is the highest-signal thing your users will ever
 hand you, so treating it as a first-class detection is usually right.
 
+## Counting events per mailbox or per user
+
+A rule that fires on one event is often not what you want. "One malicious message
+landed in a mailbox" is routine; "the same mailbox received five in an hour" is an
+attack on a person. LimaCharlie's D&R [suppression](../8-reference/response-actions.md#suppression)
+does the counting, and Email Security events carry the identity to count by, so no
+mail-specific feature is needed.
+
+The pattern is a `report` action whose suppression is **global** and whose `keys`
+include the mailbox or user. Global means the counter is shared across the
+organization, so it is scoped by the key alone. The action is skipped until the
+count reaches `min_count`, and then fires up to `max_count` times in the `period`.
+Setting both to the same number fires once, on the Nth event, and stays quiet for
+the rest of the window.
+
+| Parameter | Use for per-user counters |
+|---|---|
+| `is_global` | `true`. The counter is organization-wide and the key decides what is counted together |
+| `keys` | A constant label, so two rules never share a counter, then the field to count by, for example `'{{ .event.mailbox.address }}'` |
+| `min_count`, `max_count` | The threshold. Set both to `N` to fire once when the Nth event arrives |
+| `period` | The window: `s`, `m` or `h`, from 1 second to 720 hours |
+
+The window is fixed, not sliding: it starts at the first counted event for a key and
+the counter resets when it expires. See the platform's
+[Behavioral Detection](../3-detection-response/behavioral-detection.md) page for the
+full set of patterns and its limitations.
+
+The field to count by depends on the event:
+
+| Event | Field | Holds |
+|---|---|---|
+| Any event about a mailbox (`EMAIL_MESSAGE`, `EMAIL_VERDICT`, `EMAIL_ACTION`, and the other mailbox-scoped events) | `event/mailbox/address` (template `{{ .event.mailbox.address }}`) | The protected mailbox the event is about. The same `mailbox` object also carries `id` (the provider's stable handle) and `upn` (the sign-in name, which can differ from the address on Microsoft 365), so `{{ .event.mailbox.upn }}` can key a counter by sign-in identity |
+| `EMAIL_USER_REPORT` | `event/reporter` (template `{{ .event.reporter }}`) | The address that sent the report to the abuse mailbox, or `unknown` when the report had no usable sender. Its `mailbox` is the abuse mailbox the report arrived in, not the person who reported, so count reports per person with `reporter` |
+
+### Example: five malicious messages to one mailbox in an hour
+
+```yaml
+# Detect
+op: and
+rules:
+  - op: is
+    path: routing/event_type
+    value: EMAIL_MESSAGE
+  - op: is
+    path: event/verdict/verdict
+    value: malicious
+  - op: is
+    path: event/direction
+    value: inbound
+```
+
+```yaml
+# Respond
+- action: report
+  name: email-mailbox-malicious-burst
+  priority: 3
+  suppression:
+    is_global: true
+    min_count: 5
+    max_count: 5
+    period: 1h
+    keys:
+      - 'email-malicious-per-mailbox'
+      - '{{ .event.mailbox.address }}'
+```
+
+The detection fires once, when a mailbox receives its fifth malicious inbound
+message inside the hour, and carries the triggering `EMAIL_MESSAGE` so the
+responder can see the mailbox and the message. It counts the verdict the rule pack
+gave at ingest. A message that only becomes malicious later, through an analyst, AI
+or detonation revision, arrives as an `EMAIL_VERDICT` and is not counted by this
+rule.
+
+### Example: three user reports from one person in a day
+
+```yaml
+# Detect
+op: and
+rules:
+  - op: is
+    path: routing/event_type
+    value: EMAIL_USER_REPORT
+  - op: exists
+    path: event/automated_sender
+    not: true
+```
+
+```yaml
+# Respond
+- action: report
+  name: email-reporter-repeat
+  priority: 2
+  suppression:
+    is_global: true
+    min_count: 3
+    max_count: 3
+    period: 24h
+    keys:
+      - 'email-reports-per-reporter'
+      - '{{ .event.reporter }}'
+```
+
+`automated_sender` is present, and `true`, only on reports that came from a
+machine, so the second condition leaves those out of the count. A person who
+reports three messages in a day is either being targeted or is the most alert
+member of your staff, and in both cases an analyst wants to know.
+
+!!! tip "Chain a counter onto a detection"
+    The same suppression can count detections instead of events, using the
+    `target: detection` chaining described in
+    [Behavioral Detection](../3-detection-response/behavioral-detection.md#cardinality-detection).
+    That is how you count *distinct* values, for example the number of different
+    senders that hit one mailbox, rather than the number of events.
+
 ## Watching your own coverage
 
 `EMAIL_INGEST_ERROR` is the event to alert on. A mail security product that
@@ -224,6 +365,18 @@ The **Email Security → Hunt** screen runs ordinary LCQL search over
 `EMAIL_MESSAGE` events under your own organization permissions. Its guided
 filters can also be opened in the Query Console. Other emitted `EMAIL_*` events
 are searchable in the Query Console and through `limacharlie search`.
+
+**Body contains** matches a case-insensitive phrase in any of the message's
+current authored thread, visible HTML text or plain-text part. The phrase is
+limited to 256 characters and cannot contain control characters or line breaks.
+It searches the body text retained in the event, subject to ingestion limits;
+it does not fetch the original EML. Narrow the time window and other filters
+before searching bodies, because the search reads message text across the window.
+
+Before running, Hunt estimates the search cost. Small priced searches can start
+immediately; larger searches ask you to confirm. If the estimate is unavailable
+or unpriced, Hunt says so and asks before running, rather than treating the
+search as free. The estimate is a guide; the final charge can differ.
 
 These searches cover retained telemetry, independently of the Email Security
 message index and raw-message retention. They can find older emitted messages

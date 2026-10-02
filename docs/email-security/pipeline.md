@@ -168,6 +168,9 @@ single "status" would lose every one of those distinctions.
 A mail security product holds the most sensitive data in the tenant, so it is
 worth being precise about what is kept, where, and who can read it.
 
+For where the data lives and what can leave the region, see
+[Data Residency, Encryption and Data Flows](data-residency.md).
+
 ### The raw message
 
 The full original message is stored, compressed and then encrypted with
@@ -222,7 +225,9 @@ Opening the drawer serves the **sealed judged model** where it exists, labelled
 included. The fallback re-parses the encrypted raw message with today's parser
 (`mdm_source: eml_reparse`) and carries no enrichments at all, and the response
 always says which one you are reading. Neither needs a justification: the model
-is the product's structured view of the message.
+is the product's structured view of the message. Each read is still recorded in the
+organization's audit log, see
+[Who read a message](messages.md#who-read-a-message-the-content-read-audit-event).
 
 The **original bytes** are gated separately. Downloading the EML requires the
 `mailsec.get.eml` permission on top of `mailsec.get`, plus a written

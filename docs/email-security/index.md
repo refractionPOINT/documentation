@@ -116,4 +116,5 @@ Managing connections and policy uses the ordinary Hive permissions for the
 | [Policy Reference](policy.md) | Every `mailsec_policy` record type |
 | [Events & Automation](automation.md) | The `EMAIL_*` events and wiring them to D&R |
 | [Command Line Interface](cli.md) · [API Reference](api-reference.md) | The programmable surface |
+| [Data Residency & Encryption](data-residency.md) | Where mail is stored, how it is encrypted, how long it is kept, and what can leave the region |
 | [Troubleshooting](troubleshooting.md) | What each failure looks like, and where it is reported |

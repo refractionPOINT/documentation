@@ -343,28 +343,90 @@ through [Mail Rules](custom-rules.md).
 
 ## `banners`
 
-The warning banner's text and switch.
+The warning banner's look, wording and switch.
 
 ```yaml
 policy_type: banners
 enabled: true
+title: "Acme IT security"
+color: red
 text: "External sender. Verify before clicking links or opening attachments."
+logo_url: "https://cdn.example.com/brand/logo.png"
+logo_alt: "Acme IT"
+variants:
+  malicious:
+    title: "Do not open"
+    text: "Our systems judged this message malicious. Do not click or reply; report it."
+    color: red
+  suspicious:
+    text: "This message looks suspicious. Check the sender before you act."
 ```
 
 | Field | Default | |
 |---|---|---|
 | `enabled` | `false` | Bannering rewrites the customer's mail, and nothing in this product modifies mail by default |
-| `text` | A packaged warning | **Plain text only** — no `<` or `>` — and capped at 512 characters |
+| `text` | A packaged warning | **Plain text only** — no `<` or `>` — at most 512 characters |
+| `title` | `Security warning` | The bold heading. Plain text, at most 80 characters |
+| `color` | `yellow` | One of `yellow`, `red`, `orange`, `blue`, `green`, `gray`. A name from a fixed palette, never a CSS value |
+| `logo_url` | none | An `https://` URL of one image, at most 512 characters. See [the logo](#the-logo) |
+| `logo_alt` | empty | Alternative text for the logo, at most 80 characters |
+| `variants` | none | Overrides of `title`, `text` and `color` per verdict: `malicious`, `suspicious`, `graymail`, `benign`, `unknown` |
 
-The HTML template is fixed and sanitized in code; policy contributes only the
-text, and it is HTML-escaped when the banner is rendered. Accepting markup here
-would turn a configuration field into stored HTML injection against your own
-users, so it is refused at the record and escaped again at the render.
+The HTML template is fixed and sanitized in code. Policy contributes plain-text
+strings, one colour *name*, and one image URL; nothing you write is ever
+interpreted as HTML or CSS. Text is escaped when the banner is rendered, and
+accepting markup here would turn a configuration field into stored HTML
+injection against your own users, so it is refused when the record is written
+and neutralized again at render time. Control characters, bidirectional
+overrides and isolates, and characters that hide text (zero-width space, word
+joiner, byte-order mark, soft hyphen) are refused too, because they let a
+warning read differently from what it says. The joiners and the left-to-right,
+right-to-left and Arabic letter marks that Persian, Hebrew, Arabic and Indic
+writing need are allowed. Tab and newline are allowed in the wording
+and show as a space.
 
-**This record is the only source of a banner's wording.** No API call, CLI flag
-or D&R rule supplies banner HTML — the `banner` field on the action routes and
-the `--banner` flag are deprecated and ignored, and will be removed. If you
-change the wording here, every subsequent `banner_message` uses it.
+The banner is placed **outside** the container that holds the sender's own HTML
+and stylesheets, so a sender cannot hide, restyle or cover it, whatever the
+message contains. Your branding lives inside that protected block.
+
+### Which wording a message gets
+
+For each message, most specific first:
+
+1. the `text` the action itself carried (an API call, a D&R rule, or the console's
+   "Banner wording" box; see [Remediation](remediation.md)), for that one banner;
+2. the `variants` entry for the message's **current verdict**;
+3. the record's `text`;
+4. the packaged sentence.
+
+`title` and `color` follow the same order, minus step 1. The logo belongs to the
+organization and does not vary by verdict. A verdict without a variant uses the
+defaults. A message that already carries a banner keeps it: `banner_message`
+is idempotent, so a later verdict change does not swap the wording on messages
+that were already bannered. Un-banner and banner again if you want that.
+
+### The logo
+
+The logo is one image, shown 32 pixels high (at most 128 wide) at the start of
+the heading, with the alt text as its description. To keep it safe:
+
+- Only `https://` URLs are accepted. `http:`, `data:`, `cid:` and other schemes
+  are refused, as are URLs carrying credentials, a port, an IP address or a
+  single-label host name, and anything that is not plain ASCII (percent-encode
+  the rest).
+- Mail clients fetch the image from **your** host each time a message is
+  opened, and several block remote images until the reader allows them. The
+  banner's text always stands on its own: treat the logo as decoration and
+  never as the only thing that says "warning". A roughly square logo looks best;
+  a very wide one is scaled down.
+
+### Previewing
+
+The console's Policy page shows the banner exactly as recipients get it, from
+the same renderer and validator the collector uses, before you save. The same
+preview is available from the API as `POST /banner/preview`.
+
+### Switch
 
 `enabled` is what lets **automation** banner this organization's mail: with it
 off, an automation, a D&R rule or the AI triage agent asking for
@@ -379,7 +441,9 @@ wording is the packaged sentence.
 
 Bannering also needs the provider capability: `Mail.ReadWrite` is enough on
 Microsoft 365 (edited in place), while Google Workspace additionally needs the
-optional `https://mail.google.com/` scope and **replaces** the message.
+optional `https://mail.google.com/` scope and **replaces** the message. On Google
+Workspace, a plain-text part of a message can only carry text, so there the banner is
+two lines (title, then wording) and the logo and colour do not apply.
 
 ---
 

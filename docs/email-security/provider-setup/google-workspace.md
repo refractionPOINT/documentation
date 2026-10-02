@@ -454,7 +454,7 @@ before lifecycle can pass. It is idempotent and the watch expires on its own.
 
 | Action | What happens in Gmail |
 |---|---|
-| `quarantine_message` | `INBOX` removed, an `LC Quarantine` label added — restorable, and out of the user's inbox |
+| `quarantine_message` | `INBOX` removed, an `LC Quarantine` label added. Restorable, and out of the user's inbox. The label is created **visible** in the label list and in message lists, so the user can still see and open the quarantined message (unlike Microsoft 365, where the folder is hidden) |
 | `trash_message` | `TRASH` added. The product's own quarantine label is removed afterwards, so the message's placement reads as trashed rather than still quarantined |
 | `move_to_spam` | `SPAM` added, resolved through Gmail's own identifiers |
 | `restore_message` | The labels are inverted |
