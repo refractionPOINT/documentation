@@ -25,6 +25,7 @@ it at the provider.
 | **Remediation** | Typed, idempotent, audited actions performed at the provider: quarantine, trash, move to spam, restore, apply and remove a warning banner. Available by policy automation, from the console, from a D&R rule, from the API and from the CLI. |
 | **Campaigns** | Messages the engine attributed to one attack are clustered, so a campaign that hit forty mailboxes is triaged once and swept once. |
 | **User reports** | An abuse mailbox becomes an SLA queue: reports are joined back to the original message across the whole tenant, robots that mail the abuse address are auto-resolved out of the queue, and reporters can be sent a templated acknowledgement. |
+| **Sample submission** | Opt-in, one message at a time: an analyst can send LimaCharlie a copy of a message the engine got wrong, and list and withdraw what was sent. See [Sample Submission](sample-submission.md). |
 | **Telemetry** | `EMAIL_MESSAGE`, `EMAIL_VERDICT` (every verdict decision — the engine's own at ingest, then each override), `EMAIL_ACTION`, `EMAIL_USER_REPORT` and `EMAIL_INGEST_ERROR` land in the same lake as your EDR, cloud and identity telemetry — so "phish delivered, then that user's endpoint ran a new binary" is one D&R rule. |
 | **Configuration as data** | Connections, policy and custom rules are Hive records, so everything is API-first and git-syncable from day one. |
 | **AI assistant access** | [MCP tools](mcp.md) for read-only coverage and triage, with separately permissioned diagnostics and responses. Requires a server version containing MailSec support. |
@@ -110,6 +111,7 @@ Managing connections and policy uses the ordinary Hive permissions for the
 | [Bulk Remediation](remediation.md) | Acting on a set of messages you named: preview, confirm, execute, poll |
 | [Campaigns](campaigns.md) | Clustering and campaign-wide sweeps |
 | [User Reports](user-reports.md) | The abuse mailbox and the report SLA queue |
+| [Sample Submission](sample-submission.md) | Opt-in: send LimaCharlie a copy of one message the engine got wrong, and withdraw it |
 | [Detections & Verdicts](detections.md) | How a verdict is produced, and what the rules can read |
 | [Custom Rules](custom-rules.md) | Writing, validating and backtesting your own mail rules |
 | [IOC & Reputation Feeds](ioc-feeds.md) | Mirroring a threat feed into a lookup and matching messages against it |

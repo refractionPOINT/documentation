@@ -6,7 +6,7 @@ The `limacharlie mailsec` command group covers the Email Security API surface:
 the coverage screen, the message index and drawer, the audited raw-EML download,
 verdict revisions, campaigns and campaign-wide sweeps, bulk remediation over a
 selection you name, sender profiles, the action audit trail, the abuse-mailbox
-report queue, custom-rule validation and backtest, the connection preflight, the
+report queue, sample submission, custom-rule validation and backtest, the connection preflight, the
 served onboarding guide, and the tenant purge.
 
 Commands take the global options (`--oid`,
@@ -55,7 +55,7 @@ trusted with four separable things — plus one command that is not any of them:
 |---|---|
 | `mailsec.get` | Read the product's own view: queue, drawer, campaigns, senders, audit trail |
 | `mailsec.set` | Change triage state — resolving a user report |
-| `mailsec.act` | Remediate live mail at the provider |
+| `mailsec.act` | Remediate live mail at the provider; submit and withdraw samples |
 | `mailsec.get.eml` | Download the original bytes of a message; requires a logged justification |
 | `mailsec.act` **and** `billing.ctrl` **and** `user.ctrl` | `tenant purge`, in both its preview and its destructive form. Owner-level authority, the same trio deleting the organization requires — there is no separate "owner" permission |
 
@@ -96,6 +96,13 @@ limacharlie mailsec message action <msg_uuid> --action restore_message
 limacharlie mailsec message bulk-action --action quarantine_message --input-file uuids.txt
 limacharlie mailsec message bulk-action --action quarantine_message --input-file uuids.txt --confirm <token> --reason "INC-4471"
 limacharlie mailsec message bulk-status <bulk_id>
+
+# Sample submission (opt-in): copy ONE message to LimaCharlie, list it, withdraw it
+limacharlie mailsec message submit-sample <msg_uuid> --category missed_threat --reason "credential phish we did not flag"
+limacharlie mailsec message withdraw-sample <msg_uuid>
+limacharlie mailsec submission list --category false_positive --since 2026-09-01T00:00:00Z
+limacharlie mailsec submission get <submission_id>
+limacharlie mailsec submission withdraw <submission_id>
 
 # Campaigns: one attack, triaged once
 limacharlie mailsec campaign list --min-members 3
@@ -300,6 +307,22 @@ The job runs in the background, `--wait` is the default, and **the exit code
 carries the outcome** — `0` only when the job completed and something was acted
 on. The full contract, including every `state`, `result` and count, is in
 [Bulk Remediation](remediation.md#from-the-cli).
+
+### Submitting a sample sends the message to LimaCharlie
+
+`message submit-sample` copies one message to LimaCharlie, so it is opt-in, explicit and
+one message per call. The organization must have opted in with a `sample_sharing`
+[policy record](policy.md#sample_sharing); `--category`
+(`missed_threat`, `false_positive`, `other`) and `--reason` (1 to 1024 characters) are
+both required and are checked before anything is sent. A refusal (not opted in, no store
+in the datacenter, raw copy no longer stored) is reported like any other failed action, with the reason in
+`error`; the command prints the reason and exits non-zero. `submission list` prints the `enabled` and
+`available` flags, so an empty list can be told apart from a feature that is off, and
+pages with `--cursor`. `submission get` shows recorded access times for the copy, and
+`submission withdraw` (or `message withdraw-sample`) deletes it. An unknown id is not an
+error: `submission get` returns `submission: null` and `submission withdraw` returns
+`withdrawn: false`, and the command says so on stderr. See
+[Sample Submission](sample-submission.md).
 
 ### Revising a verdict is `mailsec.act`, not `mailsec.set`
 
