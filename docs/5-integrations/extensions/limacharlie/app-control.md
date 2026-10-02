@@ -126,6 +126,7 @@ The document is a single JSON object:
 | `stance` | yes | `allowlist` denies anything no rule allows. `blocklist` allows anything no rule denies. There is no default: either guess would be harmful, so a document without a stance is refused. |
 | `trust_os_vendor` | no | `true` (the default) implicitly allows OS-vendor-signed executables. See [OS-vendor trust](#os-vendor-trust). |
 | `rules` | no | The list of rules, described below. Up to 10,000 rules. |
+| `max_age_sec` | no | How long, in seconds, an endpoint may keep enforcing this policy without receiving a fresh copy. Omitted or `0` means the policy never expires. See [Policy expiry](#policy-expiry). |
 
 Each rule has these fields:
 
@@ -144,6 +145,27 @@ The document is validated strictly when you save it:
 - Trailing content after the JSON object, such as a second object pasted by accident, is refused.
 
 Reformatting a document, for example re-indenting it or reordering its keys, does not trigger a new push to your endpoints. Changing the rules does, including changing their order.
+
+### Policy expiry
+
+By default a policy never expires. An endpoint keeps enforcing the last policy it received for as long as it runs, including while it is offline and across reboots.
+
+Setting `max_age_sec` makes a policy expire. Once that many seconds have passed since the policy was issued, an endpoint that has not received a fresh copy keeps the policy but lowers its mode to `permissive`. It keeps reporting what the policy would deny, and it stops blocking. It returns to the configured mode as soon as it receives a fresh copy.
+
+Expiry is a recovery mechanism for an endpoint that cannot be reached. Without it, a policy that cuts an endpoint off from LimaCharlie stays in force on that endpoint until someone fixes the endpoint locally, because no corrected policy can reach it. An allowlist that blocks the endpoint's VPN client or proxy agent is an example. The cost is that an endpoint offline for longer than the age, such as a laptop on a long trip, stops blocking until it reconnects.
+
+```json
+{
+    "stance": "allowlist",
+    "trust_os_vendor": true,
+    "max_age_sec": 1209600,
+    "rules": [ ... ]
+}
+```
+
+`1209600` is 14 days. The value is in seconds.
+
+An online endpoint does not expire on schedule: it requests a fresh copy of its policy from halfway through the maximum age, so only an endpoint that stays out of reach for the whole age expires. Agent 5.4.0 does not make that request. On 5.4.0 an online endpoint receives a fresh copy only when the policy changes or the agent restarts, so give it a maximum age well beyond your normal interval between policy changes, or leave the field out.
 
 ### Rule kinds
 
@@ -367,7 +389,7 @@ The component that actually allows or denies an execution is separate from the a
 | Value | Flag | Meaning | What to do |
 | --- | --- | --- | --- |
 | `1` (`0x1`) | `NO_POLICY` | No policy is installed. Either none has been received, or the cached copy could not be used. | Check that a policy targets this endpoint. If one does, look for `APP_CONTROL_UNRESOLVED` events with a reason in the `20`–`28` range. |
-| `2` (`0x2`) | `POLICY_STALE` | The installed policy is older than its maximum age, which is 14 days from when it was issued. The endpoint keeps it, but lowers its mode to permissive, so it is no longer blocking. | Get a fresh copy of the policy onto the endpoint. A host that has been offline gets one on its next sync. |
+| `2` (`0x2`) | `POLICY_STALE` | The installed policy is older than the `max_age_sec` its document sets. The endpoint keeps it, but lowers its mode to permissive, so it is no longer blocking. Never set for a policy without a maximum age. See [Policy expiry](#policy-expiry). | Get a fresh copy of the policy onto the endpoint. A host that has been offline gets one on its next sync. |
 | `4` (`0x4`) | `HASH_UNAVAILABLE` | A decision needed the file's SHA-256 and could not get it, for example because the file is larger than 50 MiB. That execution was allowed. The flag stays set until the agent restarts. | Look at the `APP_CONTROL_UNRESOLVED` events with reason `50`, and replace the `sha256` rules involved with `signer` or `path` rules. |
 | `8` (`0x8`) | `NOT_ENFORCED` | A policy is installed, but no enforcement component has it, so nothing on the endpoint is acting on it. | Check that the Windows kernel driver or the macOS system extension is installed and running. |
 | `16` (`0x10`) | `ENFORCED_SKEW` | The enforcement component holds a different policy generation from the agent, so the wrong policy is deciding executions. Compare the two `APP_CONTROL_GENERATION` values. | Usually clears on its own once the component catches up. If it persists, contact support. |
