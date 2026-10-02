@@ -75,12 +75,22 @@ is your abuse mailbox. The person who sent the report is `event/reporter`.
 | `EMAIL_ANALYSIS_COMPLETE` | When the initial analysis window closes, including messages with nothing pending. Carries terminal outcomes, final verdict snapshot and timing |
 | `EMAIL_ACTION` | On every remediation outcome, including failures and skips, **and on every raw-message download** (`action: get_eml`), served or refused. Who asked, what was attempted, what happened |
 | `EMAIL_USER_REPORT` | When a message reaches the abuse mailbox and becomes a report |
+| `EMAIL_PROVIDER_QUARANTINE` | Microsoft reports a quarantined, spam-filtered or failed delivery. `provider_status` distinguishes them; this is provider delivery metadata, not an engine verdict |
+| `EMAIL_RELEASE_REQUEST` | An end user requests release from Microsoft hosted quarantine. Releases/denials are retained as history and do not emit this event |
 | `EMAIL_INGEST_ERROR` | When a message could not be fetched or processed. Coverage honesty: failures are visible, never silent |
 
 `EMAIL_MESSAGE` is emitted once and is immutable. When a verdict changes, the
 original event is never rewritten — a new `EMAIL_VERDICT` is emitted instead, so
 the verdict history is the sequence of those events and a replay can reconstruct
 what was known at any point in time.
+
+### Provider visibility events
+
+See [Provider Quarantine](provider-quarantine.md#events-and-identity) for the
+payload fields, mailbox identity, retry deduplication and correlation limits.
+Match `routing/event_type` and `event/provider_status` to distinguish quarantined
+mail from delivery failures. `EMAIL_RELEASE_REQUEST` observes a user's request;
+it does not grant approval or execute a release.
 
 ### `EMAIL_VERDICT`
 

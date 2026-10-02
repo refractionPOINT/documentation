@@ -34,6 +34,9 @@ consent.
 
 | Grant | Unlocks | Without it |
 |---|---|---|
+| **ExchangeMessageTrace.Read.All** (Microsoft Graph) | Provider quarantine, spam filtering and delivery-failure visibility | Message-trace coverage reports `not_granted`; ingestion continues |
+| **SecurityAnalyzedMessage.ReadWrite.All** (Microsoft Graph, optional beta) | Hosted quarantine and move-to-Inbox restore; requires Defender for Office 365 Plan 2 | Microsoft target reports `not_granted` and quarantine records its LC-folder fallback |
+| **ActivityFeed.Read** (Office 365 Management APIs) | Hosted-quarantine release requests and release/denial history from Audit.General | Release-activity coverage reports `not_granted`; ingestion continues |
 | **Mail.Send** | Reporter auto-replies — the templated acknowledgement sent to a person who reported a message | Reporter replies are **refused by name**, reported as an explicitly unavailable capability rather than silently skipped. Everything else is unaffected. Check `mail_send` reports `skipped`. |
 
 !!! info "Why the consented set is readable at all"
@@ -46,6 +49,21 @@ consent.
     Graph permissions must be added under **Application permissions**. Delegated
     permissions require a signed-in user and leave the connection failing after
     consent looks granted.
+
+Message trace additionally requires the tenant service principal for Microsoft's
+application `8bd644d1-64a1-4d4b-ae52-2e0cbf64e373`. An administrator can provision
+it with `New-MgServicePrincipal` as described in Microsoft's
+[message trace onboarding guide](https://learn.microsoft.com/en-us/exchange/monitoring/trace-an-email-message/graph-api-message-trace).
+Granting the app permission alone does not provision that prerequisite.
+
+For release activity, select **Office 365 Management APIs → Application
+permissions → ActivityFeed.Read** separately from Microsoft Graph, grant admin
+consent, and enable unified audit logging. The connection uses a separate
+Management API token and starts its own Audit.General subscription. Feed records
+can be delayed after a subscription starts. See Microsoft's
+[Management API setup](https://learn.microsoft.com/en-us/office/office-365-management-api/get-started-with-office-365-management-apis)
+and [activity API reference](https://learn.microsoft.com/en-us/office/office-365-management-api/office-365-management-activity-api-reference).
+See [Provider Quarantine](../provider-quarantine.md) for the coverage states.
 
 ## Create the app registration
 
@@ -68,9 +86,12 @@ it can connect without using your personal password.
        immediately; the **Secret ID** is not the credential. Record its expiry so
        your administrator can replace it before access stops.
     5. Open **API permissions → Add a permission → Microsoft Graph → Application
-       permissions**. Add the required permissions listed above and any optional
+       permissions**. Add the required Graph permissions and any optional Graph
        permissions you intend to use.
-    6. Select **Grant admin consent** for your directory. If you cannot, ask a
+    6. For release activity, choose **Add a permission → APIs my organization
+       uses → Office 365 Management APIs → Application permissions** and add
+       **ActivityFeed.Read** separately.
+    7. Select **Grant admin consent** for your directory. If you cannot, ask a
        Privileged Role Administrator or Global Administrator to grant it. Confirm
        that the permissions show consent granted before continuing.
 
@@ -101,6 +122,30 @@ it can connect without using your personal password.
       az ad app permission add --id "$APP_ID" --api "$GRAPH" \
         --api-permissions "$ROLE_ID=Role"
     done
+
+    az ad app permission admin-consent --id "$APP_ID"
+    ```
+
+=== "Optional visibility grants (Cloud Shell)"
+
+    Run this separately only if you want provider visibility. Keep the `APP_ID`
+    from the registration above, provision the message-trace prerequisite, and
+    enable unified audit logging for release activity. Admin consent is required.
+
+    ```bash
+    # Run only after the message-trace service principal prerequisite above is provisioned.
+    TRACE_ROLE=$(az ad sp show --id "$GRAPH" \
+      --query "appRoles[?value=='ExchangeMessageTrace.Read.All'].id | [0]" -o tsv)
+    az ad app permission add --id "$APP_ID" --api "$GRAPH" \
+      --api-permissions "$TRACE_ROLE=Role"
+
+    # Release activity is a DIFFERENT resource, not Microsoft Graph.
+    MANAGEMENT=c5393580-f805-4401-95e8-94b7a6ef2fc2
+    az ad sp show --id "$MANAGEMENT" >/dev/null 2>&1 || az ad sp create --id "$MANAGEMENT"
+    ACTIVITY_ROLE=$(az ad sp show --id "$MANAGEMENT" \
+      --query "appRoles[?value=='ActivityFeed.Read'].id | [0]" -o tsv)
+    az ad app permission add --id "$APP_ID" --api "$MANAGEMENT" \
+      --api-permissions "$ACTIVITY_ROLE=Role"
 
     az ad app permission admin-consent --id "$APP_ID"
     ```
@@ -204,6 +249,8 @@ limacharlie mailsec connection test m365-prod --oid $OID --output yaml
 | `credential` | ✅ | The tenant/client/secret triple was rejected, or the client secret expired |
 | `mailbox_read` | ✅ | `User.Read.All` not consented — no mailbox can be discovered. Also fails when the directory genuinely returns no mailboxes |
 | `mail_write` | ✅ | `Mail.ReadWrite` not consented — nothing can be read or remediated |
+| `provider_quarantine` | — | Message trace permission missing; optional capability unavailable |
+| `release_requests` | — | Management Activity permission missing or not evaluated; optional capability unavailable |
 | `mail_send` | — | `Mail.Send` not consented; reporter replies unavailable. Reported as `skipped`, and `ok` stays true |
 
 ## How ingestion works
@@ -241,3 +288,23 @@ limacharlie mailsec connection test m365-prod --oid $OID --output yaml
 | Some mailboxes never become `protected` | An Exchange application access policy denies the app for those mailboxes | Widen the policy, or exclude those mailboxes in the record's `scope` so coverage reflects a decision rather than a refusal |
 | Attachment analysis looks incomplete | Defender **Safe Attachments in Dynamic Delivery mode** detaches the attachment from the delivered message | Use Block mode if you want attachments analyzed post-delivery |
 | Everything fails at `credential` after months of working | Client secrets expire | Re-mint before expiry and update the secret record; nothing else changes |
+
+### Optional hosted quarantine permission
+
+The Microsoft target is off by default and separate from visibility. Grant the Graph
+**application** permission `SecurityAnalyzedMessage.ReadWrite.All` and admin consent
+only when opting into the [Microsoft quarantine beta](../provider-quarantine.md#optional-microsoft-quarantine-target-beta).
+It requires Defender for Office 365 Plan 2; consent and successful analyzed-email
+reads cannot prove licensing. A licensing or permission refusal records the LC-folder
+fallback rather than silently claiming Microsoft quarantine succeeded.
+
+For Azure CLI users, run this separately with the app registration's `APP_ID` and
+Graph resource ID from the setup above, then grant admin consent:
+
+```bash
+HOSTED_ROLE=$(az ad sp show --id "$GRAPH" \
+  --query "appRoles[?value=='SecurityAnalyzedMessage.ReadWrite.All'].id | [0]" -o tsv)
+az ad app permission add --id "$APP_ID" --api "$GRAPH" \
+  --api-permissions "$HOSTED_ROLE=Role"
+az ad app permission admin-consent --id "$APP_ID"
+```

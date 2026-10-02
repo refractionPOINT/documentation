@@ -428,3 +428,11 @@ limacharlie mailsec report resolve "$REPORT" --disposition malicious
 Because the CLI is the whole surface, it is also how an
 [AI triage agent](ai-triage.md) reaches Email Security — there is no separate
 integration for agents to learn.
+
+## Provider quarantine and release activity
+
+`mailsec provider-quarantine list` and `mailsec release-request list` observe
+Microsoft delivery and hosted-quarantine activity. They support connection,
+status, time-window and cursor filters and return independent coverage. They
+require a CLI build containing these commands and `mailsec.get`. See
+[Provider Quarantine](provider-quarantine.md#cli-and-api) for examples and limits.
