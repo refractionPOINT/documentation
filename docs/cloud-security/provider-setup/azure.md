@@ -99,8 +99,7 @@ The detector needs neither **Get** nor **Key Vault Secrets User**.
 Microsoft documents that [Key Vault Reader](https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles/security#key-vault-reader)
 can read secret properties while excluding values. The collector lists metadata
 for current and older secret versions, counts enabled versions without expiration,
-and reports the vault and count. Findings do not include secret names or values.
-Disabled versions are excluded.
+and reports the vault and count. CIS Azure 8.1 grades currently enabled secrets from the secrets list; historical enabled versions have a separate posture finding and do not fail that control. Findings do not include secret names or values. Disabled secrets and versions are excluded.
 
 The optional provider test probes one discovered vault with a metadata list.
 Permission on that vault does not prove access to every vault. No available vault
@@ -110,12 +109,10 @@ firewalls and private endpoints are checked during the sweep.
 Collection uses a stable sorted window of the first 50 vaults per subscription per pass and 100 metadata
 requests / 2,000 items per vault. Optional metadata reads use at most five minutes
 of the vault collection task, reserving time to retain ARM inventory and logging
-observations. A metadata timeout keeps expiry unassessed while preserving those
-vault facts. The window does not rotate: subscriptions
+observations. An incomplete current list keeps expiry unassessed while preserving those vault facts. A historical-version failure preserves a completed current-secret audit. The window does not rotate: subscriptions
 with more than 50 vaults remain **NOT_ASSESSED** for clean expiry compliance,
 and later vaults are not probed. An unread or capped list keeps clean expiry
-compliance **NOT_ASSESSED**, while an observed enabled version without an
-expiration date can still fail. A complete list with no enabled versions is
+compliance **NOT_ASSESSED**, while an observed currently enabled secret without an expiration date can still fail. A complete current list with no enabled secrets is
 **NOT_APPLICABLE**. These reads currently support public Azure vault endpoints;
 private or sovereign-cloud endpoints that cannot be reached remain unassessed.
 
