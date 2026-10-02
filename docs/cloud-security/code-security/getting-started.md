@@ -234,7 +234,6 @@ If a repository stays unscanned, see [Troubleshooting](troubleshooting.md).
 - [Pull-request checks and push rescans](pull-requests.md): catch problems before they merge.
 - [AutoFix pull requests](autofix.md): have LimaCharlie open dependency upgrades.
 
-
 ## Trial, coverage and billing
 
 Code Security has independent paid repository coverage: $0.80 per protected
