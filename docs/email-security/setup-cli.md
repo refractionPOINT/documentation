@@ -33,25 +33,21 @@ create automation policy records. With no automation policy, automatic actions
 are off; a new automation rule defaults to `alert_only`, so it records intent
 without moving mail. See [Policy Reference](policy.md).
 
-!!! info "Free trial: 14 days, 25 mailboxes"
-    An organization on the LimaCharlie free tier gets Email Security in full for
-    **14 days** and protects up to **25 mailboxes** while it does. Every feature
-    is the same as on a paid plan; only the duration and the mailbox count
-    differ. The clock starts the day you subscribe and **does not restart if you
-    unsubscribe and resubscribe**, so point the 25 at the mailboxes that matter
-    — start with the executives, finance and the abuse mailbox.
+!!! info "Trial and independent paid coverage"
+    New organizations receive 14 days with up to 25 protected mailboxes, starting
+    at the first protected mailbox. Unsubscribe/resubscribe does not restart the
+    trial. Existing enabled organizations receive the once-only fresh trial and
+    preserved baseline described in [Security product billing](../7-administration/billing/security-products.md).
 
-    When the trial ends, ingestion pauses and nothing is deleted; the data is
-    removed 30 days later unless the organization moves off the free tier, and
-    you are told before that happens. The full rules, and the exact fields to
-    read the countdown from, are in
-    [Plans, the free trial, and the mailbox cap](policy.md#plans-the-free-trial-and-the-mailbox-cap).
+    Email Security paid coverage is independent of endpoint security quota.
+    Review and accept $1 per protected mailbox-month, calculated using UTC daily
+    high-water marks and a fixed 30-day month, through Billing & Usage. Inspect
+    coverage and billing status until protection is acknowledged; saving a
+    connection or receiving a pending response does not establish coverage.
 
-    During private beta, trial limits may be reported before enforcement is
-    enabled. Check `mailsec coverage` and its `entitlement` block for your
-    organization's actual standing and enforcement. Contact LimaCharlie if the
-    reported state and collection behavior disagree; saving a connection alone
-    does not establish trial eligibility.
+    At expiry unpaid ingestion may pause, with data retained under the product's
+    retention and deletion policy. Read [Plans, the free trial, and the mailbox cap](policy.md#plans-the-free-trial-and-the-mailbox-cap)
+    and scheduled-deletion notices before the deadline.
 
 ## 2. Grant the permissions
 
@@ -274,8 +270,7 @@ entitlement:
 ```
 
 `mailboxes_over_cap` is the number that matters: those mailboxes were found and
-are not being watched. Narrow the connection's `scope`, or move off the free
-tier. See
+are not being watched. Narrow the connection's `scope`, or explicitly activate paid Email Security. See
 [Plans, the free trial, and the mailbox cap](policy.md#plans-the-free-trial-and-the-mailbox-cap).
 
 !!! note "Backfill is judged, and acts on nothing"

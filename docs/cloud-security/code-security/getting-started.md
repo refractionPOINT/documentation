@@ -233,3 +233,18 @@ If a repository stays unscanned, see [Troubleshooting](troubleshooting.md).
 - [Working with results](results.md): triage what the first scan found.
 - [Pull-request checks and push rescans](pull-requests.md): catch problems before they merge.
 - [AutoFix pull requests](autofix.md): have LimaCharlie open dependency upgrades.
+
+## Trial, coverage and billing
+
+Code Security has independent paid repository coverage: $0.80 per protected
+repository-month plus the existing Cloud Security base fee. A new organization
+receives a 14-day trial for up to 10 repositories across hosted connections and
+external imports. Container images do not contribute to the repository meter.
+Existing enabled organizations receive the fresh trial and preserved-set grant
+at enforcement; their deadline is not backdated to an old Cloud trial.
+
+In Billing & Usage or Code Security, inspect the canonical trial limit and
+acknowledged protection, choose coverage in scanning settings, and explicitly
+accept pricing to activate paid coverage. The separate Cloud entitlement and
+base fee remain distinct. See [Security product billing](../../7-administration/billing/security-products.md)
+for daily high-water marks, cost calculation, payment grace and stopping coverage.

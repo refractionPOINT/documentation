@@ -520,6 +520,7 @@ nav:
           - SSO: 7-administration/access/sso.md
       - Billing:
           - Options: 7-administration/billing/options.md
+          - Security Products: 7-administration/billing/security-products.md
           - Custom Plans: 7-administration/billing/custom-plans.md
           - Estimating Data Ingestion: 7-administration/billing/data-estimation.md
       - Config Hive:
