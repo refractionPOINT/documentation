@@ -102,6 +102,12 @@ automations:
 An **empty match matches everything**. An enforcing rule with an empty match is
 refused at save — "quarantine all mail" is never what someone meant to write.
 
+Every matching automation applies, in record-name and rule order. Matching typed
+mail-rule actions join the same action union. Conflicting permitted placement
+actions resolve as quarantine, then trash, then spam; equivalent intents are
+deduplicated with deterministic first parameters. Alert-only remains the default,
+and an enforcing rule cannot bypass the organization enforcement gate.
+
 ### `actions`
 
 | Action | | Touches the mailbox |
@@ -118,6 +124,12 @@ on one message must not fan out to hundreds without a human — that is an expli
 action), `restore_message` (undoing is a human decision), and the disposition
 labels (labels are evidence, and a machine writing them would poison the data set
 that measures the machine).
+
+`action_params` optionally supplies parameters keyed by an action in `actions`.
+For `banner_message`, the `text` override is plain text, at most 512 Unicode
+characters; empty or whitespace-only uses the banner-policy text. The banner
+policy must still be enabled. Unknown parameters, orphan action parameters,
+duplicate actions and more than 16 actions are refused.
 
 ### The two asking actions
 

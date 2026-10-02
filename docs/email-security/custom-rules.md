@@ -132,10 +132,44 @@ limacharlie hive set --hive-name dr-mail --key vendor-bank-change \
 | `weight` | ✅ for `signal` and `detection` | 1–100 for `signal` and `detection`. **Omit the field for `graymail`**, including an explicit zero; the Hive rejects any supplied weight for that class |
 | `confidence` | — | 0–100, **default 100**. An author who does not express a confidence means "when this fires, it is right" |
 | `shared_fact` | — | Optional group for overlapping scoring signals. Only the strongest weighted contribution in the group counts; not allowed on graymail or response rules |
-| `respond` | — | `post_verdict` only |
+| `respond` | — | Native responses, `post_verdict` only |
+| `severity` | — | `informational`, `low`, `medium`, `high` or `critical`; omitted means informational when scored |
+| `actions` | — | Typed policy actions applied when this rule matches; see below |
+| `action_params` | — | Parameters keyed by an action named in `actions`; optional banner `text` |
+| `mode` | — | `alert_only` (default) or `enforce`, only when typed actions are present |
 | `name` | ✅ | Non-empty human-readable label, up to 256 bytes |
 | `fp_notes` | ✅ | Non-empty explanation of the benign mail that might match |
 | `tags`, `attack_types` | — | Grouping and authoring metadata; entries must not be empty |
+
+### Severity and typed actions
+
+Severity is independent of score and verdict. A message carries the maximum
+severity of all matching, unsuppressed rules, including matches beyond the
+shortened top-signals display. Excluded rules contribute neither severity nor
+typed actions. All shipped defaults declare a severity; historical messages may
+have no stored value, which remains unknown.
+
+Typed actions are `quarantine_message`, `trash_message`, `move_to_spam`,
+`banner_message`, `submit_to_triage` and `crawl_link`. A rule can request up to
+16 distinct actions; duplicates, unknown actions and parameters for absent
+actions are refused. Scoring-rule actions run after scoring when their rule
+matched; post-verdict actions run when their final-state condition matches.
+Existing native `respond` blocks remain available.
+
+Actions default to `alert_only`. Choosing `enforce` cannot override an
+organization's alert-only policy, exclusions or VIP restrictions. Rule actions
+and every matching policy automation form a union. For conflicting permitted
+placement intents, quarantine takes precedence over trash, which takes precedence
+over spam. Alert-only intents do not suppress a permitted enforcement intent.
+Repeated equivalent intents are deduplicated; rule order supplies deterministic
+parameters within an equivalent intent.
+
+For `banner_message`, `action_params.banner_message.text` optionally overrides
+the warning with plain text of at most 512 Unicode characters. Markup and unsafe
+control or direction-changing characters are refused. Empty or whitespace-only
+text uses the policy default. The override does not enable a disabled banner
+policy. See [Policy Reference](policy.md#actions) and
+[Message Groups & Cases](groups.md).
 
 ### Signal, detection, or graymail?
 
