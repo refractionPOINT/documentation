@@ -321,6 +321,73 @@ Supports the [file name](#file-name) and [sub domain](#sub-domain) transforms.
 >
 > You can create your own lookups and optionally publish them in the add-on marketplace. To learn more, see [Lookups](../7-administration/config-hive/lookups.md) and [Lookup Manager](../5-integrations/extensions/limacharlie/lookup-manager.md).
 
+### ask ai
+
+Makes one synchronous LLM request using an enabled `ai_agent` Hive record, then evaluates the returned answer with `metadata_rules`. Use it to classify events that have already passed inexpensive checks.
+
+```yaml
+detect:
+  event: NEW_PROCESS
+  op: and
+  rules:
+    - op: is windows
+    - op: contains
+      path: event/COMMAND_LINE
+      value: -enc
+    - op: ask ai
+      definition: hive://ai_agent/cmdline-triage
+      prompt: "Is this command line malicious? {{ .event.COMMAND_LINE }}"
+      data:
+        cmd: "{{ .event.COMMAND_LINE }}"
+        parent: "{{ .event.PARENT.FILE_PATH }}"
+      response_schema:
+        type: object
+        properties:
+          verdict: {type: string, enum: [malicious, suspicious, benign]}
+          confidence: {type: number}
+          reason: {type: string}
+        required: [verdict, confidence, reason]
+      max_tokens: 512
+      timeout: 20
+      cache_ttl: 3600
+      metadata_rules:
+        op: is
+        path: verdict
+        value: malicious
+respond:
+  - action: report
+    name: ai-flagged-encoded-powershell
+```
+
+Create an enabled `ai_agent` record named `cmdline-triage` with a system `prompt`, a provider/model and credentials, for example an `anthropic_secret: hive://secret/llm-key` reference. Never put an API key in a detection rule. See [AI agent definitions](../9-ai-sessions/dr-sessions.md#ai-agent-record-fields).
+
+| Parameter | Required | Meaning |
+|-----------|----------|---------|
+| `definition` | Yes | Literal `hive://ai_agent/<name>` reference. The name uses ASCII letters, digits, underscores, hyphens or dots; paths, percent encoding, `..` and a standalone `.` are rejected. Inline credentials and templated definitions are unsupported. |
+| `prompt` | No | User prompt, evaluated as a template against the event. |
+| `data` | No | Dictionary of event extraction mappings, with the same semantics as `start ai agent`. Rule keys override the record's extracted keys. |
+| `response_schema` | No | JSON Schema dictionary for structured output, passed through the provider's native structured-output API. Use a schema supported by your selected model/provider. |
+| `max_tokens` | No | Integer output token limit, 1–32768. Overrides the record's `max_tokens`; otherwise the record or service default (512) applies. |
+| `timeout` | No | Integer seconds, 1–60. Default: 20. Bounds the request, including a wait for an identical in-flight request. |
+| `cache_ttl` | No | Integer seconds, 0–86400. Default: 3600. Set 0 to disable response caching. |
+| `metadata_rules` | No | Detection logic evaluated against the response metadata. Omit to match any successful call. |
+
+Schemas must be self-contained and are limited to 16 KiB, 256 JSON nodes and 16 levels of nesting. External references cannot fetch network or file resources. Responses are validated against the original schema even when provider-specific structured-output grammars need a transformed version.
+
+The record's `prompt` supplies the system message. The rule's rendered `prompt` and the merged extracted data supply the user message; data is appended as an **Event data:** fenced JSON block. The model is instructed to return a single JSON object. The operator makes no tool calls and starts no agent session.
+
+If the answer parses as a JSON object, that object is the metadata. Without `response_schema`, other answers become `{"text": "<answer>"}`, which you can inspect at `path: text`. With a schema, non-object or schema-invalid answers produce an operator error and no match. Metadata paths are relative to this object, so use `verdict`, rather than `event/verdict`. On a match, the answer is attached to the detection's `mtd` under `ai_agent_<name>`, like lookup metadata. Answers are bounded to 64 KiB; oversized replies produce an operator error. A nested metadata operator can contribute its own metadata using the same behavior as `lookup`.
+
+With `metadata_rules`, the operator matches only when the call succeeds **and** the metadata rule matches. Without it, any successful call matches; that does not itself establish whether an event is malicious. `not: true` reverses a successful match decision. A timeout, provider/authentication error, unavailable definition, saturation or resource ACL refusal produces an operator error and no match, including with `not: true`.
+
+Treat event fields as untrusted input: they can contain instructions designed to influence the model. Keep classification instructions in the system prompt, combine model decisions with deterministic predicates, and validate behavior before using AI verdicts to trigger automated response actions.
+
+**Latency and cost:** `and` evaluates rules in order and short-circuits. Put `ask ai` last, after event type, platform and literal-field filters. An uncached evaluation waits for the model and consumes provider tokens. Choose a small output limit and extract only the data the model needs. Response caching is bounded and scoped to the organization and the effective request, including the agent definition; it is an optimization, so even within the TTL an evicted entry or another service instance can make a new call. Setting `cache_ttl: 0` increases calls and cost. In-flight limits fail fast instead of queueing excess calls.
+
+Event data is sent to the configured provider. The same resource ACL egress restrictions as `start ai agent` apply, including data in the prompt and extraction mappings. Keep API credentials in [Hive Secrets](../7-administration/config-hive/secrets.md).
+
+**Testing and supported contexts:** saving a valid rule does not call the model. Save-time `tests:` and historical replay have no AI callback; when evaluation reaches `ask ai`, they report `ask ai is not supported in this context`. A test that short-circuits before `ask ai` can still validate earlier filters. Test the AI verdict on live events in a controlled organization. Mail signal and cloud posture policy rules reject this operator when saved.
+
 ### scope
 
 In some cases, you may want to limit the scope of the matching and the `path` you use to be within a specific part of the event. The `scope` operator allows you to do just that, reset the root of the `event/` in paths to be a sub-path of the event.
