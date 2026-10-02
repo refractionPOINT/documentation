@@ -108,7 +108,10 @@ leaves the metadata permission unverified. Per-vault access policies, RBAC,
 firewalls and private endpoints are checked during the sweep.
 
 Collection uses a stable sorted window of the first 50 vaults per subscription per pass and 100 metadata
-requests / 2,000 items per vault. The window does not rotate: subscriptions
+requests / 2,000 items per vault. Optional metadata reads use at most five minutes
+of the vault collection task, reserving time to retain ARM inventory and logging
+observations. A metadata timeout keeps expiry unassessed while preserving those
+vault facts. The window does not rotate: subscriptions
 with more than 50 vaults remain **NOT_ASSESSED** for clean expiry compliance,
 and later vaults are not probed. An unread or capped list keeps clean expiry
 compliance **NOT_ASSESSED**, while an observed enabled version without an
