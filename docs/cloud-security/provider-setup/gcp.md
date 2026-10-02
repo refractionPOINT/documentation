@@ -256,9 +256,9 @@ Each adds one inventory or analysis surface. Skipping one leaves that surface
 
     Three limits are worth knowing up front:
 
-    - **Images are not inventoried yet.** A vulnerable image appears as a
-      finding subject, not in Inventory or the topology, and nothing links it to
-      the workloads that run it.
+    - **Artifact Analysis is not a registry catalog.** Use the
+      [Code Security](../code-security/index.md) image browser for image
+      inventory and links to workloads running a digest.
     - **An enabled verdict is about the API, not every repository.** We read
       whether Artifact Analysis answers for the project. That does not prove
       on-push scanning is configured for every repository.
@@ -310,24 +310,25 @@ Each adds one inventory or analysis surface. Skipping one leaves that surface
     IAM** in addition to Kubernetes RBAC, so the same service-account key you
     already connected reaches each cluster's Kubernetes API directly.
 
-    **Both required roles already cover it, independently.** `roles/viewer`
-    contains every permission this uses, and so does
-    `roles/iam.securityReviewer` — `container.pods.list`,
+    **The required `roles/iam.securityReviewer` grant already covers it** — `container.pods.list`,
     `container.namespaces.list`, `container.deployments.list`,
     `container.statefulSets.list`, `container.daemonSets.list`,
     `container.cronJobs.list`, `container.jobs.list`,
     `container.replicaSets.list`. Since `roles/iam.securityReviewer` is
-    required anyway, **the least-privilege alternative works too, with nothing
-    added**.
+    required, **no extra role is needed for the Kubernetes object reads**.
+    Google documents the permissions in its
+    [Security Reviewer role](https://docs.cloud.google.com/iam/docs/roles-permissions/iam#iam.securityReviewer).
 
     `roles/container.viewer` is worth adding for exactly one case: it is the
-    only one of these that carries `container.clusters.connect`, which is
+    read-only role that carries `container.clusters.connect`, which is
     required to reach a cluster through its **DNS-based control-plane
-    endpoint**. If you are using that endpoint (see below), grant it.
+    endpoint**. If you are using that endpoint (see below), grant it. See
+    Google's [DNS endpoint access guidance](https://docs.cloud.google.com/kubernetes-engine/docs/how-to/latest/network-isolation#define-access-to-the-dns-based-endpoint).
 
-    The reads are **list-only, and metadata-only**. Secrets, ConfigMap values,
-    pod logs and `exec` are never read, and the credential has no permission to
-    write anything to a cluster.
+    Collection uses **read-only list requests** for namespaces, controllers
+    and pods. It retains workload configuration and runtime image metadata.
+    It does not request Secrets, ConfigMaps, pod logs or `exec`, and the
+    listed roles do not grant Kubernetes write access.
 
 !!! warning "A cluster we cannot reach on the network is reported as partial, not empty"
     The connection talks to each cluster's **control-plane endpoint**. Two
@@ -351,7 +352,9 @@ Each adds one inventory or analysis surface. Skipping one leaves that surface
       for a private control plane and is not subject to authorized networks —
       this is the option we recommend, and it needs no addresses from us. It
       does need `roles/container.viewer` on the connection's service account,
-      because that endpoint additionally checks `container.clusters.connect`;
+      because that endpoint additionally checks `container.clusters.connect`.
+      VPC Service Controls can still restrict access; allow the connection
+      identity through any applicable service perimeter;
     - or allowlist our egress in the cluster's **authorized networks**. Ask
       support for the current addresses for your region rather than inferring
       them: they are per-datacenter and they change.
