@@ -31,7 +31,10 @@ mailbox, sender, free text, placement, direction, lane, score and IOC pivots.
 Switching views keeps the filters and their badges. Omitted user-reported state
 leaves that dimension unrestricted. Filters combine across dimensions and allow
 alternatives within one dimension. Unsupported combinations show an error instead
-of silently removing a filter.
+of silently removing a filter. When a filtered page comes back empty while more
+results remain, the queue shows **Still searching** and keeps loading, and after
+twenty empty pages in a row offers **Keep searching** rather than claiming that
+nothing matched.
 
 A copy filter includes a group when a copy matches the complete filter set.
 The row still describes the whole group: subject and sender, representative
