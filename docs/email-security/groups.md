@@ -14,6 +14,10 @@ several groups. Group membership is stricter than campaign similarity.
 The organization-scoped `group_id` combines the normalized Message-ID, sender
 SMTP address, normalized subject, From/sender display names, the sets of
 registrable Reply-To and link domains, and the SHA-256 digests of attachments.
+For links to IP addresses or hosts with no registrable parent, the normalized
+host value participates instead. Relative paths without a host contribute no
+link domain. Different IP destinations stay separate; equivalent IPv6 spellings
+and host capitalization do not split copies.
 Inline raster images displayed in the body are excluded; inline PDFs, SVGs and
 other files remain attachments for identity purposes.
 
