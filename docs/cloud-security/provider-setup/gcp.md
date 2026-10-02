@@ -317,7 +317,7 @@ Each adds one inventory or analysis surface. Skipping one leaves that surface
     `container.replicaSets.list`. Since `roles/iam.securityReviewer` is
     required, **no extra role is needed for the Kubernetes object reads**.
     Google documents the permissions in its
-    [Security Reviewer role](https://docs.cloud.google.com/iam/docs/roles-permissions/container#iam.securityReviewer).
+    [Security Reviewer role](https://docs.cloud.google.com/iam/docs/roles-permissions/container).
 
     `roles/container.viewer` is worth adding for exactly one case: it is the
     read-only role that carries `container.clusters.connect`, which is
