@@ -99,6 +99,8 @@ typing a justification to look at the queue.
 Managing connections and policy uses the ordinary Hive permissions for the
 `mailsec_provider`, `mailsec_policy`, `dr-mail`, `secret` and `lookup` hives.
 
+Read [collection and history coverage](pipeline.md#collection-and-history-coverage) to understand the Overview badge and informational outcomes.
+
 ## Where to go next
 
 | | |
