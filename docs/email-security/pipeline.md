@@ -491,6 +491,7 @@ These fields are available in the coverage response:
 | `connections.state` | The worst configured connection's health. No configured connection is `unconfigured`, rather than healthy. |
 | `mailboxes.error` | Mailboxes whose protection could not be established. Deliberately excluded mailboxes are separate. |
 | `ingest_errors.total` / `by_stage` | Real permanent ingestion failures in the requested window, including exhausted retries, authentication failures, unreadable oversized messages, and unsafe parsing failures. |
+| `ingest_errors.recent[].category` | Structured failure cause: `auth`, `mailbox_gone`, `oversized`, `fetch`, `parse`, `dead_lettered`, `binding`, `emit`, or `other`. The same category appears on `EMAIL_INGEST_ERROR`; missing or unknown categories display as `other`, without guessing from diagnostic text. |
 | `ingest_errors.pending` / `undelivered` | Failure notices still waiting to be delivered, or notices whose delivery was abandoned. Pending notices cover the whole retained backlog, even outside the requested window. |
 | `removed_before_scan.total` | Work queued during the requested window whose message was confirmed removed before scanning. This is informational and does not count as an ingestion failure. Retries of the same queued work do not inflate the count. |
 | `volume.parse_degraded` / `parse_degraded_rate` | Messages that were successfully scanned using best-effort parsing because their format was malformed. A small count below the threshold above does not raise the badge. |
