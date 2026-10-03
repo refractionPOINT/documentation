@@ -2,7 +2,8 @@
 
 --8<-- "includes/email-security-beta.md"
 
-A message group represents one email delivered to several recipients. Open
+A message group represents one email delivered to several recipients, including
+per-recipient personalization. Open
 **Email Security → Messages** and choose **Groups** in the **Messages | Groups**
 switch to triage the copies together. Groups is the default when no view has been
 chosen for the organization. A campaign relates similar messages and may contain
@@ -10,13 +11,29 @@ several groups. Group membership is stricter than campaign similarity.
 
 ## Identity and the queue
 
-The organization-scoped `group_id` combines the normalized Message-ID with the
-sender, Reply-To, subject and message content. Reusing a legitimate Message-ID
-with different content does not put the forged email into the legitimate group.
-Recipient-specific delivery headers and supported Safe Links wrapping do not
-create separate identities. Missing or truncated identity uses an individual
-message identity. Other content changes, including personalized links, can split
-copies into separate groups; inspect instances before applying remediation.
+The organization-scoped `group_id` combines the normalized Message-ID, sender
+SMTP address, normalized subject, From/sender display names, the sets of
+registrable Reply-To and link domains, and the SHA-256 digests of attachments.
+For links to IP addresses or hosts with no registrable parent, the normalized
+host value participates instead. Relative paths without a host contribute no
+link domain. Different IP destinations stay separate; equivalent IPv6 spellings
+and host capitalization do not split copies.
+Inline raster images displayed in the body are excluded; inline PDFs, SVGs and
+other files remain attachments for identity purposes.
+
+Copies can share a group despite personalized greetings or footers, tracking and
+unsubscribe URL paths, queries or fragments, Reply-To local-part tokens, different
+HTML presentation and recipient-specific delivery headers. A copy reusing the
+same Message-ID, sender and subject with a different link-domain or attachment
+set stays separate. Group membership does not establish that every copy has the
+same body, engine verdict or disposition; inspect instances and the remediation
+preview before acting.
+
+Missing or invalid Message-ID or sender, or incomplete identity inputs, produce
+an individual message identity. Unrelated parser warnings do not split copies
+when all identity inputs are complete. The current identity version applies only
+to newly ingested messages. Existing stored group IDs remain unchanged, so older
+and newer groups can coexist for the same send; no historical regrouping occurs.
 
 The default queue shows groups needing triage: malicious or suspicious copies,
 medium-or-higher rule severity, or user-reported mail. An analyst benign revision
