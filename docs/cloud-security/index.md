@@ -23,6 +23,7 @@ rules, Cases, and Outputs you already use.
 | **Data security (DSPM)** | Which data stores exist, which are sensitive (you declare it by policy), and which sensitive stores are exposed. |
 | **AI security (AISPM)** | Your OpenAI and Anthropic organizations as first-class estate: members, API keys, projects, and posture — with the same findings and compliance lenses (`nist-ai-rmf`, `owasp-llm`). |
 | **Compliance** | Per-control pass/fail assessment of frameworks over the live estate, whole-estate or scoped to named assignments. |
+| **Entity Pivot** | Resolve identifiers into User and Host entities with confidence, relationships and permission-aware activity. [Availability and usage](entity-pivot.md). |
 | **CAASM** | A merged third-party asset inventory (EDR / IdP / MDM / scanner sources, including LimaCharlie's own sensors) with coverage-gap and device-posture findings — "seen by the identity provider, no EDR". |
 | **Security graph & topology** | An explorable graph of resources, identities, and their relationships (`can_reach`, `exposed_to`, `has_permission_on`, `can_assume`, …) plus an aggregated estate topology view, with a query language and saved queries. |
 | **Runtime fusion** | Bidirectional resolution between LimaCharlie sensors and the cloud assets they run on — pivot from a cloud finding to the live endpoint and back. |
