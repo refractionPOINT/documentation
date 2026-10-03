@@ -478,9 +478,9 @@ mailboxes, and plain-language failure summaries. Expand **Technical details** fo
 the provider error and processing stage.
 
 The badge appears when a connection is failing or degraded, a mailbox has an
-error, a real ingestion failure or undelivered failure notice exists, message
-telemetry is overdue, or historical import has unreadable mailboxes or skipped
-messages. Degraded parsing needs attention only when it affects **at least 1%** of
+error, a real ingestion failure exists, a failure notice is pending or
+undelivered, message telemetry is overdue, or historical import has unreadable
+mailboxes, skipped messages or skipped mailboxes. Degraded parsing needs attention only when it affects **at least 1%** of
 messages in the requested window **and at least 10 messages**. For example, 14
 messages out of 17,629 is informational; 10 out of 1,000 needs attention.
 
