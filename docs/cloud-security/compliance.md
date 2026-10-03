@@ -1,9 +1,11 @@
 # Compliance
 
 Cloud Security evaluates compliance frameworks continuously against the live
-estate: each control maps to detection rules, and a control fails when open
-findings prove the violation — so the compliance report is always as fresh
-as the last sweep, with finding-level evidence per control.
+estate. Controls combine observed configuration, findings and, where required,
+scoped manual evidence. A finding can prove a violation even when collection is
+partial. A clean result receives credit only after the required collection and
+assessment finish against the current connection settings. A report is an
+assessment of that evidence, not certification of the entire framework.
 
 ## The report
 
@@ -23,9 +25,15 @@ and `owasp-llm` are AI frameworks: they assess the OpenAI and Anthropic estate
 connected through the [AI providers](providers.md#ai-security-aispm).
 `owasp-top10` (OWASP Top 10:2021, mapped by CWE) and `cis-supply-chain` (the CIS
 Software Supply Chain Security Guide's *Source Code* and *Dependencies*
-sections) are graded off [Code Security](code-security/results.md#compliance) and apply only when a
-GitHub organization is connected. The set
-grows over time, so `limacharlie cloudsec compliance frameworks`
+sections) use [Code Security](code-security/results.md#compliance), GitHub
+configuration and manual evidence, and apply to connected GitHub organizations.
+The Supply Chain dependency scanner checks combine observed settings across active
+GitHub repositories with code-scan observations under your selected policy. They
+do not certify complete software composition analysis across every repository.
+OWASP A06/A08 and CIS Supply Chain 3.1.1 can FAIL from observed code findings;
+their clean assessment currently remains unverified because the required code
+evaluation completion evidence is unavailable.
+The set grows over time, so `limacharlie cloudsec compliance frameworks`
 (`GET /compliance/frameworks`) — which carries each framework's `id`, `name`,
 `version`, and control counts — is the source of truth for valid
 `--framework` values.
@@ -43,8 +51,9 @@ unchanged, and you move to the newer one when you are ready:
 | `cis-m365` | CIS Microsoft 365 Foundations Benchmark (v4.0 subset) | 26 |
 | `cis-m365-v7` | CIS Microsoft 365 Foundations Benchmark v7.0.0 | 160: 143 automated, 17 manual |
 
-The newer versions carry the full benchmark. Each control carries its CIS
-recommendation number (`external_id`, for example `5.1.2.3`) with a title and a
+The newer catalogs include every benchmark control; collection support and
+manual requirements still determine which controls can be assessed. Each control
+carries its CIS recommendation number (`external_id`, for example `5.1.2.3`) with a title and a
 description of what LimaCharlie checks, written by LimaCharlie. The benchmark
 text itself is published by CIS at
 [cisecurity.org](https://www.cisecurity.org/cis-benchmarks).
@@ -65,10 +74,14 @@ text itself is published by CIS at
   [certificate mode](provider-setup/entra.md#authentication-modes). The Entra half of
   an `azure` connection reads the Microsoft Graph settings only; Exchange Online,
   Purview, Teams and Power BI / Fabric are read through an `entra` connection.
-- **`cis-m365`** (v4.0) is graded off the Microsoft Entra directory. It covers the
-  benchmark's Entra chapter and reports NOT_ASSESSED for the admin centers it does
-  not collect (Defender, Purview, Exchange, SharePoint, Teams). It applies to a
-  tenant connected as an `entra` provider, or as the Entra half of an `azure` one.
+- **`cis-m365`** (v4.0) covers a benchmark selection. Its Entra checks apply to
+  an `entra` provider or the Entra half of an `azure` connection. An `entra`
+  connection also supplies the named v7 reads reused by legacy checks: password
+  expiration, common attachment filtering, unified audit logging, privileged-role
+  access review definitions, SharePoint external sharing and Teams anonymous
+  meetings. The non-Graph reads need certificate mode as described above. This
+  reuse does not assess every control in those admin centers or change an
+  assignment to the v7 benchmark.
 
 !!! note "Licence-gated Microsoft 365 controls"
     37 `cis-m365-v7` controls grade a feature that exists only with a specific
@@ -83,26 +96,30 @@ text itself is published by CIS at
 
 The report is per-control, and each control lands in one of four states:
 
-- **PASS** — no open finding proves a violation of the control.
+- **PASS** — every required input was read, the relevant detectors completed,
+  no open finding proves a violation, and any required manual evidence is valid
+  for the assessed scope.
 - **FAIL** — one or more open findings prove it; their `finding_id`s are
   attached as evidence.
-- **NOT_ASSESSED** — the control cannot be evaluated automatically. These are
-  the manual / attestation controls (policy documents, board sign-off,
-  interview evidence): the framework marks them as not auto-assessable, so no
-  rule is run and no verdict is invented. A control also lands here when the
-  detection that would have decided it never ran — including when a
-  [`rules` policy](custom-rules.md#compliance-interaction) has **disabled every
+- **NOT_ASSESSED** — evidence is missing or unverified. This includes unread,
+  denied, capped or stale collection; changed connection settings awaiting a
+  successful collection; incomplete assessment; and manual requirements without
+  valid scoped evidence. A partly automated control can FAIL from observed
+  counterevidence, but needs its manual requirements satisfied to PASS. A control
+  also lands here when the detection that would have decided it never ran —
+  including when a [`rules` policy](custom-rules.md#compliance-interaction) has **disabled every
   rule the control relies on** and it has no other basis to be graded from. A
   zero-violation result from a detector that did not run is not evidence of
   compliance, so it is never reported as a PASS.
-- **NOT_APPLICABLE** — the control has nothing to assess in *this* estate:
-  either the framework's cloud has no resources connected, or the control
-  declares no resource types to apply to.
+- **NOT_APPLICABLE** — complete observation proves that the control has no
+  eligible resources in this scope, or authoritative connection inventory proves
+  its provider is absent. A newly connected, unread or failed provider is
+  **NOT_ASSESSED**, even if no resources have been inventoried yet.
 
 A framework scoped to a single cloud assesses only that cloud's findings —
 `cis-aws` looks at AWS findings, `cis-gcp` at GCP. A framework with no
-in-scope resource types comes back **NOT_APPLICABLE** rather than a vacuous
-PASS, so an empty estate never reads as compliant.
+eligible resources comes back **NOT_APPLICABLE** only when absence is established,
+so an unread estate never reads as compliant.
 
 ### How the score is computed
 

@@ -100,6 +100,15 @@ script grants all of them (the SharePoint one only when you
 | **OrgSettings-Forms.Read.All** | — | Microsoft Forms settings (phishing protection, external sharing). |
 | **SharePointTenantSettings.Read.All** | — | SharePoint and OneDrive sharing settings, through Microsoft Graph. |
 
+Legacy per-user MFA assessment uses the Microsoft Graph beta
+[authentication requirements read](https://learn.microsoft.com/en-us/graph/api/authentication-get?view=graph-rest-beta)
+with application `Policy.Read.All`; the required `Directory.Read.All` permission
+already provides the user inventory. It reads at most 1,000 users, under a
+separate time budget. Larger directories, refusals, timeouts or unread user
+states remain NOT_ASSESSED. An enabled or enforced state that was read can
+still prove a violation after a later read fails; incomplete reads never prove
+PASS.
+
 ### Grants outside Microsoft Graph
 
 | Grant | Certificate mode only | What it reads |

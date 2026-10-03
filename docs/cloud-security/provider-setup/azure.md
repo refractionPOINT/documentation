@@ -42,6 +42,7 @@ licensed, Conditional Access and sign-in activity.
 
 | Grant | Unlocks | Preflight check |
 |---|---|---|
+| **Key Vault Reader** RBAC role (RBAC vaults), or **Secret permissions: List** (legacy access-policy vaults) | Enabled secret-version expiration metadata. No secret values are read | `keyvault_secret_metadata` (one representative vault) |
 | **Policy.Read.All** (application) | Conditional Access policy posture | *(collected during the sweep)* |
 | **AuditLog.Read.All** (application) | Two things: last-sign-in / dormancy enrichment on identities, and each identity's **MFA-registration state** (whether the user is MFA-registered / MFA-capable, from the authentication-methods registration report). **Requires an Entra ID P1 or P2 licence** — without the licence the reports are unavailable regardless of consent | `signin_activity` covers the sign-in half only |
 | **RoleManagement.Read.Directory** (application) | Directory role assignments and PIM eligibility | *(collected during the sweep)* |
@@ -85,6 +86,35 @@ unobserved while everything else still collects.
     state is read during the sweep, so if that particular report is denied or
     unlicensed the provider test still passes and the symptom is identities with
     **no MFA-registration information** rather than a failing check.
+
+### Key Vault secret expiration metadata
+
+Subscription **Reader** supplies vault inventory, but it does not grant data-plane
+secret metadata. For vaults that use RBAC, open the vault's **Access control (IAM)**
+and assign **Key Vault Reader** to the collector's existing service principal.
+You can also assign it at a subscription scope that covers the intended vaults.
+For a vault using legacy access policies, grant **Secret permissions → List**.
+The detector needs neither **Get** nor **Key Vault Secrets User**.
+
+Microsoft documents that [Key Vault Reader](https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles/security#key-vault-reader)
+can read secret properties while excluding values. The collector lists metadata
+for current and older secret versions, counts enabled versions without expiration,
+and reports the vault and count. CIS Azure 8.1 grades currently enabled secrets from the secrets list; historical enabled versions have a separate posture finding and do not fail that control. Findings do not include secret names or values. Disabled secrets and versions are excluded.
+
+The optional provider test probes one discovered vault with a metadata list.
+Permission on that vault does not prove access to every vault. No available vault
+leaves the metadata permission unverified. Per-vault access policies, RBAC,
+firewalls and private endpoints are checked during the sweep.
+
+Collection uses a stable sorted window of the first 50 vaults per subscription per pass and 100 metadata
+requests / 2,000 items per vault. Optional metadata reads use at most five minutes
+of the vault collection task, reserving time to retain ARM inventory and logging
+observations. An incomplete current list keeps expiry unassessed while preserving those vault facts. A historical-version failure preserves a completed current-secret audit. The window does not rotate: subscriptions
+with more than 50 vaults remain **NOT_ASSESSED** for clean expiry compliance,
+and later vaults are not probed. An unread or capped list keeps clean expiry
+compliance **NOT_ASSESSED**, while an observed currently enabled secret without an expiration date can still fail. A complete current list with no enabled secrets is
+**NOT_APPLICABLE**. These reads currently support public Azure vault endpoints;
+private or sovereign-cloud endpoints that cannot be reached remain unassessed.
 
 ## Create the app registration
 
@@ -221,6 +251,7 @@ the Azure-specific checks follow.
 | `arm_reader` | ✅ | Reader is not assigned on the configured subscription — no resource inventory. |
 | `graph_directory` | ✅ | `Directory.Read.All` not consented — no identity inventory. |
 | `subscriptions` | — | Subscription fan-out disabled; only the configured subscription is swept. |
+| `keyvault_secret_metadata` | — | Secret metadata is unavailable on the representative vault; expiry stays unassessed. No discovered vault leaves permission unverified. |
 | `defender_vuln` | — | Workload **and container image** vulnerability findings unavailable — both are rows in the same Resource Graph table behind the same grant, so one check covers both. |
 | `signin_activity` | — | Last-sign-in and dormancy enrichment unavailable (usually a missing Entra ID P1/P2 licence). |
 
