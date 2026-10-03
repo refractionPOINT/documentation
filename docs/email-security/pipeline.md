@@ -469,3 +469,45 @@ of them moved.
 | [Messages & Triage](messages.md) | The queue, the drawer, actions and the audit trail |
 | [Policy Reference](policy.md) | Every `mailsec_policy` record type |
 | [Troubleshooting](troubleshooting.md) | When a stage does not do what this page says |
+
+## Collection and history coverage
+
+Overview's **Collection needs attention** badge identifies collection failures that
+need investigation. Open **View coverage** to see the counts, the affected
+mailboxes, and plain-language failure summaries. Expand **Technical details** for
+the provider error and processing stage.
+
+The badge appears when a connection is failing or degraded, a mailbox has an
+error, a real ingestion failure exists, a failure notice is pending or
+undelivered, message telemetry is overdue, or historical import has unreadable
+mailboxes, skipped messages or skipped mailboxes. Degraded parsing needs attention only when it affects **at least 1%** of
+messages in the requested window **and at least 10 messages**. For example, 14
+messages out of 17,629 is informational; 10 out of 1,000 needs attention.
+
+These fields are available in the coverage response:
+
+| Field | Meaning |
+|---|---|
+| `connections.state` | The worst configured connection's health. No configured connection is `unconfigured`, rather than healthy. |
+| `mailboxes.error` | Mailboxes whose protection could not be established. Deliberately excluded mailboxes are separate. |
+| `ingest_errors.total` / `by_stage` | Real permanent ingestion failures in the requested window, including exhausted retries, authentication failures, unreadable oversized messages, and unsafe parsing failures. |
+| `ingest_errors.recent[].category` | Structured failure cause: `auth`, `mailbox_gone`, `oversized`, `fetch`, `parse`, `dead_lettered`, `binding`, `emit`, or `other`. The same category appears on `EMAIL_INGEST_ERROR`; missing or unknown categories display as `other`, without guessing from diagnostic text. |
+| `ingest_errors.pending` / `undelivered` | Failure notices still waiting to be delivered, or notices whose delivery was abandoned. Pending notices cover the whole retained backlog, even outside the requested window. |
+| `removed_before_scan.total` | Work queued during the requested window whose message was confirmed removed before scanning. This is informational and does not count as an ingestion failure. Retries of the same queued work do not inflate the count. |
+| `volume.parse_degraded` / `parse_degraded_rate` | Messages that were successfully scanned using best-effort parsing because their format was malformed. A small count below the threshold above does not raise the badge. |
+| `emission.backlog` | Indexed messages whose telemetry is overdue beyond the repair grace period. Messages still processing within that grace period do not raise the badge. |
+| `backfill.mailboxes_unreadable` / `messages_skipped` / `mailboxes_skipped` | Historical import gaps, with separate message and mailbox counts. |
+| `backfill.mailboxes_skipped_unmeasured` | Mailboxes for which skipped-message counts are unavailable. This is incomplete coverage information, not proof of an ingestion failure. |
+
+**Removed before scanning** means the user deleted or moved a message between its
+notification and the fetch. Microsoft sends another notification for a moved
+message under its new identifier; Google retains its message identifier across
+label moves. A fresh Google not-found response is retried for two minutes to allow
+for delivery propagation before it is counted as a removal. Confirmed removals
+require no action and produce no `EMAIL_INGEST_ERROR` event.
+
+The removal count uses the original queue time, not the time of a later retry or
+the sender's clock. It covers `[window_start, window_end)` and is retained for 35
+days. Independently queued notifications in different minutes can count
+separately. Windows extending beyond retained coverage cannot reconstruct older
+counts. Missing coverage fields are shown as unavailable, rather than as zero.
