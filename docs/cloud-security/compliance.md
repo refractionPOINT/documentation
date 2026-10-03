@@ -27,6 +27,12 @@ connected through the [AI providers](providers.md#ai-security-aispm).
 Software Supply Chain Security Guide's *Source Code* and *Dependencies*
 sections) use [Code Security](code-security/results.md#compliance), GitHub
 configuration and manual evidence, and apply to connected GitHub organizations.
+The Supply Chain dependency scanner checks combine observed settings across active
+GitHub repositories with code-scan observations under your selected policy. They
+do not certify complete software composition analysis across every repository.
+OWASP A06/A08 and CIS Supply Chain 3.1.1 can FAIL from observed code findings;
+their clean assessment currently remains unverified because the required code
+evaluation completion evidence is unavailable.
 The set grows over time, so `limacharlie cloudsec compliance frameworks`
 (`GET /compliance/frameworks`) — which carries each framework's `id`, `name`,
 `version`, and control counts — is the source of truth for valid
@@ -68,10 +74,14 @@ text itself is published by CIS at
   [certificate mode](provider-setup/entra.md#authentication-modes). The Entra half of
   an `azure` connection reads the Microsoft Graph settings only; Exchange Online,
   Purview, Teams and Power BI / Fabric are read through an `entra` connection.
-- **`cis-m365`** (v4.0) is graded off the Microsoft Entra directory. It covers the
-  benchmark's Entra chapter and reports NOT_ASSESSED for the admin centers it does
-  not collect (Defender, Purview, Exchange, SharePoint, Teams). It applies to a
-  tenant connected as an `entra` provider, or as the Entra half of an `azure` one.
+- **`cis-m365`** (v4.0) covers a benchmark selection. Its Entra checks apply to
+  an `entra` provider or the Entra half of an `azure` connection. An `entra`
+  connection also supplies the named v7 reads reused by legacy checks: password
+  expiration, common attachment filtering, unified audit logging, privileged-role
+  access review definitions, SharePoint external sharing and Teams anonymous
+  meetings. The non-Graph reads need certificate mode as described above. This
+  reuse does not assess every control in those admin centers or change an
+  assignment to the v7 benchmark.
 
 !!! note "Licence-gated Microsoft 365 controls"
     37 `cis-m365-v7` controls grade a feature that exists only with a specific
