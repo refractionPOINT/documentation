@@ -202,7 +202,8 @@ limacharlie cloudsec provider test --input-file provider.yaml
 Organization governance includes owner counts, default repository permission,
 and member repository/team creation settings when GitHub returns those fields.
 More than three owners is a LimaCharlie review baseline; CIS still requires a
-manual judgement about the minimum owners your organization needs.
+manual judgement about the minimum owners your organization needs; an owner
+count alone does not fail that CIS control.
 
 Default-branch configuration combines classic branch protection and active
 repository/organization rulesets. **Administration → Read-only** supplies classic
