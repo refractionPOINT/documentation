@@ -179,7 +179,10 @@ To declare a custom sensor key, set `client_options.mapping.sensor_identity_type
 next to `client_options.mapping.sensor_key_path`. Accepted nonempty values are
 exactly the four lowercase values above. Unsupported values fail configuration
 validation. A declaration without `sensor_key_path` does not override a parser's
-default; omitting the declaration preserves that default.
+default. When a configured `sensor_key_path` supplies a nonempty custom key, also
+set `sensor_identity_type` to enable identity association; an omitted or empty
+type leaves that custom key undeclared. If the configured path is absent or empty
+in an event, the parser's original key and identity declaration remain in use.
 
 The raw sensor key must be nonempty, valid UTF-8 and at most **512 UTF-8 bytes**.
 An invalid or oversized key is not truncated: its identity declaration is omitted
