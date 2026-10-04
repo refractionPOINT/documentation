@@ -17,8 +17,8 @@ Ownership relates a User to a Host; they remain separate entities.
 
 ## Investigate an entity
 
-Open **Cloud Security → Entities** and search with an identifier
-prefix. Results are grouped into Users and Hosts. Search covers every identifier
+Open **Entities** from the top level of the console sidebar and search with an
+identifier prefix. Results are grouped into Users and Hosts. Search covers every identifier
 type below, requires at least two characters and accepts up to 512 UTF-8 bytes.
 You can also start from Identity 360, a sensor page or an Email Security message's
 sender or mailbox address.
@@ -37,7 +37,7 @@ the first result. Possible matches are displayed separately as **unconfirmed**.
 
 | Identifier type | Meaning |
 |---|---|
-| `email` | Mailbox address, directory email, user principal name or reported alias. |
+| `email` | Mailbox address, user principal name, sign-in email or directory alias. An editable directory mail attribute (Entra `mail`, Okta secondary email) that matches no sign-in address on the same record is only a possible match. |
 | `entra_object_id` | Microsoft Entra user object ID. |
 | `okta_user_id` | Okta user ID. |
 | `gws_user_id` | Google Workspace user ID. |
