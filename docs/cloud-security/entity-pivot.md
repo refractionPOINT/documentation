@@ -2,7 +2,7 @@
 
 Entity Pivot connects identifiers from Cloud Security, endpoint security and
 Email Security to **User** and **Host** entities. Start with an email address,
-Windows account, hostname, IP address or sensor ID to find the known identities,
+Windows account, GitHub login, hostname, IP address or sensor ID to find the known identities,
 relationships and activity associated with it.
 
 A User represents a principal, including a person, service account or shared
@@ -38,6 +38,7 @@ the first result. Possible matches are displayed separately as **unconfirmed**.
 | Identifier type | Meaning |
 |---|---|
 | `email` | Mailbox address, user principal name, sign-in email or directory alias. An editable directory mail attribute (Entra `mail`, Okta secondary email) that matches no sign-in address on the same record is only a possible match. |
+| `github_login` | GitHub login, normalized to lowercase; links declared adapter users and collected GitHub identities. |
 | `entra_object_id` | Microsoft Entra user object ID. |
 | `okta_user_id` | Okta user ID. |
 | `gws_user_id` | Google Workspace user ID. |
@@ -67,6 +68,42 @@ principal name. **Active on** means a process-owner account was observed on a
 host. **Logged on** means a successful login was observed. Process-owner evidence
 is not proof that someone logged in, and ownership is not proof of current use.
 
+## Adapter identities and external actors
+
+An adapter sensor can represent a user or device rather than an endpoint host.
+Supported parsers declare this meaning automatically; a custom mapping can declare
+`sensor_identity_type` alongside `sensor_key_path`. See
+[Adapter usage](../2-sensors-deployment/adapters/usage.md)
+for the vocabulary, parser defaults and raw-key limits.
+
+- `email` and `github_login` create Users and can join matching directory identities.
+- `username` creates a User, but a shared bare name remains a possible match and
+  never merges users.
+- `device` creates a Host. A valid device hostname can corroborate a unique name
+  from another source. Vendor identifiers remain evidence rather than device
+  identifiers that link across providers; ID-shaped hostnames do not establish a
+  name match.
+- An undeclared adapter sensor does not become an entity based on its platform
+  or hostname alone.
+
+A User known only through an adapter is shown as an **External actor**
+(`attrs.external: true`). This means no directory-backed observation has joined
+that entity; it does not determine whether the actor is malicious. Directory-backed
+users appear before external actors in search results. When directory evidence
+joins the entity, the external designation is removed.
+
+The entity page's **Telemetry sources** section lists attached adapter sensors,
+including sensor ID, platform, identity type and hostname. The card API exposes
+this optional section as `telemetry_sources`, containing objects with `sid`,
+`platform`, `identity_type` and `hostname`. Sensor timeline links require
+`sensor.get`; opening event data still requires the permissions of the destination.
+An absent or empty section means no attached adapter sources were reported by that
+response, not that the entity has never generated telemetry.
+
+Detections activity includes the entity's attached adapter sensor IDs. The same
+`insight.det.get` permission applies. Declarations are picked up on the next sensor
+connection; existing events and sensor names are not backfilled.
+
 ## Permissions
 
 Every entity route requires `cloudsec.get` and an enabled Cloud Security
@@ -76,8 +113,8 @@ subscription. Product links and previews use the caller's own permissions.
 |---|---|
 | Endpoint sightings, recent endpoint activity, historical IP resolution | `insight.evt.get`. Without it, cards and resolution report `sightings: "forbidden"` and omit this evidence; the sightings route returns HTTP 403. |
 | Email activity | `mailsec.get` and an enabled Email Security subscription. |
-| Detections | `insight.det.get`. For a User without `insight.evt.get`, detections use owned hosts only, excluding hosts linked solely by endpoint activity. |
-| Live sensor state | `sensor.get`. |
+| Detections | `insight.det.get`. For a User without `insight.evt.get`, detections include attached adapter sensors and owned hosts, excluding hosts linked solely by endpoint activity. |
+| Live sensor state and sensor timeline links | `sensor.get`; event data additionally requires the destination’s event permissions. |
 | Cloud findings | `cloudsec.get`. |
 
 A forbidden source is not an empty source. Ask an organization administrator to
