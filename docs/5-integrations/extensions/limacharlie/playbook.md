@@ -2,12 +2,10 @@
 
 > LimaCharlie LABS
 
-!!! warning "Python SDK v4 only"
-    The Playbook execution environment runs on the LimaCharlie **Python SDK v4**.
-    The recently released [Python SDK v5](../../../6-developer-guide/sdks/python-sdk.md)
-    is **not yet supported** in playbooks — write playbook code against v4 APIs.
-    See the [Python SDK v4 documentation](../../../6-developer-guide/sdks/python-sdk-v4.md)
-    for the supported `Manager` interface and module layout.
+!!! note "Choosing the Python SDK version"
+    Each playbook runs on either the LimaCharlie [Python SDK v4](../../../6-developer-guide/sdks/python-sdk-v4.md)
+    (the default) or the [Python SDK v5](../../../6-developer-guide/sdks/python-sdk.md).
+    Existing playbooks keep running on v4. See [Python SDK version](#python-sdk-version) below to opt a playbook into v5.
 
 The Playbook Extension allows you to execute Python playbooks within the context of your Organization in order to automate tasks and customize more complex detections.
 
@@ -60,6 +58,31 @@ Here is an example D&R rule starting a new invocation of a playbook.
 
 ### Python example
 
+Using the Python SDK v5:
+
+```python
+from limacharlie.client import Client
+from limacharlie.sdk.organization import Organization
+from limacharlie.sdk.extensions import Extensions
+
+# Client picks up credentials from the environment or ~/.limacharlie.d/config.yaml.
+org = Organization(Client())
+
+# Issue a request to the "ext-playbook" extension.
+response = Extensions(org).request("ext-playbook", "run_playbook", {
+    "name": "my-playbook",
+    "credentials": "hive://secret/my-playbook-api-key",
+    "data": {
+        "some": "data"
+    }
+})
+
+# The returned data from the playbook.
+print(response)
+```
+
+Using the Python SDK v4:
+
 ```python
 import limacharlie
 
@@ -80,11 +103,13 @@ response = ext.request("ext-playbook", "run_playbook", {
 print(response)
 ```
 
+The SDK used to *call* a playbook is independent of the SDK the playbook itself runs on.
+
 ## Playbook structure
 
 A playbook is a normal python script. The only required component is a top level function called `playbook` which takes 2 arguments:
 
-- `sdk`: an instance of the LC Python SDK v4 `limacharlie.Manager`, pre-authenticated to the relevant Organization based on the credentials provided, if any, `None` otherwise.
+- `sdk`: an instance of the LC Python SDK, pre-authenticated to the relevant Organization based on the credentials provided, if any, `None` otherwise. With SDK v4 (the default) it is a `limacharlie.Manager`; with SDK v5 it is a `limacharlie.sdk.organization.Organization`. See [Python SDK version](#python-sdk-version).
 - `data`: the optional JSON dictionary provided as context to your playbook.
 
 The function must return a dictionary with the following optional keys:
@@ -95,6 +120,48 @@ The function must return a dictionary with the following optional keys:
 4. `cat`: a string to use as the category of the detection, if `detection` is specified.
 
 This allows your playbook to return information about its execution, return data, errors or generate a detection. The python `print()` statement is not currently being returned to the caller or otherwise accessible, so you will want to use the `data` in order to return information about the execution of your playbook.
+
+### Python SDK version
+
+The optional `sdk_version` field of the playbook record selects the Python SDK the playbook runs on:
+
+| `sdk_version` | SDK | `sdk` argument |
+|---|---|---|
+| absent, `""` or `"4"` | [Python SDK v4](../../../6-developer-guide/sdks/python-sdk-v4.md) | `limacharlie.Manager` |
+| `"5"` | [Python SDK v5](../../../6-developer-guide/sdks/python-sdk.md) | `limacharlie.sdk.organization.Organization` |
+
+Any other value is rejected when the playbook is saved. In the web app, choose the version with the **Python SDK** selector in the playbook editor. Through the API, CLI or Infrastructure as Code, set `sdk_version` next to `python` in the record's data (see [Infrastructure as Code](#infrastructure-as-code)).
+
+Things to know about SDK v5 playbooks:
+
+- The value returned by `playbook()` must be JSON-serializable.
+- The `is_interactive` request parameter is only supported with SDK v4. A request with `is_interactive` set to `true` for a v5 playbook is rejected.
+- Each v5 execution runs in its own process, and anything the playbook started in the background is stopped when `playbook()` returns.
+
+The following v5 playbook reads a secret and counts the Organization's sensors:
+
+```python
+from limacharlie.sdk.hive import Hive
+
+def playbook(sdk, data):
+  if not sdk:
+    return {"error": "LC API key required"}
+
+  # Read a secret from the secret Hive.
+  my_secret = Hive(sdk, "secret").get("my-secret-name").data["secret"]
+
+  # Organization.list_sensors() is a v5 generator yielding sensor dicts.
+  sensors = [{"sid": s["sid"], "hostname": s.get("hostname")} for s in sdk.list_sensors()]
+
+  return {
+    "data": {
+      "oid": sdk.oid,
+      "sensor_count": len(sensors),
+    }
+  }
+```
+
+The examples below use SDK v4.
 
 ### Example playbook
 
@@ -200,11 +267,10 @@ The current execution environment is based on the default libraries provided by 
 
 - Python
   - `weasyprint`
-  - `flask`
-  - `gunicorn`
-  - `flask`
-  - `limacharlie` (LimaCharlie SDK/CLI)
-  - `lcextension` (LimaCharlie Extension SDK)
+  - `flask` (SDK v4 playbooks only)
+  - `gunicorn` (SDK v4 playbooks only)
+  - `limacharlie` (LimaCharlie SDK/CLI): v4 for SDK v4 playbooks, v5 for SDK v5 playbooks
+  - `lcextension` (LimaCharlie Extension SDK, SDK v4 playbooks only)
   - `scikit-learn` (Python Machine Learning kit)
   - `jinja2`
   - `markdown`
@@ -233,6 +299,30 @@ hives:
                         return {
                             "data": {
                                 "sensors": [s.getInfo() for s in sdk.sensors()]
+                            }
+                        }
+            usr_mtd:
+                enabled: true
+                expiry: 0
+                tags: []
+                comment: ""
+```
+
+To run a playbook on the Python SDK v5, add `sdk_version: "5"` to its data:
+
+```yaml
+hives:
+    playbook:
+        my-v5-playbook:
+            data:
+                sdk_version: "5"
+                python: |-
+                    def playbook(sdk, data):
+                        if not sdk:
+                            return {"error": "LC API key required to list sensors"}
+                        return {
+                            "data": {
+                                "sensors": list(sdk.list_sensors())
                             }
                         }
             usr_mtd:
