@@ -665,6 +665,7 @@ nav:
       - Security Graph & Queries: cloud-security/graph.md
       - Compliance: cloud-security/compliance.md
       - CAASM: cloud-security/caasm.md
+      - Entity Pivot: cloud-security/entity-pivot.md
       - Custom Posture Rules: cloud-security/custom-rules.md
       - Mail Posture Rules: cloud-security/mail-posture-rules.md
       - Configuration Reference: cloud-security/configuration.md

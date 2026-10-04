@@ -74,8 +74,9 @@ certificate, and follow the steps below.
 Every grant except `Directory.Read.All` is optional. Each optional grant feeds
 specific collectors or `cis-m365-v7` controls. Without it, those controls report
 NOT_ASSESSED and name what is missing; nothing else stops working. The setup
-script grants all of them (the SharePoint one only when you
-[opt in](#sharepoint-advanced-settings-opt-in)).
+script grants the settings permissions (the SharePoint one only when you
+[opt in](#sharepoint-advanced-settings-opt-in)). The optional managed-device
+inventory grant below can be added separately.
 
 ### Microsoft Graph application permissions
 
@@ -94,6 +95,7 @@ script grants all of them (the SharePoint one only when you
 | **Policy.Read.DeviceConfiguration** | — | The device registration policy. |
 | **AccessReview.Read.All** | — | Access review definitions (guest and privileged-role reviews). |
 | **RoleManagementPolicy.Read.Directory** | — | PIM role settings (activation approval, duration). |
+| **DeviceManagementManagedDevices.Read.All** | — | Optional Intune managed-device inventory: device identity, reported posture and primary-user ownership for [Entity Pivot](../entity-pivot.md). |
 | **DeviceManagementConfiguration.Read.All** | — | Intune device compliance settings. |
 | **DeviceManagementServiceConfig.Read.All** | — | Intune enrollment restrictions. |
 | **OrgSettings-AppsAndServices.Read.All** | — | Microsoft 365 admin center settings for apps and services. |
@@ -108,6 +110,37 @@ separate time budget. Larger directories, refusals, timeouts or unread user
 states remain NOT_ASSESSED. An enabled or enforced state that was read can
 still prove a violation after a later read fails; incomplete reads never prove
 PASS.
+
+### Intune managed-device inventory (optional)
+
+To add Intune device evidence to [Entity Pivot](../entity-pivot.md) and the
+[CAASM device inventory](../caasm.md), grant the provider app Microsoft Graph
+**Application** permission `DeviceManagementManagedDevices.Read.All` and
+select **Grant admin consent**. Add it to the existing provider app; no separate
+connection is needed. It works with either certificate or client-secret
+credentials. Microsoft requires an active Intune licence for the tenant; see
+[Microsoft’s managed-device API permissions](https://learn.microsoft.com/en-us/graph/api/intune-devices-manageddevice-list?view=graph-rest-1.0).
+
+When managed-device collection is available and enabled, this grant permits
+collection of the reported device name, serial number, Wi-Fi MAC address,
+operating system, primary-user principal name and posture, including compliance
+and encryption when reported. The user principal name can associate a User
+entity with the Host they own. Missing posture remains unknown; ownership does
+not mean that the user is currently active on the device. Ethernet MAC addresses
+are not collected in the initial version.
+
+The grant is **optional** and separate from
+`DeviceManagementConfiguration.Read.All`, which reads compliance settings. Do
+not assume an existing setup script already includes managed-device inventory:
+check the app’s granted permissions and add this application permission if
+needed.
+
+Without the grant, the optional Intune check reports `not_granted`, managed-device
+collection is unavailable, and directory identities and the other provider
+collectors continue working. Previously collected device evidence is preserved
+rather than removed by a denied read; inspect freshness before relying on it.
+Granting consent enables fresh device evidence on a subsequent successful
+collection.
 
 ### Grants outside Microsoft Graph
 
