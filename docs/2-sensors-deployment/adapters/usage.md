@@ -141,6 +141,7 @@ The following configurations allow you to customize the way data is ingested by 
 - `client_options.mapping.parsing_re`: regular expression with [named capture groups](https://github.com/StefanSchroeder/Golang-Regex-Tutorial/blob/master/01-chapter2.markdown#named-matches). The name of each group will be used as the key in the converted JSON parsing.
 - `client_options.mapping.parsing_grok:`  grok pattern parsing for structured data extraction from unstructured log messages. Grok patterns combine regular expressions with predefined patterns to simplify log parsing and field extraction.
 - `client_options.mapping.sensor_key_path`: indicates which component of the events represent unique sensor identifiers.
+- `client_options.mapping.sensor_identity_type`: optionally declares the meaning of that sensor key: `email`, `username`, `github_login` or `device`. It overrides the built-in declaration only when `sensor_key_path` is also supplied. See [Sensor identity declarations](#sensor-identity-declarations).
 - `client_options.mapping.sensor_hostname_path`: indicates which component of the event represents the hostname of the resulting Sensor in LimaCharlie.
 - `client_options.mapping.event_type_path`: indicates which component of the event represents the Event Type of the resulting event in LimaCharlie. It also supports template strings based on each event.
 - `client_options.mapping.event_time_path`: indicates which component of the event represents the Event Time of the resulting event in LimaCharlie.
@@ -149,6 +150,44 @@ The following configurations allow you to customize the way data is ingested by 
 - `client_options.mapping.mappings`: *deprecated*
 - `client_options.mapping.transform`: a Transform to apply to events.
 - `client_options.mapping.drop_fields`: a list of field paths to be dropped from the data before being processed and retained.
+
+### Sensor Identity Declarations
+
+!!! note "Availability"
+    Sensor identity declarations require adapter and ingestion versions that support
+    `sensor_identity_type`. Entity associations also require Entity Pivot to be
+    enabled for your Cloud Security subscription.
+
+A multiplexed adapter creates a separate sensor for each sensor key. A declaration
+explains whether that sensor represents a user or a device, allowing Entity Pivot
+to associate its telemetry with the corresponding entity.
+
+| `sensor_identity_type` | Meaning of the sensor key |
+|---|---|
+| `email` | An email address identifying a user. |
+| `username` | A bare account name in the adapter's namespace. Names alone produce possible matches and never merge users. |
+| `github_login` | A GitHub login, normalized to lowercase for matching. |
+| `device` | The vendor's device identifier. The sensor hostname supplies the device name; the vendor identifier does not link devices across providers. |
+
+Built-in parsers declare `github_login` for `github`, `email` for `1password`, and
+`device` for `crowdstrike`, `sentinel_one`, `carbon_black`, `msdefender`,
+`trend_worryfree` and `fortigate`. Other parsers leave the declaration empty unless
+configured explicitly. An empty declaration does not infer an identity from the
+platform or hostname.
+
+To declare a custom sensor key, set `client_options.mapping.sensor_identity_type`
+next to `client_options.mapping.sensor_key_path`. Accepted nonempty values are
+exactly the four lowercase values above. Unsupported values fail configuration
+validation. A declaration without `sensor_key_path` does not override a parser's
+default; omitting the declaration preserves that default.
+
+The raw sensor key must be nonempty, valid UTF-8 and at most **512 UTF-8 bytes**.
+An invalid or oversized key is not truncated: its identity declaration is omitted
+while telemetry ingestion continues. This bound applies to the raw key before
+identity normalization, independently of the sensor's display hostname.
+
+Existing sensors pick up declarations on their **next connection**. There is no
+backfill of identities from old events or existing sensor names.
 
 ### Parsing
 
