@@ -10,14 +10,14 @@ mailbox owner. A Host represents a machine, including an endpoint or cloud VM.
 Ownership relates a User to a Host; they remain separate entities.
 
 !!! note "Availability"
-    Entity Pivot is being rolled out. The console entry, API readers, MCP tools
-    and CLI commands become available as their respective versions are enabled.
-    A missing console entry or `feature_disabled: true` response means the
+    The Entity Pivot API is available in every region for organizations with
+    Cloud Security. The console page, MCP tools and CLI commands become available
+    with their next releases. A `feature_disabled: true` response means the
     feature is unavailable; it does not mean the organization has no entities.
 
 ## Investigate an entity
 
-When enabled, open **Cloud Security → Entities** and search with an identifier
+Open **Cloud Security → Entities** and search with an identifier
 prefix. Results are grouped into Users and Hosts. Search covers every identifier
 type below, requires at least two characters and accepts up to 512 UTF-8 bytes.
 You can also start from Identity 360, a sensor page or an Email Security message's

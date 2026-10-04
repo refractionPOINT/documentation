@@ -140,8 +140,7 @@ collection is unavailable, and directory identities and the other provider
 collectors continue working. Previously collected device evidence is preserved
 rather than removed by a denied read; inspect freshness before relying on it.
 Granting consent enables fresh device evidence on a subsequent successful
-collection once managed-device collection is enabled. A granted permission alone
-does not enable a feature that is still being rolled out.
+collection.
 
 ### Grants outside Microsoft Graph
 
