@@ -29,7 +29,7 @@ Two things live in the record's metadata rather than in its data:
 - A comment explaining why the rule exists goes in the metadata `comment`.
 - A temporary exception takes a metadata `expiry`. See [A temporary exception](#a-temporary-exception).
 
-Only enabled records apply. Records created without metadata are enabled by default in this hive.
+Only enabled records apply. Records created without metadata are enabled by default in this hive. Setting any metadata on create, such as a comment, tags or an expiry, without also passing `--enabled` stores the record disabled.
 
 ## Rule kinds
 

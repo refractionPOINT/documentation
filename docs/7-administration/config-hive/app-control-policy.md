@@ -77,7 +77,7 @@ See [Permissions](../../8-reference/permissions.md#application-control).
 
 ## Examples
 
-All examples use the CLI generic hive commands. Pass `--oid <oid>` if your CLI is not already pointed at the organization. Records created without metadata are enabled by default in this hive, and the examples pass `--enabled` anyway so the intent is visible.
+All examples use the CLI generic hive commands. Pass `--oid <oid>` if your CLI is not already pointed at the organization. Records created without metadata are enabled by default in this hive, and the examples pass `--enabled` anyway so the intent is visible. Setting any metadata on create, such as a comment, tags or an expiry, without also passing `--enabled` stores the record disabled.
 
 ### A Windows allowlist policy
 
