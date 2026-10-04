@@ -153,6 +153,7 @@ Once the supporting client versions are released, both `cloud_security` and
 | Tool | Purpose |
 |---|---|
 | `cloudsec_entity_pivot` | Resolve `identifier` (optional `type`, `at`), return cards for confirmed unambiguous matches and retain candidates. Possible or ambiguous candidates are not followed automatically. |
+| `cloudsec_entity_search` | Search the `q` identifier prefix, optional `kind`, `limit` (1–100), `cursor`, returning one page with readiness and the next cursor. |
 | `cloudsec_entity_activity` | Activity preview for `entity_id`, optional `since`, `until`, `sources`, preserving per-source status and truncation. |
 
 The CLI command group is `limacharlie cloudsec entity`, with the following
