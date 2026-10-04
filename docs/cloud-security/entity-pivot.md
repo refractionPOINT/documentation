@@ -114,7 +114,8 @@ this optional section as `telemetry_sources`, containing objects with `sid`,
 The declaration source is `parser` or `mapping`; mappings are shown as
 **unconfirmed**. Missing or unknown provenance remains unknown rather than trusted.
 Sensor timeline links require
-`sensor.get`; opening event data still requires the permissions of the destination.
+`sensor.get` and either `insight.evt.get` or `insight.evt.get.simple`, matching the
+destination timeline permissions.
 An absent or empty section means no attached adapter sources were reported by that
 response, not that the entity has never generated telemetry.
 
@@ -137,7 +138,8 @@ subscription. Product links and previews use the caller's own permissions.
 | Endpoint sightings, recent endpoint activity, historical IP resolution | `insight.evt.get`. Without it, cards and resolution report `sightings: "forbidden"` and omit this evidence; the sightings route returns HTTP 403. |
 | Email activity | `mailsec.get` and an enabled Email Security subscription. |
 | Detections | `insight.det.get`. For a User without `insight.evt.get`, detections include attached adapter sensors and owned hosts, excluding hosts linked solely by endpoint activity. |
-| Live sensor state and sensor timeline links | `sensor.get`; event data additionally requires the destination’s event permissions. |
+| Live sensor state | `sensor.get`. |
+| Sensor timeline links | `sensor.get` and either `insight.evt.get` or `insight.evt.get.simple`. Simple event access does not grant entity sightings. |
 | Cloud findings | `cloudsec.get`. |
 
 A forbidden source is not an empty source. Ask an organization administrator to
