@@ -156,7 +156,8 @@ The following configurations allow you to customize the way data is ingested by 
 !!! note "Availability"
     Sensor identity declarations require adapter and ingestion versions that support
     `sensor_identity_type`. Entity associations also require Entity Pivot to be
-    enabled for your Cloud Security subscription.
+    enabled for your Cloud Security subscription, including the separate adapter
+    association control, which starts disabled.
 
 A multiplexed adapter creates a separate sensor for each sensor key. A declaration
 explains whether that sensor represents a user or a device, allowing Entity Pivot
@@ -166,7 +167,7 @@ to associate its telemetry with the corresponding entity.
 |---|---|
 | `email` | An email address identifying a user. |
 | `username` | A bare account name in the adapter's namespace. Names alone produce possible matches and never merge users. |
-| `github_login` | A GitHub login, normalized to lowercase for matching. |
+| `github_login` | A mutable GitHub login, normalized to lowercase with a terminal `[bot]` suffix preserved. Built-in parser evidence links only when exactly one current collected GitHub identity holds the login; stable numeric IDs prevent renamed or reclaimed logins from joining different people. |
 | `device` | The vendor's device identifier. The sensor hostname supplies the device name; the vendor identifier does not link devices across providers. |
 
 Built-in parsers declare `github_login` for `github`, `email` for `1password`, and
@@ -174,6 +175,18 @@ Built-in parsers declare `github_login` for `github`, `email` for `1password`, a
 `trend_worryfree` and `fortigate`. Other parsers leave the declaration empty unless
 configured explicitly. An empty declaration does not infer an identity from the
 platform or hostname.
+
+Built-in parser declarations record `identity_source: parser`. The GitHub parser
+also supplies the audit event's immutable numeric actor ID as `identity_id`,
+which becomes an authoritative `github_user_id` identifier in Entity Pivot.
+A login alone is corroborated evidence subject to the uniqueness guard, never an
+authoritative identifier. Device parsers can supply an immutable vendor device ID;
+it remains vendor evidence rather than a cross-provider identity link.
+
+Customer declarations record `identity_source: mapping`. **All identifiers from a
+customer mapping are possible and unconfirmed**, including the sensor ID. A
+free-form log field can be influenced by outsiders; declaring its type never
+merges entities or confirms a matching directory identity.
 
 To declare a custom sensor key, set `client_options.mapping.sensor_identity_type`
 next to `client_options.mapping.sensor_key_path`. Accepted nonempty values are
@@ -188,12 +201,16 @@ behavior for an empty key and omits the identity declaration. An empty template
 result leaves the parser's original key and declaration unchanged.
 
 For an identity declaration, the raw sensor key must be nonempty, valid UTF-8 and
-at most **512 UTF-8 bytes**.
-An invalid or oversized key is not truncated: its identity declaration is omitted
+at most **512 UTF-8 bytes**, and must be valid for its declared type. An
+optional stable `identity_id` has the same byte bound and is also validated.
+An invalid or oversized key or ID is not truncated: its identity declaration is omitted
 while telemetry ingestion continues. This bound applies to the raw key before
 identity normalization, independently of the sensor's display hostname.
 
-Existing sensors pick up declarations on their **next connection**. There is no
+The persisted declaration metadata consists of four additive fields:
+`identity_type`, raw `identity_key`, optional immutable `identity_id`, and
+`identity_source` (`parser` or `mapping`). Existing sensors pick up declarations
+on their **next connection**. There is no
 backfill of identities from old events or existing sensor names.
 
 ### Parsing
