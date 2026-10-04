@@ -417,6 +417,7 @@ nav:
           - Using Extensions: 5-integrations/extensions/using-extensions.md
           - LimaCharlie:
               - Overview: 5-integrations/extensions/limacharlie/index.md
+              - Application Control: 5-integrations/extensions/limacharlie/app-control.md
               - Artifact: 5-integrations/extensions/limacharlie/artifact.md
               - BinLib: 5-integrations/extensions/limacharlie/binlib.md
               - Cases: 5-integrations/extensions/limacharlie/cases.md
@@ -529,6 +530,8 @@ nav:
           - D&R Rules: 7-administration/config-hive/dr-rules.md
           - YARA: 7-administration/config-hive/yara.md
           - Cloud Sensors: 7-administration/config-hive/cloud-sensors.md
+          - Application Control Policies: 7-administration/config-hive/app-control-policy.md
+          - Application Control Rules: 7-administration/config-hive/app-control-rule.md
           - Apps: 7-administration/config-hive/apps.md
 
   - Reference:
