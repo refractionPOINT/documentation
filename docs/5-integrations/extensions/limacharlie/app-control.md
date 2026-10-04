@@ -56,13 +56,13 @@ A deny rule always wins.
 
 Start in a mode that cannot block and move forward only once the reports are quiet. Tags make this easy because a policy can target a tag, and moving a sensor between stages is a tag change. The [policy page](../../../7-administration/config-hive/app-control-policy.md#staged-rollout-by-tag) has the three policies for this flow.
 
-1. **Observe in `permissive`.** Create an allowlist policy for the platform with no tag filter. Add the rules you already know you need (your software publishers, your standard install locations). Every execution that the policy would deny shows up as an `APP_CONTROL_DENIED` event with `APP_CONTROL_IS_ENFORCED` false. Nothing is blocked and process start is not slowed.
+1. **Observe in `permissive`.** Create an allowlist policy for the platform with no tag filter. Add the rules you already know you need (your software publishers, your standard install locations). Every execution that the policy would deny shows up as an `APP_CONTROL_DENIED` event with `APP_CONTROL_IS_ENFORCED` set to `0`. Nothing is blocked and process start is not slowed.
 2. **Fix the rules.** Read the would-be blocks (see [Reading would-be blocks](#reading-would-be-blocks)). For each legitimate program, add an allow rule. Prefer a `signer` rule for software that updates, and use a `path` rule only for locations ordinary users cannot write to. Repeat until the legitimate noise is gone. Use a [temporary exception](../../../7-administration/config-hive/app-control-rule.md#a-temporary-exception) for one-off cases.
 3. **Soak a pilot in `permissive_sync`.** Add a policy that targets a pilot tag, such as `app-control-soak`, in `permissive_sync`. These sensors run the full blocking path but still allow everything. This is the last chance to find a problem before blocking.
 4. **Enforce the pilot.** Add a policy with a lower priority number than the other two that targets `app-control-enforce` in `enforcing`. Tag a small group of machines and watch them.
 5. **Widen.** Tag more machines. Keep a broad `permissive` policy at the end of the order so that untagged machines keep reporting.
 
-To step back at any point, remove the tag, or set the policy to `permissive` or `off`. The change reaches sensors on their next sync.
+To step back at any point, set the policy to `permissive` or `off`, or remove the tag so that the sensor falls through to the broad `permissive` policy. A sensor that no longer matches any policy keeps the last policy it received, so keep that broad policy in place. The change reaches sensors on their next sync.
 
 !!! warning "Deleting does not disarm"
     Removing a policy, or unsubscribing from the extension, does not disarm sensors that already hold a policy. They keep enforcing it. To stand enforcement down, set the policy to `mode: off` and let sensors sync before you remove anything.
@@ -74,7 +74,7 @@ To step back at any point, remove the tag, or set the policy to `permissive` or 
 
 Application Control reports through two events, available on Windows and macOS. See the [EDR events reference](../../../8-reference/edr-events.md#app_control_denied) for the full fields.
 
-`APP_CONTROL_DENIED` means the policy denied an execution. If `APP_CONTROL_IS_ENFORCED` is true, the sensor blocked it. If it is false, the sensor is in `permissive` or `permissive_sync` and only reports what it would have blocked.
+`APP_CONTROL_DENIED` means the policy denied an execution. If `APP_CONTROL_IS_ENFORCED` is `1`, the sensor blocked it. If it is `0`, the sensor is in `permissive` or `permissive_sync` and only reports what it would have blocked.
 
 `APP_CONTROL_UNRESOLVED` means the sensor could not evaluate an execution and allowed it.
 
@@ -88,7 +88,7 @@ Useful fields on `APP_CONTROL_DENIED`:
 | `APP_CONTROL_SIGNING_ID` | The macOS code-signing identifier the sensor saw. |
 | `APP_CONTROL_REASON` | Why the sensor reached the decision. |
 | `APP_CONTROL_MATCHED_RULE` | Optional. The rule that matched, when there is one. |
-| `APP_CONTROL_MODE` | The mode of the policy in effect. |
+| `APP_CONTROL_MODE` | The mode of the policy in effect, as a number: `0` off, `1` permissive, `2` permissive_sync, `3` enforcing. |
 | `APP_CONTROL_GENERATION` | The generation of the policy the sensor was running. |
 
 To turn would-be blocks into something you can list and count, write a D&R rule that reports them:
@@ -98,15 +98,15 @@ detect:
   event: APP_CONTROL_DENIED
   op: is
   path: event/APP_CONTROL_IS_ENFORCED
-  value: false
+  value: 0
 respond:
   - action: report
     name: app-control-would-block
 ```
 
-Group the resulting detections by `FILE_PATH` or signer to see which programs matter most. A signer that appears on many machines is a candidate for a `signer` allow rule. A path seen on one machine is usually a one-off. To alert on actual blocks instead, match `true` and change the report name.
+Group the resulting detections by `FILE_PATH` or signer to see which programs matter most. A signer that appears on many machines is a candidate for a `signer` allow rule. A path seen on one machine is usually a one-off. To alert on actual blocks instead, match `1` and change the report name.
 
-Watch `APP_CONTROL_UNRESOLVED` during the soak steps. Each one is an execution the sensor let through because it could not decide, so it is a gap in what the policy covers.
+Watch `APP_CONTROL_UNRESOLVED` during the `permissive_sync` soak. Each one is an execution the sensor let through because it could not check it in time, for example when the file hash was not available.
 
 ## Managing from the CLI
 

@@ -29,7 +29,7 @@ Both hives are partitioned by organization, like the other Config Hive types. Ea
 Keywords are case-sensitive and must be lowercase exactly as shown. Unknown fields are refused when you save the record.
 
 !!! warning "A locked-out allowlist is refused"
-    An `enforcing` policy with stance `allowlist` and `trust_os_vendor: false` is refused on save. A sensor cannot apply it, because it would block the operating system itself.
+    An `enforcing` policy with stance `allowlist` and `trust_os_vendor: false` is refused on save. Sensors refuse to enforce an allowlist that does not trust the operating system vendor, so the policy would never take effect.
 
 ## Which policy a sensor gets
 
@@ -50,7 +50,7 @@ Because the first match wins, you stage a rollout by putting narrow policies (a 
 | `permissive_sync` | The sensor runs the same blocking path as `enforcing`, then always allows. Nothing is blocked. Use this as the last soak step before enforcing. |
 | `enforcing` | The sensor blocks executions that the policy denies. |
 
-In `permissive` and `permissive_sync`, a would-be block is reported as an `APP_CONTROL_DENIED` event with `APP_CONTROL_IS_ENFORCED` set to false. See [Reading would-be blocks](../../5-integrations/extensions/limacharlie/app-control.md#reading-would-be-blocks).
+In `permissive` and `permissive_sync`, a would-be block is reported as an `APP_CONTROL_DENIED` event with `APP_CONTROL_IS_ENFORCED` set to `0`. See [Reading would-be blocks](../../5-integrations/extensions/limacharlie/app-control.md#reading-would-be-blocks).
 
 ## Stance
 
