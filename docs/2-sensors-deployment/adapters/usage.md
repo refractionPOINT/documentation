@@ -181,10 +181,14 @@ exactly the four lowercase values above. Unsupported values fail configuration
 validation. A declaration without `sensor_key_path` does not override a parser's
 default. When a configured `sensor_key_path` supplies a nonempty custom key, also
 set `sensor_identity_type` to enable identity association; an omitted or empty
-type leaves that custom key undeclared. If the configured path is absent or empty
-in an event, the parser's original key and identity declaration remain in use.
+type leaves that custom key undeclared. If the configured path is absent in an
+event, the parser's original key and identity declaration remain in use. An
+extractor that explicitly returns an empty string preserves the existing sensor-ID
+behavior for an empty key and omits the identity declaration. An empty template
+result leaves the parser's original key and declaration unchanged.
 
-The raw sensor key must be nonempty, valid UTF-8 and at most **512 UTF-8 bytes**.
+For an identity declaration, the raw sensor key must be nonempty, valid UTF-8 and
+at most **512 UTF-8 bytes**.
 An invalid or oversized key is not truncated: its identity declaration is omitted
 while telemetry ingestion continues. This bound applies to the raw key before
 identity normalization, independently of the sensor's display hostname.
