@@ -2,7 +2,7 @@
 
 Entity Pivot connects identifiers from Cloud Security, endpoint security and
 Email Security to **User** and **Host** entities. Start with an email address,
-Windows account, GitHub login, hostname, IP address or sensor ID to find the known identities,
+Windows account, GitHub user ID or login, hostname, IP address or sensor ID to find the known identities,
 relationships and activity associated with it.
 
 A User represents a principal, including a person, service account or shared
@@ -38,7 +38,8 @@ the first result. Possible matches are displayed separately as **unconfirmed**.
 | Identifier type | Meaning |
 |---|---|
 | `email` | Mailbox address, user principal name, sign-in email or directory alias. An editable directory mail attribute (Entra `mail`, Okta secondary email) that matches no sign-in address on the same record is only a possible match. |
-| `github_login` | GitHub login, normalized to lowercase; links declared adapter users and collected GitHub identities. |
+| `github_user_id` | GitHub's immutable numeric user ID, represented as a decimal string; authoritative identity evidence from a collected identity or built-in adapter parser. |
+| `github_login` | Mutable GitHub login, normalized to lowercase with an App actor's terminal `[bot]` suffix preserved. Corroborated linking requires exactly one current GitHub identity holding the login; renamed or reclaimed logins do not override stable numeric IDs. |
 | `entra_object_id` | Microsoft Entra user object ID. |
 | `okta_user_id` | Okta user ID. |
 | `gws_user_id` | Google Workspace user ID. |
@@ -76,7 +77,10 @@ Supported parsers declare this meaning automatically; a custom mapping can decla
 [Adapter usage](../2-sensors-deployment/adapters/usage.md)
 for the vocabulary, parser defaults and raw-key limits.
 
-- `email` and `github_login` create Users and can join matching directory identities.
+- Built-in parser `email` declarations create Users and can join matching directory
+  identities. GitHub parsers attach the immutable numeric `github_user_id` when
+  available; matching this ID is authoritative. The mutable `github_login` is
+  corroborated only under the uniqueness and stable-ID collision checks.
 - `username` creates a User, but a shared bare name remains a possible match and
   never merges users.
 - `device` creates a Host. A valid device hostname can corroborate a unique name
@@ -85,6 +89,17 @@ for the vocabulary, parser defaults and raw-key limits.
   name match.
 - An undeclared adapter sensor does not become an entity based on its platform
   or hostname alone.
+
+A customer mapping is a declaration about a free-form log field, which may be
+influenced by an outside actor. **Every identifier from a mapping is possible
+and unconfirmed**, including its sensor ID; it never merges entities. A built-in
+parser declaration uses the confidence rules above. Declaring a mapping does not
+prove that its sensor and a matching directory account are the same principal.
+
+Adapter associations have a separate enablement control, initially off. Existing
+entity indexing can remain enabled while adapter sensors stay outside the entity
+model. Supporting ingestion, schema and indexing versions must be enabled before
+these associations appear; absence is not evidence of no adapter activity.
 
 A User known only through an adapter is shown as an **External actor**
 (`attrs.external: true`). This means no directory-backed observation has joined
@@ -95,14 +110,22 @@ joins the entity, the external designation is removed.
 The entity page's **Telemetry sources** section lists attached adapter sensors,
 including sensor ID, platform, identity type and hostname. The card API exposes
 this optional section as `telemetry_sources`, containing objects with `sid`,
-`platform`, `identity_type` and `hostname`. Sensor timeline links require
+`platform`, `identity_type`, `hostname` and optional `identity_source`.
+The declaration source is `parser` or `mapping`; mappings are shown as
+**unconfirmed**. Missing or unknown provenance remains unknown rather than trusted.
+Sensor timeline links require
 `sensor.get`; opening event data still requires the permissions of the destination.
 An absent or empty section means no attached adapter sources were reported by that
 response, not that the entity has never generated telemetry.
 
 Detections activity includes the entity's attached adapter sensor IDs. The same
 `insight.det.get` permission applies. Declarations are picked up on the next sensor
-connection; existing events and sensor names are not backfilled.
+connection; existing events and sensor names are not backfilled. The sensor
+identity metadata uses four additive fields: `identity_type`, raw `identity_key`,
+optional immutable `identity_id` and declaration provenance `identity_source`.
+Both raw key and stable ID are limited to 512 UTF-8 bytes and validated for their
+declared type. Invalid or oversized declarations are dropped rather than
+truncated, while telemetry continues to ingest.
 
 ## Permissions
 
