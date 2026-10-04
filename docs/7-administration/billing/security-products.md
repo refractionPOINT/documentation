@@ -55,15 +55,17 @@ A request can remain **Pending** while billing or protection reconciles. Do not 
 an HTTP success or a saved configuration as paid coverage. Refresh until the server
 reports acknowledged paid protection. A failed or unavailable response does not
 establish coverage; correct the payment method or contact support as indicated.
-Activation may be temporarily unavailable during rollout while reads and stop remain
-available.
+An HTTP 200 mutation with `acknowledged: false` is committed but pending; poll GET
+until its control settles and protection matches the requested change. HTTP 503
+is retryable after refreshing status and does not confirm paid coverage. Activation
+may be temporarily unavailable during rollout while reads and stop remain available.
 
 The billing API uses the same routes for both products:
 
 | Operation | Route |
 |---|---|
 | Status and cost | `GET /v1/orgs/{oid}/billing/security/{product}` |
-| Accept pricing and request activation | `POST /v1/orgs/{oid}/billing/security/{product}` with `{"accept_pricing":true}` |
+| Accept pricing and request activation | `POST /v1/orgs/{oid}/billing/security/{product}` with `{"accept_pricing":true,"accepted_quote":<complete status.pricing_quote>}` |
 | Request paid stop | `DELETE /v1/orgs/{oid}/billing/security/{product}` |
 
 `product` is `mail_security` or `code_security`. Optional GET parameters `from` and
@@ -73,6 +75,41 @@ range, use the returned billing period; an invoice interval can differ from a ca
 month. The normalized `status` contains phase, acknowledged protection, trial limits,
 pending control, rates and costs. Fields whose authority is unavailable are omitted
 or null; do not interpret missing fields as paid or as zero cost.
+
+### Accept the exact quoted price
+
+GET returns `status.quote_guard_version: 1` and `status.pricing_quote`. All nine
+quote fields are required: `version`, `quote_id`, `product`, `currency`,
+`monthly_cents`, `days_per_month`, `cloud_base_monthly_cents`, `meter_price_id`,
+and `cloud_price_id`. Email's Cloud amount is `0` and price ID is an empty string;
+these fields are still required. Review the rates and send the entire quote unchanged
+in `accepted_quote`. Its opaque ID binds organization, payer and billing mode as
+well as prices. It accepts rates, not a fixed future population or monthly total.
+
+If pricing changed, POST returns HTTP 409 `reason: security_quote_changed` before
+recording consent or performing purchase effects. Refetch GET, review the new quote,
+and obtain fresh consent. The console clears its checkbox. Do not silently accept
+a freshly fetched replacement quote. Missing pricing or an unsupported quote guard
+pauses purchasing.
+
+With a CLI version supporting quoted purchases, save the quote you will review:
+
+```sh
+limacharlie billing security get mail_security --oid <organization-uuid> --output json > security-status.json
+python3 -c 'import json; s=json.load(open("security-status.json")); assert s["status"]["quote_guard_version"] == 1; print(json.dumps(s["status"]["pricing_quote"], indent=2))' > accepted-quote.json
+cat accepted-quote.json
+# After reviewing the quote:
+limacharlie billing security activate mail_security --accepted-quote accepted-quote.json --accept-pricing --oid <organization-uuid> --output yaml
+limacharlie billing security get mail_security --oid <organization-uuid> --output yaml
+# Explicit manual stop; then poll GET for acknowledgement:
+limacharlie billing security stop mail_security --confirm --oid <organization-uuid> --output yaml
+```
+
+Use `code_security` for Code; its quote also discloses the separate Cloud fee.
+The SDK class `limacharlie.sdk.billing.Billing` accepts `Billing(org).activate_security("mail_security", accept_pricing=True,
+accepted_quote=reviewed_quote)`, with the complete quote from
+`Billing(org).get_security("mail_security")`. Both surfaces preserve pending
+responses and API errors instead of claiming that purchase has completed.
 
 ## How cost is calculated
 
