@@ -1,6 +1,6 @@
 # Events & Automation
 
---8<-- "includes/email-security-beta.md"
+--8<-- "includes/email-security-availability.md"
 
 Email Security is not a side-car product with its own event bus. Everything it
 sees becomes ordinary LimaCharlie telemetry, in the same lake as your endpoint,

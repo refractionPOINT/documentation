@@ -1,6 +1,6 @@
 # Mail Rule Reference
 
---8<-- "includes/email-security-beta.md"
+--8<-- "includes/email-security-availability.md"
 
 Use this reference with [Mail Rules](custom-rules.md). It describes
 `dr-mail` rules and the Message Data Model (MDM) they read. Platform D&R rules on

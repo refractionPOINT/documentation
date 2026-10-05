@@ -1,6 +1,6 @@
 # Detections & Verdicts
 
---8<-- "includes/email-security-beta.md"
+--8<-- "includes/email-security-availability.md"
 
 Every message gets exactly one verdict, and the verdict always carries its
 reasons. This page explains how the reasons are produced, what the rules can see,

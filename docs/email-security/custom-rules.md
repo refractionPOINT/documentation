@@ -1,6 +1,6 @@
 # Mail Rules
 
---8<-- "includes/email-security-beta.md"
+--8<-- "includes/email-security-availability.md"
 
 Every mail detection rule lives in your organization's **`dr-mail` Hive**, one rule
 per record. **Email Security → Rules** shows the complete set: search and filter,

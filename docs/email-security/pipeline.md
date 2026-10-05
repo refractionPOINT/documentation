@@ -1,6 +1,6 @@
 # How a Message Is Processed
 
---8<-- "includes/email-security-beta.md"
+--8<-- "includes/email-security-availability.md"
 
 This is the page to read first if you are evaluating the product. It follows one
 message from the moment your provider says it exists to the moment somebody

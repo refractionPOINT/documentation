@@ -1,6 +1,6 @@
 # Sample Submission
 
---8<-- "includes/email-security-beta.md"
+--8<-- "includes/email-security-availability.md"
 
 Sample submission lets your analysts send LimaCharlie a copy of a message the
 engine got wrong, so detection can improve. It is **off by default**, it is

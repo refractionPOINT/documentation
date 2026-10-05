@@ -1,6 +1,6 @@
 # Internal Domains and Message Direction
 
---8<-- "includes/email-security-beta.md"
+--8<-- "includes/email-security-availability.md"
 
 Every message Email Security processes gets a `direction`:
 

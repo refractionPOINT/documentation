@@ -1,6 +1,6 @@
 # API Reference
 
---8<-- "includes/email-security-beta.md"
+--8<-- "includes/email-security-availability.md"
 
 All Email Security routes live under
 `https://api.limacharlie.io/v1/mailsec/{oid}/…` and appear in the public OpenAPI

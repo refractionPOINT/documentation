@@ -1,6 +1,6 @@
 # Messages & Triage
 
---8<-- "includes/email-security-beta.md"
+--8<-- "includes/email-security-availability.md"
 
 **Email Security → Messages** is the shared queue for individual messages and
 [message groups](groups.md). Choose **Messages** or **Groups** with the switch

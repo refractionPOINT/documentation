@@ -1,6 +1,6 @@
 # Message Groups & Cases
 
---8<-- "includes/email-security-beta.md"
+--8<-- "includes/email-security-availability.md"
 
 A message group represents one email delivered to several recipients, including
 per-recipient personalization. Open

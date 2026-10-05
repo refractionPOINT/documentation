@@ -1,6 +1,6 @@
 # Connecting Providers
 
---8<-- "includes/email-security-beta.md"
+--8<-- "includes/email-security-availability.md"
 
 A mail connection is one `mailsec_provider` Hive record plus one credential in
 the [secret](../7-administration/config-hive/secrets.md) Hive. Two providers are
@@ -180,9 +180,8 @@ and its retained copy follow `flagged_days` (**1–400**, default **400**) separ
 
 Deletion is asynchronous. The deployment must have retention deletion enabled;
 a changed retention window gets a report-only sweep before deletion, and large
-backlogs can take multiple sweeps. During private beta, coordinate with the
-MailSec team to confirm the sweep mode and completion before treating cleanup
-as complete. Restore your intended ongoing retention only after verifying it.
+backlogs can take multiple sweeps. Verify sweep completion before treating
+cleanup as complete. Restore your intended ongoing retention only after verifying it.
 This removes MailSec data, not messages from the provider's mailbox.
 
 Backfilled historical messages are judged but emit no `EMAIL_MESSAGE` or

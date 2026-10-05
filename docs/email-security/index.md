@@ -1,6 +1,6 @@
 # Email Security
 
---8<-- "includes/email-security-beta.md"
+--8<-- "includes/email-security-availability.md"
 
 LimaCharlie Email Security protects Microsoft 365 and Google Workspace mailboxes
 from inside the same tenant, permission model, telemetry lake and automation
