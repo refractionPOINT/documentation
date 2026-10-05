@@ -141,6 +141,7 @@ The following configurations allow you to customize the way data is ingested by 
 - `client_options.mapping.parsing_re`: regular expression with [named capture groups](https://github.com/StefanSchroeder/Golang-Regex-Tutorial/blob/master/01-chapter2.markdown#named-matches). The name of each group will be used as the key in the converted JSON parsing.
 - `client_options.mapping.parsing_grok:`  grok pattern parsing for structured data extraction from unstructured log messages. Grok patterns combine regular expressions with predefined patterns to simplify log parsing and field extraction.
 - `client_options.mapping.sensor_key_path`: indicates which component of the events represent unique sensor identifiers.
+- `client_options.mapping.sensor_identity_type`: optionally declares the meaning of that sensor key: `email`, `username`, `github_login` or `device`. It overrides the built-in declaration only when `sensor_key_path` is also supplied. See [Sensor identity declarations](#sensor-identity-declarations).
 - `client_options.mapping.sensor_hostname_path`: indicates which component of the event represents the hostname of the resulting Sensor in LimaCharlie.
 - `client_options.mapping.event_type_path`: indicates which component of the event represents the Event Type of the resulting event in LimaCharlie. It also supports template strings based on each event.
 - `client_options.mapping.event_time_path`: indicates which component of the event represents the Event Time of the resulting event in LimaCharlie.
@@ -149,6 +150,67 @@ The following configurations allow you to customize the way data is ingested by 
 - `client_options.mapping.mappings`: *deprecated*
 - `client_options.mapping.transform`: a Transform to apply to events.
 - `client_options.mapping.drop_fields`: a list of field paths to be dropped from the data before being processed and retained.
+
+### Sensor Identity Declarations
+
+!!! note "Availability"
+    Built-in parser declarations need no adapter change. A custom
+    `sensor_identity_type` requires an adapter version that supports it. Entity
+    associations require a Cloud Security subscription with Entity Pivot.
+
+A multiplexed adapter creates a separate sensor for each sensor key. A declaration
+explains whether that sensor represents a user or a device, allowing Entity Pivot
+to associate its telemetry with the corresponding entity.
+
+| `sensor_identity_type` | Meaning of the sensor key |
+|---|---|
+| `email` | An email address identifying a user. |
+| `username` | A bare account name in the adapter's namespace. Names alone produce possible matches and never merge users. |
+| `github_login` | A mutable GitHub login, normalized to lowercase with a terminal `[bot]` suffix preserved. Built-in parser evidence links only when exactly one current collected GitHub identity holds the login; stable numeric IDs prevent renamed or reclaimed logins from joining different people. |
+| `device` | The vendor's device identifier. The sensor hostname supplies the device name; the vendor identifier does not link devices across providers. |
+
+Built-in parsers declare `github_login` for `github`, `email` for `1password`, and
+`device` for `crowdstrike`, `sentinel_one`, `carbon_black`, `msdefender`,
+`trend_worryfree` and `fortigate`. Other parsers leave the declaration empty unless
+configured explicitly. An empty declaration does not infer an identity from the
+platform or hostname.
+
+Built-in parser declarations record `identity_source: parser`. The GitHub parser
+also supplies the audit event's immutable numeric actor ID as `identity_id`,
+which becomes an authoritative `github_user_id` identifier in Entity Pivot.
+A login alone is corroborated evidence subject to the uniqueness guard, never an
+authoritative identifier. Device parsers can supply an immutable vendor device ID;
+it remains vendor evidence rather than a cross-provider identity link.
+
+Customer declarations record `identity_source: mapping`. **All identifiers from a
+customer mapping are possible and unconfirmed**, including the sensor ID. A
+free-form log field can be influenced by outsiders; declaring its type never
+merges entities or confirms a matching directory identity.
+
+To declare a custom sensor key, set `client_options.mapping.sensor_identity_type`
+next to `client_options.mapping.sensor_key_path`. Accepted nonempty values are
+exactly the four lowercase values above. Unsupported values fail configuration
+validation. A declaration without `sensor_key_path` does not override a parser's
+default. When a configured `sensor_key_path` supplies a nonempty custom key, also
+set `sensor_identity_type` to enable identity association; an omitted or empty
+type leaves that custom key undeclared. If the configured path is absent in an
+event, the parser's original key and identity declaration remain in use. An
+extractor that explicitly returns an empty string preserves the existing sensor-ID
+behavior for an empty key and omits the identity declaration. An empty template
+result leaves the parser's original key and declaration unchanged.
+
+For an identity declaration, the raw sensor key must be nonempty, valid UTF-8 and
+at most **512 UTF-8 bytes**, and must be valid for its declared type. An
+optional stable `identity_id` has the same byte bound and is also validated.
+An invalid or oversized key or ID is not truncated: its identity declaration is omitted
+while telemetry ingestion continues. This bound applies to the raw key before
+identity normalization, independently of the sensor's display hostname.
+
+The persisted declaration metadata consists of four additive fields:
+`identity_type`, raw `identity_key`, optional immutable `identity_id`, and
+`identity_source` (`parser` or `mapping`). Existing sensors pick up declarations
+on their **next connection**. There is no
+backfill of identities from old events or existing sensor names.
 
 ### Parsing
 
