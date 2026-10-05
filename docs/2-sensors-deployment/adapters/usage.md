@@ -154,10 +154,9 @@ The following configurations allow you to customize the way data is ingested by 
 ### Sensor Identity Declarations
 
 !!! note "Availability"
-    Sensor identity declarations require adapter and ingestion versions that support
-    `sensor_identity_type`. Entity associations also require Entity Pivot to be
-    enabled for your Cloud Security subscription, including the separate adapter
-    association control, which starts disabled.
+    Built-in parser declarations need no adapter change. A custom
+    `sensor_identity_type` requires an adapter version that supports it. Entity
+    associations require a Cloud Security subscription with Entity Pivot.
 
 A multiplexed adapter creates a separate sensor for each sensor key. A declaration
 explains whether that sensor represents a user or a device, allowing Entity Pivot
