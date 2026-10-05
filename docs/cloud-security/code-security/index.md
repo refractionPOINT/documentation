@@ -1,5 +1,11 @@
 # Code Security
 
+Code Security is generally available through the **Cloud Security** extension.
+**Subscribing to the extension is the purchase**. Paid Code Security usage costs
+**$0.80 per protected repository per month**, billed daily at **$0.80/30 per
+repository-day** on that day's protected-repository count, plus the existing
+Cloud Security base fee. See [security product billing](../../7-administration/billing/security-products.md).
+
 Code Security scans the source repositories behind your cloud estate and puts
 what it finds into the same risk-ranked worklist as your cloud findings. You
 triage a leaked credential or a vulnerable dependency the same way you triage a
@@ -12,6 +18,20 @@ pull requests that upgrade vulnerable dependencies.
 !!! tip "Ready to start?"
     [Get started](getting-started.md) takes about ten minutes on GitHub: the
     console creates the GitHub App for you and turns scanning on.
+
+## Free-tier trial
+
+Organizations with a configured sensor quota of **2 or less** receive the
+Cloud Security **14-day trial**, with up to **2 provider connections**,
+**10 repositories per connection**, and **5 container images per organization**.
+The repository and image limits apply to hosted scans.
+
+At expiry, collection and hosted scanning pause. Provider configuration and
+policies are kept. Collected data becomes eligible for deletion after a
+**7-day purge grace period**, starting when expiry is observed. Raising the
+sensor quota above **2** moves the organization to a paid plan, lifts the trial
+limits and allows collection and scanning to resume. Upgrading before the purge
+cancels trial-expiry deletion; usage is then billed.
 
 ## What it finds
 

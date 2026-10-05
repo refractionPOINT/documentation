@@ -1,6 +1,6 @@
 # User Reports
 
---8<-- "includes/email-security-beta.md"
+--8<-- "includes/email-security-availability.md"
 
 Your own people are the best detector you have for the mail that got through.
 Email Security turns an abuse mailbox into an SLA queue: reports are joined back

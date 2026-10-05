@@ -521,6 +521,7 @@ nav:
           - SSO: 7-administration/access/sso.md
       - Billing:
           - Options: 7-administration/billing/options.md
+          - Security Products: 7-administration/billing/security-products.md
           - Custom Plans: 7-administration/billing/custom-plans.md
           - Estimating Data Ingestion: 7-administration/billing/data-estimation.md
       - Config Hive:
@@ -591,7 +592,7 @@ nav:
           - Case-Reviewer Agent: 9-ai-sessions/compliance/case-reviewer-agent.md
           - Gap Analysis: 9-ai-sessions/compliance/gap-analysis.md
 
-  - Email Security (Private Beta):
+  - Email Security:
       - Overview: email-security/index.md
       - How a Message Is Processed: email-security/pipeline.md
       - Getting Started: email-security/getting-started.md

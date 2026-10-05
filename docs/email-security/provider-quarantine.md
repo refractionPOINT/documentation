@@ -1,6 +1,6 @@
 # Microsoft Provider Quarantine
 
---8<-- "includes/email-security-beta.md"
+--8<-- "includes/email-security-availability.md"
 
 **Provider quarantine** shows Microsoft delivery observations and hosted-quarantine
 release activity. Messages blocked before reaching a mailbox may never enter

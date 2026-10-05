@@ -1,6 +1,6 @@
 # Campaigns
 
---8<-- "includes/email-security-beta.md"
+--8<-- "includes/email-security-availability.md"
 
 An attack that reached forty mailboxes is one thing that happened, not forty. A
 campaign is the cluster of messages the engine attributed to one attack, so it is

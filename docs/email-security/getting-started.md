@@ -1,6 +1,6 @@
 # Getting Started with Email Security
 
---8<-- "includes/email-security-beta.md"
+--8<-- "includes/email-security-availability.md"
 
 Connect your organization's Microsoft 365 or Google Workspace mail to analyze
 messages for threats. You do not need to change mail routing or install software
@@ -13,7 +13,7 @@ an analyzed message**. You can configure automated responses later.
 
 ## Before you start
 
-Have these ready before enabling the trial:
+Have these ready before subscribing:
 
 | What you need | Where to get it |
 |---|---|
@@ -30,17 +30,20 @@ A **credential** is the key the product uses to access your mail provider. A
     Free-tier organizations can try Email Security for **14 days**, with up to
     **25 mailboxes**. The clock starts when you subscribe, and resubscribing does
     not restart it. Prepare your administrator access first. At expiry ingestion
-    pauses; data is removed 30 days later unless the organization moves off the
-    free tier. See [trial details](policy.md#plans-the-free-trial-and-the-mailbox-cap).
+    pauses; data is removed after a **30-day purge grace period** unless the
+    organization moves off the free tier before the purge. See
+    [trial details](policy.md#plans-the-free-trial-and-the-mailbox-cap).
 
-    During private beta, limits may be reported before enforcement is enabled.
-    Check the Overview trial/coverage information (or `coverage.entitlement`
-    from the API) for the standing actually in force in your organization.
+    The free tier means a configured sensor quota of **2 or less**. Raising it
+    above **2** moves the organization to a paid plan and lifts the trial limits.
+    See [pricing and billing](../7-administration/billing/security-products.md).
 
 ## 1. Enable Email Security
 
 In your LimaCharlie organization, open **Extensions**, find **Email Security**,
-and subscribe. Then open **Email Security → Settings**.
+and subscribe. **Subscribing is the purchase**: paid usage is **$1 per protected
+mailbox per month**, billed daily at **$1/30 per mailbox-day** on that day's
+protected-mailbox count. Then open **Email Security → Settings**.
 
 If an action is unavailable, ask your organization administrator for access.
 Connection management uses `mailsec_provider.get` and `mailsec_provider.set`;

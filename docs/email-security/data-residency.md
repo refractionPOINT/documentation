@@ -1,6 +1,6 @@
 # Data Residency, Encryption and Data Flows
 
---8<-- "includes/email-security-beta.md"
+--8<-- "includes/email-security-availability.md"
 
 This page answers the questions a security or privacy review asks about Email
 Security: where your mail is stored, how it is protected, how long it is kept, and

@@ -1,6 +1,6 @@
 # Command Line Interface
 
---8<-- "includes/email-security-beta.md"
+--8<-- "includes/email-security-availability.md"
 
 The `limacharlie mailsec` command group covers the Email Security API surface:
 the coverage screen, the message index and drawer, the audited raw-EML download,
