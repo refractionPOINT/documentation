@@ -10,11 +10,14 @@ connections or repository scanning policies you want to use.
 | Product | Monthly rate | Daily billing |
 |---|---|---|
 | Email Security | **$1 per protected mailbox** | That day's protected-mailbox count × **$1/30** |
-| Code Security | **$0.80 per protected repository**, plus the existing **Cloud Security base fee** | That day's protected-repository count × **$0.80/30**, plus the base fee |
+| Code Security | **$0.80 per protected repository**, plus the existing **Cloud Security base fee** | That day's protected-repository count × **$0.80/30** for repository usage |
 
 Usage is billed per day using a **30-day divisor**. Each protected mailbox-day
 or repository-day contributes the daily rate, so changes in coverage affect the
 days on which that coverage is protected.
+
+The existing Cloud Security base fee applies separately from daily repository
+usage charges.
 
 ## Free-tier trials
 
