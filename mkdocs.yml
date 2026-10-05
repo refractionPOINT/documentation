@@ -66,6 +66,13 @@ plugins:
         'docs/lc-extensions.md': '5-integrations/extensions/limacharlie/index.md'
         'docs/third-party-extensions.md': '5-integrations/extensions/third-party/index.md'
         'cloud-security/code-scanning.md': 'cloud-security/code-security/index.md'
+        # Retired lc-compliance plugin pages
+        '9-ai-sessions/compliance/index.md': 'cloud-security/compliance.md'
+        '9-ai-sessions/compliance/installation.md': 'cloud-security/compliance.md'
+        '9-ai-sessions/compliance/frameworks.md': 'cloud-security/compliance.md'
+        '9-ai-sessions/compliance/skills.md': 'cloud-security/compliance.md'
+        '9-ai-sessions/compliance/case-reviewer-agent.md': 'cloud-security/compliance.md'
+        '9-ai-sessions/compliance/gap-analysis.md': 'cloud-security/compliance.md'
         # Extension website fields (old Readme.io /docs/<slug> format)
         'docs/binlib.md': '5-integrations/extensions/limacharlie/binlib.md'
         'docs/ext-artifact.md': '5-integrations/extensions/limacharlie/artifact.md'
@@ -584,13 +591,6 @@ nav:
       - Command Line Interface: 9-ai-sessions/cli.md
       - Alternative Providers: 9-ai-sessions/alternative-providers.md
       - API Reference: 9-ai-sessions/api-reference.md
-      - Compliance:
-          - Overview: 9-ai-sessions/compliance/index.md
-          - Installation: 9-ai-sessions/compliance/installation.md
-          - Frameworks: 9-ai-sessions/compliance/frameworks.md
-          - Skills Reference: 9-ai-sessions/compliance/skills.md
-          - Case-Reviewer Agent: 9-ai-sessions/compliance/case-reviewer-agent.md
-          - Gap Analysis: 9-ai-sessions/compliance/gap-analysis.md
 
   - Email Security:
       - Overview: email-security/index.md
