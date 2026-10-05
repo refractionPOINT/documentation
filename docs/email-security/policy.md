@@ -602,14 +602,14 @@ server from your verified claims rather than taken from the request.
 | Event | When the data is deleted | What cancels it |
 |---|---|---|
 | The organization unsubscribes from Email Security | **30 days** later | Resubscribing at any point inside those 30 days |
-| The effective Email Security trial ends without paid coverage | **30 days** later | Acknowledged paid Email Security eligibility inside those 30 days |
+| The organization's free trial ends and it stays on the free tier | **30 days** later | Moving the organization off the free tier at any point inside those 30 days |
 | The organization itself is deleted | Immediately | Nothing — the organization no longer exists |
 
 None of them needs anyone to ask. The 30-day delay exists so that unsubscribing
 by mistake, letting a trial lapse over a holiday, or moving billing around is
 recoverable — and undoing the thing that started the clock is all the recovery
 takes. The two cancellations are **not interchangeable**: resubscribing does not
-cancel a deletion scheduled because a trial ended, and paid activation does not cancel
+cancel a deletion scheduled because a trial ended, and upgrading does not cancel
 one scheduled because the organization unsubscribed. Each undoes only what it
 contradicts.
 
@@ -633,51 +633,76 @@ re-sent for the new date.
 
 ## Plans, the free trial, and the mailbox cap
 
-Email Security must be available to your organization before setup. It has an
-independent paid product: **$1 per protected mailbox-month**, divided by 30 per
-UTC mailbox-day. Paying for endpoint security or increasing its quota does not
-activate paid Email Security. See [Security product billing](../7-administration/billing/security-products.md)
-for price acceptance, payment methods, costs and pending acknowledgements.
+Email Security is in private beta and must be available to your organization
+before you subscribe. For an enabled organization, what differs between a
+**trial** organization and a **paid** one is how long it runs and how many
+mailboxes it protects.
+
+An organization is on the trial when it is on the LimaCharlie free tier — the
+same line the rest of the platform draws, so an organization evaluating Email
+Security and Cloud Security at once gets one answer about what it is paying for.
 
 | | Trial | Paid |
 |---|---|---|
-| Duration | **14 days** from the first protected mailbox for new organizations | No trial duration limit |
-| Protected mailboxes | **25** across the organization | No trial mailbox cap |
-| Product features | Identical | Identical |
+| Duration | **14 days** from the day Email Security was enabled | No trial duration limit |
+| Protected mailboxes | **25** | No plan-imposed mailbox cap |
+| Everything else — detections, remediation, retention, API, telemetry | Identical | Identical |
 
-Organizations enabled before enforcement get a fresh 14-day trial from the
-enforcement instant. Their existing protected set remains free for those 14 days,
-including a set above 25. The exception preserves that set; new organizations and
-expansion beyond the permitted baseline follow the standard cap.
+These are the trial terms. During beta, a deployment can report limits before
+enforcing them. Read `coverage.entitlement` for your actual standing and
+enforcement; a reported limit alone does not prove ingestion has paused. Contact
+LimaCharlie to confirm trial or scheduled-deletion enforcement in your data
+region. Policy records and a CLI installation cannot enable server enforcement.
 
 ### The 14-day clock
 
-The server records trial eligibility durably. **Unsubscribing and resubscribing
-does not restart it.** Read the canonical deadline and remaining days from the
-product coverage surface or billing status; a browser clock is not entitlement
-authority. Existing-organizations' fresh trial is a once-only grant, not a reset
-available on each subscription.
+The clock starts the day the organization first subscribes to
+`ext-email-security` and is recorded durably. **Unsubscribing and resubscribing
+does not restart it**: the clock survives an unsubscribe, so a trial is 14 days
+once rather than 14 days per subscription. Moving the organization off the free
+tier clears the limits immediately.
+
+Read the remaining time from the `entitlement` block of
+[`GET /coverage`](api-reference.md#reads): `trial_ends_at` and
+`trial_days_remaining`.
 
 ### What happens when the trial ends
 
-Unpaid ingestion can pause when the effective trial expires. Configuration and
-previously analyzed mail remain subject to [data retention and deletion](#data-retention-and-deletion),
-including scheduled-deletion notices and grace. Reading and acting on retained
-messages remain available to authorized analysts. Explicit paid activation resumes
-eligible protection after acknowledgement; it does not retroactively analyze
-mail delivered while ingestion was paused.
+The same thing that happens when an organization unsubscribes, and for the same
+reason — the product stops, nothing is deleted yet:
+
+- **Ingestion pauses.** No new mail is analyzed, and the mail connections are
+  not renewed, so the provider's own watches expire on their own schedule.
+- **Nothing is deleted, and nothing is changed.** The connections, the policy
+  records and every message already analyzed are intact and follow their normal
+  [retention](#data-retention-and-deletion).
+- **Reading and acting still work.** An analyst can still search the queue, read
+  a message and remediate mail that was already ingested.
+- **The 30-day deletion clock starts**, with the notices described above.
+
+Moving the organization off the free tier resumes ingestion within about five
+minutes, and cancels the scheduled deletion. Mail delivered while ingestion was
+paused is not analyzed retroactively.
 
 ### The 25-mailbox cap
 
-A new trial protects up to 25 distinct mailboxes across all connections. Discovery
-can find more than the protected set. Use connection scope and
-[`exclusions`](#exclusions) to choose coverage, and inspect `GET /coverage` for
-what is actually protected. Renames and shared references use stable provider
-identities, rather than billing each address spelling separately.
+A trial organization protects up to 25 mailboxes. The cap applies to the whole
+organization, across every connected mail tenant, and it works on **activation**
+only:
 
-Read the server's actual enforcement and pending state. During rollout, a
-reported limit alone does not prove ingestion has paused. Contact support if
-reported entitlement and observed collection disagree.
+- Discovery still finds every mailbox in the tenant — the ones past the cap are
+  reported as `discovered` rather than `protected`, so you can see exactly how
+  much of the estate is not covered.
+- A mailbox that is already protected is **never** dropped to fit a cap. If the
+  cap is reached, further mailboxes stop being protected; the ones already being
+  watched keep being watched.
+- Use [`exclusions`](#exclusions) and the connection's `scope` to choose *which*
+  25 mailboxes matter — the executives and finance addresses attacks aim at are
+  the ones worth spending a trial on.
+
+`GET /coverage`'s `entitlement` block reports `mailbox_cap`, `mailboxes_active`,
+`mailboxes_over_cap` and `mailbox_cap_reached`, so the shortfall is a number
+rather than a discovery.
 
 ### Requesting a purge
 
