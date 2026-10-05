@@ -7,7 +7,7 @@ organization is subscribed and has a payment method or authorized invoicing.
 A paid organization is one that is off the free tier. Review the extension's
 pricing when subscribing.
 
-| Product | Paid rate | New organization trial |
+| Product | Paid rate | Free-tier trial |
 |---|---|---|
 | Email Security | $1 per protected mailbox-month | 14 days, up to 25 mailboxes |
 | Code Security | $0.80 per protected repository-month, plus the Cloud Security base fee | 14 days, up to 10 repositories |
@@ -21,16 +21,22 @@ it is not included in the $0.80 rate.
 
 ## Trial and coverage
 
-A new trial starts at the first protected resource. Unsubscribing, resubscribing or
-restarting a connection does not restart it. Use the server's trial deadline and
+A new free-tier trial starts at the first protected resource. Unsubscribing,
+resubscribing or restarting a connection does not restart it. Use the server's trial deadline and
 coverage status instead of calculating entitlement from a browser clock.
 
 Organizations enabled before billing enforcement receive a fresh 14-day trial from
-the enforcement instant. Their existing protected set stays free for those 14 days,
-including sets above 25 mailboxes or 10 repositories. This exception preserves the
+the enforcement instant. While trial coverage is active, their existing protected
+set stays free, including sets above 25 mailboxes or 10 repositories. This exception preserves the
 existing set; it does not allow unlimited expansion or swapping in an unlimited number
 of new resources. New organizations and growth beyond that baseline follow the normal
-limits. Trial-period usage stays free for everyone, including organizations on paid plans.
+limits. Usage while trial coverage is active is free.
+
+Paid coverage starts billing after the protection service acknowledges it. It can
+start before the original trial deadline when the subscribed organization is on a
+paid plan with a payment method or authorized invoicing. Paid coverage does not
+reset the trial history. Returning to the free tier while subscribed can resume
+any remaining original trial under its limits; it does not create another trial.
 
 Use Email Security mailbox scope and exclusions to choose coverage. Code's scanning
 settings select repository coverage. Review resources that are discovered but not
@@ -46,7 +52,8 @@ In **Extensions**, review pricing and subscribe to Email Security or Cloud
 Security. Subscribing on a paid organization with a payment method or authorized
 invoicing automatically enables paid coverage. Moving a subscribed organization
 from the free tier to a paid plan, or adding a payment method to a subscribed paid
-organization, also enables it automatically. Trial-period usage remains free.
+organization, also enables it automatically. Billing begins after paid coverage
+is acknowledged; usage while trial coverage is active is free.
 
 A free-tier organization receives the trial and pauses when it expires. To keep
 protecting resources after the trial, move the organization to a paid plan and
@@ -75,8 +82,10 @@ are omitted or null; do not interpret missing fields as paid or as zero cost.
 ## How cost is calculated
 
 Each UTC day uses the **highest paid protected resource count** reached that day.
-Removing resources later that day does not erase the day's peak. Trials are free;
-trial observed counts do not become billable resource-days.
+Removing resources later that day does not erase the day's peak. Usage observed
+only under trial coverage is free. Once paid coverage begins, the paid protected
+count contributes to that UTC day's peak, even if the original trial deadline is
+still in the future. Earlier trial-only days are not billed retroactively.
 
 The monthly resource rate is divided by a fixed **30** to price each resource-day.
 The billing period sums daily peaks and rounds the resulting period amount; it does

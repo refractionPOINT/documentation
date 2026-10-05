@@ -27,7 +27,7 @@ A **credential** is the key the product uses to access your mail provider. A
 **connection** combines that secret with your provider and mailbox choices.
 
 !!! info "Trial and subscription billing"
-    New organizations receive **14 days** for up to **25 mailboxes**, starting
+    New free-tier organizations receive **14 days** for up to **25 mailboxes**, starting
     at the first protected mailbox. Resubscribing does not restart the trial.
     Existing enabled organizations receive a fresh 14-day trial at enforcement
     with their current protected set preserved. See
@@ -36,8 +36,8 @@ A **credential** is the key the product uses to access your mail provider. A
     Subscribing purchases Email Security at **$1 per protected mailbox-month**,
     divided by 30 per UTC mailbox-day. Paid coverage starts automatically on an
     organization off the free tier with a payment method or authorized invoicing.
-    Trial-period usage remains free. On the free tier, ingestion pauses at trial
-    expiry and data follows the retention and scheduled-deletion policy. Check
+    Usage while trial coverage is active is free; billing begins after paid
+    coverage is acknowledged. On the free tier, ingestion pauses at trial expiry and data follows the retention and scheduled-deletion policy. Check
     actual trial and coverage status to confirm protection has started.
 
 ## 1. Enable Email Security

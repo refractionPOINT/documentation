@@ -637,7 +637,8 @@ Email Security must be available to your organization before setup. Its
 subscription price is **$1 per protected mailbox-month**, divided by 30 per UTC
 mailbox-day. Subscribing purchases coverage; it starts automatically when the
 organization is off the free tier with a payment method or authorized invoicing.
-Trial-period usage remains free. See [Security product billing](../7-administration/billing/security-products.md)
+Usage while trial coverage is active is free; billing begins after paid coverage
+is acknowledged. See [Security product billing](../7-administration/billing/security-products.md)
 for payment methods, costs and pending acknowledgements.
 
 | | Trial | Paid |
@@ -647,8 +648,8 @@ for payment methods, costs and pending acknowledgements.
 | Product features | Identical | Identical |
 
 Organizations enabled before enforcement get a fresh 14-day trial from the
-enforcement instant. Their existing protected set remains free for those 14 days,
-including a set above 25. The exception preserves that set; new organizations and
+enforcement instant. While trial coverage is active, their existing protected set
+remains free, including a set above 25. The exception preserves that set; new organizations and
 expansion beyond the permitted baseline follow the standard cap.
 
 ### The 14-day clock

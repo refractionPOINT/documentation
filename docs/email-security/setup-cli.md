@@ -34,7 +34,7 @@ are off; a new automation rule defaults to `alert_only`, so it records intent
 without moving mail. See [Policy Reference](policy.md).
 
 !!! info "Trial and subscription billing"
-    New organizations receive 14 days with up to 25 protected mailboxes, starting
+    New free-tier organizations receive 14 days with up to 25 protected mailboxes, starting
     at the first protected mailbox. Unsubscribe/resubscribe does not restart the
     trial. Existing enabled organizations receive the once-only fresh trial and
     preserved baseline described in [Security product billing](../7-administration/billing/security-products.md).
@@ -42,7 +42,8 @@ without moving mail. See [Policy Reference](policy.md).
     Subscribing purchases Email Security at $1 per protected mailbox-month,
     calculated using UTC daily high-water marks and a fixed 30-day month. Paid
     coverage starts automatically on an organization off the free tier with a
-    payment method or authorized invoicing. Trial-period usage remains free.
+    payment method or authorized invoicing. Usage while trial coverage is active
+    is free; billing begins after paid coverage is acknowledged.
     Inspect coverage and billing status until protection is acknowledged.
 
     At expiry unpaid ingestion may pause, with data retained under the product's
