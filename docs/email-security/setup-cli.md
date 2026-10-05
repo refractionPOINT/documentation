@@ -33,17 +33,17 @@ create automation policy records. With no automation policy, automatic actions
 are off; a new automation rule defaults to `alert_only`, so it records intent
 without moving mail. See [Policy Reference](policy.md).
 
-!!! info "Trial and independent paid coverage"
+!!! info "Trial and subscription billing"
     New organizations receive 14 days with up to 25 protected mailboxes, starting
     at the first protected mailbox. Unsubscribe/resubscribe does not restart the
     trial. Existing enabled organizations receive the once-only fresh trial and
     preserved baseline described in [Security product billing](../7-administration/billing/security-products.md).
 
-    Email Security paid coverage is independent of endpoint security quota.
-    Review and accept $1 per protected mailbox-month, calculated using UTC daily
-    high-water marks and a fixed 30-day month, through Billing & Usage. Inspect
-    coverage and billing status until protection is acknowledged; saving a
-    connection or receiving a pending response does not establish coverage.
+    Subscribing purchases Email Security at $1 per protected mailbox-month,
+    calculated using UTC daily high-water marks and a fixed 30-day month. Paid
+    coverage starts automatically on an organization off the free tier with a
+    payment method or authorized invoicing. Trial-period usage remains free.
+    Inspect coverage and billing status until protection is acknowledged.
 
     At expiry unpaid ingestion may pause, with data retained under the product's
     retention and deletion policy. Read [Plans, the free trial, and the mailbox cap](policy.md#plans-the-free-trial-and-the-mailbox-cap)
@@ -270,7 +270,8 @@ entitlement:
 ```
 
 `mailboxes_over_cap` is the number that matters: those mailboxes were found and
-are not being watched. Narrow the connection's `scope`, or explicitly activate paid Email Security. See
+are not being watched. Narrow the connection's `scope`, or move the subscribed organization to a paid
+plan with a payment method or authorized invoicing. See
 [Plans, the free trial, and the mailbox cap](policy.md#plans-the-free-trial-and-the-mailbox-cap).
 
 !!! note "Backfill is judged, and acts on nothing"

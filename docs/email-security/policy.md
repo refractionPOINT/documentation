@@ -609,7 +609,7 @@ None of them needs anyone to ask. The 30-day delay exists so that unsubscribing
 by mistake, letting a trial lapse over a holiday, or moving billing around is
 recoverable — and undoing the thing that started the clock is all the recovery
 takes. The two cancellations are **not interchangeable**: resubscribing does not
-cancel a deletion scheduled because a trial ended, and paid activation does not cancel
+cancel a deletion scheduled because a trial ended, and restoring paid coverage does not cancel
 one scheduled because the organization unsubscribed. Each undoes only what it
 contradicts.
 
@@ -633,11 +633,12 @@ re-sent for the new date.
 
 ## Plans, the free trial, and the mailbox cap
 
-Email Security must be available to your organization before setup. It has an
-independent paid product: **$1 per protected mailbox-month**, divided by 30 per
-UTC mailbox-day. Paying for endpoint security or increasing its quota does not
-activate paid Email Security. See [Security product billing](../7-administration/billing/security-products.md)
-for price acceptance, payment methods, costs and pending acknowledgements.
+Email Security must be available to your organization before setup. Its
+subscription price is **$1 per protected mailbox-month**, divided by 30 per UTC
+mailbox-day. Subscribing purchases coverage; it starts automatically when the
+organization is off the free tier with a payment method or authorized invoicing.
+Trial-period usage remains free. See [Security product billing](../7-administration/billing/security-products.md)
+for payment methods, costs and pending acknowledgements.
 
 | | Trial | Paid |
 |---|---|---|
@@ -663,7 +664,8 @@ available on each subscription.
 Unpaid ingestion can pause when the effective trial expires. Configuration and
 previously analyzed mail remain subject to [data retention and deletion](#data-retention-and-deletion),
 including scheduled-deletion notices and grace. Reading and acting on retained
-messages remain available to authorized analysts. Explicit paid activation resumes
+messages remain available to authorized analysts. Moving the subscribed
+organization to a paid plan with a payment method or authorized invoicing resumes
 eligible protection after acknowledgement; it does not retroactively analyze
 mail delivered while ingestion was paused.
 

@@ -236,15 +236,18 @@ If a repository stays unscanned, see [Troubleshooting](troubleshooting.md).
 
 ## Trial, coverage and billing
 
-Code Security has independent paid repository coverage: $0.80 per protected
-repository-month plus the existing Cloud Security base fee. A new organization
+Subscribing to Cloud Security purchases Code Security coverage: $0.80 per protected
+repository-month plus the Cloud Security base fee. A new organization
 receives a 14-day trial for up to 10 repositories across hosted connections and
 external imports. Container images do not contribute to the repository meter.
 Existing enabled organizations receive the fresh trial and preserved-set grant
 at enforcement; their deadline is not backdated to an old Cloud trial.
 
-In Billing & Usage or Code Security, inspect the canonical trial limit and
-acknowledged protection, choose coverage in scanning settings, and explicitly
-accept pricing to activate paid coverage. The separate Cloud entitlement and
-base fee remain distinct. See [Security product billing](../../7-administration/billing/security-products.md)
+Review pricing in Extensions before subscribing. Paid coverage starts
+automatically when the organization is off the free tier with a payment method
+or authorized invoicing. Trial-period usage remains free. A free-tier organization
+pauses at trial expiry; move it to a paid plan to continue coverage. Inspect the
+canonical trial limit and acknowledged protection, and choose coverage in scanning
+settings. Unsubscribing from Cloud Security stops Code coverage and its Cloud
+base fee. See [Security product billing](../../7-administration/billing/security-products.md)
 for daily high-water marks, cost calculation, payment grace and stopping coverage.
