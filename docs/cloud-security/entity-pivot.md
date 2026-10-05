@@ -96,10 +96,10 @@ and unconfirmed**, including its sensor ID; it never merges entities. A built-in
 parser declaration uses the confidence rules above. Declaring a mapping does not
 prove that its sensor and a matching directory account are the same principal.
 
-Adapter associations have a separate enablement control, initially off. Existing
-entity indexing can remain enabled while adapter sensors stay outside the entity
-model. Supporting ingestion, schema and indexing versions must be enabled before
-these associations appear; absence is not evidence of no adapter activity.
+An adapter sensor is associated after it connects with a declaration and the
+next entity refresh completes. Sensors that have not reconnected since their
+declaration became available are not yet associated; absence is not evidence of
+no adapter activity.
 
 A User known only through an adapter is shown as an **External actor**
 (`attrs.external: true`). This means no directory-backed observation has joined
