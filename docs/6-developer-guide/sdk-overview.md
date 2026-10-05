@@ -126,6 +126,48 @@ Search for Indicators of Compromise (domains, IPs, file hashes, etc.) across the
 limacharlie ioc --help
 ```
 
+#### Batch location results and errors
+
+For `POST /v1/insight/{oid}/objects` with `info=locations`, check the top-level
+`errors` map before reading results for any requested object type. A successful
+HTTP response can contain healthy types and errors for other types:
+
+```json
+{
+  "domain": {
+    "example.test": {
+      "summary": {
+        "last_1_days": 0,
+        "last_7_days": 0,
+        "last_30_days": 0,
+        "last_365_days": 0
+      },
+      "locations": []
+    }
+  },
+  "errors": {
+    "file_name": "dependency error"
+  }
+}
+```
+
+Here the domain query succeeded with no sightings; the file-name query is
+unavailable. Failed types are omitted from the result map. Do not treat an
+absent type as zero sightings or replace missing values with empty results.
+Successfully queried types still include every requested indicator, including
+zero-hit indicators. If all requested types fail, the API returns a request
+error. The SDK and CLI pass partial responses through, so applications must
+check `errors` themselves.
+
+This is an upcoming API compatibility change.
+Applications that assume `result[type][name]` always exists must handle partial
+failures before the service update rolls out. See the
+[Python SDK error-handling example](https://github.com/refractionPOINT/python-limacharlie/blob/master/doc/sdk/search-insight.md#batch-location-failures).
+
+Indexed batch summaries reject the entire request before starting queries if a
+name exceeds 3,968 normalized UTF-8 bytes. Query oversized values individually
+instead of including them in a batch summary.
+
 ### Extensions
 
 Manage extension subscriptions.
