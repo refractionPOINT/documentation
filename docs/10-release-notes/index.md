@@ -18,6 +18,31 @@ Release notes for LimaCharlie platform components, organized by date.
 
     For discussion and email notification of the same releases, set the [Platform Updates category](https://community.limacharlie.com/c/platform-updates/5) in the community forum to Watching. For service availability rather than releases, subscribe on the [status page](https://status.limacharlie.io/).
 
+## 2026-10-05
+
+### Web App 6.5.0
+
+Email Security is now generally available. This release also adds a new Application Control page, clearer compliance reports, Cloud Security setup and page improvements, a System theme option, and faster loading.
+
+#### New Features
+
+- (Email Security) **Email Security is generally available**: protect Microsoft 365 and Google Workspace mailboxes through the provider API, with no MX or mail routing change. Every message gets an explainable verdict, and you can search, investigate, and remediate it from the console. A guided setup takes you from connecting a provider to your first results. Messages, recipient groups, campaigns, and user reports each have their own triage view, with bulk remediation and Hunt for searching past mail. Detection rules, policies, and warning banners are managed in Settings. Subscribe to the Email Security extension to enable it. See [Email Security](../email-security/index.md).
+- (Cloud Security) **Clearer pages and setup**: Identity Risks rows link to Identity 360 and to that identity's findings, and Access loads much faster. The Policies page states the real collection schedule. GCP setup lists the optional roles for CIS GCP v5.0 and the APIs to enable. The Google Workspace permissions list shows every scope. Microsoft 365 onboarding can generate a certificate for full coverage.
+- (Compliance) **Why a control is incomplete**: reports keep all four result statuses, and Manual is used only for organizational attestations. Controls explain why they are incomplete, such as collection still running, stale data, or missing inventory. You can filter by reason, and the export includes the same explanations.
+- (Application Control) **Application Control page**: manage policies and rules in one place. Create, edit, duplicate, enable, disable, and delete policies, and search and filter rules. Policies are listed in the order a sensor applies them, and a policy fully covered by an earlier one is marked Unreachable. New `app_control.get` and `app_control.set` permissions, and Git Sync support for Application Control. Requires the Application Control extension.
+- (Platform) **System theme**: the appearance setting now offers Light, Dark, or System, which follows your operating system.
+- (Platform) **Faster loading**: the console starts faster, organizations load sooner, and the Sensors list loads faster for large fleets. Sensor filters show a loading indicator while a query runs.
+- (Platform) **Navigation**: Give Feedback is in the Cloud Security sidebar. Users & Roles, REST API, and Access Control Lists are now tabs under one Access Management link. Extension pages share one layout and filter bar.
+- (Playbooks) **Python SDK version**: choose the Python SDK version (v4 or v5) for a playbook.
+
+#### Bug Fixes
+
+- (Platform) The API key permission picker now offers all assignable permissions.
+- (Detection) Importing a community rule keeps the rule name and enables Create.
+- (Billing) CSV exports write negative amounts as numbers, and unit prices no longer show as $0.
+
+---
+
 ## 2026-09-30
 
 ### Endpoint Agent 5.3.12
