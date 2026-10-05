@@ -273,7 +273,7 @@ permission only when the workflow needs it:
 | Product provider/policy/secret setup | `platform_admin` | Dedicated provider `.get/set`, product `.get/set` for policy, `secret.set` and required metadata-read access |
 
 CloudSec requires the `ext-cloud-security` subscription; MailSec requires
-`ext-email-security` and applicable beta access. Setup uses generic Hive and
+`ext-email-security`. Setup uses generic Hive and
 extension tools, the console or CLI; product read-only profiles exclude those
 writes. MailSec's read-only profile excludes raw EML and privileged diagnostics.
 Backend capability rollout remains independent of the client version.
