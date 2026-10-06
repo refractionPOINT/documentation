@@ -6,14 +6,12 @@
     See [security product billing](/7-administration/billing/security-products/)
     for pricing, trial limits and upgrading.
 
-    CLI examples require a build that includes the `mailsec` commands. Check
-    your installation before running them:
+    CLI examples require LimaCharlie CLI **5.7.0 or later**, which includes the
+    `mailsec` commands. Install or upgrade, then check:
 
     ```bash
+    python -m pip install --upgrade limacharlie
     limacharlie mailsec --help
     ```
 
-    These commands are not yet in the stable CLI release. Use the web console
-    or REST API, or a development build from the
-    [public SDK repository](https://github.com/refractionPOINT/python-limacharlie).
     Credential-file examples also require `jq`.
