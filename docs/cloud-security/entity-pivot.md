@@ -10,9 +10,10 @@ mailbox owner. A Host represents a machine, including an endpoint or cloud VM.
 Ownership relates a User to a Host; they remain separate entities.
 
 !!! note "Availability"
-    The Entity Pivot API is available in every region for organizations with
-    Cloud Security. The console page, MCP tools and CLI commands become available
-    with their next releases. A `feature_disabled: true` response means the
+    The Entity Pivot API, the console page, the CLI and the MCP tools are available
+    for organizations with Cloud Security. The CLI group `limacharlie cloudsec entity`
+    is in python-limacharlie 5.7.0 and later; the `pivot` subcommand ships in the next
+    CLI release. A `feature_disabled: true` response means the
     feature is unavailable; it does not mean the organization has no entities.
 
 ## Investigate an entity
@@ -149,9 +150,14 @@ grant the needed permission; subscribe to the product to enable its data.
 
 - `index_ready: false` means the first entity index has not completed. Wait for
   collection and indexing before interpreting results.
-- `card: null` with `index_ready: true` means the entity ID is unknown in this
-  organization. After a merge, `redirect_to` identifies the surviving entity;
-  follow it instead of treating the old ID as missing.
+- `card: null` with `index_ready: true` and no `redirect_to` means the entity ID
+  is unknown in this organization.
+- Entities can merge when new evidence shows two entities are the same. Reading
+  a merged ID returns the **surviving** entity's card, with `redirect_to` set to
+  the survivor's ID. Use `redirect_to` as the ID from then on. If the survivor has
+  itself been retired, `card` is `null` and `redirect_to` names that retired
+  entity: the ID was known and merged, but no current entity is left to show.
+  A retired entity that was never merged is indistinguishable from an unknown ID.
 - Source freshness includes `source`, optional `last_success` in Unix seconds,
   `stale` and optional `detail`. Missing successful collection time is unknown.
 - Sightings are **best effort**, retained for up to 365 days. They cover events
@@ -207,34 +213,209 @@ than silently dropping candidates.
 See the [API reference](api-reference.md) for authentication and the wider Cloud
 Security API.
 
+## Response reference
+
+All timestamps are Unix seconds. Fields described as optional are omitted when
+they have no value. Ignore unknown fields: responses can gain fields over time.
+
+### Resolve
+
+The response has `results` (one object per input, in input order), `index_ready`
+and `sources` (freshness, see [Cards](#cards)). `sightings: "forbidden"` appears
+when the caller lacks `insight.evt.get`; see [Permissions](#permissions).
+
+| Result field | Meaning |
+|---|---|
+| `input` | The `value` and optional `type` you submitted. |
+| `detected_types` | The identifier types tried. With an explicit `type` it contains only that type; otherwise the types the value's shape could be. |
+| `matches` | Confirmed candidates, with confidence `authoritative` or `corroborated`. |
+| `possible` | Unconfirmed candidates. Never select one automatically. |
+| `ambiguous` | `true` when `matches` holds more than one entity. See [API routes](#api-routes). |
+
+A match (in `matches`, `possible` or a card's `possible_matches`) has:
+
+| Match field | Meaning |
+|---|---|
+| `entity_id` | The entity's opaque ID. |
+| `kind` | `user` or `host`. |
+| `display_name` | Human-readable name. |
+| `confidence` | `authoritative`, `corroborated` or `possible`. |
+| `via` | The identifier that produced the match: `type`, `value` and the `sources` that assert it. |
+| `approximate` | Optional, `true` for an IP match derived from endpoint sightings, whose interval endpoints are approximate. |
+| `sid` | Optional, the sensor whose sighting produced an approximate IP match. |
+
+### Cards
+
+`GET .../entities/{entity_id}` returns `card`, `index_ready`, optional
+`redirect_to` and optional `sightings`. The card has:
+
+| Card field | Meaning |
+|---|---|
+| `entity` | `id`, `kind`, `display_name` and `attrs` (see below). |
+| `identifiers` | Every identifier of the entity: `type`, `value`, `display`, `confidence`, the `sources` that assert it, and `first_seen` and `last_seen`. A `0` timestamp means unknown. |
+| `relationships` | Links to other entities: `rel` (such as `owns`), `direction`, the related `entity` (`id`, `kind`, `display_name`), `confidence` and the `source` that reported it. `direction` is `out` when this entity is the subject (a User that `owns` a Host) and `in` when the other entity is. |
+| `recent_activity` | Optional, omitted without `insight.evt.get`. Account observations on sensors within the `sightings_days` window: `rel` (`active_on` or `logged_on`), `sid`, the account label in `value`, `first_ts`, `last_ts`, `confidence` and `approximate`. `entity` names the other entity when exactly one confirmed match exists; otherwise it is absent and the candidates appear in `possible_matches`. |
+| `possible_matches` | Unconfirmed candidates, shaped like a [match](#resolve). |
+| `telemetry_sources` | Optional attached adapter sensors; see [Adapter identities](#adapter-identities-and-external-actors). |
+| `cloud` | Cloud or identity records linked to the entity: `urn` and `type` (the resource type from the URN). `name`, `exposed` and `open_findings` are optional and omitted when unknown; read open findings with the `cloud` [activity source](#readiness-history-and-incomplete-results). |
+| `pivots` | Links, not data: `product`, `label`, `route`, `params` and the `permission` needed. A sensor identifier yields a sensor-timeline pivot (`product: "edr"`, permission `sensor.get`). |
+| `sources` | Freshness of each source behind the card: `source`, optional `last_success`, `stale` and optional `detail`. |
+
+`entity.attrs` is a small summary object. Keys that can appear:
+
+| `attrs` key | Meaning |
+|---|---|
+| `external` | `true` for a User with no internal directory record: known only through an adapter, or flagged by its provider as outside the organization. Removed when a directory record joins the entity. See [Adapter identities](#adapter-identities-and-external-actors). |
+| `human` | On a User from a directory or identity provider: `true` for a person, `false` for a known non-human principal such as a service account. Absent when the source does not say. |
+| `platform` | On a Host: the platform reported by its sensor, such as `windows`. |
+| `os` | On a Host built from a managed-device or third-party asset record: the operating system the source reported. |
+| `posture` | On such a Host, device-posture facts the source reported (for example `encryption`, `screen_lock`, `managed_state`, `ownership`, `os_version`, `model`, `manufacturer`). Only reported facts appear. |
+| `last_alive_day` | On a Host with a sensor: the latest known UTC day (`YYYY-MM-DD`) the sensor manager saw it alive. With several sensors, the latest day. Absent when unknown. |
+| `sources` | The sorted, de-duplicated list of sources that contributed to the entity. |
+| `joins_stale` | `true` when the sensor-to-cloud link data was unavailable at the last refresh and the entity kept its earlier cloud links. Treat the card's source freshness as stale. |
+| `split_from` | List of earlier entity IDs: this entity was created when the identifiers of an earlier entity no longer formed one group. The earlier ID stays with the group that kept most of its identifiers. |
+| `recent_activity_incomplete`, `possible_matches_incomplete`, `projection_catching_up` | Incompleteness markers; see [Readiness](#readiness-history-and-incomplete-results). |
+
+### Sightings
+
+`GET .../sightings` returns `sightings`, optional `next_cursor` and
+`best_effort: true`. Rows are daily buckets, newest day first:
+
+| Row field | Meaning |
+|---|---|
+| `sid` | Sensor that observed it. |
+| `kind` | `user`, `logon`, `int_ip`, `ext_ip` or `hostname`. |
+| `value`, `value_display` | The normalized value, and its display form. |
+| `day` | UTC date, `YYYY-MM-DD`. |
+| `first_ts`, `last_ts` | First and last observation in that bucket. |
+| `host_entity_id` | Optional. The Host entity: the entity itself for a Host, or for a User the single Host that has this sensor. |
+| `user_entity_id` | Optional. Set on `user` and `logon` rows when exactly one confirmed User matches the account. |
+
+Sightings follow merges silently and do not return `redirect_to`; use the card to
+learn the survivor's ID. An unknown entity returns an empty list.
+
+### Search
+
+`GET .../entities/search` returns `entities`, `index_ready` and optional
+`next_cursor`. Each entity has `id`, `kind`, `display_name` and `matched` (the
+identifier `type` and `value` that matched the prefix).
+
+### Activity
+
+`GET .../activity` returns `entity_id`, `index_ready`, `since`, `until`,
+`sources` (one object per requested source) and optional `redirect_to` and
+`sightings`. Each source object has `source`, `status`, `items`, `truncated` and
+`link`, where `link` is the route of the full view. Items are the records the
+underlying product returns: messages for `email`, detections for `detections`,
+`sid` with live state for `sensor`, and open findings for `cloud`. When the index
+is not ready or the entity has no card, the route returns the card response shape
+(`card: null`) instead.
+
 ## MCP and CLI
 
-Once the supporting client versions are released, both `cloud_security` and
-`cloud_security_readonly` MCP profiles provide these read-only tools:
+These MCP tools are read-only. All six are in the `cloud_security`,
+`cloud_security_readonly`, `historical_data`, `historical_data_readonly`,
+`email_security` and `email_security_readonly` profiles, so an email or
+historical-data investigation can pivot without switching profile.
 
-| Tool | Purpose |
-|---|---|
-| `cloudsec_entity_pivot` | Resolve `identifier` (optional `type`, `at`), return cards for confirmed unambiguous matches and retain candidates. Possible or ambiguous candidates are not followed automatically. |
-| `cloudsec_entity_search` | Search the `q` identifier prefix, optional `kind`, `limit` (1–100), `cursor`, returning one page with readiness and the next cursor. |
-| `cloudsec_entity_activity` | Activity preview for `entity_id`, optional `since`, `until`, `sources`, preserving per-source status and truncation. |
+| Tool | Arguments | Purpose |
+|---|---|---|
+| `cloudsec_entity_pivot` | `identifier` (required), optional `type`, `at` | The default for "what is this identifier?". Resolves one identifier, then returns the cards of its confirmed, unambiguous matches (at most 10) in `cards`. The resolve results stay in `candidates`; possible and ambiguous candidates are never followed automatically. Also returns `index_ready`, `sources`, any other top-level resolve fields, `truncated` and, for a card that failed to load, `card_errors`. |
+| `cloudsec_entity_resolve` | `identifiers` (required, 1–100 objects with `value` and optional `type`), optional `at` | Batch resolution only: candidates for every input, no cards. The [resolve response](#resolve) unchanged. |
+| `cloudsec_entity_get` | `entity_id` (required), optional `sightings_days` (1–365) | One entity card with `index_ready`, `redirect_to` and `sightings`, unchanged. |
+| `cloudsec_entity_search` | `q` (required), optional `kind`, `limit` (1–100), `cursor` | One page of identifier-prefix search with readiness and the next cursor. |
+| `cloudsec_entity_sightings` | `entity_id` (required), optional `kind`, `since`, `until`, `limit` (1–500), `cursor` | One page of best-effort sightings. Needs `insight.evt.get`. |
+| `cloudsec_entity_activity` | `entity_id` (required), optional `since`, `until`, `sources` | Activity preview, preserving per-source status and truncation. |
 
-The CLI command group is `limacharlie cloudsec entity`, with the following
-subcommands. Availability depends on your installed release: check
-`limacharlie cloudsec --help` first. A release without `entity` cannot run them;
-use the API when its readers are available.
+Arguments follow the [API routes](#api-routes). `type` takes one of the
+[identifier types](#identifiers-and-confidence).
+
+The CLI command group is `limacharlie cloudsec entity`. Each subcommand answers
+`--ai-help` with guidance on its purpose and response fields.
 
 | Subcommand | Main selectors |
 |---|---|
+| `pivot` | `--identifier` (one value), optional `--type`, `--at`. Resolves the identifier and fetches cards the same way as `cloudsec_entity_pivot`. |
 | `resolve` | Repeatable `--identifier`, optional `--type`, `--at`. |
 | `get` | `--entity-id`, optional `--sightings-days`. |
 | `search` | `--q`, optional `--kind`, `--limit`, `--cursor`. |
 | `sightings` | `--entity-id`, optional `--kind`, `--since`, `--until`, `--limit`, `--cursor`. |
 | `activity` | `--entity-id`, optional `--since`, `--until`, repeatable `--source`. |
 
+`pivot` ships in the next CLI release. Use `resolve` followed by `get` with
+python-limacharlie 5.7.0 and later. Run `limacharlie cloudsec entity --help` to
+see what your installed release provides.
+
 Use the organization and output options described in [CLI](cli.md). Preserve
 ambiguity, forbidden statuses, redirects and continuation cursors when scripting;
 an empty preview is not evidence that nothing happened. See [MCP](mcp.md) for
 profile setup.
+
+## Worked investigation
+
+A message from a suspicious sender reached `alice@example.com`. Which machine does
+she own, what did it do, and is there cloud exposure? The values below are
+synthetic.
+
+1. **Resolve the mailbox to a User.** Pass the address with no `type`. One
+   confirmed, unambiguous match gives a User ID such as `eu_k5xw4zdpnvsxe3tl`. If
+   `ambiguous` is `true`, or the only candidates are in `possible`, stop and pick
+   with evidence instead of taking the first.
+2. **Read the User card.** `relationships` with `rel: "owns"` and
+   `direction: "out"` list the Hosts she owns, for example `eh_nfzxiyltmrzgs43t`.
+   Check `redirect_to` and use it as the ID if present.
+3. **Ask for activity.** For the User, `email` shows her messages; `detections` and
+   `sensor` include her owned Hosts. Then ask for the Host's `detections`,
+   `sensor` and `cloud` sources. Read each `status` and `truncated` before
+   concluding anything.
+
+=== "CLI"
+
+    ```bash
+    # Next CLI release: resolve and fetch the card in one step.
+    limacharlie cloudsec entity pivot --identifier alice@example.com --oid $OID
+
+    # python-limacharlie 5.7.0 and later:
+    limacharlie cloudsec entity resolve --identifier alice@example.com --oid $OID
+    limacharlie cloudsec entity get --entity-id eu_k5xw4zdpnvsxe3tl --oid $OID
+    limacharlie cloudsec entity activity --entity-id eu_k5xw4zdpnvsxe3tl \
+      --source email --source detections --oid $OID
+    limacharlie cloudsec entity activity --entity-id eh_nfzxiyltmrzgs43t \
+      --source detections --source sensor --source cloud --oid $OID
+    ```
+
+=== "MCP"
+
+    ```text
+    cloudsec_entity_pivot    {"identifier": "alice@example.com"}
+    cloudsec_entity_activity {"entity_id": "eu_k5xw4zdpnvsxe3tl",
+                              "sources": ["email", "detections"]}
+    cloudsec_entity_activity {"entity_id": "eh_nfzxiyltmrzgs43t",
+                              "sources": ["detections", "sensor", "cloud"]}
+    ```
+
+=== "API"
+
+    ```bash
+    BASE="https://api.limacharlie.io/v1/cloudsec/$OID/entities"
+
+    curl -s -X POST "$BASE/resolve" \
+      -H "Authorization: Bearer $JWT" -H "Content-Type: application/json" \
+      -d '{"identifiers": [{"value": "alice@example.com"}]}'
+
+    curl -s -H "Authorization: Bearer $JWT" \
+      "$BASE/eu_k5xw4zdpnvsxe3tl?sightings_days=30"
+
+    curl -s -H "Authorization: Bearer $JWT" \
+      "$BASE/eu_k5xw4zdpnvsxe3tl/activity?sources=email,detections"
+
+    curl -s -H "Authorization: Bearer $JWT" \
+      "$BASE/eh_nfzxiyltmrzgs43t/activity?sources=detections,sensor,cloud"
+    ```
+
+The same walk works from any starting identifier: a hostname, an IP address
+(add `at` for a past time), a sensor ID or a GitHub login. Each step needs the
+permissions in the [table above](#permissions).
 
 ## Add Intune device evidence
 
