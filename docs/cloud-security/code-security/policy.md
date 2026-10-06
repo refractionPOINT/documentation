@@ -19,7 +19,7 @@ Use `hive enable` with the same flags to re-enable it, or `--disabled` on
 `hive set` to stage a new policy. Once the updated Hive default is available,
 new policy records created without `usr_mtd` default to enabled. Explicit
 metadata overrides that default; data-only updates preserve metadata. The
-creation example above uses `--enabled` to choose explicitly during rollout.
+creation example below uses `--enabled` to choose explicitly during rollout.
 
 ## Example
 
