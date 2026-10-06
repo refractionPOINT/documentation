@@ -99,6 +99,8 @@ Because the `install-mode` policy is `permissive`, executions that your normal p
 
 The console creates the policy the first time you start install mode. It appears on the **Policies** tab with a **System: install mode** badge. For install mode to work the policy must stay enabled, in a mode that does not enforce, matching only the `appctl-install-mode` tag, with no platform filter, and ordered before every other enabled policy. If a policy is later created with a lower `priority` number, or the record is edited into something that would not work, the Policies tab flags it with **Needs attention**, and starting install mode lists what is wrong and offers to repair the policy. The console never starts a window on top of a policy that would still block.
 
+Anyone who holds `sensor.tag` can add the `appctl-install-mode` tag to a host, with or without a time to live, and the `install-mode` policy then applies to that host ahead of every other policy. The `app_control.set` requirement is enforced by the console only. The **Policies** tab shows how many hosts carry the tag right now, so review that count and the hosts behind it regularly.
+
 If another policy already has the lowest possible priority (`-2147483648`), no policy can be ordered before it. Raise that policy's `priority` number first.
 
 Deleting the `install-mode` policy stops install mode from working until the policy exists again. Starting install mode on a host recreates it. Hosts that are in a window when you delete it return to their normal policy.
