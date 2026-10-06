@@ -80,7 +80,7 @@ Application Control reports through two events, available on Windows and macOS. 
 
 When the same program draws the same verdict repeatedly, the first occurrence is reported right away as `APP_CONTROL_DENIED` and the repeats within the next five minutes are folded into a single `APP_CONTROL_DENIED_SUMMARY` event. It carries `APP_CONTROL_COUNT` (the first occurrence included) and the first and last time seen in `APP_CONTROL_FIRST_TS` and `APP_CONTROL_LAST_TS`. A summary has its own event name, so a rule written against `APP_CONTROL_DENIED` is not triggered again for occurrences it was already told about.
 
-Every event carries the name of the policy that produced it in `APP_CONTROL_POLICY_LABEL`, which is the record name of the policy.
+Events carry the name of the policy that produced them in `APP_CONTROL_POLICY_LABEL`, which is the record name of the policy.
 
 Useful fields on `APP_CONTROL_DENIED`:
 
