@@ -43,7 +43,7 @@ The returned data from the API contains the following:
 
 ### Query Language
 
-To use Replay in LCQL Mode (LimaCharlie Query Language), you can specify your query in the `query` parameter of the Replay Request (defined below) when using the REST interface, or you can use the LimaCharlie Python SDK/CLI's [query interface](https://github.com/refractionPOINT/python-limacharlie/blob/master/limacharlie/Query.py): `limacharlie search --help`.
+To use Replay in LCQL Mode (LimaCharlie Query Language), you can specify your query in the `query` parameter of the Replay Request (defined below) when using the REST interface, or you can use the LimaCharlie Python SDK/CLI's [query interface](https://github.com/refractionPOINT/python-limacharlie/blob/master/limacharlie/sdk/search.py): `limacharlie search --help`.
 
 ### Python CLI
 

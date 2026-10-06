@@ -105,4 +105,4 @@ sophos:
 
 ## API Doc
 
-See the official [documentation](https://developer.sophos.com/docs/siem-v1/1/overview).
+See the official [documentation](https://developer.sophos.com/siem-api-schemas/).
