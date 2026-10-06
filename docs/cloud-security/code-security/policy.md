@@ -7,6 +7,20 @@ nothing is scanned.
 Edit it in the console under **Cloud Security → Policies → Code scanning**, or
 store it as a record in the `cloudsec_policy` hive.
 
+Every `cloudsec_policy` record honours `usr_mtd.enabled`, across all Cloud
+Security and Code Security policy types. A disabled record does not apply,
+even if `code_scanning.enabled` is `true`. Disable a record with:
+
+```bash
+limacharlie hive disable --hive-name cloudsec_policy --key code-scanning
+```
+
+Use `hive enable` with the same flags to re-enable it, or `--disabled` on
+`hive set` to stage a new policy. Once the updated Hive default is available,
+new policy records created without `usr_mtd` default to enabled. Explicit
+metadata overrides that default; data-only updates preserve metadata. The
+creation example above uses `--enabled` to choose explicitly during rollout.
+
 ## Example
 
 ```yaml
@@ -39,7 +53,7 @@ limacharlie hive set --hive-name cloudsec_policy --key code-scanning \
 ```
 
 Save the YAML above as `code-policy.yaml`. Both enable switches matter: the
-Hive record must be enabled (`--enabled`), and its nested
+Hive record's `usr_mtd.enabled` must be `true` (`--enabled`), and its nested
 `code_scanning.enabled` must be `true`. Put `repos`, `scanners` and every field
 below **inside `code_scanning`**, not beside `policy_type`. A flat record is
 refused because it has no code-scanning body.
