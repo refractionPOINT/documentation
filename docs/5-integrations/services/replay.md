@@ -155,6 +155,8 @@ For example, this `lookups` field supplies a lookup named `suspicious-domains`, 
 
 Replay never reads your Organization's lookups. A rule's `hive://lookup/<name>` always resolves to the lookup of that name in the request's `lookups`, used exactly as given, even when the Organization has a lookup with the same name. This lets you test a lookup rule against sample indicators without creating or changing a lookup in your Organization.
 
+The lookups in a request are intentionally immutable: they are fixed when the request is received, and they do not change while the rule is evaluated, however long the replay runs or however many workers it is spread across. This makes a replay reproducible. The same rule with the same lookups over the same events always gives the same results, whatever happens to your Organization's lookups in the meantime. It also means you provide all the static data a rule needs up front, so you can test a rule against exact indicators and compare runs while you change the rule.
+
 If the request has no `lookups` field, or the field does not contain a lookup the rule names, the rule fails to compile and the response's `error` contains:
 
 ```text
@@ -181,7 +183,7 @@ The `lookups` field is meant for sample indicators and rule validation, not for 
 
 - up to 32 lookups
 - up to 20,000 indicators across all of its lookups
-- a `lookups` field of at most 256 KiB, measured as sent
+- a `lookups` field of at most 64 KiB, measured as sent
 
 A request over any of these limits, or whose `lookups` field is not an object of objects, is rejected with HTTP status `400` and an `error` explaining why:
 
