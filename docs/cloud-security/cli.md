@@ -128,7 +128,9 @@ limacharlie cloudsec fleet overview --group <GROUP_ID> --limit 100
 The `entity` subgroup resolves an identifier to a User or Host and reads its
 card, sightings and activity; `entity pivot` does the resolve and card fetch in
 one step. See [Entity Pivot](entity-pivot.md#mcp-and-cli) for the subcommands and
-how to read the results. Entity commands are read-only and need `cloudsec.get`.
+how to read the results, including `--foreign-hostname` and `--observation-selector`
+for [leads from adapter events](entity-pivot.md#leads-from-adapter-events) (next CLI release).
+Entity commands are read-only and need `cloudsec.get`.
 
 The `export` subgroup streams the **entire** filtered set as a CSV
 (server-side keyset walk, capped at 100,000 rows) — use it for offline

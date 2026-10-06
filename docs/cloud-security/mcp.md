@@ -82,7 +82,8 @@ Six read-only tools resolve an email address, hostname, IP address, sensor ID or
 other identifier into User and Host entities, and read their cards, sightings and
 activity: `cloudsec_entity_pivot`, `cloudsec_entity_resolve`, `cloudsec_entity_get`,
 `cloudsec_entity_search`, `cloudsec_entity_sightings` and `cloudsec_entity_activity`.
-Start with `cloudsec_entity_pivot`. They are in the `cloud_security` and
+Start with `cloudsec_entity_pivot`; resolve and pivot also take `observation_selectors` for
+[leads from adapter events](entity-pivot.md#leads-from-adapter-events). They are in the `cloud_security` and
 `cloud_security_readonly` profiles, and also in `historical_data`,
 `historical_data_readonly`, `email_security` and `email_security_readonly`. See
 [Entity Pivot](entity-pivot.md#mcp-and-cli) for arguments and how to read results.
