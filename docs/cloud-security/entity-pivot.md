@@ -243,8 +243,9 @@ identifier, and nothing is stored as a relationship.
 All of this needs `insight.evt.get` (no new permission). Each panel shows at most
 20 rows, newest day first, from the last 30 days.
 
-**How to word a lead.** Say "same hostname and internal IP observed that day", a
-"lead" or "possible". Do not say "same machine" or "verified". Reused addresses and
+**How to word a lead.** Describe it by its `reason`, for example "same hostname
+and internal IP observed that day", and call it a "lead" or "possible". Do not say
+"same machine" or "verified". Reused addresses and
 names, NAT, VPN and cloned machines can produce a wrong lead even when it is the
 only one, so every qualifying Host is listed and none is selected for you.
 
