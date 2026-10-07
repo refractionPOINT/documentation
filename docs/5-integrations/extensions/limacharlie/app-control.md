@@ -251,3 +251,114 @@ By default the Owner, Administrator and Operator roles have both. The Viewer rol
 - [Config Hive overview](../../../7-administration/config-hive/index.md)
 - [Permissions](../../../8-reference/permissions.md#application-control)
 - [EDR events reference](../../../8-reference/edr-events.md#app_control_denied)
+## Exporting compliance evidence
+
+Open **Application Control**, select **Export compliance evidence**, and choose a
+start and end time in UTC. Select **Collect evidence**. The dialog shows collection
+progress, including the number of sensors read, and lets you cancel. Once the
+files are ready, select **Download evidence bundle** to save a ZIP archive.
+The default window is the preceding 30 days.
+
+The export reads data without changing policies, rules, sensors, or observation
+triage. Sensor collection pages through the entire organization, including sensors
+that have never reported Application Control. It does not export only the Fleet
+page currently visible. If pagination fails, repeats records, or returns a changed
+sensor total, that section's partial results are discarded and marked unavailable.
+Retry the export to collect the section again. Canceling discards the export.
+
+### Files and evidence
+
+The archive contains:
+
+- **report.pdf**: the report metadata, requirement coverage, policies, rule summaries,
+  enforcement coverage, observations, and available change history.
+- **report.html**: the same localized report as selectable, searchable text. The PDF
+  renders text with browser fonts to preserve all supported languages; use the HTML
+  companion for text selection and accessibility.
+- **evidence.json**: the evidence, section availability, timestamps, and localized
+  report content. Machine-readable field names and API enum values remain unchanged.
+- **rules.csv**, when policy/rule read permission is available: the complete rule
+  list, including action, kind, value, policy scope, enabled state, expiry, comment,
+  and hive change metadata. Disabled and expired rules are included.
+- **fleet.csv**, when sensor-list permission is available and collection completes:
+  every collected sensor's identity and last-reported Application Control posture.
+
+The report identifies the organization, exporting user, generation time, collection
+start, and selected window. Policies include targeting, priority, mode, stance,
+OS vendor trust, behavior for programs already running, enabled state, and the last
+change timestamp and author returned in hive `sys_mtd`. Rule summaries distinguish
+all rules from active rules, temporary allow exceptions from other rules, and
+trusted installer rules.
+
+Fleet evidence counts reporting sensors by mode and held policy, sensors with no
+Application Control report, refused policies, break-glass, and degraded enforcement.
+It also identifies posture reports older than 24 hours. The inventory includes
+unsupported platforms; their presence or absence of a report does not establish
+protection. Policy and rule configuration and Fleet posture are current snapshots,
+collected at different times, **not proof of continuous enforcement throughout the
+selected window**.
+
+Observations count distinct retained applications whose `last_seen` is in the
+selected window and whose retained dispositions include a block or would-block.
+The report includes the top applications ranked by retained execution lower bounds,
+plus the last ingestion time and retained shedding count. **These are not exact
+block-event or would-block-event totals for the window.** Dispositions and execution
+lower bounds span retained history, and an application can appear in both groups.
+An application seen again after the window can be absent from this selection.
+Retention, discarded observations, and delayed ingestion can omit activity.
+The observation actions do not provide time-bucketed event totals, so the report
+explicitly identifies those totals as unavailable.
+
+Available change history comes from retained organization audit entries for
+Application Control policy and rule hives in the chosen window. Entries may not
+contain before/after values. Missing retained entries do not establish that no
+changes occurred, and the export does not reconstruct historical policy state.
+
+### Permissions and unavailable sections
+
+The export respects the exporting user's permissions. It keeps unavailable
+sections in the report with an explanation rather than presenting missing data as
+zero activity or failing the whole export.
+
+| Section | Required permission |
+| --- | --- |
+| Policies and rules | `app_control.get` |
+| Fleet enforcement coverage | `sensor.list` |
+| Observations | `app_control.get` and `ext.request` |
+| Change history | `audit.get` |
+
+For example, an export without `audit.get` states
+**Not available: missing permission audit.get** in the change-history section.
+A section whose collection fails is marked unavailable and includes no partial
+inventory. Its CSV is omitted; the PDF, HTML, and JSON explain the omission.
+
+### Coverage statements for an auditor
+
+The report presents evidence and **capability coverage**, not a compliance
+certification, a pass/fail decision about the organization, or an Essential Eight
+maturity rating. An auditor must assess the actual scope, authorization process,
+exceptions, and enforcement gaps. An enforcing allowlist policy can deny program
+execution by default and permit exceptions. A blocklist or permissive policy does
+not implement allow-by-exception.
+
+| Requirement or application type | Capability coverage | Reason |
+| --- | --- | --- |
+| CIS Controls v8 2.5, Allowlist Authorized Software | Partially covered | Windows and macOS program execution can be allowlisted. Fleet scope, exceptions, and enforcement must be assessed; scripts and libraries are not controlled. |
+| CIS Controls v8 2.7, Allowlist Authorized Scripts | Not covered | Scripts are **not controlled**. Only program execution is controlled. Allowing an interpreter does not authorize or constrain the scripts it runs. |
+| Australian Essential Eight, Application control | Partially covered | Executables are supported; the other application types below are not covered. No maturity level is claimed. |
+| Executables | Covered capability | Process-start control on supported Windows/macOS sensors. Blocking requires an enforcing policy; allow-by-exception requires allowlist stance. |
+| Software libraries / DLLs | Not covered | Library and DLL loading is not controlled. |
+| Scripts | Not covered | Script content and execution within an allowed interpreter are not controlled. |
+| Installers (MSI) | Not covered | MSI packages are not controlled. Trusted installer rules provide executable trust exceptions, not MSI allowlisting. |
+| Compiled HTML / HTA | Not covered | CHM and HTA execution is not controlled. |
+| Control panel applets | Not covered | CPL applets are not controlled. |
+| NIST SP 800-53 CM-7(5), Authorized Software — Allow-by-exception | Partially covered | Enforcing allowlist policies support deny-by-default with exceptions. This export does not establish the organization's approved inventory, review process, or continuous enforcement. |
+
+Trusted installer rules can trust program descendants or written executables. Treat
+them as broad trust exceptions when assessing the allowlist, alongside vendor,
+signer, and path-based trust. They do not add script, library, or MSI package control.
+
+The requirement references are the
+[CIS Controls v8 guidance](https://www.cisecurity.org/-/media/project/cisecurity/cisecurity/data/media/files/white-paper-docs/cis-controls--v8--lotl-powershell--2022-07.pdf),
+[ASD application control guidance](https://www.cyber.gov.au/business-government/protecting-devices-systems/hardening-systems-applications/system-hardening/implementing-application-control),
+and [NIST SP 800-53 Rev. 5](https://csrc.nist.gov/pubs/sp/800/53/r5/upd1/final).
