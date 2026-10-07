@@ -174,7 +174,7 @@ More fixes: [Troubleshooting](troubleshooting.md).
 ## After your first successful test
 
 Review a few messages before enabling automated responses. Read
-[Policy → Automations](policy.md#automations): enforcement currently has an
+[Policy → Response automations](policy.md#automations): enforcement currently has an
 organization-wide consent effect, so enabling one rule can authorize other
 automated paths to act too. Expand mailbox coverage when you are ready.
 

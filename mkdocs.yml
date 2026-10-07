@@ -610,7 +610,7 @@ nav:
       - Sample Submission: email-security/sample-submission.md
       - Provider Quarantine: email-security/provider-quarantine.md
       - Detections & Verdicts: email-security/detections.md
-      - Mail Rules: email-security/custom-rules.md
+      - Detection Rules: email-security/custom-rules.md
       - Rule Reference: email-security/rule-reference.md
       - IOC & Reputation Feeds: email-security/ioc-feeds.md
       - Policy Reference: email-security/policy.md

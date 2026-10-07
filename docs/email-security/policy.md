@@ -70,6 +70,9 @@ modifies mail, and nothing sends mail until you say so.
 
 ## `automations`
 
+In the console, open **Policy → Response automations**. These ordered responses
+are separate from **Detection rules**, which define how messages are scored.
+
 The ordered list of `{match → actions}` rules that decide what happens to a
 message automatically.
 
@@ -349,7 +352,7 @@ raises suspicious — so the invariant is enforced after composition, not only p
 record. An inverted pair would make every suspicious message malicious.
 
 Individual rule weights and enabled states are edited on the `dr-mail` record,
-through [Mail Rules](custom-rules.md).
+through [Detection Rules](custom-rules.md).
 
 ---
 
