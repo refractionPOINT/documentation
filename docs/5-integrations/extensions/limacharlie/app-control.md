@@ -119,6 +119,62 @@ To step back at any point, set the policy to `permissive` or `off`, or remove th
 !!! note
     An `enforcing` allowlist with `trust_os_vendor: false` is refused on save, because a sensor cannot apply it.
 
+## Lockdown
+
+**Lock down host…** on a sensor page, or in the sensor list's bulk actions, requests incident-response containment through Application Control. The host can still use the network. Application Control enforces on **Windows and macOS only**; the bulk dialog skips other platforms, including Linux.
+
+The console creates a reserved, explicitly enabled `lockdown` policy in `app_control_policy` before adding the sensor tag `appctl-lockdown`:
+
+```yaml
+priority: -2  # Example only: must be lower than every other policy, including install-mode.
+platforms: []
+tags: [appctl-lockdown]
+mode: enforcing
+stance: allowlist
+trust_os_vendor: true
+on_enable: terminate
+```
+
+The console chooses a priority strictly lower than every other policy, including disabled policies and the reserved `install-mode` policy. It refuses if the lowest possible priority is already occupied. It creates the record conditionally so an existing policy is not overwritten; an altered or disabled lockdown policy needs an explicit repair before containment starts. Repair affects all hosts carrying the lockdown tag.
+
+When the policy reaches the host:
+
+- OS-vendor software and the LimaCharlie sensor can keep running.
+- Enabled, unexpired Application Control rules apply if their `policies` list is empty (every policy) or names `lockdown`. Allow rules authorize software; deny rules still take precedence. Rules scoped only to the host's ordinary policy do not carry over.
+- Applicable trusted-installer rules can also allow installer descendants and files written by those installers. Review these rules when defining containment. Already-running installer descendants whose lineage is no longer retained are reported and left running unless a deny rule matches, as described in [Programs that are already running](#programs-that-are-already-running).
+- Other running programs refused by the policy are reported and terminated. New executions refused by the policy are blocked.
+
+Use the Rules tab or rule editor to name `lockdown` when authorizing incident-response tools specifically during containment. A signer or path allow rule can authorize more software than a single-file hash rule; choose the scope deliberately.
+
+The dialog requires a reason. It stores a short URI-encoded reason in a companion sensor tag, visible in sensor tags, events and tag audit records. The reason tag shares any chosen TTL and is removed on release. Do not put secrets in the reason. By default, containment has **no user-selected TTL** and requires an explicit release; you can choose a limited duration instead. Changes take effect on the next sensor sync, so the presence of a tag is not confirmation that the sensor has already applied containment. The sensor-page banner checks that the lockdown policy remains applicable.
+
+**Release lockdown** removes the tag, checking the host's current tags even if the sensor list is stale. The host receives its next matching enabled policy on its next sync. If install mode is still tagged and matches, that policy can apply again; install mode cannot override lockdown while both tags are present. Terminated programs are not restarted.
+
+!!! warning "Keep a fallback policy"
+    Keep an enabled policy that matches the host after release. If no other policy matches, the sensor keeps enforcing the last policy it received, including lockdown. Deleting or disabling the lockdown policy does not guarantee release either. Use a matching replacement policy, or set enforcement to `off` and let the sensor sync before removing the policy.
+
+### Automate lockdown with D&R
+
+First create the reserved policy **once per organization** using **Set up lockdown** on the Policies tab. This only sets up the policy; it does not tag hosts. Starting lockdown from a host dialog also creates it. Keep the policy enabled and correctly configured before relying on automation: adding a tag alone does not create or repair the policy.
+
+A D&R [add tag response](../../../8-reference/response-actions.md#add-tag-remove-tag) with `tag: appctl-lockdown` requests lockdown automatically. Use a sensor event as the trigger so the response can identify the host. The following example locks down a host executing a confirmed malicious file; replace the placeholder hash and adapt the trigger to your incident signal before enabling it:
+
+```yaml
+detect:
+  event: NEW_PROCESS
+  op: is
+  path: event/HASH
+  value: REPLACE_WITH_CONFIRMED_MALICIOUS_SHA256
+respond:
+  - action: add tag
+    tag: appctl-lockdown
+    ttl: 3600
+```
+
+Here `ttl: 3600` gives the tag a one-hour lifetime. `ttl` is optional and measured in seconds; **omit that line to require explicit release**. Repeated tagging can extend the lifetime. Automated tagging does not require the console dialog's reason or add its companion reason tag. Include incident context in your detection reports or case records.
+
+The console action needs `app_control.get`, `app_control.set`, and `sensor.tag`, and an Application Control subscription. Policy-only setup needs Application Control read/write access. Automation must be authorized to tag the sensor. Restrict `sensor.tag` access: anyone who can add or remove this tag can request or release containment.
+
 ## Reading would-be blocks
 
 Application Control reports through these events, available on Windows and macOS. See the [EDR events reference](../../../8-reference/edr-events.md#app_control_denied) for the full fields.
