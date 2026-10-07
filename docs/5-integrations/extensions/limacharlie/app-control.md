@@ -251,6 +251,7 @@ By default the Owner, Administrator and Operator roles have both. The Viewer rol
 - [Config Hive overview](../../../7-administration/config-hive/index.md)
 - [Permissions](../../../8-reference/permissions.md#application-control)
 - [EDR events reference](../../../8-reference/edr-events.md#app_control_denied)
+
 ## Exporting compliance evidence
 
 Open **Application Control**, select **Export compliance evidence**, and choose a
