@@ -265,6 +265,8 @@ triage. Sensor collection pages through the entire organization, including senso
 that have never reported Application Control. It does not export only the Fleet
 page currently visible. If pagination fails, repeats records, or returns a changed
 sensor total, that section's partial results are discarded and marked unavailable.
+If the sensor count changes during collection, the report identifies inventory
+changes as the reason. Retry when sensor enrollment and removal are quieter.
 Retry the export to collect the section again. Canceling discards the export.
 
 ### Files and evidence
@@ -314,6 +316,8 @@ Available change history comes from retained organization audit entries for
 Application Control policy and rule hives in the chosen window. Entries may not
 contain before/after values. Missing retained entries do not establish that no
 changes occurred, and the export does not reconstruct historical policy state.
+The PDF and HTML show the newest 100 matching entries and the total returned;
+`evidence.json` includes every fetched matching entry.
 
 ### Permissions and unavailable sections
 
