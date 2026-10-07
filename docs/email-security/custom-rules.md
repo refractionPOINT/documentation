@@ -1,11 +1,16 @@
-# Mail Rules
+# Detection Rules
 
 --8<-- "includes/email-security-availability.md"
 
 Every mail detection rule lives in your organization's **`dr-mail` Hive**, one rule
-per record. **Email Security → Rules** shows the complete set: search and filter,
+per record. **Email Security → Detection rules** shows the complete set: search and filter,
 inspect the full YAML/JSON, edit, enable, disable or delete any rule. Reading takes
 `mailsec.get`; changing or deleting takes `mailsec.set`.
+
+The catalog shows each rule’s human name alongside its record ID, class, authored
+severity, and scoring strength. Weight is scaled by confidence before matching
+signals contribute to the verdict. Response automations are configured separately
+under **Policy → Response automations**.
 
 ## Default rules and ownership
 
