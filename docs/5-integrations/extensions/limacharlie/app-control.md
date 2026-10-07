@@ -168,6 +168,47 @@ Group the resulting detections by `FILE_PATH` or signer to see which programs ma
 
 Watch `APP_CONTROL_UNRESOLVED` during the `permissive_sync` soak. Each one is an execution the sensor let through because it could not check it in time, for example when the file hash was not available.
 
+## Managed alerts
+
+Application Control can install managed D&R rules that report detections for operational and enforcement events. All four alerts are **off by default**, including for existing subscriptions. To enable them, open the Application Control extension's **Configuration** view in the console, turn on the alerts you want, and save. Each option is independent of the policy's mode and `on_enable` setting.
+
+| Configuration option | Trigger | Detection name | Suppression |
+| --- | --- | --- | --- |
+| `alert_policy_refused` | A `SYNC` contains `APP_CONTROL_STATUS/APP_CONTROL_REFUSED`: the sensor reports a policy it declined. | `app-control-policy-refused` | Once per sensor and refused generation for 30 days. |
+| `alert_break_glass` | A `SYNC` contains `APP_CONTROL_STATUS/APP_CONTROL_ENFORCED/APP_CONTROL_BREAK_GLASS` equal to `1`. | `app-control-break-glass` | Once per sensor per 24 hours. |
+| `alert_enforced_blocks` | `APP_CONTROL_DENIED` with `APP_CONTROL_IS_ENFORCED` equal to `1`: an execution was actually blocked. | `app-control-enforced-block` | Once per sensor and application per 24 hours, identified by `HASH` when available, otherwise `FILE_PATH`. |
+| `alert_resident_terminated` | `APP_CONTROL_RESIDENT` with `APP_CONTROL_IS_ENFORCED` equal to `1`: a program already running was stopped when the policy landed. | `app-control-resident-terminated` | Each termination is reported. |
+
+Would-be blocks, unresolved executions, summaries, and resident programs that were only reported do not trigger the enforcement alerts. Turning on the resident alert does not itself stop programs; the policy must specify `on_enable: terminate` and be enforcing.
+
+The detections have priority `3`. The original sensor event is in `detect`, and the following metadata is in `detect_mtd`. Values copied from the event are rendered as strings; an absent optional hash, policy label, or matched rule id is an empty string.
+
+| Detection | Metadata keys |
+| --- | --- |
+| `app-control-policy-refused` | `refused_generation`, `reason_code`, `reason` (human-readable), `refused_at` (the sensor's refusal timestamp in Unix milliseconds). |
+| `app-control-break-glass` | `break_glass`, `enforced_generation`, `policy_label` (the policy held by the sensor). |
+| `app-control-enforced-block` | `file_path`, `hash`, `policy_label`, `matched_rule_id`, `generation`, `is_enforced`. |
+| `app-control-resident-terminated` | `file_path`, `hash`, `policy_label`, `matched_rule_id`, `generation`, `is_enforced`. |
+
+The refusal reasons are:
+
+| `reason_code` | `reason` |
+| --- | --- |
+| `21` | invalid signature |
+| `22` | foreign sensor or organization |
+| `23` | expired policy |
+| `24` | unknown signing key |
+| `25` | policy refused |
+| `26` | generation not newer |
+| `27` | policy rolled back |
+| `28` | host clock skew |
+
+Other reason codes produce `unknown reason (<code>)`. A refusal report describes the refused generation, which can differ from the policy the sensor still holds. Repeated syncs carrying that generation are suppressed for the maximum supported D&R period, 30 days; an unchanged refusal can alert again after that window. Daily suppression periods are 24-hour windows rather than calendar days.
+
+Rules are installed in `dr-managed` with names prefixed `ext-app-control-alert-`, using the detection name's suffix. They are reconciled on subscription, extension updates, and configuration changes. Turning an option off removes its rule, and unsubscribing removes all four alert rules. Existing detections remain available. The extension's API key needs `dr.set.managed`, `dr.list.managed`, and `dr.del.managed` to manage the rules.
+
+The rules request access to the Resource ACL scopes the extension's API key belongs to. Add that key to the appropriate scopes to include ACL-restricted sensors. On a platform that rejects the ACL scope marker, installation retries without it and logs a warning; those rules cannot reach ACL-restricted sensors.
+
 ## Managing from the CLI
 
 The two hives work with the generic hive commands.
