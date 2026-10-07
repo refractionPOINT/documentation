@@ -188,12 +188,16 @@ needs `cloudsec.get` and Cloud Security, in addition to `mailsec.get`.
 ### Pagination
 
 Pages are keyset-paginated. `next_cursor` is opaque and is passed back verbatim;
-an empty one is the last page.
+an empty one is the last page. When filtering by `flagged` or
+`inspection_incomplete`, a page can be short or empty and still have a cursor:
+the service bounds how much it scans per request. Keep paging until the cursor
+is empty. These filtered walks keep one snapshot for 50 minutes; restart after
+expiry or after changing filters.
 
 A message cursor is **bound to the complete filter set that minted it**: the
 token carries the chosen read index and a digest of your organization, the sort
 order and *every* filter — `q`, verdict, severity, disposition, state, direction, lane, mailbox,
-sender address, sender root domain, campaign, user-reported, score floor, time
+sender address, sender root domain, campaign, user-reported, flagged, inspection completeness, score floor, time
 window, link domain and attachment hash — so changing any of them mid-walk fails
 the next page (`400`, `error_code: cursor_filter_changed`, `restart_walk: true`)
 rather than silently resuming at the previous search's position. Filter *values*

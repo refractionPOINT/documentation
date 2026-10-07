@@ -182,3 +182,7 @@ current verdict threat severity (`severity`). Benign/graymail/unknown/error are
 informational; suspicious floor low, malicious floor high. Inspection failures
 and unknown coverage remain independent and visible on benign mail. Do not infer
 complete inspection from absent/new optional backend fields or from five reasons.
+
+Boolean-filter message pagination is bounded and uses a 50-minute snapshot.
+Short/empty pages with next_cursor are unfinished; document continuation by
+cursor, never by row count. Absent inspection never means complete.
