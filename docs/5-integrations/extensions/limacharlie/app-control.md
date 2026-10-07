@@ -312,6 +312,11 @@ Retention, discarded observations, and delayed ingestion can omit activity.
 The observation actions do not provide time-bucketed event totals, so the report
 explicitly identifies those totals as unavailable.
 
+If retained observations change between pages (for example, an application's
+`last_seen` moves past the window end), that section is marked unavailable with
+this reason and its partial results are discarded. An earlier end time can reduce
+changes caused by applications running during collection.
+
 Available change history comes from retained organization audit entries for
 Application Control policy and rule hives in the chosen window. Entries may not
 contain before/after values. Missing retained entries do not establish that no
