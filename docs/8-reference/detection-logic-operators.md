@@ -317,7 +317,7 @@ The value is supplied via the `path` parameter and the lookup is defined in the 
 
 Supports the [file name](#file-name) and [sub domain](#sub-domain) transforms.
 
-When a rule is run with [Replay](../5-integrations/services/replay.md), its `hive://lookup/` lookups are not read from your Organization: you supply them inline in the Replay request, with sample indicators or empty to only validate the rule. See [Lookups in Replay](../5-integrations/services/replay.md#lookups-in-replay).
+When a rule is run with [Replay](../5-integrations/services/replay.md), you supply its `hive://lookup/` lookups inline in the Replay request, with sample indicators or empty to only validate the rule. Inline lookups are the recommended way to test and replay lookup rules, because the results are reproducible. A Replay request can also opt in to reading the Organization's own lookups. See [Lookups in Replay](../5-integrations/services/replay.md#lookups-in-replay).
 
 > API-based lookups, like VirusTotal and IP Geolocation, work a little bit differently. For more information, see [Using API-based lookups](../5-integrations/api-integrations/index.md).
 >
