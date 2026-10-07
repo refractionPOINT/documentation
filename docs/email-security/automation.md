@@ -976,3 +976,14 @@ rules:
 A rule acts with the extension's own credential, so whoever can save rules in
 `dr-general` can cause these writes. Keep that in mind when you decide who gets
 that permission.
+
+### Threat eligibility and inspection events
+
+Cases completion eligibility uses `revision/verdict` on `EMAIL_VERDICT` and the
+scalar `verdict` on completed analysis, plus independent user-report triggers.
+Medium/high authored impact on benign mail does not create a threat case.
+Severity remains available for priority after eligibility is established.
+Inspection status and coverage-rule IDs travel independently on verdict and
+completion events, so rules can alert on incomplete inspection of benign mail.
+The coverage endpoint's `inspection` block counts `incomplete`, `unknown` and
+`total` over `window_start`–`window_end`, regardless of the triage queue.

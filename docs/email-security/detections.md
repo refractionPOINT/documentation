@@ -30,6 +30,10 @@ The verdict object on a message carries:
 |---|---|
 | `verdict` | The class above |
 | `score` | 0–100 |
+| `severity` | Threat impact: nonflagged verdicts informational, suspicious at least low, malicious at least high |
+| `rule_severity` | Maximum unsuppressed authored rule impact, retained for later verdict upgrades |
+| `inspection_incomplete` | An observed inspection gap, independent of the threat verdict |
+| `coverage_signals` | Every matched coverage-tagged rule ID, including score-excluded rules |
 | `top_signals` | Up to five contributing rules, heaviest first, each with `rule_id`, `name` and `weight`. This is the "why this verdict" block |
 | `matched_signals` | Every rule id that matched, including suppressed ones — the hunting surface |
 | `tags` | The deduplicated, sorted tags of the rules that actually contributed |
