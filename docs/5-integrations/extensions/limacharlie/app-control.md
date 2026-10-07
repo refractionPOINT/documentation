@@ -170,7 +170,7 @@ Watch `APP_CONTROL_UNRESOLVED` during the `permissive_sync` soak. Each one is an
 
 ## Managed alerts
 
-Application Control can install managed D&R rules that report detections for operational and enforcement events. All four alerts are **off by default**, including for existing subscriptions. To enable them, open the Application Control extension's **Configuration** view in the console, turn on the alerts you want, and save. Changes take effect at the next extension refresh, normally daily. Each option is independent of the policy's mode and `on_enable` setting.
+Application Control can install managed D&R rules that report detections for operational and enforcement events. All four alerts are **off by default**, including for existing subscriptions. To enable them, open the Application Control extension's **Configuration** view in the console, turn on the alerts you want, and save. Each toggle applies within about 5 minutes of saving, on the next sensor SYNC. Each option is independent of the policy's mode and `on_enable` setting.
 
 | Configuration option | Trigger | Detection name | Suppression |
 | --- | --- | --- | --- |
@@ -205,7 +205,7 @@ The refusal reasons are:
 
 Other reason codes produce `unknown reason (<code>)`. A refusal report describes the refused generation, which can differ from the policy the sensor still holds. Repeated syncs carrying that generation are suppressed for the maximum supported D&R period, 30 days; an unchanged refusal can alert again after that window. Daily suppression periods are 24-hour windows rather than calendar days.
 
-Rules are installed in `dr-managed` with names prefixed `ext-app-control-alert-`, using the detection name's suffix. They are reconciled on subscription and extension refreshes using the saved configuration. Turning an option off removes its rule at the next refresh, and unsubscribing removes all four alert rules. Configuration validation rejects non-boolean alert values and leaves the rules unchanged; validating without saving does not enable or disable alerts. Existing detections remain available. The extension's API key needs `dr.set.managed`, `dr.list.managed`, and `dr.del.managed` to manage the rules.
+Rules are installed in `dr-managed` with names prefixed `ext-app-control-alert-`, using the detection name's suffix. They are reconciled in the background when sensor SYNC or another extension request carries changed saved settings, and repaired on subscription and extension refreshes. Turning an option off removes its rule within about 5 minutes of saving, and unsubscribing removes all four alert rules. Rule updates never hold up policy delivery. If rule updates fail or the service is busy, later requests retry them and changes can take longer. Configuration validation rejects non-boolean alert values and leaves the rules unchanged; validating without saving does not enable or disable alerts. Existing detections remain available. The extension's API key needs `dr.set.managed`, `dr.list.managed`, and `dr.del.managed` to manage the rules.
 
 The rules request access to the Resource ACL scopes the extension's API key belongs to. Add that key to the appropriate scopes to include ACL-restricted sensors. On a platform that rejects the ACL scope marker, installation retries without it and logs a warning; those rules cannot reach ACL-restricted sensors.
 
