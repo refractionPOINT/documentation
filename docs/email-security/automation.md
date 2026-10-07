@@ -691,3 +691,14 @@ rule attribution. Report resolution requires an interactive analyst decision.
 The revise action takes `mode: analyst|ai`, a verdict, and a nonempty list of
 rationale strings. Resolve accepts the same five dispositions and optional
 message/campaign remediation with preview/confirm.
+
+### Threat eligibility and inspection events
+
+Cases completion eligibility uses `revision/verdict` on `EMAIL_VERDICT` and the
+scalar `verdict` on completed analysis, plus independent user-report triggers.
+Medium/high authored impact on benign mail does not create a threat case.
+Severity remains available for priority after eligibility is established.
+Inspection status and coverage-rule IDs travel independently on verdict and
+completion events, so rules can alert on incomplete inspection of benign mail.
+The coverage endpoint's `inspection` block counts `incomplete`, `unknown` and
+`total` over `window_start`–`window_end`, regardless of the triage queue.

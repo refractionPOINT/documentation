@@ -36,14 +36,16 @@ Filtering is **entirely server-side** — every filter below narrows the query i
 the backend, so a filtered page is a statement about your whole mail history, not
 about the rows a browser happened to have loaded. Both views use the same filter
 bar, filter modal, search and active-filter badges. Switching views keeps the
-filters. **Include unflagged groups** expands the default Groups triage queue; it
-does not change the individual Messages view. **Clear all** also resets that
-group scope to its default.
+filters. **Include unflagged** expands both triage views. Default eligibility follows
+analyst disposition, suspicious/malicious verdict or an undismissed user report;
+rule severity alone never adds benign mail to triage. Older backends without the
+Messages selector must identify that scope as unavailable. **Clear all** resets
+queue scope to its default.
 
 | Filter | Notes |
 |---|---|
 | `verdict` | Repeatable: `malicious`, `suspicious`, `graymail`, `benign`, `unknown` |
-| `severity` | Repeatable rule severity: `informational`, `low`, `medium`, `high`, `critical` |
+| `severity` | Repeatable threat severity: `informational`, `low`, `medium`, `high`, `critical` |
 | `disposition` | Repeatable analyst disposition: `malicious`, `spam`, `graymail`, `benign`, `simulation`; `none` selects copies without a disposition |
 | `state` | Repeatable: `delivered`, `quarantined`, `trashed`, `restored`, `bannered`, `spam` |
 | `direction` | Repeatable: `inbound`, `outbound`, `internal` |
@@ -53,10 +55,12 @@ group scope to its default.
 | `sender_root_domain` | One sender registrable domain |
 | `campaign_id` | The members of one campaign |
 | `group_id` | Every indexed recipient copy of one hardened message group |
-| `severity` | Repeatable rule severity: `informational`, `low`, `medium`, `high`, `critical` |
+| `severity` | Repeatable threat severity: `informational`, `low`, `medium`, `high`, `critical` |
 | `link_domain` | Messages linking to this **registrable root** domain (`evil.example`, not `login.evil.example`) |
 | `attachment_sha256` | Messages carrying an attachment with this hash |
 | `user_reported` | Tri-state — see below |
+| `inspection_incomplete` | `true` finds incomplete inspection, including benign mail; `false` finds known-complete inspection and excludes unmeasured history |
+| `flagged` | Messages only: `true` selects current triage eligibility, `false` selects unflagged mail; omit for all |
 | `min_score` | Messages scoring at least this much |
 | `q` | Free-text over the message's subject and sender address, up to 512 characters. The subject is matched in both its raw and its normalized form, so a hit can be on text the row does not display. It is matched row by row rather than looked up, so it must be accompanied by something that bounds the read: a `since`, or one of `mailbox` / `sender_email` / `campaign_id` / `link_domain` / `attachment_sha256`, or a **single** `verdict`. On its own it is refused — see [Free text needs a window](#free-text-needs-a-window) |
 | `since` / `until` | RFC3339 or unix seconds |
@@ -93,6 +97,21 @@ automatic responses; an empty action history on one is expected.
     Omitting `user_reported` means the dimension is *unconstrained*. Setting it
     to `false` selects mail **nobody reported**, which is a different and much
     larger set than "all mail".
+
+### Threat severity and inspection
+
+Message severity measures the threat indicated by its current verdict. Benign,
+graymail, unknown and error verdicts are informational. Suspicious verdicts have
+a low floor; malicious verdicts have a high floor. Authored rule impact can raise
+a flagged verdict above its floor, even when a shared-fact cap reduced score.
+
+Inspection is a separate signal. A benign message can still have
+`inspection_incomplete: true` because a scanner, lookup or parse could not finish.
+`coverage_signals` identifies the matched coverage rules. Unknown or absent
+inspection status is unmeasured, never proof of successful inspection. Groups
+report incomplete and unknown recipient-copy counts independently of severity.
+Enable Include unflagged when hunting benign inspection failures; the coverage
+summary counts them regardless of triage scope.
 
 ### Free text needs a window
 

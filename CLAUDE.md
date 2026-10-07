@@ -175,3 +175,10 @@ When adding or editing documentation that includes code snippets or commands, ve
 Runnable Python and Go SDK examples live in `snippets/` (`snippets/python/*.py`, `snippets/golang/*/main.go`) and are embedded into the docs with `pymdownx.snippets` (`--8<--`). They are compiled in CI (`.github/workflows/snippet-tests.yml`): Go snippets are built with `go build`, and Python snippets are byte-compiled with their SDK import paths verified. Add or edit runnable SDK examples there rather than inline, so CI keeps them from drifting out of sync with the SDKs.
 
 **Reminder:** This repository is PUBLIC. Only reference and link public sources; never include internal repository names, internal URLs, org IDs, or other non-public details in documentation or examples.
+
+## Email threat severity and inspection descriptions
+The email-security pages distinguish authored rule impact (`rule_severity`) from
+current verdict threat severity (`severity`). Benign/graymail/unknown/error are
+informational; suspicious floor low, malicious floor high. Inspection failures
+and unknown coverage remain independent and visible on benign mail. Do not infer
+complete inspection from absent/new optional backend fields or from five reasons.

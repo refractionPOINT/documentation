@@ -863,6 +863,10 @@ text examined.
 | Field | Type | Presence |
 |---|---|---|
 | `verdict` | string | Always |
+| `severity` | string | Valid threat severity on judged messages and revisions |
+| `rule_severity` | string | Maximum authored rule impact on judged messages |
+| `inspection_incomplete` | boolean | Present when an inspection gap was observed |
+| `coverage_signals` | array of string | All matched coverage-rule IDs, including excluded matches |
 | `score` | integer | Always |
 | `top_signals` | array of [TopSignal](#topsignal) | Non-empty |
 | `matched_signals` | array of string | Non-empty |
