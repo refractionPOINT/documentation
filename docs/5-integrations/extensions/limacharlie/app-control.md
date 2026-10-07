@@ -13,6 +13,7 @@ Application Control lets you decide which programs may run on your endpoints. Yo
 
 - The `ext-app-control` extension subscribed in the organization. See [Enabling the extension](#enabling-the-extension).
 - Endpoint agent **5.4.0** or later. [Upgrade](../../../2-sensors-deployment/endpoint-agent/versioning-upgrades.md) older sensors first.
+- For [trusted installers](#self-updating-software-and-trusted-installers) and for [`on_enable`](#programs-that-are-already-running), a sensor version that supports them. An older sensor applies the rest of the policy and ignores the installers. It does not act on `on_enable`.
 - Windows or macOS.
 - The `app_control.get` and `app_control.set` [permissions](../../../8-reference/permissions.md#application-control) to read and write policies.
 
@@ -31,15 +32,16 @@ Two hives hold the configuration. Both are partitioned by organization.
 
 | Hive | One record is | Page |
 | --- | --- | --- |
-| `app_control_policy` | A policy. It says which sensors it covers (by platform and tag), the mode, the stance (allowlist or blocklist) and whether to trust the OS vendor. | [Policies](../../../7-administration/config-hive/app-control-policy.md) |
-| `app_control_rule` | A rule. It allows or denies one path, signer, signing identifier, certificate-chain thumbprint or file hash, for all policies or only the ones you name. | [Rules](../../../7-administration/config-hive/app-control-rule.md) |
+| `app_control_policy` | A policy. It says which sensors it covers (by platform and tag), the mode, the stance (allowlist or blocklist), whether to trust the OS vendor and what to do about programs that are already running. | [Policies](../../../7-administration/config-hive/app-control-policy.md) |
+| `app_control_rule` | A rule. It allows or denies one path, signer, signing identifier, certificate-chain thumbprint or file hash, or names a trusted installer, for all policies or only the ones you name. | [Rules](../../../7-administration/config-hive/app-control-rule.md) |
 
 A sensor gets the first enabled policy, ordered by `priority` and then by name, whose platform and tags match it. When the sensor starts a process, it checks the rules that apply to its policy in this order and stops at the first answer:
 
 1. Deny rules.
 2. Allow rules.
 3. OS vendor trust (Apple platform binaries, Microsoft-signed binaries), unless the policy turns it off.
-4. The stance. An allowlist denies anything not allowed. A blocklist allows anything not denied.
+4. Trusted installers: a process started by a trusted installer, or a file one wrote. See [below](#self-updating-software-and-trusted-installers).
+5. The stance. An allowlist denies anything not allowed. A blocklist allows anything not denied.
 
 A deny rule always wins.
 
@@ -51,6 +53,53 @@ A deny rule always wins.
 | `permissive` | Evaluates executions asynchronously after the process starts. Reports would-be blocks. Blocks nothing and adds no latency. |
 | `permissive_sync` | Runs the same blocking path as `enforcing`, then always allows. The recommended last step before enforcing. |
 | `enforcing` | Blocks executions the policy denies. |
+
+## Self-updating software and trusted installers
+
+A hash or path rule stops matching as soon as an updater ships a new binary. A `signer` rule survives updates, so prefer it. It cannot cover what an updater unpacks without a signature: helpers, installer custom actions, or in-house tools pushed by a deployment system. For those, add an **installer rule** that names the updater.
+
+An installer rule is a record in the [`app_control_rule`](../../../7-administration/config-hive/app-control-rule.md#installer-rules) hive with `"action": "installer"`. It gives the named program two kinds of trust:
+
+- **Processes it starts.** A process that matches the rule, and every process it starts after that, is a trusted installer. Whatever a trusted installer launches is allowed.
+- **Files it writes.** A file a trusted installer wrote may run later, from any location and started by anyone. The sensor records the file by its digest, so a copy keeps the trust and a modified file loses it.
+
+What it does not do:
+
+- Deny rules still win.
+- An installer rule does not allow the updater itself. The updater needs its own allow rule, or OS vendor trust, to run.
+- It only has an effect under an `allowlist`. A blocklist already allows what no deny rule matches.
+- Removing or editing the rule withdraws everything it trusted.
+- An installer is named by `path`, `signer`, `signing_id` or `signer_root`, never by `sha256`. The hash of an updater is what its next update changes, so the hive refuses it.
+
+An installer rule is broad: everything the updater starts, and everything it writes, is trusted. Name the narrowest identity that works, and review it like a signer rule.
+
+Under an allowlist, a policy that names installers makes the sensor hash each program that nothing cheaper allowed, because only the digest says whether an installer wrote it. Those programs would be denied anyway, so the cost falls on executions that are about to be refused.
+
+Caveats:
+
+- The record of what installers wrote lives on the sensor. On macOS it is held in memory by the endpoint security extension, and it is lost when that extension restarts.
+- Files an installer wrote before the policy arrived are not trusted, because the sensor did not see them written. See also [programs that are already running](#programs-that-are-already-running).
+
+## Programs that are already running
+
+A policy judges a program when it starts. Programs that were already running when the policy reached the sensor were never judged. The policy's `on_enable` setting says what the sensor does about them:
+
+| Value | What the sensor does |
+| --- | --- |
+| `leave` | Nothing. The policy only applies to programs that start afterward. |
+| `report` | Reports each running program the policy refuses, as an `APP_CONTROL_RESIDENT` event. Nothing is blocked or stopped. This is what the sensor does when the setting is omitted. |
+| `terminate` | Reports them and stops them. It only stops anything while the policy's mode is `enforcing`. In any other mode it reports, like `report`. |
+
+The sensor looks at running programs once for each policy generation it installs, and again when the sensor itself restarts. A change to the policy is a new generation. A mode of `off` does nothing.
+
+The sensor checks the process creation time before it stops a process, so a reused process ID cannot be hit. Some programs are never stopped:
+
+- Critical Windows processes, such as `csrss` and `wininit`, the sensor itself, and processes with a very low ID.
+- On macOS, Apple platform binaries.
+- A program that is refused only because no rule matched it, when the policy names installers. The lineage that would have allowed it is only held while the installer runs, so the sensor reports it and leaves it alone. A deny rule still stops it.
+
+!!! warning "Terminate stops programs"
+    With `terminate` in an `enforcing` policy, saving the policy stops the running programs it refuses as soon as sensors receive it, and again whenever a sensor restarts. Read the `APP_CONTROL_RESIDENT` events from a `report` first, and only then switch to `terminate`.
 
 ## Rolling out
 
@@ -72,11 +121,13 @@ To step back at any point, set the policy to `permissive` or `off`, or remove th
 
 ## Reading would-be blocks
 
-Application Control reports through two events, available on Windows and macOS. See the [EDR events reference](../../../8-reference/edr-events.md#app_control_denied) for the full fields.
+Application Control reports through these events, available on Windows and macOS. See the [EDR events reference](../../../8-reference/edr-events.md#app_control_denied) for the full fields.
 
 `APP_CONTROL_DENIED` means the policy denied an execution. If `APP_CONTROL_IS_ENFORCED` is `1`, the sensor blocked it. If it is `0`, the sensor is in `permissive` or `permissive_sync` and only reports what it would have blocked.
 
 `APP_CONTROL_UNRESOLVED` means the sensor could not evaluate an execution and allowed it.
+
+`APP_CONTROL_RESIDENT` means a program was already running when the policy arrived and the policy refuses it. No execution was refused, so it is a separate event and a detection on `APP_CONTROL_DENIED` does not fire for it. `APP_CONTROL_IS_ENFORCED` is `1` if the sensor stopped the program. See [Programs that are already running](#programs-that-are-already-running).
 
 When the same program draws the same verdict repeatedly, the first occurrence is reported right away as `APP_CONTROL_DENIED` and the repeats within the next five minutes are folded into a single `APP_CONTROL_DENIED_SUMMARY` event. It carries `APP_CONTROL_COUNT` (the first occurrence included) and the first and last time seen in `APP_CONTROL_FIRST_TS` and `APP_CONTROL_LAST_TS`. A summary has its own event name, so a rule written against `APP_CONTROL_DENIED` is not triggered again for occurrences it was already told about.
 
