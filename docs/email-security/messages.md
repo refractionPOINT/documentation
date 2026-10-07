@@ -62,7 +62,7 @@ queue scope to its default.
 | `inspection_incomplete` | `true` finds incomplete inspection, including benign mail; `false` finds known-complete inspection and excludes unmeasured history |
 | `flagged` | Messages only: `true` selects current triage eligibility, `false` selects unflagged mail; omit for all |
 | `min_score` | Messages scoring at least this much |
-| `q` | Free-text over the message's subject and sender address, up to 512 characters. The subject is matched in both its raw and its normalized form, so a hit can be on text the row does not display. It is matched row by row rather than looked up, so it must be accompanied by something that bounds the read: a `since`, or one of `mailbox` / `sender_email` / `campaign_id` / `link_domain` / `attachment_sha256`, or a **single** `verdict`. On its own it is refused — see [Free text needs a window](#free-text-needs-a-window) |
+| `q` | Free-text over the message's subject and sender address, up to 512 characters. The subject is matched in both its raw and its normalized form, so a hit can be on text the row does not display. It is matched row by row rather than looked up, so it must be accompanied by something that bounds the read: a `since`, or one of `mailbox` / `sender_email` / `campaign_id` / `link_domain` / `attachment_sha256`, or a **single** `verdict` or `severity`, or a positive sparse queue (`flagged=true`, or `inspection_incomplete=true` with `flagged` absent). False boolean hunting needs a window or selective pivot. On its own it is refused — see [Free text needs a window](#free-text-needs-a-window) |
 | `since` / `until` | RFC3339 or unix seconds |
 
 Repeatable filters **OR within a key and AND across keys**: `verdict=suspicious`
@@ -131,8 +131,12 @@ walk:
   newest-first, so `until` moves where it starts and `since` is where it stops;
 - or one of **`mailbox`**, **`sender_email`**, **`campaign_id`**,
   **`link_domain`**, **`attachment_sha256`**;
-- or a **single** `verdict`. Two or more verdicts is not a lookup either, so it
-  does not count.
+- or a **single** `verdict` or `severity`;
+- or **`flagged=true`**, or **`inspection_incomplete=true`** with `flagged` absent.
+  These select a sparse attention queue. For `flagged=false`, or
+  `inspection_incomplete=false` with `flagged` absent, supply `since` or a
+  selective mailbox/sender/campaign/IOC pivot, even when specifying a verdict
+  or severity.
 
 `state`, `direction`, `user_reported`, `min_score` and `sender_root_domain`
 narrow the *answer* rather than the *scan*, so they do not satisfy the
