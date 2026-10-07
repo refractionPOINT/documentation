@@ -78,6 +78,10 @@ Application Control reports through two events, available on Windows and macOS. 
 
 `APP_CONTROL_UNRESOLVED` means the sensor could not evaluate an execution and allowed it.
 
+When the same program draws the same verdict repeatedly, the first occurrence is reported right away as `APP_CONTROL_DENIED` and the repeats within the next five minutes are folded into a single `APP_CONTROL_DENIED_SUMMARY` event. It carries `APP_CONTROL_COUNT` (the first occurrence included) and the first and last time seen in `APP_CONTROL_FIRST_TS` and `APP_CONTROL_LAST_TS`. A summary has its own event name, so a rule written against `APP_CONTROL_DENIED` is not triggered again for occurrences it was already told about.
+
+Events carry the name of the policy that produced them in `APP_CONTROL_POLICY_LABEL`, which is the record name of the policy.
+
 Useful fields on `APP_CONTROL_DENIED`:
 
 | Field | Meaning |
@@ -88,8 +92,13 @@ Useful fields on `APP_CONTROL_DENIED`:
 | `APP_CONTROL_SIGNING_ID` | The macOS code-signing identifier the sensor saw. |
 | `APP_CONTROL_REASON` | Why the sensor reached the decision. |
 | `APP_CONTROL_MATCHED_RULE` | Optional. The rule that matched, when there is one. |
+| `APP_CONTROL_MATCHED_RULE_ID` | Optional. The id (record name) of the rule that matched. |
+| `APP_CONTROL_POLICY_LABEL` | The name of the policy that produced the event. |
+| `APP_CONTROL_SIGNATURE_STATUS` | What the signature check concluded: `1` valid, `2` unsigned, `3` invalid, `4` untrusted, `5` expired. |
 | `APP_CONTROL_MODE` | The mode of the policy in effect, as a number: `0` off, `1` permissive, `2` permissive_sync, `3` enforcing. |
 | `APP_CONTROL_GENERATION` | The generation of the policy the sensor was running. |
+
+The events also carry who ran the program (`USER_ID`, `USER_NAME`), the launching process (`PARENT`), and, where the platform provides them, the vendor trust (`APP_CONTROL_VENDOR_TRUSTED`), the issuer and root certificate thumbprints on Windows (`APP_CONTROL_ISSUER_THUMBPRINT`, `APP_CONTROL_ROOT_THUMBPRINT`, which you can paste into a `signer_root` rule), and the application's identity: the bundle on macOS, the version resource on Windows. See the [EDR events reference](../../../8-reference/edr-events.md#app_control_denied) for all of them.
 
 To turn would-be blocks into something you can list and count, write a D&R rule that reports them:
 
@@ -139,7 +148,7 @@ By default the Owner, Administrator and Operator roles have both. The Viewer rol
 ## Limits
 
 - 10,000 rules may apply to a single policy.
-- Policy record names are limited to 256 bytes and rule ids to 64 bytes.
+- Policy record names are limited to 128 bytes and rule ids to 64 bytes.
 - A policy can list at most 64 tags.
 
 ## See Also
