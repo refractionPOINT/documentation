@@ -2,7 +2,7 @@
 
 The `app_control_policy` hive holds the policies of [Application Control](../../5-integrations/extensions/limacharlie/app-control.md). A policy decides which sensors it covers, whether it blocks or only reports, and what the default answer is for a program that no rule mentions. The rules themselves live in the [`app_control_rule`](app-control-rule.md) hive.
 
-Both hives are partitioned by organization, like the other Config Hive types. Each policy is one record. The record name is the policy name, up to 128 bytes, and rules refer to it by that name.
+Both hives are partitioned by organization, like the other Config Hive types. Each policy is one record. The record name is the policy name, up to 128 bytes, and rules refer to it by that name. The sensor also echoes the name into every event the policy produces as `APP_CONTROL_POLICY_LABEL`, so an event tells you which policy produced it. See [Which policy produced an event](#which-policy-produced-an-event).
 
 ## Format
 
@@ -42,6 +42,12 @@ A sensor receives one policy. LimaCharlie takes the enabled policies, orders the
 - Disabled records are skipped.
 
 Because the first match wins, you stage a rollout by putting narrow policies (a pilot tag) ahead of a broad one. See [Staged rollout by tag](#staged-rollout-by-tag).
+
+## Which policy produced an event
+
+The policy name is sent to the sensor as the policy's label. The sensor adds it to every `APP_CONTROL_DENIED`, `APP_CONTROL_UNRESOLVED` and `APP_CONTROL_DENIED_SUMMARY` event as the `APP_CONTROL_POLICY_LABEL` field, which is how you tell apart the events of the policies in a staged rollout. The name is not truncated, which is why it is limited to 128 bytes: the record is refused on save if its name is longer.
+
+Policies delivered by the Application Control extension also have summarizing on: when the same program is blocked repeatedly within five minutes, the first occurrence is reported as `APP_CONTROL_DENIED` straight away and the repeats are folded into one `APP_CONTROL_DENIED_SUMMARY` event with a count and the first and last time seen. See [`APP_CONTROL_DENIED_SUMMARY`](../../8-reference/edr-events.md#app_control_denied_summary).
 
 ## Modes
 
