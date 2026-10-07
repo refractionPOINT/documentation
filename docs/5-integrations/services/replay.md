@@ -126,7 +126,8 @@ To query Replay, do a `POST` with a `Content-Type` header of `application-json` 
   "trace": false,        // optional, if true add trace information to response, VERY VERBOSE
   "is_dry_run": false,   // optional, if true, an estimate of the total cost of the query will be returned
   "query": "",           // optional alternative way to describe a replay query as a LimaCharlie Query Language (LCQL) query.
-  "lookups": {}          // optional lookups used by rules with "op: lookup", see "Lookups in Replay" below
+  "lookups": {},         // optional lookups used by rules with "op: lookup", see "Lookups in Replay" below
+  "use_org_lookups": false // optional, if true, lookups the rule names that "lookups" does not supply are read from the Organization
 }
 ```
 
@@ -153,14 +154,17 @@ For example, this `lookups` field supplies a lookup named `suspicious-domains`, 
 }
 ```
 
-Replay never reads your Organization's lookups. A rule's `hive://lookup/<name>` always resolves to the lookup of that name in the request's `lookups`, used exactly as given, even when the Organization has a lookup with the same name. This lets you test a lookup rule against sample indicators without creating or changing a lookup in your Organization.
+By default, Replay does not read your Organization's lookups. A rule's `hive://lookup/<name>` resolves to the lookup of that name in the request's `lookups`, used exactly as given, even when the Organization has a lookup with the same name. This lets you test a lookup rule against sample indicators without creating or changing a lookup in your Organization. A request can opt in to reading the lookups it does not supply from the Organization, see [Reading Your Organization's Lookups](#reading-your-organizations-lookups).
 
 The lookups in a request are intentionally immutable: they are fixed when the request is received, and they do not change while the rule is evaluated, however long the replay runs or however many workers it is spread across. This makes a replay reproducible. The same rule with the same lookups over the same events always gives the same results, whatever happens to your Organization's lookups in the meantime. It also means you provide all the static data a rule needs up front, so you can test a rule against exact indicators and compare runs while you change the rule.
 
-If the request has no `lookups` field, or the field does not contain a lookup the rule names, the rule fails to compile and the response's `error` contains:
+!!! tip "Prefer inline lookups for testing, replaying and reproducibility"
+    Supply lookups inline in the `lookups` field whenever you test or validate a rule, replay it to compare results across runs, or need a result someone else can reproduce later. Inline lookups are static: the request itself records exactly which indicators the rule saw. Organization lookups are read when the request runs, so the same request can give different results tomorrow if the lookup changed in between.
+
+If the request has no `lookups` field, or the field does not contain a lookup the rule names, and the request does not set `use_org_lookups`, the rule fails to compile and the response's `error` contains:
 
 ```text
-lookup "suspicious-domains" is not available in replay: supply it in the request's "lookups" field
+lookup "suspicious-domains" is not available in replay: supply it in the request's "lookups" field, or set "use_org_lookups" to read the organization's own
 ```
 
 An empty lookup, `{"suspicious-domains": {}}`, is valid. It lets a rule that names the lookup compile, which is useful to validate a rule's syntax, and it matches nothing.
@@ -192,6 +196,42 @@ A request over any of these limits, or whose `lookups` field is not an object of
   "error": "invalid lookups: too many lookups: 33 (max 32)"
 }
 ```
+
+These limits apply to the inline `lookups` field only. Lookups read from the Organization have their own limits, described below.
+
+#### Reading Your Organization's Lookups
+
+To replay a rule over historical data with the lookups it uses in production, set `use_org_lookups` to `true` in the request. Every lookup the rule names that the request's `lookups` field does not supply is then read from your Organization's [lookup Hive](../../7-administration/config-hive/lookups.md).
+
+!!! note
+    For testing, validating and comparing rules, prefer [inline lookups](#lookups-in-replay). Use `use_org_lookups` when you specifically want to know what a rule would have detected with the Organization's current lookups.
+
+Requirements:
+
+- Reading Organization lookups in Replay must be enabled for your Organization. Contact LimaCharlie support to enable it. Requests that do not set `use_org_lookups` behave the same whether or not it is enabled.
+- The credentials making the request need the `lookup.get` [permission](../../8-reference/permissions.md).
+
+How the lookups are resolved:
+
+- **Inline lookups win.** A lookup supplied in the request's `lookups` field is used exactly as given, and the Organization's lookup of the same name is not read. You can mix both in one request: supply some lookups inline and let the rest come from the Organization.
+- **One version per request.** Each Organization lookup is read once, when the request starts, and every part of the replay uses that same version. A lookup that changes between two requests can give the two requests different results.
+- **Matching is the same** as for inline lookups and live D&R rules, see [Matching](#matching). An expired lookup is treated as not existing.
+
+Limits:
+
+- up to 32 lookups read from the Organization per request
+- up to 250,000 indicators per lookup
+- the lookups a rule reads, inline and from the Organization together, must be at most 2 MiB once compressed
+
+Errors fail the request before any events are processed, and the response's `error` explains why. For example:
+
+| Cause | `error` |
+|---|---|
+| Not enabled for the Organization | `lookup "suspicious-domains": reading the organization's lookups in replay (use_org_lookups) is not enabled for this organization` |
+| Missing `lookup.get` | `lookup "suspicious-domains": reading the organization's lookups in replay requires the lookup.get permission` |
+| The lookup does not exist | `lookup "suspicious-domains" does not exist in the organization` |
+| Too many indicators | `lookup "top-domains" has 1000000 entries, more than replay reads (max 250000)` |
+| Too large once compressed | `the lookups the rule reads are about 2400000 bytes compressed, more than replay sends to workers (max 2097152)` |
 
 #### Example: Domain Lookup Against Sample Events
 
@@ -359,6 +399,45 @@ To check that a rule using a lookup compiles, without testing what it matches, s
 ```
 
 The same request without the `lookups` field fails with the `lookup "suspicious-domains" is not available in replay` error shown above.
+
+#### Example: Organization and Inline Lookups Together
+
+This rule checks the destination IPs of `NETWORK_CONNECTIONS` events against two lookups. The request supplies `test-ips` inline and sets `use_org_lookups`, so `ip-reputation` is read from the Organization:
+
+```json
+{
+  "oid": "YOUR_OID",
+  "rule_source": {
+    "rule": {
+      "detect": {
+        "event": "NETWORK_CONNECTIONS",
+        "op": "or",
+        "rules": [
+          {"op": "lookup", "path": "event/NETWORK_ACTIVITY/?/DESTINATION/IP_ADDRESS", "resource": "hive://lookup/ip-reputation"},
+          {"op": "lookup", "path": "event/NETWORK_ACTIVITY/?/DESTINATION/IP_ADDRESS", "resource": "hive://lookup/test-ips"}
+        ]
+      },
+      "respond": [
+        {"action": "report", "name": "bad-ip"}
+      ]
+    }
+  },
+  "event_source": {
+    "sensor_events": {
+      "start_time": 1700000000,
+      "end_time": 1700086400
+    }
+  },
+  "lookups": {
+    "test-ips": {
+      "192.0.2.10": {"score": 9}
+    }
+  },
+  "use_org_lookups": true
+}
+```
+
+Without `use_org_lookups`, the same request fails to compile on `ip-reputation`. To make this replay reproducible, copy the indicators of `ip-reputation` that matter into the `lookups` field and drop `use_org_lookups`.
 
 ## Billing
 
