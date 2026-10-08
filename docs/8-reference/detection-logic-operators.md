@@ -445,7 +445,7 @@ respond:
 | `instructions` | Required, non-empty text, at most 4 KiB per question. Describes the condition, category or rating to evaluate. |
 | `choices` | Required for `choice` only: 2–64 unique values, each a string or a dictionary with `value` and an optional `description`. |
 | `levels` | Required for `score` only: 2–16 unique labels ordered lowest first, each a string or a dictionary with `label` and an optional `description`. |
-| `value` / `label` | 1–128 ASCII letters, digits, spaces, underscores, dots, colons or hyphens, starting with a letter or digit. |
+| `value` / `label` | 1–128 ASCII letters, digits, underscores, dots, colons, hyphens or single spaces between words, starting with a letter or digit. Leading, trailing and consecutive spaces are rejected. |
 | `description` | Optional text for a choice or level, at most 1 KiB. |
 
 Quote YAML values such as `"yes"`, `"no"` and `"1"` so they remain strings rather than booleans or numbers. A predicate has no `choices` or `levels`. Invalid question definitions are rejected when saving the rule.
@@ -466,7 +466,7 @@ severity:
   probabilities: {low: 0.07, medium: 0.26, high: 0.67}
 ```
 
-Probabilities and confidence range from 0 to 1. A score is the probability-weighted average of 0-based level indices, so it can fall between levels. Metadata paths are relative to this object, including values containing spaces, as in `category/probabilities/remote access`. On a match, the object appears in the detection's `mtd` under `ai_agent_<name>`, where `<name>` is the agent record name. If the model refuses any question, the entire evaluation errors and produces no match, including with `not: true`.
+Probabilities and confidence range from 0 to 1. A score is the probability-weighted average of 0-based level indices, so it can fall between levels. Metadata paths are relative to this object, including values containing spaces, as in `category/probabilities/remote access`. On a match, the object appears in the detection's `mtd` under `ai_agent_<name>`, where `<name>` is the agent record name. If the model refuses any question, or an answer is missing or has an invalid type or field value, the entire evaluation errors and produces no match, including with `not: true`.
 
 ### scope
 
