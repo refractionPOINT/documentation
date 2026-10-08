@@ -280,14 +280,14 @@ Vendor-tagged defaults receive later pack updates, preserving enabled/disabled
 choices. Disable an unwanted default; deleting it can let the next pack release
 recreate it. Copy or untag a rule before maintaining your own version. See
 [default rule ownership](custom-rules.md#default-rules-and-ownership).
-**Email Security → Rules** is the authoritative catalog for your organization:
+**Email Security → Detection rules** is the authoritative catalog for your organization:
 it shows the exact current conditions, weight, confidence, phase, tags and
 false-positive notes. Every default is editable, disableable and deletable.
 
 Defaults cover impersonation, authentication and sender history, links,
 attachment threats, suspicious content, detonation evidence and graymail.
 They are ordinary D&R rules over the Message Data Model, not a separate engine.
-See [Mail Rules](custom-rules.md) for the format, IaC and explicit restoration.
+See [Detection Rules](custom-rules.md) for the format, IaC and explicit restoration.
 
 ### Callback phishing and HTML smuggling
 
@@ -331,7 +331,7 @@ Display-name brand impersonation ("PayPal Support" over an unrelated address),
 advance-fee and extortion text, voicemail and fax lures, free-hosting and
 open-redirector links, internationalised look-alike domains, OneNote files, locked
 PDFs with the password in the message, and web pages hidden inside archives from a
-stranger are covered by further defaults. **Email Security → Rules** shows every rule's
+stranger are covered by further defaults. **Email Security → Detection rules** shows every rule's
 conditions and false-positive notes.
 
 A verdict's `engine_version` is a SHA-256 fingerprint of the scoring rules,
