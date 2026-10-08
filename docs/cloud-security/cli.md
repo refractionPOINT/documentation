@@ -80,6 +80,11 @@ limacharlie cloudsec compliance assignments
 limacharlie cloudsec resolve sensors $SID1 $SID2
 limacharlie cloudsec resolve assets "lcrn:..."
 
+# Entity Pivot: identifier -> User / Host, then card and activity
+limacharlie cloudsec entity resolve --identifier alice@example.com
+limacharlie cloudsec entity get --entity-id eu_k5xw4zdpnvsxe3tl
+limacharlie cloudsec entity activity --entity-id eu_k5xw4zdpnvsxe3tl --source detections
+
 # CAASM
 limacharlie cloudsec caasm assets -q laptop
 limacharlie cloudsec caasm coverage --status open --sort lc_risk --order desc
@@ -119,6 +124,13 @@ limacharlie cloudsec export query --named public_data_stores -o data-stores.csv
 limacharlie cloudsec fleet overview --oid $OID1 --oid $OID2 --trend-days 30
 limacharlie cloudsec fleet overview --group <GROUP_ID> --limit 100
 ```
+
+The `entity` subgroup resolves an identifier to a User or Host and reads its
+card, sightings and activity; `entity pivot` does the resolve and card fetch in
+one step. See [Entity Pivot](entity-pivot.md#mcp-and-cli) for the subcommands and
+how to read the results, including `--foreign-hostname` and `--observation-selector`
+for [leads from adapter events](entity-pivot.md#leads-from-adapter-events) (next CLI release).
+Entity commands are read-only and need `cloudsec.get`.
 
 The `export` subgroup streams the **entire** filtered set as a CSV
 (server-side keyset walk, capped at 100,000 rows) — use it for offline

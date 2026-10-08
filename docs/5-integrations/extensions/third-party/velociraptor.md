@@ -47,7 +47,7 @@ For example, to run a [Linux.Triage.UAC](https://triage.velocidex.com/docs/linux
 
 If `_All` returns more data than needed, you can define a single target instead. See the [UAC target reference](https://triage.velocidex.com/docs/linux.triage.uac/) for the full list of available options.
 
-For [Windows.KapeFiles.Targets](https://github.com/Velocidex/velociraptor/blob/master/artifacts/definitions/Windows/KapeFiles/Targets.yaml), you can use `"HighLevelTargets=[\"_KapeTriage\"]"`.
+For [Windows.KapeFiles.Targets](https://docs.velociraptor.app/docs/file_collection/bulk/), you can use `"HighLevelTargets=[\"_KapeTriage\"]"`.
 
 ## Monitoring Collections
 

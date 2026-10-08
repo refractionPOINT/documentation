@@ -58,4 +58,4 @@ sensor_type: hubspot
 
 ## API Doc
 
-See the official [documentation](https://developers.hubspot.com/docs/reference/api/settings/account-activity-api).
+See the official [documentation](https://developers.hubspot.com/docs/api-reference/account-audit-logs-v3/guide).

@@ -17,6 +17,10 @@ The Chrome sensor is available in the Chrome Web Store.
 
 The installation key can also be pre-configured through the Managed Storage feature (key named `installation_key`) if you are using a managed Chrome deployment.
 
+## Chrome Sensors in Entity Pivot
+
+A Chrome sensor's hostname is the account the browser profile is signed in to, followed by `@` and an installation token. In [Entity Pivot](../../../cloud-security/entity-pivot.md#chrome-browser-profiles) (requires Cloud Security), a signed-in profile attaches to that person's User as a telemetry source rather than appearing as a Host. A profile with no signed-in account stays a Host. The account is the one the browser was signed in to when the extension started; it is not proof of who produced every event.
+
 ## Troubleshooting the Chrome Sensor
 
 If the Chrome extension is giving connectivity issues, the following may help.

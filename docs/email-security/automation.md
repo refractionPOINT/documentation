@@ -15,6 +15,10 @@ hostname is the mailbox's primary address, and it appears in the sensor list the
 first time the mailbox produces an event. A ten-thousand-mailbox tenant is ten
 thousand sensors; the `email` platform does not count against your sensor quota.
 
+Each mailbox sensor declares its mailbox address as its identity, so with Cloud
+Security it appears as a telemetry source on the matching User in
+[Entity Pivot](../cloud-security/entity-pivot.md#adapter-identities-and-external-actors).
+
 Events that are not about one mailbox land on the connection's own sensor,
 `mailsec-<connection name>`. That is where a tenant-level event such as a
 tenant data deletion request goes, and where everything the connection produced

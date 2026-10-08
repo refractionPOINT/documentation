@@ -159,6 +159,13 @@ limacharlie mailsec message list --link-domain evil.example --oid $OID
 limacharlie mailsec message list --attachment-sha256 <sha256> --oid $OID
 ```
 
+### Pivot from a sender or mailbox
+
+When a message's sender or recipient mailbox needs context beyond mail, resolve
+the address in [Entity Pivot](../cloud-security/entity-pivot.md). It maps the
+address to a User, their owned Hosts, endpoint detections and cloud findings. It
+needs `cloudsec.get` and Cloud Security, in addition to `mailsec.get`.
+
 ### Pagination
 
 Pages are keyset-paginated. `next_cursor` is opaque and is passed back verbatim;

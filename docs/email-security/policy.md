@@ -70,6 +70,9 @@ modifies mail, and nothing sends mail until you say so.
 
 ## `automations`
 
+In the console, open **Policy → Response automations**. These ordered responses
+are separate from **Detection rules**, which define how messages are scored.
+
 The ordered list of `{match → actions}` rules that decide what happens to a
 message automatically.
 
@@ -349,7 +352,7 @@ raises suspicious — so the invariant is enforced after composition, not only p
 record. An inverted pair would make every suspicious message malicious.
 
 Individual rule weights and enabled states are edited on the `dr-mail` record,
-through [Mail Rules](custom-rules.md).
+through [Detection Rules](custom-rules.md).
 
 ---
 
@@ -818,11 +821,18 @@ The default is **on**, because the organization that most needs body similarity 
 one being hit by a kit that randomizes subjects and links — is the one least
 likely to go looking for a switch to turn on.
 
-The distance default is measured, not chosen: across a 404-message corpus of
-ordinary business mail the closest pair of *unrelated* messages is 39 apart,
-while two copies of one message differing only in the recipient's name and the
-link's tracking parameters are 0 apart. The ceiling of 35 sits below that closest
-pair deliberately — a setting above it is one you cannot have measured.
+The distance default is measured, not chosen: across a corpus of several hundred
+pieces of ordinary business mail the closest pair of *unrelated* messages is 40
+apart, while one phishing pitch templated over eight victims — name, greeting,
+amount, account fragment, tracking token and signature all varying — is 0 apart
+after normalization. The ceiling of 35 sits below that closest pair deliberately
+— a setting above it is one you cannot have measured.
+
+Raising it is not the lever it looks like. Body similarity works by *normalizing*
+per-copy variance away, not by tolerating it: a single per-copy word the
+normalization cannot identify costs a median of 20–30 points but exceeds 100 in
+the worst 5% of cases, so moving 30 to 35 takes that case from about 56% of
+pairs grouping to about 71% while spending most of the margin against unrelated mail.
 
 See [Body similarity](campaigns.md#body-similarity) for what the key is and how a
 body is normalized before it is hashed.

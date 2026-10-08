@@ -70,7 +70,7 @@ typing a justification to look at the queue.
 # Coverage
 limacharlie mailsec coverage --window-days 30
 
-# Explicit UTC window instead of window-days (development builds with these flags).
+# Explicit UTC window instead of window-days.
 limacharlie mailsec coverage --since "2026-09-01T00:00:00Z" --until "2026-09-02T00:00:00Z"
 
 # The triage queue

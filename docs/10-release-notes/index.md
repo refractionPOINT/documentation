@@ -18,6 +18,61 @@ Release notes for LimaCharlie platform components, organized by date.
 
     For discussion and email notification of the same releases, set the [Platform Updates category](https://community.limacharlie.com/c/platform-updates/5) in the community forum to Watching. For service availability rather than releases, subscribe on the [status page](https://status.limacharlie.io/).
 
+## 2026-10-06
+
+### Endpoint Agent: Changes from 4.33.25 to 5.3.12
+
+A roll-up of everything that changed in the Endpoint Agent between 4.33.25 and 5.3.12, for fleets upgrading from the 4.33 line in one step. Each release in between has its own entry further down this page.
+
+#### New Features
+
+- New [response commands](../8-reference/endpoint-commands.md): `reg_get`, `usb_list_devices`, `dir_find`, `file_grep`, `container_list`, `repo_list`, `restart_core` and `repair_core_config`.
+- `reg_list` can recurse into sub-keys; `os_drivers` now works on Linux; artifact retrieval can collect several files in one task.
+- Installed-package listing now covers Linux and macOS packages and Windows hotfixes; autoruns now expand wildcard paths.
+- The sensor service can be upgraded or uninstalled through cloud tasking, and upgrades can be pinned to a version.
+- Shell commands can run as a specific user.
+- TLS 1.3 for the cloud connection, with automatic fallback to TLS 1.2.
+- USB Data Loss Prevention, managed from the cloud.
+- YARA scanning built in, with match addresses for memory detections and the `macho` module.
+- Windows script visibility through the Antimalware Scan Interface (AMSI), reported already deobfuscated.
+- Linux process events identify their container and Kubernetes pod.
+- Cloud VMs on AWS, Azure and Google Cloud report their native instance identity; GKE nodes report their cluster.
+- Linux detection of setuid privilege changes and of AF_ALG, RxRPC and NETLINK socket creation.
+- Linux DNS events report the process that sent the query or received the response (kernel 5.15+).
+- Local applications can send events to the sensor through a Unix socket API.
+- macOS installation is now one guided window instead of seven separate prompts.
+- RPM packages for Linux.
+- The Windows service now installs under `C:\Program Files\limacharlie\`; existing installs are migrated on upgrade.
+- Full crash reports (stack trace, modules, fault detail) on Windows, macOS and Linux.
+
+#### Bug Fixes
+
+- Fixed a large set of sensor crashes, including the sensor terminating itself on transient OS resource failures, crashes at shutdown on CentOS/RHEL 7, and a race in the random number generator.
+- Linux and macOS now shut down cleanly when stopped, so service stops, restarts and reboots no longer show up as crashes.
+- Cloud-driven upgrades and uninstalls now complete reliably on Linux and macOS.
+- Linux kernel acquisition now loads on kernel 5.4, on RHEL/Oracle Linux 9, and on hosts without cgroup2, and recovers after the service is force-killed.
+- Fixed process events being linked to the wrong parent on hosts that reuse process IDs quickly.
+- Windows: fixed multi-second delays opening files on network shares.
+- Windows kernel acquisition: fixed network events being lost in bursts and events arriving out of order.
+- Fixed connections staying on a dead link for hours after a network disruption, and hangs behind unresponsive proxies.
+- Payload downloads and artifact uploads now work through enterprise TLS inspection, filtering proxies and redirects, and large uploads resume after interruptions.
+- Fixed macOS file-creation events reporting the parent directory instead of the file.
+- The sensor's log file is no longer world-readable or world-writable.
+- Events dropped by a full outbound queue are now counted and reported instead of being discarded silently.
+- Hardened DNS collection against malformed packets.
+
+#### Improvements
+
+- Windows: significantly lower CPU and memory usage, from caching file hashes and code-signature checks and reusing buffers on busy code paths.
+- Smaller downloads: the Linux and macOS binaries are 30–45% smaller, and cloud-delivered modules are cached on disk across restarts.
+- The Linux sensor now requires glibc 2.12 instead of 2.17.
+- Transfer and command failures now report readable error descriptions instead of bare codes.
+- Sensor diagnostics now report kernel telemetry health, event loss and service version.
+- Windows Event Log collection resumes where it left off after a restart.
+- Updated embedded libraries, including TLS (mbedtls 4.1.1).
+
+---
+
 ## 2026-10-05
 
 ### Web App 6.5.0
