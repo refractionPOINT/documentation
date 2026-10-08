@@ -313,6 +313,21 @@ executor, so the organization's `alert_only` / `enforce` mode, the audit row and
 idempotency all apply unchanged — there is exactly one remediation path in this
 product.
 
+A rule may act even when the organization is in alert-only mode by adding
+`force: true` to its `extension request`. Only a real boolean `true` forces. The
+action is recorded as forced, on its audit row and as `forced: true` on its
+`EMAIL_ACTION` — see
+[Forcing an action in alert-only mode](remediation.md#forcing-an-action-in-alert-only-mode):
+
+```yaml
+- action: extension request
+  extension name: ext-email-security
+  extension action: quarantine_message
+  extension request:
+    msg_uuid: '{{ .event.msg_uuid }}'
+    force: true
+```
+
 A rule does not supply banner HTML: `banner_message` uses the organization's own
 banner from its [`banners` policy record](policy.md#banners) (title, colour,
 logo and the wording for the message's verdict), rendered server-side into a
@@ -341,7 +356,7 @@ the warning. Automated bannering also requires
 `enabled` on the [`banners` record](policy.md#banners); without it a rule's
 `banner_message` is decided and audited but the mailbox is not touched
 (`alert_only`). Bannering asked for by a person — console, API, CLI — is not
-gated by that switch.
+gated by that switch, and neither is a forced `banner_message`.
 
 **How the action is attributed.** A rule in the `dr-general` Hive acts with the
 Email Security extension's own credential: the organization authorized it by

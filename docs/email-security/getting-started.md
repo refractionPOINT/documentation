@@ -52,8 +52,9 @@ requires `mailsec.act`. Reading results requires `mailsec.get`.
 
 New subscriptions start with **alert-only** automation: automatic rules record
 what they would do without moving or modifying messages. The provider credential
-still grants the access required for response actions. Actions you explicitly
-run yourself can change mail even in alert-only mode.
+still grants the access required for response actions. While no automation is in
+`enforce`, actions you run yourself are withheld too, until you
+[force](remediation.md#forcing-an-action-in-alert-only-mode) them.
 
 <span id="2-grant-the-permissions"></span>
 <span id="3-prepare-the-provider-credential"></span>

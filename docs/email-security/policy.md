@@ -53,6 +53,16 @@ visible; an ignored field is not.
 The validator's own wording is what you get back — in the CLI, in the API, and
 verbatim in the console's Policy page.
 
+### A disabled record is not applied
+
+A record's Hive `enabled` flag is your off switch, and a disabled record
+contributes nothing to the resolved policy. A record written without
+`--enabled` is stored disabled, which is an easy way to write an `enforce`
+automation that never takes effect. So a disabled record is reported to the
+organization's error stream, under component `mailsec/policy`, and repeated about
+once a day while it stays disabled — see
+[Troubleshooting](troubleshooting.md#a-policy-record-has-no-effect).
+
 ### Editing preserves what you did not touch
 
 The console's **Policy** page edits every record type, and saves are
@@ -452,7 +462,10 @@ rewriting mail on its own, not to stop an operator from acting on a message in
 front of them. An organization that has never written this record still has
 working `banner_message` from the console with explicit override consent when
 the organization is alert-only; it simply has no automated bannering, and the
-wording is the packaged sentence.
+wording is the packaged sentence. A
+[forced](remediation.md#forcing-an-action-in-alert-only-mode) `banner_message`,
+including one from a D&R rule that sets `force: true`, is performed regardless of
+this switch.
 
 Bannering also needs the provider capability: `Mail.ReadWrite` is enough on
 Microsoft 365 (edited in place), while Google Workspace additionally needs the

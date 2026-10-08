@@ -259,6 +259,22 @@ change the score. Automated remediation still follows the organization's
 [automation mode](policy.md#mode). Adding this rule does not itself enable
 `enforce`.
 
+To have a rule act even while the organization is in alert-only mode, add
+`force: true` to the `extension request`. Only a real boolean `true` forces; a
+quoted `"true"` does not. The action is recorded as forced, and its
+`EMAIL_ACTION` carries `forced: true` — see
+[Forcing an action in alert-only mode](remediation.md#forcing-an-action-in-alert-only-mode).
+
+```yaml
+respond:
+  - action: extension request
+    extension name: ext-email-security
+    extension action: quarantine_message
+    extension request:
+      msg_uuid: "{{ .msg_uuid }}"
+      force: true
+```
+
 Everything sensor-shaped — task, tag, isolate, seal, re-enroll, set variable —
 **fails loudly** in a mail rule with a message saying so. There is no sensor
 behind a message, and remediation goes through `extension request`.

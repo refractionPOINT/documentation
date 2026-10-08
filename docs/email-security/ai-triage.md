@@ -104,7 +104,10 @@ agent passive or active. Create the key, then store it as a secret too.
     An active agent may additionally remediate: quarantine, trash, banner, move-to-spam,
     restore, act on a whole campaign, and write a `mode: ai` verdict. Every action passes
     through the same choke point as a human's — your `alert_only` / `enforce` policy
-    applies, and an audit row names the agent as the actor.
+    applies, and an audit row names the agent as the actor. In alert-only mode an
+    agent's action is withheld like anyone's; an agent holding `mailsec.act` can
+    [force](remediation.md#forcing-an-action-in-alert-only-mode) it, and the
+    override is recorded as forced.
 
     ```bash
     limacharlie api-key create --oid "$OID" \
