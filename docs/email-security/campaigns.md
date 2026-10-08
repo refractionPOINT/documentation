@@ -95,36 +95,59 @@ rather than changing completely when one character does.
 ### The body is normalized first
 
 Hashing the raw body would key on exactly the bytes a kit varies. Before hashing,
-the body is reduced to what it actually says:
+the body is reduced to what it actually says, in this order:
 
-- the **visible** text is used — text hidden from the reader (zero-height divs,
-  white-on-white) is dropped, because planting per-recipient noise there is the
-  oldest way to defeat a similarity hash;
-- **links** collapse to their scheme and host: the path, query and fragment are
-  where the victim's identifier lives, while the host is what the attacker had to
-  register;
-- **email addresses** collapse to a placeholder — the greeting and the "this was
-  sent to …" footer are otherwise a per-recipient signature;
-- the **greeting** collapses, salutation and all, so "Dear Riley," and "Good
-  morning Morgan" are the same sentence;
-- **every recipient's name** collapses wherever it appears in the prose — the
-  names on the To and Cc lines as well as the mailbox's own — so a kit that writes
-  "this notice was sent to Riley only" does not sign each copy;
-- **signature blocks** collapse: the sign-off line and the short block after it,
-  which is where a templated message puts its rotating persona or case worker;
-- **quoted replies and forwarded threads** collapse, so a kit that top-posts one
-  pitch above each victim's own stolen thread is one message, not forty;
-- **numbers** collapse to a single placeholder each — an amount, an account
-  fragment, a date, a reference — and so do **hex, opaque and short
-  letter-and-digit tokens**: invoice numbers, ticket ids, unsubscribe and tracking
-  tokens;
-- whitespace collapses last.
+1. **Visible text.** The text a reader sees is used: the displayed text of the HTML
+   part when there is one, the plain part otherwise. Text hidden from the reader
+   (zero-height divs, white-on-white) is dropped, because planting per-recipient
+   noise there is the oldest way to defeat a similarity hash.
+2. **Case and invisible characters.** Everything is lowercased, and control
+   characters and zero-width or other invisible formatting characters are removed
+   — the same evasion as hidden text, one layer down.
+3. **Links** collapse to their scheme and host, in place. The path, query and
+   fragment are where the victim's identifier lives; the host is what the attacker
+   had to register, so the whole host is kept, subdomains included. A
+   credential-in-URL host such as `www.example.com@evil.example` is kept too, with
+   the `@` read as the word "at", because the deception is the point of that link.
+4. **Quoted replies and forwarded threads** collapse from the start of the quote to
+   the end of the message, so a kit that top-posts one pitch above each victim's
+   own stolen thread is one message, not forty. Only unambiguous markers count: a
+   forwarded-message or original-message separator, a client attribution line
+   ("On …, name <address> wrote:"), or a block of quoted lines running to the end.
+5. **Email addresses** collapse to a placeholder — the greeting and the "this was
+   sent to …" footer are otherwise a per-recipient signature.
+6. **Signature blocks** collapse: the sign-off line ("Kind regards,") and the short
+   block after it, which is where a templated message puts its rotating persona
+   or case worker. Only a short block at the end of the message qualifies.
+7. **Greetings** collapse, salutation and all, so "Dear Riley," and "Good morning
+   Morgan" are the same sentence.
+8. **Every recipient's name** collapses wherever it appears in the prose — the
+   display names and addresses on the To and Cc lines as well as the mailbox's own
+   — so a kit that writes "this notice was sent to Riley only" does not sign each
+   copy. Names shorter than three characters and names that are also ordinary words
+   are left alone.
+9. **Hex, opaque and short letter-and-digit tokens** collapse to a placeholder:
+   long hex strings and UUIDs, any 20-character run of letters, digits, `_` and `-`, and
+   any run of six or more characters that has at least four digits beside a
+   letter. That covers invoice numbers, ticket ids, and unsubscribe and tracking
+   tokens.
+10. **Numbers** collapse to a single placeholder each, however they are punctuated
+    — an amount, an account fragment, a date, a time. This runs after step 9 on
+    purpose: collapsing digits first would hide the mixed letter-and-digit
+    references that step 9 exists to catch.
+11. **Whitespace** collapses last.
+
+Steps 8 to 10 never touch the host of a link. That protection is deliberate: the
+host is made of exactly the shapes those steps collapse (an IP address is all
+digits, `office365` is a letter-and-digit run), and without the protection two
+unrelated messages linking to different hosts could normalize to the same text.
 
 How much this matters, measured rather than claimed: one phishing pitch templated
 over eight recipients — name, greeting, amount, account fragment, tracking token
 and signature all varying per copy — is **37 to 219 apart before normalization and
 0 apart after it**, across all three shapes such a kit takes (addressed to each
-victim, collected from a shared mailbox, or top-posted above a stolen thread). The default
+victim, collected from a shared mailbox, or top-posted above a stolen thread). That
+is 84 pairs in all, and every one of them is 0 apart once normalized. The default
 join distance is 30, so without the normalization this key would not work at the
 length of an ordinary email.
 
@@ -135,8 +158,8 @@ policy knob (`clustering` — see the [Policy Reference](policy.md#clustering)).
 
 30 is measured. Across a corpus of several hundred pieces of ordinary business
 mail — newsletters, invoices, calendar invites, internal notices — the **closest
-pair of unrelated messages is 40 apart**, and at 30 the body key produces zero agreements
-across every pair. The policy ceiling is 35, below that closest pair on purpose: a
+pair of unrelated messages is 40 apart**, and at 30 (or at the ceiling of 35) the
+body key produces zero agreements across every pair. The policy ceiling is 35, below that closest pair on purpose: a
 setting above it is one you cannot have measured, and what it buys is a
 campaign-wide quarantine reaching mail that was never part of the attack. That
 margin is re-measured whenever the normalization changes, and it is the number a
@@ -150,9 +173,10 @@ change has to justify itself against.
     a word of prose — costs a median of 20 to 30 points but exceeds 100 in the worst
     5% of cases, measured across a whole corpus rather than on one pair.
 
-    So a residual per-copy word is close to a coin flip, and moving the distance from
-    30 to the ceiling of 35 changes that from roughly half the cases to roughly two
-    thirds while spending most of the margin against unrelated mail. **Raising the
+    So a residual per-copy word is close to a coin flip: in our measurement about
+    56% of such pairs land within the default distance of 30. Moving the distance to
+    the ceiling of 35 raises that to about 71% while spending most of the margin
+    against unrelated mail. **Raising the
     threshold is not the lever it looks like.** What the key reliably buys is the
     mass case — one pitch, randomized subjects, links, names, amounts, references and
     signatures — which is the dominant real shape. A kit that rewrites a word of

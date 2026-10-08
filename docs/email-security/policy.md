@@ -831,8 +831,8 @@ after normalization. The ceiling of 35 sits below that closest pair deliberately
 Raising it is not the lever it looks like. Body similarity works by *normalizing*
 per-copy variance away, not by tolerating it: a single per-copy word the
 normalization cannot identify costs a median of 20–30 points but exceeds 100 in
-the worst 5% of cases, so moving 30 to 35 takes that case from roughly half to
-roughly two thirds while spending most of the margin against unrelated mail.
+the worst 5% of cases, so moving 30 to 35 takes that case from about 56% of
+pairs grouping to about 71% while spending most of the margin against unrelated mail.
 
 See [Body similarity](campaigns.md#body-similarity) for what the key is and how a
 body is normalized before it is hashed.
