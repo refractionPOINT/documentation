@@ -692,13 +692,32 @@ The revise action takes `mode: analyst|ai`, a verdict, and a nonempty list of
 rationale strings. Resolve accepts the same five dispositions and optional
 message/campaign remediation with preview/confirm.
 
-### Threat eligibility and inspection events
+### Threat severity and inspection on events
 
-Cases completion eligibility uses `revision/verdict` on `EMAIL_VERDICT` and the
-scalar `verdict` on completed analysis, plus independent user-report triggers.
-Medium/high authored impact on benign mail does not create a threat case.
-Severity remains available for priority after eligibility is established.
-Inspection status and coverage-rule IDs travel independently on verdict and
-completion events, so rules can alert on incomplete inspection of benign mail.
-The coverage endpoint's `inspection` block counts `incomplete`, `unknown` and
-`total` over `window_start`–`window_end`, regardless of the triage queue.
+`EMAIL_VERDICT` and `EMAIL_ANALYSIS_COMPLETE` carry three independent paths next
+to the `revision` block:
+
+| Path | |
+|---|---|
+| `event/severity` | Threat severity of the decision: informational for benign, graymail, unknown and error verdicts, at least `low` for suspicious, at least `high` for malicious |
+| `event/inspection_incomplete` | `true` when an inspection gap was observed, `false` when inspection was measured complete, `null` when it was not measured. `null` is not a pass |
+| `event/coverage_signals` | The IDs of the matched coverage rules, including rules excluded from the score. Omitted when none matched |
+
+Because inspection status does not depend on the verdict, a rule can alert on
+incomplete inspection of benign mail:
+
+```yaml
+# Detect
+event: EMAIL_VERDICT
+op: is
+path: event/inspection_incomplete
+value: true
+```
+
+The managed Cases pack opens a Case from `EMAIL_ANALYSIS_COMPLETE` when
+`event/revision/verdict` is suspicious or malicious, or when `event/user_reported`
+is true, and from a human `EMAIL_USER_REPORT`. Severity only sets the priority
+afterwards: a benign message that matched a medium or high impact rule does not
+create a Case. The coverage endpoint's `inspection` block counts `incomplete`,
+`unknown` and `total` messages over its `window_start` to `window_end`,
+regardless of the triage queue.

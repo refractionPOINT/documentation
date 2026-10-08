@@ -30,9 +30,9 @@ The verdict object on a message carries:
 |---|---|
 | `verdict` | The class above |
 | `score` | 0–100 |
-| `severity` | Threat impact: nonflagged verdicts informational, suspicious at least low, malicious at least high |
+| `severity` | Threat severity of the current verdict: informational for benign, graymail, unknown and error; at least `low` for suspicious; at least `high` for malicious |
 | `rule_severity` | Maximum unsuppressed authored rule impact, retained for later verdict upgrades |
-| `inspection_incomplete` | An observed inspection gap, independent of the threat verdict |
+| `inspection_incomplete` | `true` when an inspection gap was observed, independent of the threat verdict. Omitted otherwise, which does not prove inspection was complete |
 | `coverage_signals` | Every matched coverage-tagged rule ID, including score-excluded rules |
 | `top_signals` | Up to five contributing rules, heaviest first, each with `rule_id`, `name` and `weight`. This is the "why this verdict" block |
 | `matched_signals` | Every rule id that matched, including suppressed ones — the hunting surface |
@@ -323,9 +323,9 @@ and tiny-redirect defaults require a browser-file extension; source templates an
 files with unconventional names can fall outside those two checks.
 
 In managed pack `0.6.0`, these 22 new rules carry explicit severity. Older managed
-rules currently use the informational fallback. Severity is independent of the
-verdict, so a malicious verdict from an older rule can still have informational
-severity.
+rules currently use the informational fallback for their authored impact. The
+message's threat severity still follows its verdict, so a malicious verdict from
+an older rule is at least `high`.
 
 Display-name brand impersonation ("PayPal Support" over an unrelated address),
 advance-fee and extortion text, voicemail and fax lures, free-hosting and

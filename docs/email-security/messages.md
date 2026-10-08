@@ -28,7 +28,7 @@ the `mail_type` object, including its classifier version, with
 not a message-list filter.
 
 For recipient-wide triage, select the Groups view on Messages; see [Message Groups & Cases](groups.md). Severity
-is a separate rule signal from the security verdict and analyst disposition.
+describes the threat a flagged verdict represents, and inspection status is a separate signal; both are independent of analyst disposition (see [Threat severity and inspection](#threat-severity-and-inspection)).
 
 ## The queue
 
@@ -36,11 +36,13 @@ Filtering is **entirely server-side** — every filter below narrows the query i
 the backend, so a filtered page is a statement about your whole mail history, not
 about the rows a browser happened to have loaded. Both views use the same filter
 bar, filter modal, search and active-filter badges. Switching views keeps the
-filters. **Include unflagged** expands both triage views. Default eligibility follows
-analyst disposition, suspicious/malicious verdict or an undismissed user report;
-rule severity alone never adds benign mail to triage. Older backends without the
-Messages selector must identify that scope as unavailable. **Clear all** resets
-queue scope to its default.
+filters. Both views start on the triage queue; **Include unflagged messages** (Messages)
+and **Include unflagged groups** (Groups) widen the view to all mail. A message
+is in the queue when an analyst marked it malicious or spam, or when its verdict
+is suspicious or malicious, or when it has a user report that nobody has dismissed.
+An analyst disposition of benign, graymail or simulation takes it out. Rule
+severity alone never adds benign mail to the queue. **Clear all** resets the queue
+scope to its default.
 
 | Filter | Notes |
 |---|---|
@@ -62,7 +64,7 @@ queue scope to its default.
 | `inspection_incomplete` | `true` finds incomplete inspection, including benign mail; `false` finds known-complete inspection and excludes unmeasured history |
 | `flagged` | Messages only: `true` selects current triage eligibility, `false` selects unflagged mail; omit for all |
 | `min_score` | Messages scoring at least this much |
-| `q` | Free-text over the message's subject and sender address, up to 512 characters. The subject is matched in both its raw and its normalized form, so a hit can be on text the row does not display. It is matched row by row rather than looked up, so it must be accompanied by something that bounds the read: a `since`, or one of `mailbox` / `sender_email` / `campaign_id` / `link_domain` / `attachment_sha256`, or a **single** `verdict` or `severity`, or a positive sparse queue (`flagged=true`, or `inspection_incomplete=true` with `flagged` absent). False boolean hunting needs a window or selective pivot. On its own it is refused — see [Free text needs a window](#free-text-needs-a-window) |
+| `q` | Free-text over the message's subject and sender address, up to 512 characters. The subject is matched in both its raw and its normalized form, so a hit can be on text the row does not display. It is matched row by row rather than looked up, so it must be accompanied by something that bounds the read: a `since`, or one of `mailbox` / `sender_email` / `campaign_id` / `link_domain` / `attachment_sha256`, or a **single** `verdict` (without `lane`) or `severity`, or a positive sparse queue (`flagged=true`, or `inspection_incomplete=true` with `flagged` absent). Searching within `flagged=false` or `inspection_incomplete=false` needs a window or selective pivot. On its own it is refused — see [Free text needs a window](#free-text-needs-a-window) |
 | `since` / `until` | RFC3339 or unix seconds |
 
 Repeatable filters **OR within a key and AND across keys**: `verdict=suspicious`
@@ -106,12 +108,16 @@ a low floor; malicious verdicts have a high floor. Authored rule impact can rais
 a flagged verdict above its floor, even when a shared-fact cap reduced score.
 
 Inspection is a separate signal. A benign message can still have
-`inspection_incomplete: true` because a scanner, lookup or parse could not finish.
-`coverage_signals` identifies the matched coverage rules. Unknown or absent
-inspection status is unmeasured, never proof of successful inspection. Groups
+`inspection_incomplete: true` because a scanner, lookup or parse could not finish,
+and the console marks it **Inspection incomplete**. `coverage_signals` lists the
+IDs of the matched coverage rules, including rules excluded from the score.
+`inspection_incomplete` is `null` when inspection was never measured (for example
+older history); that is unmeasured, never proof that inspection succeeded. Groups
 report incomplete and unknown recipient-copy counts independently of severity.
-Enable Include unflagged when hunting benign inspection failures; the coverage
-summary counts them regardless of triage scope.
+Because benign mail is outside the default triage queue, select **Include
+unflagged messages** (or **Include unflagged groups**) when you hunt for benign
+mail with incomplete inspection. The coverage summary counts these messages
+regardless of the queue scope.
 
 ### Free text needs a window
 
@@ -131,7 +137,7 @@ walk:
   newest-first, so `until` moves where it starts and `since` is where it stops;
 - or one of **`mailbox`**, **`sender_email`**, **`campaign_id`**,
   **`link_domain`**, **`attachment_sha256`**;
-- or a **single** `verdict` or `severity`;
+- or a **single** `verdict` (not combined with `lane`) or a **single** `severity`;
 - or **`flagged=true`**, or **`inspection_incomplete=true`** with `flagged` absent.
   These select a sparse attention queue. For `flagged=false`, or
   `inspection_incomplete=false` with `flagged` absent, supply `since` or a
