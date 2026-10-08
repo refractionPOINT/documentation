@@ -119,6 +119,47 @@ To step back at any point, set the policy to `permissive` or `off`, or remove th
 !!! note
     An `enforcing` allowlist with `trust_os_vendor: false` is refused on save, because a sensor cannot apply it.
 
+## Install mode
+
+Install mode lets you put one host, or a selection of hosts, in a temporary window where Application Control only reports and never blocks. Use it to install or update software on an endpoint that an `enforcing` policy would otherwise stop, then review what ran. When the window ends the host goes back to its normal policy on its own.
+
+### Starting install mode
+
+- **One host.** Open the sensor in the web console and select **App Control install mode...**.
+- **Several hosts.** In the sensors list, select the hosts and choose **App Control install mode...** from the bulk actions. **End App Control install mode** is next to it.
+
+Choose 1 hour, 4 hours, 24 hours, or a custom number of whole hours up to 168. Starting again on a host that is already in install mode restarts its window. While a window is on, the sensor page shows the time left, with **Restart window...** and **End install mode**.
+
+The action appears only when the organization is subscribed to the `ext-app-control` extension and you hold `app_control.get`, `app_control.set` and `sensor.tag`. Install mode matters on Windows and macOS hosts only, because Application Control does not run on other platforms. The console warns you when a selected host is on another platform, and tags it anyway. A change reaches the host the next time it syncs.
+
+### How it works
+
+Install mode uses nothing beyond what this page already describes. It is a policy and a sensor tag:
+
+| Piece | What it is |
+| --- | --- |
+| The `install-mode` policy | A reserved policy record in `app_control_policy`: `mode: permissive`, `stance: allowlist`, `trust_os_vendor: true`, no platform filter, matching the tag `appctl-install-mode`. Its `priority` is one below every other policy except the [lockdown](#lockdown) policy, which is ordered before it, so a sensor resolves it first. |
+| The `appctl-install-mode` tag | Added to the host with a time to live equal to the window. A host that carries it gets the `install-mode` policy. When the tag expires, the host matches its normal policy again. |
+| The `appctl-install-mode-until-<epoch seconds>` tag | Added in the same call with the same time to live. It records when the window ends so the console can show the time left. It expires together with the tag that does the work. |
+
+Because the `install-mode` policy is `permissive`, executions that your normal policy would have denied are reported as `APP_CONTROL_DENIED` events with `APP_CONTROL_IS_ENFORCED` set to `0`. Read them as described in [Reading would-be blocks](#reading-would-be-blocks) to decide which software to allow afterwards.
+
+### The `install-mode` policy
+
+The console creates the policy the first time you start install mode. It appears on the **Policies** tab with a **System: install mode** badge. For install mode to work the policy must stay enabled, in a mode that does not enforce, matching only the `appctl-install-mode` tag, with no platform filter, and ordered before every other enabled policy except `lockdown`. If a policy is later created with a lower `priority` number, or the record is edited into something that would not work, the Policies tab flags it with **Needs attention**, and starting install mode lists what is wrong and offers to repair the policy. The console never starts a window on top of a policy that would still block.
+
+Anyone who holds `sensor.tag` can add the `appctl-install-mode` tag to a host, with or without a time to live, and the `install-mode` policy then applies to that host ahead of every other policy. The `app_control.set` requirement is enforced by the console only. The **Policies** tab shows how many hosts carry the tag right now, so review that count and the hosts behind it regularly.
+
+If another policy already has the lowest possible priority (`-2147483648`), no policy can be ordered before it. Raise that policy's `priority` number first.
+
+Lockdown takes priority over install mode. A host that carries both the `appctl-lockdown` and `appctl-install-mode` tags stays in [lockdown](#lockdown) until the lockdown tag is removed.
+
+Deleting the `install-mode` policy stops install mode from working until the policy exists again. Starting install mode on a host recreates it. Hosts that are in a window when you delete it return to their normal policy.
+
+### Without the console
+
+Install mode is not a separate feature, so you can do the same through the API. Create the `install-mode` policy with the fields above and a `priority` below your other policies (but above the `lockdown` policy, if you use it), then add the `appctl-install-mode` tag to a sensor with the `ttl` parameter of the sensor tag API, which is a number of seconds. See [Sensor tags](../../../2-sensors-deployment/sensor-tags.md). The countdown in the console needs the `appctl-install-mode-until-<epoch seconds>` tag as well. Without it the console still shows the host as in install mode, but reports that no end time is known.
+
 ## Lockdown
 
 **Lock down host…** on a sensor page, or in the sensor list's bulk actions, requests incident-response containment through Application Control. The host can still use the network. Application Control enforces on **Windows and macOS only**; the bulk dialog skips other platforms, including Linux.
@@ -142,11 +183,11 @@ When the policy reaches the host:
 - OS-vendor software and the LimaCharlie sensor can keep running.
 - Enabled, unexpired Application Control rules apply if their `policies` list is empty (every policy) or names `lockdown`. Allow rules authorize software; deny rules still take precedence. Rules scoped only to the host's ordinary policy do not carry over.
 - Applicable trusted-installer rules can also allow installer descendants and files written by those installers. Review these rules when defining containment. Already-running installer descendants whose lineage is no longer retained are reported and left running unless a deny rule matches, as described in [Programs that are already running](#programs-that-are-already-running).
-- Other running programs refused by the policy are reported and terminated. New executions refused by the policy are blocked.
+- Other running programs refused by the policy are reported and terminated, except the programs that are never stopped, as listed in [Programs that are already running](#programs-that-are-already-running). New executions refused by the policy are blocked.
 
 Use the Rules tab or rule editor to name `lockdown` when authorizing incident-response tools specifically during containment. A signer or path allow rule can authorize more software than a single-file hash rule; choose the scope deliberately.
 
-The dialog requires a reason. It stores a short URI-encoded reason in a companion sensor tag, visible in sensor tags, events and tag audit records. The reason tag shares any chosen TTL and is removed on release. Do not put secrets in the reason. By default, containment has **no user-selected TTL** and requires an explicit release; you can choose a limited duration instead. Changes take effect on the next sensor sync, so the presence of a tag is not confirmation that the sensor has already applied containment. The sensor-page banner checks that the lockdown policy remains applicable.
+The dialog requires a reason. It stores a short URI-encoded reason in a companion sensor tag, visible in sensor tags, events and tag audit records. The reason tag shares any chosen TTL and is removed on release. Do not put secrets in the reason. By default, containment has **no user-selected TTL** and requires an explicit release; you can choose a limited duration instead, as a whole number of hours up to 168. Changes take effect on the next sensor sync, so the presence of a tag is not confirmation that the sensor has already applied containment. The sensor-page banner checks that the lockdown policy remains applicable.
 
 **Release lockdown** removes the tag, checking the host's current tags even if the sensor list is stale. The host receives its next matching enabled policy on its next sync. If install mode is still tagged and matches, that policy can apply again; install mode cannot override lockdown while both tags are present. Terminated programs are not restarted.
 
@@ -171,9 +212,9 @@ respond:
     ttl: 3600
 ```
 
-Here `ttl: 3600` gives the tag a one-hour lifetime. `ttl` is optional and measured in seconds; **omit that line to require explicit release**. Repeated tagging can extend the lifetime. Automated tagging does not require the console dialog's reason or add its companion reason tag. Include incident context in your detection reports or case records.
+Here `ttl: 3600` gives the tag a one-hour lifetime. `ttl` is optional and measured in seconds; **omit that line to require explicit release**. Adding the tag again with a `ttl` restarts its lifetime from that moment. Adding it again without a `ttl` does not remove a lifetime the tag already has. Automated tagging does not require the console dialog's reason or add its companion reason tag. Include incident context in your detection reports or case records.
 
-The console action needs `app_control.get`, `app_control.set`, and `sensor.tag`, and an Application Control subscription. Policy-only setup needs Application Control read/write access. Automation must be authorized to tag the sensor. Restrict `sensor.tag` access: anyone who can add or remove this tag can request or release containment.
+The console action needs `app_control.get`, `app_control.set`, and `sensor.tag`, and an Application Control subscription. Policy-only setup needs Application Control read/write access. Restrict `sensor.tag` access, and write access to D&R rules: anyone who can add or remove this tag, or who can create a rule that does, can request or release containment.
 
 ## Reading would-be blocks
 
@@ -223,6 +264,34 @@ respond:
 Group the resulting detections by `FILE_PATH` or signer to see which programs matter most. A signer that appears on many machines is a candidate for a `signer` allow rule. A path seen on one machine is usually a one-off. To alert on actual blocks instead, match `1` and change the report name.
 
 Watch `APP_CONTROL_UNRESOLVED` during the `permissive_sync` soak. Each one is an execution the sensor let through because it could not check it in time, for example when the file hash was not available.
+
+## Blocking a file from the console
+
+Wherever the web console shows a SHA-256 hash, you can block that exact file with one action, without writing a rule by hand. **Block with Application Control** is offered on:
+
+- the event detail panel (sensor timeline and the Query Console), as a button for the event's own `HASH` and as an action on any hash field in the event JSON;
+- the detection viewer, as an action on the hash fields of the detection;
+- the sensor's file hash view, and the modules of a process.
+
+The action opens a confirmation that shows the hash and, when the event has one, the file path. You can add a comment and, optionally, an expiry. Confirming creates a rule in `app_control_rule`:
+
+```json
+{
+    "action": "deny",
+    "kind": "sha256",
+    "value": "<the hash, in lowercase hex>"
+}
+```
+
+The rule applies to every policy. Its record name is `deny-sha256-` followed by the first 16 hex characters of the hash, for example `deny-sha256-0123456789abcdef`, so blocking the same file twice never creates two rules. If that name already belongs to a different rule, the console uses the next free name (`...-2`, `...-3`). The rule is created, never overwritten, and it is stored enabled.
+
+The dialog also tells you:
+
+- **Already blocked.** An enabled deny for the same hash that applies to every policy and does not expire is already there, so nothing is created. A deny that is disabled, expired, limited to some policies, or temporary does not count: the dialog mentions it and still offers to create the block.
+- **Only enforcing blocks.** A deny rule blocks only on sensors whose policy is in `enforcing` mode. Under `permissive` and `permissive_sync` the sensor reports the execution it would have blocked. If no enabled policy is in `enforcing` mode, the dialog warns that the rule will not block anything yet.
+- **Allow rules.** An allow rule for the same hash does not defeat the block, because a deny always wins.
+
+The action is offered only when the organization is subscribed to the `ext-app-control` extension and you hold `app_control.get` and `app_control.set`. The console reads the existing rules to choose a free name and to tell you when a file is already blocked, so `app_control.set` alone is not enough.
 
 ## Managed alerts
 
@@ -292,6 +361,8 @@ Examples of both record types are on the [policy](../../../7-administration/conf
 | `app_control.set` | Create, edit and delete policies and rules, and their metadata. |
 
 By default the Owner, Administrator and Operator roles have both. The Viewer role has `app_control.get`.
+
+Three console actions need more than the App Control permissions alone. [Install mode](#install-mode) and [lockdown](#lockdown) also need `sensor.tag`, because they tag the host. [Blocking a file from the console](#blocking-a-file-from-the-console) needs both `app_control.get` and `app_control.set`.
 
 ## Limits
 
