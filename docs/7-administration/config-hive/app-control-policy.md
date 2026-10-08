@@ -2,7 +2,7 @@
 
 The `app_control_policy` hive holds the policies of [Application Control](../../5-integrations/extensions/limacharlie/app-control.md). A policy decides which sensors it covers, whether it blocks or only reports, and what the default answer is for a program that no rule mentions. The rules themselves live in the [`app_control_rule`](app-control-rule.md) hive.
 
-Both hives are partitioned by organization, like the other Config Hive types. Each policy is one record. The record name is the policy name, up to 256 bytes, and rules refer to it by that name.
+Both hives are partitioned by organization, like the other Config Hive types. Each policy is one record. The record name is the policy name, up to 128 bytes, and rules refer to it by that name. The sensor also echoes the name into every event the policy produces as `APP_CONTROL_POLICY_LABEL`, so an event tells you which policy produced it. See [Which policy produced an event](#which-policy-produced-an-event).
 
 ## Format
 
@@ -13,7 +13,8 @@ Both hives are partitioned by organization, like the other Config Hive types. Ea
     "tags": ["app-control-enforce"],
     "mode": "enforcing",
     "stance": "allowlist",
-    "trust_os_vendor": true
+    "trust_os_vendor": true,
+    "on_enable": "report"
 }
 ```
 
@@ -25,6 +26,7 @@ Both hives are partitioned by organization, like the other Config Hive types. Ea
 | `mode` | Yes | `off`, `permissive`, `permissive_sync` or `enforcing`. See [Modes](#modes). |
 | `stance` | Yes | `allowlist` or `blocklist`. There is no default, so you always choose one on purpose. See [Stance](#stance). |
 | `trust_os_vendor` | No | Boolean, default `true`. When `true`, binaries signed by the operating system vendor are implicitly allowed: Apple platform binaries on macOS and Microsoft-signed binaries on Windows. Deny rules still win. |
+| `on_enable` | No | `leave`, `report` or `terminate`. What the sensor does about programs that are already running when the policy arrives. When omitted, the sensor reports them. A blank value is refused. See [Programs that are already running](#programs-that-are-already-running). |
 
 Keywords are case-sensitive and must be lowercase exactly as shown. Unknown fields are refused when you save the record.
 
@@ -43,6 +45,12 @@ Because the first match wins, you stage a rollout by putting narrow policies (a 
 
 !!! note "Reserved policy name: `install-mode`"
     The web console uses a policy named `install-mode` for [install mode](../../5-integrations/extensions/limacharlie/app-control.md#install-mode), a temporary window in which a host only reports. It matches the tag `appctl-install-mode`, is `permissive`, and has a `priority` below every other policy. Keep it enabled and ordered first, and do not use the name for anything else.
+
+## Which policy produced an event
+
+The policy name is sent to the sensor as the policy's label. The sensor adds it to every `APP_CONTROL_DENIED`, `APP_CONTROL_UNRESOLVED` and `APP_CONTROL_DENIED_SUMMARY` event as the `APP_CONTROL_POLICY_LABEL` field, which is how you tell apart the events of the policies in a staged rollout. The name is not truncated, which is why it is limited to 128 bytes: the record is refused on save if its name is longer.
+
+Policies delivered by the Application Control extension also have summarizing on: when the same program is blocked repeatedly within five minutes, the first occurrence is reported as `APP_CONTROL_DENIED` straight away and the repeats are folded into one `APP_CONTROL_DENIED_SUMMARY` event with a count and the first and last time seen. See [`APP_CONTROL_DENIED_SUMMARY`](../../8-reference/edr-events.md#app_control_denied_summary).
 
 ## Modes
 
@@ -68,6 +76,25 @@ The sensor works through the policy in a fixed order and stops at the first answ
 2. Allow rules.
 3. OS vendor trust, if `trust_os_vendor` is `true`.
 4. The stance.
+
+## Programs that are already running
+
+A policy judges a program when it starts. A program that was already running when the policy reached the sensor was never judged. `on_enable` says what the sensor does about those programs, once for each policy generation it installs and again when the sensor restarts.
+
+| Value | Behavior |
+| --- | --- |
+| `leave` | The sensor does nothing about running programs. The policy applies only to programs that start afterward. |
+| `report` | The sensor reports each running program the policy refuses as an `APP_CONTROL_RESIDENT` event and leaves it running. This is the behavior when the field is omitted. |
+| `terminate` | The sensor reports them and stops them, but only while `mode` is `enforcing`. In any other mode it reports, as `report` does. |
+
+Nothing happens when `mode` is `off`.
+
+!!! warning "Terminate stops running programs"
+    A policy with `"mode": "enforcing"` and `"on_enable": "terminate"` stops the running programs it refuses as soon as sensors receive it. Start with `report`, read the `APP_CONTROL_RESIDENT` events, and add rules for what you need to keep.
+
+A program that is refused only because no rule matched it is reported but not stopped when the policy names [installer rules](app-control-rule.md#installer-rules). Critical Windows processes, the sensor itself and, on macOS, Apple platform binaries are never stopped. See [Programs that are already running](../../5-integrations/extensions/limacharlie/app-control.md#programs-that-are-already-running) for the details.
+
+An `APP_CONTROL_RESIDENT` event is not an execution that was refused, so a detection on `APP_CONTROL_DENIED` does not fire for it. See the [EDR events reference](../../8-reference/edr-events.md#app_control_resident).
 
 ## Permissions
 
@@ -113,6 +140,22 @@ limacharlie hive validate \
   --hive-name app_control_policy \
   --key windows-allowlist \
   --input-file windows-allowlist.json
+```
+
+### Stopping unapproved running programs
+
+This policy stops the running programs it refuses. Use it only after a `report` run has shown which programs that is, through `APP_CONTROL_RESIDENT` events, and you have added the rules for the ones you need.
+
+```json
+{
+    "priority": 10,
+    "tags": ["app-control-enforce"],
+    "platforms": ["windows"],
+    "mode": "enforcing",
+    "stance": "allowlist",
+    "trust_os_vendor": true,
+    "on_enable": "terminate"
+}
 ```
 
 ### Staged rollout by tag
@@ -177,7 +220,7 @@ where `windows-off.json` is the same policy with `"mode": "off"`.
 
 ## Limits
 
-- Record name: 256 bytes.
+- Record name: 128 bytes.
 - Tags per policy: 64, each at most 256 bytes.
 - Rules that apply to a single policy: 10,000.
 
