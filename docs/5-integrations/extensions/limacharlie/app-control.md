@@ -47,12 +47,15 @@ A deny rule always wins.
 
 ### Modes
 
-| Mode | What the sensor does |
-| --- | --- |
-| `off` | Evaluates nothing. |
-| `permissive` | Evaluates executions asynchronously after the process starts. Reports would-be blocks. Blocks nothing and adds no latency. |
-| `permissive_sync` | Runs the same blocking path as `enforcing`, then always allows. The recommended last step before enforcing. |
-| `enforcing` | Blocks executions the policy denies. |
+The console and evidence reports use the following labels. Configuration and raw
+JSON retain the API values.
+
+| Console label | API value | What the sensor does |
+| --- | --- | --- |
+| Off | `off` | Evaluates nothing. |
+| Audit | `permissive` | Evaluates executions asynchronously after the process starts. Reports would-be blocks. Blocks nothing and adds no latency. |
+| Rehearsal | `permissive_sync` | Runs the same blocking path as `enforcing`, then always allows. The recommended last step before enforcing. |
+| Enforcing | `enforcing` | Blocks executions the policy denies. |
 
 ## Self-updating software and trusted installers
 
@@ -105,9 +108,9 @@ The sensor checks the process creation time before it stops a process, so a reus
 
 Start in a mode that cannot block and move forward only once the reports are quiet. Tags make this easy because a policy can target a tag, and moving a sensor between stages is a tag change. The [policy page](../../../7-administration/config-hive/app-control-policy.md#staged-rollout-by-tag) has the three policies for this flow.
 
-1. **Observe in `permissive`.** Create an allowlist policy for the platform with no tag filter. Add the rules you already know you need (your software publishers, your standard install locations). Every execution that the policy would deny shows up as an `APP_CONTROL_DENIED` event with `APP_CONTROL_IS_ENFORCED` set to `0`. Nothing is blocked and process start is not slowed.
+1. **Observe in Audit (`permissive`).** Create an allowlist policy for the platform with no tag filter. Add the rules you already know you need (your software publishers, your standard install locations). Every execution that the policy would deny shows up as an `APP_CONTROL_DENIED` event with `APP_CONTROL_IS_ENFORCED` set to `0`. Nothing is blocked and process start is not slowed.
 2. **Fix the rules.** Read the would-be blocks (see [Reading would-be blocks](#reading-would-be-blocks)). For each legitimate program, add an allow rule. Prefer a `signer` rule for software that updates, and use a `path` rule only for locations ordinary users cannot write to. Repeat until the legitimate noise is gone. Use a [temporary exception](../../../7-administration/config-hive/app-control-rule.md#a-temporary-exception) for one-off cases.
-3. **Soak a pilot in `permissive_sync`.** Add a policy that targets a pilot tag, such as `app-control-soak`, in `permissive_sync`. These sensors run the full blocking path but still allow everything. This is the last chance to find a problem before blocking.
+3. **Soak a pilot in Rehearsal (`permissive_sync`).** Add a policy that targets a pilot tag, such as `app-control-soak`, in `permissive_sync`. These sensors run the full blocking path but still allow everything. This is the last chance to find a problem before blocking.
 4. **Enforce the pilot.** Add a policy with a lower priority number than the other two that targets `app-control-enforce` in `enforcing`. Tag a small group of machines and watch them.
 5. **Widen.** Tag more machines. Keep a broad `permissive` policy at the end of the order so that untagged machines keep reporting.
 
@@ -145,7 +148,7 @@ Useful fields on `APP_CONTROL_DENIED`:
 | `APP_CONTROL_MATCHED_RULE` | Optional. The rule that matched, when there is one. |
 | `APP_CONTROL_MATCHED_RULE_ID` | Optional. The id (record name) of the rule that matched. |
 | `APP_CONTROL_POLICY_LABEL` | The name of the policy that produced the event. |
-| `APP_CONTROL_SIGNATURE_STATUS` | What the signature check concluded: `1` valid, `2` unsigned, `3` invalid, `4` untrusted, `5` expired. |
+| `APP_CONTROL_SIGNATURE_STATUS` | What the signature check concluded: `0` not checked, `1` valid, `2` unsigned, `3` invalid, `4` untrusted, `5` expired. |
 | `APP_CONTROL_MODE` | The mode of the policy in effect, as a number: `0` off, `1` permissive, `2` permissive_sync, `3` enforcing. |
 | `APP_CONTROL_GENERATION` | The generation of the policy the sensor was running. |
 
@@ -279,19 +282,29 @@ The archive contains:
   renders text with browser fonts to preserve all supported languages; use the HTML
   companion for text selection and accessibility.
 - **evidence.json**: the evidence, section availability, timestamps, and localized
-  report content. Machine-readable field names and API enum values remain unchanged.
+  report content. Its `formatNotes` explicitly identify the raw sections: machine-readable
+  field names, API enum values, numeric codes, and boolean flags remain unchanged.
+  The `report` field uses the same localized labels as the PDF and HTML.
 - **rules.csv**, when policy/rule read permission is available: the complete rule
   list, including action, kind, value, policy scope, enabled state, expiry, comment,
   and hive change metadata. Disabled and expired rules are included.
 - **fleet.csv**, when sensor-list permission is available and collection completes:
-  every collected sensor's identity and last-reported Application Control posture.
+  every collected sensor's identity and last-reported Application Control posture,
+  using console labels for mode, enforcement connection, break-glass, and issues.
+- **observations.csv**, when observation collection completes: every retained
+  application selected by the window, with console labels for signature status,
+  vendor trust (Yes, No, or Unknown), enforcement, and triage status. Executions
+  use the console's lower-bound display (for example, **1,234+**), or **No executions**.
 
 The report identifies the organization, exporting user, generation time, collection
 start, and selected window. Policies include targeting, priority, mode, stance,
-OS vendor trust, behavior for programs already running, enabled state, and the last
+OS vendor trust, behavior for programs already running, **Notify users of blocks**,
+**Show tray icon**, enabled state, and the last
 change timestamp and author returned in hive `sys_mtd`. Rule summaries distinguish
 all rules from active rules, temporary allow exceptions from other rules, and
-trusted installer rules.
+trusted installer rules. The PDF, HTML, and CSV values use the current console labels
+in the selected language. Omitted notification and tray settings default to No;
+the report describes configuration, not proof that an end-user notification appeared.
 
 Fleet evidence counts reporting sensors by mode and held policy, sensors with no
 Application Control report, refused policies, break-glass, and degraded enforcement.
@@ -348,7 +361,7 @@ The report presents evidence and **capability coverage**, not a compliance
 certification, a pass/fail decision about the organization, or an Essential Eight
 maturity rating. An auditor must assess the actual scope, authorization process,
 exceptions, and enforcement gaps. An enforcing allowlist policy can deny program
-execution by default and permit exceptions. A blocklist or permissive policy does
+execution by default and permit exceptions. A blocklist policy, or a policy in Audit or Rehearsal mode, does
 not implement allow-by-exception.
 
 | Requirement or application type | Capability coverage | Reason |
