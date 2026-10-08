@@ -376,7 +376,7 @@ Each adds one inventory or analysis surface. Skipping one leaves that surface
     bindings), **NetworkPolicies** and **admission webhooks**. Kubernetes RBAC
     therefore does not appear in identity or attack-path analysis.
 
-    Two deliberate modelling choices worth knowing:
+    Three deliberate modelling choices worth knowing:
 
     - a **Job created by a CronJob** and a **ReplicaSet created by a
       Deployment** are not listed as workloads of their own; their pods are
