@@ -17,3 +17,7 @@ Endpoint Detection and Response (EDR) solutions are crucial for organizations to
 - **Integration with open-source and managed rulesets:** Leverage detections created by best-in-class security professionals using managed and open-source rulesets. With one-click access to sources like SOC Prime, Soteria, Sigma, and YARA, teams can gain unparalleled cost efficiencies and stay ahead of emerging threats.
 - **Reduced mean time to respond (MTTR):** LimaCharlie allows security teams to execute a full suite of remediation responses, such as triggering memory dumps or killing process trees. By simplifying the process of activating rulesets and building custom rules, LimaCharlie significantly reduces MTTR.
 - **Vendor-agnostic telemetry ingestion:** Ingest data from any source, including existing EDR solutions, in real-time. This allows security teams to avoid vendor lock-in and leverage the ASW's powerful Detection, Automation, and Response Engine on all of their telemetry, regardless of the source.
+
+### Related Resources
+
+- [Entity Pivot](../../cloud-security/entity-pivot.md) - Start from a hostname, IP address, sensor ID or account and find the related Users, Hosts, detections and cloud findings (requires Cloud Security)

@@ -1,6 +1,6 @@
 # AI Triage
 
---8<-- "includes/email-security-beta.md"
+--8<-- "includes/email-security-availability.md"
 
 Email Security produces an explainable verdict for every message. AI triage is the
 optional second pass: an agent that reads a message the way an analyst would, pivots on
@@ -376,21 +376,12 @@ Prove the recipe before trusting it.
    or report-resolution shows up in the message and report timelines and in the
    `EMAIL_ACTION` audit trail.
 
-!!! warning "The agent needs the `mailsec` CLI in its runtime — the one real gap today"
-    The agent reaches Email Security by driving the `limacharlie mailsec ...` command
-    group, and that command group must be present in the CLI inside the session runtime.
-    The `lc-essentials` plugin installs the `limacharlie` CLI
-    ([runner environment](../9-ai-sessions/runner-environment.md)), but some runtimes still
-    ship a CLI old enough to predate the `mailsec` commands — a runtime on `v5.6.2`, for
-    example, lacks them.
-
-    When that happens the agent still starts and still investigates through the events and
-    data it is handed, but it cannot run the `mailsec` tools to pivot or act — the
-    reference playbook detects the missing command group, reports the coverage gap, and
-    defers to a human rather than guessing. Confirm your session runtime carries a
-    `limacharlie` CLI new enough to include `limacharlie mailsec`. The server side —
-    verdict write-back, actions, report resolution, and the `submit_to_triage` trigger —
-    is live; this is purely about the CLI shipped in the agent's runtime.
+!!! note "CLI tools in the agent runtime"
+    The agent uses `limacharlie mailsec ...` to investigate and act on messages.
+    The `lc-essentials` plugin installs the CLI in the
+    [session runtime](../9-ai-sessions/runner-environment.md). Confirm the runtime
+    installation with `limacharlie mailsec --help`; upgrade with
+    `python -m pip install --upgrade limacharlie` when needed.
 
 ## Passive first, then active
 

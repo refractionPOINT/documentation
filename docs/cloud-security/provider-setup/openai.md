@@ -1,5 +1,13 @@
 # OpenAI
 
+!!! tip "Connecting from the web app?"
+    Follow the prerequisites and credential creation instructions below, then
+    return to **Cloud Security → Settings → Providers → Add provider**. Enter
+    the provider IDs under **Configuration** and save the credential using
+    **New secret** under **Permissions**. Run **Test Provider**, fix required
+    failures, and save. The LimaCharlie CLI examples below are an alternative.
+    [First-time setup and verification](../getting-started.md) explains the full journey.
+
 Collects your OpenAI platform organization as an AI-security surface: projects,
 members (including pending invites — staged seats that have never logged in)
 and service accounts, API keys (with last-used timestamps, so dormant
@@ -48,15 +56,16 @@ The secret's shape is:
 ```
 
 You may also store the bare key string; it is wrapped into this shape
-automatically, which makes it a one-liner:
+automatically. The example below stores the JSON form.
+Save the credential JSON shown above as `openai-secret.json`, then upload it via stdin:
 
 ```bash
-limacharlie secret set --key openai-admin-key \
-    --value 'sk-admin-...' --enabled
+jq -Rs '{secret: .}' openai-secret.json \
+  | limacharlie secret set --key openai-admin-key --enabled \
+  && rm -f openai-secret.json
 ```
 
-`secret set` wraps whatever you pass in `--value` into the secret record's
-`{"secret": "..."}` shape for you.
+`jq -Rs` builds the outer secret-record envelope for stdin.
 
 ## Create the provider record
 

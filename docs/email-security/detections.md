@@ -1,12 +1,19 @@
 # Detections & Verdicts
 
---8<-- "includes/email-security-beta.md"
+--8<-- "includes/email-security-availability.md"
 
 Every message gets exactly one verdict, and the verdict always carries its
 reasons. This page explains how the reasons are produced, what the rules can see,
 and how to tune it.
 
 ## The verdict
+
+The optional `mail_type` classification describes apparent purpose, such as
+marketing or correspondence, independently of this verdict. A purpose label
+does not establish safety or consent. `mail_type/type=unknown` is a classification
+abstention; an absent `mail_type` means not classified. See
+[Messages & Triage](messages.md) for viewing it and the
+[rule reference](rule-reference.md#mailtypeinfo) for its paths.
 
 | Verdict | Meaning |
 |---|---|
@@ -26,7 +33,7 @@ The verdict object on a message carries:
 | `top_signals` | Up to five contributing rules, heaviest first, each with `rule_id`, `name` and `weight`. This is the "why this verdict" block |
 | `matched_signals` | Every rule id that matched, including suppressed ones — the hunting surface |
 | `tags` | The deduplicated, sorted tags of the rules that actually contributed |
-| `engine_version` | The rule-pack version that decided it |
+| `engine_version` | SHA-256 fingerprint of the scoring rules, scoring policy and engine build |
 | `decided_at` | When |
 | `mode` | Who last decided: `auto` (the rule pack), `analyst` (a person), `ai` (a triage agent) or `detonation` ([link detonation](#link-detonation)). See [Revising a verdict](#revising-a-verdict) |
 | `campaign_id` | The campaign this message was clustered into, if any |
@@ -149,13 +156,17 @@ ships an [`EMAIL_VERDICT`](automation.md#email_verdict) at the next `seq`.
 
 ## Scoring
 
-Each matching rule carries a **weight** (0–100, how much this evidence is worth)
+Each matching scoring rule carries a **weight** (1–100, how much this evidence is worth)
 and a **confidence** (0–100, how often it is right when it fires). The score
 combines them with diminishing returns rather than a sum:
 
 ```text
 score = 100 × ( 1 − Π (1 − wᵢ/100 × cᵢ/100) )
 ```
+
+Rules with the same non-empty `shared_fact` contribute only their strongest
+weighted evidence to this formula. Rules without a group contribute separately;
+suppressed matches contribute nothing. Graymail rules use a separate lane.
 
 Each signal removes a fraction of the *remaining* headroom. A sum would let five
 weak signals outscore one strong one and would need clamping at 100, which makes
@@ -197,8 +208,11 @@ without anyone deleting them. See
 
 Rules are standard D&R detect blocks evaluated against the **Message Data
 Model** — the parsed message — plus the enrichments the pipeline stamped onto it.
-Because the enrichments are *in the message*, a rule reads them as ordinary paths
-and a re-evaluation later sees exactly what the pipeline saw.
+Enrichments are fields in the message, so a rule reads them as ordinary paths.
+A replay of the emitted event can read its original stamps; the MailSec
+[rule backtest](custom-rules.md#what-a-backtest-can-evaluate) instead re-parses
+stored EMLs and does not reconstruct those enrichments. See the
+[Rule Reference](rule-reference.md) for JSON fields, types, and presence rules.
 
 ### The parsed message
 
@@ -255,46 +269,98 @@ re-incrementing the counter that caused it, never decaying, and in enforce mode
 quarantining a legitimate sender silently. Counting only the independent lane
 makes a history rule an amplifier of *other* evidence and never of itself.
 
-## The managed rule pack
+## The default rules
 
-A packaged, versioned set of rules ships with the product and its version is
-stamped into every verdict as `engine_version`. The current pack:
+LimaCharlie's default rules are installed into `dr-mail` when you subscribe.
+Vendor-tagged defaults receive later pack updates, preserving enabled/disabled
+choices. Disable an unwanted default; deleting it can let the next pack release
+recreate it. Copy or untag a rule before maintaining your own version. See
+[default rule ownership](custom-rules.md#default-rules-and-ownership).
+**Email Security → Detection rules** is the authoritative catalog for your organization:
+it shows the exact current conditions, weight, confidence, phase, tags and
+false-positive notes. Every default is editable, disableable and deletable.
 
-| Rule id | Class | Weight | What it says |
-|---|---|:--:|---|
-| `ms-sender-first-contact` | signal | 30 | First message ever from this sender (`prevalence: none`) |
-| `ms-sender-known-bad-history` | signal | 65 | This sender has been independently flagged before |
-| `ms-sender-domain-newly-registered` | signal | 45 | The sender's domain was registered in the last week |
-| `ms-auth-dmarc-fail` | signal | 50 | DMARC failed |
-| `ms-auth-spf-fail-inbound` | signal | 40 | SPF failed on inbound mail |
-| `ms-impersonation-vip-display-name` | signal | 55 | Display name matches a VIP but the address does not |
-| `ms-impersonation-org-domain-lookalike` | signal | 70 | Sender domain is one or two edits from one of your domains |
-| `ms-impersonation-exact-org-domain-external` | **detection** | 85 | Claims one of your domains but arrived from outside |
-| `ms-impersonation-reply-to-mismatch` | signal | 35 | `Reply-To` points at a different organization than `From` |
-| `ms-link-display-href-mismatch` | signal | 60 | A link's visible text names a different site than its destination |
-| `ms-link-credentials-in-url` | signal | 75 | A link embeds credentials before the host |
-| `ms-link-mixed-script-domain` | **detection** | 80 | A link's domain mixes writing systems within one label |
-| `ms-link-unranked-domain` | signal | 30 | A link points at a domain absent from the top-1M list |
-| `ms-link-known-malicious-url` | **detection** | 95 | A link matches the managed malicious-URL feed |
-| `ms-graymail-list-unsubscribe` | graymail | — | Bulk mail carrying `List-Unsubscribe` |
-| `ms-graymail-precedence-bulk` | graymail | — | The message declares itself bulk |
+Defaults cover impersonation, authentication and sender history, links,
+attachment threats, suspicious content, detonation evidence and graymail.
+They are ordinary D&R rules over the Message Data Model, not a separate engine.
+See [Detection Rules](custom-rules.md) for the format, IaC and explicit restoration.
 
-Rule ids are stable and are never renamed — that is the only reason an exclusion
-or a per-rule override can be persisted at all.
+### Callback phishing and HTML smuggling
 
-You can disable a packaged rule or replace its weight for your organization
-without forking anything, through
-[`mailsec_policy/thresholds` → `rule_overrides`](policy.md#thresholds).
+Two attack classes are invisible to a scanner that only looks at links and known-bad
+files, so the defaults read them from structure.
 
-!!! tip "Judge a message without ingesting it"
-    `POST /mailsec/{oid}/analyze` (`limacharlie mailsec analyze --file
-    suspect.eml`) parses a raw message you supply and runs the enrichers and the
-    packaged rules against default policy. **Nothing is ingested or stored**: no
-    index row is written, no raw copy is kept, and the organization's mail
-    history is unchanged. It is how you test a rule change, or analyze a sample
-    that was never in the tenant. The tenant-specific context it cannot have —
-    your sender history, your VIP list — is named explicitly in the response
-    rather than silently missing.
+**Callback phishing** (telephone-oriented attack delivery) is an invoice, renewal or
+"your device is infected" notice whose only action is a phone number. The defaults
+read the number as a fact ([PhoneNumbers](rule-reference.md#phonenumbers)) from the
+body, from the text of attached images, from numbers in a PDF, and from attached
+messages, and combine it with a call to action, billing vocabulary, how short the
+message is, and whether the sender looks odd (a free-mail address, a young domain, a
+failing DMARC result, a Reply-To elsewhere). A legitimate vendor's receipt carries the
+same words and a support number, which is why a sender oddity is required and an
+established sender is never read as a lure. The callback rules describe one
+observation and do not add up: a message that trips all of them scores as the
+strongest. A PDF's wording is not available to rules, so the PDF rule judges a short
+PDF by its shape and its numbers; numbers in a PDF are recognised for North American
+formats only.
+
+**HTML smuggling** is a web page, often an `.html` or `.svg` attachment, that builds
+the real payload in the victim's browser. The parser scans every HTML-like attachment
+and HTML body in full and reports encoded data, the type that data decodes to,
+decoding and download primitives, redirects and password forms
+([HTMLIndicators](rule-reference.md#htmlindicators)). Defaults flag a page that
+decodes encoded data and saves it, a page whose encoded data is an archive or
+executable, a page that builds its own decoder, an HTML sign-in page delivered as a
+file, a tiny redirect page, an SVG that carries script, and a message body that runs
+a decoder. A single-file report or export tool that embeds data and offers a download
+button matches the same facts as a smuggling page and is scored as suspicious, not
+malicious, unless its data also decodes to a recognisable payload. Credential-page
+and tiny-redirect defaults require a browser-file extension; source templates and
+files with unconventional names can fall outside those two checks.
+
+In managed pack `0.6.0`, these 22 new rules carry explicit severity. Older managed
+rules currently use the informational fallback. Severity is independent of the
+verdict, so a malicious verdict from an older rule can still have informational
+severity.
+
+Display-name brand impersonation ("PayPal Support" over an unrelated address),
+advance-fee and extortion text, voicemail and fax lures, free-hosting and
+open-redirector links, internationalised look-alike domains, OneNote files, locked
+PDFs with the password in the message, and web pages hidden inside archives from a
+stranger are covered by further defaults. **Email Security → Detection rules** shows every rule's
+conditions and false-positive notes.
+
+A verdict's `engine_version` is a SHA-256 fingerprint of the scoring rules,
+resolved thresholds, exclusions, VIPs, threat-feed references and clustering policy,
+and linked parsing/enrichment library build.
+Changing rule content or scoring policy changes the fingerprint. It identifies
+the decision configuration; it is not a promise that an external lookup feed
+or other message enrichment is unchanged.
+
+### Outbound PII detections
+
+The optional email DLP pack adds outbound detections for validated payment card
+numbers, IBANs and US Social Security numbers, plus a bulk detection when any
+one kind has at least ten distinct values. Bulk counts are per kind: four cards,
+four IBANs and four SSNs do not meet the bulk threshold. Bulk detections fire
+alongside the matching single-kind detection. These are platform D&R rules on
+`EMAIL_MESSAGE`, separate from the engine verdict; installing them does not
+change the verdict or automatically move mail.
+
+The rules read [PIIFindings](rule-reference.md#piifindings), which stores counts
+only. A detection still carries the originating email event, whose body can
+contain the actual sensitive values; the count facts do not redact that body.
+Plan detection access and outputs accordingly. IBANs commonly occur on ordinary
+invoices, and dashed SSN-shaped internal IDs can match. Tune the optional rules
+for your organization rather than treating a match as proof of malicious intent.
+The detector covers message text, OCR and attached messages, but does not inspect
+text inside ordinary document, spreadsheet or PDF files. Counts remain lower
+bounds for these excluded sources even when `enrichments/pii/truncated` is absent.
+Known incomplete extraction or parsing, and inspection limits, set that flag;
+the counts still describe only the available text.
+Deferred attachment scans refresh the stored facts but do not replay the initial
+`EMAIL_MESSAGE` evaluation. A DLP match therefore describes evidence available
+when that event was emitted, rather than every later attachment result.
 
 ## Link detonation
 
@@ -394,8 +460,8 @@ blind detonation by padding a harvest page.
 
 ### `mode: detonation`
 
-When the evidence changes the class, the message is re-judged in full — both
-rule packs, your policy, your thresholds — and the new class is filed as a
+When the evidence changes the class, the message is re-judged in full — the enabled
+rule records, your policy, your thresholds — and the new class is filed as a
 revision in `mode: detonation`.
 
 It has the **lowest authority** of the three revising modes:

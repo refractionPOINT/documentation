@@ -20,6 +20,8 @@ standard `limacharlie hive` commands — see
 [Configuration](configuration.md); this group is the query and triage
 surface.
 
+--8<-- "includes/code-security-cli.md"
+
 For Code Security (repositories, SBOMs, AutoFix, local scans and pushed results), see
 [Code Security](code-security/results.md#from-the-cli) and
 [Bring your own scanner](code-security/bring-your-own-scanner.md).
@@ -78,6 +80,11 @@ limacharlie cloudsec compliance assignments
 limacharlie cloudsec resolve sensors $SID1 $SID2
 limacharlie cloudsec resolve assets "lcrn:..."
 
+# Entity Pivot: identifier -> User / Host, then card and activity
+limacharlie cloudsec entity resolve --identifier alice@example.com
+limacharlie cloudsec entity get --entity-id eu_k5xw4zdpnvsxe3tl
+limacharlie cloudsec entity activity --entity-id eu_k5xw4zdpnvsxe3tl --source detections
+
 # CAASM
 limacharlie cloudsec caasm assets -q laptop
 limacharlie cloudsec caasm coverage --status open --sort lc_risk --order desc
@@ -117,6 +124,13 @@ limacharlie cloudsec export query --named public_data_stores -o data-stores.csv
 limacharlie cloudsec fleet overview --oid $OID1 --oid $OID2 --trend-days 30
 limacharlie cloudsec fleet overview --group <GROUP_ID> --limit 100
 ```
+
+The `entity` subgroup resolves an identifier to a User or Host and reads its
+card, sightings and activity; `entity pivot` does the resolve and card fetch in
+one step. See [Entity Pivot](entity-pivot.md#mcp-and-cli) for the subcommands and
+how to read the results, including `--foreign-hostname` and `--observation-selector`
+for [leads from adapter events](entity-pivot.md#leads-from-adapter-events) (next CLI release).
+Entity commands are read-only and need `cloudsec.get`.
 
 The `export` subgroup streams the **entire** filtered set as a CSV
 (server-side keyset walk, capped at 100,000 rows) — use it for offline
@@ -167,7 +181,11 @@ limacharlie cloudsec finding list \
   --sort lc_risk --order desc \
   --limit 50
 # ...then pass the returned next_cursor back:
-limacharlie cloudsec finding list --cursor "<next_cursor>" --limit 50
+limacharlie cloudsec finding list \
+  --severity CRITICAL --severity HIGH \
+  --status open -q payment \
+  --sort lc_risk --order desc \
+  --cursor "<next_cursor>" --limit 50
 ```
 
 Boolean tri-state flags (`--kev/--no-kev`, `--reachable/--no-reachable`)
@@ -181,16 +199,10 @@ applies to `finding list`, `finding facets`, `finding causes`, and
 that defaults to **ascending** (soonest deadline first), keeping findings with
 no due date last rather than dropping them.
 
-!!! note "`--sla` needs a CLI newer than 5.6.1"
-    The SLA selector and the `due_at` sort key ship in the first `limacharlie`
-    release after 5.6.1. On an older CLI, use the `sla=` and `sort=due_at`
-    parameters on the [REST route](api-reference.md#reads) — the server-side
-    feature is live either way.
-
 The other lists carry a subset, so check `--help` before assuming a flag is
 there. `caasm coverage` behaves like `finding list` (repeatable filters,
-`--sort`/`--order`, paging). `inventory list` and `caasm assets` page but do
-not sort, and inventory's `--type` / `--provider` / `--account` / `--region`
+`--sort`/`--order`, paging). `caasm assets` supports paging and `--sort urn` or `--sort last_seen`.
+`inventory list` pages without sorting, and inventory's `--type` / `--provider` / `--account` / `--region`
 each take a single value rather than repeating. `attack-path list` returns
 the headline set in one shot: repeatable filters and `-q`, but no sorting and
 no paging.
@@ -215,19 +227,28 @@ the returned sample, and `simulate resources` takes a repeatable
 `--resource-type` to narrow the walked types the way an exclusions rule does.
 `policy suggest` takes `--limit` (default 20, cap 50).
 
+## Additional selectors
+
+These selectors are available in the CLI. Check each command's `--help` for
+usage; the corresponding REST selectors are in the [API reference](api-reference.md).
+
+| Command | Additional selectors |
+|---|---|
+| `cloudsec image list` | Repeatable `--lineage-status` (`verified`, `asserted`, `inferred`, `ambiguous`, `unknown`). Stale lineage counts as unknown. |
+| `cloudsec image repo-facets` | `--lineage-facet` adds digest-level lineage counts; these counts are separate from registry placement counts. |
+| `cloudsec caasm assets` | Repeatable `--kind`, `--source`, `--encryption`, `--screen-lock`, `--compromised`, `--managed`, plus `--sort urn` or `--sort last_seen`. For a posture dimension, an empty value selects unreported state. |
+| `cloudsec export findings`, `cloudsec export inventory` | `--max-rows` bounds a CSV chunk; `--cursor` resumes it. A trailing `# next_cursor=...` comment carries the continuation token when more rows remain. Keep all selectors unchanged when resuming. |
+| `cloudsec provider m365-certificate` | Generates and stores an Entra connection key pair and returns only its public certificate. See [certificate setup](provider-setup/entra.md#without-the-web-app). |
+
+A CSV reader should skip `#` comment lines before treating the file as a table.
+Check for the continuation token before considering a bounded export complete.
+
 ## Scripting
 
 The SDK class behind the CLI is available directly:
 
 ```python
-from limacharlie.client import Client
-from limacharlie.sdk.organization import Organization
-from limacharlie.sdk.cloudsec import CloudSec
-
-cs = CloudSec(Organization(Client(oid="...")))
-page = cs.list_findings(severity=["CRITICAL"], kev=True, limit=100)
-for f in page["findings"]:
-    print(f["lc_risk"], f["title"], f["resource_urn"])
+--8<-- "snippets/python/cloudsec_findings.py"
 ```
 
 Each method mirrors one API route and returns the raw response dict; see the

@@ -1,5 +1,13 @@
 # Amazon Web Services
 
+!!! tip "Connecting from the web app?"
+    Follow the prerequisites and credential creation instructions below, then
+    return to **Cloud Security → Settings → Providers → Add provider**. Enter
+    the provider IDs under **Configuration** and save the credential using
+    **New secret** under **Permissions**. Run **Test Provider**, fix required
+    failures, and save. The LimaCharlie CLI examples below are an alternative.
+    [First-time setup and verification](../getting-started.md) explains the full journey.
+
 Read-only inventory via an IAM identity that **assumes a read-only role**.
 Two topologies:
 
@@ -18,51 +26,153 @@ An IAM **user** whose only permission is `sts:AssumeRole` on a read-only
 LimaCharlie stores the user's access key, assumes the role, and reads. The
 user itself can do nothing but assume that one role.
 
-## Create the identity (CLI, single account)
+<span id="create-the-identity-cli-single-account"></span>
 
-Run as an IAM admin (never the root user):
+## Create the identity (single account)
 
-```bash
-ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
-EXTERNAL_ID=$(openssl rand -hex 16)          # save this
+Use a dedicated test account for your first connection if you have one. Ask an
+AWS administrator who can create IAM users, roles, policies, and access keys
+to run the steps below. The created user is the application's identity, not a
+human login. The role grants the read permissions, and the external ID is a
+value that must match between the role's trust policy and LimaCharlie.
 
-aws iam create-user --user-name lc-cloudsec
+Choose one tab; both create the same user, role, and access key.
 
-cat > trust.json <<EOF
-{ "Version": "2012-10-17", "Statement": [{
-  "Effect": "Allow",
-  "Principal": { "AWS": "arn:aws:iam::${ACCOUNT_ID}:user/lc-cloudsec" },
-  "Action": "sts:AssumeRole",
-  "Condition": { "StringEquals": { "sts:ExternalId": "${EXTERNAL_ID}" } }
-}] }
-EOF
-aws iam create-role --role-name LimaCharlieCloudSecRO \
-  --assume-role-policy-document file://trust.json
-aws iam attach-role-policy --role-name LimaCharlieCloudSecRO \
-  --policy-arn arn:aws:iam::aws:policy/SecurityAudit
-aws iam attach-role-policy --role-name LimaCharlieCloudSecRO \
-  --policy-arn arn:aws:iam::aws:policy/job-function/ViewOnlyAccess
+=== "Web console"
 
-cat > assume.json <<EOF
-{ "Version": "2012-10-17", "Statement": [{
-  "Effect": "Allow", "Action": "sts:AssumeRole",
-  "Resource": "arn:aws:iam::${ACCOUNT_ID}:role/LimaCharlieCloudSecRO"
-}] }
-EOF
-aws iam put-user-policy --user-name lc-cloudsec \
-  --policy-name lc-assume-ro --policy-document file://assume.json
+    1. Sign in to the AWS console as an administrator, open **IAM → Users → Create user**,
+       and name the user `lc-cloudsec`. Leave console access off. Create the user
+       without attaching policies; its permission is added below.
+    2. Copy your 12-digit account ID from the account menu. Generate and save a unique
+       alphanumeric external ID (for example, using a password manager). Replace
+       `<ACCOUNT_ID>` and `<EXTERNAL_ID>` in the following policy with those values.
+    3. Open **IAM → Roles → Create role → Custom trust policy** and paste:
 
-aws iam create-access-key --user-name lc-cloudsec   # capture AccessKeyId + SecretAccessKey
-```
+        ```json
+        {
+          "Version": "2012-10-17",
+          "Statement": [{
+            "Effect": "Allow",
+            "Principal": {"AWS": "arn:aws:iam::<ACCOUNT_ID>:user/lc-cloudsec"},
+            "Action": "sts:AssumeRole",
+            "Condition": {"StringEquals": {"sts:ExternalId": "<EXTERNAL_ID>"}}
+          }]
+        }
+        ```
 
-!!! note "In the web app (AWS console)"
-    IAM → Users → create `lc-cloudsec`; IAM → Roles → create
-    `LimaCharlieCloudSecRO` (custom trust policy → the user plus the
-    external-ID condition; attach `SecurityAudit` + `ViewOnlyAccess`); add an
-    inline policy on the user allowing `sts:AssumeRole` on the role; then
-    create an access key.
+    4. Continue to permissions and select both `SecurityAudit` and `ViewOnlyAccess`.
+       Name the role `LimaCharlieCloudSecRO`, create it, and copy its **ARN** from
+       the role details. Keep the external ID for the LimaCharlie wizard.
+    5. Open **IAM → Users → lc-cloudsec → Permissions → Add permissions → Create
+       inline policy**. Select the **JSON** editor and paste this policy, replacing
+       `<ACCOUNT_ID>` with the same account ID:
+
+        ```json
+        {
+          "Version": "2012-10-17",
+          "Statement": [{
+            "Effect": "Allow",
+            "Action": "sts:AssumeRole",
+            "Resource": "arn:aws:iam::<ACCOUNT_ID>:role/LimaCharlieCloudSecRO"
+          }]
+        }
+        ```
+
+    6. Name the policy `lc-assume-ro` and create it. The user now has permission to
+       assume this role; the read permissions belong to the role.
+    7. On the user's **Security credentials** tab, choose **Create access key**.
+       Review the use-case guidance, select **Other**, continue through the prompts,
+       and save the **Access key ID** and **Secret access key**. AWS shows the
+       secret only at creation; keep it for the credential step below.
+
+    AWS documents [custom trust policies](https://aws.amazon.com/blogs/security/iam-access-analyzer-makes-it-simpler-to-author-and-validate-role-trust-policies/)
+    and [access key creation](https://docs.aws.amazon.com/IAM/latest/UserGuide/access-keys-admin-managed.html).
+
+=== "Cloud Shell / CLI"
+
+    1. Sign in to the AWS console with that administrator identity (not root).
+    2. Open **CloudShell** from the console toolbar and use its Bash shell. The AWS
+       CLI is already installed and uses your console identity. See
+       [AWS CloudShell setup](https://docs.aws.amazon.com/cloudshell/latest/userguide/getting-started.html).
+    3. Run `aws sts get-caller-identity` and confirm the **Account** is the one you
+       intend to connect.
+    4. Run the commands below in that same shell. Stop if a command fails rather
+       than continuing with an incomplete role.
+    5. Keep the generated external ID and the access key's **AccessKeyId** and
+       **SecretAccessKey**. They are used in different fields, as shown below.
+
+    ```bash
+    ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+    EXTERNAL_ID=$(openssl rand -hex 16)          # save this
+
+    aws iam create-user --user-name lc-cloudsec
+
+    cat > trust.json <<EOF
+    { "Version": "2012-10-17", "Statement": [{
+      "Effect": "Allow",
+      "Principal": { "AWS": "arn:aws:iam::${ACCOUNT_ID}:user/lc-cloudsec" },
+      "Action": "sts:AssumeRole",
+      "Condition": { "StringEquals": { "sts:ExternalId": "${EXTERNAL_ID}" } }
+    }] }
+    EOF
+    aws iam create-role --role-name LimaCharlieCloudSecRO \
+      --assume-role-policy-document file://trust.json
+    aws iam attach-role-policy --role-name LimaCharlieCloudSecRO \
+      --policy-arn arn:aws:iam::aws:policy/SecurityAudit
+    aws iam attach-role-policy --role-name LimaCharlieCloudSecRO \
+      --policy-arn arn:aws:iam::aws:policy/job-function/ViewOnlyAccess
+
+    cat > assume.json <<EOF
+    { "Version": "2012-10-17", "Statement": [{
+      "Effect": "Allow", "Action": "sts:AssumeRole",
+      "Resource": "arn:aws:iam::${ACCOUNT_ID}:role/LimaCharlieCloudSecRO"
+    }] }
+    EOF
+    aws iam put-user-policy --user-name lc-cloudsec \
+      --policy-name lc-assume-ro --policy-document file://assume.json
+
+    aws iam create-access-key --user-name lc-cloudsec   # capture AccessKeyId + SecretAccessKey
+    ```
+
+## Compliance metadata permissions
+
+The assumed role, including every organization member-account role, needs these
+read permissions for configuration compliance. Keep the base IAM user's grant
+limited to `sts:AssumeRole`.
+
+| Permission | Resource scope | Read surface |
+|---|---|---|
+| `iam:ListUsers`, `iam:ListAccessKeys` | `*` for user enumeration; IAM user resources for key metadata where applicable | Active human IAM user key creation dates; uses the existing IAM user inventory reads |
+| `cloudtrail:DescribeTrails`, `cloudtrail:GetTrailStatus`, `cloudtrail:GetEventSelectors` | `*` | Trail configuration, logging status and management-event selectors |
+| `ec2:DescribeRegions` | `*` | Complete region enumeration for absence decisions |
+| `s3:GetEncryptionConfiguration` | `arn:aws:s3:::*` (or the intended bucket ARNs) | Bucket default encryption configuration |
+
+Verify these permissions on your role even if its managed policies already include
+them. IAM user normalization also needs the existing MFA, key-last-used and
+attached/inline policy read permissions. Key metadata never exposes the key value.
+Only active keys participate in the 90-day age check; inactive keys and a proven
+empty active-key population are excluded. Unknown creation dates or incomplete
+user enumeration cannot establish a clean result.
+
+CloudTrail checks use each trail's home-region status and selectors, including
+organization/shadow trails. A qualifying multi-region trail must log read and
+write management events. Unsupported or unread selectors stay unknown. An
+explicitly configured region subset can prove a qualifying multi-region trail,
+but cannot prove its absence across the account. Provider tests probe only a
+representative trail and bucket; per-resource reads decide sweep coverage.
+
+S3 default encryption describes **new uploads**, not historical objects. AWS
+[automatically encrypts new uploads with SSE-S3](https://docs.aws.amazon.com/AmazonS3/latest/userguide/default-bucket-encryption.html),
+so an absent stored bucket encryption configuration is not evidence of unencrypted
+storage. Historical object encryption remains a manual part of the CIS encryption
+assessment. Configuration reads never authorize a claim about all existing objects.
 
 ## Create the credentials secret
+
+In the LimaCharlie wizard's **Permissions** step, select **New secret**. Choose
+a name such as `aws-credentials`, then paste this JSON with the two values
+from AWS: the access key ID and secret access key. If you used the CLI, do not
+paste the entire command output.
 
 ```json
 {"access_key_id": "AKIA...", "secret_access_key": "..."}
@@ -78,16 +188,26 @@ aws iam create-access-key --user-name lc-cloudsec   # capture AccessKeyId + Secr
     `InvalidClientTokenId`). Use the long-lived access key of the dedicated IAM
     user — the role it assumes is where the read permissions live.
 
+For CLI setup, save the credential JSON above as `aws-secret.json` and install `jq`.
+
 ```bash
-limacharlie secret set --key aws-credentials \
-    --value "$(cat aws-secret.json)" --enabled
+jq -Rs '{secret: .}' aws-secret.json \
+  | limacharlie secret set --key aws-credentials --enabled \
+  && rm -f aws-secret.json
 ```
 
-`secret set` wraps the value into the secret record for you — the equivalent of
+`jq -Rs` wraps the file contents into the secret record for stdin — the equivalent of
 `limacharlie hive set --hive-name secret` with `{"secret": "<the credential JSON
 as a string>"}`.
 
 ## Create the provider record
+
+In the wizard's **Configuration** step, enter the role ARN from IAM → Roles →
+`LimaCharlieCloudSecRO` and the external ID you generated. An ARN is AWS's full
+identifier for a resource. Leave the member role field empty for a single-account
+setup; it is for collecting across an AWS Organization. Then test and save.
+
+The equivalent CLI configuration is below.
 
 `provider.yaml`:
 
@@ -194,3 +314,12 @@ guardrails to account for.
 |---|---|---|
 | `auth` fails: `… no EC2 IMDS role found` | Secret used the wrong key names → no static creds → default chain → IMDS | Use `access_key_id` / `secret_access_key` (no `aws_` prefix) |
 | `AccessDenied` on `sts:AssumeRole` | External ID mismatch, wrong trust-policy principal, or propagation | Confirm `aws_external_id` matches the trust condition; retry after a few seconds |
+
+## Private ECR images
+
+To scan private images in Amazon ECR, add these permissions to the **assumed role** used by this connection:
+
+- `ecr:GetAuthorizationToken` (this action uses `Resource: "*"`).
+- `ecr:BatchGetImage` and `ecr:GetDownloadUrlForLayer` on each ECR repository you want scanned.
+
+For an AWS Organization connection, grant the same permissions to the member-account role in the account that owns each image, and allow the connected role `organizations:DescribeAccount` so LimaCharlie can confirm that the image's account is a member. Keep the base IAM user's permission limited to `sts:AssumeRole`. Each pull credential is limited by a session policy to the one repository being scanned. Images in AWS accounts outside the connected account and its organization are not pulled. See [AWS's ECR pull permission reference](https://docs.aws.amazon.com/AmazonECR/latest/userguide/ECR_on_ECS.html) and [private image scanning](../code-security/container-registries.md).

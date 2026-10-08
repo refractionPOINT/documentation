@@ -18,7 +18,152 @@ Release notes for LimaCharlie platform components, organized by date.
 
     For discussion and email notification of the same releases, set the [Platform Updates category](https://community.limacharlie.com/c/platform-updates/5) in the community forum to Watching. For service availability rather than releases, subscribe on the [status page](https://status.limacharlie.io/).
 
+## 2026-10-06
+
+### Endpoint Agent: Changes from 4.33.25 to 5.3.12
+
+A roll-up of everything that changed in the Endpoint Agent between 4.33.25 and 5.3.12, for fleets upgrading from the 4.33 line in one step. Each release in between has its own entry further down this page.
+
+#### New Features
+
+- New [response commands](../8-reference/endpoint-commands.md): `reg_get`, `usb_list_devices`, `dir_find`, `file_grep`, `container_list`, `repo_list`, `restart_core` and `repair_core_config`.
+- `reg_list` can recurse into sub-keys; `os_drivers` now works on Linux; artifact retrieval can collect several files in one task.
+- Installed-package listing now covers Linux and macOS packages and Windows hotfixes; autoruns now expand wildcard paths.
+- The sensor service can be upgraded or uninstalled through cloud tasking, and upgrades can be pinned to a version.
+- Shell commands can run as a specific user.
+- TLS 1.3 for the cloud connection, with automatic fallback to TLS 1.2.
+- USB Data Loss Prevention, managed from the cloud.
+- YARA scanning built in, with match addresses for memory detections and the `macho` module.
+- Windows script visibility through the Antimalware Scan Interface (AMSI), reported already deobfuscated.
+- Linux process events identify their container and Kubernetes pod.
+- Cloud VMs on AWS, Azure and Google Cloud report their native instance identity; GKE nodes report their cluster.
+- Linux detection of setuid privilege changes and of AF_ALG, RxRPC and NETLINK socket creation.
+- Linux DNS events report the process that sent the query or received the response (kernel 5.15+).
+- Local applications can send events to the sensor through a Unix socket API.
+- macOS installation is now one guided window instead of seven separate prompts.
+- RPM packages for Linux.
+- The Windows service now installs under `C:\Program Files\limacharlie\`; existing installs are migrated on upgrade.
+- Full crash reports (stack trace, modules, fault detail) on Windows, macOS and Linux.
+
+#### Bug Fixes
+
+- Fixed a large set of sensor crashes, including the sensor terminating itself on transient OS resource failures, crashes at shutdown on CentOS/RHEL 7, and a race in the random number generator.
+- Linux and macOS now shut down cleanly when stopped, so service stops, restarts and reboots no longer show up as crashes.
+- Cloud-driven upgrades and uninstalls now complete reliably on Linux and macOS.
+- Linux kernel acquisition now loads on kernel 5.4, on RHEL/Oracle Linux 9, and on hosts without cgroup2, and recovers after the service is force-killed.
+- Fixed process events being linked to the wrong parent on hosts that reuse process IDs quickly.
+- Windows: fixed multi-second delays opening files on network shares.
+- Windows kernel acquisition: fixed network events being lost in bursts and events arriving out of order.
+- Fixed connections staying on a dead link for hours after a network disruption, and hangs behind unresponsive proxies.
+- Payload downloads and artifact uploads now work through enterprise TLS inspection, filtering proxies and redirects, and large uploads resume after interruptions.
+- Fixed macOS file-creation events reporting the parent directory instead of the file.
+- The sensor's log file is no longer world-readable or world-writable.
+- Events dropped by a full outbound queue are now counted and reported instead of being discarded silently.
+- Hardened DNS collection against malformed packets.
+
+#### Improvements
+
+- Windows: significantly lower CPU and memory usage, from caching file hashes and code-signature checks and reusing buffers on busy code paths.
+- Smaller downloads: the Linux and macOS binaries are 30–45% smaller, and cloud-delivered modules are cached on disk across restarts.
+- The Linux sensor now requires glibc 2.12 instead of 2.17.
+- Transfer and command failures now report readable error descriptions instead of bare codes.
+- Sensor diagnostics now report kernel telemetry health, event loss and service version.
+- Windows Event Log collection resumes where it left off after a restart.
+- Updated embedded libraries, including TLS (mbedtls 4.1.1).
+
+---
+
+## 2026-10-05
+
+### Web App 6.5.0
+
+Email Security is now generally available. This release also adds a new Application Control page, clearer compliance reports, Cloud Security setup and page improvements, a System theme option, and faster loading.
+
+#### New Features
+
+- (Email Security) **Email Security is generally available**: protect Microsoft 365 and Google Workspace mailboxes through the provider API, with no MX or mail routing change. Every message gets an explainable verdict, and you can search, investigate, and remediate it from the console. A guided setup takes you from connecting a provider to your first results. Messages, recipient groups, campaigns, and user reports each have their own triage view, with bulk remediation and Hunt for searching past mail. Detection rules, policies, and warning banners are managed in Settings. Subscribe to the Email Security extension to enable it. See [Email Security](../email-security/index.md).
+- (Cloud Security) **Clearer pages and setup**: Identity Risks rows link to Identity 360 and to that identity's findings, and Access loads much faster. The Policies page states the real collection schedule. GCP setup lists the optional roles for CIS GCP v5.0 and the APIs to enable. The Google Workspace permissions list shows every scope. Microsoft 365 onboarding can generate a certificate for full coverage.
+- (Compliance) **Why a control is incomplete**: reports keep all four result statuses, and Manual is used only for organizational attestations. Controls explain why they are incomplete, such as collection still running, stale data, or missing inventory. You can filter by reason, and the export includes the same explanations.
+- (Application Control) **Application Control page**: manage policies and rules in one place. Create, edit, duplicate, enable, disable, and delete policies, and search and filter rules. Policies are listed in the order a sensor applies them, and a policy fully covered by an earlier one is marked Unreachable. New `app_control.get` and `app_control.set` permissions, and Git Sync support for Application Control. Requires the Application Control extension.
+- (Platform) **System theme**: the appearance setting now offers Light, Dark, or System, which follows your operating system.
+- (Platform) **Faster loading**: the console starts faster, organizations load sooner, and the Sensors list loads faster for large fleets. Sensor filters show a loading indicator while a query runs.
+- (Platform) **Navigation**: Give Feedback is in the Cloud Security sidebar. Users & Roles, REST API, and Access Control Lists are now tabs under one Access Management link. Extension pages share one layout and filter bar.
+- (Playbooks) **Python SDK version**: choose the Python SDK version (v4 or v5) for a playbook.
+
+#### Bug Fixes
+
+- (Platform) The API key permission picker now offers all assignable permissions.
+- (Detection) Importing a community rule keeps the rule name and enables Create.
+- (Billing) CSV exports write negative amounts as numbers, and unit prices no longer show as $0.
+
+---
+
+## 2026-09-30
+
+### Endpoint Agent 5.3.12
+
+#### New Features
+
+- Cloud virtual machines on AWS, Azure and Google Cloud now report their native cloud instance identity when the sensor connects, so a host can be matched to its cloud inventory.
+- Sensors on Google Kubernetes Engine nodes now also report the cluster they run in, so a sensor can be tied to its Kubernetes node.
+- Sensors running inside a Kubernetes pod can report the pod and container they belong to.
+
+#### Bug Fixes
+
+- Fixed a Windows sensor crash when a cloud message arrived while the Host Based Sensor was still starting, most often seen during an organization-wide version upgrade.
+- Linux kernel acquisition: hosts where it cannot load no longer reload the component every 20 minutes, which after several days crashed the sensor on older distributions such as CentOS 7.
+- Fixed a sensor crash when caching a document larger than the cache's size limit.
+- Fixed a crash when logging some event field types on Linux and macOS.
+- Network requests (uploads, downloads, cloud lookups) now honor their timeout even when the remote end sends data very slowly, so they can no longer hang indefinitely.
+- macOS: kernel acquisition now starts on a fresh install even when nobody is logged in, instead of staying off until a user logs in.
+- macOS: if Full Disk Access is still needed after an install at the login window, the prompt now appears once a user logs in.
+- macOS: the system extension no longer grows its memory use with every network flow seen.
+- macOS: fixed a resource leak each time the sensor read another process's memory.
+- macOS: fixed a reference-counting bug when matching disks to USB devices.
+- Fixed gradual memory growth in file type tracking on long-running macOS and Linux hosts.
+
+---
+
+## 2026-09-21
+
+### Endpoint Agent 5.3.11
+
+#### Bug Fixes
+
+- On Red Hat Enterprise Linux 9 and Oracle Linux 9 hosts running the stock Red Hat kernel, fixed kernel acquisition failing to start at all, leaving the host with no process, file, socket, network or DNS telemetry from the kernel.
+- Fixed the sensor diagnostic report returning an empty agent log section on healthy hosts, because it looked for the log in the location used before the sensor moved to its data directory. The report now also lists every location it searched when no log is found.
+
+#### Improvements
+
+- Linux kernel acquisition no longer floods the sensor log. Its DNS attribution status line was written on nearly every poll and accounted for the large majority of everything the sensor logged on a busy host; it is now reported when the status actually changes, and at most every five minutes otherwise.
+- When the sensor cannot keep up with kernel events and discards some, it now reports how many were lost in a single periodic summary instead of one log line per discarded record — more information, at a fraction of the log volume, and quietest exactly when the host is under load.
+
+---
+
 ## 2026-09-16
+
+### Endpoint Agent 5.3.10
+
+#### New Features
+
+- New `restart_core` command restarts the sensor on demand on Linux and macOS. The sensor shuts down exactly as it would for an administrative stop and its service manager starts it again; the command is refused on hosts where nothing would bring the sensor back.
+- New `repair_core_config` command checks an installed sensor's service configuration against what the installer should have written and repairs any drift, with a dry-run mode that reports without changing anything. It currently covers the Windows service recovery setting that lets the service manager restart a sensor that failed to start.
+
+#### Bug Fixes
+
+- Fixed the sensor deliberately terminating itself when the operating system refused a thread or another resource, rather than reporting the failure and carrying on. This accounted for a significant share of sensor crashes in the field.
+- On Windows, fixed the sensor terminating itself while reading the environment of a process whose environment block had grown large.
+- On Windows, fixed a crash when a USB key listing was requested on a host with removable USB storage attached.
+- On Linux, fixed the sensor permanently losing kernel acquisition after the service was force-killed. A process the sensor had started could keep the acquisition listener's address held across every later restart, leaving the sensor connected and reporting healthy while collecting no kernel telemetry.
+- The CPU usage the sensor reports now reflects its load across the reporting interval. A momentary burst was previously reported as sustained load, and a reading the sensor could not measure was reported as 255%.
+- On Windows, fixed event log collection writing its bookmarks into the sensor's upgrade log instead of its own file. Bookmarks are re-established once on upgrade to this release.
+- On Linux, kernel acquisition load failures now report why the load actually failed instead of an unrelated error code.
+
+#### Improvements
+
+- Cloud-delivered modules are now kept on disk and reused across restarts, so the sensor no longer re-downloads several megabytes every time a host boots. The cloud still decides what the sensor loads, and every module is verified before it runs exactly as it was when delivered over the network.
+- The macOS sensor download is substantially smaller — roughly 38% for the service binary and 35% for the Host Based Sensor module — and the Linux kernel acquisition module is smaller again on top of the previous release's reduction.
+- Linux `.deb` and `.rpm` packages now register the service through the sensor itself, so an upgrade restores the service definition when it has gone missing. Previously only Debian-family systemd hosts recovered from that, and RPM hosts never did.
 
 ### Web App 6.4.0
 

@@ -1,5 +1,13 @@
 # Okta
 
+!!! tip "Connecting from the web app?"
+    Follow the prerequisites and credential creation instructions below, then
+    return to **Cloud Security → Settings → Providers → Add provider**. Enter
+    the provider IDs under **Configuration** and save the credential using
+    **New secret** under **Permissions**. Run **Test Provider**, fix required
+    failures, and save. The LimaCharlie CLI examples below are an alternative.
+    [First-time setup and verification](../getting-started.md) explains the full journey.
+
 Collects the Okta directory as identity posture: users (with MFA factors and
 admin roles), groups and membership, application inventory and per-user app
 assignments, and external identity providers (federation / social trust).
@@ -112,12 +120,14 @@ domain. It is treated as an internal domain on top of the record's
 Store it:
 
 ```bash
-limacharlie secret set --key okta-credentials \
-    --value "$(cat okta-secret.json)" --enabled
+jq -Rs '{secret: .}' okta-secret.json \
+  | limacharlie secret set --key okta-credentials --enabled \
+  && rm -f okta-secret.json
 ```
 
-`secret set` wraps the value into the secret record's `{"secret": "..."}`
-envelope for you.
+`jq -Rs` builds the secret record's `{"secret": "..."}` envelope without
+putting the credential in process arguments. The temporary file is removed only
+after a successful write.
 
 ### Requesting extra scopes
 

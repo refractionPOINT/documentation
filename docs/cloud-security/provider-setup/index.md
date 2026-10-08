@@ -1,7 +1,6 @@
 # Provider Setup
 
-[Getting Started](../getting-started.md) walks the end-to-end flow with a
-Google Cloud example. This section is the per-provider companion: for **every**
+[Getting Started](../getting-started.md) walks the end-to-end console flow. This section is the per-provider companion: for **every**
 supported platform, the exact scopes and permissions the collector needs, the
 click-by-click steps to create the credential in that platform, the
 credential-secret format, and the first-run failures with their fixes.
@@ -33,7 +32,44 @@ extension (step 1 of
 [Connecting Providers](../providers.md) is the conceptual overview of the same
 fifteen connectors — what each collects and why.
 
-## The common model
+## Use these guides with the wizard
+
+Choose the service above and keep its guide open in a second browser tab.
+Each guide contains both setup instructions and technical reference material;
+you do not have to run its LimaCharlie CLI examples to use the web app.
+
+1. Check **Prerequisites** with your provider administrator. A read-only login
+   for you personally may not be enough to create the application's credential.
+2. Follow the credential creation steps. Record the account/project/tenant IDs
+   separately from the credential itself.
+3. In **Cloud Security → Settings → Providers → Add provider**, choose that
+   service and enter those IDs under **Configuration**.
+4. Under **Permissions**, select **New secret** to store the credential, or select
+   an existing saved secret. Follow the credential format for that service.
+5. Run **Test Provider**. Fix required failures; optional failures mean some
+   data or capabilities will be unavailable.
+6. Save, wait for collection, and confirm a resource you recognize in Inventory.
+   An accepted credential alone does not prove the intended account was scanned.
+
+### Choose browser steps or commands
+
+Where a guide offers tabs, **Web console** walks through browser setup;
+**Cloud Shell / CLI** keeps the command alternative. Complete one method per
+step. You do not need to install a CLI to follow the browser instructions.
+
+### If you choose commands
+
+The provider's CLI creates access in that provider. The `limacharlie` CLI
+configures LimaCharlie. They are separate tools. If you use a provider command
+block, install and sign in to that provider's CLI first and select the intended
+account. Replace placeholders and define variables before running commands;
+`$SA_PROJECT`, for example, means the project that owns a service account.
+
+For Google Cloud you can use Cloud Shell in the Google Cloud console. For Azure,
+you can use Azure Cloud Shell. If you cannot create identities or grant roles,
+ask the provider administrator to perform those steps, then return to the wizard.
+
+## Advanced: the stored configuration
 
 Every provider connection is **two Hive records**:
 
@@ -56,19 +92,22 @@ limacharlie hive set --hive-name secret --key <name> \
 
 where `secret.json` is `{"secret": "<the credential JSON, as a string>"}`.
 
-The `secret set` shortcut does that wrapping for you, so you can hand it the
-credential itself — `credential.json` below is the provider's credential JSON,
-with no `{"secret": …}` envelope:
+For `secret set` on stdin, install `jq` and build the envelope with `jq -Rs`.
+`credential.json` below is the provider's credential JSON, with no outer
+`{"secret": …}` envelope:
 
 ```bash
-limacharlie secret set --key <name> --value "$(cat credential.json)" --enabled
+jq -Rs '{secret: .}' credential.json \
+  | limacharlie secret set --key <name> --enabled \
+  && rm -f credential.json
 ```
 
-!!! note "`--value` lands in your shell history"
-    Anything passed on the command line is visible in the process list and in
-    shell history. To avoid that, pipe the record on stdin instead —
-    `echo '{"secret": "…"}' | limacharlie secret set --key <name> --enabled` —
-    or use `--input-file`.
+!!! note "Keep credentials out of command arguments"
+    Use stdin as above, or `--input-file` with a prepared secret-record envelope.
+    `--value` exposes the expanded credential in process arguments; a literal
+    credential typed in the command also enters shell history. Remove temporary
+    credential copies after verifying the saved secret. File deletion is not a
+    guarantee of secure erasure on SSDs, snapshots, or backups.
 
 !!! tip "Bare keys are accepted for single-key providers"
     For [OpenAI](openai.md), [Anthropic](anthropic.md), and

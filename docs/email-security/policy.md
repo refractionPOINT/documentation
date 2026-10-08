@@ -1,6 +1,6 @@
 # Policy Reference
 
---8<-- "includes/email-security-beta.md"
+--8<-- "includes/email-security-availability.md"
 
 Email Security is configured through Hive records. Anything the console can
 configure, `limacharlie hive set` can configure — so tenant onboarding and
@@ -9,8 +9,14 @@ fleet-wide policy are a script, not a UI workflow.
 | Hive | Records | Purpose |
 |---|---|---|
 | `mailsec_provider` | one per mail connection | which tenant to protect, with which credential — see [Connecting Providers](providers.md) |
-| `mailsec_policy` | many, discriminated by `policy_type` | managed detections, automations, exclusions, VIPs, thresholds, banners, retention, reporter replies, hunt defaults, clustering |
-| `dr-mail` | one per custom rule | your own mail detection rules — see [Custom Rules](custom-rules.md) |
+| `mailsec_policy` | many, discriminated by `policy_type` | automations, exclusions, VIPs, thresholds, banners, retention, reporter replies, sample submission, hunt defaults, clustering |
+| `dr-mail` | one per rule | all mail rules, including installed defaults — see [Custom Rules](custom-rules.md) |
+
+<span id="managed_rules"></span>
+
+Mail rules are ordinary `dr-mail` records, not a `managed_rules` policy type.
+See [default rule ownership and updates](custom-rules.md#default-rules-and-ownership)
+before customizing the installed pack.
 
 ## How `mailsec_policy` records work
 
@@ -33,8 +39,8 @@ How each type composes:
 | `exclusions` | Concatenated — a set of independent suppressions |
 | `vips` | Union, deduplicated and sorted |
 | `thresholds` | Last writer wins per field, with the ordering invariant re-checked afterwards |
-| `managed_rules`, `banners`, `reporter_reply`, `hunt_defaults`, `clustering` | Last writer wins per field |
-| `retention` | **Maximum** wins — see [Retention](#retention) |
+| `banners`, `reporter_reply`, `sample_sharing`, `hunt_defaults`, `clustering` | Last writer wins per field |
+| `retention` | **Minimum** wins — the shortest horizon for each field; see [Retention](#retention) |
 
 ### Unknown fields are refused
 
@@ -72,113 +78,10 @@ modifies mail, and nothing sends mail until you say so.
 
 ---
 
-## `managed_rules`
-
-The switch for the packaged detection pack. It is the first record in this
-reference because it is the only one that can turn detection off.
-
-```yaml
-policy_type: managed_rules
-enabled: false
-```
-
-| Field | Default | |
-|---|---|---|
-| `enabled` | `true` | Whether the managed rule pack is matched at all |
-
-**`enabled` must be stated.** A `managed_rules` record that sets nothing is
-refused rather than read as "disable": the failure mode of guessing wrong here is
-an organization with no detection that believes it has some.
-
-**Absent is enabled.** An organization that has never written this record has the
-pack. "No record" is the product default, not an opt-out, and nothing in the
-console or the API renders a missing record as off.
-
-**When it is off**, the managed pack is not matched at all. Your own `dr-mail`
-rules still are, and they are still scored the same way — so an organization that
-wants to own detection entirely can. A message that then matches nothing is
-`unknown`, never `benign`: "nobody was looking" and "we looked and it was fine"
-are different facts and are reported differently. See
-[Managed detections are optional](pipeline.md#managed-detections-are-optional).
-
-You do not need this switch to *tune* the pack. Disabling one packaged rule, or
-changing its weight, is a [`rule_overrides`](#thresholds) entry.
-
-### The three ways to flip it
-
-All three write the same record — same name, same `policy_type`, same field — and
-the collector cannot tell which one wrote it.
-
-=== "Console"
-
-    **Email Security → Settings** carries a managed-detection switch, and
-    **Overview** leads with a banner while the pack is off — that one fact
-    changes how every count below it should be read. Turning the pack **off**
-    asks for confirmation; turning it back on restores the product default and
-    does not.
-
-    When more than one `managed_rules` record exists, or the canonical one has
-    been disabled in the Hive, the switch is **replaced** by a status badge
-    showing the resolved value and a link to the **Policy** page. It does not
-    offer to write, because a write in that state would either be overridden by
-    a later-named record or silently do nothing — and a switch that reports a
-    state it did not produce is worse than no switch.
-
-=== "CLI"
-
-    ```bash
-    cat > managed-rules.yaml <<'YAML'
-    policy_type: managed_rules
-    enabled: false
-    YAML
-
-    limacharlie hive set --hive-name mailsec_policy --key managed_rules \
-      --input-file managed-rules.yaml --enabled --oid $OID
-    ```
-
-=== "Extension"
-
-    `ext-email-security` exposes two actions for reading and flipping this
-    without hand-writing a record — which is how a D&R rule or an automation
-    reaches it:
-
-    | Action | Body | Returns |
-    |---|---|---|
-    | `set_managed_rules` | `enabled` (**required** boolean), optional `reason` — recorded as the record's comment | `managed_rules_enabled` |
-    | `get_managed_rules` | — | `managed_rules_enabled`, and `configured` |
-
-    `configured` is the field that distinguishes **on by default** from **turned
-    on deliberately**: it is `false` when no record exists. `set_managed_rules`
-    needs `mailsec.set`; `get_managed_rules` needs `mailsec.get`.
-
-!!! note "`managed_rules` is the canonical record name"
-    The console and the extension both write the record **named**
-    `managed_rules`, and the CLI example above does too. Any record name works —
-    composition is last-writer-wins in record-name order over the records the
-    Hive has *enabled* — but a second record named later than `managed_rules`
-    wins over it, and a `managed_rules` record the Hive has disabled does not
-    count at all. Keep it to one record unless you mean to layer them.
-
-    Only the extension stamps the record with the `lc:system` tag. The console
-    and the CLI do not add it, and the console **preserves** it when it edits a
-    record the extension wrote — so the tag tells you how a record was first
-    created, and nothing more. Do not treat its absence as meaningful.
-
-### How fast a change takes effect
-
-| | |
-|---|---|
-| **Normally** | Seconds. A `mailsec_policy` write is broadcast on the Hive's change feed and the collector drops that organization's cached policy on the spot |
-| **If the broadcast is missed** | The next mailbox-lease renewal tick re-reads policy |
-| **Worst case** | **Five minutes** — the resolved-policy cache's TTL, which expires whether or not anything was heard |
-
-The broadcast is the fast path and never the guarantee: it is fire-and-forget, so
-a collector that was restarting can miss it. The bound you are promised is the
-five-minute TTL, and the broadcast is why you almost never wait for it.
-
----
-
 ## `automations`
+
+In the console, open **Policy → Response automations**. These ordered responses
+are separate from **Detection rules**, which define how messages are scored.
 
 The ordered list of `{match → actions}` rules that decide what happens to a
 message automatically.
@@ -212,6 +115,12 @@ automations:
 An **empty match matches everything**. An enforcing rule with an empty match is
 refused at save — "quarantine all mail" is never what someone meant to write.
 
+Every matching automation applies, in record-name and rule order. Matching typed
+mail-rule actions join the same action union. Conflicting permitted placement
+actions resolve as quarantine, then trash, then spam; equivalent intents are
+deduplicated with deterministic first parameters. Alert-only remains the default,
+and an enforcing rule cannot bypass the organization enforcement gate.
+
 ### `actions`
 
 | Action | | Touches the mailbox |
@@ -228,6 +137,12 @@ on one message must not fan out to hundreds without a human — that is an expli
 action), `restore_message` (undoing is a human decision), and the disposition
 labels (labels are evidence, and a machine writing them would poison the data set
 that measures the machine).
+
+`action_params` optionally supplies parameters keyed by an action in `actions`.
+For `banner_message`, the `text` override is plain text, at most 512 Unicode
+characters; empty or whitespace-only uses the banner-policy text. The banner
+policy must still be enabled. Unknown parameters, orphan action parameters,
+duplicate actions and more than 16 actions are refused.
 
 ### The two asking actions
 
@@ -270,14 +185,15 @@ same enforcement check as everything else, and deliberately so: a detonation
 opens a connection to attacker-controlled infrastructure, which confirms to the
 sender that the mail landed in a monitored mailbox. An organization in
 `alert_only` has said "do not do things on my behalf", and that is such a thing.
-Where detonation is not deployed, the action records a failed result naming that
-rather than pretending to have queued it.
+An analyst in an alert-only organization must explicitly override with `force: true`
+(CLI `--force`); otherwise the response reports `force_required: true`. Where detonation is not deployed, the action
+records a failed result naming that rather than pretending to have queued it.
 
 ### `mode`
 
 | Mode | |
 |---|---|
-| `alert_only` | **The default.** The rule is evaluated and its intent recorded; the mailbox is not touched. Actions report `alert_only` as their result — including actions a person starts, until some rule is in `enforce` |
+| `alert_only` | **The default.** The rule is evaluated and its intent recorded; the mailbox is not touched. Actions report `alert_only` as their result |
 | `enforce` | The action is performed at the provider |
 
 The default is load-bearing. A rule whose mode is missing, misspelled, or written
@@ -287,18 +203,16 @@ save, and anything that ever slipped past decoding still behaves as
 `alert_only`.
 
 !!! danger "Enforcement is currently organization-wide at the executor"
-    The remediation executor authorizes action when **any** resolved
+    The remediation executor authorizes *automated* action when **any** resolved
     automation rule is in `enforce` mode. Which rule dispatches which action is
     still decided per rule, but the executor's consent check is not per rule — so
     putting one rule into `enforce` enables the organization's automated paths
     generally. Treat the first `enforce` as the decision that this organization
     now moves mail automatically.
 
-    The same check covers actions people start. With no rule in `enforce`, a
-    quarantine clicked in the console, sent from the CLI or the API, or asked for
-    by an AI agent is withheld too (`result: alert_only`, `force_required: true`).
-    Repeat it with `force` to perform that one action — see
-    [Forcing an action in alert-only mode](remediation.md#forcing-an-action-in-alert-only-mode).
+    Analyst-initiated actions in an alert-only organization are also withheld
+    unless the caller explicitly supplies `force: true` (CLI `--force`). See
+    [manual overrides](messages.md#enforcement).
 
 **Default:** subscribing seeds a recommended preset entirely in `alert_only` —
 malicious → quarantine and graymail → move to spam among them. Nobody is
@@ -309,7 +223,7 @@ of them to `enforce`.
     Automations are **compiled** from the resolved policy, and that compile
     happens on a ten-minute tick rather than per message. Everything the
     judgement path reads — [`thresholds`](#thresholds), [`exclusions`](#exclusions),
-    the [`managed_rules`](#managed_rules) switch — applies within five minutes and
+    applies within five minutes and
     usually within seconds. An edit here is the one with the longer bound.
 
     Plan a change to `enforce` accordingly: the switch is not instantaneous, and
@@ -435,53 +349,109 @@ The verdict cutoffs and per-rule overrides.
 policy_type: thresholds
 malicious_min: 80
 suspicious_min: 40
-rule_overrides:
-  ms-link-unranked-domain:
-    weight: 15
-  ms-graymail-precedence-bulk:
-    disabled: true
 ```
 
 | Field | Default | |
 |---|---|---|
 | `malicious_min` | 85 | 1–100 |
 | `suspicious_min` | 45 | 1–100 |
-| `rule_overrides` | — | Keyed by rule id: `disabled` to switch a packaged rule off for your organization, `weight` (0–100) to replace its packaged weight |
 
 `malicious_min` must remain **above** `suspicious_min`. Two records that are each
 individually sane can compose into an inversion — one lowers malicious, another
 raises suspicious — so the invariant is enforced after composition, not only per
 record. An inverted pair would make every suspicious message malicious.
 
-Rule ids are stable and are never renamed, which is the only reason an override
-can be persisted at all.
+Individual rule weights and enabled states are edited on the `dr-mail` record,
+through [Detection Rules](custom-rules.md).
 
 ---
 
 ## `banners`
 
-The warning banner's text and switch.
+The warning banner's look, wording and switch.
 
 ```yaml
 policy_type: banners
 enabled: true
+title: "Acme IT security"
+color: red
 text: "External sender. Verify before clicking links or opening attachments."
+logo_url: "https://cdn.example.com/brand/logo.png"
+logo_alt: "Acme IT"
+variants:
+  malicious:
+    title: "Do not open"
+    text: "Our systems judged this message malicious. Do not click or reply; report it."
+    color: red
+  suspicious:
+    text: "This message looks suspicious. Check the sender before you act."
 ```
 
 | Field | Default | |
 |---|---|---|
 | `enabled` | `false` | Bannering rewrites the customer's mail, and nothing in this product modifies mail by default |
-| `text` | A packaged warning | **Plain text only** — no `<` or `>` — and capped at 512 characters |
+| `text` | A packaged warning | **Plain text only** — no `<` or `>` — at most 512 characters |
+| `title` | `Security warning` | The bold heading. Plain text, at most 80 characters |
+| `color` | `yellow` | One of `yellow`, `red`, `orange`, `blue`, `green`, `gray`. A name from a fixed palette, never a CSS value |
+| `logo_url` | none | An `https://` URL of one image, at most 512 characters. See [the logo](#the-logo) |
+| `logo_alt` | empty | Alternative text for the logo, at most 80 characters |
+| `variants` | none | Overrides of `title`, `text` and `color` per verdict: `malicious`, `suspicious`, `graymail`, `benign`, `unknown` |
 
-The HTML template is fixed and sanitized in code; policy contributes only the
-text, and it is HTML-escaped when the banner is rendered. Accepting markup here
-would turn a configuration field into stored HTML injection against your own
-users, so it is refused at the record and escaped again at the render.
+The HTML template is fixed and sanitized in code. Policy contributes plain-text
+strings, one colour *name*, and one image URL; nothing you write is ever
+interpreted as HTML or CSS. Text is escaped when the banner is rendered, and
+accepting markup here would turn a configuration field into stored HTML
+injection against your own users, so it is refused when the record is written
+and neutralized again at render time. Control characters, bidirectional
+overrides and isolates, and characters that hide text (zero-width space, word
+joiner, byte-order mark, soft hyphen) are refused too, because they let a
+warning read differently from what it says. The joiners and the left-to-right,
+right-to-left and Arabic letter marks that Persian, Hebrew, Arabic and Indic
+writing need are allowed. Tab and newline are allowed in the wording
+and show as a space.
 
-**This record is the only source of a banner's wording.** No API call, CLI flag
-or D&R rule supplies banner HTML — the `banner` field on the action routes and
-the `--banner` flag are deprecated and ignored, and will be removed. If you
-change the wording here, every subsequent `banner_message` uses it.
+The banner is placed **outside** the container that holds the sender's own HTML
+and stylesheets, so a sender cannot hide, restyle or cover it, whatever the
+message contains. Your branding lives inside that protected block.
+
+### Which wording a message gets
+
+For each message, most specific first:
+
+1. the `text` the action itself carried (an API call, a D&R rule, or the console's
+   "Banner wording" box; see [Remediation](remediation.md)), for that one banner;
+2. the `variants` entry for the message's **current verdict**;
+3. the record's `text`;
+4. the packaged sentence.
+
+`title` and `color` follow the same order, minus step 1. The logo belongs to the
+organization and does not vary by verdict. A verdict without a variant uses the
+defaults. A message that already carries a banner keeps it: `banner_message`
+is idempotent, so a later verdict change does not swap the wording on messages
+that were already bannered. Un-banner and banner again if you want that.
+
+### The logo
+
+The logo is one image, shown 32 pixels high (at most 128 wide) at the start of
+the heading, with the alt text as its description. To keep it safe:
+
+- Only `https://` URLs are accepted. `http:`, `data:`, `cid:` and other schemes
+  are refused, as are URLs carrying credentials, a port, an IP address or a
+  single-label host name, and anything that is not plain ASCII (percent-encode
+  the rest).
+- Mail clients fetch the image from **your** host each time a message is
+  opened, and several block remote images until the reader allows them. The
+  banner's text always stands on its own: treat the logo as decoration and
+  never as the only thing that says "warning". A roughly square logo looks best;
+  a very wide one is scaled down.
+
+### Previewing
+
+The console's Policy page shows the banner exactly as recipients get it, from
+the same renderer and validator the collector uses, before you save. The same
+preview is available from the API as `POST /banner/preview`.
+
+### Switch
 
 `enabled` is what lets **automation** banner this organization's mail: with it
 off, an automation, a D&R rule or the AI triage agent asking for
@@ -490,16 +460,18 @@ off, an automation, a D&R rule or the AI triage agent asking for
 console, the API or the CLI — because the switch exists to stop the product
 rewriting mail on its own, not to stop an operator from acting on a message in
 front of them. An organization that has never written this record still has
-working `banner_message` from the console, subject to the organization's
-[`mode`](#mode) like every other action; it simply has no automated bannering,
-and the wording is the packaged sentence. A
-[forced](remediation.md#forcing-an-action-in-alert-only-mode) `banner_message` —
-including one from a D&R rule that sets `force: true` — is performed regardless
-of this switch.
+working `banner_message` from the console with explicit override consent when
+the organization is alert-only; it simply has no automated bannering, and the
+wording is the packaged sentence. A
+[forced](remediation.md#forcing-an-action-in-alert-only-mode) `banner_message`,
+including one from a D&R rule that sets `force: true`, is performed regardless of
+this switch.
 
 Bannering also needs the provider capability: `Mail.ReadWrite` is enough on
 Microsoft 365 (edited in place), while Google Workspace additionally needs the
-optional `https://mail.google.com/` scope and **replaces** the message.
+optional `https://mail.google.com/` scope and **replaces** the message. On Google
+Workspace, a plain-text part of a message can only carry text, so there the banner is
+two lines (title, then wording) and the logo and colour do not apply.
 
 ---
 
@@ -558,8 +530,11 @@ button you press.
 
 Two consequences worth knowing:
 
-- Lowering a value takes effect on the next sweep, and a large backlog drains
-  over several sweeps rather than all at once.
+- A changed retention window first receives a report-only sweep. Deletion on
+  subsequent sweeps requires the deployment's retention mode to be `enforce`;
+  `report` reports candidates without deleting, and `off` disables the sweeper.
+  Check sweep completion before treating cleanup as complete. Large backlogs
+  drain over several sweeps.
 - The horizons are independent. A flagged message's evidence can outlive its
   index entry (the usual case: 400 against 35), and if you set `flagged_days`
   *below* `message_days` the reverse happens — the index entry remains without a
@@ -612,6 +587,8 @@ A tenant purge permanently deletes, for one organization:
 - user (abuse-mailbox) reports
 - stored raw messages and their parsed copies
 - link-detonation results
+- sample submissions: every message your analysts copied to LimaCharlie, and its
+  metadata (see [Sample Submission](sample-submission.md))
 - the organization's Email Security provider connection and policy configuration
 
 It also **stops the mail connections at Microsoft 365 and Google Workspace**, so
@@ -642,7 +619,10 @@ server from your verified claims rather than taken from the request.
 |---|---|---|
 | The organization unsubscribes from Email Security | **30 days** later | Resubscribing at any point inside those 30 days |
 | The organization's free trial ends and it stays on the free tier | **30 days** later | Moving the organization off the free tier at any point inside those 30 days |
-| The organization itself is deleted | Immediately | Nothing — the organization no longer exists |
+| The organization itself is deleted | After a **7-day** grace period | The organization is found to exist again before the purge |
+
+Grace periods start when the cleanup process observes the condition. Deletion
+runs asynchronously after the grace period; normal retention policies still apply.
 
 None of them needs anyone to ask. The 30-day delay exists so that unsubscribing
 by mistake, letting a trial lapse over a holiday, or moving billing around is
@@ -672,19 +652,23 @@ re-sent for the new date.
 
 ## Plans, the free trial, and the mailbox cap
 
-Email Security is available to every organization. What differs between a
-**trial** organization and a **paid** one is how long it runs and how many
-mailboxes it protects.
+Email Security is generally available. **Subscribing to the Email Security
+extension is the purchase**. Paid usage costs **$1 per protected mailbox per
+month**, billed daily at **$1/30 per mailbox-day** on that day's protected-mailbox
+count. See [security product billing](../7-administration/billing/security-products.md).
 
-An organization is on the trial when it is on the LimaCharlie free tier — the
-same line the rest of the platform draws, so an organization evaluating Email
-Security and Cloud Security at once gets one answer about what it is paying for.
+An organization gets the trial when it is on the LimaCharlie free tier: its
+configured sensor quota is **2 or less**. Raising the quota above **2** moves the
+organization to a paid plan, lifts the trial limits, and starts usage billing.
 
 | | Trial | Paid |
 |---|---|---|
-| Duration | **14 days** from the day Email Security was enabled | No limit |
-| Protected mailboxes | **25** | No limit |
+| Duration | **14 days** from the day Email Security was enabled | No trial duration limit |
+| Protected mailboxes | **25** | No plan-imposed mailbox cap |
 | Everything else — detections, remediation, retention, API, telemetry | Identical | Identical |
+
+Read `coverage.entitlement` for the trial countdown, mailbox coverage and any
+scheduled deletion.
 
 ### The 14-day clock
 
@@ -700,27 +684,27 @@ Read the remaining time from the `entitlement` block of
 
 ### What happens when the trial ends
 
-The same thing that happens when an organization unsubscribes, and for the same
-reason — the product stops, nothing is deleted yet:
+If the organization stays on the free tier at expiry, collection pauses and
+configuration is kept:
 
 - **Ingestion pauses.** No new mail is analyzed, and the mail connections are
   not renewed, so the provider's own watches expire on their own schedule.
 - **Nothing is deleted, and nothing is changed.** The connections, the policy
   records and every message already analyzed are intact and follow their normal
   [retention](#data-retention-and-deletion).
-- **Reading and acting still work.** An analyst can still search the queue, read
-  a message and remediate mail that was already ingested.
-- **The 30-day deletion clock starts**, with the notices described above.
+- **A 30-day purge grace period starts when expiry is observed**, with the
+  notices described above. Data is removed after that grace period unless the
+  organization upgrades.
 
-Moving the organization off the free tier resumes ingestion within about five
-minutes, and cancels the scheduled deletion. Mail delivered while ingestion was
-paused is not analyzed retroactively.
+Raising the configured sensor quota above **2** lifts the trial limits, allows
+collection to resume, and cancels trial-expiry deletion if the upgrade happens
+before the purge. Usage is then billed.
 
 ### The 25-mailbox cap
 
 A trial organization protects up to 25 mailboxes. The cap applies to the whole
-organization, across every connected mail tenant, and it works on **activation**
-only:
+organization, across every connected mail tenant, and limits **new mailbox
+protection** only:
 
 - Discovery still finds every mailbox in the tenant — the ones past the cap are
   reported as `discovered` rather than `protected`, so you can see exactly how
@@ -768,53 +752,62 @@ The templated acknowledgement sent to someone who reported a message. See
 ```yaml
 policy_type: reporter_reply
 enabled: true
+acknowledgement: "Your report was received and is being reviewed."
+on_resolve: true
 templates:
-  malicious: "Thanks — you were right. We removed that message from every mailbox it reached."
-  benign: "Thanks for checking. That message is legitimate; no action was needed."
+  malicious: "Your report has been reviewed and classified as malicious."
+  benign: "Your report has been reviewed and classified as benign."
 ```
 
 | Field | Default | |
 |---|---|---|
 | `enabled` | `false` | It sends mail on your behalf to your own staff; opt-in |
-| `templates` | — | Keyed by verdict. A verdict with no template falls back to a generic acknowledgement, so enabling replies can never leave a reporter with silence |
+| `acknowledgement` | Neutral receipt wording | Plain text for the receipt reply; at most 4096 UTF-8 bytes, no markup |
+| `on_resolve` | `false` | Send a separate reply after report resolution |
+| `templates` | — | Plain-text resolution templates keyed by malicious, spam, graymail, benign, simulation. Missing entries state the recorded disposition; each is at most 4096 UTF-8 bytes |
 
 Template keys must be verdicts. Values are plain text (no `<` or `>`), capped at
 4096 characters.
 
 ---
 
-## `hunt_defaults`
+## `sample_sharing`
 
-Starting values for retro-hunt requests.
+Lets your analysts copy one message at a time to LimaCharlie so detection can
+improve. See [Sample Submission](sample-submission.md) for what is kept, where,
+for how long and how to withdraw.
 
 ```yaml
-policy_type: hunt_defaults
-window_days: 7
-max_results: 1000
-dry_run: true
+policy_type: sample_sharing
+enabled: true
 ```
 
-| Field | Default | Range |
+| Field | Default | |
 |---|---|---|
-| `window_days` | 7 | 1–365 |
-| `max_results` | 1000 | 1–100000 |
-| `dry_run` | `true` | An operation that can bulk-remediate defaults to "show me what this would match" |
+| `enabled` | `false` | Opt-in. Submitting copies a message to LimaCharlie, so without this record (or with `enabled: false`) every submit request is refused |
 
-!!! warning "Nothing reads this record yet"
-    The record type validates and composes like every other one, and it is
-    documented here because it is savable and will be refused if you get it
-    wrong. But **no surface consumes it today.** The server-side retro-hunt
-    (`POST /hunts`, `GET /hunts/{hunt_id}`, `POST /hunts/{hunt_id}/remediate`)
-    is registered in the public OpenAPI document and answers a typed
-    `not_implemented` — the URLs and their permission gates are frozen ahead of
-    the engine that will serve them. The console's **Hunt** screen is a
-    different thing entirely: it compiles your criteria to
-    [LCQL](automation.md#querying-mail-with-lcql) and runs the ordinary
-    historical-event search over `EMAIL_MESSAGE`, with its own window control,
-    and it does not read this record.
+The record is closed: `enabled` is the only field, unknown fields are refused, and
+a record that sets nothing is refused. A suggested record name is
+`sample-sharing`. Turning it on requires `mailsec.set` and the organization Owner's
+`billing.ctrl` and `user.ctrl` authority. Turning it off needs only `mailsec.set`:
+write `enabled: false` on an active record without expiry. Removing, disabling or
+expiring an override requires Owner authority because an earlier enabled record
+could become effective. Nothing is ever submitted automatically, and D&R rules,
+automations and the AI agent cannot submit even when the record is on.
 
-    Writing `hunt_defaults` now is harmless and changes nothing. Do not treat a
-    `dry_run: true` here as a safety control over anything.
+---
+
+## `hunt_defaults`
+
+This legacy record type remains accepted for compatibility, but no current
+workflow consumes it. It does not control the Hunt screen, LCQL search limits,
+or remediation safety. New configurations do not need it.
+
+Use the Hunt screen's time-window and filter controls for
+[historical LCQL search](automation.md#querying-mail-with-lcql). Actions on the
+messages you select use [bulk remediation](remediation.md), with a read-only
+preview and explicit confirmation. A legacy `dry_run` value does not replace
+that confirmation.
 
 ---
 

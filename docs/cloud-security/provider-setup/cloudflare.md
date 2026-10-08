@@ -1,5 +1,13 @@
 # Cloudflare
 
+!!! tip "Connecting from the web app?"
+    Follow the prerequisites and credential creation instructions below, then
+    return to **Cloud Security → Settings → Providers → Add provider**. Enter
+    the provider IDs under **Configuration** and save the credential using
+    **New secret** under **Permissions**. Run **Test Provider**, fix required
+    failures, and save. The LimaCharlie CLI examples below are an alternative.
+    [First-time setup and verification](../getting-started.md) explains the full journey.
+
 The lightest provider: a **scoped, read-only API token** plus your **account
 ID**. No infrastructure to stand up.
 
@@ -78,12 +86,14 @@ Save the credential JSON as `cf-secret.json`:
 ```
 
 ```bash
-limacharlie secret set --key cloudflare-credentials \
-    --value "$(cat cf-secret.json)" --enabled
+jq -Rs '{secret: .}' cf-secret.json \
+  | limacharlie secret set --key cloudflare-credentials --enabled \
+  && rm -f cf-secret.json
 ```
 
-`secret set` wraps whatever you pass in `--value` into the secret record's
-`{"secret": "..."}` shape for you.
+`jq -Rs` reads the credential file as a string and builds the secret record's
+`{"secret": "..."}` envelope for stdin. Remove any other temporary copies after
+verifying the saved credential.
 
 ## Create the provider record
 

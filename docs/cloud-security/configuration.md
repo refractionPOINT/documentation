@@ -16,6 +16,9 @@ tenant onboarding and fleet-wide policy a script, not a UI workflow (see
     `cloudsec_provider` records are gated by the dedicated
     `cloudsec_provider.get/set/del` permissions; `cloudsec_policy`,
     `cloudsec_query` and `cloudsec_code_rule` follow `cloudsec.get`/`cloudsec.set`.
+    Writing a `cloudsec_policy` record of type `response` also needs
+    `cloudsec.respond`, because it decides what a
+    [remediation run](code-security/containment-setup.md#response-playbooks) may do.
 
 ## cloudsec_provider
 
@@ -134,10 +137,11 @@ not accept is **rejected when you save** rather than silently ignored:
 | Dimension | Where it is honored |
 |---|---|
 | `tag` | compute resources only. Within `classification` that means the `compute` section; the dimension is also accepted on `coverage` and `exclusions`. |
-| `public` | data stores **and** compute. |
+| `public` | data stores **and** compute. Not accepted on exclusions. |
 | `content_class` | data stores only — and not yet populated, see the caveat above. |
 | `label` / `label_key_present` | resources carrying cloud labels. Not honored on `classification.identities`. |
 | `services` / `resource_types` | collection exclusions only. |
+| `region` | accepted on collection exclusions, where it is judged on each row. |
 | account / name / provider matchers | every surface, including the `exclusions` emission list — which honors *only* these. |
 
 The console's policy editors enforce this per surface and offer live value
@@ -241,6 +245,7 @@ has no effect on the others. At least one list must be non-empty:
 | List | Effect |
 |---|---|
 | `collection` | Matching scopes are skipped by the collection sweep. Only this list may add the `services` and `resource_types` narrowers on top of the shared resource matchers — an account-only rule excludes the whole account, while adding `services`/`resource_types` narrows the exclusion to those collector services or resource types inside the matched scope. |
+| `scanning` | Accepted for the agentless workload snapshot scanner. That scanner is not available, so this list has no effect today. |
 | `emission` | Matching events are dropped before delivery to the event stream. Only account/name/provider matchers are honored here — an emission rule constrained on labels or tags can never be satisfied by a lean event and so never drops one. |
 
 !!! warning "A collection exclusion deletes the inventory it excludes"
@@ -251,6 +256,31 @@ has no effect on the others. At least one list must be non-empty:
     an excluded scope disappears instead of lingering as stale rows — but it
     means excluding a scope you still want recorded loses that inventory until
     you remove the exclusion and let a sweep repopulate it.
+
+How a `collection` rule is judged:
+
+- **One account per row.** A row is matched on its own account when it has one,
+  otherwise on the account the collector ran for. A tenant-wide collector (an
+  Azure tenant, for example) is excluded wholesale by a rule whose account or
+  provider matches it. A rule with a negated account pattern is applied row by
+  row instead.
+- **`provider`, `region` and `resource_types` are checked on each row.** A
+  provider rule never matches another cloud's account.
+- **A row that does not state a fact the rule needs is kept.** For example, a
+  `region` rule keeps rows with no region, and the sweep records a note that
+  those rows were kept.
+- **Relationships go with what they connect.** Removing a resource also removes
+  its relationships, so a bucket-name rule removes that bucket's access grants.
+  Containers are the exception: a project-name rule does not remove grants made
+  at the project level.
+- **A fully excluded type is removed even when the pass was partial or failed.**
+- **Only deletes the exclusion caused are kept out of the event feed.** A
+  resource that is really deleted in the cloud still emits
+  `cloud_resource.deleted`.
+
+Excluded resources also drop out of [Code Security](code-security/index.md)'s
+view of your cloud. Its evidence then reads `resource_not_collected` or
+`workload_not_resolved`, never "not exposed".
 
 Exclusions are captured when a sweep starts, so an edit lands on the *next*
 sweep. Change the provider's `sync_now` nonce to apply it immediately instead of

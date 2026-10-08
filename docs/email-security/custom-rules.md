@@ -1,16 +1,105 @@
-# Custom Rules
+# Detection Rules
 
---8<-- "includes/email-security-beta.md"
+--8<-- "includes/email-security-availability.md"
 
-Your own mail rules live in the `dr-mail` Hive. They are ordinary D&R detect
-blocks evaluated against the [Message Data Model](detections.md#what-the-rules-can-read),
-and they compound with the managed pack in the same scoring pass — so a custom
-rule is evidence in the same verdict, not a parallel opinion.
+Every mail detection rule lives in your organization's **`dr-mail` Hive**, one rule
+per record. **Email Security → Detection rules** shows the complete set: search and filter,
+inspect the full YAML/JSON, edit, enable, disable or delete any rule. Reading takes
+`mailsec.get`; changing or deleting takes `mailsec.set`.
+
+The catalog shows each rule’s human name alongside its record ID, class, authored
+severity, and scoring strength. Weight is scaled by confidence before matching
+signals contribute to the verdict. Response automations are configured separately
+under **Policy → Response automations**.
+
+## Default rules and ownership
+
+The first subscription installs LimaCharlie's defaults as ordinary enabled records
+tagged `limacharlie`. There is no hidden pack or reserved record-name
+prefix, global managed-detection switch, or per-rule policy override. The record
+key is the rule ID. Default keys such as `ms-link-credentials-in-url` are ordinary
+keys with exactly the same permissions and behavior as names you choose.
+
+New rule-pack releases update **vendor-tagged records** automatically during the
+daily extension update: new defaults are added, changed vendor bodies are
+replaced, and retired vendor rules are removed. Your enabled/disabled choices,
+expiry and extra tags are preserved. Removing a default is not a durable way to
+turn it off: a missing default is recreated at the next pack release. **Disable
+it instead.**
+
+To maintain your own version, copy a default to a new key without the
+`limacharlie` tag, then disable its vendor original. Alternatively, remove that
+tag from the existing record before customizing it. Records without the vendor
+tag are not replaced by pack updates. Keep a copy in version control.
+
+Only enabled records run. With no enabled `pre_verdict` rules, messages remain
+`unknown`. When scoring rules run but none matches, the verdict can be `benign`.
+Rule changes normally apply on the next rule reload, within ten minutes. If a
+reload fails, the collector keeps the last successfully loaded set and reports
+the failure. Existing verdicts are not rewritten by a configuration edit.
+
+The subscription's one-time installation marker survives unsubscribe/resubscribe.
+Resubscribing alone does not recreate deleted rules; a subsequent pack update can.
+If the initial installation was interrupted or partially failed, use **Restore
+defaults** to complete it.
+
+## Restore defaults
+
+**Restore defaults** creates missing default records and leaves every existing
+record untouched, including disabled or edited defaults. Select **Also reset
+existing default rules** to replace default-keyed records with the shipped body,
+enabled state, tags and comment. ACL tags are preserved. Keys outside the default
+set are never changed. Reset discards edits, and requires confirmation in the UI.
+
+The action is `ext-email-security` → `restore_default_rules`, with optional
+`overwrite` (default `false`). It returns `total`, `created`, `overwritten`,
+`skipped`, `failed`, and up to 50 `{key, error}` failures. A partial result is not
+success for every record. Retry the explicit restore to recover.
+
+The extension performs writes with its own identity. `ext.request` authorizes
+calling the action; the console additionally requires `mailsec.set`. Records
+outside the extension's segment cannot be overwritten and are reported as failed.
+
+To apply the current pack update immediately, preserving vendor rules' enabled
+states and leaving customer-owned records alone:
+
+```bash
+limacharlie extension request --name ext-email-security \
+  --action restore_default_rules --data '{"upgrade": true}' --oid "$OID"
+```
+
+`upgrade` and `overwrite` cannot be combined: upgrade keeps your vendor-rule
+enable choices, while overwrite explicitly resets existing defaults.
+
+## Infrastructure as code
+
+The UI, Hive API and CLI edit the same records. Use `limacharlie hive list`,
+`get`, `set`, `enable`, `disable`, `delete` or `validate` with `--hive-name dr-mail`.
+The record body is a single rule, not a `rules:` wrapper and not an `id` field.
+Pass `--enabled` when creating a rule that should run.
+
+`limacharlie sync pull` and `sync push` support `--hive-dr-mail` and
+`--hive-mailsec-policy`, and include both with `--all`. This lets version-controlled
+configuration own the exact same execution set visible in the console.
+
+## Choose where the rule runs
+
+| Goal | Configuration | Detection paths |
+|---|---|---|
+| Add evidence to a message verdict | `dr-mail`, `phase: pre_verdict`, class `signal` or `detection` | Message root: `sender/email/domain/root` |
+| Classify bulk mail | `dr-mail`, `phase: pre_verdict`, class `graymail` | Message root; omit `weight` |
+| Act after the initial verdict | `mailsec_policy` automations, or `dr-mail` with `phase: post_verdict` | Message root, including `verdict/verdict` |
+| React to later verdict revisions or correlate mail with other telemetry | `dr-general` on `EMAIL_*` events | `routing/event_type` and `event/...` |
+| Detect risky mailbox or domain configuration | `cloudsec_policy` posture rules | Resource properties under `event/...`; see [Mail Posture Rules](../cloud-security/mail-posture-rules.md) |
+
+See the [Rule Reference](rule-reference.md) for supported operators, limits, and
+message fields. A `dr-mail` rule has no `event/` or `mdm/` prefix. Its record body
+contains the fields below directly, without a `rule:` or `data:` wrapper.
 
 ## A rule
 
 ```yaml
-# hive: dr-mail, record name: custom-vendor-bank-change
+# hive: dr-mail, record name: vendor-bank-change
 name: Payment-detail change from a first-contact sender
 phase: pre_verdict
 class: signal
@@ -33,7 +122,7 @@ detect:
 ```
 
 ```bash
-limacharlie hive set --hive-name dr-mail --key custom-vendor-bank-change \
+limacharlie hive set --hive-name dr-mail --key vendor-bank-change \
   --input-file rule.yaml --enabled --oid $OID
 ```
 
@@ -41,16 +130,91 @@ limacharlie hive set --hive-name dr-mail --key custom-vendor-bank-change \
 
 | Field | Required | Meaning |
 |---|:--:|---|
-| *(record name)* | ✅ | **The record name is the rule id.** It must start with `custom-`, which is what keeps your rules from ever colliding with a packaged one. It is also what an exclusion or a rule override names, which is why the id is the name rather than a field inside the body — a body field could be duplicated across two records |
+| *(record name)* | ✅ | **The record name is the rule ID.** Any non-empty Hive key up to 64 bytes; no prefix is reserved. Exclusions and verdict signals name this key. |
 | `phase` | ✅ | `pre_verdict` or `post_verdict` — see below |
 | `detect` | ✅ | A standard D&R detect block over the MDM |
 | `class` | — | `signal` (default), `detection` or `graymail` |
-| `weight` | ✅ for `signal` and `detection` | 0–100. Must be **0** for `graymail`, because the graymail lane bypasses the score entirely and a weight there would never be read |
+| `weight` | ✅ for `signal` and `detection` | 1–100 for `signal` and `detection`. **Omit the field for `graymail`**, including an explicit zero; the Hive rejects any supplied weight for that class |
 | `confidence` | — | 0–100, **default 100**. An author who does not express a confidence means "when this fires, it is right" |
-| `name` | ✅ | Shown beside the rule in every verdict it contributes to. A rule without one is refused at save |
-| `fp_notes` | ✅ | A sentence on what benign mail the rule is known to fire on — what the analyst who sees its first false positive reads. A rule without it is **refused at save** (`hive set` and `hive validate`), because a rule set containing one would not compile |
-| `respond` | — | `post_verdict` only |
-| `tags`, `attack_types` | — | Documentation and grouping |
+| `shared_fact` | — | Optional group for overlapping scoring signals. Only the strongest weighted contribution in the group counts; not allowed on graymail or response rules |
+| `respond` | — | Native responses, `post_verdict` only |
+| `severity` | — | `informational`, `low`, `medium`, `high` or `critical`; omitted means informational when scored |
+| `actions` | — | Typed policy actions applied when this rule matches; see below |
+| `action_params` | — | Parameters keyed by an action named in `actions`; optional banner `text` |
+| `mode` | — | `alert_only` (default) or `enforce`, only when typed actions are present |
+| `name` | ✅ | Non-empty human-readable label, up to 256 bytes |
+| `fp_notes` | ✅ | Non-empty explanation of the benign mail that might match |
+| `tags`, `attack_types` | — | Grouping and authoring metadata; entries must not be empty |
+
+### Severity and typed actions
+
+Severity is independent of score and verdict. A message carries the maximum
+severity of all matching, unsuppressed rules, including matches beyond the
+shortened top-signals display. Excluded rules contribute neither severity nor
+typed actions. All shipped defaults declare a severity; historical messages may
+have no stored value, which remains unknown.
+
+Typed actions are `quarantine_message`, `trash_message`, `move_to_spam`,
+`banner_message`, `submit_to_triage` and `crawl_link`. A rule can request up to
+16 distinct actions; duplicates, unknown actions and parameters for absent
+actions are refused. Scoring-rule actions run after scoring when their rule
+matched; post-verdict actions run when their final-state condition matches.
+Existing native `respond` blocks remain available.
+
+Actions default to `alert_only`. Choosing `enforce` cannot override an
+organization's alert-only policy, exclusions or VIP restrictions. Rule actions
+and every matching policy automation form a union. For conflicting permitted
+placement intents, quarantine takes precedence over trash, which takes precedence
+over spam. Alert-only intents do not suppress a permitted enforcement intent.
+Repeated equivalent intents are deduplicated; rule order supplies deterministic
+parameters within an equivalent intent.
+
+For `banner_message`, `action_params.banner_message.text` optionally overrides
+the warning with plain text of at most 512 Unicode characters. Markup and unsafe
+control or direction-changing characters are refused. Empty or whitespace-only
+text uses the policy default. The override does not enable a disabled banner
+policy. See [Policy Reference](policy.md#actions) and
+[Message Groups & Cases](groups.md).
+
+### Signal, detection, or graymail?
+
+Both `signal` and `detection` contribute `weight × confidence / 100` through the
+[scoring formula](detections.md#scoring). A `detection` match also prevents the
+graymail lane from winning; it does **not** bypass the malicious threshold.
+Use `signal` for evidence intended to compound with other evidence.
+
+Overlapping pre-verdict signals can use `shared_fact` to count only the strongest
+contribution for the same fact. The field must have no surrounding whitespace
+and cannot be used on graymail or post-verdict rules.
+
+A graymail rule contributes no score. For example:
+
+```yaml
+# hive: dr-mail, record name: custom-bulk-precedence
+name: Message declares bulk precedence
+phase: pre_verdict
+class: graymail
+fp_notes: Transactional messages can also declare bulk precedence.
+detect:
+  op: scope
+  path: headers/all
+  rule:
+    op: and
+    rules:
+      - op: is
+        path: name
+        value: Precedence
+        case sensitive: false
+      - op: is
+        path: value
+        value: bulk
+        case sensitive: false
+```
+
+The installed defaults already include bulk-mail rules; this illustrates the
+record format. Source files for default rules use `id` and `weight: 0` for
+graymail. The extension converts those files into ordinary Hive records using
+the record key as the ID and omitting graymail `weight`.
 
 ### The two phases
 
@@ -63,17 +227,16 @@ limacharlie hive set --hive-name dr-mail --key custom-vendor-bank-change \
 
 | Action | |
 |---|---|
-| `extension request` naming `ext-email-security` | The way a rule reaches remediation. The typed action goes to the same executor every other action uses, which is where `alert_only` / `enforce` is decided. Add `force: true` to act even in alert-only mode — see below |
+| `extension request` naming `ext-email-security` | The way a rule reaches remediation. The typed action goes to the same executor every other action uses, which is where `alert_only` / `enforce` is decided |
 | `report` | Raise a detection into the platform's detection stream |
 
 ```yaml
+# hive: dr-mail, record name: custom-quarantine-cfo-malicious
 name: Quarantine malicious mail to the CFO
+fp_notes: Inherits false positives from the rules that produced the verdict.
 phase: post_verdict
 class: signal
 weight: 1
-fp_notes: >
-  Acts on the verdict, so it inherits the verdict's false positives; a
-  misjudged message to this mailbox is quarantined and must be restored.
 detect:
   op: and
   rules:
@@ -91,10 +254,15 @@ respond:
       msg_uuid: "{{ .msg_uuid }}"
 ```
 
-To have the rule act even while the organization is in alert-only mode, add
-`force: true` to the `extension request`. Only a real boolean `true` forces — a
+The `weight: 1` satisfies the shared rule contract; post-verdict rules do not
+change the score. Automated remediation still follows the organization's
+[automation mode](policy.md#mode). Adding this rule does not itself enable
+`enforce`.
+
+To have a rule act even while the organization is in alert-only mode, add
+`force: true` to the `extension request`. Only a real boolean `true` forces; a
 quoted `"true"` does not. The action is recorded as forced, and its
-`EMAIL_ACTION` carries `forced: true`; see
+`EMAIL_ACTION` carries `forced: true` — see
 [Forcing an action in alert-only mode](remediation.md#forcing-an-action-in-alert-only-mode).
 
 ```yaml
@@ -120,41 +288,17 @@ behind a message, and remediation goes through `extension request`.
 
 ## Matching one link, not any two links
 
-A mail rule reads the message as JSON, and the paths it writes are the emitted
-event's own field names. Two constructs walk a list, and confusing them is the
-most common way a mail rule quietly matches the wrong thing.
+`dr-mail` rules use `scope` to walk arrays of objects. The Hive rejects paths
+containing `?` or `*`, even though those paths work in ordinary platform D&R
+rules. This restriction applies to every `dr-mail` record, including defaults.
 
 ### `?` walks a list and compares values
 
-`?` is a **path segment**. It stands for "every element", and the condition
-matches if **any** element satisfies it.
-
-```yaml
-# Any link whose registrable domain is evil.example
-op: is
-path: links/?/href_url/domain/root
-value: evil.example
-```
-
-Cheap, and right most of the time. But two conditions using `?` can be satisfied
-by **two different elements**:
-
-```yaml
-# WRONG if you meant "one link that is both"
-op: and
-rules:
-  - op: is
-    path: links/?/href_url/domain/root
-    value: evil.example
-  - op: is
-    path: links/?/mismatched
-    value: true
-```
-
-That fires on a message with a perfectly ordinary link to `evil.example` *and* a
-separate, unrelated link whose visible text disagrees with its destination.
-Nothing in it says "the same link" — and a phishing message that carries a
-tracking pixel and a footer link will satisfy pairs like this by accident.
+In `dr-general`, `?` is a path segment that matches any element. Two conditions
+using it may match two different elements. For example, a condition on
+`event/links/?/href_url/domain/root` and another on
+`event/links/?/mismatched` need not describe the same link. Use `scope` when the
+conditions must describe one element. In `dr-mail`, use `scope` for either case.
 
 ### `scope` re-roots a whole sub-rule onto one element
 
@@ -178,39 +322,44 @@ rule:
 ```
 
 Paths inside a `scope` are **relative to the element** — `href_url/domain/root`
-and `mismatched`, not `links/?/href_url/domain/root`. That is the other half of
-the trap: a rule that keeps the full path inside a `scope` block looks correct
-and matches nothing.
-
-| | `?` | `scope` |
-|---|---|---|
-| What it is | A segment in a `path` | An operator with `path` and `rule` |
-| Correlates fields of one element | **No** | **Yes** |
-| Paths inside | Full, from the message root | Relative to the element |
-| Cost | One extraction | The sub-rule, once per element |
+and `mismatched`, not `links/href_url/domain/root`. A rule that keeps the full
+path inside a `scope` block addresses fields that are not on that element.
 
 ### `scope` is capped, and nesting is refused
 
-Use `?` unless you actually need the correlation, because `scope` is the one
-allowed operator whose cost the rule's own size does not describe: the element
-counts — links, attachments, headers, hops — come from **the message**, not from
-your rule.
+At most **two** `scope` operators are allowed in one `dr-mail` rule, and a
+`scope` inside another `scope` is rejected. Keep conditions about one attachment,
+link, or header in the same scope. Two sibling scopes can match different
+elements and do not establish a relationship between them.
 
-- At most **two** `scope` operators per rule.
-- A `scope` inside another `scope` is **refused at save**, not merely
-  discouraged. Nesting multiplies: elements to the power of the depth.
+For a single-field array test, the same construct applies:
 
-Both refusals name the reason rather than reporting a generic validation error.
+```yaml
+op: scope
+path: links
+rule:
+  op: is
+  path: href_url/domain/root
+  value: evil.example
+```
 
 ## Validation
 
-A `dr-mail` record is validated at **write time** by compiling it on the real
-engine, so a record that exists has already been proven to compile. Validate a
-candidate before you save it — the check calls the *same* function the Hive runs
-on save, so "valid here" means "savable there":
+A `dr-mail` record is validated at **write time**: required fields, supported
+operators, path restrictions, and budgets are checked, and the `detect` block is
+compiled on the real engine. The `respond` block is checked for shape and size;
+full response compilation happens when the collector loads it. Validation does
+not prove that a field will be present or that a response will succeed.
+
+Validate a candidate before saving it. The API calls the same validator as the
+Hive, including lookup existence checks when its Hive access is configured.
+
+The `mailsec rule` commands take a **JSON** file containing the rule body. For
+the YAML examples on this page, save the equivalent JSON as `rule.json`; generic
+`hive` commands also accept YAML through `--input-file`.
 
 ```bash
-limacharlie mailsec rule validate --file rule.json --rule-id custom-vendor-bank-change --oid $OID
+limacharlie mailsec rule validate --file rule.json --rule-id vendor-bank-change --oid $OID
 ```
 
 An invalid rule is a **200 carrying `valid: false` and the reason**, not an error
@@ -218,7 +367,7 @@ response: you asked whether the rule is valid and found out that it is not. The
 reason is the validator's own wording, because an author acts on the message and
 not on a status code.
 
-Omitting `--rule-id` validates against a placeholder in the `custom-` namespace,
+Omitting `--rule-id` validates against the placeholder `unnamed`,
 so a rule you have not named yet does not fail on its name.
 
 `limacharlie hive validate --hive-name dr-mail --key <name> --input-file rule.yaml`
@@ -266,70 +415,76 @@ message history. Both `rule validate` and `rule backtest` are gated on
 should be able to check their work with the grant that lets them see what the
 rule would be matching.
 
-### Two kinds of rule cannot be backtested
+### Backtests are budgeted, because they re-read your mail
 
-Both are **refused by name**, and in neither case is the rule itself the problem:
-the backtest is what cannot be run, not the rule.
+A backtest is not an index query. For every message in the window it fetches the
+stored original, decrypts it, decompresses it, parses it and evaluates your rule
+against it — so it is the most expensive read on the Email Security surface, and
+an organization gets **6 backtests per 10 minutes** across every credential in
+it. Past that the call answers `429` with `rate_bucket: mailsec_post_read` and a
+`Retry-After`; see [Read budgets](api-reference.md#the-replay-budget).
 
-**A rule using `lookup`.** The `lookup` operator resolves one of your
-organization's own `lookup` Hive records, and the service that answers a backtest
-cannot reach them. The refusal names the resource it could not resolve, and says
-what to do instead: the rule is otherwise valid, so save it and it evaluates
-normally in the pipeline, where the lookup **is** resolved.
+That is sized for the loop this page describes — write, backtest, read the
+report, adjust — and not for a script. Asking for a narrower window does not take
+the call out of the budget (the charge is the same whatever window you name), but
+it does make the call itself faster, and a backtest over a wide window on a busy
+organization can take tens of seconds.
 
-That is a real limitation, not a transient error to retry. The alternative would
-have been to report "0 messages matched" for a rule that in fact matches plenty,
-which is a claim about your mail that nothing looked at.
+### What a backtest can evaluate
 
-To size an IOC rule before enabling it, either backtest the same rule with the
-`lookup` clause removed — which tells you how much the rest of the logic narrows
-— or save it and watch it live, which is safe because a `dr-mail` rule
-contributes to a verdict and your automations are in `alert_only` until you say
-otherwise. See [IOC & Reputation Feeds](ioc-feeds.md).
+A `post_verdict` rule is refused: this backtest does not compute a new verdict or
+execute responses. Backtest the `pre_verdict` conditions instead.
 
-**A `post_verdict` rule.** It runs against the verdict a pass would compute, and
-a backtest replays a message rather than re-scoring it. Backtest the
-`pre_verdict` rules that produce the verdict instead.
+The service re-parses stored EMLs and restores `direction` and `mailbox/address`
+from the index. It does **not** reconstruct the original pipeline's sender
+history, VIP matches, domain-age enrichments, attachment scanner results, or
+detonation results. Zero matches on a rule that requires those fields does not
+prove that the rule would never match live mail. Use representative enriched
+message fixtures for those conditions and inspect live matches before relying
+on them for remediation.
+
+A `lookup` rule can be backtested when the API service has its Hive resolver
+configured. It reads the organization's **current** lookup records, not a
+historical snapshot of the feed. If no resolver is configured, the request is
+refused with the resource name; it is not reported as zero matches.
+
+`mailsec analyze --file sample.eml` evaluates the organization's enabled scoring
+rules and resolved scoring policy without ingesting the sample or executing
+responses. It does not accept an unsaved candidate rule. Use `rule validate`
+and `rule backtest` to check a candidate before saving it, and read the analyze
+response's context limitations when testing rules that need enrichments.
+
+The default window is seven days, the maximum window is 35 days, and a run
+examines at most 2,000 messages. Check `coverage_note`, skip counts, and
+`truncated` before interpreting the result.
 
 ### Rules for `lookup` in a mail rule
 
-| | |
+| Constraint | Behavior |
 |---|---|
-| Form | The resource must be `hive://lookup/<name>` — nothing else is accepted |
-| Count | At most **four** `lookup` operators per rule. Each resolves a whole lookup record for your organization |
-| Existence | Checked **on save**, not by `rule validate` — see below |
+| Resource | Only `hive://lookup/<name>` is accepted |
+| Count | At most four `lookup` operators per rule |
+| Existence | Checked on save and by `rule validate` when the API's Hive metadata access is configured |
+| Arrays | Use `scope` and an element-relative path; wildcard paths are rejected in `dr-mail` |
 
-!!! warning "`rule validate` does not check that the lookup exists"
-    A `lookup` rule naming a record your organization does not have **passes
-    `rule validate` and then fails the save.** That is the one place where "valid
-    here means savable there" does not hold: the existence check needs to read
-    your `lookup` records, and the validate call cannot.
+Create and populate the lookup before validating or saving the rule. A missing
+record is reported by name when the metadata lookup succeeds. If that lookup
+fails, the existence check is skipped; a successful validation therefore does
+not prove that the lookup was resolved. Existence validation also does not prove
+that the lookup is enabled, populated, or fresh; inspect the record and test a known
+indicator. See [IOC & Reputation Feeds](ioc-feeds.md#changing-the-verdict-instead-of-raising-a-detection).
 
-    The check itself is worth having, and the Hive does run it: a dangling
-    `hive://lookup/` reference is the most common authoring mistake, it would
-    otherwise save cleanly and match nothing forever, and that reads as coverage.
-    The refusal names the record and tells you to create it first.
+## Tuning rules
 
-    So: write the lookup before you write the rule that names it, and treat a
-    save failure after a clean validate as this, not as a mystery.
+Edit `weight`, `confidence` or `detect` directly on the rule record. Use the
+record's enabled state to turn it off. This applies equally to seeded defaults
+and rules you wrote. The YAML and JSON editors preserve the complete rule body.
+Saves use the record's etag; a concurrent edit is reported as a conflict rather
+than overwritten.
 
-## Tuning the managed pack
-
-You do not need a custom rule to change a packaged one. Disable it, or replace
-its weight, for your organization:
-
-```yaml
-policy_type: thresholds
-rule_overrides:
-  ms-link-unranked-domain:
-    weight: 15
-  ms-sender-first-contact:
-    disabled: true
-```
-
-And to suppress a rule for a specific sender, domain or mailbox rather than
-everywhere, use an [exclusion](policy.md#exclusions) — which carries a reason and
-an optional expiry, so the hole in detection is reviewable.
+For a scoped suppression, use an [exclusion](policy.md#exclusions) with a reason
+and optional expiry. A suppressed match remains in `matched_signals` for auditing;
+a disabled rule does not run at all.
 
 ## Rules that act on emitted events
 
@@ -376,7 +531,7 @@ fields that distinguish them:
 | Only the rule pack's own decision | `path: event/revision/seq`, `value: 0` |
 | Only overrides | `op: is greater than`, `path: event/revision/seq`, `value: 0` |
 | Only what a human decided | `path: event/revision/mode`, `value: analyst` |
-| Only a *change* to malicious | `path: event/revision/prior/verdict`, `op: is not`, `value: malicious` |
+| Only a *change* to malicious | `path: event/revision/prior/verdict`, `op: is`, `not: true`, `value: malicious` |
 | A specific rule that fired | `op: is`, `path: event/revision/top_signals/?/rule_id`, `value: ms-link-credentials-in-url` — the `?` matches any element of the list (`seq 0` only; an override carries no signals) |
 
 !!! warning "Overrides go both ways"
@@ -384,3 +539,27 @@ fields that distinguish them:
     `verdict: malicious` will see the escalation, and a later `benign` revision
     does **not** undo the action it took — write the compensating rule if you
     want one.
+
+## Maintaining your rules
+
+Your own untagged `dr-mail` records stay under your control. For vendor defaults,
+follow the [ownership guidance](#default-rules-and-ownership) above so a pack
+update does not replace your edits. [Restore defaults](#restore-defaults)
+explicitly when you want to return to the current LimaCharlie pack.
+
+For a rule you maintain:
+
+1. Keep the single-record JSON or YAML body in your own version control.
+2. Validate it with `mailsec rule validate` before saving it.
+3. Use `mailsec rule backtest` to test the unsaved candidate against retained
+   mail. Review the context limitations and skipped-message counts above.
+   `mailsec analyze` evaluates the currently enabled organization rules, so it
+   cannot test an unsaved candidate; use it to inspect sample parsing and the
+   current pack's results.
+4. Save the candidate in a pilot organization with `limacharlie hive set
+   --hive-name dr-mail`, using a stable record key and `--enabled`. Analyze
+   positive and near-miss samples there before promoting it to wider coverage
+   or permitting automated responses.
+
+Keep [mail posture rules](../cloud-security/mail-posture-rules.md) separate:
+they evaluate provider configuration, while these rules evaluate messages.

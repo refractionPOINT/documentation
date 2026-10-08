@@ -66,6 +66,13 @@ plugins:
         'docs/lc-extensions.md': '5-integrations/extensions/limacharlie/index.md'
         'docs/third-party-extensions.md': '5-integrations/extensions/third-party/index.md'
         'cloud-security/code-scanning.md': 'cloud-security/code-security/index.md'
+        # Retired lc-compliance plugin pages
+        '9-ai-sessions/compliance/index.md': 'cloud-security/compliance.md'
+        '9-ai-sessions/compliance/installation.md': 'cloud-security/compliance.md'
+        '9-ai-sessions/compliance/frameworks.md': 'cloud-security/compliance.md'
+        '9-ai-sessions/compliance/skills.md': 'cloud-security/compliance.md'
+        '9-ai-sessions/compliance/case-reviewer-agent.md': 'cloud-security/compliance.md'
+        '9-ai-sessions/compliance/gap-analysis.md': 'cloud-security/compliance.md'
         # Extension website fields (old Readme.io /docs/<slug> format)
         'docs/binlib.md': '5-integrations/extensions/limacharlie/binlib.md'
         'docs/ext-artifact.md': '5-integrations/extensions/limacharlie/artifact.md'
@@ -417,6 +424,7 @@ nav:
           - Using Extensions: 5-integrations/extensions/using-extensions.md
           - LimaCharlie:
               - Overview: 5-integrations/extensions/limacharlie/index.md
+              - Application Control: 5-integrations/extensions/limacharlie/app-control.md
               - Artifact: 5-integrations/extensions/limacharlie/artifact.md
               - BinLib: 5-integrations/extensions/limacharlie/binlib.md
               - Cases: 5-integrations/extensions/limacharlie/cases.md
@@ -497,6 +505,7 @@ nav:
           - Python SDK: 6-developer-guide/sdks/python-sdk.md
           - Python SDK v4: 6-developer-guide/sdks/python-sdk-v4.md
           - Go SDK: 6-developer-guide/sdks/go-sdk.md
+      - CLI Quick Start: 6-developer-guide/cli-quickstart.md
       - Command Line Interface: 6-developer-guide/sdk-overview.md
       - CLI Extension: 6-developer-guide/cli.md
       - Connecting AI Assistants: 6-developer-guide/mcp-server.md
@@ -515,9 +524,11 @@ nav:
           - API Keys: 7-administration/access/api-keys.md
           - User Access: 7-administration/access/user-access.md
           - Designing Access: 7-administration/access/designing-access.md
+          - Resource ACLs: 7-administration/access/resource-acls.md
           - SSO: 7-administration/access/sso.md
       - Billing:
           - Options: 7-administration/billing/options.md
+          - Security Products: 7-administration/billing/security-products.md
           - Custom Plans: 7-administration/billing/custom-plans.md
           - Estimating Data Ingestion: 7-administration/billing/data-estimation.md
       - Config Hive:
@@ -527,6 +538,8 @@ nav:
           - D&R Rules: 7-administration/config-hive/dr-rules.md
           - YARA: 7-administration/config-hive/yara.md
           - Cloud Sensors: 7-administration/config-hive/cloud-sensors.md
+          - Application Control Policies: 7-administration/config-hive/app-control-policy.md
+          - Application Control Rules: 7-administration/config-hive/app-control-rule.md
           - Apps: 7-administration/config-hive/apps.md
 
   - Reference:
@@ -578,57 +591,65 @@ nav:
       - Command Line Interface: 9-ai-sessions/cli.md
       - Alternative Providers: 9-ai-sessions/alternative-providers.md
       - API Reference: 9-ai-sessions/api-reference.md
-      - Compliance:
-          - Overview: 9-ai-sessions/compliance/index.md
-          - Installation: 9-ai-sessions/compliance/installation.md
-          - Frameworks: 9-ai-sessions/compliance/frameworks.md
-          - Skills Reference: 9-ai-sessions/compliance/skills.md
-          - Case-Reviewer Agent: 9-ai-sessions/compliance/case-reviewer-agent.md
-          - Gap Analysis: 9-ai-sessions/compliance/gap-analysis.md
 
-  - Email Security (Private Beta):
+  - Email Security:
       - Overview: email-security/index.md
       - How a Message Is Processed: email-security/pipeline.md
       - Getting Started: email-security/getting-started.md
+      - Setup with the CLI: email-security/setup-cli.md
       - Connecting Providers: email-security/providers.md
+      - Internal Domains: email-security/internal-domains.md
       - Provider Setup:
           - Microsoft 365: email-security/provider-setup/microsoft-365.md
           - Google Workspace: email-security/provider-setup/google-workspace.md
       - Messages & Triage: email-security/messages.md
+      - Message Groups & Cases: email-security/groups.md
       - Bulk Remediation: email-security/remediation.md
       - Campaigns: email-security/campaigns.md
       - User Reports: email-security/user-reports.md
+      - Sample Submission: email-security/sample-submission.md
+      - Provider Quarantine: email-security/provider-quarantine.md
       - Detections & Verdicts: email-security/detections.md
-      - Custom Rules: email-security/custom-rules.md
+      - Detection Rules: email-security/custom-rules.md
+      - Rule Reference: email-security/rule-reference.md
       - IOC & Reputation Feeds: email-security/ioc-feeds.md
       - Policy Reference: email-security/policy.md
       - Events & Automation: email-security/automation.md
       - Command Line Interface: email-security/cli.md
+      - AI Assistants (MCP): email-security/mcp.md
       - API Reference: email-security/api-reference.md
       - AI Triage: email-security/ai-triage.md
+      - Data Residency & Encryption: email-security/data-residency.md
       - Troubleshooting: email-security/troubleshooting.md
 
   - Cloud Security:
       - Overview: cloud-security/index.md
       - Getting Started: cloud-security/getting-started.md
+      - Setup with the CLI: cloud-security/setup-cli.md
       - Connecting Providers: cloud-security/providers.md
       - Code Security:
           - Overview: cloud-security/code-security/index.md
           - Get Started: cloud-security/code-security/getting-started.md
           - Working with Results: cloud-security/code-security/results.md
+          - Private Container Registries: cloud-security/code-security/container-registries.md
           - Scan Policy: cloud-security/code-security/policy.md
           - Code Rules: cloud-security/code-security/code-rules.md
           - Pull-Request Checks & Push Rescans: cloud-security/code-security/pull-requests.md
           - AutoFix Pull Requests: cloud-security/code-security/autofix.md
           - Bring Your Own Scanner: cloud-security/code-security/bring-your-own-scanner.md
+          - What Code Security Guarantees: cloud-security/code-security/guarantees.md
+          - Evidence, Lineage & Remediation Setup: cloud-security/code-security/containment-setup.md
+          - Automatic Behavior & Incident Response: cloud-security/code-security/incident-response.md
+          - Data Handling & Privacy: cloud-security/code-security/data-handling.md
           - Reference: cloud-security/code-security/reference.md
           - Troubleshooting: cloud-security/code-security/troubleshooting.md
+          - Unknown, Partial & Refusal Reasons: cloud-security/code-security/reasons.md
       - Provider Setup:
           - Overview: cloud-security/provider-setup/index.md
           - Google Cloud: cloud-security/provider-setup/gcp.md
           - Amazon Web Services: cloud-security/provider-setup/aws.md
           - Microsoft Azure: cloud-security/provider-setup/azure.md
-          - Microsoft Entra ID: cloud-security/provider-setup/entra.md
+          - Microsoft Entra ID / Microsoft 365: cloud-security/provider-setup/entra.md
           - Okta: cloud-security/provider-setup/okta.md
           - Google Workspace: cloud-security/provider-setup/google-workspace.md
           - 1Password: cloud-security/provider-setup/onepassword.md
@@ -645,7 +666,9 @@ nav:
       - Security Graph & Queries: cloud-security/graph.md
       - Compliance: cloud-security/compliance.md
       - CAASM: cloud-security/caasm.md
+      - Entity Pivot: cloud-security/entity-pivot.md
       - Custom Posture Rules: cloud-security/custom-rules.md
+      - Mail Posture Rules: cloud-security/mail-posture-rules.md
       - Configuration Reference: cloud-security/configuration.md
       - Command Line Interface: cloud-security/cli.md
       - IDE & MCP: cloud-security/mcp.md

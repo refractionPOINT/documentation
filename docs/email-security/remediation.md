@@ -1,6 +1,6 @@
 # Bulk Remediation
 
---8<-- "includes/email-security-beta.md"
+--8<-- "includes/email-security-availability.md"
 
 A campaign sweep acts on a cluster the engine decided. **Bulk remediation** acts
 on a set *you* named — a filtered page of the queue, the result of an LCQL hunt,
@@ -13,6 +13,12 @@ selection rather than a cluster, with one structural difference: **the execute
 cannot finish inside a request.** Up to 500 provider writes paced against
 Microsoft 365 and Google throttling do not fit in one call, so execute returns a
 handle and the work proceeds in the background.
+
+With the optional [Microsoft quarantine target](provider-quarantine.md#optional-microsoft-quarantine-target-beta),
+per-message `pending` means accepted for background placement tracking. The bulk job
+stays running while these members are pending; a bounded wait that cannot settle them
+reports `interrupted`, never complete. Re-sending the same confirmation reads their
+durable outcomes without repeating the Microsoft submission.
 
 ## The four steps
 
@@ -288,7 +294,7 @@ route and renders each member's outcome by name.
 
 The console's bulk action list is a deliberate subset: `banner_message` is
 offered (a bulk banner still uses the organization's own
-[banner policy](policy.md#banners); no client supplies HTML), and
+[banner policy](policy.md#banners), and may carry one plain-text `text` that replaces the wording for the whole job; no client supplies HTML), and
 `unbanner_message` is not — un-bannering is a per-message follow-up taken from a
 bannered row's timeline, not a sweep. The API accepts all six.
 
@@ -307,10 +313,11 @@ remediation path in this product.
 ## Forcing an action in alert-only mode
 
 An organization with no [automation](policy.md#automations) in `enforce` mode is
-in **alert-only mode**, and that applies to **every** remediation, not only
-automated ones. An action a person starts from the console, the CLI or the API,
-or one an AI agent asks for, is decided, audited and withheld exactly like a
-rule's: `result: alert_only`, and no mail moves.
+in **alert-only mode**, and that applies to every action that changes a mailbox,
+not only automated ones. An action a person starts from the console, the CLI or
+the API, or one an AI agent asks for, is decided, audited and withheld exactly
+like a rule's: `result: alert_only`, and no mail moves. See also
+[Enforcement](messages.md#enforcement).
 
 A withheld action says so. Its response carries `force_required: true`. To
 perform it, repeat the **same** request with `force: true`. That is an explicit
@@ -361,6 +368,5 @@ rules:
     value: true
 ```
 
-`force` needs a `limacharlie` release that includes it; an older CLI refuses
-`--force` as unknown, and the field can be sent directly to the API in the
-meantime.
+`--force` and the SDK `force` argument need `limacharlie` 5.7.0 or later. The
+REST field works with any client.

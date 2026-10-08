@@ -30,6 +30,10 @@ LimaCharlie uses a granular permission system that controls access to all platfo
 | apikey.ctrl | Create, delete, and modify API keys |
 | user.ctrl | Manage user accounts and permissions |
 | billing.ctrl | Access and modify billing information |
+| acl.get | View [Resource ACL](../7-administration/access/resource-acls.md) scopes and the resources tagged with them |
+| acl.set | Manage Resource ACL scopes and add or remove `acl:` tags. Does not grant read access to restricted content |
+
+Unlike most hive permissions, these have no per-record form: `acl.set.<scope>` grants nothing.
 
 ### Sensor Management
 
@@ -142,6 +146,91 @@ LimaCharlie uses a granular permission system that controls access to all platfo
 | ai\_agent.del | Delete AI agents |
 | ai\_agent.get.mtd | View AI agent metadata only |
 | ai\_agent.set.mtd | Modify AI agent metadata only |
+| ai_agent.exec | Launch a configured AI agent through a UI action |
+| ai_agent.operate | Allow an AI agent to operate on this organization using the authenticated identity's permissions |
+
+#### `ai_agent.exec`: launch a configured agent
+
+Grant `ai_agent.exec` to the **user or API key invoking an AI agent UI action**.
+It authorizes execution of an existing `ai_agent` Hive record. Reading, editing,
+and deleting that configuration use the separate `.get`, `.set`, and `.del`
+permissions above; those permissions do not substitute for `.exec`.
+
+Launching a configured agent creates an AI Session that continues in the
+background. The agent uses the LimaCharlie credentials configured in the record
+(for example, through `lc_api_key_secret`). Its organization access is determined
+by those credentials, which can differ from the caller's permissions.
+
+Treat execution access as permission to initiate the configured workflow: an
+agent with response privileges may make changes even when the person launching
+it has no direct response privileges. Review the agent's prompt and credentials
+before granting execution access. [Resource ACLs](../7-administration/access/resource-acls.md)
+can additionally restrict access to a particular agent record.
+
+This permission specifically covers launching a configured agent through a UI
+action. It is not a blanket requirement for every way of creating a session;
+[user sessions](../9-ai-sessions/user-sessions.md) and
+[D&R-driven sessions](../9-ai-sessions/dr-sessions.md) have their own setup and
+authentication requirements.
+
+#### `ai_agent.operate`: allow agent access to an organization
+
+Grant `ai_agent.operate` to the **identity the AI agent uses to access LimaCharlie**:
+its organization API key, or the user whose credentials it uses. This permission
+is organization-scoped. Access to one organization does not authorize AI
+operations on another organization.
+
+`ai_agent.operate` is an additional gate for AI access, including read-only
+operations. It does not grant access to telemetry, sensors, configurations, or
+response actions by itself. The identity also needs each operation's normal API
+permission. For example:
+
+| Agent task | Permissions on the agent's identity |
+| --- | --- |
+| List sensors | `ai_agent.operate`, `sensor.list` |
+| Read historical detections | `ai_agent.operate`, `insight.det.get` |
+| Read CloudSec posture and findings | `ai_agent.operate`, `cloudsec.get` |
+| Read MailSec messages and campaigns | `ai_agent.operate`, `mailsec.get` |
+
+These are task-specific examples, not complete permission sets for an entire
+investigation. Add the permissions needed for the other operations in your
+workflow, and grant write permissions only when the agent needs to make changes.
+
+Managed AI Sessions instruct the agent to verify `ai_agent.operate` before its
+first operation on each organization and refuse to operate when it is missing.
+The [MCP server](../6-developer-guide/mcp-server.md#permission-enforcement) also
+enforces this permission by default for organization-scoped tools, with explicit
+exceptions such as AI generation tools. This is an AI access control; it does not
+replace the normal permissions enforced by the REST API.
+
+#### Choosing which identity gets each permission
+
+| Workflow | Caller launching the workflow | Identity used by the agent |
+| --- | --- | --- |
+| Analyst launches an existing agent UI action | `ai_agent.exec` | `ai_agent.operate` plus permissions for the configured workflow |
+| User works interactively in an AI Session | Follow the user-session authentication setup | `ai_agent.operate` on each target organization plus task permissions |
+| External AI assistant connects through MCP | Follow the MCP authentication setup | `ai_agent.operate` plus permissions for the requested tools |
+| D&R rule starts an automated agent | Follow the D&R session setup | `ai_agent.operate` plus task permissions on the configured LimaCharlie credentials |
+
+Neither permission implies the other. An agent does not need `ai_agent.exec`
+merely to read detections through MCP, and a caller's `ai_agent.exec` does not
+supply `ai_agent.operate` to the credentials inside a launched session.
+
+#### Troubleshooting access
+
+| Symptom | What to check |
+| --- | --- |
+| Launching an agent UI action is denied | Check `ai_agent.exec` on the caller in the target organization, and any Resource ACL on the agent record. |
+| A session opens, but the agent refuses organization operations | Check `ai_agent.operate` on the credentials actually used inside the session, for that specific organization. |
+| MCP reports missing `ai_agent.operate` | Check the MCP connection's API key or authenticated user's permissions in the target organization. |
+| The agent passes the AI permission check, but an operation is denied | Check the operation's normal API permission and any applicable Resource ACL. |
+| A tool is unavailable or requires approval | Check the MCP profile and session tool settings; these are separate from organization permissions. |
+
+Assign permissions through [User Access](../7-administration/access/user-access.md)
+or [API Keys](../7-administration/access/api-keys.md). Session settings such as
+`allowed_tools`, `denied_tools`, and `permission_mode` control tool execution and
+approval; they do not grant organization API permissions. See
+[Tool Permissions & Profiles](../9-ai-sessions/tool-permissions.md).
 
 ### Cloud Sensors
 
@@ -192,6 +281,13 @@ LimaCharlie uses a granular permission system that controls access to all platfo
 | app.del | Delete app records |
 | app.get.mtd | View app metadata only |
 | app.set.mtd | Modify app metadata only |
+
+### Application Control
+
+| Permission | Description |
+| --- | --- |
+| app_control.get | Read Application Control policies and rules |
+| app_control.set | Create, modify and delete Application Control policies and rules, and their metadata |
 
 ### External Adapters
 

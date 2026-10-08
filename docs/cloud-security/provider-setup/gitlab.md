@@ -1,5 +1,13 @@
 # GitLab
 
+!!! tip "Connecting from the web app?"
+    Follow the prerequisites and credential creation instructions below, then
+    return to **Cloud Security → Settings → Providers → Add provider**. Enter
+    the provider IDs under **Configuration** and save the credential using
+    **New secret** under **Permissions**. Run **Test Provider**, fix required
+    failures, and save. The LimaCharlie CLI examples below are an alternative.
+    [First-time setup and verification](../getting-started.md) explains the full journey.
+
 Connects one **GitLab namespace** — a group with every subgroup below it, or a user
 namespace — on GitLab.com or a self-managed GitLab instance. Its projects become repositories
 in the inventory, and the namespace itself becomes the account they belong to.
@@ -80,8 +88,12 @@ The secret holds the token, either bare or as a JSON document:
 {"token": "glpat-xxxxxxxxxxxxxxxxxxxx"}
 ```
 
+Save the credential JSON shown above as `gitlab-secret.json`, then upload it via stdin:
+
 ```bash
-limacharlie secret set --key gitlab-token --value '{"token": "glpat-..."}' --enabled
+jq -Rs '{secret: .}' gitlab-secret.json \
+  | limacharlie secret set --key gitlab-token --enabled \
+  && rm -f gitlab-secret.json
 ```
 
 ## Create the provider record

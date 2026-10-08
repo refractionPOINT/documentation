@@ -8,9 +8,11 @@ Authentication is the standard `Authorization: Bearer <JWT>` header.
 !!! info "Permissions & enable gate"
     Reads — and the read-only preview `POST`s (`query`, `simulate/resources`,
     `simulate/findings`, `policy/suggest`) — require `cloudsec.get`; every
-    other write requires `cloudsec.set`. Every route requires the
-    organization to be subscribed to `ext-cloud-security` — a `403` on any
-    route means subscribe first. The `oid` is always taken from the
+    other ordinary write requires `cloudsec.set`. Code Security remediation and
+    AutoFix require `cloudsec.respond`; see [their route permissions](code-security/reference.md#api-routes).
+    Every route requires the organization to be subscribed to
+    `ext-cloud-security`. For a `403`, check both the subscription and the
+    permission named in the error. The `oid` is always taken from the
     authorized path. Provider *records* are not `/cloudsec` routes: their
     CRUD goes through Hive (`cloudsec_provider` hive, gated by
     `cloudsec_provider.get/set/del`).
@@ -51,7 +53,7 @@ Shared behaviors:
 | `GET /ciem/facets` | `{facets}` — identity facet counts. |
 | `GET /ciem/identities` | `{principals, next_cursor}` — the same per-principal effective-access rows `public-access` carries, but server-filtered and keyset-paginated instead of a top-N. Takes the same selectors as `/ciem/facets`, so the rail's counts always describe the population in the list. Ranked by risk score by default, so a walk that spans a projector rebuild can move a row across the cursor — use it for browsing, and `/inventory` with `type=Identity` and the default `urn` sort for an exact export. |
 | `GET /ciem/identity?urn=` | `{identity}` — the Identity 360 single-identity rollup for one principal URN: its grants, reachable sensitive resources, access levels, and escalation paths. |
-| `GET /code/repos`, `/code/status`, `/code/capabilities`, `/code/fixes`, `/code/repos/{repo}/sbom`, `/code/images`, `/code/image-repos` | Code Security reads: repositories, run status, GitHub capabilities, the dependency fix queue, SBOM links and container images. See [Code Security API routes](code-security/reference.md#api-routes). |
+| `GET /code/repos`, `/code/status`, `/code/capabilities`, `/code/fixes`, `/code/sbom?repo=`, `/code/images`, `/code/image-repos` | Code Security reads: repositories, run status, GitHub capabilities, the dependency fix queue, SBOM links and container images. See [Code Security API routes](code-security/reference.md#api-routes). |
 | `GET /inventory` | `{resources, next_cursor}`. Filters: `type`, `provider`, `account`, `region`, `q`, `account_unscoped` (drop the account scoping and walk the whole estate), `sort` (`urn`, the default and the safe order for a full walk or export; `risk` with `type=Identity`; `last_seen` with `type=ThirdPartyAsset`), paging. With `type=Identity`, `provider`/`source`, `account`, and `region` become repeatable and the identity cross-filter applies: `kind`, `criticality`, `risk_band`, `mfa` (`on`/`off`/`unknown`), and the tri-state `admin`, `external`, `public`, `disabled`, `crown_jewel`, `can_escalate`, `dormant_90d`, `with_sensitive`. Pages served from the materialized view also carry `served_from` and `data_as_of` (the snapshot's build time) so a client can render "as of" instead of implying live. |
 | `GET /inventory/facets` | Inventory facet counts by type/account/region. |
 | `GET /data-security/facets` | `{facets}` — DSPM data-store rollup. |
@@ -79,8 +81,8 @@ Shared behaviors:
 
 !!! note "`ciem/*` and `providers/*` families"
     `ciem/*` has four members — `public-access`, `facets`, `identities`, and
-    `identity` (singular: one principal). `providers/*` has two — `test`
-    (`POST`, below) and `manifest` (`GET`, above). Creating, editing, and
+    `identity` (singular: one principal). `providers/*` has three members. `test`
+    and `m365/certificate` are `POST` routes, below, and `manifest` is a `GET`, above. Creating, editing, and
     deleting provider *records* is not a `/cloudsec` route: it goes through the
     `cloudsec_provider` Hive.
 
@@ -94,7 +96,9 @@ One route sits outside the `{oid}` path — the MSSP cross-tenant board:
 
 ## Writes
 
-All writes are `POST` with a JSON body and require `cloudsec.set`.
+The writes below use `POST` with a JSON body. Ordinary configuration, triage and
+ingest writes require `cloudsec.set`; Code Security AutoFix instead requires
+`cloudsec.respond` and creates a governed remediation run.
 
 | Route | Body | Returns |
 |---|---|---|
@@ -109,6 +113,7 @@ All writes are `POST` with a JSON body and require `cloudsec.set`.
 | `/code/scan`, `/code/autofix`, `/code/ingest`, `/code/pr_check` | Code Security writes: rescan a repository, open an AutoFix pull request, push scan results, check a pull request. See [Code Security API routes](code-security/reference.md#api-routes). | Rescan, AutoFix and pull-request checks are queued and answer `accepted`; the work runs afterwards. Ingest answers with what was recorded and `notes`. |
 | `/code/webhook` | `{connection, url, secret}` — point a GitHub connection's App webhook at this organization's `github-code-webhook-<connection>` adapter. `url` must be this organization's own hook URL, and the App must already have an active webhook (`webhook_not_active` otherwise). See [the webhook API](code-security/pull-requests.md#the-webhook-api) for the rules and refusal reasons. | The connection's re-checked webhook status: `{state, reason, missing_events, detail}`. |
 | `/providers/test` | `{provider: <cloudsec_provider record>}` — credential inline (ephemeral, never stored) or a `hive://secret/<name>` reference. | `{supported, report: {provider, ok, checks: [{id, name, required, ok, detail}]}}`. A provider type with no preflight implemented answers `{supported: false, report: null}` rather than an error — treat it as "cannot verify", not "credential bad". |
+| `/providers/m365/certificate` | `{connection, client_id?, replace?}`. Generates the certificate a Microsoft Entra / Microsoft 365 connection authenticates with (see [certificate mode](provider-setup/entra.md#certificate-mode-recommended)). Also requires `secret.set`: the key pair is written to the organization's secret store as `cloudsec-m365-<connection>`. A repeat call returns the existing certificate unless `replace` is `true`. | `{created, secret_name, credentials, common_name, certificate, certificate_pem, thumbprint, thumbprint_sha256, not_before, not_after}`. `certificate` is the base64 DER `.cer` to upload; the private key is never returned. |
 
 Example — disposition a finding:
 
