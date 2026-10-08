@@ -368,6 +368,7 @@ Create an enabled `ai_agent` record named `cmdline-triage` with a system `prompt
 | `definition` | Yes | Literal `hive://ai_agent/<name>` reference. The name uses ASCII letters, digits, underscores, hyphens or dots; paths, percent encoding, `..` and a standalone `.` are rejected. Inline credentials and templated definitions are unsupported. |
 | `prompt` | No | User prompt, evaluated as a template against the event. |
 | `data` | No | Dictionary of event extraction mappings, with the same semantics as `start ai agent`. Rule keys override the record's extracted keys. |
+| `questions` | No | List of typed decision questions. Mutually exclusive with `response_schema` and rule-level `max_tokens`; see [Decision questions](#decision-questions). |
 | `response_schema` | No | JSON Schema dictionary for structured output, passed through the provider's native structured-output API. Use a schema supported by your selected model/provider. |
 | `max_tokens` | No | Integer output token limit, 1–32768. Overrides the record's `max_tokens`; otherwise the record or service default (512) applies. |
 | `timeout` | No | Integer seconds, 1–60. Default: 20. Bounds the request, including a wait for an identical in-flight request. |
@@ -376,9 +377,9 @@ Create an enabled `ai_agent` record named `cmdline-triage` with a system `prompt
 
 Schemas must be self-contained and are limited to 16 KiB, 256 JSON nodes and 16 levels of nesting. External references cannot fetch network or file resources. Responses are validated against the original schema even when provider-specific structured-output grammars need a transformed version. A schema outside these limits is not rejected when the rule is saved; it produces an operator error when `ask ai` is evaluated.
 
-The record's `prompt` supplies the system message. The rule's rendered `prompt` and the merged extracted data supply the user message; data is appended as an **Event data:** fenced JSON block. The model is instructed to return a single JSON object. The operator makes no tool calls and starts no agent session.
+For calls without `questions`, the record's `prompt` supplies the system message. The rule's rendered `prompt` and the merged extracted data supply the user message; data is appended as an **Event data:** fenced JSON block. The model is instructed to return a single JSON object. The operator makes no tool calls and starts no agent session.
 
-If the answer parses as a JSON object, that object is the metadata. Without `response_schema`, other answers become `{"text": "<answer>"}`, which you can inspect at `path: text`. With a schema, non-object or schema-invalid answers produce an operator error and no match. Metadata paths are relative to this object, so use `verdict`, rather than `event/verdict`. On a match, the answer is attached to the detection's `mtd` under `ai_agent_<name>`, like lookup metadata. Answers are bounded to 64 KiB; oversized replies produce an operator error. A reply that the provider cuts off at the output token limit, or that the model refuses, is treated as incomplete and also produces an operator error, so set `max_tokens` high enough for the complete answer. A nested metadata operator can contribute its own metadata using the same behavior as `lookup`.
+For calls without `questions`, if the answer parses as a JSON object, that object is the metadata. Without `response_schema`, other answers become `{"text": "<answer>"}`, which you can inspect at `path: text`. With a schema, non-object or schema-invalid answers produce an operator error and no match. Metadata paths are relative to this object, so use `verdict`, rather than `event/verdict`. On a match, the answer is attached to the detection's `mtd` under `ai_agent_<name>`, like lookup metadata. Answers are bounded to 64 KiB; oversized replies produce an operator error. A reply that the provider cuts off at the output token limit, or that the model refuses, is treated as incomplete and also produces an operator error, so set `max_tokens` high enough for the complete answer. A nested metadata operator can contribute its own metadata using the same behavior as `lookup`.
 
 With `metadata_rules`, the operator matches only when the call succeeds **and** the metadata rule matches. Without it, any successful call matches; that does not itself establish whether an event is malicious. `not: true` reverses a successful match decision. A timeout, provider/authentication error, unavailable definition, saturation or resource ACL refusal produces an operator error and no match, including with `not: true`.
 
@@ -389,6 +390,83 @@ Treat event fields as untrusted input: they can contain instructions designed to
 Event data is sent to the configured provider. The same resource ACL egress restrictions as `start ai agent` apply, including data in the prompt and extraction mappings. Keep API credentials in [Hive Secrets](../7-administration/config-hive/secrets.md).
 
 **Testing and supported contexts:** saving a valid rule does not call the model. Save-time `tests:` and historical replay have no AI callback; when evaluation reaches `ask ai`, they report `ask ai is not supported in this context`. A test that short-circuits before `ask ai` can still validate earlier filters. Test the AI verdict on live events in a controlled organization. Mail signal and cloud posture policy rules reject this operator when saved.
+
+#### Decision questions
+
+Use `questions` when you need a probability that a condition holds, a choice from a fixed set, or a score against ordered levels. Use `response_schema` when you need a custom JSON object, such as extracted fields or a written explanation. All questions evaluate the same input: the record prompt, rendered rule prompt and extracted event data.
+
+Today, only OpenAI API-key agents support questions. Set `provider: openai` with API-key credentials in the enabled `ai_agent` record; Azure OpenAI is unsupported. The default model for questions is `gpt-6-luna`; an explicit model in the record takes precedence. Other providers fail the evaluation before making a provider request and produce no match, including with `not: true`. The question format is provider-neutral, so support for other providers can be added without changing rules.
+
+```yaml
+detect:
+  event: NEW_PROCESS
+  op: and
+  rules:
+    - op: contains
+      path: event/COMMAND_LINE
+      value: https://
+    - op: ask ai
+      definition: hive://ai_agent/cmdline-triage
+      prompt: "Command: {{ .event.COMMAND_LINE }}"
+      questions:
+        - name: malicious
+          type: predicate
+          instructions: The command downloads and executes a remote payload.
+        - name: category
+          type: choice
+          instructions: The most likely intent of the command.
+          choices:
+            - benign
+            - value: remote access
+              description: Installs or opens remote control of the host.
+        - name: severity
+          type: score
+          instructions: The impact if the command is malicious.
+          levels: [low, medium, high]
+      metadata_rules:
+        op: and
+        rules:
+          - op: is greater than
+            path: malicious/probability
+            value: 0.8
+          - op: is greater than
+            path: category/probabilities/remote access
+            value: 0.7
+respond:
+  - action: report
+    name: ai-flagged-remote-payload
+```
+
+| Parameter | Meaning and limits |
+|-----------|--------------------|
+| `questions` | 1–32 questions. Cannot be combined with `response_schema` or rule-level `max_tokens`. The record's `max_tokens` is not sent to the decision API. |
+| `name` | Required, unique within the rule: 1–64 ASCII letters, digits, underscores or hyphens. Identifies the answer in metadata. |
+| `type` | Required: `predicate`, `choice` or `score`. |
+| `instructions` | Required, non-empty text, at most 4 KiB per question. Describes the condition, category or rating to evaluate. |
+| `choices` | Required for `choice` only: 2–64 unique values, each a string or a dictionary with `value` and an optional `description`. |
+| `levels` | Required for `score` only: 2–16 unique labels ordered lowest first, each a string or a dictionary with `label` and an optional `description`. |
+| `value` / `label` | 1–128 ASCII letters, digits, spaces, underscores, dots, colons or hyphens, starting with a letter or digit. |
+| `description` | Optional text for a choice or level, at most 1 KiB. |
+
+Quote YAML values such as `"yes"`, `"no"` and `"1"` so they remain strings rather than booleans or numbers. A predicate has no `choices` or `levels`. Invalid question definitions are rejected when saving the rule.
+
+The normalized metadata has one entry per question name. For example:
+
+```yaml
+malicious: {type: predicate, probability: 0.93}
+category:
+  type: choice
+  choice: remote access
+  confidence: 0.81
+  probabilities: {benign: 0.19, remote access: 0.81}
+severity:
+  type: score
+  score: 1.6
+  confidence: 0.67
+  probabilities: {low: 0.07, medium: 0.26, high: 0.67}
+```
+
+Probabilities and confidence range from 0 to 1. A score is the probability-weighted average of 0-based level indices, so it can fall between levels. Metadata paths are relative to this object, including values containing spaces, as in `category/probabilities/remote access`. On a match, the object appears in the detection's `mtd` under `ai_agent_<name>`, where `<name>` is the agent record name. If the model refuses any question, the entire evaluation errors and produces no match, including with `not: true`.
 
 ### scope
 
