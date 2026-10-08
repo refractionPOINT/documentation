@@ -412,7 +412,7 @@ The archive contains:
 - **observations.csv**, when observation collection completes: every retained
   application selected by the window, with console labels for signature status,
   vendor trust (Yes, No, or Unknown), enforcement, and triage status. Executions
-  use the console's lower-bound display (for example, **1,234+**), or **No executions**.
+  use the console's lower-bound display (for example, **1,234+**), or **none seen** when no executions were reported.
 
 The report identifies the organization, exporting user, generation time, collection
 start, and selected window. Policies include targeting, priority, mode, stance,
