@@ -1,6 +1,6 @@
 # Connecting Providers
 
---8<-- "includes/email-security-beta.md"
+--8<-- "includes/email-security-availability.md"
 
 A mail connection is one `mailsec_provider` Hive record plus one credential in
 the [secret](../7-administration/config-hive/secrets.md) Hive. Two providers are
@@ -30,6 +30,7 @@ scope:
   exclude_addresses: []
   include_groups: []
   domains: []
+  internal_domains: []
 
 ingest:
   mode: auto | push        # Workspace requires explicit push
@@ -62,6 +63,7 @@ Which mailboxes the connection covers.
 | `exclude_addresses` | Mailboxes never to cover. Excludes always win over includes. |
 | `include_groups` | Directory groups to expand into addresses before discovery. |
 | `domains` | Restrict to mailboxes in these domains. **Every listed domain is enumerated**, so an account hosting several domains can name as many as it needs. **Empty means every domain in the account** — the intended default, and what the setup wizard writes. |
+| `internal_domains` | Extra domains your organization sends from, used only to label mail from them as `internal`. It does not change which mailboxes are covered. Most organizations leave it empty, because your mailbox and alias domains are detected automatically. See [Internal Domains](internal-domains.md). |
 
 Addresses and domains are lowercased on save.
 
@@ -136,7 +138,7 @@ over.
 
 | | Microsoft 365 | Google Workspace |
 |---|---|---|
-| **Quarantine** | Move to a hidden `LC Quarantine` folder — restorable, invisible to the user | Remove `INBOX`, add an `LC Quarantine` label |
+| **Quarantine** | Move to a hidden `LC Quarantine` folder. Restorable, and the user does not see the folder | Remove `INBOX`, add a **visible** `LC Quarantine` label. Restorable, and the user can still find the message under that label |
 | **Trash** | Move to Recoverable Items — invisible to the user, recoverable by an admin. Distinct from Deleted Items | Add `TRASH` |
 | **Move to spam** | Move to the Junk Email folder | Add `SPAM` |
 | **Restore** | Move back to the folder we recorded, falling back to the Inbox | Invert the labels |
@@ -178,9 +180,8 @@ and its retained copy follow `flagged_days` (**1–400**, default **400**) separ
 
 Deletion is asynchronous. The deployment must have retention deletion enabled;
 a changed retention window gets a report-only sweep before deletion, and large
-backlogs can take multiple sweeps. During private beta, coordinate with the
-MailSec team to confirm the sweep mode and completion before treating cleanup
-as complete. Restore your intended ongoing retention only after verifying it.
+backlogs can take multiple sweeps. Verify sweep completion before treating
+cleanup as complete. Restore your intended ongoing retention only after verifying it.
 This removes MailSec data, not messages from the provider's mailbox.
 
 Backfilled historical messages are judged but emit no `EMAIL_MESSAGE` or

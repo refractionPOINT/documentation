@@ -1,19 +1,36 @@
-# Mail Rules
+# Detection Rules
 
---8<-- "includes/email-security-beta.md"
+--8<-- "includes/email-security-availability.md"
 
 Every mail detection rule lives in your organization's **`dr-mail` Hive**, one rule
-per record. **Email Security → Rules** shows the complete set: search and filter,
+per record. **Email Security → Detection rules** shows the complete set: search and filter,
 inspect the full YAML/JSON, edit, enable, disable or delete any rule. Reading takes
 `mailsec.get`; changing or deleting takes `mailsec.set`.
 
+The catalog shows each rule’s human name alongside its record ID, class, authored
+severity, and scoring strength. Weight is scaled by confidence before matching
+signals contribute to the verdict. Response automations are configured separately
+under **Policy → Response automations**.
+
 ## Default rules and ownership
 
-The first subscription installs LimaCharlie's defaults as ordinary enabled records.
-After installation they are yours. There is no hidden pack, reserved record-name
+The first subscription installs LimaCharlie's defaults as ordinary enabled records
+tagged `limacharlie`. There is no hidden pack or reserved record-name
 prefix, global managed-detection switch, or per-rule policy override. The record
 key is the rule ID. Default keys such as `ms-link-credentials-in-url` are ordinary
 keys with exactly the same permissions and behavior as names you choose.
+
+New rule-pack releases update **vendor-tagged records** automatically during the
+daily extension update: new defaults are added, changed vendor bodies are
+replaced, and retired vendor rules are removed. Your enabled/disabled choices,
+expiry and extra tags are preserved. Removing a default is not a durable way to
+turn it off: a missing default is recreated at the next pack release. **Disable
+it instead.**
+
+To maintain your own version, copy a default to a new key without the
+`limacharlie` tag, then disable its vendor original. Alternatively, remove that
+tag from the existing record before customizing it. Records without the vendor
+tag are not replaced by pack updates. Keep a copy in version control.
 
 Only enabled records run. With no enabled `pre_verdict` rules, messages remain
 `unknown`. When scoring rules run but none matches, the verdict can be `benign`.
@@ -22,7 +39,7 @@ reload fails, the collector keeps the last successfully loaded set and reports
 the failure. Existing verdicts are not rewritten by a configuration edit.
 
 The subscription's one-time installation marker survives unsubscribe/resubscribe.
-Deleted rules never return on a background refresh or a later subscription callback.
+Resubscribing alone does not recreate deleted rules; a subsequent pack update can.
 If the initial installation was interrupted or partially failed, use **Restore
 defaults** to complete it.
 
@@ -42,6 +59,17 @@ success for every record. Retry the explicit restore to recover.
 The extension performs writes with its own identity. `ext.request` authorizes
 calling the action; the console additionally requires `mailsec.set`. Records
 outside the extension's segment cannot be overwritten and are reported as failed.
+
+To apply the current pack update immediately, preserving vendor rules' enabled
+states and leaving customer-owned records alone:
+
+```bash
+limacharlie extension request --name ext-email-security \
+  --action restore_default_rules --data '{"upgrade": true}' --oid "$OID"
+```
+
+`upgrade` and `overwrite` cannot be combined: upgrade keeps your vendor-rule
+enable choices, while overwrite explicitly resets existing defaults.
 
 ## Infrastructure as code
 
@@ -109,10 +137,44 @@ limacharlie hive set --hive-name dr-mail --key vendor-bank-change \
 | `weight` | ✅ for `signal` and `detection` | 1–100 for `signal` and `detection`. **Omit the field for `graymail`**, including an explicit zero; the Hive rejects any supplied weight for that class |
 | `confidence` | — | 0–100, **default 100**. An author who does not express a confidence means "when this fires, it is right" |
 | `shared_fact` | — | Optional group for overlapping scoring signals. Only the strongest weighted contribution in the group counts; not allowed on graymail or response rules |
-| `respond` | — | `post_verdict` only |
+| `respond` | — | Native responses, `post_verdict` only |
+| `severity` | — | `informational`, `low`, `medium`, `high` or `critical`; omitted means informational when scored |
+| `actions` | — | Typed policy actions applied when this rule matches; see below |
+| `action_params` | — | Parameters keyed by an action named in `actions`; optional banner `text` |
+| `mode` | — | `alert_only` (default) or `enforce`, only when typed actions are present |
 | `name` | ✅ | Non-empty human-readable label, up to 256 bytes |
 | `fp_notes` | ✅ | Non-empty explanation of the benign mail that might match |
 | `tags`, `attack_types` | — | Grouping and authoring metadata; entries must not be empty |
+
+### Severity and typed actions
+
+Severity is independent of score and verdict. A message carries the maximum
+severity of all matching, unsuppressed rules, including matches beyond the
+shortened top-signals display. Excluded rules contribute neither severity nor
+typed actions. All shipped defaults declare a severity; historical messages may
+have no stored value, which remains unknown.
+
+Typed actions are `quarantine_message`, `trash_message`, `move_to_spam`,
+`banner_message`, `submit_to_triage` and `crawl_link`. A rule can request up to
+16 distinct actions; duplicates, unknown actions and parameters for absent
+actions are refused. Scoring-rule actions run after scoring when their rule
+matched; post-verdict actions run when their final-state condition matches.
+Existing native `respond` blocks remain available.
+
+Actions default to `alert_only`. Choosing `enforce` cannot override an
+organization's alert-only policy, exclusions or VIP restrictions. Rule actions
+and every matching policy automation form a union. For conflicting permitted
+placement intents, quarantine takes precedence over trash, which takes precedence
+over spam. Alert-only intents do not suppress a permitted enforcement intent.
+Repeated equivalent intents are deduplicated; rule order supplies deterministic
+parameters within an equivalent intent.
+
+For `banner_message`, `action_params.banner_message.text` optionally overrides
+the warning with plain text of at most 512 Unicode characters. Markup and unsafe
+control or direction-changing characters are refused. Empty or whitespace-only
+text uses the policy default. The override does not enable a disabled banner
+policy. See [Policy Reference](policy.md#actions) and
+[Message Groups & Cases](groups.md).
 
 ### Signal, detection, or graymail?
 
@@ -462,50 +524,26 @@ fields that distinguish them:
     does **not** undo the action it took — write the compensating rule if you
     want one.
 
-## Maintaining the default rule sources
+## Maintaining your rules
 
-For contributors with access to the product repositories, `mail-rules` contains
-the source pack and its sample harness. The shipped default sources live in
-`go-mailsec/signals/rules/`. `ext-email-security` converts them into ordinary
-Hive records during initial installation or explicit restoration;
-`legion_mailsec` evaluates the organization's enabled records. Updating the
-source pack does not replace an existing organization's rules.
+Your own untagged `dr-mail` records stay under your control. For vendor defaults,
+follow the [ownership guidance](#default-rules-and-ownership) above so a pack
+update does not replace your edits. [Restore defaults](#restore-defaults)
+explicitly when you want to return to the current LimaCharlie pack.
 
-`go-cloudsec` owns the separate configuration-posture rules described in
-[Mail Posture Rules](../cloud-security/mail-posture-rules.md).
+For a rule you maintain:
 
-Default source files contain a top-level `rules` list. Each rule has a stable `id`,
-`name`, `phase: pre_verdict`, `class`, `weight`, `confidence`, `tags`,
-`attack_types`, `fp_notes`, and `detect`. Unlike a graymail Hive record,
-a source graymail entry uses `weight: 0`. Do not copy a source file directly
-into `dr-mail`: remove the list wrapper and body ID, choose the record key,
-omit graymail weight, and replace any wildcard paths with supported conditions.
+1. Keep the single-record JSON or YAML body in your own version control.
+2. Validate it with `mailsec rule validate` before saving it.
+3. Use `mailsec rule backtest` to test the unsaved candidate against retained
+   mail. Review the context limitations and skipped-message counts above.
+   `mailsec analyze` evaluates the currently enabled organization rules, so it
+   cannot test an unsaved candidate; use it to inspect sample parsing and the
+   current pack's results.
+4. Save the candidate in a pilot organization with `limacharlie hive set
+   --hive-name dr-mail`, using a stable record key and `--enabled`. Analyze
+   positive and near-miss samples there before promoting it to wider coverage
+   or permitting automated responses.
 
-The contribution workflow is:
-
-1. Change the YAML under `mail-rules/rules/`. Preserve rule IDs; retire and add a
-   new ID when changing the meaning of a rule. Update false-positive notes.
-2. Add positive and near-miss RFC 5322 samples under
-   `samples/<rule-id>/positive/` and `samples/<rule-id>/negative/`. Use reserved
-   domains such as `.example` and `.invalid` for fixture addresses and URLs.
-3. Supply runtime-only enrichment facts in `<sample>.enrich.json` sidecars.
-   Authentication results, headers, link mismatches, and other parse-derived
-   evidence must come from the EML bytes. The harness runs the real parser and
-   pure enrichers before applying sidecars.
-4. Run the harness from its module directory:
-
-   ```bash
-   cd mail-rules/harness
-   go test ./...
-   ```
-
-5. Sync approved changes into `go-mailsec/signals/rules/`, update its default-pack
-   version, and run the library's rule and corpus tests. Check the extension's
-   library pin before expecting an installation or restore to use the new defaults.
-   Live verdicts identify the effective rules and policy by their configuration
-   fingerprint; existing Hive records change only through an explicit edit or restore.
-
-The harness checks compilation, sample coverage, positive and negative behavior,
-fixture hygiene, and the benign-corpus gate. Its current benign-corpus gate
-requires zero flagged messages. A change needs both a sample that should match
-and a plausible benign sample that should not.
+Keep [mail posture rules](../cloud-security/mail-posture-rules.md) separate:
+they evaluate provider configuration, while these rules evaluate messages.

@@ -1,5 +1,8 @@
 # Troubleshooting Code Security
 
+For evidence-chain, lineage, runtime-check and remediation reason codes, see
+[Unknown, partial and refusal reasons](reasons.md).
+
 Start with the **Set up code security** checklist on the **Code security** page,
 if it is shown. It names what is not set up and links to the fix. From the CLI,
 `limacharlie cloudsec code status` shows whether scans run and what failed.
@@ -20,7 +23,8 @@ if it is shown. It names what is not set up and links to the fix. From the CLI,
 | A repository still shows `sast_ruleset_unresolved` | That result predates code rules, and `sast_ruleset` is now ignored. The next scan replaces it. |
 | GitLab projects are listed but never scanned | The connection is to a self-managed GitLab instance. Only GitLab.com projects can be scanned. The connection test reports `code_scanning_reachable`. |
 | The repository drawer says it is outside the App's installation | The GitHub App is installed on selected repositories only. Add the repository on GitHub's installation page. |
-| An image shows `registry_permission_denied`, or the status shows `image_registry_permission` | The registry refused to let us pull the image. For Google Cloud, grant the connection's service account `roles/artifactregistry.reader` on the project that hosts the image. See [Container image scanning](../provider-setup/gcp.md#container-image-scanning-by-code-security). The image is retried automatically, at most once a day after repeated failures. **Sync now** on the source-control connection retries it immediately. |
+| An image shows `registry_permission_denied`, or the status shows `image_registry_permission` | The registry refused the image pull. Grant the connected cloud role or registry credential read access to this repository. See [Scan private container images](container-registries.md). The image is retried automatically; **Sync now** on the source connection retries immediately. |
+| Status shows `image_registry_credential` | A private image has no usable registry credential. Add the appropriate cloud permission or a read-only repository credential under **Cloud Security → Settings → Registries**. Other images can still scan; this pass is partial. See [Scan private container images](container-registries.md). |
 | An image shows `image_not_found` | The registry has no image with that digest, usually because it was deleted or cleaned up. After two such answers the image is no longer retried. It is dropped when nothing references it. If you pushed it again, use **Sync now** on the source-control connection. |
 | An image shows `failure_backoff` | Recent attempts failed. The image's error says why and when it will next be tried. |
 | A finding you expected is missing entirely | Check `severity_floor`. Findings below it are never recorded, so there is nothing to filter for. |
@@ -59,13 +63,15 @@ if it is shown. It names what is not set up and links to the fix. From the CLI,
 |---|---|
 | No AutoFix pull request appears | Refusals are reported as `cloudsec.code_autofix_refused` events, once `ops_events` is on. See [When no pull request appears](autofix.md#when-no-pull-request-appears). |
 | `write_app_lacks_contents` | Grant **Contents: Read and write** to the App and approve on the installation page. |
+| `403 missing_permission` when asking for a fix | You need `cloudsec.respond`. `cloudsec.set` does not include it. See [Permissions](containment-setup.md#permissions). |
+| `503 disabled` when asking for a fix | Remediation is not enabled for your organization yet. |
 | The pull request warns that the lockfile is stale | Run the command in the pull request on its branch before merging. See [Lockfiles](autofix.md#lockfiles). |
 
 ## Pushed results and local scans
 
 | Problem | What to check |
 |---|---|
-| `No such command` for `cloudsec code` | Upgrade the `limacharlie` CLI. |
+| `No such command` for `cloudsec code` | Upgrade with `python -m pip install --upgrade limacharlie` and confirm [CLI setup](getting-started.md#cli-installation). |
 | The CLI cannot identify the repository | Pass `--repo <owner>/<repository>`. |
 | Docker is not found | Install and start Docker, or use `--binary`, or push results from your own scanner with `code ingest`. |
 | A pushed repository is not recorded | It must match an enabled code-scanning policy and fit within the repository limits. |

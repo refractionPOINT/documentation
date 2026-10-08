@@ -55,7 +55,7 @@ The mapping above is based on the expected webhook event from Jira. Note that in
 
 ### 2. Building the Webhook URL
 
-After creating the webhook, you'll need to retrieve the webhook URL from the [Get Org URLs](https://api.limacharlie.io/static/swagger/get-org-urls) API call. You'll need the following information to complete the Webhook URL:
+After creating the webhook, you'll need to retrieve the webhook URL from the [Get Org URLs](https://api.limacharlie.io/static/swagger/#/Org/get_orgs__oid___urls) API call. You'll need the following information to complete the Webhook URL:
 
 - Organization ID
 - Webhook name (from the config)

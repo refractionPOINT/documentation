@@ -1,6 +1,6 @@
 # API Reference
 
---8<-- "includes/email-security-beta.md"
+--8<-- "includes/email-security-availability.md"
 
 All Email Security routes live under
 `https://api.limacharlie.io/v1/mailsec/{oid}/…` and appear in the public OpenAPI
@@ -9,7 +9,8 @@ standard `Authorization: Bearer <JWT>` header.
 
 !!! info "Permissions & enable gate"
     Every route requires the organization to be subscribed to
-    `ext-email-security` — a `403` on any route means subscribe first. The `oid`
+    `ext-email-security`. For a `403`, check both the subscription and the
+    permission named in the error. The `oid`
     is always taken from the authorized path.
 
     Reads and the read-only `POST`s (`analyze`, `rules/validate`,
@@ -55,6 +56,8 @@ Shared behaviours:
 | `GET /reports` | The user-report queue. Params: `status[]` (`open`, `triaging`, `resolved`), `oldest_first`, `cursor`, `limit` |
 | `GET /reports/{report_id}` | One report: who reported it, the message they reported, the original once located across the tenant's mailboxes, and its triage state |
 | `GET /senders/{key}` | The accumulated profile for one correspondent. `key` is qualified (`email:someone@corp.example` or `domain:corp.example`) or a bare address or domain. A key with no profile says so explicitly rather than returning a zeroed profile |
+| `GET /submissions` | `{enabled, available, submissions, next_cursor}` — the samples your organization copied to LimaCharlie. Filters: `category` (`missed_threat`, `false_positive`, `other`), `since`, `until` (RFC 3339), `limit` (1-200, default 50), `cursor`. `enabled` is whether the organization opted in and `available` is whether the datacenter has a submissions store; both are always present. See [Sample Submission](sample-submission.md). Requires `mailsec.get` |
+| `GET /submissions/{submission_id}` | `{submission, reviews, reviews_truncated}` — one submission and up to 200 review-access timestamps (never who); counts and latest-review time include all accesses. An unknown id is not an error: it returns `{"submission": null, "reviews": []}`. Requires `mailsec.get` |
 | `GET /actions/{action_id}` | `{action}` — one audit entry expanded, **including the JSON request payload the message timeline omits**. For a raw-message download that payload carries the access justification. Gated on `mailsec.get`: reading who did what to a message is part of reading the product |
 | `GET /onboarding` | `{scopes, steps, script}` — the setup steps, OAuth scopes and `gcloud` commands for connecting a tenant, for rendering in a setup flow. Each step carries a `console` and, where verifiable, a `verified_by` naming the connection-test check that proves it. Params: `provider` (`gworkspace` default, or `m365`), `project_id`, `sa_email`, `topic`, `subscription` — supply them and the commands come back ready to run rather than templated |
 | `GET /tenant` | `{confirmation, expires_in_seconds, warning}` — the tenant-purge preview. Returns the warning describing exactly what a purge removes, and mints the single-use `confirmation` token that [`DELETE /tenant`](#delete-tenant) requires. **It changes nothing.** The token expires after `expires_in_seconds` (300). Requires Owner-level authority, not `mailsec.get` |
@@ -101,6 +104,7 @@ that fires on volume. A refused attempt carries `result: refused` and a
 | `eml_never_stored` | The message exists but no raw copy was written at ingest |
 | `eml_expired` | The raw copy aged out of its retention lane |
 | `read_failed` | The object is there and could not be read |
+| `audit_write_failed` | The access record for this download could not be written (or an earlier record for it could not be read), so nothing was served |
 | `eml_store_not_configured` | This deployment has no raw-message store |
 | `internal_error` | The service could not complete the read (an index-store failure, not an object failure) |
 
@@ -308,10 +312,12 @@ faster, which is worth doing for its own sake.
 
 | Route | Does |
 |---|---|
-| `POST /messages/{msg_uuid}/actions` | Perform a typed action on one message. Body: `action` (`quarantine_message`, `trash_message`, `move_to_spam`, `restore_message`, `banner_message`, `unbanner_message`), optional `force` (boolean; see [alert-only overrides](#explicit-override-in-alert-only-mode)), optional `reason`, optional `attempt` (idempotency token — omit to collapse onto the existing attempt). `banner_message` uses the organization's own banner, rendered from its `mailsec_policy` record of type `banners`; the body's `banner` field is **deprecated and ignored** and will be removed. Requires `mailsec.act` |
+| `POST /messages/{msg_uuid}/actions` | Perform a typed action on one message. Body: `action` (`quarantine_message`, `trash_message`, `move_to_spam`, `restore_message`, `release_message`, `banner_message`, `unbanner_message`), optional `force` (boolean; see [alert-only overrides](#explicit-override-in-alert-only-mode)), optional `reason`, optional `attempt` (idempotency token — omit to collapse onto the existing attempt). `banner_message` uses the organization's own banner, rendered from its `mailsec_policy` record of type `banners`; its optional `text` (plain text, at most 512 characters; refused on any other action) replaces the wording for that one banner. No caller supplies HTML. Requires `mailsec.act` |
+| `POST /messages/{msg_uuid}/actions` with `submit_sample` or `withdraw_sample` | Copy one message to LimaCharlie, or withdraw that copy. `submit_sample` requires `category` (`missed_threat`, `false_positive`, `other`) and a `reason` of 1-1024 characters; `withdraw_sample` takes an optional `reason`. Only a person can run either: D&R rules, automations and the AI agent are refused. Submission requires organization opt-in; withdrawal remains available after opt-out or provider disconnect. See [Sample Submission](sample-submission.md). Requires `mailsec.act` |
+| `DELETE /submissions/{submission_id}` | Withdraw a submission: hard-deletes the stored copy and its metadata and returns `{withdrawn: true, submission_id, action_id}`. An unknown or already-deleted id returns `{withdrawn: false, submission_id}` with no `action_id`; an expired id is still cleaned up if metadata remains. Requires `mailsec.act` |
 | `POST /campaigns/{campaign_id}/actions` | Sweep a campaign. Same body plus `confirm`. **Without `confirm` this previews** and changes nothing, returning the member ids, the distinct mailboxes, the counts and a `confirm` token derived from that exact member set. With `confirm` it executes exactly that set; a campaign that grew since the preview is refused. Capped at 500 members. `reason` is recorded on **every member's** audit row and on the sweep's own row (`action_id` in the response); `attempt` (bounded at 128 characters, refused not truncated) mints a new row per member, so a deliberate retry is recorded beside what it retried instead of over it. Neither is part of the `confirm` token. Requires `mailsec.act` |
 | `POST /actions/bulk/execute` | Execute a previewed bulk remediation. Returns a `bulk_id` immediately and the provider work proceeds in the background. Requires `mailsec.act`. See [Bulk Remediation](remediation.md) |
-| `POST /reports/{report_id}/resolve` | Record a triage outcome. Body: `disposition` — one of `true_positive`, `false_positive`, `benign`. Resolving an already-resolved report succeeds and reports `already_resolved`, so two analysts clicking at once is not an error. Requires `mailsec.set` |
+| `POST /reports/{report_id}/resolve` | Record a triage outcome. Body: `disposition` — one of `malicious`, `spam`, `graymail`, `benign`, `simulation`. Resolving an already-resolved report succeeds and reports `already_resolved`, so two analysts clicking at once is not an error. Requires `mailsec.set` |
 | `POST /reports/{report_id}/reopen` | Put a resolved report back in the queue — see [`POST /reports/{report_id}/reopen`](#post-reportsreport_idreopen). Requires `mailsec.set` |
 | `POST /messages/{msg_uuid}/verdict` | Re-judge one message — see [`POST /messages/{msg_uuid}/verdict`](#post-messagesmsg_uuidverdict). Requires `mailsec.act` |
 | `POST /connections/{record}/test` | Probe a configured connection and report each requirement independently: the credential, each scope, a real directory read, and — for Google Workspace — the notification subscription and topic. Every check carries `id`, `name`, `required`, `status`, and on failure `detail` and `remediation`. A failed **optional** check leaves `ok` true. Body: `include_watch` (Workspace only; the one probe with a side effect — it establishes an idempotent, self-expiring push watch). Takes a **record name, not a credential**. Requires `mailsec.act` |
@@ -398,6 +404,7 @@ close a report must be able to reopen one, or a mis-click is permanent.
 |---|---|
 | `POST /analyze` | Parse a raw message into the Message Data Model and judge it with the organization’s enabled `dr-mail` rules and resolved scoring policy. **Nothing is ingested or stored**: no index row is written, no raw copy kept, and the organization's mail history is unchanged. Body: `eml_b64` (preferred) or `eml`, plus optional `org_domains` and `direction` — one of `inbound`, `internal`, `outbound`; anything else is refused with a `400` rather than analysed, because many default detections apply to inbound mail only and a mistyped direction would silently answer a lower verdict. Omit it to judge with no direction. Tenant context it cannot have — your sender history, your VIP list — is named explicitly in the payload rather than silently missing. Requires `mailsec.get` |
 | `POST /actions/bulk/preview` | Preview a bulk remediation over a caller-supplied selection: reports each message's current state and the distinct-mailbox blast radius, and mints the `confirm` token derived from that exact selection. **Nothing is changed and no job is created** — it is a `POST` only because up to 500 message ids do not belong in a query string. Requires `mailsec.get`, like the campaign preview it mirrors. See [Bulk Remediation](remediation.md) |
+| `POST /banner/preview` | Render a candidate [`banners` policy](policy.md#banners) exactly as recipients would see it, without saving. Body: `banner` (the record's fields, without `policy_type`), optional `verdict` (which variant to preview) and optional `text` (an action's wording). Answers 200 with `valid: true`, the rendered `html`, supported `colors` and field `limits`, or `valid: false` and the validator's reason. Requires `mailsec.get` |
 | `POST /rules/validate` | Compile a candidate `dr-mail` rule and report its errors without saving it. Body: `rule` (object), optional `rule_id`. Runs the same validator the `dr-mail` Hive applies on save, including lookup existence checks when the API's Hive metadata access is configured. Response blocks receive shape and size checks; full response compilation happens in the collector. See [Custom Rules](custom-rules.md#validation). An invalid rule is a `200` carrying `valid: false` and the reason, not an error response. Requires `mailsec.get` |
 | `POST /rules/backtest` | Evaluate a candidate `pre_verdict` rule over re-parsed stored messages. Original pipeline enrichments are not reconstructed. Lookups use current records when the Hive resolver is configured; `post_verdict` rules are refused. See [backtest limitations](custom-rules.md#what-a-backtest-can-evaluate). Body: `rule`, optional `rule_id`, `since`, `until`. Every response carries a `coverage_note` and counts what it could not examine (`skipped_no_raw`, `skipped_unparse`, `truncated`). `precision` is `null` — not `0` — when nothing it matched has an analyst disposition yet. Every message in the window is re-read from storage, which makes this the most expensive read on the surface: it is subject to the [replay budget](#the-replay-budget). Requires `mailsec.get` |
 
@@ -477,6 +484,8 @@ telemetry and every customer rule is keyed on them.
 | `EMAIL_VERDICT` | Once per verdict **decision**. `revision/seq: 0` with `revision/mode: auto` is the rule pack's own verdict, emitted at ingest immediately after that message's `EMAIL_MESSAGE`; `seq: 1…` is one per override (`analyst`, `ai`, `detonation`) |
 | `EMAIL_ACTION` | Once per remediation outcome, including failures and skips |
 | `EMAIL_USER_REPORT` | Once per message that reaches the abuse mailbox |
+| `EMAIL_DISPOSITION` | Independent analyst/SOAR disposition changed or cleared; carries actor, source, note, server timestamp, prior value, and sequence |
+| `EMAIL_REPORT_RESOLVED` | Report resolved; carries report/message identities, recorded disposition and resolver, and mailbox when available |
 | `EMAIL_INGEST_ERROR` | Once per message that could not be fetched or processed |
 
 Two consequences worth stating plainly:
@@ -508,3 +517,29 @@ having if it names who really asked.
 The Python SDK exposes the same surface, and the CLI wraps it — see
 [Command Line Interface](cli.md). Both are generated against these routes, so
 anything documented here is reachable from either.
+
+## Provider quarantine and release activity
+
+`GET /provider-quarantine` and `GET /release-requests` require `mailsec.get`.
+They accept scalar `connection`, `status`, `since`, `until`, `cursor` and `limit`
+(1–1000). Delivery status values are `quarantined`, `filteredAsSpam` and `failed`;
+release status values are `requested`, `released` and `denied`. Responses include
+independent per-feed `coverage`; an empty list with `not_granted`, pending, stale
+or error coverage is not proof of zero blocked messages. See
+[Provider Quarantine](provider-quarantine.md#cli-and-api) for the row contract.
+
+### Disposition and release
+
+| Route | Body and behavior |
+|---|---|
+| `POST /messages/{msg_uuid}/disposition` | `disposition` from the five-value vocabulary, optional `note`; or `clear: true`. Requires `mailsec.set`. |
+| `POST /messages/dispositions` | Same decision plus 1–500 unique `msg_uuids`. Returns per-message results, including partial failures. Requires `mailsec.set`. |
+| `GET /messages?disposition=<value>` | Filter by one disposition, or `none` for no current label. |
+| `POST /messages/{msg_uuid}/actions` with `action: release_message` | Restore, benign verdict revision, benign disposition, history repair. Optional `mode` (`analyst` or `ai`), `reason`, `force`, `attempt`. Requires `mailsec.act`. |
+| `POST /reports/{report_id}/resolve` | `disposition`; optional `remediation` with `scope` (`message`, `group` or `campaign`), `action` and optional `confirm`, `reason`, `force`, `attempt` (a required UUID for group scope, reused for preview, confirmation and polling; see [Message Groups](groups.md)). Without confirm, remediation is previewed and the report stays open. Pure resolution requires `mailsec.set`; remediation also requires `mailsec.act`. |
+
+The five dispositions are `malicious`, `spam`, `graymail`, `benign`, and
+`simulation`. Disposition is separate from verdict. Message detail includes
+`disposition_info: {disposition, note, actor, source, ts}` and `disposition_seq`.
+Source is `analyst`, `api`, `extension`, `report`, or `ai`; attribution and time
+are assigned by the service. Bodies cannot forge them.

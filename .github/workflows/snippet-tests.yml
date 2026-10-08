@@ -71,7 +71,7 @@ jobs:
         # reorganizes modules fails the PR that bumps it, not an unrelated PR.
         run: |
           pip install --upgrade pip
-          pip install 'limacharlie==5.5.1'
+          pip install 'limacharlie==5.6.2'
 
       - name: Byte-compile (do not run) the Python snippets
         run: python -m py_compile snippets/python/*.py
@@ -83,5 +83,6 @@ jobs:
           from limacharlie.sdk.organization import Organization
           from limacharlie.sdk.search import Search
           from limacharlie.sdk.hive import Hive, HiveRecord
+          from limacharlie.sdk.cloudsec import CloudSec
           print("SDK import paths used by the documentation snippets all resolve.")
           PY

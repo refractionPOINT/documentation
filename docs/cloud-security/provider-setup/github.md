@@ -32,8 +32,8 @@ Create the App with **read-only** access on the following. All are
 
 | Permission | Scope | Why | Preflight check |
 |---|---|---|---|
-| **Members** | Organization | Org members and teams — the identity inventory | `members`, `teams` |
-| **Metadata** | Repository | Repository inventory | `repos` |
+| **Members** | Organization | Org members and teams, plus complete organization owner counts | `members`, `teams` |
+| **Metadata** | Repository | Repository inventory and effective inherited branch rules | `repos` |
 
 ## Optional permissions
 
@@ -41,7 +41,7 @@ Create the App with **read-only** access on the following. All are
 |---|---|---|---|
 | **Administration** | Organization | Installed-App inventory → over-privileged-app findings; the org's **MFA-required** posture; the per-member MFA-enrollment cross-check | `installed_apps` |
 | **Secrets** | Organization | Organization Actions-secret inventory (**names only**, never values) | `org_secrets` |
-| **Administration** | Repository | Branch-protection posture and deploy-key inventory (deploy keys are also the one activity signal — see [Known limitations](#known-limitations)) | *(collected during the sweep)* |
+| **Administration** | Repository | Classic branch protection, required commit signatures, and deploy-key inventory (deploy keys are also the one activity signal — see [Known limitations](#known-limitations)) | *(collected during the sweep)* |
 | **Secrets** | Repository | Whether a repository has Actions secrets at all — an existence flag, not a name list (org-level secrets are the ones inventoried by name) | *(collected during the sweep)* |
 | **Contents** | Repository | [Code Security](../code-security/index.md) — dependencies, secrets, infrastructure-as-code, container images, code weaknesses and licenses. Without it the connector inventories repositories but cannot read them | `code_contents` |
 | **Attestations** | Repository | Verify GitHub Actions artifact attestations for container-image lineage. Without it, other scans continue, but GitHub-signed image lineage is unavailable | *(exercised during image lineage collection)* |
@@ -211,6 +211,35 @@ limacharlie cloudsec provider test --input-file provider.yaml
 | `repos` passes but repositories are missing | The installation was scoped to selected repositories | Re-install with **All repositories**, or accept partial coverage |
 | First sweep takes many minutes | Large orgs need per-repository calls for branch protection, deploy keys and the Actions-secret check | Expected; subsequent sweeps are incremental |
 | A permission was added after installing | GitHub requires the installation to accept new permissions | Approve the permission request on the org's installation page |
+
+## Organization and branch compliance coverage
+
+Organization governance includes owner counts, default repository permission,
+and member repository/team creation settings when GitHub returns those fields.
+More than three owners is a LimaCharlie review baseline; CIS still requires a
+manual judgement about the minimum owners your organization needs; an owner
+count alone does not fail that CIS control.
+
+Default-branch configuration combines classic branch protection and active
+repository/organization rulesets. **Administration → Read-only** supplies classic
+protection and commit-signature requirements; **Metadata → Read-only** supplies
+effective rules. These checks require no write grant. Install on **All repositories**
+to establish complete organization coverage. A selected-repository installation
+can report observed violations but cannot establish clean whole-organization
+compliance or prove a whole-organization empty population.
+
+Detailed rule reads cover at most 500 active repositories per pass, selected in
+stable name order. Archived repositories are excluded. A missing default branch,
+capped or incomplete policy read, or unsupported rule leaves the affected policy
+unknown. Existing classic branch-protection checks continue beyond this detailed
+read budget.
+
+GitHub's [read-only ruleset responses omit bypass actors](https://docs.github.com/en/rest/repos/rules#get-a-repository-ruleset).
+Configured review, status-check, signature, linear-history, force-push and deletion
+requirements can be observed. Administrator enforcement, review dismissal and
+push restrictions remain unknown when rulesets might change those claims unless
+classic protection independently establishes them. Configured requirements do
+not prove that every actor is unable to bypass them or that reviews were effective.
 
 ## Known limitations
 

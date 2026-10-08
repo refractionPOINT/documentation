@@ -1,8 +1,8 @@
 # Mail Rule Reference
 
---8<-- "includes/email-security-beta.md"
+--8<-- "includes/email-security-availability.md"
 
-Use this reference with [Mail Rules](custom-rules.md). It describes
+Use this reference with [Detection Rules](custom-rules.md). It describes
 `dr-mail` rules and the Message Data Model (MDM) they read. Platform D&R rules on
 `EMAIL_*` events and [cloud posture rules](../cloud-security/mail-posture-rules.md)
 have different wrappers and validation rules.
@@ -14,7 +14,8 @@ have different wrappers and validation rules.
 | `dr-mail`, either phase | `sender/email/domain/root` |
 | `dr-mail`, `post_verdict` only | `verdict/verdict` |
 | `dr-general` on `EMAIL_MESSAGE` | `event/sender/email/domain/root` |
-| `dr-general` on `EMAIL_VERDICT` | `event/revision/verdict` |
+| `dr-general` on `EMAIL_VERDICT` or `EMAIL_ANALYSIS_COMPLETE` | `event/revision/verdict` |
+| `dr-general` on `EMAIL_DISPOSITION` or `EMAIL_REPORT_RESOLVED` | `event/disposition` |
 | Inside `scope` with `path: links` | `href_url/domain/root` |
 
 The MDM is the root of a mail rule. Do not add `mdm/` or `event/`. The Hive
@@ -67,12 +68,20 @@ Scoring classes require `weight` from 1 to 100; graymail records must omit it.
 | Where would a reply go? | `headers/reply_to` (array of addresses), `sender/reply_to_mismatch` |
 | Did authentication fail? | `auth/spf/result`, `auth/dmarc/result`; scope `auth/dkim` for individual signatures |
 | What does the newest reply say? | `body/current_thread/text` or `body/current_thread/visible_text` |
+| Does it claim to be a reply to a known conversation? | `body/is_reply`, `enrichments/thread_verification/known`, `enrichments/thread_verification/unverified_reply` |
+| What kind of message does it appear to be? | `mail_type/type`; purpose classification is separate from the security verdict |
 | Does one link disguise its destination? | Scope `links`; compare `href_url/domain/root` and `mismatched` |
 | Is a link's domain new or suspicious? | Scope `enrichments/link_features`; read `domain`, `domain_age_days`, `popularity_bucket` |
 | Does an attachment match an IOC? | Scope `attachments`; read `sha256` or another hash |
 | What did attachment analysis actually inspect? | Scope `attachments`; inspect `explode/scanners` before interpreting scanner-specific results |
 | Is this a known sender? | `enrichments/sender_profile/prevalence` (`none`, `new`, `rare`, `common`) |
 | Is the sender impersonating an organization? | `enrichments/lookalike/org_domain_distance`, `enrichments/lookalike/vip_hit` |
+| Is the display name a well-known brand over an address that is not the brand's? | `enrichments/lookalike/display_name_brand` |
+| Does it contain validated payment cards, IBANs or US Social Security numbers? | `enrichments/pii/card_numbers`, `ibans`, `us_ssns`; counts only, with `truncated` for incomplete inspection. See [PIIFindings](#piifindings) |
+| Does the message tell the reader to call a number (callback phishing)? | `enrichments/phone_numbers/body` and `enrichments/phone_numbers/attachments`; read `call_to_action`, `lure_terms`, `toll_free`. See [PhoneNumbers](#phonenumbers) |
+| Is this attachment a web page that builds a file in the browser (HTML smuggling)? | Scope `attachments`; read `html/base64_bytes`, `html/payload_types`, `html/blob_download`, `html/atob`. See [HTMLIndicators](#htmlindicators) |
+| Is a PDF short, locked, or carrying phone numbers? | Scope `attachments`; read `explode/pdf`. See [PDFInfo](#pdfinfo) |
+| How much of the message does the reader actually see? | `body/current_thread/visible_chars` |
 | What happened after a link was fetched? | `enrichments/detonation`; see [Link detonation](detections.md#link-detonation) |
 | Was parsing or analysis incomplete? | `_meta/truncations`, `_meta/errors`, `_meta/explode_timeout`, `body/truncated` |
 
@@ -139,10 +148,6 @@ Timestamps are RFC 3339 strings. `direction` is `inbound`, `outbound`, or
 only after scoring. Recursive attachment children and attached messages remain
 subject to parser and analysis depth limits.
 
-<!-- Field tables checked against go-mailsec v0.1.78, the
-legion_mailsec dependency at review time. Update from model JSON tags when that
-wire contract changes; do not infer presence from Go field names or comments. -->
-
 ### MDM
 
 | Field | Type | Presence |
@@ -165,7 +170,33 @@ wire contract changes; do not infer presence from Go field names or comments. --
 | `hops` | array of [Hop](#hop) | Non-empty |
 | `enrichments` | [Enrichments](#enrichments) | When set |
 | `verdict` | [VerdictInfo](#verdictinfo) | When set |
+| `mail_type` | [MailTypeInfo](#mailtypeinfo) | When set |
 | `_meta` | [Meta](#meta) | When set |
+
+### MailTypeInfo
+
+| Field | Type | Presence |
+|---|---|---|
+| `type` | string | Always |
+| `reasons` | array of [MailTypeReason](#mailtypereason) | Always |
+| `classifier_version` | string | Always |
+
+`type` describes apparent purpose: `correspondence`, `transactional`,
+`notification`, `marketing`, `solicitation`, or `unknown`. It does not establish
+safety, authenticity, consent, or whether a recipient wants the message. Keep
+unfamiliar values when reading newer data. An absent `mail_type` means not
+classified, including historical messages; `unknown` is an explicit abstention.
+Neither should suppress threat evidence or authorize a response.
+
+Use `mail_type/type` in a `dr-mail` rule or `event/mail_type/type` in a platform
+D&R rule on `EMAIL_MESSAGE`. Message-list filtering does not accept `mail_type`.
+
+### MailTypeReason
+
+| Field | Type | Presence |
+|---|---|---|
+| `code` | string | Always |
+| `description` | string | Always |
 
 ### Mailbox
 
@@ -190,6 +221,7 @@ wire contract changes; do not infer presence from Go field names or comments. --
 |---|---|---|
 | `sent` | timestamp | When set |
 | `received` | timestamp | Always |
+| `notified` | timestamp | When the provider notification reached LimaCharlie; absent for mail without a known notification |
 | `ingested` | timestamp | Always |
 
 ### Headers
@@ -272,11 +304,16 @@ wire contract changes; do not infer presence from Go field names or comments. --
 | `plain` | [PlainBody](#plainbody) | When set |
 | `current_thread` | [ThreadSegment](#threadsegment) | When set |
 | `previous_threads` | array of [PreviousThread](#previousthread) | Non-empty |
+| `is_reply` | boolean | Non-empty |
 | `ips` | array of string | Non-empty |
 | `has_remote_images` | boolean | Non-empty |
 | `hidden_text_present` | boolean | Non-empty |
 | `language` | string | Non-empty |
 | `truncated` | boolean | Non-empty |
+
+`is_reply` records an unauthenticated header claim. Check
+[ThreadVerification](#threadverification) before trusting the quoted history;
+the pipeline includes the whole body in `current_thread` for an unverified reply.
 
 ### HTMLBody
 
@@ -286,6 +323,7 @@ wire contract changes; do not infer presence from Go field names or comments. --
 | `inner_text` | string | Non-empty |
 | `display_text` | string | Non-empty |
 | `charset` | string | Non-empty |
+| `indicators` | [HTMLIndicators](#htmlindicators) | When the scan found something |
 
 ### PlainBody
 
@@ -300,7 +338,14 @@ wire contract changes; do not infer presence from Go field names or comments. --
 | `text` | string | Non-empty |
 | `renderings` | array of [ThreadRendering](#threadrendering) | Non-empty |
 | `visible_text` | string | Non-empty |
+| `visible_chars` | integer | Non-empty |
 | `links` | array of [Link object](#link) | Non-empty |
+
+`visible_chars` is the number of non-whitespace characters in `visible_text`. It
+measures how much the reader is shown, and blank-line padding cannot inflate it.
+A mail rule cannot compute a length itself because its regular expressions are
+limited to short repeat counts, so use this field for "the message is a two-line
+note" conditions.
 
 ### ThreadRendering
 
@@ -324,7 +369,14 @@ wire contract changes; do not infer presence from Go field names or comments. --
 | `form_password_input` | boolean | Non-empty |
 | `rewritten_by` | string | Non-empty |
 | `rewritten_url` | string | Non-empty |
+| `unverified_hint` | boolean | Non-empty |
+| `hint_mismatch` | boolean | Non-empty |
 | `redirects_resolved` | array of string | Non-empty |
+
+`unverified_hint` marks a destination derived from an author-controlled hint,
+rather than decoded from a gateway wrapper. It is a lead to investigate, not
+proof of where a click goes. `hint_mismatch` marks disagreement between that hint
+and a decoded destination; when both links are emitted, it is set on both.
 
 ### URLInfo
 
@@ -363,7 +415,66 @@ wire contract changes; do not infer presence from Go field names or comments. --
 | `tlsh` | string | Non-empty |
 | `magic_type` | string | Non-empty |
 | `is_inline` | boolean | Non-empty |
+| `html` | [HTMLIndicators](#htmlindicators) | When the part is HTML-like |
 | `explode` | [Explode](#explode) | When set |
+
+`html` is computed from the attachment's own bytes when the message is parsed, so
+it does not depend on attachment analysis. It is present exactly when the part
+was recognised as HTML-like (an HTML or SVG file, or any part whose first bytes
+open like a web page, whatever it is called). An absent block means "not a web
+page", never "a clean web page".
+
+### HTMLIndicators
+
+Structural facts from a bounded scan of an HTML-like document: an attachment, or
+the HTML body. HTML smuggling is a structure, not a string: a large blob of
+encoded data, a few lines of script that decode it, and a browser call that
+saves the result as a download. No single field below is a finding, because HTML
+exports embed images as base64 and ordinary pages call `atob`. Combine them.
+Keyword fields are matched on a normalised view of the document (lower case,
+whitespace and quotes removed), so spacing and case do not matter, but splitting a
+word across string pieces (`'at'+'ob'`) defeats them. The encoded data and its
+decoded type are reported for that reason.
+
+| Field | Type | Presence |
+|---|---|---|
+| `scripts` | integer | Non-empty |
+| `event_handlers` | boolean | Non-empty |
+| `base64_bytes` | integer | Non-empty |
+| `base64_max_run` | integer | Non-empty |
+| `numeric_array_bytes` | integer | Non-empty |
+| `payload_types` | array of string | Non-empty |
+| `atob` | boolean | Non-empty |
+| `eval` | boolean | Non-empty |
+| `from_char_code` | boolean | Non-empty |
+| `unescape` | boolean | Non-empty |
+| `document_write` | boolean | Non-empty |
+| `blob_download` | boolean | Non-empty |
+| `download_attr` | boolean | Non-empty |
+| `auto_click` | boolean | Non-empty |
+| `js_redirect` | boolean | Non-empty |
+| `meta_refresh` | boolean | Non-empty |
+| `password_input` | boolean | Non-empty |
+| `remote_form_action` | boolean | Non-empty |
+| `truncated` | boolean | Non-empty |
+
+- `scripts` counts `<script` elements. `event_handlers` means an inline `on*`
+  attribute (`onload`, `onerror`, `onclick`, and similar) appears. Both are
+  ordinary in web pages and meaningful in an SVG image or a message body.
+- `base64_bytes` is the total length of base64 runs of at least 256 characters;
+  `base64_max_run` is the longest single run; `numeric_array_bytes` is the
+  longest run of only digits and commas (a payload written as a decimal array).
+- `payload_types` are the file types the first encoded runs decode to, in the
+  same vocabulary as `magic_type` (`Zip archive`, `PE executable`, ...). Empty
+  means none decoded to a recognised format, not that none is a payload.
+- `blob_download` means the page builds a `Blob` and hands it to the browser to
+  save. `download_attr` means a `download` attribute or property is set, and
+  `auto_click` that script clicks or dispatches an event.
+- `js_redirect` and `meta_refresh` mean the page navigates itself.
+  `password_input` means a password field; `remote_form_action` means a form
+  posts to an absolute URL.
+- `truncated` means the scan stopped at its byte limit (16 MiB); everything else
+  describes the prefix.
 
 ### Explode
 
@@ -375,6 +486,7 @@ wire contract changes; do not infer presence from Go field names or comments. --
 | `vba` | [VBAInfo](#vbainfo) | When set |
 | `qr` | array of [QRCode](#qrcode) | Non-empty |
 | `ocr_excerpt` | string | Non-empty |
+| `pdf` | [PDFInfo](#pdfinfo) | When set |
 | `yara_matches` | array of string | Non-empty |
 | `archive` | [ArchiveInfo](#archiveinfo) | When set |
 | `flavors` | array of string | Non-empty |
@@ -382,6 +494,33 @@ wire contract changes; do not infer presence from Go field names or comments. --
 | `file_count` | integer | Non-empty |
 | `truncated` | boolean | Non-empty |
 | `truncation_reasons` | array of string | Non-empty |
+
+### PDFInfo
+
+What the analyzer's PDF scanner reported about one file. Unlike the other
+findings, it does not aggregate over the tree: a PDF inside an archive carries
+its own block on its own child. The analyzer does not return a PDF's text, so
+this is everything a rule gets about a PDF's content.
+
+| Field | Type | Presence |
+|---|---|---|
+| `pages` | integer | Non-empty |
+| `words` | integer | Non-empty |
+| `images` | integer | Non-empty |
+| `encrypted` | boolean | Non-empty |
+| `needs_password` | boolean | Non-empty |
+| `embedded_files` | integer | Non-empty |
+| `links` | integer | Non-empty |
+| `phones` | array of string | Non-empty |
+
+`encrypted` includes owner-password restrictions on a readable PDF.
+`needs_password` means opening requires a password; the analyzer stops without
+examining its content. A locked PDF is unexamined, not empty. An owner password
+alone does not make a PDF opaque.
+`phones` holds the telephone numbers the analyzer read from the text layer, digits
+only, exactly as it reported them (separators and any leading `+` are dropped), at
+most 16. They are raw evidence: read
+[`enrichments/phone_numbers`](#phonenumbers) instead, which validates them.
 
 ### VBAInfo
 
@@ -471,8 +610,45 @@ wire contract changes; do not infer presence from Go field names or comments. --
 | `sender_domain` | [SenderDomain](#senderdomain) | When set |
 | `link_features` | array of [LinkFeature](#linkfeature) | Non-empty |
 | `lookalike` | [Lookalike](#lookalike) | When set |
+| `thread_verification` | [ThreadVerification](#threadverification) | When set |
 | `password_in_body` | boolean | Non-empty |
 | `detonation` | [Detonation](#detonation) | When set |
+| `phone_numbers` | [PhoneNumbers](#phonenumbers) | When a number was found |
+| `pii` | [PIIFindings](#piifindings) | When a validated value was found or inspection was truncated |
+
+### PIIFindings
+
+Counts of distinct validated values across the subject, plain body, HTML text,
+attachment OCR and attached messages. Quoted and hidden body text count because
+that text was sent too. Repeating a value in two body renderings counts once.
+The facts contain no values, masked values, prefixes or hashes.
+
+| Field | Type | Presence |
+|---|---|---|
+| `card_numbers` | integer | Always inside `pii`, including zero |
+| `ibans` | integer | Always inside `pii`, including zero |
+| `us_ssns` | integer | Always inside `pii`, including zero |
+| `truncated` | boolean | Only when inspection was incomplete |
+
+Payment cards require a supported issuer prefix and length and a valid Luhn
+checksum. IBANs require registered country length and structure plus valid mod-97
+check digits. US Social Security numbers require valid area, group and serial
+shapes; common published placeholders are excluded. Dashed `NNN-NN-NNNN` values
+need no label, so similarly shaped internal IDs can match. Spaced or contiguous
+forms need a preceding SSN or social-security label. These validators recognize
+plausible values; they cannot establish that an account or identity exists.
+
+Scanning is bounded to 512 KiB per text, 2 MiB total and 1,000 distinct values per
+kind. `truncated: true` makes counts lower bounds, including an all-zero block
+when nothing was found before a limit, or attachment extraction was unavailable.
+Known parser limits and unavailable extraction inside attached messages also set
+the flag. The entire `pii` block is omitted when available-text inspection
+completes without a finding. Text inside ordinary document, spreadsheet and PDF
+files is not inspected by this detector; OCR and attached-message text are covered.
+Counts remain lower bounds for excluded file text even when `truncated` is absent.
+Missing findings are not assurance that all attachments were examined.
+
+See [outbound PII detections](detections.md#outbound-pii-detections).
 
 ### SenderProfile
 
@@ -482,9 +658,15 @@ wire contract changes; do not infer presence from Go field names or comments. --
 | `days_known` | integer | Non-empty |
 | `msg_count_30d` | integer | Non-empty |
 | `flagged_count_180d` | integer | Non-empty |
+| `sparse_flagged_history` | boolean | Non-empty |
+| `established_high_volume` | boolean | Non-empty |
 | `flagged_count_other_addresses_180d` | integer | Non-empty |
 | `prevalence` | string | Non-empty |
 | `profile_key` | string | Non-empty |
+
+`established_high_volume` describes sustained sending history;
+`sparse_flagged_history` qualifies that history with a low historical flag count.
+Neither establishes safety or overrides content and authentication findings.
 
 ### SenderDomain
 
@@ -502,8 +684,28 @@ wire contract changes; do not infer presence from Go field names or comments. --
 | `domain_age_days` | integer | When set |
 | `popularity_bucket` | string | Non-empty |
 | `in_urlhaus` | boolean | Non-empty |
+| `feed_lookup_skipped` | boolean | Non-empty |
 | `mixed_script` | boolean | Non-empty |
 | `credentials_in_url` | boolean | Non-empty |
+
+When `feed_lookup_skipped` is true, that URL exceeded the per-message lookup
+budget. An absent or false `in_urlhaus` then means it was not checked, rather than
+a completed lookup with no hit.
+
+### ThreadVerification
+
+| Field | Type | Presence |
+|---|---|---|
+| `checked` | integer | Non-empty |
+| `known` | boolean | Non-empty |
+| `unverified_reply` | boolean | Non-empty |
+
+This optional block checks inbound reply references against mail the organization
+participated in. `checked` counts bounded lookups; `known` means at least one
+qualifying referenced message was found. A message from the same external sender
+alone does not qualify. `unverified_reply` identifies an unsupported reply claim.
+An absent block, or an omitted false boolean, does not prove the thread is safe;
+lookup failure must not be treated as evidence against a message.
 
 ### Lookalike
 
@@ -512,6 +714,77 @@ wire contract changes; do not infer presence from Go field names or comments. --
 | `vip_hit` | string | Non-empty |
 | `org_domain_distance` | integer | When set |
 | `brand_domain_distance` | integer | When set |
+| `display_name_brand` | string | Non-empty |
+
+`display_name_brand` names a well-known brand (for example `paypal`, `microsoft`,
+`docusign`) when the sender's display name is that brand plus only role words such
+as Support, Security or Team, and the sender's domain does not belong to the brand.
+A personal name beside the brand ("John Smith via PayPal"), another company, or the
+brand's own mail (regional domains included) never sets it. Consumer mailbox
+domains such as `outlook.com` and `gmail.com` are never a brand's own. It needs no
+organization configuration.
+
+### PhoneNumbers
+
+The telephone numbers a message asks its reader to use. Callback phishing carries
+no link and often no attachment payload: the harm is the phone call, so the number
+is a fact of its own. Numbers are normalised (`+18885550142`), validated (a
+numbering-plan shape, not an order number), distinct and bounded.
+
+| Field | Type | Presence |
+|---|---|---|
+| `body` | [PhoneSource](#phonesource) | When a number was found |
+| `attachments` | [PhoneSource](#phonesource) | When a number was found |
+| `pdf` | [PhoneSource](#phonesource) | When a PDF carried a valid number |
+| `pdf_documents` | array of [PDFPhoneDocument](#pdfphonedocument) | When a root PDF carried a valid number |
+
+`body` reads the newest segment the sender wrote (quoted history never supplies a
+number). `attachments` unions the text recovered from images by OCR, the numbers
+the PDF scanner read, and the body of attached messages: its number fields
+(`count`, `numbers`, `toll_free`) are a union, while its context fields
+(`call_to_action`, `toll_free_call_to_action`, `lure_terms`, `text_chars`) all
+come from the one text that looks most like a callback lure, never a mixture of
+unrelated texts. `pdf` holds only the numbers read from PDF text layers, so a rule
+about a PDF is not satisfied by a number in an image. A PDF contributes numbers
+only, with no `call_to_action` or `lure_terms`, and only North American numbers can
+be recognised from it. `pdf_documents` binds validated numbers and shape to each
+root PDF separately; a number from one file cannot satisfy a rule about another
+file's page or word count. Absent means no number was found in the sources that were
+available: an image that was not OCRed says nothing.
+
+### PDFPhoneDocument
+
+One root PDF attachment, up to 128 records. Small candidates are retained first
+when the limit is reached. OCR, attached-message numbers and cross-document joins
+do not supply these facts.
+
+| Field | Type | Presence |
+|---|---|---|
+| `count` | integer | Always; distinct validated numbers in this PDF |
+| `pages` | integer | Always; analyzer-reported page count |
+| `words` | integer | Always; analyzer-reported word count |
+
+### PhoneSource
+
+| Field | Type | Presence |
+|---|---|---|
+| `count` | integer | Non-empty |
+| `numbers` | array of string | Non-empty |
+| `toll_free` | boolean | Non-empty |
+| `call_to_action` | boolean | Non-empty |
+| `toll_free_call_to_action` | boolean | Non-empty |
+| `lure_terms` | integer | Non-empty |
+| `text_chars` | integer | Non-empty |
+
+`numbers` keeps at most five. `call_to_action` is true when a number sits within
+about 80 characters of a verb that tells the reader to use it (call, dial,
+contact, reach, helpline...). `toll_free_call_to_action` is true when the same
+number is toll-free and has that call to action; `toll_free` and `call_to_action`
+alone can belong to two different numbers. `lure_terms` counts distinct billing and support
+words in the same text (purchase, subscription, invoice, refund, renew, charged,
+antivirus, ...); one is ordinary commerce, four beside a phone number is the
+callback-lure shape. The vocabulary is English. `text_chars` is the length of the
+text examined.
 
 ### Detonation
 
@@ -621,4 +894,53 @@ wire contract changes; do not infer presence from Go field names or comments. --
 | Field | Type | Presence |
 |---|---|---|
 | `stage` | string | Always |
+| `code` | string | Non-empty |
 | `message` | string | Always |
+
+When present, `code` is the stable identifier for a recovered failure. Prefer it
+over matching the human-readable `message`, which may change.
+
+## Analysis status and timing on platform events
+
+These fields belong to `EMAIL_VERDICT` and `EMAIL_ANALYSIS_COMPLETE`, rather
+than the MDM rule root. A `dr-mail` scoring rule cannot wait for completion;
+use a platform `dr-general` rule on the emitted completion event.
+
+| Path | Available on | Meaning |
+|---|---|---|
+| `event/completion_id` | `EMAIL_ANALYSIS_COMPLETE` | Stable completion identity, equal to `msg_uuid`; use it to suppress retried delivery |
+| `event/analysis/pending` | Seq-0 `EMAIL_VERDICT` | Array of `detonation` and/or `attachment_scan`; empty when none outstanding |
+| `event/analysis/complete` | Seq-0 `EMAIL_VERDICT` | Whether there was no outstanding work in that snapshot |
+| `event/results/<kind>` | `EMAIL_ANALYSIS_COMPLETE` | `completed`, `changed_verdict`, `skipped`, `shed`, `failed`, or `timed_out` |
+| `event/completed_at` | `EMAIL_ANALYSIS_COMPLETE` | When the initial analysis window was durably closed |
+| `event/revision/verdict`, `event/revision/score`, `event/revision/seq` | Both | Initial decision or final completion snapshot |
+| `event/after_complete` | Later `EMAIL_VERDICT` | True when a revision was decided after the completion boundary |
+| `event/timing/received`, `ingested`, `decided` | Both | Required absolute processing instants |
+| `event/timing/sent`, `notified` | Both, when known | Sender Date header and notification arrival; sent is untrusted |
+| `event/timing/completed` | Completion | Absolute completion instant |
+| `event/timing/provider_lag_ms` | Both, when notified known | Received → notified, integer ms |
+| `event/timing/queue_ms` | Both, when notified known | Notified → ingested, integer ms |
+| `event/timing/processing_ms` | Both | Ingested → initial decided, integer ms |
+| `event/timing/end_to_end_ms` | Both | Received → initial decided, integer ms |
+| `event/timing/analysis_ms` | Completion | Initial decided → completed, integer ms |
+| `event/timing/clock_skew` | When true | At least one negative interval was clamped to zero |
+
+Completion delivery is at least once; key response suppression on
+`event/completion_id`, as shown in the [triage example](automation.md#triage-after-initial-analysis).
+Completion covers emitted live messages, including emitting re-drives. Initial
+historical backfill emits no `EMAIL_*` events and no completion event.
+
+Missing optional intervals are absent, never fabricated zero. A completion with
+`failed`, `shed`, or `timed_out` results does not classify the message as benign.
+See [completion triage and delay rules](automation.md#triage-after-initial-analysis).
+
+## Provider delivery and release events
+
+Provider visibility uses ordinary D&R events: match `routing/event_type` on
+`EMAIL_PROVIDER_QUARANTINE` or `EMAIL_RELEASE_REQUEST`. For delivery observations,
+`event/provider_status` is `quarantined`, `filteredAsSpam` or `failed`; a failure
+is not quarantine. Request events contain `event/audit_id`, `event/requested_at`
+and, when supplied, `event/network_message_id` and `event/recipient_address`.
+Deduplicate retried work using `event/event_id`. These events have no engine
+verdict and do not run `dr-mail` message analysis. See
+[Provider Quarantine](provider-quarantine.md) for coverage and correlation limits.

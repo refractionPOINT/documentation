@@ -14,9 +14,10 @@
 10. [Hive Operations](#hive-operations)
 11. [Search (LCQL)](#search-lcql)
 12. [Extensions](#extensions)
-13. [Infrastructure as Code](#infrastructure-as-code)
-14. [Error Handling](#error-handling)
-15. [Complete Examples](#complete-examples)
+13. [Cloud, Code and Email Security](#cloud-code-and-email-security)
+14. [Infrastructure as Code](#infrastructure-as-code)
+15. [Error Handling](#error-handling)
+16. [Complete Examples](#complete-examples)
 
 ## Overview
 
@@ -41,7 +42,7 @@ The LimaCharlie Python SDK provides a comprehensive interface for interacting wi
 
 ### Requirements
 
-- Python 3.9 or higher
+- Python 3.10 or higher
 - pip package manager
 
 ### Install via pip
@@ -709,6 +710,40 @@ response = ext.request(
     },
 )
 ```
+
+## Cloud, Code and Email Security
+
+### Cloud Security
+
+The SDK exposes `CloudSec` through `limacharlie.sdk.cloudsec`. The
+organization must be subscribed to Cloud Security; reading findings requires
+`cloudsec.get`. This example follows every page while keeping its filters unchanged:
+
+```python
+--8<-- "snippets/python/cloudsec_findings.py"
+```
+
+The wrapper returns response dictionaries rather than typed finding objects.
+Connection and policy configuration uses `Hive` (`cloudsec_provider`,
+`cloudsec_policy`, `cloudsec_query`, `cloudsec_code_rule`). See
+[Cloud Security setup](../../cloud-security/setup-cli.md) for the permission
+split and [API reference](../../cloud-security/api-reference.md) for response
+fields.
+
+### Code Security and Email Security availability
+
+Install or upgrade the SDK with `python -m pip install --upgrade limacharlie`.
+Use `CloudSec` for Cloud Security and Code Security, and `Mailsec` for Email
+Security. Follow [Code Security setup](../../cloud-security/code-security/getting-started.md)
+or [Email Security setup](../../email-security/setup-cli.md) to configure the
+product subscription, provider connection and permissions.
+
+Email Security requires its extension subscription and separates reading
+(`mailsec.get`), policy/triage edits (`mailsec.set`), provider actions
+(`mailsec.act`) and raw-email access (`mailsec.get.eml` on top of
+`mailsec.get`). Provider records have their own `mailsec_provider` permissions.
+See [Email Security API reference](../../email-security/api-reference.md) and
+[permission setup](../../email-security/setup-cli.md#2-grant-the-permissions).
 
 ## Infrastructure as Code
 

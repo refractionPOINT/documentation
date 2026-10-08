@@ -58,6 +58,19 @@ installation, the drawer says so and links to the installation page.
 Select an image to open its findings in Risks. **Registries** groups images by
 image repository.
 
+From the CLI:
+
+```bash
+limacharlie cloudsec image repos
+limacharlie cloudsec image repo-facets
+limacharlie cloudsec image list --running --findings with
+limacharlie cloudsec image get "sha256:<full-image-digest>"
+```
+
+Read an image's lineage status alongside its findings. `verified`, `asserted`
+and `inferred` describe different strengths of source attribution; they do not
+say the image is safe. See [Image lineage](containment-setup.md#image-lineage).
+
 ### Risks
 
 Code findings appear in the main worklist on **Risks**. Use the **Repository**
@@ -181,26 +194,33 @@ own. These queries ship in the [query pack](../graph.md):
 
 ## Compliance
 
-Two frameworks are graded from code findings. Both apply only when a GitHub
-organization is connected, and grade GitHub repositories.
+Code Security supplies evidence for two frameworks. Both apply to connected
+GitHub organizations and grade the repositories in scope. Supply-chain controls
+also use GitHub configuration and manual evidence.
 
 - **`owasp-top10`**: OWASP Top 10:2021, mapped by CWE. Five categories depend on
-  static analysis and report **NOT_ASSESSED** until a static-analysis scan has
-  run.
+  static analysis. Missing scan coverage stays **NOT_ASSESSED**; broader process
+  requirements also need scoped manual evidence.
 - **`cis-supply-chain`**: the *Source Code* and *Dependencies* sections of the CIS
-  Software Supply Chain Security Guide, 60 controls. 10 can be assessed
-  automatically. The others report **NOT_ASSESSED** with a reason, so read the
-  coverage figure next to the score.
+  Software Supply Chain Security Guide, 60 controls. Repository scans and
+  read-only organization and branch settings supply configuration evidence.
+  Reviewer authorization, whether owners are necessary, and whether documented
+  processes are followed still require manual evidence. Read each control's
+  reasons and coverage alongside its score.
 
 ```bash
 limacharlie cloudsec compliance report --framework owasp-top10
 limacharlie cloudsec compliance report --framework cis-supply-chain
 ```
 
-Controls that grade outcomes, such as "no secrets in source", wait until a scan
-has completed. They grade what was scanned. A repository your policy excludes
-produces no findings and cannot fail them, so compare the score with scanner
-coverage. See [Compliance](../compliance.md) for how scoring works.
+Controls that grade outcomes, such as "no secrets in source", wait until the
+required scan has completed. A repository excluded by policy does not provide
+clean evidence. SECURITY.md, CODEOWNERS and workflow checks require complete,
+fresh evidence for all active repositories in scope, across repository inventory
+and scanned repositories; a successful scan of one repository cannot establish
+whole-organization compliance. These file checks observe configuration, while
+manual requirements still govern the processes that use it. Compare the score
+with scanner coverage. See [Compliance](../compliance.md) for how scoring works.
 
 ## In your IDE
 

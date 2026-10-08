@@ -1,10 +1,10 @@
 # Email Security setup with the CLI
 
---8<-- "includes/email-security-beta.md"
+--8<-- "includes/email-security-availability.md"
 
 Prefer the web app? Start with the [console walkthrough](getting-started.md).
 
-Install the beta CLI from `master` as shown above, then [configure authentication](../6-developer-guide/cli.md) and select your organization. `$OID` below means your LimaCharlie organization ID.
+Use a CLI build that includes the commands described above, then [configure authentication](../6-developer-guide/cli-quickstart.md) and select your organization. `$OID` below means your LimaCharlie organization UUID, not its display name. Use `limacharlie org list --output yaml` to find it and set `OID="<organization-uuid>"` for these examples.
 
 This reference takes an organization from zero to a populated Email Security queue:
 enable the product, connect a mail tenant, verify the connection, and read the
@@ -16,7 +16,9 @@ both are shown.
 Email Security is enabled per organization by subscribing to the
 `ext-email-security` extension. The subscription is the enable gate: without it
 every `/v1/mailsec/*` route is refused, and the console shows a subscribe screen
-instead of the product.
+instead of the product. **Subscribing is the purchase**. Paid usage is **$1 per
+protected mailbox per month**, billed daily at **$1/30 per mailbox-day** on that
+day's protected-mailbox count. See [security product billing](../7-administration/billing/security-products.md).
 
 ```bash
 limacharlie extension subscribe --name ext-email-security --oid $OID
@@ -28,8 +30,10 @@ Confirm it:
 limacharlie extension list --oid $OID
 ```
 
-Subscribing also seeds the recommended policy records — all in `alert_only`
-mode, so nothing moves mail until you say so. See [Policy Reference](policy.md).
+Subscribing installs the default detection rules in `dr-mail`. It does not
+create automation policy records. With no automation policy, automatic actions
+are off; a new automation rule defaults to `alert_only`, so it records intent
+without moving mail. See [Policy Reference](policy.md).
 
 !!! info "Free trial: 14 days, 25 mailboxes"
     An organization on the LimaCharlie free tier gets Email Security in full for
@@ -40,10 +44,16 @@ mode, so nothing moves mail until you say so. See [Policy Reference](policy.md).
     — start with the executives, finance and the abuse mailbox.
 
     When the trial ends, ingestion pauses and nothing is deleted; the data is
-    removed 30 days later unless the organization moves off the free tier, and
+    removed after a **30-day purge grace period** unless the organization moves
+    off the free tier before the purge, and
     you are told before that happens. The full rules, and the exact fields to
     read the countdown from, are in
     [Plans, the free trial, and the mailbox cap](policy.md#plans-the-free-trial-and-the-mailbox-cap).
+
+    The free tier means a configured sensor quota of **2 or less**. Raising it
+    above **2** moves the organization to a paid plan, lifts the trial limits,
+    and starts usage billing. Check `mailsec coverage` and its `entitlement`
+    block for the trial countdown and any scheduled deletion.
 
 ## 2. Grant the permissions
 
@@ -53,8 +63,22 @@ analyst needs only `mailsec.get`. `mailsec.get.eml` is an escalation on top of
 `mailsec.get` and should be granted deliberately — see
 [Overview → Permissions](index.md#permissions).
 
-Managing the connection itself additionally needs the Hive permissions for
-`mailsec_provider` and `secret`.
+For setup, ask your administrator for the permissions that match your tasks:
+
+| Task | Permissions |
+|---|---|
+| Subscribe | `billing.ctrl`, `user.ctrl` |
+| Read, create or edit connections (including `--enabled` on a data write) | `mailsec_provider.get`, `mailsec_provider.set` |
+| Enable or disable an existing connection without editing its data | Read access to its metadata (`mailsec_provider.get.mtd` or `mailsec_provider.get`), and `mailsec_provider.set.mtd` or `mailsec_provider.set` |
+| Create and enable a credential secret in one write | `secret.set` |
+| Select existing secrets and read their metadata | `secret.get.mtd`; reading secret values separately needs `secret.get` |
+| Test a connection | `mailsec.act` |
+| Read messages and coverage | `mailsec.get` |
+| Change mail rules or policy | `mailsec.set` |
+
+Deleting a connection additionally needs `mailsec_provider.del`. Read-only
+analyst access does not grant permission to change which tenant or mailboxes
+the product reads.
 
 ## 3. Prepare the provider credential
 
@@ -81,6 +105,18 @@ always referenced, never inlined into the connection record.
     limacharlie mailsec onboarding --provider gworkspace --oid $OID
     limacharlie mailsec onboarding --provider m365 --oid $OID
     ```
+
+    Fill the Google commands in advance with your project details:
+
+    ```bash
+    limacharlie mailsec onboarding --provider gworkspace \
+      --project-id "$GCP_PROJECT" --sa-email "$SERVICE_ACCOUNT_EMAIL" \
+      --topic mailsec-gmail-push --subscription mailsec-gmail-push-sub \
+      --oid "$OID" --output yaml
+    ```
+
+    Set the two variables to the project and service-account email from your
+    downloaded key. The CLI uses these values to populate the onboarding instructions.
 
 ## 4. Connect the mail tenant
 
@@ -127,10 +163,11 @@ ingest:
   backfill_days: 14
 features:
   outbound_observation: true
-  reports_mailbox: phishing@corp.example
 ```
 
-Replace `pilot@corp.example` with your pilot mailbox addresses. Omitting `scope`
+Replace `pilot@corp.example` with your pilot mailbox addresses. If you later
+configure `features.reports_mailbox`, use an existing mailbox and include it
+in this scope too; otherwise user reports cannot arrive. Omitting `scope`
 or leaving its include lists empty covers **every discovered mailbox**, subject
 to exclusions and any domain filter. `include_addresses` and `exclude_addresses`
 entries must contain `@`; `domains` entries must be bare domains containing a dot,

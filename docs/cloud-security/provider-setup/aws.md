@@ -134,6 +134,39 @@ Choose one tab; both create the same user, role, and access key.
     aws iam create-access-key --user-name lc-cloudsec   # capture AccessKeyId + SecretAccessKey
     ```
 
+## Compliance metadata permissions
+
+The assumed role, including every organization member-account role, needs these
+read permissions for configuration compliance. Keep the base IAM user's grant
+limited to `sts:AssumeRole`.
+
+| Permission | Resource scope | Read surface |
+|---|---|---|
+| `iam:ListUsers`, `iam:ListAccessKeys` | `*` for user enumeration; IAM user resources for key metadata where applicable | Active human IAM user key creation dates; uses the existing IAM user inventory reads |
+| `cloudtrail:DescribeTrails`, `cloudtrail:GetTrailStatus`, `cloudtrail:GetEventSelectors` | `*` | Trail configuration, logging status and management-event selectors |
+| `ec2:DescribeRegions` | `*` | Complete region enumeration for absence decisions |
+| `s3:GetEncryptionConfiguration` | `arn:aws:s3:::*` (or the intended bucket ARNs) | Bucket default encryption configuration |
+
+Verify these permissions on your role even if its managed policies already include
+them. IAM user normalization also needs the existing MFA, key-last-used and
+attached/inline policy read permissions. Key metadata never exposes the key value.
+Only active keys participate in the 90-day age check; inactive keys and a proven
+empty active-key population are excluded. Unknown creation dates or incomplete
+user enumeration cannot establish a clean result.
+
+CloudTrail checks use each trail's home-region status and selectors, including
+organization/shadow trails. A qualifying multi-region trail must log read and
+write management events. Unsupported or unread selectors stay unknown. An
+explicitly configured region subset can prove a qualifying multi-region trail,
+but cannot prove its absence across the account. Provider tests probe only a
+representative trail and bucket; per-resource reads decide sweep coverage.
+
+S3 default encryption describes **new uploads**, not historical objects. AWS
+[automatically encrypts new uploads with SSE-S3](https://docs.aws.amazon.com/AmazonS3/latest/userguide/default-bucket-encryption.html),
+so an absent stored bucket encryption configuration is not evidence of unencrypted
+storage. Historical object encryption remains a manual part of the CIS encryption
+assessment. Configuration reads never authorize a claim about all existing objects.
+
 ## Create the credentials secret
 
 In the LimaCharlie wizard's **Permissions** step, select **New secret**. Choose
@@ -281,3 +314,12 @@ guardrails to account for.
 |---|---|---|
 | `auth` fails: `… no EC2 IMDS role found` | Secret used the wrong key names → no static creds → default chain → IMDS | Use `access_key_id` / `secret_access_key` (no `aws_` prefix) |
 | `AccessDenied` on `sts:AssumeRole` | External ID mismatch, wrong trust-policy principal, or propagation | Confirm `aws_external_id` matches the trust condition; retry after a few seconds |
+
+## Private ECR images
+
+To scan private images in Amazon ECR, add these permissions to the **assumed role** used by this connection:
+
+- `ecr:GetAuthorizationToken` (this action uses `Resource: "*"`).
+- `ecr:BatchGetImage` and `ecr:GetDownloadUrlForLayer` on each ECR repository you want scanned.
+
+For an AWS Organization connection, grant the same permissions to the member-account role in the account that owns each image, and allow the connected role `organizations:DescribeAccount` so LimaCharlie can confirm that the image's account is a member. Keep the base IAM user's permission limited to `sts:AssumeRole`. Each pull credential is limited by a session policy to the one repository being scanned. Images in AWS accounts outside the connected account and its organization are not pulled. See [AWS's ECR pull permission reference](https://docs.aws.amazon.com/AmazonECR/latest/userguide/ECR_on_ECS.html) and [private image scanning](../code-security/container-registries.md).

@@ -1,12 +1,12 @@
 # Command Line Interface
 
---8<-- "includes/email-security-beta.md"
+--8<-- "includes/email-security-availability.md"
 
 The `limacharlie mailsec` command group covers the Email Security API surface:
 the coverage screen, the message index and drawer, the audited raw-EML download,
 verdict revisions, campaigns and campaign-wide sweeps, bulk remediation over a
 selection you name, sender profiles, the action audit trail, the abuse-mailbox
-report queue, custom-rule validation and backtest, the connection preflight, the
+report queue, sample submission, custom-rule validation and backtest, the connection preflight, the
 served onboarding guide, and the tenant purge.
 
 Commands take the global options (`--oid`,
@@ -55,7 +55,7 @@ trusted with four separable things — plus one command that is not any of them:
 |---|---|
 | `mailsec.get` | Read the product's own view: queue, drawer, campaigns, senders, audit trail |
 | `mailsec.set` | Change triage state — resolving a user report |
-| `mailsec.act` | Remediate live mail at the provider |
+| `mailsec.act` | Remediate live mail at the provider; submit and withdraw samples |
 | `mailsec.get.eml` | Download the original bytes of a message; requires a logged justification |
 | `mailsec.act` **and** `billing.ctrl` **and** `user.ctrl` | `tenant purge`, in both its preview and its destructive form. Owner-level authority, the same trio deleting the organization requires — there is no separate "owner" permission |
 
@@ -70,10 +70,14 @@ typing a justification to look at the queue.
 # Coverage
 limacharlie mailsec coverage --window-days 30
 
+# Explicit UTC window instead of window-days.
+limacharlie mailsec coverage --since "2026-09-01T00:00:00Z" --until "2026-09-02T00:00:00Z"
+
 # The triage queue
 limacharlie mailsec message list --verdict suspicious --verdict malicious
 limacharlie mailsec message list --mailbox cfo@corp.example --since 2026-08-01
 limacharlie mailsec message list --user-reported            # a human flagged these
+limacharlie mailsec message list --lane backfill            # historical analysis, not live actions
 limacharlie mailsec message list --link-domain evil.example # IOC pivot
 limacharlie mailsec message list --attachment-sha256 <sha>  # IOC pivot
 limacharlie mailsec message get <msg_uuid>
@@ -93,6 +97,13 @@ limacharlie mailsec message bulk-action --action quarantine_message --input-file
 limacharlie mailsec message bulk-action --action quarantine_message --input-file uuids.txt --confirm <token> --reason "INC-4471"
 limacharlie mailsec message bulk-status <bulk_id>
 
+# Sample submission (opt-in): copy ONE message to LimaCharlie, list it, withdraw it
+limacharlie mailsec message submit-sample <msg_uuid> --category missed_threat --reason "credential phish we did not flag"
+limacharlie mailsec message withdraw-sample <msg_uuid>
+limacharlie mailsec submission list --category false_positive --since 2026-09-01T00:00:00Z
+limacharlie mailsec submission get <submission_id>
+limacharlie mailsec submission withdraw <submission_id>
+
 # Campaigns: one attack, triaged once
 limacharlie mailsec campaign list --min-members 3
 limacharlie mailsec campaign get <campaign_id>
@@ -107,7 +118,7 @@ limacharlie mailsec action get <action_id>
 # Abuse-mailbox reports
 limacharlie mailsec report list --status open --oldest-first
 limacharlie mailsec report get <report_id>
-limacharlie mailsec report resolve <report_id> --disposition true_positive
+limacharlie mailsec report resolve <report_id> --disposition malicious
 limacharlie mailsec report reopen <report_id>
 
 # Custom rules
@@ -118,12 +129,24 @@ limacharlie mailsec rule backtest --file rule.json --since 2026-08-01
 limacharlie mailsec analyze --file suspect.eml --org-domain corp.example
 limacharlie mailsec connection test gws-exp
 limacharlie mailsec onboarding --provider gworkspace
+limacharlie mailsec onboarding --provider gworkspace \
+  --project-id "$GCP_PROJECT" --sa-email "$SERVICE_ACCOUNT_EMAIL" \
+  --topic mailsec-gmail-push --subscription mailsec-gmail-push-sub
 
 # Delete everything Email Security holds for this org — previews without --confirm
 limacharlie mailsec tenant purge
 ```
 
 `--window-days` accepts 1-35 (the platform's maximum message retention) and cannot be combined with an explicit `--since`/`--until`. Out-of-range values for `--limit`, `--min-score` and `--min-members` are refused with an error naming the flag rather than silently clamped or ignored.
+
+The `--lane`, explicit coverage-window and personalized-onboarding flags are
+development additions. Check the command's `--help`; an older development
+checkout may lack them. They are tracked in the
+[public SDK update](https://github.com/refractionPOINT/python-limacharlie/pull/408);
+until it is merged, `master` does not include every new flag. Use the equivalent query parameters in the
+[API reference](api-reference.md#reads) with `limacharlie api` until you update.
+`--lane` cannot be combined with `--mailbox`, `--sender-email` or `--campaign-id`;
+it filters where a message was judged, not its threat verdict.
 
 ## Things worth knowing before you script this
 
@@ -285,9 +308,25 @@ carries the outcome** — `0` only when the job completed and something was acte
 on. The full contract, including every `state`, `result` and count, is in
 [Bulk Remediation](remediation.md#from-the-cli).
 
+### Submitting a sample sends the message to LimaCharlie
+
+`message submit-sample` copies one message to LimaCharlie, so it is opt-in, explicit and
+one message per call. The organization must have opted in with a `sample_sharing`
+[policy record](policy.md#sample_sharing); `--category`
+(`missed_threat`, `false_positive`, `other`) and `--reason` (1 to 1024 characters) are
+both required and are checked before anything is sent. A refusal (not opted in, no store
+in the datacenter, raw copy no longer stored) is reported like any other failed action, with the reason in
+`error`; the command prints the reason and exits non-zero. `submission list` prints the `enabled` and
+`available` flags, so an empty list can be told apart from a feature that is off, and
+pages with `--cursor`. `submission get` shows recorded access times for the copy, and
+`submission withdraw` (or `message withdraw-sample`) deletes it. An unknown id is not an
+error: `submission get` returns `submission: null` and `submission withdraw` returns
+`withdrawn: false`, and the command says so on stderr. See
+[Sample Submission](sample-submission.md).
+
 ### Revising a verdict is `mailsec.act`, not `mailsec.set`
 
-`message revise` records a human disposition over the scorer's, appending to the
+`message revise` records a human verdict revision over the scorer's, appending to the
 message's history rather than overwriting it. `--rationale` is required and
 audited — at least one, at most ten, each 280 characters or fewer.
 
@@ -383,9 +422,52 @@ limacharlie mailsec campaign action "$CAMPAIGN" --action quarantine_message \
 # Resolve the oldest open report
 REPORT=$(limacharlie mailsec report list --status open --oldest-first --limit 1 \
   --output json | jq -r '.reports[0].report_id')
-limacharlie mailsec report resolve "$REPORT" --disposition true_positive
+limacharlie mailsec report resolve "$REPORT" --disposition malicious
 ```
 
 Because the CLI is the whole surface, it is also how an
 [AI triage agent](ai-triage.md) reaches Email Security — there is no separate
 integration for agents to learn.
+
+## Provider quarantine and release activity
+
+`mailsec provider-quarantine list` and `mailsec release-request list` observe
+Microsoft delivery and hosted-quarantine activity. They support connection,
+status, time-window and cursor filters and return independent coverage. They
+require a CLI build containing these commands and `mailsec.get`. See
+[Provider Quarantine](provider-quarantine.md#cli-and-api) for examples and limits.
+
+## Independent disposition and release
+
+```bash
+limacharlie mailsec message disposition <msg_uuid> --disposition benign --note "Reviewed"
+limacharlie mailsec message disposition <msg_uuid> --clear
+limacharlie mailsec message list --disposition none
+limacharlie mailsec message bulk-disposition --msg-uuids <id1> --msg-uuids <id2> --disposition spam
+limacharlie mailsec message release <msg_uuid> --reason "Reviewed as safe" --mode analyst
+```
+
+Disposition accepts `malicious`, `spam`, `graymail`, `benign`, or `simulation` and
+never changes the engine verdict. A bulk selection is limited to 500 unique IDs;
+individual failures are reported and cause a nonzero CLI exit. Release restores
+placement and records a benign verdict and disposition. It needs `mailsec.act`;
+`--force` supplies explicit consent in alert-only mode. See [Messages](messages.md).
+
+For report remediation, first preview:
+
+```bash
+limacharlie mailsec report resolve <report_id> --disposition malicious --scope message --action quarantine_message
+# all recipient copies of the reported message's group (durable job)
+limacharlie mailsec report resolve <report_id> --disposition malicious --scope group --action quarantine_message --attempt $(uuidgen)
+```
+
+Read `remediation_preview`, then repeat with `--confirm <token>` and, when needed,
+`--force`. Pure resolution uses `mailsec.set`; remediation also needs `mailsec.act`.
+The report remains open during preview or when provider remediation fails.
+
+Group report remediation uses `--scope group` with an explicit UUID `--attempt`,
+reused through preview, confirmation and polling. Add `--wait` to wait up to
+300 seconds for a complete preview or resolution; timeouts exit with code 2 and
+the durable job continues. Resume with the same attempt and confirmation.
+See [group report remediation](user-reports.md#remediate-the-same-message-across-recipients)
+for the complete workflow.

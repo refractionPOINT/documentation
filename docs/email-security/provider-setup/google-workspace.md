@@ -1,6 +1,6 @@
 # Google Workspace
 
---8<-- "includes/email-security-beta.md"
+--8<-- "includes/email-security-availability.md"
 
 A Google Workspace connection reads and remediates Gmail through the Gmail API,
 using a **service account with domain-wide delegation**. There is no mail
@@ -377,12 +377,13 @@ ingest:
   backfill_days: 14
 features:
   outbound_observation: true
-  reports_mailbox: phishing@corp.example
   pubsub_topic: projects/<YOUR_PROJECT_ID>/topics/mailsec-gmail-push
   pubsub_subscription: projects/<YOUR_PROJECT_ID>/subscriptions/mailsec-gmail-push-sub
 ```
 
-Replace `pilot@corp.example` with your pilot mailbox addresses. Omitting `scope`
+Replace `pilot@corp.example` with your pilot mailbox addresses. If you later
+configure `features.reports_mailbox`, use an existing mailbox and include it
+in this scope too; otherwise user reports cannot arrive. Omitting `scope`
 or leaving its include lists empty covers **every discovered mailbox**, subject
 to exclusions and any domain filter. `include_addresses` and `exclude_addresses`
 entries must contain `@`; `domains` entries must be bare domains containing a dot,
@@ -453,7 +454,7 @@ before lifecycle can pass. It is idempotent and the watch expires on its own.
 
 | Action | What happens in Gmail |
 |---|---|
-| `quarantine_message` | `INBOX` removed, an `LC Quarantine` label added — restorable, and out of the user's inbox |
+| `quarantine_message` | `INBOX` removed, an `LC Quarantine` label added. Restorable, and out of the user's inbox. The label is created **visible** in the label list and in message lists, so the user can still see and open the quarantined message (unlike Microsoft 365, where the folder is hidden) |
 | `trash_message` | `TRASH` added. The product's own quarantine label is removed afterwards, so the message's placement reads as trashed rather than still quarantined |
 | `move_to_spam` | `SPAM` added, resolved through Gmail's own identifiers |
 | `restore_message` | The labels are inverted |

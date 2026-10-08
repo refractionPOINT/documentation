@@ -1,6 +1,6 @@
 # Policy Reference
 
---8<-- "includes/email-security-beta.md"
+--8<-- "includes/email-security-availability.md"
 
 Email Security is configured through Hive records. Anything the console can
 configure, `limacharlie hive set` can configure — so tenant onboarding and
@@ -9,8 +9,14 @@ fleet-wide policy are a script, not a UI workflow.
 | Hive | Records | Purpose |
 |---|---|---|
 | `mailsec_provider` | one per mail connection | which tenant to protect, with which credential — see [Connecting Providers](providers.md) |
-| `mailsec_policy` | many, discriminated by `policy_type` | automations, exclusions, VIPs, thresholds, banners, retention, reporter replies, hunt defaults, clustering |
+| `mailsec_policy` | many, discriminated by `policy_type` | automations, exclusions, VIPs, thresholds, banners, retention, reporter replies, sample submission, hunt defaults, clustering |
 | `dr-mail` | one per rule | all mail rules, including installed defaults — see [Custom Rules](custom-rules.md) |
+
+<span id="managed_rules"></span>
+
+Mail rules are ordinary `dr-mail` records, not a `managed_rules` policy type.
+See [default rule ownership and updates](custom-rules.md#default-rules-and-ownership)
+before customizing the installed pack.
 
 ## How `mailsec_policy` records work
 
@@ -33,8 +39,8 @@ How each type composes:
 | `exclusions` | Concatenated — a set of independent suppressions |
 | `vips` | Union, deduplicated and sorted |
 | `thresholds` | Last writer wins per field, with the ordering invariant re-checked afterwards |
-| `banners`, `reporter_reply`, `hunt_defaults`, `clustering` | Last writer wins per field |
-| `retention` | **Maximum** wins — see [Retention](#retention) |
+| `banners`, `reporter_reply`, `sample_sharing`, `hunt_defaults`, `clustering` | Last writer wins per field |
+| `retention` | **Minimum** wins — the shortest horizon for each field; see [Retention](#retention) |
 
 ### Unknown fields are refused
 
@@ -63,6 +69,9 @@ modifies mail, and nothing sends mail until you say so.
 ---
 
 ## `automations`
+
+In the console, open **Policy → Response automations**. These ordered responses
+are separate from **Detection rules**, which define how messages are scored.
 
 The ordered list of `{match → actions}` rules that decide what happens to a
 message automatically.
@@ -96,6 +105,12 @@ automations:
 An **empty match matches everything**. An enforcing rule with an empty match is
 refused at save — "quarantine all mail" is never what someone meant to write.
 
+Every matching automation applies, in record-name and rule order. Matching typed
+mail-rule actions join the same action union. Conflicting permitted placement
+actions resolve as quarantine, then trash, then spam; equivalent intents are
+deduplicated with deterministic first parameters. Alert-only remains the default,
+and an enforcing rule cannot bypass the organization enforcement gate.
+
 ### `actions`
 
 | Action | | Touches the mailbox |
@@ -112,6 +127,12 @@ on one message must not fan out to hundreds without a human — that is an expli
 action), `restore_message` (undoing is a human decision), and the disposition
 labels (labels are evidence, and a machine writing them would poison the data set
 that measures the machine).
+
+`action_params` optionally supplies parameters keyed by an action in `actions`.
+For `banner_message`, the `text` override is plain text, at most 512 Unicode
+characters; empty or whitespace-only uses the banner-policy text. The banner
+policy must still be enabled. Unknown parameters, orphan action parameters,
+duplicate actions and more than 16 actions are refused.
 
 ### The two asking actions
 
@@ -331,34 +352,96 @@ raises suspicious — so the invariant is enforced after composition, not only p
 record. An inverted pair would make every suspicious message malicious.
 
 Individual rule weights and enabled states are edited on the `dr-mail` record,
-through [Mail Rules](custom-rules.md).
+through [Detection Rules](custom-rules.md).
 
 ---
 
 ## `banners`
 
-The warning banner's text and switch.
+The warning banner's look, wording and switch.
 
 ```yaml
 policy_type: banners
 enabled: true
+title: "Acme IT security"
+color: red
 text: "External sender. Verify before clicking links or opening attachments."
+logo_url: "https://cdn.example.com/brand/logo.png"
+logo_alt: "Acme IT"
+variants:
+  malicious:
+    title: "Do not open"
+    text: "Our systems judged this message malicious. Do not click or reply; report it."
+    color: red
+  suspicious:
+    text: "This message looks suspicious. Check the sender before you act."
 ```
 
 | Field | Default | |
 |---|---|---|
 | `enabled` | `false` | Bannering rewrites the customer's mail, and nothing in this product modifies mail by default |
-| `text` | A packaged warning | **Plain text only** — no `<` or `>` — and capped at 512 characters |
+| `text` | A packaged warning | **Plain text only** — no `<` or `>` — at most 512 characters |
+| `title` | `Security warning` | The bold heading. Plain text, at most 80 characters |
+| `color` | `yellow` | One of `yellow`, `red`, `orange`, `blue`, `green`, `gray`. A name from a fixed palette, never a CSS value |
+| `logo_url` | none | An `https://` URL of one image, at most 512 characters. See [the logo](#the-logo) |
+| `logo_alt` | empty | Alternative text for the logo, at most 80 characters |
+| `variants` | none | Overrides of `title`, `text` and `color` per verdict: `malicious`, `suspicious`, `graymail`, `benign`, `unknown` |
 
-The HTML template is fixed and sanitized in code; policy contributes only the
-text, and it is HTML-escaped when the banner is rendered. Accepting markup here
-would turn a configuration field into stored HTML injection against your own
-users, so it is refused at the record and escaped again at the render.
+The HTML template is fixed and sanitized in code. Policy contributes plain-text
+strings, one colour *name*, and one image URL; nothing you write is ever
+interpreted as HTML or CSS. Text is escaped when the banner is rendered, and
+accepting markup here would turn a configuration field into stored HTML
+injection against your own users, so it is refused when the record is written
+and neutralized again at render time. Control characters, bidirectional
+overrides and isolates, and characters that hide text (zero-width space, word
+joiner, byte-order mark, soft hyphen) are refused too, because they let a
+warning read differently from what it says. The joiners and the left-to-right,
+right-to-left and Arabic letter marks that Persian, Hebrew, Arabic and Indic
+writing need are allowed. Tab and newline are allowed in the wording
+and show as a space.
 
-**This record is the only source of a banner's wording.** No API call, CLI flag
-or D&R rule supplies banner HTML — the `banner` field on the action routes and
-the `--banner` flag are deprecated and ignored, and will be removed. If you
-change the wording here, every subsequent `banner_message` uses it.
+The banner is placed **outside** the container that holds the sender's own HTML
+and stylesheets, so a sender cannot hide, restyle or cover it, whatever the
+message contains. Your branding lives inside that protected block.
+
+### Which wording a message gets
+
+For each message, most specific first:
+
+1. the `text` the action itself carried (an API call, a D&R rule, or the console's
+   "Banner wording" box; see [Remediation](remediation.md)), for that one banner;
+2. the `variants` entry for the message's **current verdict**;
+3. the record's `text`;
+4. the packaged sentence.
+
+`title` and `color` follow the same order, minus step 1. The logo belongs to the
+organization and does not vary by verdict. A verdict without a variant uses the
+defaults. A message that already carries a banner keeps it: `banner_message`
+is idempotent, so a later verdict change does not swap the wording on messages
+that were already bannered. Un-banner and banner again if you want that.
+
+### The logo
+
+The logo is one image, shown 32 pixels high (at most 128 wide) at the start of
+the heading, with the alt text as its description. To keep it safe:
+
+- Only `https://` URLs are accepted. `http:`, `data:`, `cid:` and other schemes
+  are refused, as are URLs carrying credentials, a port, an IP address or a
+  single-label host name, and anything that is not plain ASCII (percent-encode
+  the rest).
+- Mail clients fetch the image from **your** host each time a message is
+  opened, and several block remote images until the reader allows them. The
+  banner's text always stands on its own: treat the logo as decoration and
+  never as the only thing that says "warning". A roughly square logo looks best;
+  a very wide one is scaled down.
+
+### Previewing
+
+The console's Policy page shows the banner exactly as recipients get it, from
+the same renderer and validator the collector uses, before you save. The same
+preview is available from the API as `POST /banner/preview`.
+
+### Switch
 
 `enabled` is what lets **automation** banner this organization's mail: with it
 off, an automation, a D&R rule or the AI triage agent asking for
@@ -373,7 +456,9 @@ wording is the packaged sentence.
 
 Bannering also needs the provider capability: `Mail.ReadWrite` is enough on
 Microsoft 365 (edited in place), while Google Workspace additionally needs the
-optional `https://mail.google.com/` scope and **replaces** the message.
+optional `https://mail.google.com/` scope and **replaces** the message. On Google
+Workspace, a plain-text part of a message can only carry text, so there the banner is
+two lines (title, then wording) and the logo and colour do not apply.
 
 ---
 
@@ -435,8 +520,8 @@ Two consequences worth knowing:
 - A changed retention window first receives a report-only sweep. Deletion on
   subsequent sweeps requires the deployment's retention mode to be `enforce`;
   `report` reports candidates without deleting, and `off` disables the sweeper.
-  During private beta, ask the MailSec team to confirm deletion is enabled and
-  check sweep completion. Large backlogs drain over several sweeps.
+  Check sweep completion before treating cleanup as complete. Large backlogs
+  drain over several sweeps.
 - The horizons are independent. A flagged message's evidence can outlive its
   index entry (the usual case: 400 against 35), and if you set `flagged_days`
   *below* `message_days` the reverse happens — the index entry remains without a
@@ -489,6 +574,8 @@ A tenant purge permanently deletes, for one organization:
 - user (abuse-mailbox) reports
 - stored raw messages and their parsed copies
 - link-detonation results
+- sample submissions: every message your analysts copied to LimaCharlie, and its
+  metadata (see [Sample Submission](sample-submission.md))
 - the organization's Email Security provider connection and policy configuration
 
 It also **stops the mail connections at Microsoft 365 and Google Workspace**, so
@@ -519,7 +606,10 @@ server from your verified claims rather than taken from the request.
 |---|---|---|
 | The organization unsubscribes from Email Security | **30 days** later | Resubscribing at any point inside those 30 days |
 | The organization's free trial ends and it stays on the free tier | **30 days** later | Moving the organization off the free tier at any point inside those 30 days |
-| The organization itself is deleted | Immediately | Nothing — the organization no longer exists |
+| The organization itself is deleted | After a **7-day** grace period | The organization is found to exist again before the purge |
+
+Grace periods start when the cleanup process observes the condition. Deletion
+runs asynchronously after the grace period; normal retention policies still apply.
 
 None of them needs anyone to ask. The 30-day delay exists so that unsubscribing
 by mistake, letting a trial lapse over a holiday, or moving billing around is
@@ -549,19 +639,23 @@ re-sent for the new date.
 
 ## Plans, the free trial, and the mailbox cap
 
-Email Security is available to every organization. What differs between a
-**trial** organization and a **paid** one is how long it runs and how many
-mailboxes it protects.
+Email Security is generally available. **Subscribing to the Email Security
+extension is the purchase**. Paid usage costs **$1 per protected mailbox per
+month**, billed daily at **$1/30 per mailbox-day** on that day's protected-mailbox
+count. See [security product billing](../7-administration/billing/security-products.md).
 
-An organization is on the trial when it is on the LimaCharlie free tier — the
-same line the rest of the platform draws, so an organization evaluating Email
-Security and Cloud Security at once gets one answer about what it is paying for.
+An organization gets the trial when it is on the LimaCharlie free tier: its
+configured sensor quota is **2 or less**. Raising the quota above **2** moves the
+organization to a paid plan, lifts the trial limits, and starts usage billing.
 
 | | Trial | Paid |
 |---|---|---|
-| Duration | **14 days** from the day Email Security was enabled | No limit |
-| Protected mailboxes | **25** | No limit |
+| Duration | **14 days** from the day Email Security was enabled | No trial duration limit |
+| Protected mailboxes | **25** | No plan-imposed mailbox cap |
 | Everything else — detections, remediation, retention, API, telemetry | Identical | Identical |
+
+Read `coverage.entitlement` for the trial countdown, mailbox coverage and any
+scheduled deletion.
 
 ### The 14-day clock
 
@@ -577,27 +671,27 @@ Read the remaining time from the `entitlement` block of
 
 ### What happens when the trial ends
 
-The same thing that happens when an organization unsubscribes, and for the same
-reason — the product stops, nothing is deleted yet:
+If the organization stays on the free tier at expiry, collection pauses and
+configuration is kept:
 
 - **Ingestion pauses.** No new mail is analyzed, and the mail connections are
   not renewed, so the provider's own watches expire on their own schedule.
 - **Nothing is deleted, and nothing is changed.** The connections, the policy
   records and every message already analyzed are intact and follow their normal
   [retention](#data-retention-and-deletion).
-- **Reading and acting still work.** An analyst can still search the queue, read
-  a message and remediate mail that was already ingested.
-- **The 30-day deletion clock starts**, with the notices described above.
+- **A 30-day purge grace period starts when expiry is observed**, with the
+  notices described above. Data is removed after that grace period unless the
+  organization upgrades.
 
-Moving the organization off the free tier resumes ingestion within about five
-minutes, and cancels the scheduled deletion. Mail delivered while ingestion was
-paused is not analyzed retroactively.
+Raising the configured sensor quota above **2** lifts the trial limits, allows
+collection to resume, and cancels trial-expiry deletion if the upgrade happens
+before the purge. Usage is then billed.
 
 ### The 25-mailbox cap
 
 A trial organization protects up to 25 mailboxes. The cap applies to the whole
-organization, across every connected mail tenant, and it works on **activation**
-only:
+organization, across every connected mail tenant, and limits **new mailbox
+protection** only:
 
 - Discovery still finds every mailbox in the tenant — the ones past the cap are
   reported as `discovered` rather than `protected`, so you can see exactly how
@@ -645,18 +739,48 @@ The templated acknowledgement sent to someone who reported a message. See
 ```yaml
 policy_type: reporter_reply
 enabled: true
+acknowledgement: "Your report was received and is being reviewed."
+on_resolve: true
 templates:
-  malicious: "Thanks — you were right. We removed that message from every mailbox it reached."
-  benign: "Thanks for checking. That message is legitimate; no action was needed."
+  malicious: "Your report has been reviewed and classified as malicious."
+  benign: "Your report has been reviewed and classified as benign."
 ```
 
 | Field | Default | |
 |---|---|---|
 | `enabled` | `false` | It sends mail on your behalf to your own staff; opt-in |
-| `templates` | — | Keyed by verdict. A verdict with no template falls back to a generic acknowledgement, so enabling replies can never leave a reporter with silence |
+| `acknowledgement` | Neutral receipt wording | Plain text for the receipt reply; at most 4096 UTF-8 bytes, no markup |
+| `on_resolve` | `false` | Send a separate reply after report resolution |
+| `templates` | — | Plain-text resolution templates keyed by malicious, spam, graymail, benign, simulation. Missing entries state the recorded disposition; each is at most 4096 UTF-8 bytes |
 
 Template keys must be verdicts. Values are plain text (no `<` or `>`), capped at
 4096 characters.
+
+---
+
+## `sample_sharing`
+
+Lets your analysts copy one message at a time to LimaCharlie so detection can
+improve. See [Sample Submission](sample-submission.md) for what is kept, where,
+for how long and how to withdraw.
+
+```yaml
+policy_type: sample_sharing
+enabled: true
+```
+
+| Field | Default | |
+|---|---|---|
+| `enabled` | `false` | Opt-in. Submitting copies a message to LimaCharlie, so without this record (or with `enabled: false`) every submit request is refused |
+
+The record is closed: `enabled` is the only field, unknown fields are refused, and
+a record that sets nothing is refused. A suggested record name is
+`sample-sharing`. Turning it on requires `mailsec.set` and the organization Owner's
+`billing.ctrl` and `user.ctrl` authority. Turning it off needs only `mailsec.set`:
+write `enabled: false` on an active record without expiry. Removing, disabling or
+expiring an override requires Owner authority because an earlier enabled record
+could become effective. Nothing is ever submitted automatically, and D&R rules,
+automations and the AI agent cannot submit even when the record is on.
 
 ---
 
@@ -697,11 +821,18 @@ The default is **on**, because the organization that most needs body similarity 
 one being hit by a kit that randomizes subjects and links — is the one least
 likely to go looking for a switch to turn on.
 
-The distance default is measured, not chosen: across a 404-message corpus of
-ordinary business mail the closest pair of *unrelated* messages is 39 apart,
-while two copies of one message differing only in the recipient's name and the
-link's tracking parameters are 0 apart. The ceiling of 35 sits below that closest
-pair deliberately — a setting above it is one you cannot have measured.
+The distance default is measured, not chosen: across a corpus of several hundred
+pieces of ordinary business mail the closest pair of *unrelated* messages is 40
+apart, while one phishing pitch templated over eight victims — name, greeting,
+amount, account fragment, tracking token and signature all varying — is 0 apart
+after normalization. The ceiling of 35 sits below that closest pair deliberately
+— a setting above it is one you cannot have measured.
+
+Raising it is not the lever it looks like. Body similarity works by *normalizing*
+per-copy variance away, not by tolerating it: a single per-copy word the
+normalization cannot identify costs a median of 20–30 points but exceeds 100 in
+the worst 5% of cases, so moving 30 to 35 takes that case from about 56% of
+pairs grouping to about 71% while spending most of the margin against unrelated mail.
 
 See [Body similarity](campaigns.md#body-similarity) for what the key is and how a
 body is normalized before it is hashed.

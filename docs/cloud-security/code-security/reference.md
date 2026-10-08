@@ -150,31 +150,62 @@ on by default. See [Events](../api-reference.md#events).
 ## API routes
 
 All routes are under `https://api.limacharlie.io/v1/cloudsec/{oid}`. Reads need
-`cloudsec.get`, writes need `cloudsec.set`, and the organization must be
-subscribed to `ext-cloud-security`.
+`cloudsec.get` and writes need `cloudsec.set`. The exceptions: AutoFix and
+remediation requests and decisions need `cloudsec.respond`, a runtime check
+(`POST`) needs only `cloudsec.get`, and the map status read
+(`GET /code/iac-map/status`) needs `cloudsec.set`. See the table below. The organization must be subscribed to
+`ext-cloud-security`.
 
 | Route | CLI | Purpose |
 |---|---|---|
 | `GET /code/repos` | `code repos` | Repositories with scan status and open-finding counts. Params: `q`, `has_findings`, `provider`, `cursor`, `limit`. |
 | `GET /code/status` | `code status` | Run status per connection. |
-| `GET /code/capabilities` | `code capabilities` | What each GitHub connection can do, and its webhook status. Optional `repo`. |
+| `GET /code/capabilities` | `code capabilities` | What enabled source-control workflow connections can do, and their webhook status. Optional `repo`. |
 | `GET /code/fixes` | `code fixes` | Open dependency findings grouped by the upgrade that fixes them. |
 | `GET /code/sbom` | `code sbom` | A short-lived download link for one repository's SBOM. Params: `repo` (required, `<owner>/<name>` as `/code/repos` returns it), `provider`. |
-| `GET /code/images`, `GET /code/images/{digest}` | | Container images and one image's detail. |
-| `GET /code/image-repos`, `GET /code/image-repos/facets` | | Image repositories and their filter counts. |
+| `GET /code/images`, `GET /code/images/{digest}` | `image list`, `image get` | Container images and one image's detail. |
+| `GET /code/image-repos`, `GET /code/image-repos/facets` | `image repos`, `image repo-facets` | Image repositories and their filter counts. |
 | `POST /code/scan` | `code rescan` | Rescan one repository. Body: `{repo, ref?, provider?}`. |
-| `POST /code/autofix` | `code autofix` | Open an AutoFix pull request. Body: `{finding_id, repo?}`. |
+| `POST /code/autofix` | `code autofix` | Open an AutoFix pull request as a remediation run. Needs `cloudsec.respond`. Body: `{finding_id, repo?}`. |
 | `POST /code/ingest` | `code ingest` | Push SARIF, CycloneDX or a scanner report. |
-| `POST /code/pr_check` | | Check a pull request. Used by the webhook rules. |
-| `POST /code/webhook` | | Point a GitHub App's webhook at LimaCharlie. See [the webhook API](pull-requests.md#the-webhook-api). |
+| `POST /code/pr_check` | `code pr-check` | Check a pull request. Used by the webhook rules. |
+| `POST /code/webhook` | `code webhook` | Point a GitHub App's webhook at LimaCharlie. See [the webhook API](pull-requests.md#the-webhook-api). |
+
+Image reads accept repeatable `lineage_status` values: `verified`, `asserted`,
+`inferred`, `ambiguous`, `unknown`. Filtering is server-side; a stale lineage
+decision counts as `unknown` immediately. Image-repository facets can request
+`lineage_facet=true` for digest-level counts under `lineage_statuses`; repository
+placement filters do not narrow those lineage counts. An older server that
+cannot apply the filter refuses it instead of returning an unfiltered page.
+See [image lineage](containment-setup.md#image-lineage) for what each status
+proves.
 
 Findings are read with the standard [findings routes](../api-reference.md),
 filtered by `repo`.
+
+Evidence, lineage and remediation routes. See
+[Configure evidence, lineage and remediation](containment-setup.md) for the
+setup, and [Unknown, partial and refusal reasons](reasons.md) for the codes
+they return.
+
+| Route | Permission | Purpose |
+|---|---|---|
+| `GET /findings/{finding_id}/evidence-chain` | `cloudsec.get` | The finding's evidence chain. Optional `runtime=true`. |
+| `POST /findings/{finding_id}/runtime-check` | `cloudsec.get` | Check whether the finding's package was seen running. Reads only. |
+| `GET /code/coverage` | `cloudsec.get` | Coverage lines with their denominators. |
+| `GET /code/impact` | `cloudsec.get` | Live impact of a commit (`repo_urn`, `commit`) or a finding (`finding_id`). |
+| `GET /code/provenance`, `POST /code/provenance` | `cloudsec.get`, `cloudsec.set` | List or push build provenance. |
+| `POST /code/iac-map`, `GET /code/iac-map/status` | `cloudsec.set` | Push a Terraform map, and read its publication status. |
+| `POST /findings/{finding_id}/remediations` | `cloudsec.respond` | Request a remediation run. Body: `{action, idempotency_key}`. |
+| `GET /remediations`, `GET /remediations/{run_id}` | `cloudsec.get` | List runs, or read one run with its steps. |
+| `POST /remediations/{run_id}/approve`, `reject`, `cancel` | `cloudsec.respond` | Decide a run. |
 
 ## Not available yet
 
 - **Scanning images from container registries.** `image_sources: ["registries"]`
   is accepted but does nothing yet.
-- **Pull-request checks, push rescans and AutoFix on GitLab and Bitbucket.**
+- **GitLab and Bitbucket workflows without the corresponding server capability.**
+  Support depends on rollout in your data region. Read `code capabilities`;
+  scheduled repository scans do not imply webhook, check or AutoFix support.
 - **Scanning self-managed GitLab instances.** They can be connected for inventory.
 - **Bitbucket Data Center** (self-hosted).

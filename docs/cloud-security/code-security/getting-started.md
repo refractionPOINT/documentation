@@ -13,11 +13,39 @@ nothing until a policy selects repositories.
 
 - The organization is subscribed to Cloud Security (`ext-cloud-security`). Without
   the subscription the Cloud Security pages show an enable screen, and the API
-  answers `403`.
+  answers `403`. **Subscribing is the purchase**: paid usage is **$0.80 per
+  protected repository per month**, billed daily at **$0.80/30 per repository-day**,
+  plus the existing Cloud Security base fee. Free-tier organizations (sensor
+  quota **2 or less**) get a **14-day trial**. See
+  [pricing and trial limits](../../7-administration/billing/security-products.md).
 - You have `cloudsec.get` and `cloudsec.set`. Connecting GitHub with the
   automatic setup below needs a few more permissions, listed in that section.
+- Creating or editing the provider record, including enabling it on that write,
+  uses `cloudsec_provider.set`. Metadata-only changes can instead use
+  `cloudsec_provider.set.mtd`. These are separate from policy
+  and finding permissions. Ask your organization administrator for them if
+  saving or enabling the connection is denied.
 - For GitHub, someone who is an **owner of the GitHub organization** is
   available to approve the App.
+
+Your first goal is one successfully scanned repository. Start with a small
+repository you know contains a dependency manifest and source files. In the
+console's setup checklist, confirm hosted scanning is available in your data
+region before granting provider access. If it is unavailable, contact
+LimaCharlie; an enabled policy cannot turn on an unavailable server capability.
+
+### CLI installation
+
+The console walkthrough needs no terminal. Use this installation only for the
+CLI examples on these pages:
+
+--8<-- "includes/code-security-cli.md"
+
+Then [configure authentication](../../6-developer-guide/cli-quickstart.md). Run
+`limacharlie org list --output yaml` to find your organization ID; pass
+`--oid <organization-uuid>` on each command or select it in your CLI profile.
+Provider organization names, GitHub slugs and cloud project IDs are different
+from your LimaCharlie organization UUID.
 
 ## GitHub: let LimaCharlie create the App
 
@@ -37,6 +65,8 @@ to pushes and pull requests. Nobody has to configure a webhook by hand.
     - **Turn on code scanning with pull-request checks** creates a
       [starter policy](#the-starter-policy). It is offered, and ticked, only when
       the organization has no code-scanning policy yet.
+      For a one-repository pilot, leave it off and
+      [create a policy](#create-a-policy) with that repository in `include`.
 4. Choose **Continue on GitHub**. GitHub shows the App it is about to create. A
    GitHub organization owner creates it, then installs it on **All
    repositories**.
@@ -160,14 +190,15 @@ Or as code:
 ```yaml
 # code-policy.yaml
 policy_type: code_scanning
-enabled: true
-repos:
-  include: ["acme/api-*", "acme/payments"]
-scanners:
-  sca: true
-  secrets: true
-  iac: true
-  licenses: true
+code_scanning:
+  enabled: true
+  repos:
+    include: ["acme/api-*", "acme/payments"]
+  scanners:
+    sca: true
+    secrets: true
+    iac: true
+    licenses: true
 ```
 
 ```bash
@@ -175,7 +206,8 @@ limacharlie hive set --hive-name cloudsec_policy --key code-scanning \
     --input-file code-policy.yaml --enabled
 ```
 
-Static analysis is not listed above because it runs unless a policy sets
+Save the YAML as `code-policy.yaml`. The Hive record's `--enabled` switch and
+the nested `code_scanning.enabled: true` are both required. Static analysis is not listed above because it runs unless a policy sets
 `sast: false`. Every field is described in [Scan policy](policy.md).
 
 ## Check that it worked

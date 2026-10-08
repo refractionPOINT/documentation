@@ -1,5 +1,11 @@
 # Code Security
 
+Code Security is generally available through the **Cloud Security** extension.
+**Subscribing to the extension is the purchase**. Paid Code Security usage costs
+**$0.80 per protected repository per month**, billed daily at **$0.80/30 per
+repository-day** on that day's protected-repository count, plus the existing
+Cloud Security base fee. See [security product billing](../../7-administration/billing/security-products.md).
+
 Code Security scans the source repositories behind your cloud estate and puts
 what it finds into the same risk-ranked worklist as your cloud findings. You
 triage a leaked credential or a vulnerable dependency the same way you triage a
@@ -12,6 +18,20 @@ pull requests that upgrade vulnerable dependencies.
 !!! tip "Ready to start?"
     [Get started](getting-started.md) takes about ten minutes on GitHub: the
     console creates the GitHub App for you and turns scanning on.
+
+## Free-tier trial
+
+Organizations with a configured sensor quota of **2 or less** receive the
+Cloud Security **14-day trial**, with up to **2 provider connections**,
+**10 repositories per connection**, and **5 container images per organization**.
+The repository and image limits apply to hosted scans.
+
+At expiry, collection and hosted scanning pause. Provider configuration and
+policies are kept. Collected data becomes eligible for deletion after a
+**7-day purge grace period**, starting when expiry is observed. Raising the
+sensor quota above **2** moves the organization to a paid plan, lifts the trial
+limits and allows collection and scanning to resume. Upgrading before the purge
+cancels trial-expiry deletion; usage is then billed.
 
 ## What it finds
 
@@ -69,13 +89,20 @@ keep it.
   jobs use the connection's token. That is why those connections ask for
   read-only scopes.
 - **Only the results leave the sandbox:** findings, the software bill of
-  materials and hashes. File contents, diffs and secret values are never stored.
+  materials and hashes. Findings never hold file contents, diffs or secret
+  values. The commit package the scan reads, and the files AutoFix edits, are
+  deleted when the job ends. See [Data handling and privacy](data-handling.md).
 - **Secrets are stored as a salted hash.** No field on a finding can hold the
   credential itself.
 - **Nothing is written to your repositories unless you allow it.** Pull-request
   checks, comments and AutoFix pull requests need write permissions you grant to
   the GitHub App, and each write uses a token limited to what that one action
   needs.
+
+These guarantees describe ordinary scans and deterministic dependency AutoFix.
+The separate, currently unavailable [AI-proposed fix capability](autofix.md#ai-proposed-fixes)
+has an additional opt-in for sending one target file to your model provider;
+see [AI data handling](data-handling.md#ai).
 
 ## Where to find it
 
@@ -104,5 +131,10 @@ source** filters narrow the list.
 - [Pull-request checks and push rescans](pull-requests.md): scan every push and gate merges on GitHub.
 - [AutoFix pull requests](autofix.md): let LimaCharlie open dependency upgrade pull requests.
 - [Bring your own scanner](bring-your-own-scanner.md): scan in your own CI, or push SARIF and CycloneDX results.
+- [What Code Security guarantees](guarantees.md): the rules behind `verified`, image lineage, runtime evidence and remediation.
+- [Configure evidence, lineage and remediation](containment-setup.md): permissions, connections, pull-request disclosure, remediation runs and playbooks.
+- [Automatic behavior and incident response](incident-response.md): what happens on its own, and how to stop or undo a remediation.
+- [Data handling and privacy](data-handling.md): what is read, what is kept, retention and purge.
 - [Reference](reference.md): languages, limits, status codes and API routes.
 - [Troubleshooting](troubleshooting.md): common problems and how to fix them.
+- [Unknown, partial and refusal reasons](reasons.md): every reason code and what to do about it.

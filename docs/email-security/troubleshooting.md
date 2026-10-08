@@ -1,6 +1,6 @@
 # Troubleshooting
 
---8<-- "includes/email-security-beta.md"
+--8<-- "includes/email-security-availability.md"
 
 Most Email Security problems are one of a small number of shapes, and the product
 is built so that each of them says so somewhere rather than looking like silence.
@@ -294,8 +294,9 @@ expected. A burst that does not decay is not.
 ## "Why does my organization have a `mailsec` installation key?"
 
 Email Security ships its telemetry the same way every other LimaCharlie data
-source does, so each connection appears as one cloud sensor on platform `email`
-and authenticates with an installation key tagged `mailsec`.
+source does. Each connection authenticates with an installation key tagged
+`mailsec`, and its mail appears as one sensor per mailbox on platform `email`,
+plus one connection-level sensor named `mailsec-<connection name>`.
 
 **One key per connection**, and it is *ensured* rather than minted: the id is
 derived, so the same connection reconnecting — after an update, a failover or a
