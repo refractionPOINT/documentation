@@ -112,6 +112,7 @@ same list; you only need to follow one method.
 | Container Analysis API | `containeranalysis.googleapis.com` |
 | Cloud Run Admin API | `run.googleapis.com` |
 | Cloud Functions API | `cloudfunctions.googleapis.com` |
+| Kubernetes Engine API | `container.googleapis.com` |
 | Vertex AI API | `aiplatform.googleapis.com` |
 | Notebooks API | `notebooks.googleapis.com` |
 | Recommender API | `recommender.googleapis.com` |
@@ -316,19 +317,23 @@ Each adds one inventory or analysis surface. Skipping one leaves that surface
     `container.cronJobs.list`, `container.jobs.list`,
     `container.replicaSets.list`. Since `roles/iam.securityReviewer` is
     required, **no extra role is needed for the Kubernetes object reads**.
-    Google documents the permissions in its
-    [Security Reviewer role](https://docs.cloud.google.com/iam/docs/roles-permissions/container).
+    Google lists them under the
+    [Security Reviewer role](https://docs.cloud.google.com/iam/docs/roles-permissions/iam#iam.securityReviewer).
 
     `roles/container.viewer` is worth adding for exactly one case: it is the
     read-only role that carries `container.clusters.connect`, which is
     required to reach a cluster through its **DNS-based control-plane
-    endpoint**. If you are using that endpoint (see below), grant it. See
-    Google's [DNS endpoint access guidance](https://docs.cloud.google.com/kubernetes-engine/docs/how-to/latest/network-isolation#define-access-to-the-dns-based-endpoint).
+    endpoint**. `roles/viewer` also carries it. If you are using that endpoint
+    (see below) and have not granted `roles/viewer`, grant it. See Google's
+    [DNS endpoint access guidance](https://docs.cloud.google.com/kubernetes-engine/docs/how-to/latest/network-isolation#dns-based-endpoint).
 
     Collection uses **read-only list requests** for namespaces, controllers
-    and pods. It retains workload configuration and runtime image metadata.
-    It does not request Secrets, ConfigMaps, pod logs or `exec`, and the
-    listed roles do not grant Kubernetes write access.
+    and pods. It retains workload configuration (replica counts, service
+    accounts, security settings, host-path mounts), namespace and workload
+    labels and annotations (bounded in size), and the images pods are running.
+    It does not read environment variables, command lines, Secrets,
+    ConfigMaps, pod logs or `exec`, and the listed roles do not grant
+    Kubernetes write access.
 
 !!! warning "A cluster we cannot reach on the network is reported as partial, not empty"
     The connection talks to each cluster's **control-plane endpoint**. Two
@@ -377,6 +382,9 @@ Each adds one inventory or analysis surface. Skipping one leaves that surface
       Deployment** are not listed as workloads of their own; their pods are
       attributed to the CronJob or Deployment that owns them, which is the
       object you actually operate;
+    - a pod that none of those five kinds owns (a bare pod, or one managed by
+      a custom controller) is listed as a workload of unspecified kind, named
+      after the pod or after the top-level object that owns it;
     - a workload **scaled to zero** is inventoried with no image link. That is
       "nothing is running", not "no image".
 
