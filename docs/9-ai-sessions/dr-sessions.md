@@ -483,7 +483,7 @@ This approach keeps D&R rules clean and lets you update the agent's behavior (pr
 
 #### AI Agent Record Fields
 
-The same record can also supply a one-shot model call from the [`ask ai` detection operator](../8-reference/detection-logic-operators.md#ask-ai). That operator uses the provider credentials, `prompt` as a system message, `data`, `model` and `max_tokens`. It ignores session names, LimaCharlie credentials, tool permissions, plugins, turns, budget, lifetime, debounce, environment and MCP servers. Configure those fields for `start ai agent` when the record serves both purposes.
+The same record can also supply a one-shot model call from the [`ask ai` detection operator](../8-reference/detection-logic-operators.md#ask-ai). That operator uses the provider credentials, `prompt`, `data` and `model`. For ordinary calls, `prompt` is a system message and `max_tokens` limits output. With [decision questions](../8-reference/detection-logic-operators.md#decision-questions), the prompt and event data form shared input; only OpenAI API-key agents are supported, the default model is `gpt-6-luna`, and the record model takes precedence, so use a separate record without `model` (or with a decision-capable model) for question rules. The decision API does not receive `max_tokens`. It ignores session names, LimaCharlie credentials, tool permissions, plugins, turns, budget, lifetime, debounce, environment and MCP servers. Configure those fields for `start ai agent` when the record serves both purposes.
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
@@ -501,7 +501,7 @@ The same record can also supply a one-shot model call from the [`ask ai` detecti
 | `denied_tools` | list | No | Tools Claude cannot use. |
 | `permission_mode` | string | No | `acceptEdits`, `plan`, or `bypassPermissions`. |
 | `model` | string | No | Provider model identifier. When routing through Bedrock, use the Bedrock model ID format (see [Alternative AI Providers](alternative-providers.md)). |
-| `max_tokens` | integer | No | Output token limit for `ask ai`, 1–32768. Omit to use the service default (512). A rule-level `max_tokens` overrides this value. Ignored by `start ai agent`. |
+| `max_tokens` | integer | No | Output token limit for `ask ai`, 1–32768. Omit to use the service default (512). A rule-level `max_tokens` overrides this value. Not sent for decision questions. Ignored by `start ai agent`. |
 | `max_turns` | integer | No | Maximum conversation turns. |
 | `max_budget_usd` | float | No | Maximum spend limit in USD. |
 | `ttl_seconds` | integer | No | Maximum session lifetime in seconds. |
