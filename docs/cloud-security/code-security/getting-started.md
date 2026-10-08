@@ -96,7 +96,7 @@ starts on the next pass, usually within minutes. Skip to
 ??? info "What the App is created with"
     | Permission | Access | Used for |
     |---|---|---|
-    | Repository: **Actions**, **Administration**, **Code scanning alerts**, **Dependabot alerts**, **Metadata**, **Secret scanning alerts**, **Secrets**, **Webhooks** | Read-only | Inventory and posture ([GitHub provider](../provider-setup/github.md)), and GitHub's own security alerts |
+    | Repository: **Actions**, **Administration**, **Attestations**, **Code scanning alerts**, **Dependabot alerts**, **Metadata**, **Secret scanning alerts**, **Secrets**, **Webhooks** | Read-only | Inventory and posture ([GitHub provider](../provider-setup/github.md)), GitHub's own security alerts, and signed image lineage |
     | Organization: **Administration**, **Members**, **Secrets**, **Webhooks** | Read-only | Inventory and posture |
     | Repository: **Contents** | Read-only, or **Read and write** with AutoFix | Reading code to scan it; writing AutoFix branches |
     | Repository: **Checks**, **Pull requests** | Read and write | Pull-request checks and comments. Nothing is published until the policy turns them on |
