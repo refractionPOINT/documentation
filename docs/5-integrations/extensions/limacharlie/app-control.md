@@ -370,15 +370,6 @@ Three console actions need more than the App Control permissions alone. [Install
 - Policy record names are limited to 128 bytes and rule ids to 64 bytes.
 - A policy can list at most 64 tags.
 
-## See Also
-
-- [Application Control policies](../../../7-administration/config-hive/app-control-policy.md)
-- [Application Control rules](../../../7-administration/config-hive/app-control-rule.md)
-- [Sensor tags](../../../2-sensors-deployment/sensor-tags.md)
-- [Config Hive overview](../../../7-administration/config-hive/index.md)
-- [Permissions](../../../8-reference/permissions.md#application-control)
-- [EDR events reference](../../../8-reference/edr-events.md#app_control_denied)
-
 ## Exporting compliance evidence
 
 Open **Application Control**, select **Export compliance evidence**, and choose a
@@ -496,6 +487,15 @@ them as broad trust exceptions when assessing the allowlist, alongside vendor,
 signer, and path-based trust. They do not add script, library, or MSI package control.
 
 The requirement references are the
-[CIS Controls v8 guidance](https://www.cisecurity.org/-/media/project/cisecurity/cisecurity/data/media/files/white-paper-docs/cis-controls--v8--lotl-powershell--2022-07.pdf),
+[CIS Controls v8](https://www.cisecurity.org/controls/v8),
 [ASD application control guidance](https://www.cyber.gov.au/business-government/protecting-devices-systems/hardening-systems-applications/system-hardening/implementing-application-control),
 and [NIST SP 800-53 Rev. 5](https://csrc.nist.gov/pubs/sp/800/53/r5/upd1/final).
+
+## See Also
+
+- [Application Control policies](../../../7-administration/config-hive/app-control-policy.md)
+- [Application Control rules](../../../7-administration/config-hive/app-control-rule.md)
+- [Sensor tags](../../../2-sensors-deployment/sensor-tags.md)
+- [Config Hive overview](../../../7-administration/config-hive/index.md)
+- [Permissions](../../../8-reference/permissions.md#application-control)
+- [EDR events reference](../../../8-reference/edr-events.md#app_control_denied)
