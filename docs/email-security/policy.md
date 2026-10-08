@@ -453,13 +453,20 @@ preview is available from the API as `POST /banner/preview`.
 
 ### Switch
 
-`enabled` is what lets **automation** banner this organization's mail: with it
-off, an automation, a D&R rule or the AI triage agent asking for
-`banner_message` is decided and audited but the mailbox is not touched
-(`alert_only`). It does **not** gate a banner somebody asked for — from the
-console, the API or the CLI — because the switch exists to stop the product
-rewriting mail on its own, not to stop an operator from acting on a message in
-front of them. An organization that has never written this record still has
+`enabled` is what lets Email Security banner this organization's mail **on its
+own**: with it off, a `banner_message` from an [automation](#automations) or a
+[`dr-mail` rule](custom-rules.md) is decided and audited but the mailbox is not
+touched (`alert_only`). It does **not** gate a banner requested through the API,
+because the switch exists to stop the product rewriting mail on its own, not to
+stop someone from acting on a message in front of them. A request through the
+API covers the console, the CLI, an API key, the
+[AI triage agent](ai-triage.md), and a D&R rule in the `dr-general` Hive that
+calls `banner_message` through
+[`extension request`](automation.md#acting-on-mail-from-a-dr-rule). Those requests
+are recorded with `source: api`. They are still subject to
+[alert-only mode](#mode). To stop a `dr-general` rule or the agent from bannering,
+remove `banner_message` from the rule, or don't give the agent's key `mailsec.act`.
+An organization that has never written this record still has
 working `banner_message` from the console with explicit override consent when
 the organization is alert-only; it simply has no automated bannering, and the
 wording is the packaged sentence. A
