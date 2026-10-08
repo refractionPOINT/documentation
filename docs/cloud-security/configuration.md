@@ -1,6 +1,6 @@
 # Configuration Reference
 
-Cloud Security is configured entirely through three Hive types. Anything the
+Cloud Security is configured entirely through four Hive types. Anything the
 console can configure, `limacharlie hive set` can configure — which makes
 tenant onboarding and fleet-wide policy a script, not a UI workflow (see
 [Automation & IaC](automation.md) for recipes).
@@ -10,11 +10,15 @@ tenant onboarding and fleet-wide policy a script, not a UI workflow (see
 | `cloudsec_provider` | one per cloud / IdP / SaaS / AI connection | what to collect and with which credential |
 | `cloudsec_policy` | many, discriminated by `policy_type` | classification, coverage, emission, exclusions, suppression, compliance assignments, custom posture rules, remediation SLAs |
 | `cloudsec_query` | one per saved query | shared saved graph queries |
+| `cloudsec_code_rule` | one per static-analysis rule file | the rules code scanning runs, LimaCharlie's defaults included |
 
 !!! info "Permissions"
     `cloudsec_provider` records are gated by the dedicated
-    `cloudsec_provider.get/set/del` permissions; `cloudsec_policy` and
-    `cloudsec_query` follow `cloudsec.get`/`cloudsec.set`.
+    `cloudsec_provider.get/set/del` permissions; `cloudsec_policy`,
+    `cloudsec_query` and `cloudsec_code_rule` follow `cloudsec.get`/`cloudsec.set`.
+    Writing a `cloudsec_policy` record of type `response` also needs
+    `cloudsec.respond`, because it decides what a
+    [remediation run](code-security/containment-setup.md#response-playbooks) may do.
 
 ## cloudsec_provider
 
@@ -27,7 +31,7 @@ Common fields (all provider types):
 
 | Field | Meaning |
 |---|---|
-| `provider_type` | `gcp` \| `aws` \| `azure` \| `okta` \| `entra` \| `google_workspace` \| `1password` \| `auth0` \| `cloudflare` \| `github` \| `openai` \| `anthropic` \| `limacharlie` |
+| `provider_type` | `gcp` \| `aws` \| `azure` \| `okta` \| `entra` \| `google_workspace` \| `1password` \| `auth0` \| `cloudflare` \| `github` \| `gitlab` \| `bitbucket` \| `openai` \| `anthropic` \| `limacharlie` |
 | `credentials` | A `hive://secret/<name>` reference. The credential itself lives in the secret Hive — it is **not** stored inline. |
 | `compliance_credentials` | Optional second `hive://secret/<name>` reference for providers with a second credential plane (today: Anthropic's compliance/analytics key). |
 | `internal_domains` | Your own email domains (bare domains, no `@`) beyond the discoverable primary — human identities outside this set are classified external. |
@@ -48,7 +52,9 @@ Per-provider scope fields:
 | `1password` | `onepassword_scim_url` — the SCIM bridge URL; the credential is the SCIM bearer token |
 | `auth0` | `auth0_domain` — the canonical tenant domain (`*.auth0.com`); the credential is an M2M app authorized for the Management API |
 | `cloudflare` | `cloudflare_account_id` — the 32-hex account id |
-| `github` | `github_org`, `github_app_id`, `github_installation_id` — a GitHub App installed on the org; the App private key is the credential |
+| `github` | `github_org`, `github_app_id`, `github_installation_id` — a GitHub App installed on the org; the App private key is the credential. Optional `github_actions_app_id`, `github_actions_installation_id` and `actions_credentials`, set together, name a separate GitHub App for Code Security's writes (pull-request checks and AutoFix); without them the connection's own App is used |
+| `gitlab` | `gitlab_namespace` — the group's full path (or a user namespace); optional `gitlab_base_url` — the https root of a self-managed instance. The credential is an access token with `read_api` + `read_repository` |
+| `bitbucket` | `bitbucket_workspace` — the Bitbucket Cloud workspace slug. The credential is an Atlassian API token with `read:repository:bitbucket`, `read:workspace:bitbucket` and `read:user:bitbucket` |
 | `openai` | optional `openai_org_id` (`org-...`); the credential is an Admin API key with `api.management.read` |
 | `anthropic` | optional `anthropic_org_uuid` (required when only the compliance plane is connected); Console Admin key in `credentials`, optional compliance key in `compliance_credentials` |
 | `limacharlie` | exactly one of `limacharlie_oid` (org key) or `limacharlie_uid` (user key — the MSSP fleet case) |
@@ -131,10 +137,11 @@ not accept is **rejected when you save** rather than silently ignored:
 | Dimension | Where it is honored |
 |---|---|
 | `tag` | compute resources only. Within `classification` that means the `compute` section; the dimension is also accepted on `coverage` and `exclusions`. |
-| `public` | data stores **and** compute. |
+| `public` | data stores **and** compute. Not accepted on exclusions. |
 | `content_class` | data stores only — and not yet populated, see the caveat above. |
 | `label` / `label_key_present` | resources carrying cloud labels. Not honored on `classification.identities`. |
 | `services` / `resource_types` | collection exclusions only. |
+| `region` | accepted on collection exclusions, where it is judged on each row. |
 | account / name / provider matchers | every surface, including the `exclusions` emission list — which honors *only* these. |
 
 The console's policy editors enforce this per surface and offer live value
@@ -221,7 +228,7 @@ Controls which Cloud Security events reach the organization's event stream:
 |---|---|---|
 | `resource_events` | `cloud_resource.*` inventory change events | off |
 | `finding_events` | `cloud_finding.*` lifecycle events | on |
-| `ops_events` | operational events — `cloudsec.sweep_failed` | off |
+| `ops_events` | operational events — `cloudsec.sweep_failed` and the [Code Security events](code-security/reference.md#events) | off |
 | `severity_floor` | drop finding events below this severity (`CRITICAL` … `INFO`); the first-sync summary still counts the whole estate | none |
 | `suppress_first_sync` | emit one summary instead of a per-finding flood on the first / rebuild sweep | on |
 
@@ -238,6 +245,7 @@ has no effect on the others. At least one list must be non-empty:
 | List | Effect |
 |---|---|
 | `collection` | Matching scopes are skipped by the collection sweep. Only this list may add the `services` and `resource_types` narrowers on top of the shared resource matchers — an account-only rule excludes the whole account, while adding `services`/`resource_types` narrows the exclusion to those collector services or resource types inside the matched scope. |
+| `scanning` | Accepted for the agentless workload snapshot scanner. That scanner is not available, so this list has no effect today. |
 | `emission` | Matching events are dropped before delivery to the event stream. Only account/name/provider matchers are honored here — an emission rule constrained on labels or tags can never be satisfied by a lean event and so never drops one. |
 
 !!! warning "A collection exclusion deletes the inventory it excludes"
@@ -248,6 +256,31 @@ has no effect on the others. At least one list must be non-empty:
     an excluded scope disappears instead of lingering as stale rows — but it
     means excluding a scope you still want recorded loses that inventory until
     you remove the exclusion and let a sweep repopulate it.
+
+How a `collection` rule is judged:
+
+- **One account per row.** A row is matched on its own account when it has one,
+  otherwise on the account the collector ran for. A tenant-wide collector (an
+  Azure tenant, for example) is excluded wholesale by a rule whose account or
+  provider matches it. A rule with a negated account pattern is applied row by
+  row instead.
+- **`provider`, `region` and `resource_types` are checked on each row.** A
+  provider rule never matches another cloud's account.
+- **A row that does not state a fact the rule needs is kept.** For example, a
+  `region` rule keeps rows with no region, and the sweep records a note that
+  those rows were kept.
+- **Relationships go with what they connect.** Removing a resource also removes
+  its relationships, so a bucket-name rule removes that bucket's access grants.
+  Containers are the exception: a project-name rule does not remove grants made
+  at the project level.
+- **A fully excluded type is removed even when the pass was partial or failed.**
+- **Only deletes the exclusion caused are kept out of the event feed.** A
+  resource that is really deleted in the cloud still emits
+  `cloud_resource.deleted`.
+
+Excluded resources also drop out of [Code Security](code-security/index.md)'s
+view of your cloud. Its evidence then reads `resource_not_collected` or
+`workload_not_resolved`, never "not exposed".
 
 Exclusions are captured when a sweep starts, so an edit lands on the *next*
 sweep. Change the provider's `sync_now` nonce to apply it immediately instead of
@@ -266,6 +299,12 @@ is `kind` (`accepted`/`false_positive`), `reason` (required), `ttl_days`.
 A named framework assignment over a scoped subset of the estate — see
 [Compliance](compliance.md#scoped-assignments). Fields: `framework_id`
 (required, lowercase slug), `description`, `scope` (the account/name matchers).
+
+### `code_scanning` — Code Security
+
+Which repositories are scanned, which engines run, how often, and the
+pull-request check settings. See [Scan policy](code-security/policy.md) for
+every field.
 
 ### `rules` — your own posture rules
 
@@ -361,6 +400,27 @@ other Cloud Security event.
 
 The `detection` block is still **reserved**: it is validated for shape so
 infrastructure-as-code written today keeps working, but nothing consumes it yet.
+
+## cloudsec_code_rule
+
+One Semgrep/Opengrep rule file per record, stored as JSON — `{"rules": [ ... ]}`,
+exactly what the YAML `rules:` document parses to — holding up to 100 rules in at
+most 256 KB. Code scanning's static analysis runs **exactly the enabled records**.
+
+LimaCharlie's default rules are installed here, one rule per record, when the
+organization subscribes to `ext-cloud-security`. They are ordinary records: edit,
+disable or delete any of them, and use **Restore defaults** (or the extension's
+`restore_default_code_rules` action) to bring them back. A YAML rule file can be
+saved as-is:
+
+```bash
+limacharlie hive set --hive-name cloudsec_code_rule --key acme.python.my-rule \
+    --input-file my-rule.yaml --enabled
+```
+
+The rule format, what a save validates, the per-organization limits (5,000
+enabled rules, 20 MB) and how a rule that fails to load is reported are in
+[Code rules](code-security/code-rules.md).
 
 ## Previewing policies
 

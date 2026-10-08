@@ -1,16 +1,16 @@
 # How a Message Is Processed
 
---8<-- "includes/email-security-beta.md"
+--8<-- "includes/email-security-availability.md"
 
 This is the page to read first if you are evaluating the product. It follows one
 message from the moment your provider says it exists to the moment somebody
 decides what to do about it, and it is explicit about which parts happen in one
 pass and which parts can happen later.
 
-The short version: **everything that produces the first verdict happens
-synchronously, in one pass, per message.** There is no queue of half-judged mail
-and no second job that fills in the answer. Anything that changes a verdict
-afterwards is recorded as a *revision*, not as a late arrival.
+The first verdict uses the evidence available within the bounded initial pass.
+Delayed attachment scans and link detonation can add evidence afterwards; a
+changed verdict is recorded as a *revision*. Wait for `EMAIL_ANALYSIS_COMPLETE`
+when your workflow needs the initial analysis window to close.
 
 ## The stages
 
@@ -20,7 +20,7 @@ afterwards is recorded as a *revision*, not as a late arrival.
 | 2 | **Fetch** | The raw MIME is pulled from the provider |
 | 3 | **Parse** | MIME becomes the Message Data Model |
 | 4 | **Enrich** | Sender history, lookalike, domain age, link features, attachment explosion |
-| 5 | **Score** | The managed pack and your `dr-mail` rules are matched and scored as one set |
+| 5 | **Score** | Enabled `dr-mail` rules are matched and scored as one set |
 | 6 | **Verdict** | One class, one score, and the signals that produced them |
 | 7 | **Cluster** | The message is attributed to a campaign, or not |
 | 8 | **Persist** | Index row, sealed raw message, sealed judged model |
@@ -41,10 +41,10 @@ message has already landed in the mailbox by the time we hear about it.
 | Provider | Mechanism |
 |---|---|
 | Microsoft 365 | A Microsoft Graph change-notification subscription per protected mailbox. Subscriptions are renewed well before Graph's ceiling, and lifecycle notifications are handled on their own endpoint |
-| Google Workspace | A Gmail `users.watch` per mailbox publishing to **your own** Pub/Sub topic, which the collector consumes with a pull subscription. Renewed daily. A history-based poll is the fallback for small tenants and for outages |
+| Google Workspace | A Gmail `users.watch` per mailbox publishing to **your own** Pub/Sub topic, which the collector consumes with a pull subscription. Renewed daily; recovery resumes from the stored Gmail history watermark |
 
-Both are push. Polling exists as a safety net, not as the normal path. See
-[Connecting Providers](providers.md).
+Both are push, and provider-record validation refuses delivery modes the
+collector does not run. See [Connecting Providers](providers.md).
 
 ### 2-3. Fetch and parse
 
@@ -74,7 +74,7 @@ shows exactly what the engine saw. An enrichment that could not be resolved is
 
 ### 5-6. Score and decide
 
-The managed rule pack and your own `dr-mail` `pre_verdict` rules are matched
+Your enabled `dr-mail` `pre_verdict` rules are matched
 separately and then **scored together as one set**. That matters more than it
 sounds: a custom rule is evidence in the same verdict rather than a second
 opinion sitting beside it, so two 50-weight signals from different sources
@@ -112,7 +112,7 @@ the message at the provider.
 | | |
 |---|---|
 | **Synchronous, one pass per message** | Fetch, parse, every enrichment including attachment explosion, matching, scoring, the verdict, campaign clustering, persistence, and the emission of `EMAIL_MESSAGE` followed by the engine's own `EMAIL_VERDICT` (`revision/seq: 0`) |
-| **Later, and recorded as such** | Verdict revisions, remediation outcomes, campaign membership added when a later message joins the cluster |
+| **Later, and recorded as such** | Link detonation, deferred attachment scans, analysis completion, verdict revisions, remediation outcomes, campaign membership added when a later message joins the cluster |
 
 A revision does **not** rewrite `EMAIL_MESSAGE`. The original event stands as the
 record of what the engine decided at ingest, a revision row is appended with its
@@ -135,46 +135,91 @@ revision: a message nobody has overridden still reports zero revisions.
     the gaps named. A slow enrichment degrades one signal. A blocking one
     degrades coverage, which is the thing you bought.
 
-## Managed detections are optional
+## Knowing when initial analysis has finished
 
-The managed rule pack is on by default, and you can turn it off. Some
-organizations want to own detection entirely through their own `dr-mail` rules,
-and forcing our opinions into their verdicts would make that impossible.
+The initial `EMAIL_VERDICT` (`revision/seq: 0`) includes
+`analysis: {pending: [...], complete: false}` when delayed work is outstanding.
+The closed set of pending kinds is `detonation` and `attachment_scan`. With
+nothing outstanding, it carries `pending: []` and `complete: true`.
 
-```yaml
-# managed-rules.yaml, saved as the mailsec_policy record named managed_rules
-policy_type: managed_rules
-enabled: false
-```
+`attachment_scan` is also pending when your organization's custom YARA rules were
+not yet loaded while the message was processed, for example just after a deploy or
+restart. The attachments are rescanned with your rules once they load, whatever the
+verdict or direction, and a match revises the verdict. If the rules cannot be loaded
+before the deadline, the result is `timed_out`, never a clean `completed`.
 
-```bash
-limacharlie hive set --hive-name mailsec_policy --key managed_rules \
-  --input-file managed-rules.yaml --enabled --oid $OID
-```
+`EMAIL_ANALYSIS_COMPLETE` closes that initial window for every message emitted
+through the live lane, including re-drives that emit and messages with no delayed
+work. Initial historical backfill emits no `EMAIL_*` events and has no completion
+event; a later live notification can promote that message into the live lane. It carries the final
+`revision/verdict`, `revision/score`, `revision/seq`, and known message identity
+fields, plus `results` and `timing`. Use this event to start triage that needs the
+initial batch of evidence. A completion is a processing fact, **not a safety
+verdict**. Its `completion_id` is the message's `msg_uuid` and stays the same
+for that immutable snapshot. Delivery is at least once: retries after an interruption can repeat
+the snapshot. Use `completion_id` for idempotent triage or the
+[completion suppression example](automation.md#triage-after-initial-analysis).
 
-The console carries the same switch on **Email Security → Settings**, and the
-`ext-email-security` extension exposes `get_managed_rules` and
-`set_managed_rules` for reading and flipping it without hand-writing a record.
-
-| | |
+| Result | Meaning |
 |---|---|
-| **Default** | Enabled. An organization that has written no policy has the pack |
-| **When disabled** | The managed pack is not matched at all. Your own `dr-mail` rules still are, and they are still scored the same way |
-| **If nothing matches** | The verdict is `unknown`, never `benign`. "Nobody was looking" and "we looked and it was fine" are different facts and are reported differently |
-| **Time to take effect** | Seconds, over the policy change feed. Five minutes worst case — the resolved-policy cache's TTL, which is the backstop for a change the collector did not hear about |
+| `completed` | The analysis finished without changing the verdict |
+| `changed_verdict` | The analysis committed a verdict revision |
+| `skipped` | The analysis was no longer applicable |
+| `shed` | Capacity admission refused the work |
+| `failed` | The analysis failed |
+| `timed_out` | The initial analysis deadline expired before a terminal result |
 
-The record must state `enabled` explicitly. A `managed_rules` record that sets
-nothing is refused rather than read as "disable", because the failure mode of
-guessing wrong here is an organization with no detection that believes it has
-some.
+Only armed kinds appear in `results`; `{}` means no delayed work was needed.
+Pending work is durable. A collector restart or lost in-memory task cannot leave
+the window open forever: unresolved work becomes `timed_out` at the configured
+deadline, which defaults to 20 minutes. Recovery publishes queued completion
+snapshots after a service interruption.
 
-You do not need this switch to tune the pack. Disabling one packaged rule, or
-changing its weight, is a
-[`rule_overrides`](custom-rules.md#tuning-the-managed-pack) entry.
+Evidence that arrives after this boundary can still change the verdict. Its
+`EMAIL_VERDICT` carries `after_complete: true`; it does not rewrite the completion
+snapshot. Keep a revision handler alongside completion-based triage for those
+later changes. A later escalation re-runs post-verdict rules and automations;
+a downgrade does not automatically restore mail. An explicit operator re-judge
+that escalates a message also runs responses against its newly judged evidence,
+including a re-judge of historical mail. Re-judge responses run asynchronously
+after the stored correction: a changed count does not mean containment has
+finished. Dry runs do not act; initial historical ingestion still does not run
+automations.
 
-The full record contract — composition, the three ways to write it, and what the
-console does when two records disagree — is in
-[Policy Reference](policy.md#managed_rules).
+## Processing latency
+
+The MDM's `timestamps` includes optional `notified`, the time the provider's
+notification reached LimaCharlie. Historical or periodically discovered mail
+may have no notification time. The seq-0 verdict and completion event include
+absolute `sent`, `received`, `notified`, `ingested`, `decided`, and `completed`
+instants where applicable, with these integer millisecond measurements:
+
+| Timing field | Interval |
+|---|---|
+| `provider_lag_ms` | Provider received → notification reached LimaCharlie |
+| `queue_ms` | Notification reached LimaCharlie → processing began |
+| `processing_ms` | Processing began → initial verdict decided |
+| `end_to_end_ms` | Provider received → initial verdict decided |
+| `analysis_ms` | Initial verdict decided → initial analysis window completed |
+
+`provider_lag_ms` and `queue_ms` are **absent** when `notified` is unknown. A
+measured zero is present as `0`. Negative intervals clamp to zero and set
+`clock_skew: true`; investigate clock differences before treating those zeros as
+fast processing. `sent` comes from the sender's untrusted Date header and is
+never used for these calculations. In coalesced Gmail notifications, `notified`
+is the batch's receiver observation, not a claim of one notification per message.
+
+The message drawer shows this timeline and each analysis outcome. The API and
+`limacharlie mailsec message get <UUID>` expose the same `analysis`
+and `timing` state. See [Events & Automation](automation.md#triage-after-initial-analysis)
+for completion triage and provider-delay alerts.
+
+## Rules are organization-owned
+
+The organization’s enabled `dr-mail` records are the complete rule set. Defaults
+are installed once on subscription and can be edited, disabled or deleted in
+**Email Security → Detection rules**. An empty scoring set leaves messages `unknown`;
+there is no embedded fallback. See [Detection Rules](custom-rules.md).
 
 ## The state model
 
@@ -201,6 +246,9 @@ single "status" would lose every one of those distinctions.
 
 A mail security product holds the most sensitive data in the tenant, so it is
 worth being precise about what is kept, where, and who can read it.
+
+For where the data lives and what can leave the region, see
+[Data Residency, Encryption and Data Flows](data-residency.md).
 
 ### The raw message
 
@@ -256,13 +304,62 @@ Opening the drawer serves the **sealed judged model** where it exists, labelled
 included. The fallback re-parses the encrypted raw message with today's parser
 (`mdm_source: eml_reparse`) and carries no enrichments at all, and the response
 always says which one you are reading. Neither needs a justification: the model
-is the product's structured view of the message.
+is the product's structured view of the message. Each read is still recorded in the
+organization's audit log, see
+[Who read a message](messages.md#who-read-a-message-the-content-read-audit-event).
 
 The **original bytes** are gated separately. Downloading the EML requires the
 `mailsec.get.eml` permission on top of `mailsec.get`, plus a written
 justification that is stored verbatim against your authenticated identity. A
 failed attempt is recorded too, and the bytes are not served if the audit write
 fails. See [Messages & Triage](messages.md#downloading-the-original-message).
+
+## The historical backfill
+
+When a connection is first made, the collector walks up to `ingest.backfill_days`
+(0–90, default **14**) of the mail already in each protected mailbox. That walk
+runs the **same** enrich and score stages live mail runs — your enabled `dr-mail` rules, your policy's thresholds and exclusions — so the queue has
+real verdicts on your first day, the raw copy and the judged model are stored on
+the same retention lanes, a flagged message gets the same 400-day evidence row,
+and a hunt or a [rule backtest](policy.md) has a fortnight of your own mail to
+run against.
+
+**And it stops there.** For backfilled mail there is:
+
+- no `EMAIL_MESSAGE` and no `EMAIL_VERDICT` — nothing reaches your telemetry, so
+  no D&R rule fires and no Output ships a fortnight of history;
+- no policy automation and no remediation — nothing is quarantined, moved,
+  bannered or trashed;
+- no link detonation, and no user-report processing;
+- no contribution to [time to verdict](#time-to-verdict) — see below.
+
+The reasoning is one sentence: mail delivered eleven days ago has already been
+read, filed and acted on by the person it was addressed to, so quarantining it
+now is a surprise, and replaying two weeks of it into your detection rules on the
+day you switch the product on is a denial of service on your own alerting.
+Judging it is what makes the product useful on day one; acting on it is not.
+
+What backfilled mail *does* feed is the two statistics whose whole purpose is
+history: **sender profiles** (including the flagged counter, so a sender who was
+attacking you last week is not treated as a stranger this week) and **campaign
+clustering** — a campaign that spans the fortnight is shown as one campaign
+rather than as its last two messages.
+
+**It is paced.** The walk is bounded both per connection per cycle and per
+collector pod, so it can never take ingest capacity from live mail. The
+trade-off is time: a small tenant's fortnight fills in over hours, and a very
+large estate's over days. Progress is in `coverage.backfill`, and mail that
+arrives *during* the walk is ordinary live mail and is judged, emitted and acted
+on normally.
+
+The drawer labels each such message `judged_via: backfill` — see
+[Messages & Triage](messages.md#which-lane-judged-it). A backfilled message can
+therefore show a `malicious` verdict beside an empty action timeline; that is the
+lane working, not a fault.
+
+Setting `backfill_days: 0` disables the setup walk. Recovery after an expired
+provider watermark can still re-walk the default 14-day window; it is not a
+privacy cutoff. See [backfill cleanup](providers.md#cleaning-up-an-unwanted-backfill).
 
 ## Time to verdict
 
@@ -321,12 +418,17 @@ An empty population is never reported as zero. `status` is `not_recorded` and
 zero denominator and a large one mean opposite things about whether to worry.
 
 !!! note "Backfilled and re-driven mail is excluded on purpose"
-    The historical backfill, an incident backfill, and the emission sweeper's
-    repairs all go back through the same ingest path — one path, deliberately —
-    so such a message can be a week old by the time its event ships. Those
-    samples would not widen the tail, they would *define* it, and one recovery
-    would report a time to verdict measured in days. They are identified and left
-    out of this population rather than quietly averaged into it.
+    The [historical backfill](#the-historical-backfill) runs outside the ingest
+    path entirely, so it never enters this population — not because it emits
+    nothing, but because the walk never passes through the stage that takes the
+    measurement. An incident backfill, the emission sweeper's repairs, and the
+    mail the walk hands to the live lane because it turned out to be newer than
+    the backfill cutoff *do* go back through the same ingest path — one path,
+    deliberately — so such a message can be a week old by the time its event
+    ships. Those samples would not widen the tail, they would *define* it, and
+    one recovery would report a time to verdict measured in days. They are
+    identified and left out of this population rather than quietly averaged into
+    it.
 
     A delivery timestamp slightly in our future is ordinary — the provider's
     clock is not ours — so a negative duration is clamped to zero and **counted**
@@ -361,9 +463,51 @@ of them moved.
 | | |
 |---|---|
 | [Getting Started](getting-started.md) | Connect a tenant and see the first judged message |
-| [Detections & Verdicts](detections.md) | The scoring model, the managed pack, and what the rules can read |
-| [Custom Rules](custom-rules.md) | Writing `dr-mail` rules that compound with the pack |
+| [Detections & Verdicts](detections.md) | The scoring model, the installed rules, and what the rules can read |
+| [Custom Rules](custom-rules.md) | Writing `dr-mail` rules, including the installed defaults |
 | [Events & Automation](automation.md) | The `EMAIL_*` events and the D&R seat |
 | [Messages & Triage](messages.md) | The queue, the drawer, actions and the audit trail |
 | [Policy Reference](policy.md) | Every `mailsec_policy` record type |
 | [Troubleshooting](troubleshooting.md) | When a stage does not do what this page says |
+
+## Collection and history coverage
+
+Overview's **Collection needs attention** badge identifies collection failures that
+need investigation. Open **View coverage** to see the counts, the affected
+mailboxes, and plain-language failure summaries. Expand **Technical details** for
+the provider error and processing stage.
+
+The badge appears when a connection is failing or degraded, a mailbox has an
+error, a real ingestion failure exists, a failure notice is pending or
+undelivered, message telemetry is overdue, or historical import has unreadable
+mailboxes, skipped messages or skipped mailboxes. Degraded parsing needs attention only when it affects **at least 1%** of
+messages in the requested window **and at least 10 messages**. For example, 14
+messages out of 17,629 is informational; 10 out of 1,000 needs attention.
+
+These fields are available in the coverage response:
+
+| Field | Meaning |
+|---|---|
+| `connections.state` | The worst configured connection's health. No configured connection is `unconfigured`, rather than healthy. |
+| `mailboxes.error` | Mailboxes whose protection could not be established. Deliberately excluded mailboxes are separate. |
+| `ingest_errors.total` / `by_stage` | Real permanent ingestion failures in the requested window, including exhausted retries, authentication failures, unreadable oversized messages, and unsafe parsing failures. |
+| `ingest_errors.recent[].category` | Structured failure cause: `auth`, `mailbox_gone`, `oversized`, `fetch`, `parse`, `dead_lettered`, `binding`, `emit`, or `other`. The same category appears on `EMAIL_INGEST_ERROR`; missing or unknown categories display as `other`, without guessing from diagnostic text. |
+| `ingest_errors.pending` / `undelivered` | Failure notices still waiting to be delivered, or notices whose delivery was abandoned. Pending notices cover the whole retained backlog, even outside the requested window. |
+| `removed_before_scan.total` | Work queued during the requested window whose message was confirmed removed before scanning. This is informational and does not count as an ingestion failure. Retries of the same queued work do not inflate the count. |
+| `volume.parse_degraded` / `parse_degraded_rate` | Messages that were successfully scanned using best-effort parsing because their format was malformed. A small count below the threshold above does not raise the badge. |
+| `emission.backlog` | Indexed messages whose telemetry is overdue beyond the repair grace period. Messages still processing within that grace period do not raise the badge. |
+| `backfill.mailboxes_unreadable` / `messages_skipped` / `mailboxes_skipped` | Historical import gaps, with separate message and mailbox counts. |
+| `backfill.mailboxes_skipped_unmeasured` | Mailboxes for which skipped-message counts are unavailable. This is incomplete coverage information, not proof of an ingestion failure. |
+
+**Removed before scanning** means the user deleted or moved a message between its
+notification and the fetch. Microsoft sends another notification for a moved
+message under its new identifier; Google retains its message identifier across
+label moves. A fresh Google not-found response is retried for two minutes to allow
+for delivery propagation before it is counted as a removal. Confirmed removals
+require no action and produce no `EMAIL_INGEST_ERROR` event.
+
+The removal count uses the original queue time, not the time of a later retry or
+the sender's clock. It covers `[window_start, window_end)` and is retained for 35
+days. Independently queued notifications in different minutes can count
+separately. Windows extending beyond retained coverage cannot reconstruct older
+counts. Missing coverage fields are shown as unavailable, rather than as zero.

@@ -156,7 +156,7 @@ The following settings are available through the REST API (`GET/PUT /api/v1/conf
 | `sla_config.low.mttr_minutes` | int | `2800` | MTTR target for low cases (minutes) |
 | `sla_config.info.mtta_minutes` | int | `480` | MTTA target for info cases (minutes) |
 | `sla_config.info.mttr_minutes` | int | `10080` | MTTR target for info cases (minutes) |
-| `retention_days` | int | `90` | Days to retain resolved/closed cases before archival |
+| `retention_days` | int | `90` | Days to keep a case after it is created before it is permanently deleted (1–3650) |
 | `auto_close_resolved_after_days` | int | `7` | Automatically close resolved cases after this many days. Set to `0` to disable |
 | `auto_grouping_enabled` | bool | `false` | Enable auto-grouping of related detections into single cases (see [Auto-Grouping](#auto-grouping)) |
 | `auto_grouping_include_sensor` | bool | `true` | Only applies when auto-grouping is enabled. When true, only detections from the same sensor group together |
@@ -1109,9 +1109,11 @@ Tracked event types:
 
 ## Data Retention
 
-Resolved and closed cases are retained for the configured `retention_days` (default 90 days). After the retention period, cases are archived to long-term storage and removed from the active case store.
+Cases are kept for the configured `retention_days`, counted from when each case was created. The default is 90 days, and any value from 1 to 3650 (10 years) is accepted. A maintenance job runs hourly and permanently deletes every case older than the retention period, whatever its status, along with its timeline, notes, detections, entities, telemetry and artifacts.
 
-Archived data is retained for 2 years in long-term storage for compliance and historical reporting.
+Deleted cases are not archived and cannot be recovered. If you need cases as evidence for audits or compliance, set `retention_days` to cover that period before your oldest cases reach it.
+
+Each retention run that removes cases emits a `cases_deleted` audit event with the number of cases deleted and the cutoff time. The extension also forwards every case action to an audit adapter in your organization, so a copy of each case's audit trail remains in your organization's event data after the case itself is deleted. That copy follows your organization's data retention, not `retention_days`.
 
 ## Unsubscribing
 
@@ -1124,5 +1126,3 @@ Unsubscribing from the extension removes the detection-forwarding D&R rules and 
 - [D&R Rules Overview](../../../3-detection-response/index.md) -- Detection rules that generate the detections ingested as cases
 - [Response Actions](../../../8-reference/response-actions.md) -- The `extension request` action used for D&R rule integration
 - [Using Extensions](../using-extensions.md) -- General extension subscription and management
-- [Compliance Case-Reviewer Agent](../../../9-ai-sessions/compliance/case-reviewer-agent.md) -- Per-framework AI agents (PCI, HIPAA, CMMC, SOC 2, NIST 800-53, ISO 27001, CIS v8) that classify in-scope cases against control citations on `case_created` events and write audit-grade documentation directly into the case record
-- [Compliance Plugin Overview](../../../9-ai-sessions/compliance/index.md) -- Installation and capabilities of the `lc-compliance` Claude Code plugin

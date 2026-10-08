@@ -85,6 +85,10 @@ Issue a `GET` to `/{sid}/tags` REST endpoint
 
 In detection and response rules
 
+## Resource ACL Tags
+
+Tags starting with `acl:` are reserved. They restrict who can read a sensor's telemetry and task it. Adding or removing them requires the `acl.set` permission, they cannot have a TTL, and D&R rules cannot set them. See [Resource ACLs](../7-administration/access/resource-acls.md).
+
 ## System Tags
 
 We provide system level functionality with a few system tags.  Those tags are listed below for reference:
@@ -382,8 +386,8 @@ In LimaCharlie, an Organization represents a tenant within the Agentic SecOps Wo
 
 ## See Also
 
+- [Resource ACLs](../7-administration/access/resource-acls.md)
 - [D&R Rules with Tags](../3-detection-response/index.md)
 - [Sensor Selectors](../8-reference/sensor-selector-expressions.md)
 - [Python SDK](../6-developer-guide/sdks/python-sdk.md)
 - [Go SDK](../6-developer-guide/sdks/go-sdk.md)
-- [Compliance Frameworks](../9-ai-sessions/compliance/frameworks.md) -- Scope-tag conventions per framework (`cde` for PCI, `ephi-host` for HIPAA, `cui` for CMMC, `fisma-scope` for NIST 800-53, etc.). The compliance reviewer agents key their in-scope check off these tags.

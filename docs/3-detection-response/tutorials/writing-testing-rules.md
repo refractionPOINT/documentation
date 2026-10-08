@@ -9,6 +9,50 @@ on the simple case where it is applied to Sensor events.
 
 For a full list of all rule operators and detailed documentation see the [Detection and Response](../examples.md) section.
 
+## Using AI to build a detection
+
+Start with the behavior you want to detect and the event data your organization
+actually collects. Inspect the relevant event schemas and samples before asking
+for detection logic. If your organization defines a detection-engineering SOP,
+follow it as part of this workflow.
+
+Use `limacharlie ai generate-detection --description "..."` and
+`limacharlie ai generate-response --description "..."` for separate components,
+or `limacharlie ai generate-rule --prompt "..."` for a complete rule. Add
+`--oid <organization-uuid> --output yaml` to select the organization and output
+format. Use the specific command's `--ai-help` to check its flags.
+
+Generation returns a `response` field containing the generated content. Save
+that content, rather than the outer response envelope, in the component files.
+A null, empty, or unresolved result is not a usable detection. Preserve the
+original coverage requirements when retrying; if a requirement cannot be met,
+explain the gap and keep the result as a partial draft instead of enabling a
+weaker rule under the original threat name.
+
+Before deployment:
+
+1. Validate syntax with `limacharlie dr validate --detect detect.yaml --respond respond.yaml`.
+2. Test representative events that should match and legitimate events that should
+   not match. See [Rule Unit Tests](../unit-tests.md).
+3. Replay historical events where available. No matches alone do not prove that
+   the rule works; the required telemetry or behavior may be absent.
+4. Review coverage, false positives, alert confidence, and response actions. A
+   generic keyword match should not claim confirmed exploitation. When working
+   with an AI assistant, authorize deployment of the reviewed result; choosing
+   an organization or asking for a draft alone is not deployment approval.
+
+For an authorized deployment, create and enable from the reviewed components:
+
+```bash
+limacharlie dr set --key my-rule --detect detect.yaml --respond respond.yaml --enabled --oid <organization-uuid> --output yaml
+limacharlie hive get --hive-name dr-general --key my-rule --oid <organization-uuid> --output yaml
+```
+
+Verify the returned record's **top-level** `usr_mtd.enabled`. Hive metadata belongs
+alongside the `data` wrapper, never inside rule data. Keep the reviewed rule,
+tests, and coverage notes as durable artifacts so another session can inspect or
+continue the work.
+
 ## Life of a Rule
 
 D&R rules are generally applied on a per-event basis. When the rule is applied, the "detection"

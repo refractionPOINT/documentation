@@ -1,6 +1,6 @@
 # Email Security
 
---8<-- "includes/email-security-beta.md"
+--8<-- "includes/email-security-availability.md"
 
 LimaCharlie Email Security protects Microsoft 365 and Google Workspace mailboxes
 from inside the same tenant, permission model, telemetry lake and automation
@@ -25,8 +25,10 @@ it at the provider.
 | **Remediation** | Typed, idempotent, audited actions performed at the provider: quarantine, trash, move to spam, restore, apply and remove a warning banner. Available by policy automation, from the console, from a D&R rule, from the API and from the CLI. |
 | **Campaigns** | Messages the engine attributed to one attack are clustered, so a campaign that hit forty mailboxes is triaged once and swept once. |
 | **User reports** | An abuse mailbox becomes an SLA queue: reports are joined back to the original message across the whole tenant, robots that mail the abuse address are auto-resolved out of the queue, and reporters can be sent a templated acknowledgement. |
+| **Sample submission** | Opt-in, one message at a time: an analyst can send LimaCharlie a copy of a message the engine got wrong, and list and withdraw what was sent. See [Sample Submission](sample-submission.md). |
 | **Telemetry** | `EMAIL_MESSAGE`, `EMAIL_VERDICT` (every verdict decision — the engine's own at ingest, then each override), `EMAIL_ACTION`, `EMAIL_USER_REPORT` and `EMAIL_INGEST_ERROR` land in the same lake as your EDR, cloud and identity telemetry — so "phish delivered, then that user's endpoint ran a new binary" is one D&R rule. |
 | **Configuration as data** | Connections, policy and custom rules are Hive records, so everything is API-first and git-syncable from day one. |
+| **AI assistant access** | [MCP tools](mcp.md) for read-only coverage and triage, with separately permissioned diagnostics and responses. Requires a server version containing MailSec support. |
 
 ## What it does not do
 
@@ -54,8 +56,10 @@ deploy it:
    reports each one independently. See [Connecting Providers](providers.md).
 3. **Mailboxes are discovered and subscribed.** The collector enumerates the
    directory, subscribes to change notifications (Microsoft Graph subscriptions,
-   Gmail watch → your own Pub/Sub topic), and runs a metadata-only historical
-   backfill so sender-history signals work on day two rather than day ninety.
+   Gmail watch → your own Pub/Sub topic), and runs a historical backfill — up to
+   fourteen days, judged with the same rules as live mail but emitting no
+   telemetry and taking no actions — so the queue has real verdicts on day one
+   and sender-history signals work on day two rather than day ninety.
 4. **Each message is judged.** Fetch → parse → enrich → evaluate signal rules →
    score → verdict → campaign clustering → policy automations → persist and emit.
 5. **You work the queue** in **Messages**, **Campaigns** and **User Reports**,
@@ -95,22 +99,26 @@ typing a justification to look at the queue.
 Managing connections and policy uses the ordinary Hive permissions for the
 `mailsec_provider`, `mailsec_policy`, `dr-mail`, `secret` and `lookup` hives.
 
+Read [collection and history coverage](pipeline.md#collection-and-history-coverage) to understand the Overview badge and informational outcomes.
+
 ## Where to go next
 
 | | |
 |---|---|
 | [How a Message Is Processed](pipeline.md) | The pipeline end to end: what is synchronous, what is stored, and how long it takes |
 | [Getting Started](getting-started.md) | Subscribe, connect a tenant, see the first judged message |
-| [Connecting Providers](providers.md) | The connection record, credentials, scope, ingest modes and the connection test |
+| [Connecting Providers](providers.md) | The connection record, credentials, scope, delivery mode and the connection test |
 | [Microsoft 365](provider-setup/microsoft-365.md) · [Google Workspace](provider-setup/google-workspace.md) | Per-provider setup |
 | [Messages & Triage](messages.md) | The queue, the drawer, actions and the audit trail |
 | [Bulk Remediation](remediation.md) | Acting on a set of messages you named: preview, confirm, execute, poll |
 | [Campaigns](campaigns.md) | Clustering and campaign-wide sweeps |
 | [User Reports](user-reports.md) | The abuse mailbox and the report SLA queue |
+| [Sample Submission](sample-submission.md) | Opt-in: send LimaCharlie a copy of one message the engine got wrong, and withdraw it |
 | [Detections & Verdicts](detections.md) | How a verdict is produced, and what the rules can read |
 | [Custom Rules](custom-rules.md) | Writing, validating and backtesting your own mail rules |
 | [IOC & Reputation Feeds](ioc-feeds.md) | Mirroring a threat feed into a lookup and matching messages against it |
 | [Policy Reference](policy.md) | Every `mailsec_policy` record type |
 | [Events & Automation](automation.md) | The `EMAIL_*` events and wiring them to D&R |
 | [Command Line Interface](cli.md) · [API Reference](api-reference.md) | The programmable surface |
+| [Data Residency & Encryption](data-residency.md) | Where mail is stored, how it is encrypted, how long it is kept, and what can leave the region |
 | [Troubleshooting](troubleshooting.md) | What each failure looks like, and where it is reported |

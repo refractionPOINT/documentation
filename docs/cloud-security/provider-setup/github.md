@@ -1,5 +1,15 @@
 # GitHub
 
+!!! tip "Start with the guided GitHub App setup"
+    Open **Cloud Security → Settings → Providers → Add provider → GitHub**
+    and choose **Create a GitHub App for me (recommended)** when available.
+    An owner of your GitHub organization must approve and install the app.
+    The wizard prepares the app and stores its credential for you. Review its
+    requested permissions before approving. Use the manual instructions below
+    if you already have an app or cannot use the guided option.
+    [First-time setup and verification](../getting-started.md) explains what
+    to check after connecting.
+
 Collects a GitHub organization: org settings, members (including outside
 collaborators) and teams (identities), repositories and their branch protection
 (data stores), installed GitHub Apps, deploy keys and Actions secrets (machine
@@ -22,8 +32,8 @@ Create the App with **read-only** access on the following. All are
 
 | Permission | Scope | Why | Preflight check |
 |---|---|---|---|
-| **Members** | Organization | Org members and teams — the identity inventory | `members`, `teams` |
-| **Metadata** | Repository | Repository inventory | `repos` |
+| **Members** | Organization | Org members and teams, plus complete organization owner counts | `members`, `teams` |
+| **Metadata** | Repository | Repository inventory and effective inherited branch rules | `repos` |
 
 ## Optional permissions
 
@@ -31,11 +41,13 @@ Create the App with **read-only** access on the following. All are
 |---|---|---|---|
 | **Administration** | Organization | Installed-App inventory → over-privileged-app findings; the org's **MFA-required** posture; the per-member MFA-enrollment cross-check | `installed_apps` |
 | **Secrets** | Organization | Organization Actions-secret inventory (**names only**, never values) | `org_secrets` |
-| **Administration** | Repository | Branch-protection posture and deploy-key inventory (deploy keys are also the one activity signal — see [Known limitations](#known-limitations)) | *(collected during the sweep)* |
+| **Administration** | Repository | Classic branch protection, required commit signatures, and deploy-key inventory (deploy keys are also the one activity signal — see [Known limitations](#known-limitations)) | *(collected during the sweep)* |
 | **Secrets** | Repository | Whether a repository has Actions secrets at all — an existence flag, not a name list (org-level secrets are the ones inventoried by name) | *(collected during the sweep)* |
-| **Contents** | Repository | [Code Scanning](../code-scanning.md) — dependencies, secrets, infrastructure-as-code, container images, code weaknesses and licenses. Without it the connector inventories repositories but cannot read them | `code_contents` |
+| **Contents** | Repository | [Code Security](../code-security/index.md) — dependencies, secrets, infrastructure-as-code, container images, code weaknesses and licenses. Without it the connector inventories repositories but cannot read them | `code_contents` |
 | **Dependabot alerts** | Repository | GitHub's own **Dependabot** alerts, ingested as findings and deduplicated against LimaCharlie's own dependency scanning; and whether each repository has Dependabot alerts **enabled** | `dependabot_alerts` |
 | **Code scanning alerts**, **Secret scanning alerts** | Repository | GitHub's own **code-scanning** and **secret-scanning** alerts, ingested as findings and deduplicated against LimaCharlie's own analysis | `security_events` |
+| **Checks**, **Pull requests** (Read and write) | Repository | [Pull-request checks and comments](../code-security/pull-requests.md). Write access, granted only if you want these | *(reported on the **Code security** page)* |
+| **Contents** (Read and write) | Repository | [AutoFix pull requests](../code-security/autofix.md), together with **Pull requests: Read and write**. Write access, granted only if you want it | *(reported on the **Code security** page)* |
 
 ### GitHub's own alerts, and what happens to them
 
@@ -73,10 +85,24 @@ for a setting nobody could see.
 
 ## Create the GitHub App
 
+!!! tip "Or let LimaCharlie create it"
+    In the web app, **Add provider → GitHub → Create a GitHub App for me
+    (recommended)** creates this App in your GitHub organization from a manifest,
+    with the permissions already set, and saves the connection once an owner has
+    installed it. It also sets up the App's webhook for
+    [Code Security](../code-security/getting-started.md#github-let-limacharlie-create-the-app) push
+    rescans and pull-request checks. The steps below are for creating the App by
+    hand.
+
 1. **Organization → Settings → Developer settings → GitHub Apps → New GitHub
    App.**
 2. Name it (e.g. `LimaCharlie Cloud Security`), set a homepage URL, and
    **uncheck Webhook → Active** (the collector polls; it needs no callback).
+   If you plan to use Code Security's push rescans or pull-request checks, the
+   webhook is needed after all: once connected, use **Set up webhook** on the
+   **Code security** page, which shows the URL and secret to add here, then tick
+   **Active** and subscribe to **Push** and **Pull request** (see
+   [Set up webhook](../code-security/pull-requests.md#set-up-webhook)).
 3. Under **Permissions**, set each permission above to **Read-only**.
 4. Under **Where can this GitHub App be installed?**, choose **Only on this
    account**.
@@ -113,12 +139,17 @@ The key is a multi-line PEM, so JSON-escape it rather than pasting it by hand:
 python3 -c 'import json;print(json.dumps({"private_key":open("app.private-key.pem").read()}))' \
   > gh-key.json
 
-limacharlie secret set --key github-app-key \
-    --value "$(cat gh-key.json)" --enabled
+jq -Rs '{secret: .}' gh-key.json \
+  | limacharlie secret set --key github-app-key --enabled \
+  && rm -f gh-key.json
 ```
 
-`secret set` wraps whatever you pass in `--value` into the secret record's
-`{"secret": "..."}` shape for you.
+`jq -Rs` reads the credential file as a string and builds the secret record's
+`{"secret": "..."}` envelope for stdin. Remove any other temporary copies after
+verifying the saved credential.
+
+After verifying the provider connection, remove any temporary copy of
+`app.private-key.pem` as well.
 
 ## Create the provider record
 
@@ -137,7 +168,7 @@ refresh: 6h
 Both IDs are the **numeric** values, as strings. `github_org` is the bare org
 slug — no URL, no owner prefix.
 
-In the web app: **Add provider → GitHub**, then set **Organization**, **App
+In the web app: **Add provider → GitHub → I already have a GitHub App**, then set **Organization**, **App
 ID**, **Installation ID**, **Credentials**, and **Refresh interval**.
 
 ## Verify
@@ -166,6 +197,35 @@ limacharlie cloudsec provider test --input-file provider.yaml
 | First sweep takes many minutes | Large orgs need per-repository calls for branch protection, deploy keys and the Actions-secret check | Expected; subsequent sweeps are incremental |
 | A permission was added after installing | GitHub requires the installation to accept new permissions | Approve the permission request on the org's installation page |
 
+## Organization and branch compliance coverage
+
+Organization governance includes owner counts, default repository permission,
+and member repository/team creation settings when GitHub returns those fields.
+More than three owners is a LimaCharlie review baseline; CIS still requires a
+manual judgement about the minimum owners your organization needs; an owner
+count alone does not fail that CIS control.
+
+Default-branch configuration combines classic branch protection and active
+repository/organization rulesets. **Administration → Read-only** supplies classic
+protection and commit-signature requirements; **Metadata → Read-only** supplies
+effective rules. These checks require no write grant. Install on **All repositories**
+to establish complete organization coverage. A selected-repository installation
+can report observed violations but cannot establish clean whole-organization
+compliance or prove a whole-organization empty population.
+
+Detailed rule reads cover at most 500 active repositories per pass, selected in
+stable name order. Archived repositories are excluded. A missing default branch,
+capped or incomplete policy read, or unsupported rule leaves the affected policy
+unknown. Existing classic branch-protection checks continue beyond this detailed
+read budget.
+
+GitHub's [read-only ruleset responses omit bypass actors](https://docs.github.com/en/rest/repos/rules#get-a-repository-ruleset).
+Configured review, status-check, signature, linear-history, force-push and deletion
+requirements can be observed. Administrator enforcement, review dismissal and
+push restrictions remain unknown when rulesets might change those claims unless
+classic protection independently establishes them. Configured requirements do
+not prove that every actor is unable to bypass them or that reviews were effective.
+
 ## Known limitations
 
 - **Activity data** is limited to deploy-key last-used timestamps. GitHub App
@@ -185,7 +245,7 @@ limacharlie cloudsec provider test --input-file provider.yaml
 
 ## Scanning repository contents
 
-Granting **Contents → Read-only** turns on [Code Scanning](../code-scanning.md)
+Granting **Contents → Read-only** turns on [Code Security](../code-security/index.md)
 for the repositories a `code_scanning` policy selects. The permission is an
 increase on an existing installation, so GitHub requires an organization owner to
 **approve the permission request** on the installation page before it takes
@@ -198,15 +258,22 @@ normalized finding report leaves it, and discovered secrets are stored as a
 salted hash. **This App stays read-only.** Nothing in the collection or scanning
 path writes to your repositories.
 
-### The separate write App, if you want checks or fix pull requests
+### Pull-request checks and fix pull requests
 
-Publishing a pull-request check, commenting on a pull request or opening a
-dependency fix pull request needs write access, and that is deliberately **not**
-this App. It is a second, opt-in App — "LimaCharlie Code Actions" — that you
-create, install on the repositories you choose, and name on the provider record
-with `github_actions_app_id`, `github_actions_installation_id` and
-`actions_credentials`. The record is refused if it points at the same App, or the
-same secret, as the read connection.
+These write to your repositories, so they need write permissions **you choose to grant the
+same App**: **Checks** and **Pull requests** (Read and write) for checks and comments, and
+**Contents** (Read and write) with **Pull requests** for dependency fix pull requests. Until
+you grant them the App stays read-only, and granting a permission only makes a feature
+available — the `code_scanning` policy switches are what turn it on.
 
-Its manifest, the permission union it needs and the wiring are in
-[Code Scanning](../code-scanning.md#pull-request-checks-and-merge-gating).
+Each write mints a token for only the permissions that one action needs, so publishing a
+check never carries the ability to change source. The **Code security** page reports, per
+connection, what the App can currently do and which permission to add.
+
+A **separate write App** is still supported for teams that prefer to keep write access on a
+second App: name it with `github_actions_app_id`, `github_actions_installation_id` and
+`actions_credentials`, and it is used for every write instead. The record is refused if it
+points at the same App, or the same secret, as the read connection.
+
+The permissions, the policy switches and the webhook wiring are in
+[Pull-request checks and push rescans](../code-security/pull-requests.md).

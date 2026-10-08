@@ -9,9 +9,15 @@ The Config Hive is LimaCharlie's hierarchical configuration store. It provides a
 - [Secrets](secrets.md) - Secure credential management
 - [YARA](yara.md) - YARA rule storage and management
 - [Cloud Sensors](cloud-sensors.md) - Cloud sensor configurations
+- [Application Control Policies](app-control-policy.md) - Which sensors Application Control covers, and in which mode
+- [Application Control Rules](app-control-rule.md) - Allow and deny rules for Application Control
 - [Apps](apps.md) - User-authored, AI-generated mini web applications
 - [SOPs](../../9-ai-sessions/sops.md) - Standard Operating Procedures that AI agents read and follow
 - [Organization Notes](../../9-ai-sessions/org-notes.md) - Free-form reference documents about the organization, read by analysts and AI agents
+
+## Restricting Records
+
+Tag a record `acl:<scope>` to restrict its `data` to members of that scope. Other users still see the record's name and metadata. See [Resource ACLs](../access/resource-acls.md).
 
 ## Usage
 
@@ -39,3 +45,5 @@ Hive records can be:
 - [D&R Rules](dr-rules.md)
 - [Secrets Manager](secrets.md)
 - [Lookups](lookups.md)
+- [Application Control Policies](app-control-policy.md)
+- [Application Control Rules](app-control-rule.md)
