@@ -224,6 +224,51 @@ quoted threads, hidden-text detection), `links`, `attachments`, `auth` (parsed
 SPF / DKIM / DMARC / ARC results with alignment) and `hops` (the parsed `Received`
 chain).
 
+!!! note "A message has two renderings, and your rules read both"
+    A message usually carries its content twice — once as `text/plain` and once as
+    `text/html` — and nothing in the mail standards makes the two agree. A sender
+    who writes a decoy into one part and the real message into the other would
+    otherwise choose what your rules get to read.
+
+    **In the stored message** (and so in the `EMAIL_MESSAGE` event),
+    `body/current_thread/text` is the newest segment of **both** renderings: the
+    plain one first, then the text a reader would see rendered from the HTML,
+    separated by a blank line. The HTML half is left out when it is empty or when it
+    already appears word for word in the plain part, which is the case for most
+    ordinary mail. `body/current_thread/visible_text` is the same newest segment
+    narrowed to the rendering a reader is shown: the text extracted from the HTML
+    when the message has an HTML part, the plain part otherwise. Each rendering is
+    also listed separately under `body/current_thread/renderings`, with its `kind`
+    (`plain` or `html`), its `text` and its `links`.
+
+    **In an Email Security rule** (a `dr-mail` record, a managed rule, or a
+    [rule backtest](custom-rules.md#what-a-backtest-can-evaluate)), a rule that reads any
+    `body/current_thread/…` path is evaluated **once per rendering** when the
+    message has two. In each pass `text` and `visible_text` are both that one
+    rendering's text, and `links` and `renderings` are narrowed to it too. The rule
+    fires if any pass matches, and the signal records which renderings matched
+    in `renderings` (see [TopSignal](rule-reference.md#topsignal)). So you do not
+    have to defend against a decoy yourself: a clause that switches a rule off
+    ("fire on X **unless** the message also says Y") can only stand down the
+    rendering it is found in, and the other rendering is still judged on its own.
+
+    Two things follow for a rule author:
+
+    - Anything that reads the stored message rather than running as an Email
+      Security rule, such as a D&R rule on the `EMAIL_MESSAGE` event, sees the
+      combined text. Match there with substring or regex patterns rather than
+      whole-value equality, since on a message whose two renderings differ the field
+      says the same thing twice. A clause that switches such a rule off should read
+      `body/current_thread/visible_text`, so that it cannot be satisfied by text in
+      a part the reader is not shown.
+    - These are matching surfaces, not display ones. To show a person the message,
+      read `body/html/display_text` or `body/plain/raw`.
+
+    The quoted history is excluded from all of them — that is the point of
+    `current_thread` — and it is available separately under `body/previous_threads`.
+    `body/current_thread/visible_chars` is not split per rendering: it always counts
+    the characters in the reader-shown text.
+
 ### Enrichments
 
 | Path | What it carries |
