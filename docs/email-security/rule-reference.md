@@ -2,7 +2,7 @@
 
 --8<-- "includes/email-security-availability.md"
 
-Use this reference with [Mail Rules](custom-rules.md). It describes
+Use this reference with [Detection Rules](custom-rules.md). It describes
 `dr-mail` rules and the Message Data Model (MDM) they read. Platform D&R rules on
 `EMAIL_*` events and [cloud posture rules](../cloud-security/mail-posture-rules.md)
 have different wrappers and validation rules.

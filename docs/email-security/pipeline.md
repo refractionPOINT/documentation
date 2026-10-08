@@ -218,8 +218,8 @@ for completion triage and provider-delay alerts.
 
 The organization’s enabled `dr-mail` records are the complete rule set. Defaults
 are installed once on subscription and can be edited, disabled or deleted in
-**Email Security → Rules**. An empty scoring set leaves messages `unknown`;
-there is no embedded fallback. See [Mail Rules](custom-rules.md).
+**Email Security → Detection rules**. An empty scoring set leaves messages `unknown`;
+there is no embedded fallback. See [Detection Rules](custom-rules.md).
 
 ## The state model
 
