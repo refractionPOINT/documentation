@@ -395,7 +395,7 @@ Event data is sent to the configured provider. The same resource ACL egress rest
 
 Use `questions` when you need a probability that a condition holds, a choice from a fixed set, or a score against ordered levels. Use `response_schema` when you need a custom JSON object, such as extracted fields or a written explanation. All questions evaluate the same input: the record prompt, rendered rule prompt and extracted event data.
 
-Today, only OpenAI API-key agents support questions. Set `provider: openai` with API-key credentials in the enabled `ai_agent` record; Azure OpenAI is unsupported. The default model for questions is `gpt-6-luna`; an explicit model in the record takes precedence. Other providers fail the evaluation before making a provider request and produce no match, including with `not: true`. The question format is provider-neutral, so support for other providers can be added without changing rules.
+Today, only OpenAI API-key agents support questions. Set `provider: openai` with API-key credentials in the enabled `ai_agent` record; Azure OpenAI is unsupported. The default model for questions is `gpt-6-luna`; an explicit model in the record takes precedence and is sent to the decision API as-is, so leave `model` unset (or set a decision-capable model) on agents used with questions. A model the decision API does not accept fails the evaluation with a provider request error. Other providers fail the evaluation before making a provider request and produce no match, including with `not: true`. The question format is provider-neutral, so support for other providers can be added without changing rules.
 
 ```yaml
 detect:
