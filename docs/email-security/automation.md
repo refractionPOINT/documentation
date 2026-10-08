@@ -352,11 +352,14 @@ able to decide whether the warning appears. `text` on any action other than
 `banner_message` is ignored. Because `text` replaces the organization's
 wording, avoid templating sender-controlled fields (the display name, the
 subject) into it: whatever you put there is shown to the recipient as part of
-the warning. Automated bannering also requires
-`enabled` on the [`banners` record](policy.md#banners); without it a rule's
-`banner_message` is decided and audited but the mailbox is not touched
-(`alert_only`). Bannering asked for by a person — console, API, CLI — is not
-gated by that switch, and neither is a forced `banner_message`.
+the warning. The `enabled` switch on the
+[`banners` record](policy.md#banners) does **not** gate a `banner_message` sent
+this way. That switch covers bannering that Email Security decides on its own:
+policy automations and `dr-mail` rules. A rule here acts through the API like the
+console or the CLI, so its banner is performed whenever the organization is
+enforcing, or when the request is forced. The audit row records it with
+`source: api`. If you don't want a rule to banner, leave
+`banner_message` out of it.
 
 **How the action is attributed.** A rule in the `dr-general` Hive acts with the
 Email Security extension's own credential: the organization authorized it by

@@ -107,7 +107,10 @@ agent passive or active. Create the key, then store it as a secret too.
     applies, and an audit row names the agent as the actor. In alert-only mode an
     agent's action is withheld like anyone's; an agent holding `mailsec.act` can
     [force](remediation.md#forcing-an-action-in-alert-only-mode) it, and the
-    override is recorded as forced.
+    override is recorded as forced. The agent's requests reach Email Security
+    through the API like the CLI's, so the [`banners`](policy.md#banners)
+    `enabled` switch does not stop the agent from bannering. Only alert-only mode
+    and the key's permissions do.
 
     ```bash
     limacharlie api-key create --oid "$OID" \
