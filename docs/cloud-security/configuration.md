@@ -69,11 +69,11 @@ sub-object. Every policy type honours the record's `usr_mtd.enabled` flag:
 a disabled record does not apply. This includes Cloud Security and Code
 Security policies, regardless of any switches inside their policy bodies.
 
-Once the updated Hive default is available in your environment, a new
-`cloudsec_policy` record created without `usr_mtd` defaults to enabled.
-Explicit metadata remains authoritative: `usr_mtd.enabled: false`, or a
-metadata block without an `enabled` key, creates a disabled record. Updating
-only the data preserves an existing record's metadata.
+A new `cloudsec_policy` record created without any `usr_mtd` is enabled.
+Metadata you send is stored as sent, so `usr_mtd.enabled: false`, or a metadata
+block that has no `enabled` key, creates a disabled record. Passing `--comment`
+or `--tag-add` to `hive set` on creation sends metadata, so add `--enabled` as
+well. Updating only a record's data keeps its existing metadata.
 
 To stage a new policy, pass `--disabled` to `hive set`. To disable or re-enable
 an existing policy:
@@ -83,8 +83,7 @@ limacharlie hive disable --hive-name cloudsec_policy --key my-policy
 limacharlie hive enable --hive-name cloudsec_policy --key my-policy
 ```
 
-Pass `--enabled` on creation to choose explicitly, including during rollout
-of the new default.
+Pass `--enabled` on creation to make the choice explicit.
 
 ### Rule matchers — read this first
 

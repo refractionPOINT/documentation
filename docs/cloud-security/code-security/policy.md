@@ -16,10 +16,10 @@ limacharlie hive disable --hive-name cloudsec_policy --key code-scanning
 ```
 
 Use `hive enable` with the same flags to re-enable it, or `--disabled` on
-`hive set` to stage a new policy. Once the updated Hive default is available,
-new policy records created without `usr_mtd` default to enabled. Explicit
-metadata overrides that default; data-only updates preserve metadata. The
-creation example below uses `--enabled` to choose explicitly during rollout.
+`hive set` to stage a new policy. A new policy record created without any
+`usr_mtd` is enabled. Metadata you send is stored as sent, and updating only a
+record's data keeps its existing metadata. The creation example below passes
+`--enabled` so the intent is explicit.
 
 ## Example
 
