@@ -1,6 +1,6 @@
 # Bulk Remediation
 
---8<-- "includes/email-security-beta.md"
+--8<-- "includes/email-security-availability.md"
 
 A campaign sweep acts on a cluster the engine decided. **Bulk remediation** acts
 on a set *you* named — a filtered page of the queue, the result of an LCQL hunt,

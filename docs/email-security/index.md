@@ -1,6 +1,6 @@
 # Email Security
 
---8<-- "includes/email-security-beta.md"
+--8<-- "includes/email-security-availability.md"
 
 LimaCharlie Email Security protects Microsoft 365 and Google Workspace mailboxes
 from inside the same tenant, permission model, telemetry lake and automation
@@ -98,6 +98,8 @@ typing a justification to look at the queue.
 
 Managing connections and policy uses the ordinary Hive permissions for the
 `mailsec_provider`, `mailsec_policy`, `dr-mail`, `secret` and `lookup` hives.
+
+Read [collection and history coverage](pipeline.md#collection-and-history-coverage) to understand the Overview badge and informational outcomes.
 
 ## Where to go next
 

@@ -1,6 +1,6 @@
 # Command Line Interface
 
---8<-- "includes/email-security-beta.md"
+--8<-- "includes/email-security-availability.md"
 
 The `limacharlie mailsec` command group covers the Email Security API surface:
 the coverage screen, the message index and drawer, the audited raw-EML download,
@@ -70,7 +70,7 @@ typing a justification to look at the queue.
 # Coverage
 limacharlie mailsec coverage --window-days 30
 
-# Explicit UTC window instead of window-days (development builds with these flags).
+# Explicit UTC window instead of window-days.
 limacharlie mailsec coverage --since "2026-09-01T00:00:00Z" --until "2026-09-02T00:00:00Z"
 
 # The triage queue

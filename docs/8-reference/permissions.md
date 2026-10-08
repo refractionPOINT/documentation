@@ -282,6 +282,13 @@ approval; they do not grant organization API permissions. See
 | app.get.mtd | View app metadata only |
 | app.set.mtd | Modify app metadata only |
 
+### Application Control
+
+| Permission | Description |
+| --- | --- |
+| app_control.get | Read Application Control policies and rules |
+| app_control.set | Create, modify and delete Application Control policies and rules, and their metadata |
+
 ### External Adapters
 
 | Permission | Description |

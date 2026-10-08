@@ -1,6 +1,6 @@
 # Microsoft 365
 
---8<-- "includes/email-security-beta.md"
+--8<-- "includes/email-security-availability.md"
 
 A Microsoft 365 connection reads and remediates Exchange Online mail over
 Microsoft Graph, using an **application-only** credential. There is no mail

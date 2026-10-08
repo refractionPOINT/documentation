@@ -1,6 +1,6 @@
 # Events & Automation
 
---8<-- "includes/email-security-beta.md"
+--8<-- "includes/email-security-availability.md"
 
 Email Security is not a side-car product with its own event bus. Everything it
 sees becomes ordinary LimaCharlie telemetry, in the same lake as your endpoint,
@@ -14,6 +14,10 @@ Every protected mailbox is its own sensor on platform `email`. The sensor's
 hostname is the mailbox's primary address, and it appears in the sensor list the
 first time the mailbox produces an event. A ten-thousand-mailbox tenant is ten
 thousand sensors; the `email` platform does not count against your sensor quota.
+
+Each mailbox sensor declares its mailbox address as its identity, so with Cloud
+Security it appears as a telemetry source on the matching User in
+[Entity Pivot](../cloud-security/entity-pivot.md#adapter-identities-and-external-actors).
 
 Events that are not about one mailbox land on the connection's own sensor,
 `mailsec-<connection name>`. That is where a tenant-level event such as a

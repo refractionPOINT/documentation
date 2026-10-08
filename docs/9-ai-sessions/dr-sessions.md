@@ -483,10 +483,14 @@ This approach keeps D&R rules clean and lets you update the agent's behavior (pr
 
 #### AI Agent Record Fields
 
+The same record can also supply a one-shot model call from the [`ask ai` detection operator](../8-reference/detection-logic-operators.md#ask-ai). That operator uses the provider credentials, `prompt` as a system message, `data`, `model` and `max_tokens`. It ignores session names, LimaCharlie credentials, tool permissions, plugins, turns, budget, lifetime, debounce, environment and MCP servers. Configure those fields for `start ai agent` when the record serves both purposes.
+
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| `prompt` | string | Yes | Instructions for Claude. |
-| `anthropic_secret` | string | No | Anthropic API key or `hive://secret/` reference. Set exactly one credential source: `anthropic_secret`, `bedrock`, or `vertex`. |
+| `prompt` | string | Yes | Instructions for the configured model. |
+| `anthropic_secret` | string | No | Anthropic API key or `hive://secret/` reference. Set exactly one credential source: `anthropic_secret`, `bedrock`, `vertex`, or `provider` + `credentials`. |
+| `provider` | string | No | `anthropic`, `openai`, `google` or `openrouter`; use with `credentials`, without legacy credential blocks. |
+| `credentials` | map | No | Provider credential envelope. Values may be literals or `hive://secret/` references; `auth` selects the authentication mode (default `api_key`). |
 | `bedrock` | object | No | AWS Bedrock provider block (`region`, `access_key_id_secret`, `secret_access_key_secret`, `session_token_secret`, `bearer_token_secret`). Applied on record-based launches — see [Alternative AI Providers](alternative-providers.md#amazon-bedrock). |
 | `vertex` | object | No | Google Cloud Vertex AI provider block (`project_id`, `region`, `service_account_json_secret`). Applied on record-based launches — see [Alternative AI Providers](alternative-providers.md#google-cloud-vertex-ai). |
 | `lc_api_key_secret` | string | No | LimaCharlie API key or `hive://secret/` reference. |
@@ -496,7 +500,8 @@ This approach keeps D&R rules clean and lets you update the agent's behavior (pr
 | `allowed_tools` | list | No | Tools Claude can use. |
 | `denied_tools` | list | No | Tools Claude cannot use. |
 | `permission_mode` | string | No | `acceptEdits`, `plan`, or `bypassPermissions`. |
-| `model` | string | No | Claude model identifier. When routing through Bedrock, use the Bedrock model ID format (see [Alternative AI Providers](alternative-providers.md)). |
+| `model` | string | No | Provider model identifier. When routing through Bedrock, use the Bedrock model ID format (see [Alternative AI Providers](alternative-providers.md)). |
+| `max_tokens` | integer | No | Output token limit for `ask ai`, 1–32768. Omit to use the service default (512). A rule-level `max_tokens` overrides this value. Ignored by `start ai agent`. |
 | `max_turns` | integer | No | Maximum conversation turns. |
 | `max_budget_usd` | float | No | Maximum spend limit in USD. |
 | `ttl_seconds` | integer | No | Maximum session lifetime in seconds. |
@@ -555,7 +560,6 @@ This approach keeps D&R rules clean and lets you update the agent's behavior (pr
 
 ## See Also
 
-- [Compliance Case-Reviewer Agent](compliance/case-reviewer-agent.md) -- A production example of a D&R-driven session: classifies every new case against framework control citations on `case_created` events. Useful as a reference for prompt structure, scope-check patterns, debounce keys, and case-write workflows.
 - [Tool Permissions & Profiles](tool-permissions.md) -- Configure `allowed_tools` / `denied_tools` for D&R sessions.
 - [Runner Environment](runner-environment.md) -- What's pre-installed in the session container.
 - [Alternative AI Providers](alternative-providers.md) -- Route through AWS Bedrock or Google Cloud Vertex AI instead of Anthropic direct.

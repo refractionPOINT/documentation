@@ -1,6 +1,6 @@
 # AI Triage
 
---8<-- "includes/email-security-beta.md"
+--8<-- "includes/email-security-availability.md"
 
 Email Security produces an explainable verdict for every message. AI triage is the
 optional second pass: an agent that reads a message the way an analyst would, pivots on

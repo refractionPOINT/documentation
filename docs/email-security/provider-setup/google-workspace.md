@@ -1,6 +1,6 @@
 # Google Workspace
 
---8<-- "includes/email-security-beta.md"
+--8<-- "includes/email-security-availability.md"
 
 A Google Workspace connection reads and remediates Gmail through the Gmail API,
 using a **service account with domain-wide delegation**. There is no mail

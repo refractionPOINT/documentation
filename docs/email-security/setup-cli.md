@@ -1,10 +1,10 @@
 # Email Security setup with the CLI
 
---8<-- "includes/email-security-beta.md"
+--8<-- "includes/email-security-availability.md"
 
 Prefer the web app? Start with the [console walkthrough](getting-started.md).
 
-Install the beta CLI from `master` as shown above, then [configure authentication](../6-developer-guide/cli-quickstart.md) and select your organization. `$OID` below means your LimaCharlie organization UUID, not its display name. Use `limacharlie org list --output yaml` to find it and set `OID="<organization-uuid>"` for these examples.
+Use a CLI build that includes the commands described above, then [configure authentication](../6-developer-guide/cli-quickstart.md) and select your organization. `$OID` below means your LimaCharlie organization UUID, not its display name. Use `limacharlie org list --output yaml` to find it and set `OID="<organization-uuid>"` for these examples.
 
 This reference takes an organization from zero to a populated Email Security queue:
 enable the product, connect a mail tenant, verify the connection, and read the
@@ -16,7 +16,9 @@ both are shown.
 Email Security is enabled per organization by subscribing to the
 `ext-email-security` extension. The subscription is the enable gate: without it
 every `/v1/mailsec/*` route is refused, and the console shows a subscribe screen
-instead of the product.
+instead of the product. **Subscribing is the purchase**. Paid usage is **$1 per
+protected mailbox per month**, billed daily at **$1/30 per mailbox-day** on that
+day's protected-mailbox count. See [security product billing](../7-administration/billing/security-products.md).
 
 ```bash
 limacharlie extension subscribe --name ext-email-security --oid $OID
@@ -42,16 +44,16 @@ without moving mail. See [Policy Reference](policy.md).
     — start with the executives, finance and the abuse mailbox.
 
     When the trial ends, ingestion pauses and nothing is deleted; the data is
-    removed 30 days later unless the organization moves off the free tier, and
+    removed after a **30-day purge grace period** unless the organization moves
+    off the free tier before the purge, and
     you are told before that happens. The full rules, and the exact fields to
     read the countdown from, are in
     [Plans, the free trial, and the mailbox cap](policy.md#plans-the-free-trial-and-the-mailbox-cap).
 
-    During private beta, trial limits may be reported before enforcement is
-    enabled. Check `mailsec coverage` and its `entitlement` block for your
-    organization's actual standing and enforcement. Contact LimaCharlie if the
-    reported state and collection behavior disagree; saving a connection alone
-    does not establish trial eligibility.
+    The free tier means a configured sensor quota of **2 or less**. Raising it
+    above **2** moves the organization to a paid plan, lifts the trial limits,
+    and starts usage billing. Check `mailsec coverage` and its `entitlement`
+    block for the trial countdown and any scheduled deletion.
 
 ## 2. Grant the permissions
 

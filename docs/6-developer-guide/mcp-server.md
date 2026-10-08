@@ -265,6 +265,7 @@ permission only when the workflow needs it:
 | CloudSec posture and CodeSec findings | `cloud_security_readonly` | `cloudsec.get` |
 | CloudSec triage and code ingest | `cloud_security` | `cloudsec.get`, `cloudsec.set` |
 | Dependency AutoFix and remediation run creation/decision | `cloud_security` | `cloudsec.respond` (separate from `cloudsec.set`) |
+| Entity Pivot: resolve an email, hostname, IP or sensor ID to Users and Hosts | `cloud_security_readonly`, or the `historical_data_readonly` and `email_security_readonly` investigation profiles | `cloudsec.get`; activity and sightings also need the permission of each product they read, such as `insight.evt.get`, `insight.det.get` or `mailsec.get` |
 | MailSec coverage, messages, campaigns and histories | `email_security_readonly` | `mailsec.get` |
 | Raw email download | `email_security` | `mailsec.get` and `mailsec.get.eml` |
 | MailSec EML analysis, rule validation/backtest and selected bulk preview | `email_security_readonly` | `mailsec.get` |
@@ -273,7 +274,7 @@ permission only when the workflow needs it:
 | Product provider/policy/secret setup | `platform_admin` | Dedicated provider `.get/set`, product `.get/set` for policy, `secret.set` and required metadata-read access |
 
 CloudSec requires the `ext-cloud-security` subscription; MailSec requires
-`ext-email-security` and applicable beta access. Setup uses generic Hive and
+`ext-email-security`. Setup uses generic Hive and
 extension tools, the console or CLI; product read-only profiles exclude those
 writes. MailSec's read-only profile excludes raw EML and privileged diagnostics.
 Backend capability rollout remains independent of the client version.
@@ -321,6 +322,7 @@ Once connected, AI assistants can:
 - **Search threat intelligence** — Query IOCs and map to MITRE ATT&CK
 - **Configure the platform** — Manage outputs, adapters, secrets, and playbooks
 - **Review CloudSec and CodeSec** — Inspect posture, repositories, findings and coverage
+- **Pivot on an identifier** — Resolve an email address, hostname, IP address or sensor ID to Users and Hosts, then read their [activity](../cloud-security/entity-pivot.md)
 - **Triage MailSec** — Review coverage, messages, campaigns and action history
 
 ---

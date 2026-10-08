@@ -1,6 +1,6 @@
 # IOC & Reputation Feeds
 
---8<-- "includes/email-security-beta.md"
+--8<-- "includes/email-security-availability.md"
 
 The managed rule pack carries its own link and sender reputation signals. This
 page is about the other lane: mirroring a threat feed **you** have chosen, and

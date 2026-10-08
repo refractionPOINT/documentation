@@ -1,6 +1,6 @@
 # Policy Reference
 
---8<-- "includes/email-security-beta.md"
+--8<-- "includes/email-security-availability.md"
 
 Email Security is configured through Hive records. Anything the console can
 configure, `limacharlie hive set` can configure — so tenant onboarding and
@@ -69,6 +69,9 @@ modifies mail, and nothing sends mail until you say so.
 ---
 
 ## `automations`
+
+In the console, open **Policy → Response automations**. These ordered responses
+are separate from **Detection rules**, which define how messages are scored.
 
 The ordered list of `{match → actions}` rules that decide what happens to a
 message automatically.
@@ -349,7 +352,7 @@ raises suspicious — so the invariant is enforced after composition, not only p
 record. An inverted pair would make every suspicious message malicious.
 
 Individual rule weights and enabled states are edited on the `dr-mail` record,
-through [Mail Rules](custom-rules.md).
+through [Detection Rules](custom-rules.md).
 
 ---
 
@@ -517,8 +520,8 @@ Two consequences worth knowing:
 - A changed retention window first receives a report-only sweep. Deletion on
   subsequent sweeps requires the deployment's retention mode to be `enforce`;
   `report` reports candidates without deleting, and `off` disables the sweeper.
-  During private beta, ask the MailSec team to confirm deletion is enabled and
-  check sweep completion. Large backlogs drain over several sweeps.
+  Check sweep completion before treating cleanup as complete. Large backlogs
+  drain over several sweeps.
 - The horizons are independent. A flagged message's evidence can outlive its
   index entry (the usual case: 400 against 35), and if you set `flagged_days`
   *below* `message_days` the reverse happens — the index entry remains without a
@@ -603,7 +606,10 @@ server from your verified claims rather than taken from the request.
 |---|---|---|
 | The organization unsubscribes from Email Security | **30 days** later | Resubscribing at any point inside those 30 days |
 | The organization's free trial ends and it stays on the free tier | **30 days** later | Moving the organization off the free tier at any point inside those 30 days |
-| The organization itself is deleted | Immediately | Nothing — the organization no longer exists |
+| The organization itself is deleted | After a **7-day** grace period | The organization is found to exist again before the purge |
+
+Grace periods start when the cleanup process observes the condition. Deletion
+runs asynchronously after the grace period; normal retention policies still apply.
 
 None of them needs anyone to ask. The 30-day delay exists so that unsubscribing
 by mistake, letting a trial lapse over a holiday, or moving billing around is
@@ -633,14 +639,14 @@ re-sent for the new date.
 
 ## Plans, the free trial, and the mailbox cap
 
-Email Security is in private beta and must be available to your organization
-before you subscribe. For an enabled organization, what differs between a
-**trial** organization and a **paid** one is how long it runs and how many
-mailboxes it protects.
+Email Security is generally available. **Subscribing to the Email Security
+extension is the purchase**. Paid usage costs **$1 per protected mailbox per
+month**, billed daily at **$1/30 per mailbox-day** on that day's protected-mailbox
+count. See [security product billing](../7-administration/billing/security-products.md).
 
-An organization is on the trial when it is on the LimaCharlie free tier — the
-same line the rest of the platform draws, so an organization evaluating Email
-Security and Cloud Security at once gets one answer about what it is paying for.
+An organization gets the trial when it is on the LimaCharlie free tier: its
+configured sensor quota is **2 or less**. Raising the quota above **2** moves the
+organization to a paid plan, lifts the trial limits, and starts usage billing.
 
 | | Trial | Paid |
 |---|---|---|
@@ -648,11 +654,8 @@ Security and Cloud Security at once gets one answer about what it is paying for.
 | Protected mailboxes | **25** | No plan-imposed mailbox cap |
 | Everything else — detections, remediation, retention, API, telemetry | Identical | Identical |
 
-These are the trial terms. During beta, a deployment can report limits before
-enforcing them. Read `coverage.entitlement` for your actual standing and
-enforcement; a reported limit alone does not prove ingestion has paused. Contact
-LimaCharlie to confirm trial or scheduled-deletion enforcement in your data
-region. Policy records and a CLI installation cannot enable server enforcement.
+Read `coverage.entitlement` for the trial countdown, mailbox coverage and any
+scheduled deletion.
 
 ### The 14-day clock
 
@@ -668,27 +671,27 @@ Read the remaining time from the `entitlement` block of
 
 ### What happens when the trial ends
 
-The same thing that happens when an organization unsubscribes, and for the same
-reason — the product stops, nothing is deleted yet:
+If the organization stays on the free tier at expiry, collection pauses and
+configuration is kept:
 
 - **Ingestion pauses.** No new mail is analyzed, and the mail connections are
   not renewed, so the provider's own watches expire on their own schedule.
 - **Nothing is deleted, and nothing is changed.** The connections, the policy
   records and every message already analyzed are intact and follow their normal
   [retention](#data-retention-and-deletion).
-- **Reading and acting still work.** An analyst can still search the queue, read
-  a message and remediate mail that was already ingested.
-- **The 30-day deletion clock starts**, with the notices described above.
+- **A 30-day purge grace period starts when expiry is observed**, with the
+  notices described above. Data is removed after that grace period unless the
+  organization upgrades.
 
-Moving the organization off the free tier resumes ingestion within about five
-minutes, and cancels the scheduled deletion. Mail delivered while ingestion was
-paused is not analyzed retroactively.
+Raising the configured sensor quota above **2** lifts the trial limits, allows
+collection to resume, and cancels trial-expiry deletion if the upgrade happens
+before the purge. Usage is then billed.
 
 ### The 25-mailbox cap
 
 A trial organization protects up to 25 mailboxes. The cap applies to the whole
-organization, across every connected mail tenant, and it works on **activation**
-only:
+organization, across every connected mail tenant, and limits **new mailbox
+protection** only:
 
 - Discovery still finds every mailbox in the tenant — the ones past the cap are
   reported as `discovered` rather than `protected`, so you can see exactly how
@@ -818,11 +821,18 @@ The default is **on**, because the organization that most needs body similarity 
 one being hit by a kit that randomizes subjects and links — is the one least
 likely to go looking for a switch to turn on.
 
-The distance default is measured, not chosen: across a 404-message corpus of
-ordinary business mail the closest pair of *unrelated* messages is 39 apart,
-while two copies of one message differing only in the recipient's name and the
-link's tracking parameters are 0 apart. The ceiling of 35 sits below that closest
-pair deliberately — a setting above it is one you cannot have measured.
+The distance default is measured, not chosen: across a corpus of several hundred
+pieces of ordinary business mail the closest pair of *unrelated* messages is 40
+apart, while one phishing pitch templated over eight victims — name, greeting,
+amount, account fragment, tracking token and signature all varying — is 0 apart
+after normalization. The ceiling of 35 sits below that closest pair deliberately
+— a setting above it is one you cannot have measured.
+
+Raising it is not the lever it looks like. Body similarity works by *normalizing*
+per-copy variance away, not by tolerating it: a single per-copy word the
+normalization cannot identify costs a median of 20–30 points but exceeds 100 in
+the worst 5% of cases, so moving 30 to 35 takes that case from about 56% of
+pairs grouping to about 71% while spending most of the margin against unrelated mail.
 
 See [Body similarity](campaigns.md#body-similarity) for what the key is and how a
 body is normalized before it is hashed.

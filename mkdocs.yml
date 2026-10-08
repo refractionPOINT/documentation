@@ -66,6 +66,13 @@ plugins:
         'docs/lc-extensions.md': '5-integrations/extensions/limacharlie/index.md'
         'docs/third-party-extensions.md': '5-integrations/extensions/third-party/index.md'
         'cloud-security/code-scanning.md': 'cloud-security/code-security/index.md'
+        # Retired lc-compliance plugin pages
+        '9-ai-sessions/compliance/index.md': 'cloud-security/compliance.md'
+        '9-ai-sessions/compliance/installation.md': 'cloud-security/compliance.md'
+        '9-ai-sessions/compliance/frameworks.md': 'cloud-security/compliance.md'
+        '9-ai-sessions/compliance/skills.md': 'cloud-security/compliance.md'
+        '9-ai-sessions/compliance/case-reviewer-agent.md': 'cloud-security/compliance.md'
+        '9-ai-sessions/compliance/gap-analysis.md': 'cloud-security/compliance.md'
         # Extension website fields (old Readme.io /docs/<slug> format)
         'docs/binlib.md': '5-integrations/extensions/limacharlie/binlib.md'
         'docs/ext-artifact.md': '5-integrations/extensions/limacharlie/artifact.md'
@@ -417,6 +424,7 @@ nav:
           - Using Extensions: 5-integrations/extensions/using-extensions.md
           - LimaCharlie:
               - Overview: 5-integrations/extensions/limacharlie/index.md
+              - Application Control: 5-integrations/extensions/limacharlie/app-control.md
               - Artifact: 5-integrations/extensions/limacharlie/artifact.md
               - BinLib: 5-integrations/extensions/limacharlie/binlib.md
               - Cases: 5-integrations/extensions/limacharlie/cases.md
@@ -520,6 +528,7 @@ nav:
           - SSO: 7-administration/access/sso.md
       - Billing:
           - Options: 7-administration/billing/options.md
+          - Security Products: 7-administration/billing/security-products.md
           - Custom Plans: 7-administration/billing/custom-plans.md
           - Estimating Data Ingestion: 7-administration/billing/data-estimation.md
       - Config Hive:
@@ -529,6 +538,8 @@ nav:
           - D&R Rules: 7-administration/config-hive/dr-rules.md
           - YARA: 7-administration/config-hive/yara.md
           - Cloud Sensors: 7-administration/config-hive/cloud-sensors.md
+          - Application Control Policies: 7-administration/config-hive/app-control-policy.md
+          - Application Control Rules: 7-administration/config-hive/app-control-rule.md
           - Apps: 7-administration/config-hive/apps.md
 
   - Reference:
@@ -580,15 +591,8 @@ nav:
       - Command Line Interface: 9-ai-sessions/cli.md
       - Alternative Providers: 9-ai-sessions/alternative-providers.md
       - API Reference: 9-ai-sessions/api-reference.md
-      - Compliance:
-          - Overview: 9-ai-sessions/compliance/index.md
-          - Installation: 9-ai-sessions/compliance/installation.md
-          - Frameworks: 9-ai-sessions/compliance/frameworks.md
-          - Skills Reference: 9-ai-sessions/compliance/skills.md
-          - Case-Reviewer Agent: 9-ai-sessions/compliance/case-reviewer-agent.md
-          - Gap Analysis: 9-ai-sessions/compliance/gap-analysis.md
 
-  - Email Security (Private Beta):
+  - Email Security:
       - Overview: email-security/index.md
       - How a Message Is Processed: email-security/pipeline.md
       - Getting Started: email-security/getting-started.md
@@ -606,7 +610,7 @@ nav:
       - Sample Submission: email-security/sample-submission.md
       - Provider Quarantine: email-security/provider-quarantine.md
       - Detections & Verdicts: email-security/detections.md
-      - Mail Rules: email-security/custom-rules.md
+      - Detection Rules: email-security/custom-rules.md
       - Rule Reference: email-security/rule-reference.md
       - IOC & Reputation Feeds: email-security/ioc-feeds.md
       - Policy Reference: email-security/policy.md
@@ -662,6 +666,7 @@ nav:
       - Security Graph & Queries: cloud-security/graph.md
       - Compliance: cloud-security/compliance.md
       - CAASM: cloud-security/caasm.md
+      - Entity Pivot: cloud-security/entity-pivot.md
       - Custom Posture Rules: cloud-security/custom-rules.md
       - Mail Posture Rules: cloud-security/mail-posture-rules.md
       - Configuration Reference: cloud-security/configuration.md

@@ -1,6 +1,6 @@
 # Troubleshooting
 
---8<-- "includes/email-security-beta.md"
+--8<-- "includes/email-security-availability.md"
 
 Most Email Security problems are one of a small number of shapes, and the product
 is built so that each of them says so somewhere rather than looking like silence.

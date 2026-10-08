@@ -1,6 +1,6 @@
 # Messages & Triage
 
---8<-- "includes/email-security-beta.md"
+--8<-- "includes/email-security-availability.md"
 
 **Email Security → Messages** is the shared queue for individual messages and
 [message groups](groups.md). Choose **Messages** or **Groups** with the switch
@@ -158,6 +158,13 @@ is the question that decides whether you are handling one message or an incident
 limacharlie mailsec message list --link-domain evil.example --oid $OID
 limacharlie mailsec message list --attachment-sha256 <sha256> --oid $OID
 ```
+
+### Pivot from a sender or mailbox
+
+When a message's sender or recipient mailbox needs context beyond mail, resolve
+the address in [Entity Pivot](../cloud-security/entity-pivot.md). It maps the
+address to a User, their owned Hosts, endpoint detections and cloud findings. It
+needs `cloudsec.get` and Cloud Security, in addition to `mailsec.get`.
 
 ### Pagination
 

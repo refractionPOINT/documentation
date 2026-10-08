@@ -175,6 +175,15 @@ Print out all basic sensor information for all sensors matching the [selector](.
 limacharlie sensor list --selector 'plat == windows'
 ```
 
+### Entity Pivot
+
+Resolve an email address, hostname, IP address or sensor ID to the User and Host entities behind it across endpoint, email and cloud data, then read the entity's card, sightings and activity. Requires `cloudsec.get` and Cloud Security. See [Entity Pivot](../cloud-security/entity-pivot.md#mcp-and-cli).
+
+```bash
+limacharlie cloudsec entity resolve --identifier alice@example.com
+limacharlie cloudsec entity --help
+```
+
 ### Add Users
 
 Add single or multiple users to a LimaCharlie organization. Added users will be sent an email to confirm their address, enable the account and create a new password.

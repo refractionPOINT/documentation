@@ -1,5 +1,6 @@
 !!! note "Install the CLI"
-    Install or upgrade the LimaCharlie CLI:
+    CLI examples require LimaCharlie CLI **5.7.0 or later**, which includes the
+    `cloudsec code` commands. Install or upgrade, then check:
 
     ```bash
     python -m pip install --upgrade limacharlie

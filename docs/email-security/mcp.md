@@ -1,6 +1,6 @@
 # MailSec with an AI assistant (MCP)
 
---8<-- "includes/email-security-beta.md"
+--8<-- "includes/email-security-availability.md"
 
 The [LimaCharlie MCP server](https://github.com/refractionPOINT/lc-mcp-server)
 lets an AI assistant review MailSec coverage, messages, campaigns and action
@@ -45,11 +45,16 @@ analysis, candidate validation/backtests and selected bulk previews. It excludes
 raw EML download, provider diagnostics, campaign preview, verdict revisions and
 responses. Profiles select tools; each API still checks its own permissions.
 
+The `email_security` and `email_security_readonly` profiles also include the
+read-only [Entity Pivot tools](../cloud-security/entity-pivot.md#mcp-and-cli), so
+an assistant can pivot from a sender or mailbox to the User, their Hosts and
+endpoint activity. These need `cloudsec.get` and Cloud Security.
+
 ## Connect a pilot mailbox
 
 First subscribe to `ext-email-security` through the console, CLI or administration
 profile's `subscribe_to_extension`. Every MailSec endpoint, including onboarding
-instructions, requires the subscription and beta access.
+instructions, requires the extension subscription.
 
 Then use `mailsec_get_onboarding` with `provider: "m365"` or `"gworkspace"` to read
 current setup requirements. Workspace parameters `project_id`, `sa_email`,
