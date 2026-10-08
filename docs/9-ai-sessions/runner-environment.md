@@ -41,7 +41,7 @@ The runner is a Debian Bookworm slim image. The agent process runs as a non-root
 
 | Command | Tool | Notes |
 |---|---|---|
-| `sublime` | [Sublime Security CLI](https://docs.sublime.security/docs/sublime-cli) | Email security analysis. |
+| `sublime` | [Sublime Security CLI](https://docs.sublime.security/reference/analysis-api-cli) | Email security analysis. |
 | `chkp_harmony_endpoint_management_cli` | [Check Point Harmony Endpoint Management CLI](https://github.com/CheckPointSW/harmony-endpoint-management-cli) | Pass credentials via `CP_CI_CLIENT_ID`, `CP_CI_ACCESS_KEY`, `CP_CI_GATEWAY`. |
 | `mmdblookup` | MaxMind DB lookup (`mmdb-bin`) | GeoLite2 City + ASN databases mounted at `/usr/share/GeoIP/`. May be absent in local-built images; the SDK bridge advertises GeoIP capabilities only when the databases exist. |
 
@@ -56,7 +56,7 @@ The runner is a Debian Bookworm slim image. The agent process runs as a non-root
 
 | Command | Tool | Notes |
 |---|---|---|
-| `limacharlie` | LimaCharlie CLI v2 (Python) | Installed in the `/opt/venv` Python environment from the [`cli-v2` branch](https://github.com/refractionPOINT/python-limacharlie/tree/cli-v2). For D&R-driven sessions, agent-scoped credentials are pre-injected — see [D&R-Driven Sessions](dr-sessions.md). |
+| `limacharlie` | LimaCharlie CLI v2 (Python) | Installed in the `/opt/venv` Python environment from the [`python-limacharlie`](https://github.com/refractionPOINT/python-limacharlie) package. For D&R-driven sessions, agent-scoped credentials are pre-injected — see [D&R-Driven Sessions](dr-sessions.md). |
 | `claude` | [Claude Code CLI](https://docs.claude.com/en/docs/claude-code) | The same upstream CLI the runner orchestrates internally. Agents can shell out to it for sub-invocations when needed. |
 
 ## Python environment
@@ -79,7 +79,7 @@ Plain `pip install <pkg>` from inside an agent session installs into `/opt/venv`
 
 ## Stability of this list
 
-The runner image is rebuilt and re-tagged on every release of `ai-sessions`. CLI tools are pinned to specific versions in the Dockerfile and only change when that pin is bumped — they will not silently disappear or get downgraded between sessions on the same image tag. Adding a new CLI to the runner is a code change in [`docker/Dockerfile.session-runner`](https://github.com/refractionPOINT/ai-sessions/blob/master/docker/Dockerfile.session-runner) and ships in the next image build.
+The runner image is rebuilt and re-tagged on every release of `ai-sessions`. CLI tools are pinned to specific versions in the Dockerfile and only change when that pin is bumped — they will not silently disappear or get downgraded between sessions on the same image tag. Adding a new CLI to the runner is a code change in the runner image's Dockerfile and ships in the next image build.
 
 ## See also
 

@@ -1,5 +1,13 @@
 # Microsoft Azure
 
+!!! tip "Connecting from the web app?"
+    Follow the prerequisites and credential creation instructions below, then
+    return to **Cloud Security → Settings → Providers → Add provider**. Enter
+    the provider IDs under **Configuration** and save the credential using
+    **New secret** under **Permissions**. Run **Test Provider**, fix required
+    failures, and save. The LimaCharlie CLI examples below are an alternative.
+    [First-time setup and verification](../getting-started.md) explains the full journey.
+
 Collects the Azure estate — VMs and scale sets, storage, Key Vault, SQL/Cosmos,
 AKS, networking and NSGs, Azure OpenAI — plus the tenant's Entra ID directory
 (users, groups, service principals, app registrations, roles) and, where
@@ -34,6 +42,7 @@ licensed, Conditional Access and sign-in activity.
 
 | Grant | Unlocks | Preflight check |
 |---|---|---|
+| **Key Vault Reader** RBAC role (RBAC vaults), or **Secret permissions: List** (legacy access-policy vaults) | Enabled secret-version expiration metadata. No secret values are read | `keyvault_secret_metadata` (one representative vault) |
 | **Policy.Read.All** (application) | Conditional Access policy posture | *(collected during the sweep)* |
 | **AuditLog.Read.All** (application) | Two things: last-sign-in / dormancy enrichment on identities, and each identity's **MFA-registration state** (whether the user is MFA-registered / MFA-capable, from the authentication-methods registration report). **Requires an Entra ID P1 or P2 licence** — without the licence the reports are unavailable regardless of consent | `signin_activity` covers the sign-in half only |
 | **RoleManagement.Read.Directory** (application) | Directory role assignments and PIM eligibility | *(collected during the sweep)* |
@@ -78,45 +87,99 @@ unobserved while everything else still collects.
     unlicensed the provider test still passes and the symptom is identities with
     **no MFA-registration information** rather than a failing check.
 
+### Key Vault secret expiration metadata
+
+Subscription **Reader** supplies vault inventory, but it does not grant data-plane
+secret metadata. For vaults that use RBAC, open the vault's **Access control (IAM)**
+and assign **Key Vault Reader** to the collector's existing service principal.
+You can also assign it at a subscription scope that covers the intended vaults.
+For a vault using legacy access policies, grant **Secret permissions → List**.
+The detector needs neither **Get** nor **Key Vault Secrets User**.
+
+Microsoft documents that [Key Vault Reader](https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles/security#key-vault-reader)
+can read secret properties while excluding values. The collector lists metadata
+for current and older secret versions, counts enabled versions without expiration,
+and reports the vault and count. CIS Azure 8.1 grades currently enabled secrets from the secrets list; historical enabled versions have a separate posture finding and do not fail that control. Findings do not include secret names or values. Disabled secrets and versions are excluded.
+
+The optional provider test probes one discovered vault with a metadata list.
+Permission on that vault does not prove access to every vault. No available vault
+leaves the metadata permission unverified. Per-vault access policies, RBAC,
+firewalls and private endpoints are checked during the sweep.
+
+Collection uses a stable sorted window of the first 50 vaults per subscription per pass and 100 metadata
+requests / 2,000 items per vault. Optional metadata reads use at most five minutes
+of the vault collection task, reserving time to retain ARM inventory and logging
+observations. An incomplete current list keeps expiry unassessed while preserving those vault facts. A historical-version failure preserves a completed current-secret audit. The window does not rotate: subscriptions
+with more than 50 vaults remain **NOT_ASSESSED** for clean expiry compliance,
+and later vaults are not probed. An unread or capped list keeps clean expiry
+compliance **NOT_ASSESSED**, while an observed currently enabled secret without an expiration date can still fail. A complete current list with no enabled secrets is
+**NOT_APPLICABLE**. These reads currently support public Azure vault endpoints;
+private or sovereign-cloud endpoints that cannot be reached remain unassessed.
+
 ## Create the app registration
 
-```bash
-TENANT_ID=$(az account show --query tenantId -o tsv)
-SUB_ID=<your-subscription-id>
+<span id="console-path"></span>
 
-# 1. App registration + service principal
-APP_ID=$(az ad app create --display-name lc-cloudsec --query appId -o tsv)
-az ad sp create --id "$APP_ID"
+<span id="alternative-azure-cli"></span>
 
-# 2. Client secret (note the expiry you choose; --append preserves existing ones)
-az ad app credential reset --id "$APP_ID" --years 2 --append \
-  --display-name lc-cloudsec --query password -o tsv     # capture this once
+=== "Web console"
 
-# 3. RBAC Reader on the subscription (repeat per subscription)
-az role assignment create --assignee "$APP_ID" --role Reader \
-  --scope "/subscriptions/${SUB_ID}"
+    1. Sign in to [Microsoft Entra](https://entra.microsoft.com/) and select the
+       directory that owns your Azure subscription. Open **App registrations →
+       New registration**, give the application a name, and choose single tenant.
+    2. Copy **Application (client) ID** and **Directory (tenant) ID** from its
+       Overview. The app is the collector's identity; it is separate from your login.
+    3. Under **Certificates & secrets**, create a client secret. Copy its **Value**
+       immediately, not the Secret ID. Record its expiry for future rotation.
+    4. Under **API permissions**, add the required Microsoft Graph **Application
+       permissions** listed above. Add optional ones for the data you need, and
+       have the authorized administrator **Grant admin consent**.
+    5. In the Azure portal, open **Subscriptions**, select the subscription to scan,
+       and copy its **Subscription ID**. Open **Access control (IAM) → Add role
+       assignment**, select **Reader**, and assign it to your application.
+    6. In LimaCharlie's **Configuration** step, enter the tenant, subscription, and
+       client IDs. In **Permissions**, use **New secret** to save the credential
+       JSON shown below, then test and save the connection.
 
-# 4. Microsoft Graph application permissions
-GRAPH=00000003-0000-0000-c000-000000000000
-az ad app permission add --id "$APP_ID" --api "$GRAPH" --api-permissions \
-  7ab1d382-f21e-4acd-a863-ba3e13f7da61=Role   # Directory.Read.All
-az ad app permission add --id "$APP_ID" --api "$GRAPH" --api-permissions \
-  246dd0d5-5bd0-4def-940b-0421030a5b68=Role   # Policy.Read.All
-az ad app permission add --id "$APP_ID" --api "$GRAPH" --api-permissions \
-  b0afded3-3588-46d8-8b3d-9842eff778da=Role   # AuditLog.Read.All
+    The subscription's Reader role and the directory's Graph permissions are
+    separate grants. One does not replace the other. Microsoft's
+    [role assignment guide](https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-steps)
+    explains the access needed to assign a role.
 
-# 5. Tenant-wide admin consent (needs a privileged admin)
-az ad app permission admin-consent --id "$APP_ID"
-```
+=== "Cloud Shell / CLI"
 
-!!! note "In the portal"
-    **Microsoft Entra ID → App registrations → New registration** → then
-    **Certificates & secrets → New client secret** (copy the *Value*, not the
-    ID) → **API permissions → Add a permission → Microsoft Graph →
-    Application permissions** → add the permissions above → **Grant admin
-    consent for \<tenant\>** (the status column must read *Granted*) →
-    finally **Subscriptions → \<sub\> → Access control (IAM) → Add role
-    assignment → Reader → your app**.
+    Use Azure Cloud Shell with Bash, or install the Azure CLI and sign in using
+    `az login`. Confirm the intended tenant with `az account show` before running
+    these commands. Replace the subscription placeholder with its actual ID.
+
+    ```bash
+    TENANT_ID=$(az account show --query tenantId -o tsv)
+    SUB_ID=<your-subscription-id>
+
+    # 1. App registration + service principal
+    APP_ID=$(az ad app create --display-name lc-cloudsec --query appId -o tsv)
+    az ad sp create --id "$APP_ID"
+
+    # 2. Client secret (note the expiry you choose; --append preserves existing ones)
+    az ad app credential reset --id "$APP_ID" --years 2 --append \
+      --display-name lc-cloudsec --query password -o tsv     # capture this once
+
+    # 3. RBAC Reader on the subscription (repeat per subscription)
+    az role assignment create --assignee "$APP_ID" --role Reader \
+      --scope "/subscriptions/${SUB_ID}"
+
+    # 4. Microsoft Graph application permissions
+    GRAPH=00000003-0000-0000-c000-000000000000
+    az ad app permission add --id "$APP_ID" --api "$GRAPH" --api-permissions \
+      7ab1d382-f21e-4acd-a863-ba3e13f7da61=Role   # Directory.Read.All
+    az ad app permission add --id "$APP_ID" --api "$GRAPH" --api-permissions \
+      246dd0d5-5bd0-4def-940b-0421030a5b68=Role   # Policy.Read.All
+    az ad app permission add --id "$APP_ID" --api "$GRAPH" --api-permissions \
+      b0afded3-3588-46d8-8b3d-9842eff778da=Role   # AuditLog.Read.All
+
+    # 5. Tenant-wide admin consent (needs a privileged admin)
+    az ad app permission admin-consent --id "$APP_ID"
+    ```
 
 !!! danger "`credential reset` clears existing secrets"
     Without `--append`, `az ad app credential reset` **removes every existing
@@ -135,12 +198,15 @@ az ad app permission admin-consent --id "$APP_ID"
 {"client_id": "<application-client-id>", "client_secret": "<the-secret-value>"}
 ```
 
+For CLI setup, save the credential JSON above as `azure-secret.json` and install `jq`.
+
 ```bash
-limacharlie secret set --key azure-sp \
-    --value "$(cat azure-secret.json)" --enabled
+jq -Rs '{secret: .}' azure-secret.json \
+  | limacharlie secret set --key azure-sp --enabled \
+  && rm -f azure-secret.json
 ```
 
-`secret set` wraps the value into the secret record for you — the equivalent of
+`jq -Rs` wraps the file contents into the secret record for stdin — the equivalent of
 `limacharlie hive set --hive-name secret` with `{"secret": "<the credential JSON
 as a string>"}`.
 
@@ -185,6 +251,7 @@ the Azure-specific checks follow.
 | `arm_reader` | ✅ | Reader is not assigned on the configured subscription — no resource inventory. |
 | `graph_directory` | ✅ | `Directory.Read.All` not consented — no identity inventory. |
 | `subscriptions` | — | Subscription fan-out disabled; only the configured subscription is swept. |
+| `keyvault_secret_metadata` | — | Secret metadata is unavailable on the representative vault; expiry stays unassessed. No discovered vault leaves permission unverified. |
 | `defender_vuln` | — | Workload **and container image** vulnerability findings unavailable — both are rows in the same Resource Graph table behind the same grant, so one check covers both. |
 | `signin_activity` | — | Last-sign-in and dormancy enrichment unavailable (usually a missing Entra ID P1/P2 licence). |
 
@@ -198,3 +265,7 @@ the Azure-specific checks follow.
 | `signin_activity` fails with a licence error | Sign-in activity requires Entra ID P1/P2 | Either accept the degrade or add the licence |
 | Directory data appears twice | An `azure` **and** an `entra` record both cover the tenant | This is handled automatically: the Azure connection defers its tenant-global directory collectors to the standalone [Entra](entra.md) record |
 | A scale set / App Service is missing | The resource type may need quota or a supported SKU in that subscription | Confirm the resource is visible to the SP with `az resource list` under the same identity |
+
+## Private Azure Container Registry images
+
+To scan private images in Azure Container Registry, assign **AcrPull** on each registry to the **existing app registration** used by this connection. Subscription Reader alone does not grant image pull access. LimaCharlie exchanges the app's credential for a token limited to each image repository's `pull` action. No registry admin account is needed. See [Microsoft's service principal instructions](https://learn.microsoft.com/en-us/azure/container-registry/container-registry-auth-service-principal#use-an-existing-service-principal) and [private image scanning](../code-security/container-registries.md).

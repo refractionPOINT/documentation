@@ -1,6 +1,6 @@
 # Google Workspace
 
---8<-- "includes/email-security-beta.md"
+--8<-- "includes/email-security-availability.md"
 
 A Google Workspace connection reads and remediates Gmail through the Gmail API,
 using a **service account with domain-wide delegation**. There is no mail
@@ -40,86 +40,272 @@ impersonating a Workspace admin.
     [Cloud Security](../../cloud-security/provider-setup/google-workspace.md),
     which collects it as posture findings. Email Security owns the *messages*.
 
+## Which console does what?
+
+Keep these tabs open:
+
+| Console | What you do there |
+|---|---|
+| [Google Cloud](https://console.cloud.google.com/) | Create the service account (the application's identity), download its key, and configure notifications. |
+| [Google Admin](https://admin.google.com/) | Authorize that identity to access Workspace users' mail. This is called **domain-wide delegation**. |
+| LimaCharlie | Store the key securely and configure the connection. |
+
+A **Pub/Sub topic** receives Gmail's new-mail notifications. A **pull subscription**
+lets LimaCharlie retrieve those notifications. Both belong to your Google Cloud
+project; they do not replace or reroute email.
+
 ## Setup steps
 
-!!! tip "Let the console render these with your values"
-    The wizard serves the same steps with your project id and service-account
-    address already substituted, and every command in order as a single paste.
-    `limacharlie mailsec onboarding --provider gworkspace --oid $OID` returns
-    the same thing headless. The steps below are the narrative.
+Choose **Web console** to use browser forms or **Cloud Shell / CLI** to run
+commands. Complete each step once; the tabs are alternative ways to create the
+same resources. Step 3 requires the Workspace Admin console whichever path you
+choose.
+
+For command tabs, open **Cloud Shell** in Google Cloud (the terminal icon).
+It includes `gcloud`. Replace `<YOUR_PROJECT_ID>` with the project ID shown in
+the Google Cloud project selector. After downloading the key, replace
+`<SERVICE_ACCOUNT_EMAIL>` with its `client_email` value. The LimaCharlie
+wizard can also fill these values into its setup commands for you.
 
 ### 1. Create a service account and download its JSON key
 
-In any Google Cloud project you control. It needs **no IAM roles on the
-project** — its mail access comes entirely from domain-wide delegation. Note its
-**numeric OAuth2 client ID**; the Workspace console needs the number, not the
-email address.
+=== "Web console"
+
+    1. In Google Cloud, select the project you want to use for Email Security.
+    2. Open **IAM & Admin → Service Accounts → Create service account**, choose a
+       name such as `limacharlie-mail`, and create it. You do not need a broad project
+       role for mail access; the scoped Pub/Sub grant is added in step 7.
+    3. Open the service account, then **Keys → Add key → Create new key → JSON**.
+       Download the key. If your organization's policy blocks key creation, ask
+       your Google Cloud administrator to resolve that before continuing.
+    4. In the service account details, find its **OAuth 2 client ID** for domain-wide
+       delegation. This is a number, not the service account's email address.
+
+=== "Cloud Shell / CLI"
+
+    In Cloud Shell, select your project and run:
+
+    ```bash
+    gcloud iam service-accounts create limacharlie-mail \
+      --display-name="LimaCharlie Email Security" --project=<YOUR_PROJECT_ID>
+
+    gcloud iam service-accounts keys create mailsec-key.json \
+      --iam-account=limacharlie-mail@<YOUR_PROJECT_ID>.iam.gserviceaccount.com \
+      --project=<YOUR_PROJECT_ID>
+    ```
+
+    Use Cloud Shell's **Download file** action to download `mailsec-key.json`.
+    If key creation is blocked by organization policy, ask your Google Cloud
+    administrator to resolve it. The key includes the numeric `client_id` needed
+    in step 3.
+
+The downloaded JSON contains `project_id`, `client_email`, and `client_id`.
+You will use the first two in the LimaCharlie wizard and the numeric client ID
+in Google Admin. Keep the key intact, including the private key's escaped line
+breaks. Google's [credential creation guide](https://developers.google.com/workspace/guides/create-credentials)
+provides the current console steps.
 
 ### 2. Enable the APIs
 
-In the same project as the service account.
+=== "Web console"
 
-```bash
-gcloud services enable gmail.googleapis.com admin.googleapis.com \
-  pubsub.googleapis.com --project=<YOUR_PROJECT_ID>
-```
+    1. In Google Cloud, select the project that owns the service account.
+    2. Open **APIs & Services → Library**. Search for and open **Gmail API**, then
+       select **Enable**. If it is already enabled, leave it enabled.
+    3. Repeat for **Admin SDK API** and **Cloud Pub/Sub API**.
+    4. Under **APIs & Services → Enabled APIs & services**, confirm all three are
+       listed for this project.
+
+    API IDs: `gmail.googleapis.com`, `admin.googleapis.com`, and
+    `pubsub.googleapis.com`. See Google's [API enablement guide](https://docs.cloud.google.com/service-usage/docs/enable-disable).
+
+=== "Cloud Shell / CLI"
+
+    ```bash
+    gcloud services enable gmail.googleapis.com admin.googleapis.com \
+      pubsub.googleapis.com --project=<YOUR_PROJECT_ID>
+    ```
 
 ### 3. Authorize the service account in the Workspace admin console
 
-**Security → Access and data control → API controls → Domain-wide delegation →
-Add new.** Paste the numeric client ID and the scopes as one comma-separated
-line. Include `https://mail.google.com/` only if you want banners and reporter
-replies.
+!!! important "Required even if you used Cloud Shell"
+    Enabling Google Cloud APIs, running the setup script, and saving the JSON key
+    do **not** grant access to Workspace mailboxes. Complete this manual step in
+    **Google Admin**, using a Workspace **Super Admin** account.
 
-*Verified by the `directory` check in the connection test.*
+1. Open [Google Admin](https://admin.google.com/) → **Security → Access and data
+   control → API controls → Manage Domain Wide Delegation**.
+2. Select **Add new**. For **Client ID**, copy the numeric `client_id` from the
+   **same JSON key saved for this connection**. Do not use `client_email`, your
+   administrator's address, or the Google Cloud project ID. If the client ID
+   already has an entry, select **Edit** on that entry instead.
+3. Paste **both required scopes together** into **OAuth scopes (comma-delimited)**:
+
+    ```text
+    https://www.googleapis.com/auth/admin.directory.user.readonly,https://www.googleapis.com/auth/gmail.modify
+    ```
+
+4. Select **Authorize**. Open **View details** on the entry and verify that both
+   scopes are listed under the intended client ID. When editing, retain any
+   existing scopes you still need; adding one must not remove the other.
+
+**Optional — warning banners and reporter replies:** if you want these features,
+use this combined list instead. It includes both required scopes plus broader
+mail access:
+
+```text
+https://www.googleapis.com/auth/admin.directory.user.readonly,https://www.googleapis.com/auth/gmail.modify,https://mail.google.com/
+```
+
+The `https://mail.google.com/` scope is **not required** for mailbox discovery,
+analysis, quarantine, or restore. Leaving it out can produce an optional
+`mail_full` failure in the connection test; that alone does not block collection.
+
+**Checkpoint:** the entry shows your key's numeric client ID and every scope you
+intended to authorize. If your organization requires another Super Admin to
+approve the change, complete that approval. Then run the connection test again.
+Authorization changes can take up to 24 hours to propagate, although they usually
+apply sooner. See Google's [domain-wide delegation instructions](https://knowledge.workspace.google.com/admin/apps/control-api-access-with-domain-wide-delegation).
+
+If the test still reports missing scopes, compare the saved credential's
+`client_id` with the authorized entry and check the provider error details.
+Also confirm `admin_email` names a real Workspace administrator. These messages
+are remediation suggestions: a token error can have causes other than a
+missing scope, so do not grant broader access just to clear every optional check.
+
+*Verified by the `directory`, `mail_modify`, and optional `mail_full` checks.*
 
 ### 4. Create the notification topic
 
 It **must** be in the same project as the service account — Gmail refuses a
 topic in any other project.
 
-```bash
-gcloud pubsub topics create mailsec-gmail-push --project=<YOUR_PROJECT_ID>
-```
+=== "Web console"
+
+    1. In that Google Cloud project, open **Pub/Sub → Topics → Create topic**.
+    2. Set **Topic ID** to `mailsec-gmail-push`.
+    3. Clear **Add a default subscription**; you will create the named subscription
+       with the required settings in step 6. Leave the other optional features off.
+    4. Select **Create** and confirm the topic appears in the list.
+
+    See Google's [topic creation guide](https://docs.cloud.google.com/pubsub/docs/create-topic).
+
+=== "Cloud Shell / CLI"
+
+    ```bash
+    gcloud pubsub topics create mailsec-gmail-push --project=<YOUR_PROJECT_ID>
+    ```
 
 ### 5. Let Gmail publish to the topic
 
+=== "Web console"
+
+    1. In **Pub/Sub → Topics**, select `mailsec-gmail-push`. Open **Show info panel**
+       if needed, then **Permissions → Add principal**.
+    2. Enter `gmail-api-push@system.gserviceaccount.com` as the principal.
+    3. Select **Pub/Sub Publisher** (`roles/pubsub.publisher`) and save. Apply this
+       grant to the topic, not the entire project.
+    4. Confirm this principal and role appear in the topic's permissions.
+
+=== "Cloud Shell / CLI"
+
+    ```bash
+    gcloud pubsub topics add-iam-policy-binding mailsec-gmail-push \
+      --project=<YOUR_PROJECT_ID> \
+      --member="serviceAccount:gmail-api-push@system.gserviceaccount.com" \
+      --role="roles/pubsub.publisher"
+    ```
+
+`gmail-api-push@system.gserviceaccount.com` is a Google-owned account outside
+your organization; do not substitute your service account.
+
+!!! warning "Domain Restricted Sharing can block this grant"
+    `constraints/iam.allowedPolicyMemberDomains` can reject the binding with
+    `FAILED_PRECONDITION`. Do not assume a service-agent exemption covers this
+    publisher in `system.gserviceaccount.com`. Ask your organization policy
+    administrator to make a temporary exception at this project, apply the
+    publisher binding, then restore the restriction. Existing bindings survive
+    restoration, but later IAM edits may require another exception.
+
+    For `iam.managed.allowedPolicyMembers` or a custom constraint, have the
+    administrator allow this principal under the applicable policy. See
+    [Google's DRS guidance](https://docs.cloud.google.com/organization-policy/restrict-domains)
+    and [Gmail notification setup](https://developers.google.com/workspace/gmail/api/guides/push).
+    Workspace is push-only, so skipping the grant cannot be worked around by
+    choosing a polling mode.
+
+Verify the binding in the same project before continuing:
+
 ```bash
-gcloud pubsub topics add-iam-policy-binding mailsec-gmail-push \
-  --project=<YOUR_PROJECT_ID> \
-  --member="serviceAccount:gmail-api-push@system.gserviceaccount.com" \
-  --role="roles/pubsub.publisher"
+gcloud pubsub topics get-iam-policy mailsec-gmail-push --project=<YOUR_PROJECT_ID>
 ```
 
-`gmail-api-push@system.gserviceaccount.com` is a Google-owned account, so the
-console will warn that it is outside your organization. That is expected — it is
-how Gmail delivers notifications.
+The output must list `serviceAccount:gmail-api-push@system.gserviceaccount.com`
+under `roles/pubsub.publisher`. A successful policy read alone is not proof
+that the binding exists.
 
 *Verified by the `pubsub_watch` check.*
 
 ### 6. Create the subscription we read from
 
-A **pull** subscription on that topic.
+Create a **pull** subscription on the topic from step 4.
 
-```bash
-gcloud pubsub subscriptions create mailsec-gmail-push-sub \
-  --topic=mailsec-gmail-push --project=<YOUR_PROJECT_ID> --ack-deadline=60
-```
+=== "Web console"
+
+    1. Open **Pub/Sub → Subscriptions → Create subscription** in the same project.
+    2. Set **Subscription ID** to `mailsec-gmail-push-sub` and choose the topic
+       `mailsec-gmail-push` from this project.
+    3. Select **Pull** as the delivery type. Set **Acknowledgement deadline** to
+       **60 seconds** and leave the other settings at their defaults.
+    4. Select **Create**. Confirm the subscription's topic and delivery type on
+       its details page. If this subscription already exists, edit and verify it
+       rather than creating a second subscription with a different name.
+
+    See Google's [pull subscription guide](https://docs.cloud.google.com/pubsub/docs/create-subscription).
+
+=== "Cloud Shell / CLI"
+
+    ```bash
+    gcloud pubsub subscriptions create mailsec-gmail-push-sub \
+      --topic=mailsec-gmail-push --project=<YOUR_PROJECT_ID> --ack-deadline=60
+    ```
 
 ### 7. Let us read the subscription
 
-Granted to the **same** service account you already created.
+Grant access to the **same** service account you created in step 1.
 
-```bash
-gcloud pubsub subscriptions add-iam-policy-binding mailsec-gmail-push-sub \
-  --project=<YOUR_PROJECT_ID> \
-  --member="serviceAccount:<SERVICE_ACCOUNT_EMAIL>" \
-  --role="roles/pubsub.subscriber"
-```
+=== "Web console"
+
+    1. Open **Pub/Sub → Subscriptions** and select `mailsec-gmail-push-sub`.
+    2. Open its information panel and **Permissions → Add principal**.
+    3. Paste `client_email` from your JSON key, for example
+       `limacharlie-mail@your-project.iam.gserviceaccount.com`.
+    4. Select **Pub/Sub Subscriber** (`roles/pubsub.subscriber`) and save. Apply
+       this grant to the subscription, not the entire project.
+    5. Confirm the service account and role appear in the subscription's permissions.
+
+    See Google's [Pub/Sub access-control instructions](https://docs.cloud.google.com/pubsub/docs/access-control#controlling_access_through_the_google_cloud_console).
+
+=== "Cloud Shell / CLI"
+
+    ```bash
+    gcloud pubsub subscriptions add-iam-policy-binding mailsec-gmail-push-sub \
+      --project=<YOUR_PROJECT_ID> \
+      --member="serviceAccount:<SERVICE_ACCOUNT_EMAIL>" \
+      --role="roles/pubsub.subscriber"
+    ```
 
 *Verified by the `pubsub_pull` check.*
 
 ## Store the credential
+
+In the setup wizard's **Connection details**, choose **Credential → Add New**
+and name the secret `gws-mail`. Paste the **complete downloaded JSON key** into
+**Secret**, adding an `admin_email` property containing your Workspace
+administrator's address as shown below. Select **Create**. The wizard saves and
+selects the secret, then fills in the project ID and service account email from
+the key. Keep the secret enabled. Do not replace the real private key with the
+abbreviated example or wrap the JSON in an extra `secret` property.
 
 The secret is the service-account JSON key **plus** the Workspace administrator
 address to impersonate:
@@ -137,35 +323,92 @@ address to impersonate:
 }
 ```
 
+Keep `project_id` in the stored key: Gmail quota is accounted to that credential
+project, and the connection requires it. `admin_subject` is accepted as a
+compatibility alias for `admin_email`; use `admin_email` for new credentials.
+
+!!! warning "Cloud Security uses a different credential shape"
+    This Email Security connection requires the flat key shown above, with
+    `admin_email` at the top level. The delegated
+    [Cloud Security Workspace credential](../../cloud-security/provider-setup/google-workspace.md#create-the-credentials-secret)
+    instead nests the key under `service_account_json`. Do not reuse that wrapper
+    here. The CLI's outer `secret` record envelope is separate from either
+    product's credential JSON.
+
+Alternatively, save the edited JSON as `gws-credential.json` and use the
+configured LimaCharlie CLI:
+
 ```bash
-limacharlie secret set --key gws-mail \
-  --value "$(cat gws-credential.json)" --enabled --oid $OID
+jq -Rs '{secret: .}' gws-credential.json \
+  | limacharlie secret set --key gws-mail --enabled --oid $OID \
+  && rm -f gws-credential.json
 ```
 
+Remove any remaining temporary copies of `mailsec-key.json` after the connection
+test succeeds, including the Cloud Shell download copy.
+
 ## Create the connection
+
+Open **Email Security → Settings → Add connection → Google Workspace**. Select
+`gws-mail` under **Credential**. If you selected an existing secret, copy
+`project_id` and `client_email` from its original key into the project ID and
+service account email fields. If you just created the secret here, these fields
+are filled automatically. Choose the mailboxes for your pilot.
+The wizard uses `mailsec-gmail-push` and `mailsec-gmail-push-sub`, matching the
+resources created above. Complete the checklist, review, and save.
+
+Run the connection diagnostic after saving. Enable **Verify notification
+delivery** to test Gmail notifications as well as access. Then follow
+[verify your first message](../getting-started.md#5-confirm-mail-is-arriving).
+Google's [notification setup guide](https://developers.google.com/workspace/gmail/api/guides/push)
+explains the topic, subscription, and Gmail publisher grant.
+
+### Alternative: LimaCharlie CLI
 
 ```yaml
 # gws.yaml
 provider: gworkspace
 credentials: hive://secret/gws-mail
+scope:
+  include_addresses:
+    - pilot@corp.example
 ingest:
   mode: push
   backfill_days: 14
 features:
   outbound_observation: true
-  reports_mailbox: phishing@corp.example
   pubsub_topic: projects/<YOUR_PROJECT_ID>/topics/mailsec-gmail-push
   pubsub_subscription: projects/<YOUR_PROJECT_ID>/subscriptions/mailsec-gmail-push-sub
 ```
+
+Replace `pilot@corp.example` with your pilot mailbox addresses. If you later
+configure `features.reports_mailbox`, use an existing mailbox and include it
+in this scope too; otherwise user reports cannot arrive. Omitting `scope`
+or leaving its include lists empty covers **every discovered mailbox**, subject
+to exclusions and any domain filter. `include_addresses` and `exclude_addresses`
+entries must contain `@`; `domains` entries must be bare domains containing a dot,
+with no `@` or slash. Exclusions win over inclusions.
+
+`ingest.backfill_days` accepts **0–90**, default **14**. `0` disables the initial
+connection-setup history pass; it does not delete already indexed mail and is
+not a privacy cutoff for recovery. If a Gmail history ID or Graph delta token
+expires, recovery can re-walk the default **14-day** window even when this value
+is `0`. See [backfill cleanup](../providers.md#cleaning-up-an-unwanted-backfill)
+before changing retention to remove indexed history.
+
+Read the [enforcement model](../policy.md#mode) before enabling actions:
+connections start with alert-only automation, and manual actions in an alert-only
+organization need an explicit `--force` override.
 
 ```bash
 limacharlie hive set --hive-name mailsec_provider --key gws-prod \
   --input-file gws.yaml --enabled --oid $OID
 ```
 
-`ingest.mode: push` requires **both** `pubsub_topic` and `pubsub_subscription`;
-a record that asks for push and names nowhere to receive is refused at save. Use
-`auto` to let the collector decide.
+Google Workspace supports `ingest.mode: push` only, and requires **both**
+`pubsub_topic` and `pubsub_subscription`. An omitted, `auto` or `poll` mode—or a
+push record that names nowhere to receive—is refused at save with the fields to
+repair.
 
 ## Verify
 
@@ -181,8 +424,8 @@ limacharlie mailsec connection test gws-prod --include-watch --oid $OID --output
 | `mail_modify` | ✅ | `gmail.modify` is not delegated — no analysis or remediation |
 | `mail_full` | — | `https://mail.google.com/` not delegated; banners and reporter replies are unavailable. Reported as `skipped`, and `ok` stays true |
 | `mailbox_read` | ✅ | Delegation is in place but the directory returned nothing, or the impersonated admin cannot list users |
-| `pubsub_pull` | ✅ (when push is configured) | The service account lacks `roles/pubsub.subscriber` on the subscription, or the subscription name is wrong |
-| `pubsub_watch` | ✅ (when push is configured) | Gmail cannot publish to the topic — usually the missing publisher binding, or a topic outside the service account's project |
+| `pubsub_pull` | ✅ | The service account lacks `roles/pubsub.subscriber` on the subscription, or the subscription name is wrong |
+| `pubsub_watch` | ✅ (with `--include-watch`) | Gmail cannot publish to the topic — usually the missing publisher binding, or a topic outside the service account's project. Without the flag it is reported as `skipped` and is not required, because it is the one probe with a side effect |
 
 `--include-watch` establishes a real Gmail watch and requires a real Pub/Sub pull
 before lifecycle can pass. It is idempotent and the watch expires on its own.
@@ -194,9 +437,10 @@ before lifecycle can pass. It is idempotent and the watch expires on its own.
   collector pulls your subscription with the same service-account credential and
   reads the change history from the last known point. Watches are renewed on a
   daily schedule — Gmail expires them within seven days.
-- **Poll mode** walks each mailbox's change history on an interval. It is a
-  small-tenant and failure fallback, not a scale plan: it spends quota in your
-  project continuously whether or not any mail arrived.
+- Push is the only supported Workspace delivery mode. If Pub/Sub delivery is
+  interrupted, coverage shows the connection degradation. Once delivery returns,
+  the collector resumes from the stored Gmail history watermark rather than
+  claiming a separate polling fallback.
 - Sent mail is ingested as `direction: outbound`, observation-only.
 
 !!! warning "Gmail cannot enumerate active watches"
@@ -210,18 +454,18 @@ before lifecycle can pass. It is idempotent and the watch expires on its own.
 
 | Action | What happens in Gmail |
 |---|---|
-| `quarantine_message` | `INBOX` removed, an `LC Quarantine` label added — restorable, and out of the user's inbox |
+| `quarantine_message` | `INBOX` removed, an `LC Quarantine` label added. Restorable, and out of the user's inbox. The label is created **visible** in the label list and in message lists, so the user can still see and open the quarantined message (unlike Microsoft 365, where the folder is hidden) |
 | `trash_message` | `TRASH` added. The product's own quarantine label is removed afterwards, so the message's placement reads as trashed rather than still quarantined |
 | `move_to_spam` | `SPAM` added, resolved through Gmail's own identifiers |
 | `restore_message` | The labels are inverted |
-| `banner_message` / `unbanner_message` | Gmail cannot edit a stored message, so the message is **replaced**: the banner-carrying copy is inserted before the original is deleted (so an interruption leaves a repairable duplicate rather than data loss), preserving thread, internal date and labels. **The provider message id changes**, and the new one is persisted. Requires `https://mail.google.com/`; without it the action is refused by name |
+| `banner_message` / `unbanner_message` | Gmail cannot edit a stored message, so the message is **replaced**: the banner-carrying copy is inserted before the original is deleted (so an interruption leaves a repairable duplicate rather than data loss), preserving thread, internal date and labels. **The provider message id changes**, and the new one is persisted. Requires `https://mail.google.com/`; without it the action is refused by name  Reapplying an existing banner leaves the message ID unchanged; removing an absent banner is also a no-op. Applying a banner refuses raw messages above **25 MiB**, malformed MIME, top-level base64/quoted-printable bodies, and unsupported content types. Multipart messages need an eligible unencoded text part; encoded parts are skipped, and no eligible part means refusal. A refusal is reported as a failed action. |
 
 ## Troubleshooting
 
 | Symptom | Cause | Fix |
 |---|---|---|
 | `credential` fails | Key JSON malformed, or `admin_email` missing from the secret | Re-store the secret with `admin_email` included |
-| `directory` fails | Delegation authorized against the service-account **email** instead of its **numeric client ID**, or a scope typo | Re-add the delegation with the numeric client ID and the exact scope strings |
+| `directory` or `mail_modify` fails with a request to add a scope | Required delegation missing, an incorrect client ID, a scope typo, or a change not yet applied | [Complete step 3](#3-authorize-the-service-account-in-the-workspace-admin-console) with both required scopes on the same client ID; verify the saved key and administrator if it still fails |
 | `mail_full` fails and banners are refused | `https://mail.google.com/` is not in the delegated scope list | Add it to the same delegation entry, or accept that banners and reporter replies are unavailable |
 | `pubsub_watch` fails | Missing publisher binding for `gmail-api-push@system.gserviceaccount.com`, or the topic is in a different project | Add the binding; move the topic into the service account's project |
 | `pubsub_pull` fails or times out | Missing `roles/pubsub.subscriber`, wrong subscription name, or the subscription is push rather than pull | Grant the role; recreate as a pull subscription |

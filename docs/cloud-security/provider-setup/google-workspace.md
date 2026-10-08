@@ -1,5 +1,13 @@
 # Google Workspace
 
+!!! tip "Connecting from the web app?"
+    Follow the prerequisites and credential creation instructions below, then
+    return to **Cloud Security → Settings → Providers → Add provider**. Enter
+    the provider IDs under **Configuration** and save the credential using
+    **New secret** under **Permissions**. Run **Test Provider**, fix required
+    failures, and save. The LimaCharlie CLI examples below are an alternative.
+    [First-time setup and verification](../getting-started.md) explains the full journey.
+
 Collects identity posture from Google Workspace — users, groups and
 membership, admin roles, user security posture, devices, inbound-SSO profiles,
 and Gemini-in-Workspace usage — via the Admin SDK and Cloud Identity APIs.
@@ -21,8 +29,43 @@ and Gemini-in-Workspace usage — via the Admin SDK and Cloud Identity APIs.
     - **Admin SDK API** (`admin.googleapis.com`)
     - **Cloud Identity API** (`cloudidentity.googleapis.com`) — needed for
       inbound-SSO and Cloud Identity device surfaces.
+    - **Gmail API** (`gmail.googleapis.com`) — needed for the mailbox
+      settings surface.
 3. A real **Workspace Super Admin** account to impersonate
    (e.g. `admin@example.com`) — DWD setup only.
+
+### Create the service account if you do not have one
+
+In Google Cloud, select the project that will own the credential. Open
+**IAM & Admin → Service Accounts → Create service account**, name it
+`lc-workspace`, and create it. Open its **Keys → Add key → Create new key → JSON**
+to download the key. No broad Google Cloud project role is needed for directory
+access; you authorize the Workspace scopes below. If key creation is blocked,
+ask your Google Cloud administrator to resolve it.
+
+### Enable the APIs
+
+=== "Web console"
+
+    1. In Google Cloud, select the project that owns the service account.
+    2. Open **APIs & Services → Library**. Enable **Admin SDK API**
+       (`admin.googleapis.com`), **Cloud Identity API** (`cloudidentity.googleapis.com`),
+       and **Gmail API** (`gmail.googleapis.com`), one at a time.
+    3. Confirm all three under **Enabled APIs & services**. Leave any that are
+       already enabled on.
+
+    See Google's [API enablement guide](https://docs.cloud.google.com/service-usage/docs/enable-disable).
+
+=== "Cloud Shell / CLI"
+
+    Open **Cloud Shell** in Google Cloud or use an authenticated `gcloud` CLI.
+    Replace the project ID with `project_id` from the service-account key:
+
+    ```bash
+    SA_PROJECT="your-service-account-project-id"
+    gcloud services enable admin.googleapis.com cloudidentity.googleapis.com \
+      gmail.googleapis.com --project="$SA_PROJECT"
+    ```
 
 ## OAuth scopes
 
@@ -41,11 +84,12 @@ surface, and leaving it out degrades only that surface.
 | ChromeOS devices | — | `https://www.googleapis.com/auth/admin.directory.device.chromeos.readonly` |
 | Cloud Identity devices | — | `https://www.googleapis.com/auth/cloud-identity.devices.readonly` |
 | Gemini-in-Workspace usage | — | `https://www.googleapis.com/auth/admin.reports.audit.readonly` |
+| Gmail mailbox settings (forwarding, filters, delegates) | — | `https://www.googleapis.com/auth/gmail.settings.basic` |
 
 Copy-paste block for the DWD scopes field (one comma-separated line):
 
 ```text
-https://www.googleapis.com/auth/admin.directory.user.readonly,https://www.googleapis.com/auth/admin.directory.group.readonly,https://www.googleapis.com/auth/admin.directory.group.member.readonly,https://www.googleapis.com/auth/admin.directory.user.security,https://www.googleapis.com/auth/admin.directory.rolemanagement.readonly,https://www.googleapis.com/auth/cloud-identity.inboundsso.readonly,https://www.googleapis.com/auth/admin.directory.device.mobile.readonly,https://www.googleapis.com/auth/admin.directory.device.chromeos.readonly,https://www.googleapis.com/auth/cloud-identity.devices.readonly,https://www.googleapis.com/auth/admin.reports.audit.readonly
+https://www.googleapis.com/auth/admin.directory.user.readonly,https://www.googleapis.com/auth/admin.directory.group.readonly,https://www.googleapis.com/auth/admin.directory.group.member.readonly,https://www.googleapis.com/auth/admin.directory.user.security,https://www.googleapis.com/auth/admin.directory.rolemanagement.readonly,https://www.googleapis.com/auth/cloud-identity.inboundsso.readonly,https://www.googleapis.com/auth/admin.directory.device.mobile.readonly,https://www.googleapis.com/auth/admin.directory.device.chromeos.readonly,https://www.googleapis.com/auth/cloud-identity.devices.readonly,https://www.googleapis.com/auth/admin.reports.audit.readonly,https://www.googleapis.com/auth/gmail.settings.basic
 ```
 
 !!! info "What the Gemini scope collects"
@@ -54,6 +98,14 @@ https://www.googleapis.com/auth/admin.directory.user.readonly,https://www.google
     edges — only the set of users seen in the trailing window, never any
     prompt or response content. Skipping it costs only that surface: it degrades
     to unobserved and previously collected rows are kept, never deleted.
+
+!!! info "What the Gmail settings scope collects"
+    `gmail.settings.basic` reads each mailbox's auto-forwarding setting,
+    forwarding filters and delegates, to flag mail forwarded outside your
+    domains and suspicious delegation. It never reads message content. The
+    collector impersonates each mailbox owner to read their settings, so this
+    surface requires domain-wide delegation and is unavailable in the
+    no-delegation setup.
 
 ## Register domain-wide delegation
 
@@ -148,18 +200,33 @@ service-account key:
     pointing the Workspace record at it lands in exactly this case. Give
     Workspace its own secret.
 
-Store it:
+=== "Web console"
 
-```bash
-limacharlie secret set --key gw-credentials \
-    --value "$(cat gw-secret.json)" --enabled
-```
+    In LimaCharlie, open **Organization Settings → Secrets Manager → Add**, name
+    the secret `gw-credentials`, and paste the wrapper JSON described above. Place
+    the **whole downloaded key object** under `service_account_json` and your
+    Workspace Super Admin's address under `admin_email`. Save it enabled.
 
-`secret set` wraps the value into the secret record's `{"secret": "..."}`
-envelope for you.
+    Use a local text editor to assemble the JSON if needed. Keep the key's escaped
+    line breaks unchanged. No terminal command is required to create this wrapper.
 
-Or in the web app: **Organization Settings → Secrets Manager → Add**, name it
-`gw-credentials`, and paste the JSON.
+=== "LimaCharlie CLI"
+
+    Save the wrapper JSON above as `gw-secret.json`, then run:
+
+    ```bash
+    jq -Rs '{secret: .}' gw-secret.json \
+      | limacharlie secret set --key gw-credentials --enabled \
+      && rm -f gw-secret.json
+    ```
+
+    `jq -Rs` supplies the outer secret-record envelope for stdin.
+
+!!! warning "Email Security uses a different credential shape"
+    [Email Security](../../email-security/provider-setup/google-workspace.md#store-the-credential)
+    expects the flat service-account key with `admin_email` at the top level.
+    For delegated Cloud Security collection, use the `service_account_json`
+    wrapper above instead; do not copy the Email Security credential shape.
 
 ### Alternative: no delegation
 
@@ -176,8 +243,9 @@ service-account key JSON** is accepted as the secret on its own — the file GCP
 hands you, stored verbatim with no wrapper and no `admin_email`:
 
 ```bash
-limacharlie secret set --key gw-credentials \
-    --value "$(cat sa-key.json)" --enabled
+jq -Rs '{secret: .}' sa-key.json \
+  | limacharlie secret set --key gw-credentials --enabled \
+  && rm -f sa-key.json
 ```
 
 In this form the service account calls the Admin SDK as itself instead of
@@ -241,6 +309,7 @@ limacharlie cloudsec provider test --input-file provider.yaml
 | `devices_chromeos` | — | ChromeOS device inventory unavailable. |
 | `devices_ci` | — | Cloud Identity device inventory unavailable. |
 | `reports` | — | Gemini-in-Workspace usage unavailable (no AI-application rows or per-user access edges). |
+| `gmail` | — | Mailbox forwarding and delegation posture unavailable. Probed by reading the `admin_email` user's own Gmail settings. |
 
 !!! warning "An ungranted optional scope still shows the connection as Failed"
     The optional surfaces above degrade safely — the surface goes unobserved,
@@ -267,8 +336,10 @@ limacharlie cloudsec provider test --input-file provider.yaml
 | Users or groups from a secondary domain are missing | `domain` is set in the secret, narrowing collection to that one domain | Remove `domain` from the secret; declare internal domains with `internal_domains` on the record |
 | `token mint failed (HTTP 401): scope not granted to the delegated admin` | DWD missing scopes (all-or-nothing mint), a non-`.readonly` variant, or not yet propagated | Register the **full** scope list exactly; wait for propagation; confirm the service account's client ID matches |
 | `core` fails: `HTTP 403: Not Authorized to access this resource/api` | A token **was** minted (so the scopes are registered) but the caller has no Workspace admin authority. Almost always the secret is a **raw service-account key with no `admin_email`** — typically the GCP provider's secret reused verbatim, or the wrapper flattened — so nothing is impersonated and the delegation you configured is never used. It is silently accepted as the no-delegation form. Otherwise, `admin_email` names a user who is not a Super Admin | Give Workspace its **own** secret in the wrapper envelope with `admin_email`; leave the GCP provider's secret untouched. Reusing the same *service account* is fine — reusing the same *secret* is not. Confirm the form with the `jq 'keys'` check [above](#create-the-credentials-secret) |
-| `HTTP 403: … API has not been used in project …` | Admin SDK / Cloud Identity API not enabled | Enable the named API in the service account's project |
+| `HTTP 403: … API has not been used in project …` | Admin SDK / Cloud Identity / Gmail API not enabled | Enable the named API in the service account's project |
 | `reports` fails: `HTTP 401: Access denied. You are not authorized to read activity records.` | The token minted (so the DWD registration itself is fine) but the impersonated admin cannot read the Reports audit stream — either `admin.reports.audit.readonly` is missing from the DWD scope list, or `admin_email` names an admin without the *Reports* privilege | Add the scope to the delegation and impersonate a Super Admin. Optional surface: leaving it as-is drops only Gemini-in-Workspace usage — but it does leave the connection's **Last Sync** badge on Failed, per the note above |
+| `gmail` fails: `token mint failed (HTTP 401): scope not granted to the delegated admin — mailbox forwarding and delegation posture unavailable` | `gmail.settings.basic` is missing from the DWD scope list. Every other check can pass without it, but each sync then reports `Gmail settings permission denied` as partial coverage | Add `https://www.googleapis.com/auth/gmail.settings.basic` to the delegation and enable the Gmail API. Optional surface, but leaving it out keeps the **Last Sync** badge on Failed |
+| `gmail` fails: `Gmail settings need domain-wide delegation (set admin_email)` | The secret has no `admin_email`, so nothing can impersonate mailbox owners | Use the delegation setup, or accept that mailbox settings stay unobserved |
 
 !!! tip "A changed error means you fixed something"
     These failures **mask each other**, and the **Last Sync** badge says only

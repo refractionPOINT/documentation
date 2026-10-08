@@ -1,6 +1,6 @@
 # Campaigns
 
---8<-- "includes/email-security-beta.md"
+--8<-- "includes/email-security-availability.md"
 
 An attack that reached forty mailboxes is one thing that happened, not forty. A
 campaign is the cluster of messages the engine attributed to one attack, so it is
@@ -48,6 +48,38 @@ two-member minimum, never below it.
 message index it draws on lives for 35, so the count is the historical spread of
 the attack rather than a count of messages still in the index. A campaign whose
 members have aged out still tells you how big the attack was.
+
+## Messages that join after the fact
+
+Clustering runs while a message is being ingested. Two copies of one attack that
+arrive in the same instant therefore each look for a campaign-mate before the
+other has been written down, find nothing, and are both stored attributed to
+nothing — and a campaign that forms around a third copy later would leave one of
+them out.
+
+A **retro-join pass** closes that, and what it looks at is narrow on purpose.
+
+A campaign is created from exactly one earlier message — the seed. When a message
+forms or joins a campaign, any *other* ungrouped message it agreed with is one the
+engine has just proved belongs with that campaign and passed over. Those, and only
+those, are queued to be asked again.
+
+| | |
+|---|---|
+| **What is queued** | A message another message agreed with, on at least two cluster keys, and did not take into the campaign it made. Not "anything that could conceivably cluster" — most mail satisfies the two-key rule and is in no campaign, and queueing all of it would leave the messages that matter waiting behind it |
+| **How long it stays queued** | 24 hours from delivery. Past that it is dropped: mail arriving later still finds it through the ordinary lookup, since it remains a candidate |
+| **How often it is asked** | At most once every ten minutes, and only while it is still ungrouped and inside that window |
+| **What you see** | The message's `campaign_id` and `cluster_reason` fill in, and a campaign-wide sweep from that point reaches it — the sweep and the member list read the members directly, so neither ever misses a late joiner. `member_count` catches up within about a minute, because it is folded on its own schedule rather than written by the join. An [`EMAIL_VERDICT` with `campaign_joined_late: true`](automation.md#a-message-that-joins-a-campaign-late) is emitted so a rule can respond to the change |
+
+Nothing is queued for an organization whose mail is not clustering, and a message
+that agreed with nothing is never re-asked — there is no answer waiting to change.
+
+!!! note "It applies from the day it is enabled"
+    Messages that were already ungrouped before this existed are not revisited:
+    the queue is built by the passes that leave a message out, so it starts empty.
+    In practice the next message of a live attack re-derives the same set, so an
+    ongoing campaign repairs itself; a campaign that finished before the feature
+    was on stays as it was recorded.
 
 ## Body similarity
 
@@ -343,6 +375,15 @@ produce two audit rows claiming two quarantines, and the provider re-checks each
 message's placement, so a member that is already where the action wanted it comes
 back `skipped`. This is the supported repair for a sweep that partly failed —
 re-run the same action and the members that failed are attempted again.
+
+The same repair covers a sweep that was **interrupted**. A collector that begins
+shutting down during a sweep (a deploy, a rebalance) stops between two members —
+the member in flight is always finished and recorded — and answers a retryable
+error naming how far it got (`N of M members were actioned`) and the sweep's
+`action_id`; the same happens when the caller's own request ends first. The
+sweep's audit row then reads `pending` rather than `ok`, so a partial
+campaign-wide action can never look complete. Re-run the same confirmation:
+members already actioned come back `skipped`, the rest are attempted.
 
 When you want the retry **recorded separately** — a re-run after a provider
 outage, where the record of what failed matters as much as the record of the

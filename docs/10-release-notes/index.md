@@ -18,6 +18,272 @@ Release notes for LimaCharlie platform components, organized by date.
 
     For discussion and email notification of the same releases, set the [Platform Updates category](https://community.limacharlie.com/c/platform-updates/5) in the community forum to Watching. For service availability rather than releases, subscribe on the [status page](https://status.limacharlie.io/).
 
+## 2026-10-06
+
+### Endpoint Agent: Changes from 4.33.25 to 5.3.12
+
+A roll-up of everything that changed in the Endpoint Agent between 4.33.25 and 5.3.12, for fleets upgrading from the 4.33 line in one step. Each release in between has its own entry further down this page.
+
+#### New Features
+
+- New [response commands](../8-reference/endpoint-commands.md): `reg_get`, `usb_list_devices`, `dir_find`, `file_grep`, `container_list`, `repo_list`, `restart_core` and `repair_core_config`.
+- `reg_list` can recurse into sub-keys; `os_drivers` now works on Linux; artifact retrieval can collect several files in one task.
+- Installed-package listing now covers Linux and macOS packages and Windows hotfixes; autoruns now expand wildcard paths.
+- The sensor service can be upgraded or uninstalled through cloud tasking, and upgrades can be pinned to a version.
+- Shell commands can run as a specific user.
+- TLS 1.3 for the cloud connection, with automatic fallback to TLS 1.2.
+- USB Data Loss Prevention, managed from the cloud.
+- YARA scanning built in, with match addresses for memory detections and the `macho` module.
+- Windows script visibility through the Antimalware Scan Interface (AMSI), reported already deobfuscated.
+- Linux process events identify their container and Kubernetes pod.
+- Cloud VMs on AWS, Azure and Google Cloud report their native instance identity; GKE nodes report their cluster.
+- Linux detection of setuid privilege changes and of AF_ALG, RxRPC and NETLINK socket creation.
+- Linux DNS events report the process that sent the query or received the response (kernel 5.15+).
+- Local applications can send events to the sensor through a Unix socket API.
+- macOS installation is now one guided window instead of seven separate prompts.
+- RPM packages for Linux.
+- The Windows service now installs under `C:\Program Files\limacharlie\`; existing installs are migrated on upgrade.
+- Full crash reports (stack trace, modules, fault detail) on Windows, macOS and Linux.
+
+#### Bug Fixes
+
+- Fixed a large set of sensor crashes, including the sensor terminating itself on transient OS resource failures, crashes at shutdown on CentOS/RHEL 7, and a race in the random number generator.
+- Linux and macOS now shut down cleanly when stopped, so service stops, restarts and reboots no longer show up as crashes.
+- Cloud-driven upgrades and uninstalls now complete reliably on Linux and macOS.
+- Linux kernel acquisition now loads on kernel 5.4, on RHEL/Oracle Linux 9, and on hosts without cgroup2, and recovers after the service is force-killed.
+- Fixed process events being linked to the wrong parent on hosts that reuse process IDs quickly.
+- Windows: fixed multi-second delays opening files on network shares.
+- Windows kernel acquisition: fixed network events being lost in bursts and events arriving out of order.
+- Fixed connections staying on a dead link for hours after a network disruption, and hangs behind unresponsive proxies.
+- Payload downloads and artifact uploads now work through enterprise TLS inspection, filtering proxies and redirects, and large uploads resume after interruptions.
+- Fixed macOS file-creation events reporting the parent directory instead of the file.
+- The sensor's log file is no longer world-readable or world-writable.
+- Events dropped by a full outbound queue are now counted and reported instead of being discarded silently.
+- Hardened DNS collection against malformed packets.
+
+#### Improvements
+
+- Windows: significantly lower CPU and memory usage, from caching file hashes and code-signature checks and reusing buffers on busy code paths.
+- Smaller downloads: the Linux and macOS binaries are 30–45% smaller, and cloud-delivered modules are cached on disk across restarts.
+- The Linux sensor now requires glibc 2.12 instead of 2.17.
+- Transfer and command failures now report readable error descriptions instead of bare codes.
+- Sensor diagnostics now report kernel telemetry health, event loss and service version.
+- Windows Event Log collection resumes where it left off after a restart.
+- Updated embedded libraries, including TLS (mbedtls 4.1.1).
+
+---
+
+## 2026-10-05
+
+### Web App 6.5.0
+
+Email Security is now generally available. This release also adds a new Application Control page, clearer compliance reports, Cloud Security setup and page improvements, a System theme option, and faster loading.
+
+#### New Features
+
+- (Email Security) **Email Security is generally available**: protect Microsoft 365 and Google Workspace mailboxes through the provider API, with no MX or mail routing change. Every message gets an explainable verdict, and you can search, investigate, and remediate it from the console. A guided setup takes you from connecting a provider to your first results. Messages, recipient groups, campaigns, and user reports each have their own triage view, with bulk remediation and Hunt for searching past mail. Detection rules, policies, and warning banners are managed in Settings. Subscribe to the Email Security extension to enable it. See [Email Security](../email-security/index.md).
+- (Cloud Security) **Clearer pages and setup**: Identity Risks rows link to Identity 360 and to that identity's findings, and Access loads much faster. The Policies page states the real collection schedule. GCP setup lists the optional roles for CIS GCP v5.0 and the APIs to enable. The Google Workspace permissions list shows every scope. Microsoft 365 onboarding can generate a certificate for full coverage.
+- (Compliance) **Why a control is incomplete**: reports keep all four result statuses, and Manual is used only for organizational attestations. Controls explain why they are incomplete, such as collection still running, stale data, or missing inventory. You can filter by reason, and the export includes the same explanations.
+- (Application Control) **Application Control page**: manage policies and rules in one place. Create, edit, duplicate, enable, disable, and delete policies, and search and filter rules. Policies are listed in the order a sensor applies them, and a policy fully covered by an earlier one is marked Unreachable. New `app_control.get` and `app_control.set` permissions, and Git Sync support for Application Control. Requires the Application Control extension.
+- (Platform) **System theme**: the appearance setting now offers Light, Dark, or System, which follows your operating system.
+- (Platform) **Faster loading**: the console starts faster, organizations load sooner, and the Sensors list loads faster for large fleets. Sensor filters show a loading indicator while a query runs.
+- (Platform) **Navigation**: Give Feedback is in the Cloud Security sidebar. Users & Roles, REST API, and Access Control Lists are now tabs under one Access Management link. Extension pages share one layout and filter bar.
+- (Playbooks) **Python SDK version**: choose the Python SDK version (v4 or v5) for a playbook.
+
+#### Bug Fixes
+
+- (Platform) The API key permission picker now offers all assignable permissions.
+- (Detection) Importing a community rule keeps the rule name and enables Create.
+- (Billing) CSV exports write negative amounts as numbers, and unit prices no longer show as $0.
+
+---
+
+## 2026-09-30
+
+### Endpoint Agent 5.3.12
+
+#### New Features
+
+- Cloud virtual machines on AWS, Azure and Google Cloud now report their native cloud instance identity when the sensor connects, so a host can be matched to its cloud inventory.
+- Sensors on Google Kubernetes Engine nodes now also report the cluster they run in, so a sensor can be tied to its Kubernetes node.
+- Sensors running inside a Kubernetes pod can report the pod and container they belong to.
+
+#### Bug Fixes
+
+- Fixed a Windows sensor crash when a cloud message arrived while the Host Based Sensor was still starting, most often seen during an organization-wide version upgrade.
+- Linux kernel acquisition: hosts where it cannot load no longer reload the component every 20 minutes, which after several days crashed the sensor on older distributions such as CentOS 7.
+- Fixed a sensor crash when caching a document larger than the cache's size limit.
+- Fixed a crash when logging some event field types on Linux and macOS.
+- Network requests (uploads, downloads, cloud lookups) now honor their timeout even when the remote end sends data very slowly, so they can no longer hang indefinitely.
+- macOS: kernel acquisition now starts on a fresh install even when nobody is logged in, instead of staying off until a user logs in.
+- macOS: if Full Disk Access is still needed after an install at the login window, the prompt now appears once a user logs in.
+- macOS: the system extension no longer grows its memory use with every network flow seen.
+- macOS: fixed a resource leak each time the sensor read another process's memory.
+- macOS: fixed a reference-counting bug when matching disks to USB devices.
+- Fixed gradual memory growth in file type tracking on long-running macOS and Linux hosts.
+
+---
+
+## 2026-09-21
+
+### Endpoint Agent 5.3.11
+
+#### Bug Fixes
+
+- On Red Hat Enterprise Linux 9 and Oracle Linux 9 hosts running the stock Red Hat kernel, fixed kernel acquisition failing to start at all, leaving the host with no process, file, socket, network or DNS telemetry from the kernel.
+- Fixed the sensor diagnostic report returning an empty agent log section on healthy hosts, because it looked for the log in the location used before the sensor moved to its data directory. The report now also lists every location it searched when no log is found.
+
+#### Improvements
+
+- Linux kernel acquisition no longer floods the sensor log. Its DNS attribution status line was written on nearly every poll and accounted for the large majority of everything the sensor logged on a busy host; it is now reported when the status actually changes, and at most every five minutes otherwise.
+- When the sensor cannot keep up with kernel events and discards some, it now reports how many were lost in a single periodic summary instead of one log line per discarded record — more information, at a fraction of the log volume, and quietest exactly when the host is under load.
+
+---
+
+## 2026-09-16
+
+### Endpoint Agent 5.3.10
+
+#### New Features
+
+- New `restart_core` command restarts the sensor on demand on Linux and macOS. The sensor shuts down exactly as it would for an administrative stop and its service manager starts it again; the command is refused on hosts where nothing would bring the sensor back.
+- New `repair_core_config` command checks an installed sensor's service configuration against what the installer should have written and repairs any drift, with a dry-run mode that reports without changing anything. It currently covers the Windows service recovery setting that lets the service manager restart a sensor that failed to start.
+
+#### Bug Fixes
+
+- Fixed the sensor deliberately terminating itself when the operating system refused a thread or another resource, rather than reporting the failure and carrying on. This accounted for a significant share of sensor crashes in the field.
+- On Windows, fixed the sensor terminating itself while reading the environment of a process whose environment block had grown large.
+- On Windows, fixed a crash when a USB key listing was requested on a host with removable USB storage attached.
+- On Linux, fixed the sensor permanently losing kernel acquisition after the service was force-killed. A process the sensor had started could keep the acquisition listener's address held across every later restart, leaving the sensor connected and reporting healthy while collecting no kernel telemetry.
+- The CPU usage the sensor reports now reflects its load across the reporting interval. A momentary burst was previously reported as sustained load, and a reading the sensor could not measure was reported as 255%.
+- On Windows, fixed event log collection writing its bookmarks into the sensor's upgrade log instead of its own file. Bookmarks are re-established once on upgrade to this release.
+- On Linux, kernel acquisition load failures now report why the load actually failed instead of an unrelated error code.
+
+#### Improvements
+
+- Cloud-delivered modules are now kept on disk and reused across restarts, so the sensor no longer re-downloads several megabytes every time a host boots. The cloud still decides what the sensor loads, and every module is verified before it runs exactly as it was when delivered over the network.
+- The macOS sensor download is substantially smaller — roughly 38% for the service binary and 35% for the Host Based Sensor module — and the Linux kernel acquisition module is smaller again on top of the previous release's reduction.
+- Linux `.deb` and `.rpm` packages now register the service through the sensor itself, so an upgrade restores the service definition when it has gone missing. Previously only Debian-family systemd hosts recovered from that, and RPM hosts never did.
+
+### Web App 6.4.0
+
+A personal LimaCharlie Bots workspace, a Code Security overview backed by real scan coverage, and GitLab and Bitbucket source-control connections.
+
+#### New Features
+
+- (Bots) **LimaCharlie Bots workspace**: a personal workspace at `/sessions/workspace` where you switch between named bots, build groups, and watch them hand work to one another. It carries a persistent roster, direct and group conversations, `@mentions`, saved drafts and read state, published files, questions and approvals, pause and stop, and explicit review and continuation. Each bot shows live progress: elapsed time, the tool it is running, what it is waiting on, and what is queued behind it. Handoffs between bots play as a compact bubble row above the composer, so an exchange is readable rather than gone before you see it. For users in the rollout, the AI Terminal button opens the workspace; the legacy terminal is one click away.
+- (Bots) **Start a fresh chat and browse history**: a New chat action gives a bot a clean runtime while keeping its configuration, saved memory, routines, and readable history. Past chats open read-only, with artifact downloads still available. Drafts and scroll positions stay separate per chat. Group conversations get the same New chat button, history picker, and read-only history view.
+- (Bots) **Bot memories**: a Memories browser in conversation details lists a bot's saved notes with names and timestamps. You can read, edit, and delete them. In a group you pick whose bank to open. Changes apply to new sessions and never touch chat history.
+- (Bots) **Routines**: scheduled routines move out of conversation details into their own destination at `/sessions/workspace/routines`, linked from the roster, the conversation header, and the quick switcher. Search every routine, filter by upcoming, paused, or needs attention, manage schedules, and inspect run history. A "Make this recurring" action on a bot's result builds the routine from the original request instead of asking you to retype it.
+- (Bots) **Bot avatars**: the free-text avatar field becomes a searchable gallery of 24 illustrations with live preview and a deterministic default. Existing initials, emoji, and icon names still render.
+- (Bots) **Auto-approve is on by default**: every eligible bot in a chat starts with auto-approve on. Per-bot opt-outs are kept, persist across a reload, and survive a change of group membership.
+- (Bots) **A starter team that knows the platform**: the generic Lead, Hunter, Response, and Reviewer roster is replaced by six LimaCharlie specialists — Sensor Fleet Operator, D&R Rulesmith, LCQL Hunter, CloudSec Cartographer, MailSec Investigator, and Automation Fabric Engineer. Each has focused operating instructions that route through the LimaCharlie AI skills.
+- (Cloud Security) **Code Security overview**: Code Security opened on a repository table, which hid most of what it does. A new default Overview tab leads with a prioritized fix queue — one dependency upgrade, and how many findings and repositories it clears — plus scanner coverage across active repositories, the capabilities your connected GitHub Apps actually hold, and a code to image to running-workload evidence strip. Repository, image, and registry inventories keep their tabs.
+- (Cloud Security) **Code Security's controls follow detected App permissions**: the UI used to infer what it could do from connection settings, and told orgs whose App already held the permission to go install a second one. It now reads the App's real capabilities. Available shows no notice, unavailable names the missing permissions and links to the install page, and unknown says the check could not be made and will be retried. Where an org has several connections, the ones that cannot publish are named. Capabilities are asked per repository, so a repository outside an App's selection is no longer told a check is available. Every answer states how fresh it is.
+- (Cloud Security) **GitLab and Bitbucket Cloud connections**: both can now be added and edited from the Cloud Security provider wizard like every other provider, with inline validation that matches the backend, the exact token scopes named on the permissions step, repository badges, and "Open on provider" links.
+- (Cloud Security) **Pull-request checks from the Code page**: Code Security can scan what a pull request introduces and publish the result as a check run a team can make required, but nothing reacted to a `pull_request` delivery, so that check never fired. Three webhook rules now cover it — rescan a repository after a push, check a pull request, and re-check one whose base branch moved. That last case GitHub reports without any push, so the check kept the conclusion it had and left a green gate on a diff nobody scanned. The Code page installs and removes the rules, with a badge per rule; previously they had to be written by hand with `limacharlie hive set`.
+- (Sensors) **Event Collection reads its event types from the extension**: the Event Types picker was built from a bundled list that had fallen behind and was missing 40 real events, so a recently added event could not be selected at all. It now reads the list from the Exfil extension, so new events appear as the platform adds them. A rule naming an event the extension no longer reports keeps that value instead of being written back truncated.
+- (Platform Logs) **Audit log detail panel**: selecting a log used to squeeze the table into a narrow split. The detail now opens as a drawer over the table, with the event type and time in its header, the payload below, and Escape to dismiss.
+- (Extensions) **Varist scan paths**: an "Online only" checkbox on the sensor picker. An offline sensor is dropped rather than queued, so listing every sensor in the org was inviting a scan that would never run.
+- (Outputs) **Elastic output**: the `is_compress_request` parameter is described, so the gzip toggle renders as an optional checkbox.
+- (Platform) **Startup animation**: app startup shows one of three security animations — radar, shield, or secure stream — in place of a generic spinner. It follows the theme and respects reduced motion.
+
+#### Bug Fixes
+
+- (Cloud Security) Static analysis runs unless you turn it off, but the policy form only ever wrote engines that were on, so unticking it produced a record identical to one that never mentioned it and the engine kept running. The denial is now written, and the policy form, the Code setup checklist, and the repository drawer stop reporting the engine off on every record written before it was named.
+- (Cloud Security) A failed connection preflight blocks the save instead of decorating it. A required check that a source-control token is missing a scope is where an unusable connection is turned away, and "saved anyway" meant the refusal surfaced hours later in a scan status. Sync now in the edit flow is blocked on the same condition. An optional failure still saves, and a provider type with no tester is never blocked.
+- (Cloud Security) The push-rescan recipe keyed on routing and hostname alone, which any adapter in the org could reuse. It now requires a signature-verified webhook delivery.
+- (Cloud Security) Code Security's SBOM download accepts only https URLs, so a backend-supplied link can no longer carry another scheme into an anchor.
+- (Cloud Security) Scan Diagnostics showed the last pass's targets, which drop to zero whenever no repository is due. An org with hundreds of scanned repositories read as empty. It now shows standing tracked-repository coverage, with last-pass activity as its own labelled section.
+- (Cloud Security) The Code Actions setup step linked a file in a private repository. It now links the public setup guide.
+- (Bots) Routines render and edit correctly when the API omits zero clock fields, and a timezone alias such as the default `Etc/UTC` validates.
+- (Bots) A failed turn can start a new chat. New chat was disabled on a failed conversation with a tooltip asking you to finish work that had already released its runtime, and a provider-level failure such as a usage limit reproduced on every retry, so the conversation could never leave that state. A refused new chat now says why instead of showing the word "conflict".
+- (Bots) Avatars are visually distinct and color selection is its own control, a stale prompt closes when its task stops, the message composer grows to fit a multiline draft, chat follows new messages while you are at the bottom, and duplicate approvals, answers, and sends are prevented.
+- (Platform) The app no longer stays on an older deployment. "Update now" requested service-worker activation and reloaded immediately, which could interrupt the handoff and serve the old cache. The reload now waits for the new worker to take control, and unversioned files and SPA routes revalidate instead of sitting in the browser cache.
+- (Add-ons) Logged-out visitors opening an Add-ons marketplace page saw a blank screen. The public route now renders inside a layout, so the page has height and the marketplace sidebar appears.
+- (Extensions) Varist scan results showed a blank Status badge, and picking any Risk Level emptied the list, because the scan result often omits the rating flag. The flag is derived from the numeric rating when it is absent, and the Status column sorts on that value.
+- (Platform) Light-mode warning colors are darkened for readable contrast, including investigation lane indicators and event markers.
+- (Organizations) The Organizations list no longer shows a second spinner from the New Organization dialog while it loads plans and templates.
+
+---
+
+## 2026-09-08
+
+### Endpoint Agent 5.3.9
+
+#### New Features
+
+- New `dir_find` command walks a directory tree and reports file metadata and hashes, with include and exclude patterns, size and age filters, and caps on how many files and bytes a single run may touch.
+- New `file_grep` command searches file contents for literal patterns, with optional case-insensitivity, a per-file match limit, surrounding context bytes, and an option to include binary files.
+- New `container_list` command inventories containers and images on a Linux host — runtime, image reference and digest, creation time, state and main process id — covering Docker and Podman, with containers under containerd and CRI-O identified from their process cgroups.
+- Artifact retrieval can now collect several files in one task: files are selected by pattern under a root directory, each paired with a caller-supplied payload id, and bounded by limits on file count and total bytes.
+- New `repo_list` command reports the git checkouts on a host along with their identity — worktree path, remotes and their URLs, the current branch and the commit it resolves to, whether HEAD is detached, the last fetch time, and optionally the declared submodules — so a repository can be tied to the hosts that have it cloned without a follow-up file read per candidate.
+
+#### Bug Fixes
+
+- On Linux, fixed an upgrade leaving the sensor stopped. Stopping the service also terminated the upgrade process running inside it, so the new binary was installed but never started, and no restart policy brought it back.
+- On Linux, fixed a cloud-driven uninstall being terminated by the service stop it had just issued, which left the service definition, the sensor's data directory and the staged uninstaller behind.
+- On Linux and macOS, the sensor now shuts down cleanly when stopped. Termination signals were not handled, so every service stop, restart, reboot and upgrade was reported to the cloud as a crash — nearly the entire crash volume from those platforms. A stop now waits for the sensor's own teardown (measured at about 4 seconds with all modules loaded) rather than being immediate.
+- On Windows, fixed the sensor terminating itself when Windows briefly refused to return a process listing, which happens transiently while the process list is changing under it.
+- On CentOS and RHEL 7 (and other hosts with glibc 2.17), fixed a crash during a clean shutdown.
+- Fixed crash reports being lost on hosts that could not reach the cloud on their first connection attempt, real crashes then being reported as clean exits, and the sensor occasionally reporting a crash context it had manufactured itself.
+- The sensor's log file is now created readable only by its owner. It was world-readable, and it can contain DNS queries, file paths and command lines. A host that has already been logging keeps its existing file's permissions until that file is removed.
+- Hardened DNS collection against two out-of-bounds reads reachable from a crafted DNS packet the host merely observes: a datagram too short to hold a DNS header, and a compression pointer in the final byte of a packet.
+
+#### Improvements
+
+- macOS and Linux crashes now produce a full crash report — stack trace, loaded modules and fault detail — where previously they left only a marker saying the last run had not exited cleanly. Debug information is published per release, so a report from either platform can be resolved to source without a follow-up on the affected host.
+- 32-bit Windows crash reports now carry a complete stack trace instead of the two or three frames the optimized build allowed.
+- The Linux sensor download is substantially smaller — roughly 45% for the service binary and 30% for the Host Based Sensor module — because debug information is now published separately instead of being shipped to endpoints. Every upgrade transfers less.
+- The sample macOS MDM profile now marks the sensor's background service and system extension as managed, so they can no longer be switched off or removed by a user from System Settings.
+- Releases now include the Varist file scanning engine, so it can be turned on by configuration instead of requiring a custom build.
+
+### Web App 6.3.0
+
+A full testing workspace for D&R and False Positive rules, endpoint agents as a vulnerability source in Cloud Security, and a Query Console that holds far less memory.
+
+#### New Features
+
+- **Rule testing workspace for D&R rules**: the rule page's stored tests and its replay panel are now one surface. A fullscreen workspace replays every stored case against the rule as currently edited and reports pass or fail per case, with a summary in the section header. A replayed event can be saved onto the matching test side in one click, so an ad-hoc probe becomes a stored case. A second workspace runs the rule over stored telemetry as a historical scan and renders each hit as a row, with a "Keep as non-match test" button that stores the hit's matched payload on the suite. Each suite row also gets a play button beside Run all, so one case can be re-run without disturbing the other verdicts.
+- **Rule logic tree**: the detect block renders as its boolean tree with the replay evaluation drawn on it. Green nodes evaluated true, red nodes false, and dashed nodes were short-circuited. Clicking an operation shows what it read, what it expected, and what it saw in the event. Multi-event runs get a per-event switcher, a failed run pre-selects the operation that killed the match, and stateful rules render their `with child` and `with descendant` subtrees. Anything the view cannot reconstruct from the trace falls back to the raw lines rather than guessing.
+- **Test coverage on the rules list**: a sortable Tests column shows each rule's case count, and a coverage readout beside the filter controls reports over the rows on screen. Narrowing to Custom rules answers how much of what your own team wrote is tested, instead of being dragged down by managed and service rules.
+- **A rule now tells you how much it matches**: saving an enabled rule replays the last hour of stored telemetry in the background and reports how often the rule matched. A count at flood level (100 an hour or more) comes back as a warning. A rule that is too broad announces itself seconds after the save instead of hours later in Detections. False Positive rules report suppressions and never warn, because a busy suppressor is a working one. Metadata-only saves skip the check, and a failed check stays silent rather than blocking the save.
+- **The save gate matches the server**: saving a rule with failing tests always failed at the API, but the dialog offered "Save anyway". It now blocks the save and routes into the rule testing workspace. A `report`, `add var` or `del var` action with no `name` is also caught inline in the editor rather than as an opaque API error.
+- **Edit rules in YAML or JSON, with import and export**: the D&R editor gains a YAML/JSON toggle over the detect and respond editors, file export of the stored shape (detect, respond, tests) as `.yaml` or `.json`, drag-and-drop import validated before it reaches the editors, and smart paste on the detect editor. The editor sniffs each rule's format on open and warns before a conversion would drop YAML comments. False Positive rules get the same toolbar.
+- **False Positive rules get the full testing experience**: the testing workspace and the rule logic tree are now on the False Positive rule page as well.
+- **Promote a Query Console query to a D&R rule**: an LCQL query converts to a detect block with no AI involved. Sensor selectors, event types and the filter expression tree all map across. Time ranges and projections are dropped with an explicit note. Anything that would make the rule broader than the query, such as an unsupported operator or an incomplete query, stops the conversion instead.
+- **Test a detection against its rule**: a new action in the detection viewer opens the originating D&R rule's testing workspace with the triggering event preloaded. It appears when the detection carries a real sensor event and the viewer holds the replay permission.
+- **Endpoint agents are a vulnerability source in Cloud Security**: a new Policies tab turns the endpoint-agent vulnerability lane on, so CVEs a LimaCharlie agent reports become Cloud Security findings. The Coverage tab reports the lane beside cloud compute coverage, a host with no cloud provider behind it renders as a first-class resource with its own findings and pivots, and a finding's kill chain badges the hops a LimaCharlie agent covers.
+- **More to go on when triaging a vulnerability**: findings now carry the exploit band (KEV overdue, KEV due, exploit likely, exploit probable, elevated, baseline), whether a fix is available, which lane observed it (cloud, agent, or both), and CISA's KEV due date. Each of these is absent when the platform did not report it, and an absence is shown as unknown rather than as a negative answer.
+- **VEX and SLA policy editors**: two `cloudsec_policy` types had no authoring surface, and both sit behind a headline feature. Policies gains a VEX tab for the OpenVEX documents that move a finding to "not affected" with author provenance, including a client-side parse preview, and an SLA tab for the clock behind every finding's due date. A finding can now be marked not affected from the finding itself.
+- **Coverage page**: the Inventory tab's sensor coverage becomes a Coverage page that reports each lane separately, so a workload with an agent but no vulnerability source no longer reads as fully covered. The org-level pending count for endpoint-agent inventory is reported instead of being dropped.
+- **Shared fixes**: when one remediation resolves several findings, the finding shows the other findings it covers and drills through to the exact cause.
+- **Integrations panel**: Cloud Security accepts SARIF, CycloneDX, LimaCharlie scanner reports and third-party asset batches, and every one of those doors was API-only and named nowhere in the app. Settings gains an Integrations tab that documents them in-product, deep-linkable at `?tab=integrations`.
+- **Identity and asset filters**: the Access and Assets screens gain server-side selectors, and sensitivity counts survive a cross-filter instead of resetting.
+- **Compliance reason codes**: a control that was not assessed now says why, rather than sitting blank. Azure authorization evidence has its own view, and a finding whose authorization coverage has a gap is classed as such.
+- **Managed Kubernetes clusters are typed**: the platform is retyping managed clusters from `ComputeInstance` to `KubeCluster`, with namespaces, workloads, services and roles alongside. Every Cloud Security list and map keyed on resource type now understands them, so a cluster keeps its place in the compute population and is classified the same way on every path that reaches it.
+- **The Providers list names the provider**: the source badge and the record name become one identity column with the brand glyph, the record name, and the provider's full name spelled out under it. A provider type this build has never seen degrades to a neutral badge carrying the raw token instead of rendering blank.
+- **Elastic output**: the `is_create_action` parameter is described, so the output editor renders it as an optional checkbox instead of an unlabelled required field.
+
+#### Bug Fixes
+
+- The event tree could crash the app. An atom cycle in `routing/parent` and `routing/this` recursed until the stack blew and tripped the global error boundary. The tree and the ancestor walk now track the atoms they have visited, read a self-reference as "no parent", and truncate instead of spinning.
+- Atoms and sensor ids interpolated into Insight URLs are now escaped. Event data decides what an atom contains, and one carrying a `/` rerouted the request to a different endpoint that answers with a success and no event, so the ancestor chain silently truncated with no error. Detection ids are escaped on both the read and the delete.
+- The extension definition editor showed every permission unchecked no matter what the extension held, and saving from that state dropped every permission the user did not happen to re-tick.
+- Selecting a rule from halfway down the D&R sidebar jumped the list back to the top. The sidebar now keeps its scroll position while the editor still resets.
+- Pasting a second rule while a smart-paste suggestion was still showing kept the stale card and never offered the new suggestion's action.
+- The inline "mark as crown jewel" prefill seeded the resource family instead of the resource kind, which the platform rejected for data stores and identities and mis-seeded for compute.
+- Renaming an AI Session with a name over 200 characters failed with a raw API error. The input now shows an inline error and the mutation never fires. Length is counted in code points, so an emoji-heavy name the API accepts is not rejected.
+- A tooltip on truncated text now re-measures when its container resizes, so it appears and disappears as the column changes width instead of going stale.
+
+#### Improvements
+
+- **The Query Console holds far less memory.** A loaded search now releases the rows on pages far from the viewport and fetches them again from the continuation token when you scroll back. What a search retains no longer grows with every row it has ever loaded, so a very large result set stays usable.
+- **The Detections live feed holds up under a flood.** Every incoming batch used to re-sort the whole accumulated list. Batches now merge into the already sorted rows.
+- Section collapsers can be dragged with touch as well as a mouse, and stop dragging cleanly when the tab is hidden or focus is lost.
+
+---
+
 ## 2026-09-07
 
 ### Extensions: Email Security bulk remediation, verdict revisions and the managed-detection switch

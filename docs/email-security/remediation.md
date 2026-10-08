@@ -1,6 +1,6 @@
 # Bulk Remediation
 
---8<-- "includes/email-security-beta.md"
+--8<-- "includes/email-security-availability.md"
 
 A campaign sweep acts on a cluster the engine decided. **Bulk remediation** acts
 on a set *you* named — a filtered page of the queue, the result of an LCQL hunt,
@@ -13,6 +13,12 @@ selection rather than a cluster, with one structural difference: **the execute
 cannot finish inside a request.** Up to 500 provider writes paced against
 Microsoft 365 and Google throttling do not fit in one call, so execute returns a
 handle and the work proceeds in the background.
+
+With the optional [Microsoft quarantine target](provider-quarantine.md#optional-microsoft-quarantine-target-beta),
+per-message `pending` means accepted for background placement tracking. The bulk job
+stays running while these members are pending; a bounded wait that cannot settle them
+reports `interrupted`, never complete. Re-sending the same confirmation reads their
+durable outcomes without repeating the Microsoft submission.
 
 ## The four steps
 
@@ -281,7 +287,7 @@ route and renders each member's outcome by name.
 
 The console's bulk action list is a deliberate subset: `banner_message` is
 offered (a bulk banner still uses the organization's own
-[banner policy](policy.md#banners); no client supplies HTML), and
+[banner policy](policy.md#banners), and may carry one plain-text `text` that replaces the wording for the whole job; no client supplies HTML), and
 `unbanner_message` is not — un-bannering is a per-message follow-up taken from a
 bannered row's timeline, not a sweep. The API accepts all six.
 

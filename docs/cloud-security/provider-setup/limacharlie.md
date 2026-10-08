@@ -1,5 +1,13 @@
 # LimaCharlie
 
+!!! tip "Connecting from the web app?"
+    Follow the prerequisites and credential creation instructions below, then
+    return to **Cloud Security → Settings → Providers → Add provider**. Enter
+    the provider IDs under **Configuration** and save the credential using
+    **New secret** under **Permissions**. Run **Test Provider**, fix required
+    failures, and save. The LimaCharlie CLI examples below are an alternative.
+    [First-time setup and verification](../getting-started.md) explains the full journey.
+
 Inventories your **own LimaCharlie tenancy** as an estate, like any other SaaS
 platform: org members as identities (with MFA state), API keys as machine
 identities, sensors as assets, installation keys, telemetry outputs, extension
@@ -137,16 +145,16 @@ interface.
 ```
 
 A bare key string is also accepted and wrapped automatically, so the key can go
-in directly:
+in directly. The example below stores the JSON form.
+Save the credential JSON shown above as `lc-secret.json`, then upload it via stdin:
 
 ```bash
-limacharlie secret set --key limacharlie-collector \
-    --value '<the-api-key>' --enabled
+jq -Rs '{secret: .}' lc-secret.json \
+  | limacharlie secret set --key limacharlie-collector --enabled \
+  && rm -f lc-secret.json
 ```
 
-`secret set` wraps the value into the secret record's `{"secret": "..."}`
-envelope for you. To store the JSON object form instead, pass
-`--value "$(cat lc-secret.json)"`.
+`jq -Rs` builds the outer secret-record envelope for stdin.
 
 ## Create the provider record
 

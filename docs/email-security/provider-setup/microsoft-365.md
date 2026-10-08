@@ -1,6 +1,6 @@
 # Microsoft 365
 
---8<-- "includes/email-security-beta.md"
+--8<-- "includes/email-security-availability.md"
 
 A Microsoft 365 connection reads and remediates Exchange Online mail over
 Microsoft Graph, using an **application-only** credential. There is no mail
@@ -34,6 +34,9 @@ consent.
 
 | Grant | Unlocks | Without it |
 |---|---|---|
+| **ExchangeMessageTrace.Read.All** (Microsoft Graph) | Provider quarantine, spam filtering and delivery-failure visibility | Message-trace coverage reports `not_granted`; ingestion continues |
+| **SecurityAnalyzedMessage.ReadWrite.All** (Microsoft Graph, optional beta) | Hosted quarantine and move-to-Inbox restore; requires Defender for Office 365 Plan 2 | Microsoft target reports `not_granted` and quarantine records its LC-folder fallback |
+| **ActivityFeed.Read** (Office 365 Management APIs) | Hosted-quarantine release requests and release/denial history from Audit.General | Release-activity coverage reports `not_granted`; ingestion continues |
 | **Mail.Send** | Reporter auto-replies — the templated acknowledgement sent to a person who reported a message | Reporter replies are **refused by name**, reported as an explicitly unavailable capability rather than silently skipped. Everything else is unaffected. Check `mail_send` reports `skipped`. |
 
 !!! info "Why the consented set is readable at all"
@@ -47,38 +50,105 @@ consent.
     permissions require a signed-in user and leave the connection failing after
     consent looks granted.
 
+Message trace additionally requires the tenant service principal for Microsoft's
+application `8bd644d1-64a1-4d4b-ae52-2e0cbf64e373`. An administrator can provision
+it with `New-MgServicePrincipal` as described in Microsoft's
+[message trace onboarding guide](https://learn.microsoft.com/en-us/exchange/monitoring/trace-an-email-message/graph-api-message-trace).
+Granting the app permission alone does not provision that prerequisite.
+
+For release activity, select **Office 365 Management APIs → Application
+permissions → ActivityFeed.Read** separately from Microsoft Graph, grant admin
+consent, and enable unified audit logging. The connection uses a separate
+Management API token and starts its own Audit.General subscription. Feed records
+can be delayed after a subscription starts. See Microsoft's
+[Management API setup](https://learn.microsoft.com/en-us/office/office-365-management-api/get-started-with-office-365-management-apis)
+and [activity API reference](https://learn.microsoft.com/en-us/office/office-365-management-api/office-365-management-activity-api-reference).
+See [Provider Quarantine](../provider-quarantine.md) for the coverage states.
+
 ## Create the app registration
 
-In the portal: **Microsoft Entra ID → App registrations → New registration**
-(single tenant) → **Certificates & secrets → New client secret** (copy the
-*Value*, not the *Secret ID*) → **API permissions → Add a permission →
-Microsoft Graph → Application permissions** → add `Mail.ReadWrite` and
-`User.Read.All` (and `Mail.Send` if you want reporter replies) → **Grant admin
-consent**.
+An app registration gives Email Security its own identity in Microsoft 365, so
+it can connect without using your personal password.
 
-With the Azure CLI:
+<span id="alternative-azure-cli"></span>
 
-```bash
-TENANT_ID=$(az account show --query tenantId -o tsv)
+=== "Web console"
 
-APP_ID=$(az ad app create --display-name lc-email-security --query appId -o tsv)
-az ad sp create --id "$APP_ID"
+    1. Sign in to the [Microsoft Entra admin center](https://entra.microsoft.com/).
+       Check that you are in the directory that owns the mailboxes.
+    2. Open **Entra ID → App registrations → New registration**. Enter a name such
+       as `LimaCharlie Email Security` and select accounts in this directory only
+       (single tenant). Register the app.
+    3. On the app's **Overview** page, copy **Application (client) ID** and
+       **Directory (tenant) ID**. Keep both for the credential below.
+    4. Open **Certificates & secrets → Client secrets → New client secret**.
+       Choose an expiry in line with your organization's policy. Copy the **Value**
+       immediately; the **Secret ID** is not the credential. Record its expiry so
+       your administrator can replace it before access stops.
+    5. Open **API permissions → Add a permission → Microsoft Graph → Application
+       permissions**. Add the required Graph permissions and any optional Graph
+       permissions you intend to use.
+    6. For release activity, choose **Add a permission → APIs my organization
+       uses → Office 365 Management APIs → Application permissions** and add
+       **ActivityFeed.Read** separately.
+    7. Select **Grant admin consent** for your directory. If you cannot, ask a
+       Privileged Role Administrator or Global Administrator to grant it. Confirm
+       that the permissions show consent granted before continuing.
 
-az ad app credential reset --id "$APP_ID" --years 2 --append \
-  --display-name lc-email-security --query password -o tsv   # capture this once
+    Microsoft's [app registration guide](https://learn.microsoft.com/en-us/entra/identity-platform/quickstart-register-app)
+    and [admin consent guide](https://learn.microsoft.com/en-us/entra/identity/enterprise-apps/grant-admin-consent)
+    explain the portal steps and administrator roles.
 
-GRAPH=00000003-0000-0000-c000-000000000000
+=== "Cloud Shell / CLI"
 
-# Resolve each app-role id from Graph itself rather than pasting a GUID.
-for PERM in Mail.ReadWrite User.Read.All Mail.Send; do   # Mail.Send is optional
-  ROLE_ID=$(az ad sp show --id "$GRAPH" \
-    --query "appRoles[?value=='$PERM'].id | [0]" -o tsv)
-  az ad app permission add --id "$APP_ID" --api "$GRAPH" \
-    --api-permissions "$ROLE_ID=Role"
-done
+    Use this only if you already use the Azure CLI. Sign in with `az login`, confirm
+    the intended tenant, and have an administrator available to grant consent.
 
-az ad app permission admin-consent --id "$APP_ID"
-```
+    ```bash
+    TENANT_ID=$(az account show --query tenantId -o tsv)
+
+    APP_ID=$(az ad app create --display-name lc-email-security --query appId -o tsv)
+    az ad sp create --id "$APP_ID"
+
+    az ad app credential reset --id "$APP_ID" --years 2 --append \
+      --display-name lc-email-security --query password -o tsv   # capture this once
+
+    GRAPH=00000003-0000-0000-c000-000000000000
+
+    # Resolve each app-role id from Graph itself rather than pasting a GUID.
+    for PERM in Mail.ReadWrite User.Read.All Mail.Send; do   # Mail.Send is optional
+      ROLE_ID=$(az ad sp show --id "$GRAPH" \
+        --query "appRoles[?value=='$PERM'].id | [0]" -o tsv)
+      az ad app permission add --id "$APP_ID" --api "$GRAPH" \
+        --api-permissions "$ROLE_ID=Role"
+    done
+
+    az ad app permission admin-consent --id "$APP_ID"
+    ```
+
+=== "Optional visibility grants (Cloud Shell)"
+
+    Run this separately only if you want provider visibility. Keep the `APP_ID`
+    from the registration above, provision the message-trace prerequisite, and
+    enable unified audit logging for release activity. Admin consent is required.
+
+    ```bash
+    # Run only after the message-trace service principal prerequisite above is provisioned.
+    TRACE_ROLE=$(az ad sp show --id "$GRAPH" \
+      --query "appRoles[?value=='ExchangeMessageTrace.Read.All'].id | [0]" -o tsv)
+    az ad app permission add --id "$APP_ID" --api "$GRAPH" \
+      --api-permissions "$TRACE_ROLE=Role"
+
+    # Release activity is a DIFFERENT resource, not Microsoft Graph.
+    MANAGEMENT=c5393580-f805-4401-95e8-94b7a6ef2fc2
+    az ad sp show --id "$MANAGEMENT" >/dev/null 2>&1 || az ad sp create --id "$MANAGEMENT"
+    ACTIVITY_ROLE=$(az ad sp show --id "$MANAGEMENT" \
+      --query "appRoles[?value=='ActivityFeed.Read'].id | [0]" -o tsv)
+    az ad app permission add --id "$APP_ID" --api "$MANAGEMENT" \
+      --api-permissions "$ACTIVITY_ROLE=Role"
+
+    az ad app permission admin-consent --id "$APP_ID"
+    ```
 
 !!! danger "`credential reset` clears existing secrets"
     Without `--append`, `az ad app credential reset` **removes every existing
@@ -96,20 +166,35 @@ az ad app permission admin-consent --id "$APP_ID"
 
 ## Store the credential
 
+In the setup wizard's **Connection details**, find **Credential → Add New**.
+Name the secret `m365-mail`. In **Secret**, paste the JSON below, replacing all
+three placeholders with the values you copied. Select **Create** to save it
+immediately and select it for the connection. Keep it enabled and do not add an
+outer `secret` property. You can also select an existing secret from the picker.
+
 ```json
 {"tenant_id": "<tenant-id>", "client_id": "<application-client-id>", "client_secret": "<the-secret-value>"}
 ```
 
+Alternatively, save the same JSON as `m365-credential.json` and use the configured
+LimaCharlie CLI:
+
 ```bash
-limacharlie secret set --key m365-mail \
-  --value "$(cat m365-credential.json)" --enabled --oid $OID
+jq -Rs '{secret: .}' m365-credential.json \
+  | limacharlie secret set --key m365-mail --enabled --oid $OID \
+  && rm -f m365-credential.json
 ```
 
 ## Create the connection
 
 In the console: **Email Security → Settings → add a connection → Microsoft 365**.
-The wizard renders the setup guide with your own values, stores the credential
-as a secret if you paste one, and runs **Test Connection** before you finish.
+Select `m365-mail` under **Credential** and choose a small set of mailboxes for
+your first test. Review and save. The diagnostic opens after saving if you have
+permission; select **Run connection test**. You can also open it from Settings.
+The connection stores a reference to the selected secret, not a second copy of
+the credential.
+
+Continue with [verify access and your first message](../getting-started.md#4-test-access).
 
 As code:
 
@@ -117,13 +202,34 @@ As code:
 # m365.yaml
 provider: m365
 credentials: hive://secret/m365-mail
+scope:
+  include_addresses:
+    - pilot@corp.example
 ingest:
   mode: auto
   backfill_days: 14
 features:
   outbound_observation: true
-  reports_mailbox: phishing@corp.example
 ```
+
+Replace `pilot@corp.example` with your pilot mailbox addresses. If you later
+configure `features.reports_mailbox`, use an existing mailbox and include it
+in this scope too; otherwise user reports cannot arrive. Omitting `scope`
+or leaving its include lists empty covers **every discovered mailbox**, subject
+to exclusions and any domain filter. `include_addresses` and `exclude_addresses`
+entries must contain `@`; `domains` entries must be bare domains containing a dot,
+with no `@` or slash. Exclusions win over inclusions.
+
+`ingest.backfill_days` accepts **0–90**, default **14**. `0` disables the initial
+connection-setup history pass; it does not delete already indexed mail and is
+not a privacy cutoff for recovery. If a Gmail history ID or Graph delta token
+expires, recovery can re-walk the default **14-day** window even when this value
+is `0`. See [backfill cleanup](../providers.md#cleaning-up-an-unwanted-backfill)
+before changing retention to remove indexed history.
+
+Read the [enforcement model](../policy.md#mode) before enabling actions:
+connections start with alert-only automation, and manual actions in an alert-only
+organization need an explicit `--force` override.
 
 ```bash
 limacharlie hive set --hive-name mailsec_provider --key m365-prod \
@@ -143,6 +249,8 @@ limacharlie mailsec connection test m365-prod --oid $OID --output yaml
 | `credential` | ✅ | The tenant/client/secret triple was rejected, or the client secret expired |
 | `mailbox_read` | ✅ | `User.Read.All` not consented — no mailbox can be discovered. Also fails when the directory genuinely returns no mailboxes |
 | `mail_write` | ✅ | `Mail.ReadWrite` not consented — nothing can be read or remediated |
+| `provider_quarantine` | — | Message trace permission missing; optional capability unavailable |
+| `release_requests` | — | Management Activity permission missing or not evaluated; optional capability unavailable |
 | `mail_send` | — | `Mail.Send` not consented; reporter replies unavailable. Reported as `skipped`, and `ok` stays true |
 
 ## How ingestion works
@@ -180,3 +288,23 @@ limacharlie mailsec connection test m365-prod --oid $OID --output yaml
 | Some mailboxes never become `protected` | An Exchange application access policy denies the app for those mailboxes | Widen the policy, or exclude those mailboxes in the record's `scope` so coverage reflects a decision rather than a refusal |
 | Attachment analysis looks incomplete | Defender **Safe Attachments in Dynamic Delivery mode** detaches the attachment from the delivered message | Use Block mode if you want attachments analyzed post-delivery |
 | Everything fails at `credential` after months of working | Client secrets expire | Re-mint before expiry and update the secret record; nothing else changes |
+
+### Optional hosted quarantine permission
+
+The Microsoft target is off by default and separate from visibility. Grant the Graph
+**application** permission `SecurityAnalyzedMessage.ReadWrite.All` and admin consent
+only when opting into the [Microsoft quarantine beta](../provider-quarantine.md#optional-microsoft-quarantine-target-beta).
+It requires Defender for Office 365 Plan 2; consent and successful analyzed-email
+reads cannot prove licensing. A licensing or permission refusal records the LC-folder
+fallback rather than silently claiming Microsoft quarantine succeeded.
+
+For Azure CLI users, run this separately with the app registration's `APP_ID` and
+Graph resource ID from the setup above, then grant admin consent:
+
+```bash
+HOSTED_ROLE=$(az ad sp show --id "$GRAPH" \
+  --query "appRoles[?value=='SecurityAnalyzedMessage.ReadWrite.All'].id | [0]" -o tsv)
+az ad app permission add --id "$APP_ID" --api "$GRAPH" \
+  --api-permissions "$HOSTED_ROLE=Role"
+az ad app permission admin-consent --id "$APP_ID"
+```

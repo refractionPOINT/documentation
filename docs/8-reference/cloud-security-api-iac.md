@@ -64,6 +64,7 @@ multi-tenant policy management a script, not a UI workflow.
 | `cloudsec_provider` | one per connection | what to collect — one of thirteen connectors spanning cloud infra, identity/IdP, SaaS, AI, and LimaCharlie self-inventory (see [Providers](../cloud-security/providers.md) for the full list) |
 | `cloudsec_policy` | many, typed by `policy_type` | `classification` (crown jewels), `coverage` (EDR expectation — accepted but not yet evaluated; see the [Configuration reference](../cloud-security/configuration.md)), `emission` (event feed), `exclusions` (resource escape hatch), `suppression` (finding disposition rules), `compliance` (scoped framework assignment), [`rules`](../cloud-security/custom-rules.md) (your own posture detections, plus overrides of the built-in ones), [`sla`](../cloud-security/remediation-sla.md) (remediation due dates) |
 | `cloudsec_query` | one per saved query | org-shared saved graph queries (the Query Console library) |
+| `cloudsec_code_rule` | one per rule file | the Semgrep/Opengrep static-analysis rules [Code Security](../cloud-security/code-security/code-rules.md) runs. LimaCharlie's defaults are seeded here at subscription and are yours to edit, disable or delete |
 
 !!! note "`limacharlie sync` does not cover these hives"
     The `cloudsec_*` hives are outside the set `limacharlie sync` walks, so a

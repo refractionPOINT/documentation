@@ -317,6 +317,8 @@ The value is supplied via the `path` parameter and the lookup is defined in the 
 
 Supports the [file name](#file-name) and [sub domain](#sub-domain) transforms.
 
+When a rule is run with [Replay](../5-integrations/services/replay.md), its `hive://lookup/` lookups are not read from your Organization: you supply them inline in the Replay request, with sample indicators or empty to only validate the rule. See [Lookups in Replay](../5-integrations/services/replay.md#lookups-in-replay).
+
 > API-based lookups, like VirusTotal and IP Geolocation, work a little bit differently. For more information, see [Using API-based lookups](../5-integrations/api-integrations/index.md).
 >
 > You can create your own lookups and optionally publish them in the add-on marketplace. To learn more, see [Lookups](../7-administration/config-hive/lookups.md) and [Lookup Manager](../5-integrations/extensions/limacharlie/lookup-manager.md).

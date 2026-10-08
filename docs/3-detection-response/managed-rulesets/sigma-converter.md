@@ -8,7 +8,7 @@ For cases where you either have your own Sigma rules, or you would like to conve
 
 ## Converter Service
 
-The Converter service converts one or many Sigma rules into the LimaCharlie  rule format. It can accomplish this via the following HTTPS endpoints available at <https://sigma.limacharlie.io/>:
+The Converter service converts one or many Sigma rules into the LimaCharlie  rule format. It can accomplish this via the following HTTPS endpoints available at `https://sigma.limacharlie.io`:
 
 ### Single Rule
 

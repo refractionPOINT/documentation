@@ -1,5 +1,13 @@
 # Auth0
 
+!!! tip "Connecting from the web app?"
+    Follow the prerequisites and credential creation instructions below, then
+    return to **Cloud Security → Settings → Providers → Add provider**. Enter
+    the provider IDs under **Configuration** and save the credential using
+    **New secret** under **Permissions**. Run **Test Provider**, fix required
+    failures, and save. The LimaCharlie CLI examples below are an alternative.
+    [First-time setup and verification](../getting-started.md) explains the full journey.
+
 Collects the Auth0 tenant as identity posture: the user directory (with MFA
 state), roles and role membership, applications and their machine (M2M)
 identities, client grants as entitlement edges, APIs (resource servers), and
@@ -83,13 +91,17 @@ checkboxes → **Update**.
 {"client_id": "<m2m-client-id>", "client_secret": "<m2m-client-secret>"}
 ```
 
+For CLI setup, save the credential JSON above as `auth0-secret.json` and install `jq`.
+
 ```bash
-limacharlie secret set --key auth0-m2m \
-    --value "$(cat auth0-secret.json)" --enabled
+jq -Rs '{secret: .}' auth0-secret.json \
+  | limacharlie secret set --key auth0-m2m --enabled \
+  && rm -f auth0-secret.json
 ```
 
-`secret set` wraps the value into the secret record's `{"secret": "..."}`
-envelope for you.
+`jq -Rs` builds the secret record's `{"secret": "..."}` envelope without
+putting the credential in process arguments. The temporary file is removed only
+after a successful write.
 
 ## Create the provider record
 

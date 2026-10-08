@@ -77,5 +77,11 @@ flowchart LR
   provide must carry the `ai_agent.operate` permission on that org. The agent only
   ever has the access those credentials grant.
 
+Launching a configured agent through a UI action uses the caller's
+`ai_agent.exec` permission. The credentials used inside that session need
+`ai_agent.operate` and the ordinary permissions for the agent's work. See
+[AI agent permissions](../8-reference/permissions.md#ai_agentexec-launch-a-configured-agent)
+for how to grant these separately and troubleshoot access.
+
 For how usage is billed and what it costs, see [Cost Tracking & Savings](cost-tracking.md)
 and the [billing summary](index.md#billing).

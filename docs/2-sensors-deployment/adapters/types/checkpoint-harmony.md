@@ -68,7 +68,7 @@ filter:
   - {attr: <saasAttrName>, op: <saasAttrOp>, value: "<saasAttrValue>"}
 ```
 
-`attr` is a Check Point [saasAttrName](https://sc1.checkpoint.com/documents/Harmony_Email_and_Collaboration_API_Reference/Topics-HEC-Avanan-API-Reference-Guide/Managing-Secured-Entities/Search-query.htm) (e.g. `entityPayload.subject`, `entityPayload.recipients`, `entityPayload.isRestoreRequested`). `op` is one of `is`, `isNot`, `contains`, `notContains`, `startsWith`, `isEmpty`, `isNotEmpty`, `greaterThan`, `lessThan`. `value` is a string; booleans are spelled as the string `"true"` / `"false"`. Unknown ops are rejected at startup so a typo fails loudly instead of silently matching nothing.
+`attr` is a Check Point [saasAttrName](https://sc1.checkpoint.com/documents/Harmony_Email_and_Collaboration_API_Reference/CP_Check_Point_Email_Security_API_Reference_Guide.pdf) (e.g. `entityPayload.subject`, `entityPayload.recipients`, `entityPayload.isRestoreRequested`). `op` is one of `is`, `isNot`, `contains`, `notContains`, `startsWith`, `isEmpty`, `isNotEmpty`, `greaterThan`, `lessThan`. `value` is a string; booleans are spelled as the string `"true"` / `"false"`. Unknown ops are rejected at startup so a typo fails loudly instead of silently matching nothing.
 
 #### Two cursor modes
 
@@ -298,7 +298,7 @@ Downstream rules / dashboards that filter on `_lc_harmony_source: emails` need t
 
 ## API Docs
 
-- Infinity Events (Logs-as-a-Service): [Check Point Infinity Events Reference](https://app.swaggerhub.com/apis-docs/Check-Point/infinity-events)
-- Harmony Email & Collaboration entity API: [HEC API Reference](https://sc1.checkpoint.com/documents/Infinity_Portal/WebAdminGuides/EN/Harmony-Email-and-Collaboration-Admin-Guide/Default.htm)
-- HEC `search/query` endpoint: [Search query reference](https://sc1.checkpoint.com/documents/Harmony_Email_and_Collaboration_API_Reference/Topics-HEC-Avanan-API-Reference-Guide/Managing-Secured-Entities/Search-query.htm)
-- Infinity Portal authentication: [Infinity Portal API Authentication](https://app.swaggerhub.com/apis-docs/Check-Point/infinity-portal-auth/1.0)
+- Infinity Events (Logs-as-a-Service): [Check Point Infinity Events Reference](https://app.swaggerhub.com/apis-docs/Check-Point/infinity-events-api/1.0.0)
+- Harmony Email & Collaboration entity API: [HEC API Reference](https://sc1.checkpoint.com/documents/Harmony_Email_and_Collaboration_API_Reference/CP_Check_Point_Email_Security_API_Reference_Guide.pdf)
+- HEC `search/query` endpoint: [Search query reference](https://sc1.checkpoint.com/documents/Harmony_Email_and_Collaboration_API_Reference/CP_Check_Point_Email_Security_API_Reference_Guide.pdf)
+- Infinity Portal authentication: [Infinity Portal API Authentication](https://app.swaggerhub.com/apis-docs/Check-Point/infinity-portal-api/1.0.5)

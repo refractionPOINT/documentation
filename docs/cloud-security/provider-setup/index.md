@@ -1,7 +1,6 @@
 # Provider Setup
 
-[Getting Started](../getting-started.md) walks the end-to-end flow with a
-Google Cloud example. This section is the per-provider companion: for **every**
+[Getting Started](../getting-started.md) walks the end-to-end console flow. This section is the per-provider companion: for **every**
 supported platform, the exact scopes and permissions the collector needs, the
 click-by-click steps to create the credential in that platform, the
 credential-secret format, and the first-run failures with their fixes.
@@ -23,15 +22,54 @@ extension (step 1 of
 | [1Password](onepassword.md) | Identity | SCIM bridge URL + bearer token (optionally a Connect server) |
 | [Auth0](auth0.md) | Identity | M2M application authorized on the Management API with read scopes |
 | [Cloudflare](cloudflare.md) | SaaS | One scoped read-only API token + the account ID |
-| [GitHub](github.md) | SaaS | A GitHub App installed on the org, read-only permission set |
+| [GitHub](github.md) | Source control | A GitHub App installed on the org, read-only by default (write access optional, for pull-request checks and AutoFix) |
+| [GitLab](gitlab.md) | Source control | A group/project access token with `read_api` + `read_repository` |
+| [Bitbucket Cloud](bitbucket.md) | Source control | An Atlassian API token with three read scopes; the account must be a workspace member |
 | [OpenAI](openai.md) | AI | An Admin API key created with `api.management.read` |
 | [Anthropic](anthropic.md) | AI | A Console Admin key and/or an Enterprise Compliance key |
 | [LimaCharlie](limacharlie.md) | LimaCharlie | An org or user API key with read permissions |
 
 [Connecting Providers](../providers.md) is the conceptual overview of the same
-thirteen connectors — what each collects and why.
+fifteen connectors — what each collects and why.
 
-## The common model
+## Use these guides with the wizard
+
+Choose the service above and keep its guide open in a second browser tab.
+Each guide contains both setup instructions and technical reference material;
+you do not have to run its LimaCharlie CLI examples to use the web app.
+
+1. Check **Prerequisites** with your provider administrator. A read-only login
+   for you personally may not be enough to create the application's credential.
+2. Follow the credential creation steps. Record the account/project/tenant IDs
+   separately from the credential itself.
+3. In **Cloud Security → Settings → Providers → Add provider**, choose that
+   service and enter those IDs under **Configuration**.
+4. Under **Permissions**, select **New secret** to store the credential, or select
+   an existing saved secret. Follow the credential format for that service.
+5. Run **Test Provider**. Fix required failures; optional failures mean some
+   data or capabilities will be unavailable.
+6. Save, wait for collection, and confirm a resource you recognize in Inventory.
+   An accepted credential alone does not prove the intended account was scanned.
+
+### Choose browser steps or commands
+
+Where a guide offers tabs, **Web console** walks through browser setup;
+**Cloud Shell / CLI** keeps the command alternative. Complete one method per
+step. You do not need to install a CLI to follow the browser instructions.
+
+### If you choose commands
+
+The provider's CLI creates access in that provider. The `limacharlie` CLI
+configures LimaCharlie. They are separate tools. If you use a provider command
+block, install and sign in to that provider's CLI first and select the intended
+account. Replace placeholders and define variables before running commands;
+`$SA_PROJECT`, for example, means the project that owns a service account.
+
+For Google Cloud you can use Cloud Shell in the Google Cloud console. For Azure,
+you can use Azure Cloud Shell. If you cannot create identities or grant roles,
+ask the provider administrator to perform those steps, then return to the wizard.
+
+## Advanced: the stored configuration
 
 Every provider connection is **two Hive records**:
 
@@ -54,19 +92,22 @@ limacharlie hive set --hive-name secret --key <name> \
 
 where `secret.json` is `{"secret": "<the credential JSON, as a string>"}`.
 
-The `secret set` shortcut does that wrapping for you, so you can hand it the
-credential itself — `credential.json` below is the provider's credential JSON,
-with no `{"secret": …}` envelope:
+For `secret set` on stdin, install `jq` and build the envelope with `jq -Rs`.
+`credential.json` below is the provider's credential JSON, with no outer
+`{"secret": …}` envelope:
 
 ```bash
-limacharlie secret set --key <name> --value "$(cat credential.json)" --enabled
+jq -Rs '{secret: .}' credential.json \
+  | limacharlie secret set --key <name> --enabled \
+  && rm -f credential.json
 ```
 
-!!! note "`--value` lands in your shell history"
-    Anything passed on the command line is visible in the process list and in
-    shell history. To avoid that, pipe the record on stdin instead —
-    `echo '{"secret": "…"}' | limacharlie secret set --key <name> --enabled` —
-    or use `--input-file`.
+!!! note "Keep credentials out of command arguments"
+    Use stdin as above, or `--input-file` with a prepared secret-record envelope.
+    `--value` exposes the expanded credential in process arguments; a literal
+    credential typed in the command also enters shell history. Remove temporary
+    credential copies after verifying the saved secret. File deletion is not a
+    guarantee of secure erasure on SSDs, snapshots, or backups.
 
 !!! tip "Bare keys are accepted for single-key providers"
     For [OpenAI](openai.md), [Anthropic](anthropic.md), and
@@ -108,7 +149,7 @@ limacharlie hive set --hive-name cloudsec_provider --key <name> \
 ### The two checks every provider reports first
 
 Before any provider-specific probe runs, the report always contains these two
-**required** checks. They are identical for all thirteen connectors, which is
+**required** checks. They are identical for every connector, which is
 why the per-provider tables in this section start at `auth`:
 
 | Check | Required | Meaning if it fails |
@@ -142,7 +183,9 @@ Only once both pass does `auth` actually reach the platform.
 
 - **Read-only.** Every credential documented here is read-only, except where a
   platform offers no read-only surface for something — those cases are called
-  out explicitly on the provider's page.
+  out explicitly on the provider's page. The one opt-in exception is GitHub, whose
+  App can be granted write access for Code Security's pull-request checks and
+  AutoFix pull requests.
 - **Least privilege.** Grant the required set first, confirm with
   `provider test`, then add optional grants only for the surfaces you want.
 - **Nothing is stored inline.** Credentials live in the `secret` hive and are

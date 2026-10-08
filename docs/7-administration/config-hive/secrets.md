@@ -409,4 +409,3 @@ And that's it! The output should start as expected, however when viewing the out
 - [Adapter Usage](../../2-sensors-deployment/adapters/usage.md) -- Common consumer of hive secrets.
 - [Outputs](../../5-integrations/outputs/index.md) -- Another common consumer of hive secrets.
 - [D&R-Driven AI Sessions](../../9-ai-sessions/dr-sessions.md) -- The `start ai agent` action consumes Anthropic and LC API keys via `hive://secret/<name>` references.
-- [Compliance Installation](../../9-ai-sessions/compliance/installation.md) -- The `compliance-deploy` skill stages a scoped LC API key and an Anthropic key in this hive as part of reviewer-agent deployment.

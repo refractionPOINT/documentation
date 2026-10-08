@@ -19,3 +19,4 @@ LimaCharlie provides incident response teams with a powerful, centralized soluti
 ### Related Resources
 
 - [Investigation Guide](investigation-guide.md) - Best practices for documenting investigations with MITRE ATT&CK mapping and standardized tagging
+- [Entity Pivot](../../cloud-security/entity-pivot.md) - Pivot from an email address, hostname, IP address or sensor ID to the related Users, Hosts, detections and cloud findings (requires Cloud Security)

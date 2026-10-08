@@ -13,7 +13,7 @@ Either way, run the [credential test](getting-started.md#test-the-credential-bef
 first — it probes every permission a sweep needs and reports exactly which are
 missing.
 
-## The thirteen connectors
+## The fifteen connectors
 
 | `provider_type` | Surface | Scope field(s) | Credential (JSON stored in the secret) |
 |---|---|---|---|
@@ -27,6 +27,8 @@ missing.
 | [`auth0`](provider-setup/auth0.md) | Identity | `auth0_domain` | `{"client_id": "...", "client_secret": "..."}` (M2M) |
 | [`cloudflare`](provider-setup/cloudflare.md) | SaaS | `cloudflare_account_id` | `{"api_token": "...", "user_api_token": "..."}` |
 | [`github`](provider-setup/github.md) | SaaS | `github_org` + `github_app_id` + `github_installation_id` | `{"private_key": "-----BEGIN..."}` (GitHub App) |
+| [`gitlab`](provider-setup/gitlab.md) | Source control | `gitlab_namespace` (+ `gitlab_base_url` for self-managed) | `{"token": "glpat-..."}` (access token) |
+| [`bitbucket`](provider-setup/bitbucket.md) | Source control | `bitbucket_workspace` | `{"token": "ATATT3..."}` (Atlassian API token) |
 | [`openai`](provider-setup/openai.md) | AI | *(optional `openai_org_id`)* | `{"admin_api_key": "sk-admin-..."}` |
 | [`anthropic`](provider-setup/anthropic.md) | AI | *(optional `anthropic_org_uuid`)* | `{"admin_api_key": "sk-ant-admin01-..."}` (+ optional compliance key) |
 | [`limacharlie`](provider-setup/limacharlie.md) | LimaCharlie | one of `limacharlie_oid` or `limacharlie_uid` | `{"api_key": "..."}` |
@@ -164,6 +166,45 @@ installation tokens. Set `github_org` (the org login), `github_app_id`, and
 settings/members/teams (identities), repositories (data stores), installed Apps /
 webhooks / deploy keys / Actions secrets (non-human identities), and the Actions
 OIDC subject configuration.
+
+With the **Contents → Read-only** permission added, the same connection also
+drives [Code Security](code-security/index.md) — dependencies, secrets,
+infrastructure-as-code, static analysis, container images and licenses, scanned in an
+ephemeral sandbox and filed as ordinary findings. It is opt-in per repository through a
+`code_scanning` policy; nothing is scanned until you write one. Granting the App
+**Checks**, **Pull requests** or **Contents** write access additionally enables
+[pull-request checks](code-security/pull-requests.md) and
+[AutoFix pull requests](code-security/autofix.md); nothing is written until you grant it.
+The fastest way to set all of this up is
+[**Create a GitHub App for me**](code-security/getting-started.md#github-let-limacharlie-create-the-app).
+
+### GitLab (`gitlab`)
+
+**Setup guide:** [step-by-step onboarding](provider-setup/gitlab.md).
+
+One **namespace** — a group with its subgroups, or a user namespace — on GitLab.com or a
+self-managed instance. Set `gitlab_namespace` to the full path and, for self-managed GitLab,
+`gitlab_base_url` to the https instance root. The credential is a group, project or personal
+access token with exactly `read_api` and `read_repository`: `{"token": "glpat-..."}`. A token
+missing either scope is refused; a broader one — a write scope, or `api`, `admin_mode` or
+`sudo` — still connects, and the connection test flags it as advisory. Its projects become
+repositories that a
+`code_scanning` policy can select for [Code Security](code-security/index.md). Code scanning
+works for GitLab.com only: a self-managed instance is inventoried but its projects cannot be
+scanned.
+
+### Bitbucket Cloud (`bitbucket`)
+
+**Setup guide:** [step-by-step onboarding](provider-setup/bitbucket.md).
+
+One **workspace** on Bitbucket Cloud. Set `bitbucket_workspace` to the slug. The credential is
+an Atlassian API token with `read:repository:bitbucket`, `read:workspace:bitbucket` and
+`read:user:bitbucket`: `{"token": "ATATT3..."}`. A token missing one of those is refused; a
+broader one — including an `admin:` or `delete:` scope — still connects, and the connection
+test flags it as advisory. The token's account must be a member of the workspace. Its
+repositories become
+repositories that a `code_scanning` policy can select for [Code Security](code-security/index.md).
+Bitbucket Data Center is not supported.
 
 ## AI security (AISPM)
 

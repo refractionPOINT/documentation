@@ -50,8 +50,10 @@ For commands which emit a report/reply event type from the agent, the correspond
 | [os\_version](#os_version) | [OS\_VERSION\_REP](edr-events.md#os_version_rep) | ☑️ | ☑️ | ☑️ |  |  |
 | put | [RECEIPT](edr-events.md#receipt) | ☑️ | ☑️ | ☑️ |  |  |
 | [rejoin\_network](#rejoin_network) | [REJOIN\_NETWORK](edr-events.md#rejoin_network) | ☑️ | ☑️ | ☑️ | ☑️ | ☑️ |
+| [repair\_core\_config](#repair_core_config) | SERVICE\_CONFIG\_REPAIR\_REP | ☑️ | ☑️ | ☑️ |  |  |
 | [repo\_list](#repo_list) | [REPO\_LIST\_REP](edr-events.md#repo_list_rep) | ☑️ | ☑️ | ☑️ |  |  |
 | restart | N/A | ☑️ | ☑️ | ☑️ |  |  |
+| [restart\_core](#restart_core) | SERVICE\_RESTART\_REP | ☑️ | ☑️ | ☑️ |  |  |
 | [run](#run) | N/A | ☑️ | ☑️ | ☑️ |  |  |
 | seal |  |  | ☑️ |  |  |  |
 | [segregate\_network](#segregate_network) | [SEGREGATE\_NETWORK](edr-events.md#segregate_network) | ☑️ | ☑️ | ☑️ | ☑️ | ☑️ |
@@ -1143,6 +1145,42 @@ limacharlie sensor task <SID> rejoin_network
 
 ---
 
+### repair_core_config
+
+Check the installed sensor's service configuration against what the installer should have written, and repair any setting that has drifted. Service configuration is written once, at install, and upgrading the sensor does not revisit it, so this is how a fix to that configuration reaches hosts that already have the sensor.
+
+The command only touches a fixed list of individual settings, changes only the ones that differ, and never regenerates the service definition. Running it twice is safe: the second run finds nothing to change. It currently covers one setting, the Windows service recovery option that lets the service manager restart a sensor that failed to start. On macOS and Linux there is nothing to check yet, and the command reports the service as at standard.
+
+**Platforms:** macOS | Windows | Linux
+
+**Parameters:**
+
+- `--dry-run` (optional): Report whether the service configuration is at standard without changing anything
+
+**Response Event:** SERVICE_CONFIG_REPAIR_REP
+
+The reply's `ERROR` answers whether the service configuration is what it should be once the command has run:
+
+| `ERROR` | Meaning |
+| --- | --- |
+| `0` | The configuration is at standard, whether or not this run had to change anything |
+| `13` | The configuration is not at standard. On a dry run, drift was found and left alone; on a real run, a setting could not be written |
+| `170` | Another lifecycle command (`upgrade_core`, `uninstall --native`, `restart_core`) is already in progress; try again |
+| Any other value | The sensor could not inspect its service configuration |
+
+`ERROR_MESSAGE` lists which settings differed. A dry-run sweep therefore returns non-zero on exactly the hosts that need a repair, and a dry run after a real repair returning `0` confirms it took.
+
+> **Note:** Requires sensor version 5.3.10 or later. Older sensors silently drop the request.
+
+**Usage Example:**
+
+```bash
+limacharlie sensor task <SID> repair_core_config --dry-run
+limacharlie sensor task <SID> repair_core_config
+```
+
+---
+
 ### repo_list
 
 Report the git working copies present on a host, and what each one is: its
@@ -1221,6 +1259,32 @@ limacharlie task send --sid <SID> --task 'repo_list -r "C:\\Users\\jdoe\\src" -r
     "SCAN_STOPPED_REASON": "complete"
   }
 }
+```
+
+---
+
+### restart_core
+
+Restart the sensor process. The sensor shuts down exactly as it would for an administrative stop, and its service manager (systemd, launchd, or the Windows Service Control Manager) starts it again. This restarts the sensor itself, unlike `restart`, which only restarts its connection to the cloud.
+
+The sensor refuses the command when nothing would bring it back, such as a sensor running in the foreground rather than as a service, so it cannot take a host offline permanently.
+
+**Platforms:** macOS | Windows | Linux
+
+**Parameters:**
+
+- `--is-confirmed` (required): Must be specified as a confirmation that you want to restart the sensor
+
+**Response Event:** SERVICE_RESTART_REP
+
+A refusal always produces a reply, with `ERROR` set to `50` and `ERROR_MESSAGE` giving the reason. `170` means another lifecycle command is already in progress. On success the reply is best-effort, because the sensor may exit before sending it. Treat the sensor reconnecting as the confirmation that it restarted.
+
+> **Note:** Requires sensor version 5.3.10 or later. Older sensors silently drop the request.
+
+**Usage Example:**
+
+```bash
+limacharlie sensor task <SID> restart_core --is-confirmed
 ```
 
 ---
