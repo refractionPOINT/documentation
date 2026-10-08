@@ -343,7 +343,21 @@ the warning. Automated bannering also requires
 (`alert_only`). Bannering asked for by a person — console, API, CLI — is not
 gated by that switch.
 
-Actions dispatched this way are attributed with `source: dr` in the audit trail.
+**How the action is attributed.** A rule in the `dr-general` Hive acts with the
+Email Security extension's own credential: the organization authorized it by
+writing the rule. The audit row's `reason` starts with `D&R rule <rule name>`
+(followed by your `reason`, if the rule sets one), so you can tell which rule to
+edit. The row's `actor` is the extension's own key and its `source` is `api`,
+not `DR:<rule>` / `dr`. Rules in `dr-mail` are different: the mail engine runs
+them itself and records `source: dr` with the rule as the actor.
+
+The same actions requested by a person or an API key through
+`extension request` run with **that caller's own permissions**: they need
+`mailsec.act` (in addition to `ext.request`), and the audit row names them.
+Campaign actions (`quarantine_campaign`, `trash_campaign`, `restore_campaign`)
+need a person and cannot be driven by a rule. In a rule, write a `reason` as a
+template such as `"{{ .routing.event_type }}"`; a plain string is read as a
+path into the event, so unless it matches one it is dropped.
 
 !!! tip "Which seat should this rule sit in?"
     A rule that should **change the verdict** belongs in `dr-mail` as a
