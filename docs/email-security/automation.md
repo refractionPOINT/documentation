@@ -169,7 +169,7 @@ gated by that switch.
 Email Security extension's own credential: the organization authorized it by
 writing the rule. The audit row's `reason` starts with `D&R rule <rule name>`
 (followed by your `reason`, if the rule sets one), so you can tell which rule to
-edit. The row's `actor` and `source` are those of the extension's key (`api`),
+edit. The row's `actor` is the extension's own key and its `source` is `api`,
 not `DR:<rule>` / `dr`. Rules in `dr-mail` are different: the mail engine runs
 them itself and records `source: dr` with the rule as the actor.
 
@@ -179,7 +179,7 @@ The same actions requested by a person or an API key through
 Campaign actions (`quarantine_campaign`, `trash_campaign`, `restore_campaign`)
 need a person and cannot be driven by a rule. In a rule, write a `reason` as a
 template such as `"{{ .routing.event_type }}"`; a plain string is read as a
-path and dropped.
+path into the event, so unless it matches one it is dropped.
 
 !!! tip "Which seat should this rule sit in?"
     A rule that should **change the verdict** belongs in `dr-mail` as a
