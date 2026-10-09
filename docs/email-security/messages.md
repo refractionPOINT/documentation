@@ -266,7 +266,7 @@ provider, and audited.
 | `quarantine_message` | Out of the inbox into a product-owned quarantine location, restorable. On Microsoft 365 the location is a hidden folder, so the user does not see the message. On Google Workspace it is a visible `LC Quarantine` label, so the user can still find the message under that label |
 | `trash_message` | To the provider's recoverable trash |
 | `move_to_spam` | To the provider's junk/spam location |
-| `restore_message` | Back to where it was before we moved it, falling back to the Inbox when that is unknown |
+| `restore_message` | Back to where it was before we moved it, falling back to the Inbox when that is unknown or was the provider's spam folder |
 | `banner_message` | Prepend the organization's warning banner. Its look and default wording come from the `banners` [policy record](policy.md#banners) and are escaped into a fixed template; an optional plain-text `text` replaces the wording for this one banner. No caller supplies HTML |
 | `unbanner_message` | Remove it |
 
