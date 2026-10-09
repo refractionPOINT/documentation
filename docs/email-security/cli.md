@@ -78,6 +78,7 @@ limacharlie mailsec message list --verdict suspicious --verdict malicious
 limacharlie mailsec message list --mailbox cfo@corp.example --since 2026-08-01
 limacharlie mailsec message list --user-reported            # a human flagged these
 limacharlie mailsec message list --lane backfill            # historical analysis, not live actions
+limacharlie mailsec message list --exclude-state spam       # leave out mail filed as junk by the provider
 limacharlie mailsec message list --link-domain evil.example # IOC pivot
 limacharlie mailsec message list --attachment-sha256 <sha>  # IOC pivot
 limacharlie mailsec message get <msg_uuid>
