@@ -70,6 +70,14 @@ filters use AND **on one recipient copy**. For example, mailbox A plus malicious
 returns a group only if A's copy is malicious, even when another copy is malicious.
 The default flagged-group gate remains separate: **Include unflagged groups** removes it.
 
+`exclude_state` is the one exception to the one-copy rule. On its own (for example
+`exclude_state=spam` to hide mail the provider filed as junk) it hides a group only
+when every copy is in an excluded state, judged from the group summary, and a group
+with a copy elsewhere stays with its whole-group counts. The summary refreshes within
+seconds to minutes of a change, so a copy that has just moved out of the excluded
+state can keep its group hidden until then. Combined with any other copy filter,
+`exclude_state` becomes one more condition on the matching copy.
+
 Filtered ordering uses the newest **matching** copy's time. Summary badges and
 counts still describe the whole group, so a matching copy's verdict or disposition
 can differ from the aggregate. The group drawer and remediation preview include
@@ -170,7 +178,7 @@ for the shared conventions.
 
 | Route | Does |
 |---|---|
-| `GET /groups` | The flagged triage queue, ordered by the newest matching copy. Accepts the same filters as Messages: `q`, `mailbox`, `sender_email`, `sender_root_domain`, `campaign_id`, `group_id`, `link_domain`, `attachment_sha256`, `state`, `direction`, `min_score`, `lane`, `verdict`, `severity`, `disposition` (including `none`), `user_reported`, `since`/`until` (matching-copy time, RFC 3339 or Unix seconds), plus `all=true`, `cursor`, `limit`. Repeated values OR within a filter; every active filter must match one copy. The cursor is bound to the filters and tenant. Follow short or empty pages while a cursor remains. Requires `mailsec.get` |
+| `GET /groups` | The flagged triage queue, ordered by the newest matching copy. Accepts the same filters as Messages: `q`, `mailbox`, `sender_email`, `sender_root_domain`, `campaign_id`, `group_id`, `link_domain`, `attachment_sha256`, `state`, `exclude_state`, `direction`, `min_score`, `lane`, `verdict`, `severity`, `disposition` (including `none`), `user_reported`, `since`/`until` (matching-copy time, RFC 3339 or Unix seconds), plus `all=true`, `cursor`, `limit`. Repeated values OR within a filter; every active filter must match one copy. The cursor is bound to the filters and tenant. Follow short or empty pages while a cursor remains. Requires `mailsec.get` |
 | `GET /groups/{group_id}` | One consistent aggregate of every indexed copy: first/last seen, counts, maximum verdict and severity, placement and disposition summaries, representative message and campaign. Requires `mailsec.get` |
 | `GET /messages?group_id={group_id}` | The group's recipient copies, paged like any message list |
 | `POST /groups/{group_id}/actions/preview` | Prepare a durable snapshot of every copy. Body: `preview_id` (caller UUID, reused on retry), `action` (a remediation action or `set_disposition`), optional `reason`, `text`, `force`; for `set_disposition`, `disposition` or `clear: true`, and optional `note`. Requires `mailsec.act`, plus `mailsec.set` for `set_disposition` |

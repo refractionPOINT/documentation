@@ -47,6 +47,7 @@ group scope to its default.
 | `disposition` | Repeatable analyst disposition: `malicious`, `spam`, `graymail`, `benign`, `simulation`; `none` selects copies without a disposition |
 | `state` | Repeatable: `delivered`, `quarantined`, `trashed`, `restored`, `bannered`, `spam` |
 | `direction` | Repeatable: `inbound`, `outbound`, `internal` |
+| `exclude_state` | Repeatable, same values as `state`: hides messages in those states, for example `exclude_state=spam` to leave out mail the provider already filed as junk. Combines with `state` (the `state` list applies first); naming the same value in both is refused with a 400. In Groups, a group is hidden only when **every** copy is in an excluded state; a group with at least one other copy stays, and its counts still describe the whole group |
 | `lane` | `live` for ordinary incoming mail or `backfill` for the initial history walk; omit for either |
 | `mailbox` | One protected mailbox address |
 | `sender_email` | One sender address |
@@ -115,7 +116,7 @@ walk:
 - or a **single** `verdict`. Two or more verdicts is not a lookup either, so it
   does not count.
 
-`state`, `direction`, `user_reported`, `min_score` and `sender_root_domain`
+`state`, `exclude_state`, `direction`, `user_reported`, `min_score` and `sender_root_domain`
 narrow the *answer* rather than the *scan*, so they do not satisfy the
 requirement.
 
