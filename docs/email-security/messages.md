@@ -45,7 +45,7 @@ group scope to its default.
 | `verdict` | Repeatable: `malicious`, `suspicious`, `graymail`, `benign`, `unknown` |
 | `severity` | Repeatable rule severity: `informational`, `low`, `medium`, `high`, `critical` |
 | `disposition` | Repeatable analyst disposition: `malicious`, `spam`, `graymail`, `benign`, `simulation`; `none` selects copies without a disposition |
-| `state` | Repeatable: `delivered`, `quarantined`, `trashed`, `restored`, `bannered`, `spam` |
+| `state` | Repeatable: `delivered`, `quarantined`, `trashed`, `restored`, `bannered`, `spam`. `spam` is a message in the provider's spam folder: one the provider had already filed there when it was collected, or one moved there by `move_to_spam` |
 | `direction` | Repeatable: `inbound`, `outbound`, `internal` |
 | `lane` | `live` for ordinary incoming mail or `backfill` for the initial history walk; omit for either |
 | `mailbox` | One protected mailbox address |
