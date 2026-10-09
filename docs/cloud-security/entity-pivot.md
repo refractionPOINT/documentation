@@ -14,6 +14,9 @@ sensors alone, so you do not need to connect a cloud or identity provider first.
 Providers add directory identities, devices and cloud context to what the sensors
 already provide.
 
+Detection & Response rules and outputs can look up entities as events arrive; see
+[Pivots in Rules and Outputs](rule-pivots.md).
+
 !!! note "Availability"
     The Entity Pivot API, the console page, the CLI and the MCP tools are available
     for organizations with Cloud Security. The CLI group `limacharlie cloudsec entity`
