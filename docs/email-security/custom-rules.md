@@ -148,11 +148,17 @@ limacharlie hive set --hive-name dr-mail --key vendor-bank-change \
 
 ### Severity and typed actions
 
-Severity is independent of score and verdict. A message carries the maximum
-severity of all matching, unsuppressed rules, including matches beyond the
-shortened top-signals display. Excluded rules contribute neither severity nor
-typed actions. All shipped defaults declare a severity; historical messages may
-have no stored value, which remains unknown.
+A rule's `severity` is its authored impact, independent of score and verdict.
+A message keeps the maximum authored impact of all matching, unsuppressed rules,
+including matches beyond the shortened top-signals display, as its
+`rule_severity`. Excluded rules contribute neither impact nor typed actions.
+
+The `severity` shown on a message is the threat severity of its current verdict:
+informational for benign, graymail, unknown and error verdicts, at least `low`
+for suspicious and at least `high` for malicious, raised by `rule_severity` when
+that is higher. A high-impact rule that matches benign mail therefore does not
+make the message a threat. All shipped defaults declare a severity; historical
+messages may have no stored value, which remains unknown.
 
 Typed actions are `quarantine_message`, `trash_message`, `move_to_spam`,
 `banner_message`, `submit_to_triage` and `crawl_link`. A rule can request up to

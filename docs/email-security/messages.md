@@ -28,7 +28,7 @@ the `mail_type` object, including its classifier version, with
 not a message-list filter.
 
 For recipient-wide triage, select the Groups view on Messages; see [Message Groups & Cases](groups.md). Severity
-is a separate rule signal from the security verdict and analyst disposition.
+describes the threat a flagged verdict represents, and inspection status is a separate signal; both are independent of analyst disposition (see [Threat severity and inspection](#threat-severity-and-inspection)).
 
 ## The queue
 
@@ -36,14 +36,18 @@ Filtering is **entirely server-side** — every filter below narrows the query i
 the backend, so a filtered page is a statement about your whole mail history, not
 about the rows a browser happened to have loaded. Both views use the same filter
 bar, filter modal, search and active-filter badges. Switching views keeps the
-filters. **Include unflagged groups** expands the default Groups triage queue; it
-does not change the individual Messages view. **Clear all** also resets that
-group scope to its default.
+filters. Both views start on the triage queue; **Include unflagged messages** (Messages)
+and **Include unflagged groups** (Groups) widen the view to all mail. A message
+is in the queue when an analyst marked it malicious or spam, or when its verdict
+is suspicious or malicious, or when it has a user report that nobody has dismissed.
+An analyst disposition of benign, graymail or simulation takes it out. Rule
+severity alone never adds benign mail to the queue. **Clear all** resets the queue
+scope to its default.
 
 | Filter | Notes |
 |---|---|
 | `verdict` | Repeatable: `malicious`, `suspicious`, `graymail`, `benign`, `unknown` |
-| `severity` | Repeatable rule severity: `informational`, `low`, `medium`, `high`, `critical` |
+| `severity` | Repeatable threat severity: `informational`, `low`, `medium`, `high`, `critical` |
 | `disposition` | Repeatable analyst disposition: `malicious`, `spam`, `graymail`, `benign`, `simulation`; `none` selects copies without a disposition |
 | `state` | Repeatable: `delivered`, `quarantined`, `trashed`, `restored`, `bannered`, `spam` |
 | `direction` | Repeatable: `inbound`, `outbound`, `internal` |
@@ -53,12 +57,14 @@ group scope to its default.
 | `sender_root_domain` | One sender registrable domain |
 | `campaign_id` | The members of one campaign |
 | `group_id` | Every indexed recipient copy of one hardened message group |
-| `severity` | Repeatable rule severity: `informational`, `low`, `medium`, `high`, `critical` |
+| `severity` | Repeatable threat severity: `informational`, `low`, `medium`, `high`, `critical` |
 | `link_domain` | Messages linking to this **registrable root** domain (`evil.example`, not `login.evil.example`) |
 | `attachment_sha256` | Messages carrying an attachment with this hash |
 | `user_reported` | Tri-state — see below |
+| `inspection_incomplete` | `true` finds incomplete inspection, including benign mail; `false` finds known-complete inspection and excludes unmeasured history |
+| `flagged` | Messages only: `true` selects current triage eligibility, `false` selects unflagged mail; omit for all |
 | `min_score` | Messages scoring at least this much |
-| `q` | Free-text over the message's subject and sender address, up to 512 characters. The subject is matched in both its raw and its normalized form, so a hit can be on text the row does not display. It is matched row by row rather than looked up, so it must be accompanied by something that bounds the read: a `since`, or one of `mailbox` / `sender_email` / `campaign_id` / `link_domain` / `attachment_sha256`, or a **single** `verdict`. On its own it is refused — see [Free text needs a window](#free-text-needs-a-window) |
+| `q` | Free-text over the message's subject and sender address, up to 512 characters. The subject is matched in both its raw and its normalized form, so a hit can be on text the row does not display. It is matched row by row rather than looked up, so it must be accompanied by something that bounds the read: a `since`, or one of `mailbox` / `sender_email` / `campaign_id` / `link_domain` / `attachment_sha256`, or a **single** `verdict` (without `lane`) or `severity`, or a positive sparse queue (`flagged=true`, or `inspection_incomplete=true` with `flagged` absent). Searching within `flagged=false` or `inspection_incomplete=false` needs a window or selective pivot. On its own it is refused — see [Free text needs a window](#free-text-needs-a-window) |
 | `since` / `until` | RFC3339 or unix seconds |
 
 Repeatable filters **OR within a key and AND across keys**: `verdict=suspicious`
@@ -94,6 +100,25 @@ automatic responses; an empty action history on one is expected.
     to `false` selects mail **nobody reported**, which is a different and much
     larger set than "all mail".
 
+### Threat severity and inspection
+
+Message severity measures the threat indicated by its current verdict. Benign,
+graymail, unknown and error verdicts are informational. Suspicious verdicts have
+a low floor; malicious verdicts have a high floor. Authored rule impact can raise
+a flagged verdict above its floor, even when a shared-fact cap reduced score.
+
+Inspection is a separate signal. A benign message can still have
+`inspection_incomplete: true` because a scanner, lookup or parse could not finish,
+and the console marks it **Inspection incomplete**. `coverage_signals` lists the
+IDs of the matched coverage rules, including rules excluded from the score.
+`inspection_incomplete` is `null` when inspection was never measured (for example
+older history); that is unmeasured, never proof that inspection succeeded. Groups
+report incomplete and unknown recipient-copy counts independently of severity.
+Because benign mail is outside the default triage queue, select **Include
+unflagged messages** (or **Include unflagged groups**) when you hunt for benign
+mail with incomplete inspection. The coverage summary counts these messages
+regardless of the queue scope.
+
 ### Free text needs a window
 
 Most of the filters in the table above are a **lookup**: `mailbox`,
@@ -112,8 +137,12 @@ walk:
   newest-first, so `until` moves where it starts and `since` is where it stops;
 - or one of **`mailbox`**, **`sender_email`**, **`campaign_id`**,
   **`link_domain`**, **`attachment_sha256`**;
-- or a **single** `verdict`. Two or more verdicts is not a lookup either, so it
-  does not count.
+- or a **single** `verdict` (not combined with `lane`) or a **single** `severity`;
+- or **`flagged=true`**, or **`inspection_incomplete=true`** with `flagged` absent.
+  These select a sparse attention queue. For `flagged=false`, or
+  `inspection_incomplete=false` with `flagged` absent, supply `since` or a
+  selective mailbox/sender/campaign/IOC pivot, even when specifying a verdict
+  or severity.
 
 `state`, `direction`, `user_reported`, `min_score` and `sender_root_domain`
 narrow the *answer* rather than the *scan*, so they do not satisfy the
@@ -169,12 +198,16 @@ needs `cloudsec.get` and Cloud Security, in addition to `mailsec.get`.
 ### Pagination
 
 Pages are keyset-paginated. `next_cursor` is opaque and is passed back verbatim;
-an empty one is the last page.
+an empty one is the last page. When filtering by `flagged` or
+`inspection_incomplete`, a page can be short or empty and still have a cursor:
+the service bounds how much it scans per request. Keep paging until the cursor
+is empty. These filtered walks keep one snapshot for 50 minutes; restart after
+expiry or after changing filters.
 
 A message cursor is **bound to the complete filter set that minted it**: the
 token carries the chosen read index and a digest of your organization, the sort
 order and *every* filter — `q`, verdict, severity, disposition, state, direction, lane, mailbox,
-sender address, sender root domain, campaign, user-reported, score floor, time
+sender address, sender root domain, campaign, user-reported, flagged, inspection completeness, score floor, time
 window, link domain and attachment hash — so changing any of them mid-walk fails
 the next page (`400`, `error_code: cursor_filter_changed`, `restart_walk: true`)
 rather than silently resuming at the previous search's position. Filter *values*

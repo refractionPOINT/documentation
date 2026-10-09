@@ -36,11 +36,13 @@ to newly ingested messages. Existing stored group IDs remain unchanged, so older
 and newer groups can coexist for the same send; no historical regrouping occurs.
 
 The default queue shows groups needing triage: malicious or suspicious copies,
-medium-or-higher rule severity, or user-reported mail. An analyst benign revision
-removes that copy's severity-only triage contribution while preserving its
-historical severity. Dispositions benign, graymail and simulation dismiss that
-copy's triage contribution; malicious and spam flag it. The historical user-report
-indicator stays visible. Other undismissed copies keep the group in the queue.
+or user-reported mail. Severity alone does not queue a copy: a benign message that
+matched a high-impact rule stays out of the queue, though its inspection status
+stays visible. Dispositions benign, graymail and simulation dismiss that
+copy's triage contribution; malicious and spam flag it. An analyst verdict
+revision on a copy with no disposition also dismisses its user report. The
+historical user-report indicator stays visible. Other undismissed copies keep
+the group in the queue.
 **Include unflagged groups** includes the remaining groups.
 
 Groups contain retained recipient copies from the past 35 days, consistent with
@@ -64,7 +66,7 @@ every copy matched.
 Both views apply the same filters on the server: literal text search,
 mailbox, sender address or root domain, campaign, link domain, attachment SHA-256,
 placement state, direction, minimum score, lane, verdict, severity, disposition
-(including `none`), user-reported state and time. Omitted user-reported state leaves
+(including `none`), user-reported state, inspection status and time. Omitted user-reported state leaves
 that dimension unrestricted. Alternatives within one filter use OR; different
 filters use AND **on one recipient copy**. For example, mailbox A plus malicious
 returns a group only if A's copy is malicious, even when another copy is malicious.
@@ -170,7 +172,7 @@ for the shared conventions.
 
 | Route | Does |
 |---|---|
-| `GET /groups` | The flagged triage queue, ordered by the newest matching copy. Accepts the same filters as Messages: `q`, `mailbox`, `sender_email`, `sender_root_domain`, `campaign_id`, `group_id`, `link_domain`, `attachment_sha256`, `state`, `direction`, `min_score`, `lane`, `verdict`, `severity`, `disposition` (including `none`), `user_reported`, `since`/`until` (matching-copy time, RFC 3339 or Unix seconds), plus `all=true`, `cursor`, `limit`. Repeated values OR within a filter; every active filter must match one copy. The cursor is bound to the filters and tenant. Follow short or empty pages while a cursor remains. Requires `mailsec.get` |
+| `GET /groups` | The flagged triage queue, ordered by the newest matching copy. Accepts the same filters as Messages: `q`, `mailbox`, `sender_email`, `sender_root_domain`, `campaign_id`, `group_id`, `link_domain`, `attachment_sha256`, `state`, `direction`, `min_score`, `lane`, `verdict`, `severity`, `disposition` (including `none`), `user_reported`, `inspection_incomplete`, `since`/`until` (matching-copy time, RFC 3339 or Unix seconds), plus `all=true`, `cursor`, `limit`. Repeated values OR within a filter; every active filter must match one copy. The cursor is bound to the filters and tenant. Follow short or empty pages while a cursor remains. Requires `mailsec.get` |
 | `GET /groups/{group_id}` | One consistent aggregate of every indexed copy: first/last seen, counts, maximum verdict and severity, placement and disposition summaries, representative message and campaign. Requires `mailsec.get` |
 | `GET /messages?group_id={group_id}` | The group's recipient copies, paged like any message list |
 | `POST /groups/{group_id}/actions/preview` | Prepare a durable snapshot of every copy. Body: `preview_id` (caller UUID, reused on retry), `action` (a remediation action or `set_disposition`), optional `reason`, `text`, `force`; for `set_disposition`, `disposition` or `clear: true`, and optional `note`. Requires `mailsec.act`, plus `mailsec.set` for `set_disposition` |
@@ -188,7 +190,8 @@ rules. Removal also needs detection-rule delete permission.
 The pack reports:
 
 - `EMAIL_ANALYSIS_COMPLETE` when the final verdict is malicious or suspicious,
-  severity is at least medium, or the message was user-reported.
+  or the message was user-reported. Severity sets the priority; it does not make
+  a benign message eligible.
 - `EMAIL_USER_REPORT` from a human reporter. Automated senders are excluded.
 
 Copies classified benign, graymail or simulation are excluded from both triggers.

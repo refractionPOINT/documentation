@@ -863,6 +863,10 @@ text examined.
 | Field | Type | Presence |
 |---|---|---|
 | `verdict` | string | Always |
+| `severity` | string | Non-empty |
+| `rule_severity` | string | Non-empty |
+| `inspection_incomplete` | boolean | Non-empty |
+| `coverage_signals` | array of string | Non-empty |
 | `score` | integer | Always |
 | `top_signals` | array of [TopSignal](#topsignal) | Non-empty |
 | `matched_signals` | array of string | Non-empty |
