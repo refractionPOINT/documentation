@@ -432,7 +432,7 @@ This action launches a fully-managed Claude Code session that can investigate ev
 | `lc_uid_secret` | LimaCharlie User ID. Required when `lc_api_key_secret` is a user API key. Use `hive://secret/<name>`. (Inline mode only.) |
 | `idempotent_key` | Unique key to prevent duplicate sessions. Supports template strings. (Inline mode only.) |
 | `debounce_key` | Serializes sessions: only one active session per key. New requests queue behind the active session and re-fire when it ends. Supports template strings. (Both modes.) |
-| `data` | Extract event fields to include in the prompt as JSON. (Inline mode only.) |
+| `data` | Extract event fields to include in the prompt as JSON. The platform marks this block as untrusted; event fields interpolated into `prompt` are not marked. See [Untrusted event data](../9-ai-sessions/dr-sessions.md#untrusted-event-data). (Inline mode only.) |
 | `profile` | Inline session configuration (tools, model, limits, external MCP servers). (Inline mode only.) |
 | `profile_name` | Reference a saved profile by name. (Inline mode only.) |
 

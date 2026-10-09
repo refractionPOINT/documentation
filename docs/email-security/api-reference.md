@@ -329,13 +329,14 @@ Record a re-judgement of one message, replacing the class the engine stamped.
 | Field | |
 |---|---|
 | `verdict` | **Required.** `malicious`, `suspicious`, `graymail`, `benign` or `unknown`. `unknown` is an honest abstention that escalates to a human queue. `error` is refused — it means judgement itself failed, which is an engine fact nobody decides |
-| `mode` | **Required.** Which *seat* decided: `analyst` for a person, `ai` for an autonomous triage agent calling with its own organization credentials. `auto` is refused; that is the scorer's own path and it does not override itself |
 | `rationale` | **Required.** A non-empty list of short strings. A class with no reason is a naked verdict, and the same explainability contract applies to a revision as to the engine. Bounded: at most **10 bullets of 280 characters**, clipped on a character boundary with `rationale_truncated` set, rather than the verdict being refused over a long explanation |
 | `score` | Optional. Omitting it keeps the engine's score beside the new class |
 
-**Who** revised is stamped from your authenticated identity and is never read
-from the body. `mode` names the seat, not the person: a caller misstating it can
-only do so beside an `actor` it did not choose, where the two disagree visibly.
+**Who** revised, and the `mode`, are stamped from your authenticated identity and
+are never read from the body. A signed-in user is recorded as `analyst` and any
+API key as `api`, which includes the Email Security extension acting for a D&R
+rule. There is no `mode` to send, and one in the body is ignored. Every caller
+that holds `mailsec.act` has the same effect. Older records can read `ai`.
 
 Requires **`mailsec.act`**, not `mailsec.set`, and that is the one permission
 choice on this surface that is not read off the "does it touch a mailbox" line. A
@@ -361,7 +362,7 @@ grant an operator revokes to stop an autonomous caller doing it.
     nothing: the response is `200` with `applied: false` and
     `already_current: true`. Distinguish the two through the body, not the status
     code. Re-wording the rationale alone is not a change; a person confirming an
-    agent's call **is** one, because the mode moves.
+    API key's call **is** one, because the mode moves.
 
 The revision is durable before the event and the evidence promotion are
 attempted, so a failure to ship telemetry comes back as a retryable error whose
@@ -481,7 +482,7 @@ telemetry and every customer rule is keyed on them.
 | Event | Cardinality |
 |---|---|
 | `EMAIL_MESSAGE` | Exactly once per message, at ingest, immutable. Carries the full Message Data Model |
-| `EMAIL_VERDICT` | Once per verdict **decision**. `revision/seq: 0` with `revision/mode: auto` is the rule pack's own verdict, emitted at ingest immediately after that message's `EMAIL_MESSAGE`; `seq: 1…` is one per override (`analyst`, `ai`, `detonation`) |
+| `EMAIL_VERDICT` | Once per verdict **decision**. `revision/seq: 0` with `revision/mode: auto` is the rule pack's own verdict, emitted at ingest immediately after that message's `EMAIL_MESSAGE`; `seq: 1…` is one per override (`analyst`, `api`, `detonation`, and `ai` on older records) |
 | `EMAIL_ACTION` | Once per remediation outcome, including failures and skips |
 | `EMAIL_USER_REPORT` | Once per message that reaches the abuse mailbox |
 | `EMAIL_DISPOSITION` | Independent analyst/SOAR disposition changed or cleared; carries actor, source, note, server timestamp, prior value, and sequence |
@@ -535,7 +536,7 @@ or error coverage is not proof of zero blocked messages. See
 | `POST /messages/{msg_uuid}/disposition` | `disposition` from the five-value vocabulary, optional `note`; or `clear: true`. Requires `mailsec.set`. |
 | `POST /messages/dispositions` | Same decision plus 1–500 unique `msg_uuids`. Returns per-message results, including partial failures. Requires `mailsec.set`. |
 | `GET /messages?disposition=<value>` | Filter by one disposition, or `none` for no current label. |
-| `POST /messages/{msg_uuid}/actions` with `action: release_message` | Restore, benign verdict revision, benign disposition, history repair. Optional `mode` (`analyst` or `ai`), `reason`, `force`, `attempt`. Requires `mailsec.act`. |
+| `POST /messages/{msg_uuid}/actions` with `action: release_message` | Restore, benign verdict revision, benign disposition, history repair. Optional `reason`, `force`, `attempt`. There is no `mode`: the recorded mode comes from your credential, as for a [verdict revision](#post-messagesmsg_uuidverdict). Requires `mailsec.act`. |
 | `POST /reports/{report_id}/resolve` | `disposition`; optional `remediation` with `scope` (`message`, `group` or `campaign`), `action` and optional `confirm`, `reason`, `force`, `attempt` (a required UUID for group scope, reused for preview, confirmation and polling; see [Message Groups](groups.md)). Without confirm, remediation is previewed and the report stays open. Pure resolution requires `mailsec.set`; remediation also requires `mailsec.act`. |
 
 The five dispositions are `malicious`, `spam`, `graymail`, `benign`, and

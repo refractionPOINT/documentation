@@ -530,7 +530,8 @@ fields that distinguish them:
 |---|---|
 | Only the rule pack's own decision | `path: event/revision/seq`, `value: 0` |
 | Only overrides | `op: is greater than`, `path: event/revision/seq`, `value: 0` |
-| Only what a human decided | `path: event/revision/mode`, `value: analyst` |
+| Only what a signed-in person decided | `path: event/revision/mode`, `value: analyst` |
+| Only what an API key decided, including an agent or a D&R rule | `path: event/revision/mode`, `value: api` |
 | Only a *change* to malicious | `path: event/revision/prior/verdict`, `op: is`, `not: true`, `value: malicious` |
 | A specific rule that fired | `op: is`, `path: event/revision/top_signals/?/rule_id`, `value: ms-link-credentials-in-url` — the `?` matches any element of the list (`seq 0` only; an override carries no signals) |
 
