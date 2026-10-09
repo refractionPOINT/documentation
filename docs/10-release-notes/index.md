@@ -18,6 +18,37 @@ Release notes for LimaCharlie platform components, organized by date.
 
     For discussion and email notification of the same releases, set the [Platform Updates category](https://community.limacharlie.com/c/platform-updates/5) in the community forum to Watching. For service availability rather than releases, subscribe on the [status page](https://status.limacharlie.io/).
 
+## 2026-10-09
+
+### Web App 6.6.0
+
+A major expansion of Application Control, a triage-first Email Security console, richer Entity pages, Linux vulnerability verification coverage, and a clearer Cloud and Code Security experience.
+
+#### New Features
+
+- **Email Security overview**: the overview now leads with the work that needs an analyst: mail still in inboxes, open user reports, flagged campaigns, protection mode, and recent suspicious or malicious messages. A compact coverage strip, clearer health summaries, actionable plan warnings, flatter navigation, and a compact status table for bulk group actions round it out.
+- **Email Security verdicts**: decisions made through an API key now show as "API key", and the mail provider's own spam placement (Google or Microsoft junk folder) is shown and usable in the console. Triage queues, verdict evidence, and action consent are clearer.
+- **Entities**: the Recent activity table shows when, where, who, and how an activity was observed, and why a row is unconfirmed. Entity graphs draw attached sensors, possible activity, and cloud sign-ins, and show filter chips only for kinds that are present. The Email activity table lists only flagged mail, with verdict, disposition, and a link to the message. The breadcrumb returns you to the search, view, and page you came from.
+- **Entities availability**: subscribed Cloud Security orgs now see Entities before connecting a cloud provider, as long as sensors and adapters can supply entities.
+- **Vulnerability verification**: Linux vulnerability views show distro-verification badges, a separate unverified count, status filters, and per-host coverage. Grouped kernel findings list the contributing packages, and older installed kernel builds are labelled "installed, likely not running" with a host toggle to include them.
+- **Sensor Kind**: the Sensors list adds a Kind column and filter: Endpoint agents, Browsers, Third-party EDR devices, Identity / email sources, and Cloud / log feeds.
+- **Cloud Security**: Risks gets a collapsible filter rail with counts, full finding titles, and clearer finding explanations. Finding counts show the age of their source, failed reads recover and partial dashboards still render, and unknown data-store providers are explained.
+- **Hive editor Markdown view**: SOPs, Org Notes, AI skills, and agent prompts can be viewed as rendered Markdown.
+- **Cases**: the case detail page stays usable for cases with a very large number of detections, and auto-grouping now defaults to on in the settings form.
+
+#### Bug Fixes
+
+- The case queue SLA column now uses the org's configured SLA targets instead of the built-in defaults.
+- Mark False Positive no longer opens the testing workspace over the generated rule.
+- Query Console warns about an unknown source instead of crashing.
+- The floating assistant no longer covers drawers, pagination, or bulk-action bars.
+- After a deploy, an open tab recovers from stale page chunks with a single reload.
+- Compliance stays usable when some reads fail, and stops retrying failed scroll loads.
+- Email Security sparse searches stay complete, and status badges in queue cells are spaced and stacked correctly.
+- Bulk action bars stay on one line, with responsive overflow.
+
+---
+
 ## 2026-10-06
 
 ### Endpoint Agent: Changes from 4.33.25 to 5.3.12
