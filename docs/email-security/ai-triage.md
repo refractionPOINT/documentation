@@ -153,34 +153,39 @@ and finishing with an auditable result.
 
 ```yaml
 # mailsec-triage-agent.yaml
-lc_api_key_secret: hive://secret/mailsec-triage-key
-anthropic_secret: hive://secret/mailsec-triage-anthropic
-
-name: "Email triage: {{ .msg_uuid }}{{ .report_id }}"
-prompt: |
-  You are an email security analyst triaging one LimaCharlie Email Security
-  message or user report. You receive trigger data containing oid and either
-  msg_uuid or report_id. Always pass --oid <oid> and --output yaml.
-  # ... copy the full reference playbook here ...
-
 data:
-  oid: routing.oid
-debounce_key: "mailsec-triage-{{ .msg_uuid }}{{ .report_id }}"
+  lc_api_key_secret: hive://secret/mailsec-triage-key
+  anthropic_secret: hive://secret/mailsec-triage-anthropic
 
-plugins:
-  - lc-essentials
+  name: "Email triage: {{ .msg_uuid }}{{ .report_id }}"
+  prompt: |
+    You are an email security analyst triaging one LimaCharlie Email Security
+    message or user report. You receive trigger data containing oid and either
+    msg_uuid or report_id. Always pass --oid <oid> and --output yaml.
+    # ... copy the full reference playbook here ...
 
-max_turns: 20
-max_budget_usd: 0.50
-ttl_seconds: 180
-one_shot: true
-permission_mode: bypassPermissions
+  data:
+    oid: routing.oid
+  debounce_key: "mailsec-triage-{{ .msg_uuid }}{{ .report_id }}"
+
+  plugins:
+    - lc-essentials
+
+  max_turns: 20
+  max_budget_usd: 0.50
+  ttl_seconds: 180
+  one_shot: true
+  permission_mode: bypassPermissions
 ```
 
 ```bash
 limacharlie hive set --hive-name ai_agent --key mailsec-triage \
   --input-file mailsec-triage-agent.yaml --oid "$OID" --enabled
 ```
+
+The record's own `data:` field (the event extraction) sits inside the outer `data:`
+that wraps the whole record. Without the outer wrapper the CLI reads the inner `data:`
+as the record and rejects `oid` as an unknown field.
 
 What the non-obvious fields buy you:
 

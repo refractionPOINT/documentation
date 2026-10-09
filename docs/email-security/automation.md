@@ -764,7 +764,8 @@ causes silent failures. A top-level string value that has no `{{ }}` in it is
 read as a path into the event, not as text. If the path matches nothing, the key
 is silently left out of the request. `verdict: malicious` therefore does not send
 the word `malicious`. It looks for a field named `malicious` in the event, finds
-none, and sends no verdict at all.
+none, and sends no verdict at all. The platform then refuses the request because
+`verdict` is missing. See [Errors show up when the rule runs](#errors-show-up-when-the-rule-runs).
 
 To send a fixed string, write it as a template literal:
 
@@ -790,8 +791,8 @@ top-level fixed string: `verdict`, `disposition`, `note` and `reason`.
 | Field | Allowed values and limits |
 |---|---|
 | `msg_uuid` | Required on every action except `resolve_report`. At most 36 characters |
-| `verdict` | `benign`, `graymail`, `suspicious`, `malicious` or `unknown`. `unknown` is an honest abstention that escalates to a human queue. `error` is not accepted, because it means the engine failed to judge |
-| `rationale` | A list of short strings, at least one non-blank. A person gets up to 10 bullets of 280 characters, and more is refused. A rule gets 9 of its own, because the rule name takes the first of the 10. A rule that goes over is not refused: extra bullets and extra characters are clipped, and the revision is marked `rationale_truncated` |
+| `verdict` | Required on `revise_verdict`. `benign`, `graymail`, `suspicious`, `malicious` or `unknown`. `unknown` is an honest abstention that escalates to a human queue. `error` is not accepted, because it means the engine failed to judge |
+| `rationale` | Required on `revise_verdict`. A list of short strings, at least one non-blank. A person gets up to 10 bullets of 280 characters, and more is refused. A rule gets 9 of its own, because the rule name takes the first of the 10. A rule that goes over is not refused: extra bullets and extra characters are clipped, and the revision is marked `rationale_truncated` |
 | `score` | Optional integer from 0 to 100. Leave it out to keep the engine's score beside the new verdict |
 | `disposition` | `malicious`, `spam`, `graymail`, `benign` or `simulation`. Leave it out when clearing |
 | `clear` | `true` removes the current disposition. Send it instead of `disposition`, never with it |
@@ -807,22 +808,41 @@ is refused.
 #### Errors show up when the rule runs
 
 Saving a rule does not check the request against the extension. A rule with
-`verdict: '{{ "malcious" }}'`, or one that leaves out a required field, saves
-without complaint. The extension checks the request each time the rule fires, and
-a bad one comes back as an error on the organization. Look for it with:
+`verdict: '{{ "malcious" }}'`, with a `mode` field, or with a required field
+missing, saves without complaint. The request is checked each time the rule
+fires, and a bad one is refused and writes nothing. The refusal is recorded as an
+organization error. Look at it right after the rule fires:
 
 ```bash
 limacharlie org errors --oid $OID
 ```
 
-The message names the problem, for example `invalid value for verdict: value not
-in enum` or `unknown parameter name: mode`. Errors are listed per component and
-repeats are collapsed, so test one rule at a time. A request the extension itself
-refuses may not appear there at all. A `verdict` that was dropped by the string
-rule above is one of these: the extension answers `invalid verdict`. When a rule
-seems to do nothing, check the message's `revisions` or `actions` before you
-suspect the rule did not fire. Test a new rule on a message you can afford to
-change before you rely on it.
+A plain-string `verdict: malicious`, the trap described above, produces this:
+
+```text
+request 'revise_verdict' from DR:general.my-rule failed: lc_error_code:INVALID_PARAMETER - missing one of verdict
+```
+
+A misspelled value reads `invalid value for verdict: value not in enum`, and a
+leftover `mode` reads `unknown parameter name: mode`. These refusals name the
+action and the rule.
+
+Three things limit what you see there:
+
+- All errors from rule-driven Email Security requests go to one entry, labeled
+  `extensions/ext-email-security`. A newer error from any rule or action replaces
+  the previous one, so you see the latest error only.
+- An identical message is recorded once per 15 minutes. Firing the same broken
+  rule again right away does not add anything.
+- A refusal that comes from the extension itself, written `EXTENSION_ERROR`
+  followed by a message, does not name the rule.
+
+So test one rule at a time and read the error straight after it fires. To
+confirm what a rule did, or that it did nothing, check the message itself:
+`limacharlie mailsec message revisions <msg_uuid>` for a revision, or the
+`actions` and `disposition_info` fields of `limacharlie mailsec message get
+<msg_uuid>` for a release or a disposition. Try a new rule on a message you can
+afford to change before you rely on it.
 
 #### Examples
 
