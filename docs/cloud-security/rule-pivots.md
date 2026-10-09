@@ -5,7 +5,7 @@ A pivot lets a Detection & Response (D&R) rule or an output ask a question about
 Use a pivot when the event does not carry the context you need. A firewall log names an IP address but not the machine behind it. A process event names a sensor but not the person who owns it.
 
 !!! note "Requirements"
-    Pivots require Cloud Security, because the answers come from the User and Host entities that Cloud Security builds from your sensors and connected providers. Saving a rule or an output that contains a pivot also needs extra permissions; see [Permissions](#permissions).
+    Pivots require Cloud Security, because the answers come from the User and Host entities that Cloud Security builds from your sensors and connected providers. Saving a rule or an output that contains a pivot also needs an extra permission; see [Permissions](#permissions).
 
 ## Pivot vocabulary
 
@@ -323,25 +323,24 @@ custom_transform: |-
   }
 ```
 
-An output never waits for a lookup:
+When the value is not already cached, an output waits a very short time, about 50 milliseconds, for the lookup. In normal conditions the first event for an identifier already carries the value.
 
-- The event is always delivered.
-- The first event for a given identifier can be delivered with an empty value while the answer is fetched. The events that follow carry it.
+- If the lookup does not finish in that time, the event is delivered right away with an empty value. Later events carry the value once it is cached.
+- If the lookup cannot run, the event is also delivered right away with an empty value. This happens when the organization's lookup budget is exceeded, when Entities are not ready, or when the output was not saved with the permission.
+- Delivery is never blocked beyond that short wait. An output whose lookups are slow stops waiting for a while.
 - Values are refreshed periodically, so an answer can be up to about half an hour old.
 
 ## Permissions
 
 Saving a rule or an output that contains a pivot needs `cloudsec.get` in addition to the permission you normally need: `dr.set` for a rule, `output.set` for an output. This applies to every save of that rule or output, not only the save that adds the pivot.
 
-A rule with an address pivot also needs `insight.evt.get`.
-
-The same applies to [API keys](../7-administration/access/api-keys.md) used by automation that pushes rules. A rule or an output saved without the permissions is refused, and the message names the missing permission. Enabling, disabling or tagging a rule does not need them.
+This includes rules with an address pivot. The same applies to [API keys](../7-administration/access/api-keys.md) used by automation that pushes rules. A rule or an output saved without the permission is refused, and the message names the missing permission. Enabling, disabling or tagging a rule does not need it.
 
 See [Permissions](../8-reference/permissions.md) for the full list.
 
 ## When a pivot cannot be answered
 
-A pivot cannot be answered when Entities are not ready for the organization (see [Readiness](entity-pivot.md#readiness-history-and-incomplete-results)), when a lookup fails temporarily, when the organization's lookup budget is exceeded, when the identifier is ambiguous, or when the rule was not saved with the required permission.
+A pivot cannot be answered when Entities are not ready for the organization (see [Readiness](entity-pivot.md#readiness-history-and-incomplete-results)), when a lookup fails temporarily, when the organization's lookup budget is exceeded, when the identifier is ambiguous, or when the rule or output was not saved with the required permission.
 
 What happens depends on where the pivot is.
 
@@ -351,7 +350,7 @@ What happens depends on where the pivot is.
 | Detection half, address pivot | The operator does not match. The rest of the rule is still evaluated, so other branches of an `or` still work. |
 | Response half, a `report` | The detection is not lost. The report keeps its unrendered name and metadata text. |
 | Response half, an action that acts with the value, such as `add tag`, `task` with an investigation ID, an extension request, or the fields of `start ai agent` | The action fails for that event. The other actions still run. |
-| Outputs | The event is delivered. The value renders empty. |
+| Outputs | The event is delivered. The value renders empty when the lookup did not finish within the short wait described in [Outputs](#outputs) or could not run. |
 
 Each failure is reported to the organization's error stream, at most about once per rule per minute. A stale event on an address pivot is not reported.
 
