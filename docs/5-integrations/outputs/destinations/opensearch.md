@@ -3,7 +3,7 @@
 Output events and detections to [OpenSearch](https://opensearch.org/).
 
 - `addresses`: the IPs or DNS where to send the data to
-- `index`: the index name to send data to
+- `index`: the index name to send data to. It cannot use the `pivot` and `pivots` template functions.
 - `username`: user name if using username/password auth
 - `password`: password if using username/password auth
 
