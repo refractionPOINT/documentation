@@ -233,7 +233,7 @@ misinterpret the queue.
 | **Decision mode** | `auto`, `analyst`, `ai`, `detonation` | Who last decided. `auto` is the rule pack; `detonation` is what a link turned out to lead to |
 | **Revision history** | An append-only sequence | Each revision, with its rationale |
 | **Report status** | `open`, `triaging`, `resolved`, plus a disposition | The [abuse-mailbox queue](user-reports.md) |
-| **Remediation state** | `delivered`, `quarantined`, `trashed`, `restored`, `bannered`, `spam` | Actions performed at the provider |
+| **Remediation state** | `delivered`, `quarantined`, `trashed`, `restored`, `bannered`, `spam` | Where the provider had the message when it was collected (`spam` if it was already in the provider's spam folder, otherwise `delivered`), then actions performed at the provider |
 | **Campaign membership** | A campaign id, or none | The [clustering engine](campaigns.md) |
 
 Each has exactly one writer. A quarantined message can still be `benign`

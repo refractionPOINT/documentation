@@ -124,6 +124,15 @@ A presence check distinguishes missing data from a measured zero. It does not
 turn an omitted boolean into proof of a negative result. Use the parent result
 and its scanner or completion indicators when that distinction matters.
 
+`external/spam_folder` is the clearest case: it is `true` for mail the provider had
+already filed as junk (Gmail's Spam label, Microsoft 365's Junk Email folder) when it
+was collected, and **absent** otherwise. Write "in the provider's spam folder" as
+`op: is`, `value: true`, and "not in it" as that same condition with `not: true`;
+`value: false` never matches. Both `external/spam_folder` and `external/folder` can be
+read in either phase. Provider placement is context for what a rule *does*, not
+evidence of a threat: the managed detections do not read it and it never changes a
+score.
+
 Profiles and external enrichments are available only when the pipeline stamps
 them. Detonation arrives after the first verdict. A rule referencing it will not
 match during the initial pass. The [backtest](custom-rules.md#what-a-backtest-can-evaluate)

@@ -111,9 +111,44 @@ automations:
 | `directions` | `inbound`, `outbound`, `internal` |
 | `min_score` | 0–100 |
 | `user_reported` | Tri-state: omit to ignore, `true` for mail a human flagged, `false` for mail nobody reported |
+| `provider_spam` | Tri-state: omit to ignore where the mail provider filed the message, `true` for mail the provider had **already put in its spam folder** (Gmail's Spam label, Microsoft 365's Junk Email folder) when it was collected, `false` for mail it had not |
 
 An **empty match matches everything**. An enforcing rule with an empty match is
 refused at save — "quarantine all mail" is never what someone meant to write.
+`user_reported: false` and `provider_spam: false` are not constraints on their own
+(most mail is unreported and not in spam), so a rule whose only condition is one
+of them counts as an empty match; combine it with a verdict, tag, direction or
+score.
+
+### Provider spam placement
+
+A large share of inbound mail is already in the provider's spam folder when it is
+collected, and the user never saw it. `provider_spam` lets an automation aim at the
+mail a person actually received, or deliberately at the rest:
+
+```yaml
+policy_type: automations
+automations:
+  # Suspicious mail the provider already put in spam: removing it costs the user nothing.
+  - name: suspicious-in-provider-spam-quarantine
+    match:
+      verdicts: [suspicious]
+      provider_spam: true
+    actions: [quarantine_message]
+  # Warn about suspicious mail that reached the inbox; a banner on mail nobody reads is wasted.
+  - name: suspicious-banner
+    match:
+      verdicts: [suspicious]
+      provider_spam: false
+    actions: [banner_message]
+```
+
+`provider_spam` is a **condition, not evidence**: it never changes a message's
+threat score, because an attacker's mail lands in spam too and being in the inbox
+does not clear a message. The placement is the one recorded at collection; a user
+who later rescues the message from spam is not reflected. The same fact is
+available to your own [detection rules](rule-reference.md#presence-and-missing-evidence)
+as `external/spam_folder`.
 
 Every matching automation applies, in record-name and rule order. Matching typed
 mail-rule actions join the same action union. Conflicting permitted placement
