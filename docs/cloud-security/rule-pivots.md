@@ -93,14 +93,23 @@ pivot_owner:
 
 Two `pivot` operators in one rule that would write the same key are refused when the rule is saved. Give each one a distinct `name`.
 
-In response actions the result is available under `.mtd`. For example, `{{ join "," .mtd.pivot_owner.values }}` in a [report](../8-reference/response-actions.md#report) renders the values separated by commas.
+The result is part of the detection, so outputs, cases and playbooks that receive the detection already have it under `mtd`. Copying it into a report's `metadata` is optional.
+
+In response actions the result is available under `.mtd`. The `values` of a stored result are a generic list, and `join` only accepts a list of strings, so `join` does not apply to it. Read it with `index`, `json` or `range` instead:
+
+- One value: `{{ index .mtd.pivot_owner.values 0 }}`.
+- All values as JSON: `{{ json .mtd.pivot_owner.values }}`, which renders like `["alice@example.com","bob@example.com"]`.
+- All values separated by commas: `{{ range $i, $v := .mtd.pivot_owner.values }}{{ if $i }},{{ end }}{{ $v }}{{ end }}`.
+- The number of values: `{{ .mtd.pivot_owner.count }}`.
+
+The `pivots` template function is different: it returns a list of strings, so `join` works with it.
 
 ## Template functions
 
 Two template functions give the same answers inside [template strings](../4-data-queries/template-strings.md):
 
 - `pivot` renders the value as a string. Several values are joined with `,`. This is for display only, because a value can itself contain a comma.
-- `pivots` returns a list, for use with `range`, `index`, `join` and `json`.
+- `pivots` returns a list of strings, for use with `range`, `index`, `join` and `json`.
 
 Both take `from`, the identifier and `to`.
 
@@ -167,7 +176,7 @@ respond:
   - action: report
     name: firewall-blocked-internal-client
     metadata:
-      client_hosts: '{{ join "," .mtd.pivot_ip_hostname.values }}'
+      client_hosts: '{{ json .mtd.pivot_ip_hostname.values }}'
 ```
 
 ### Require a single host for failed logons
@@ -196,7 +205,7 @@ respond:
   - action: report
     name: failed-logon-from-managed-host
     metadata:
-      source_host: '{{ join "," .mtd.pivot_ip_hostname.values }}'
+      source_host: '{{ index .mtd.pivot_ip_hostname.values 0 }}'
 ```
 
 ### Check the kind of host at the other end of a connection
@@ -261,8 +270,8 @@ respond:
   - action: report
     name: managed-host-to-managed-host
     metadata:
-      source_host: '{{ join "," .mtd.pivot_source.values }}'
-      destination_host: '{{ join "," .mtd.pivot_destination.values }}'
+      source_host: '{{ json .mtd.pivot_source.values }}'
+      destination_host: '{{ json .mtd.pivot_destination.values }}'
 ```
 
 The rule matches when both addresses are answered.
