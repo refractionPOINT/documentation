@@ -760,7 +760,11 @@ history or the audit row tells you which rule to edit.
 #### Writing the request
 
 The `extension request` block of a rule is a template, and one detail of it
-causes silent failures. A top-level string value that has no `{{ }}` in it is
+causes silent failures. This is how every `extension request` works, and the
+[general rule](../8-reference/response-actions.md#writing-the-request-values) is
+documented with the action. For these actions it matters most, because a dropped
+`verdict` or `disposition` is the difference between a working rule and one that
+does nothing. A top-level string value that has no `{{ }}` in it is
 read as a path into the event, not as text. If the path matches nothing, the key
 is silently left out of the request. `verdict: malicious` therefore does not send
 the word `malicious`. It looks for a field named `malicious` in the event, finds

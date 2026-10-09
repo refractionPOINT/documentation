@@ -338,7 +338,7 @@ detect:
       value: -enc
     - op: ask ai
       definition: hive://ai_agent/cmdline-triage
-      prompt: "Is this command line malicious? {{ .event.COMMAND_LINE }}"
+      prompt: "Is the command line in the event data malicious?"
       data:
         cmd: "{{ .event.COMMAND_LINE }}"
         parent: "{{ .event.PARENT.FILE_PATH }}"
@@ -367,7 +367,7 @@ Create an enabled `ai_agent` record named `cmdline-triage` with a system `prompt
 |-----------|----------|---------|
 | `definition` | Yes | Literal `hive://ai_agent/<name>` reference. The name uses ASCII letters, digits, underscores, hyphens or dots; paths, percent encoding, `..` and a standalone `.` are rejected. Inline credentials and templated definitions are unsupported. |
 | `prompt` | No | User prompt, evaluated as a template against the event. |
-| `data` | No | Dictionary of event extraction mappings, with the same semantics as `start ai agent`. Rule keys override the record's extracted keys. |
+| `data` | No | Dictionary of event extraction mappings, with the same semantics as `start ai agent`. Write each value as a `{{ }}` template. A plain string is read as a path into the event. Rule keys override the record's extracted keys. This is where event fields belong: the platform marks `data` as untrusted for the model and does not mark `prompt`. |
 | `questions` | No | List of typed decision questions. Mutually exclusive with `response_schema` and rule-level `max_tokens`; see [Decision questions](#decision-questions). |
 | `response_schema` | No | JSON Schema dictionary for structured output, passed through the provider's native structured-output API. Use a schema supported by your selected model/provider. |
 | `max_tokens` | No | Integer output token limit, 1–32768. Overrides the record's `max_tokens`; otherwise the record or service default (512) applies. |
@@ -407,7 +407,9 @@ detect:
       value: https://
     - op: ask ai
       definition: hive://ai_agent/cmdline-triage
-      prompt: "Command: {{ .event.COMMAND_LINE }}"
+      prompt: "Assess the command in the event data."
+      data:
+        command: "{{ .event.COMMAND_LINE }}"
       questions:
         - name: malicious
           type: predicate

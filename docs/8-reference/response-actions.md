@@ -184,6 +184,23 @@ Perform an asynchronous request to an extension the Organization is subscribed t
 
 The `extension request` parameters will vary depending on the extension (see the relevant extension's schema). The `extension request` parameter is a [transform](../4-data-queries/template-transforms.md).
 
+#### Writing the request values
+
+The transform decides what each value becomes, and a fixed string is the easy one to get wrong:
+
+| You write | The request carries |
+|---|---|
+| `sid: '{{ .routing.sid }}'` | The result of the template. |
+| `pid: event.PROCESS_ID` | The value found at that path in the event. A string with no `{{ }}` is read as a path, not as text. |
+| `verdict: malicious` | Nothing. `malicious` is read as a path, the event has no such field, and the key is **left out of the request without an error**. |
+| `verdict: '{{ "malicious" }}'` | The text `malicious`. This is how you send a fixed string. |
+| `score: 90`, `force: true` | The number or boolean as written. |
+| `rationale: [ "Matched my rule", "{{ .routing.hostname }}" ]` | The list. A string inside a list is literal text unless it contains `{{ }}`. |
+
+The path rule applies to nested objects too. A template that names a field the event does not have is not an error either: it renders as the text `<no value>`. A missing key and a wrong value both fail quietly, so test a new rule on an event you can inspect and confirm its effect.
+
+An extension that rejects the request (a missing required field, an unknown parameter, a value outside its allowed set) is not reported when the rule is saved. The rejection is recorded as an organization error when the rule fires.
+
 You can also specify a `based on report: true` parameter. When true (defaults to false), the transform for the `extension request` will be based on the latest `report` action's report instead of the original event. This means you MUST have a `report` action *before* the `extension request`.
 
 ### isolate network
@@ -399,6 +416,7 @@ This action supports two modes: **inline mode** (all parameters in the rule) and
 - action: start ai agent
   prompt: "Investigate this detection and provide a summary..."
   anthropic_secret: hive://secret/my-anthropic-key
+  lc_api_key_secret: hive://secret/lc-api-key
 ```
 
 #### Definition Mode
@@ -410,12 +428,15 @@ This action supports two modes: **inline mode** (all parameters in the rule) and
 
 This action launches a fully-managed Claude Code session that can investigate events, query LimaCharlie data via the auto-installed `limacharlie` CLI, and generate reports.
 
+Pass event fields to the session in `data:`, not by interpolating them into `prompt`. The platform marks `data:` as untrusted for the model; it does not mark text in `prompt`. See [Untrusted event data](../9-ai-sessions/dr-sessions.md#untrusted-event-data).
+
 #### Required Parameters (Inline Mode)
 
 | Parameter | Description |
 |-----------|-------------|
 | `prompt` | Instructions for Claude. Supports [template strings](../4-data-queries/template-transforms.md). |
 | `anthropic_secret` | Your Anthropic API key. Use `hive://secret/<name>` to reference a [Hive Secret](../7-administration/config-hive/secrets.md). |
+| `lc_api_key_secret` | LimaCharlie API key for org-level API access. Use `hive://secret/<name>`. The session does not start without one: the action fails with `lc_api_key is required for AI Sessions API authentication`. |
 
 #### Required Parameters (Definition Mode)
 
@@ -428,11 +449,10 @@ This action launches a fully-managed Claude Code session that can investigate ev
 | Parameter | Description |
 |-----------|-------------|
 | `name` | Session name. Supports template strings. (Inline mode only.) |
-| `lc_api_key_secret` | LimaCharlie API key for org-level API access. Use `hive://secret/<name>`. (Inline mode only.) |
 | `lc_uid_secret` | LimaCharlie User ID. Required when `lc_api_key_secret` is a user API key. Use `hive://secret/<name>`. (Inline mode only.) |
 | `idempotent_key` | Unique key to prevent duplicate sessions. Supports template strings. (Inline mode only.) |
 | `debounce_key` | Serializes sessions: only one active session per key. New requests queue behind the active session and re-fire when it ends. Supports template strings. (Both modes.) |
-| `data` | Extract event fields to include in the prompt as JSON. The platform marks this block as untrusted; event fields interpolated into `prompt` are not marked. See [Untrusted event data](../9-ai-sessions/dr-sessions.md#untrusted-event-data). (Inline mode only.) |
+| `data` | Extract event fields to include in the prompt as JSON. Values follow the same [transform rules](#writing-the-request-values) as `extension request`: use `{{ }}` templates. The platform marks this block as untrusted; event fields interpolated into `prompt` are not marked. See [Untrusted event data](../9-ai-sessions/dr-sessions.md#untrusted-event-data). (Both modes; in definition mode it is merged with the record's own `data`.) |
 | `profile` | Inline session configuration (tools, model, limits, external MCP servers). (Inline mode only.) |
 | `profile_name` | Reference a saved profile by name. (Inline mode only.) |
 

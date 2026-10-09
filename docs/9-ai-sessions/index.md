@@ -69,12 +69,17 @@ respond:
     name: suspicious-process-detected
   - action: start ai agent
     prompt: |
-      Investigate this suspicious process detection.
+      Investigate the suspicious process in the event data.
       Analyze the process tree, network connections, and file activity.
       Provide a summary of findings and recommended actions.
     anthropic_secret: hive://secret/anthropic-key
     lc_api_key_secret: hive://secret/lc-api-key
+    data:
+      hostname: "{{ .routing.hostname }}"
+      command_line: "{{ .event.COMMAND_LINE }}"
 ```
+
+Event fields go in `data:`, which the platform marks as untrusted for the model. See [Untrusted event data](dr-sessions.md#untrusted-event-data).
 
 ### For User Sessions
 

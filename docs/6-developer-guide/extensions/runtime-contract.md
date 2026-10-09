@@ -183,7 +183,7 @@ Once registered and subscribed, an extension can be invoked from several places.
       extension name: my-extension
       extension action: list_sensors
       extension request:
-        selector: '*'
+        selector: '{{ "*" }}'
     ```
 
     See [D&R response actions](../../3-detection-response/tutorials/dr-rule-building-guidebook.md) for the full syntax, including templating request values from the matched event.
