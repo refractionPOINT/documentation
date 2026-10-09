@@ -199,7 +199,7 @@ The transform decides what each value becomes, and a fixed string is the easy on
 
 The path rule applies to nested objects too. A template that names a field the event does not have is not an error either: it renders as the text `<no value>`. A missing key and a wrong value both fail quietly, so test a new rule on an event you can inspect and confirm its effect.
 
-An extension that rejects the request (a missing required field, an unknown parameter, a value outside its allowed set) is not reported when the rule is saved. The rejection is recorded as an organization error when the rule fires.
+An extension that rejects the request (a missing required field, an unknown parameter, a value outside its allowed set) is not reported when the rule is saved. The rejection is recorded as an organization error when the rule fires. The error names the action and, for a platform-level rejection, the rule. A refusal from the extension carries `EXTENSION_ERROR` followed by the extension's message. Errors from one extension share a single entry in `limacharlie org errors`, the newest replaces the previous one, and an identical message is recorded once per 15 minutes.
 
 You can also specify a `based on report: true` parameter. When true (defaults to false), the transform for the `extension request` will be based on the latest `report` action's report instead of the original event. This means you MUST have a `report` action *before* the `extension request`.
 

@@ -828,8 +828,8 @@ request 'revise_verdict' from DR:general.my-rule failed: lc_error_code:INVALID_P
 ```
 
 A misspelled value reads `invalid value for verdict: value not in enum`, and a
-leftover `mode` reads `unknown parameter name: mode`. These refusals name the
-action and the rule.
+leftover `mode` reads `unknown parameter name: mode`. The error always names the
+action. A refusal by the platform, as in these examples, also names the rule.
 
 Three things limit what you see there:
 
@@ -838,8 +838,9 @@ Three things limit what you see there:
   the previous one, so you see the latest error only.
 - An identical message is recorded once per 15 minutes. Firing the same broken
   rule again right away does not add anything.
-- A refusal that comes from the extension itself, written `EXTENSION_ERROR`
-  followed by a message, does not name the rule.
+- A refusal that comes from the extension itself reads `EXTENSION_ERROR`
+  followed by the extension's message. If the entry does not say which rule
+  fired, match its time against your rules' reports.
 
 So test one rule at a time and read the error straight after it fires. To
 confirm what a rule did, or that it did nothing, check the message itself:
