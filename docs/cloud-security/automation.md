@@ -176,7 +176,7 @@ respond:
     extension request:
       detect_id: "{{ .event.fingerprint }}"
       reopen_if_closed: true
-      note: "Remediation SLA breached — this finding is past its due date"
+      note: '{{ "Remediation SLA breached, this finding is past its due date" }}'
 ```
 
 Because the event carries `owner` and `severity`, the same hook routes just as
@@ -269,7 +269,7 @@ respond:
     extension request:
       detect_id: "{{ .event.finding.fingerprint }}"
       cat: "cloudsec:{{ .event.finding.rule_id }}"
-      source: cloudsec
+      source: '{{ "cloudsec" }}'
       detect: "{{ .event.finding }}"
 ```
 
@@ -286,8 +286,8 @@ respond:
     extension action: update_case
     extension request:
       detect_id: "{{ .event.fingerprint }}"
-      status: resolved
-      note: "Finding closed: condition no longer detected by sweep"
+      status: '{{ "resolved" }}'
+      note: '{{ "Finding closed: condition no longer detected by sweep" }}'
 ```
 
 **Reopen a case that was closed while the cloud wasn't actually fixed:**
@@ -304,7 +304,7 @@ respond:
     extension request:
       detect_id: "{{ .event.fingerprint }}"
       reopen_if_closed: true
-      note: "Linked cloud finding is still open — verified by latest sweep"
+      note: '{{ "Linked cloud finding is still open, verified by latest sweep" }}'
 ```
 
 `update_case` resolves the case through the detection index (`detect_id` =

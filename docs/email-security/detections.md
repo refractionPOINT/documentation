@@ -35,7 +35,7 @@ The verdict object on a message carries:
 | `tags` | The deduplicated, sorted tags of the rules that actually contributed |
 | `engine_version` | SHA-256 fingerprint of the scoring rules, scoring policy and engine build |
 | `decided_at` | When |
-| `mode` | Who last decided: `auto` (the rule pack), `analyst` (a person), `ai` (a triage agent) or `detonation` ([link detonation](#link-detonation)). See [Revising a verdict](#revising-a-verdict) |
+| `mode` | Who last decided: `auto` (the rule pack), `analyst` (a signed-in person), `api` (an API key, which includes a D&R rule acting through the extension) or `detonation` ([link detonation](#link-detonation)). Older records can read `ai`. See [Revising a verdict](#revising-a-verdict) |
 | `campaign_id` | The campaign this message was clustered into, if any |
 
 !!! info "A number alone is never the answer"
@@ -53,9 +53,11 @@ rule that acts on verdicts is written **once**:
 | `revision/seq` | `revision/mode` | What it is |
 |---|---|---|
 | `0` | `auto` | What the rule pack decided, emitted at ingest immediately after the message's `EMAIL_MESSAGE` |
-| `1`, `2`, … | `analyst` | A human overrode it |
-| | `ai` | The AI triage agent overrode it |
+| `1`, `2`, … | `analyst` | A signed-in person overrode it |
+| | `api` | An API key overrode it: a script, the AI triage agent, or a D&R rule through the extension |
 | | `detonation` | Link detonation found something at the other end and overrode it |
+
+Records written before the mode came from the credential can also read `ai`.
 
 The `seq 0` event repeats a verdict that is already inside `EMAIL_MESSAGE`, and
 that duplication is deliberate: without it, "tell me when a message is judged
@@ -76,8 +78,8 @@ See [Events & Automation](automation.md) for the payload and
 
 ## Revising a verdict
 
-The engine's call is the first word, not the last. A person or an AI triage agent
-can replace it, and the replacement is **appended** rather than written over the
+The engine's call is the first word, not the last. A person, an API key, an AI
+triage agent or a D&R rule can replace it, and the replacement is **appended** rather than written over the
 top.
 
 ```bash
@@ -88,7 +90,6 @@ limacharlie mailsec message revise <msg_uuid> \
 | Field | |
 |---|---|
 | `verdict` | **Required.** `malicious`, `suspicious`, `graymail`, `benign` or `unknown`. `unknown` is an honest abstention that escalates to a human queue. `error` is refused — it means judgement itself failed, which is an engine fact nobody decides |
-| `mode` | **Required.** Which seat decided: `analyst` or `ai`. `auto` is refused; the scorer does not override itself. The CLI always sends `analyst`, because the operator of a CLI is a person — an agent revises with its **own** key and `mode: ai` |
 | `rationale` | **Required.** A non-empty list of short reasons. A class with no reason is a naked verdict, and the same explainability contract applies to a revision as to the engine |
 | `score` | Optional. Omit it and the engine's score stays beside the new class, rather than a made-up number landing in the column a backtest reads |
 
@@ -96,17 +97,24 @@ limacharlie mailsec message revise <msg_uuid> \
 characters**, clipped on a character boundary with `rationale_truncated` set. A
 verdict is not thrown away over a long explanation.
 
-**Who** revised is stamped from your authenticated identity and is never read
-from the request. `mode` names the seat, not the person, so a caller misstating
-it can only do so beside an `actor` it did not choose — where the two disagree
-visibly.
+**Who** revised, and the `mode`, are stamped from your authenticated identity and
+are never read from the request. A signed-in person is recorded as `analyst`
+and any API key as `api`, including the Email Security extension when a
+[D&R rule](automation.md#feedback-events-and-typed-actions) revises the verdict.
+There is no `mode` field to send. The API ignores one in a request body, and the
+extension's `revise_verdict` action rejects it as an unknown parameter.
+
+Every caller that holds `mailsec.act` has the same effect: the verdict, the
+sender-history credit or repair, and the way a revision settles a message that
+was flagged only because a user reported it are identical for a person, a key
+and a rule. The mode is provenance for audit, not a level of authority.
 
 !!! note "A no-op is a success, not an error"
     Re-recording the class, score and mode a message already carries changes
     nothing: `applied: false`, `already_current: true`, and `revision_seq` names
     the revision that already says it. Re-wording the rationale alone is not a
-    change. A person confirming an agent's call **is** one, because the mode
-    moves.
+    change. A person confirming an API key's call **is** one, because the
+    recorded mode moves from `api` to `analyst`.
 
 Revising takes **`mailsec.act`**, not `mailsec.set` — the only place on this
 surface where the permission is not read off the "does it touch a mailbox" line.
@@ -116,13 +124,14 @@ demotion. It also emits an `EMAIL_VERDICT` that fires every matching rule. That
 is the product doing things on the organization's behalf, and `mailsec.act` is
 the single grant an operator revokes to stop an autonomous caller doing them.
 
-### The four modes
+### The decision modes
 
 | `mode` | Who |
 |---|---|
 | `auto` | The rule pack, at ingest. Only the engine writes this one |
-| `analyst` | A person, through the console, the CLI or the API |
-| `ai` | An autonomous triage agent calling with its own organization credentials — see [AI Triage](ai-triage.md) |
+| `analyst` | A person signed in, through the console or the CLI |
+| `api` | An API key: a script, an [AI triage](ai-triage.md) agent, or a D&R rule acting through the extension |
+| `ai` | Legacy. Records from the time callers chose a mode. Nothing writes it now |
 | `detonation` | [Link detonation](#link-detonation) came back with something the static pass could not know |
 
 ### The history
@@ -509,22 +518,21 @@ When the evidence changes the class, the message is re-judged in full — the en
 rule records, your policy, your thresholds — and the new class is filed as a
 revision in `mode: detonation`.
 
-It has the **lowest authority** of the three revising modes:
+It has the **lowest authority** of the revising modes. It never overwrites a decision a caller made:
 
 | The message's current mode | A detonation revision |
 |---|---|
 | `auto`, or a previous `detonation` | Applies |
-| `ai` | **Refused.** The evidence is still stamped on the message |
-| `analyst` | **Refused.** The evidence is still stamped on the message |
+| `api`, `analyst`, or the legacy `ai` | **Refused.** The evidence is still stamped on the message |
 | Anything else | **Refused.** The rule is an allow-list, so a mode this build does not recognize is not overwritten either |
 
-A machine does not overrule a person, or an agent that already looked. The
+A machine does not overrule a person, or a key that already looked. The
 refusal is a satisfied outcome, not a failure: the detonation block lands on the
 message either way, and only the verdict is left alone.
 
 `detonation` is not a mode any caller can claim. The
-[revision API](api-reference.md#post-messagesmsg_uuidverdict) accepts `analyst`
-and `ai`; this one is stamped by the engine that produced it.
+[revision API](api-reference.md#post-messagesmsg_uuidverdict) takes no mode at all;
+this one is stamped by the engine that produced it.
 
 ### What is kept, and what is not
 

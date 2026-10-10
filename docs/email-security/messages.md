@@ -562,9 +562,10 @@ limacharlie mailsec message release <msg_uuid> --reason "Reviewed as safe" --oid
 
 `release_message` restores provider placement and records both a benign verdict
 revision and a benign disposition. It repairs sender history and records one
-idempotent action. The revision mode is `analyst` by default; an AI caller can
-choose `--mode ai`. It requires `mailsec.act` and follows restore's enforcement
-rule: in alert-only mode it is recorded and withheld; `--force` is explicit consent
+idempotent action. The revision mode comes from your credential, `analyst` for
+a signed-in person and `api` for an API key, and there is no mode to pass. Every
+caller has the same effect. It requires `mailsec.act` and follows restore's
+enforcement rule: in alert-only mode it is recorded and withheld; `--force` is explicit consent
 to perform it. The withheld action changes neither verdict nor disposition.
 
 Use ordinary `restore_message` when you intend only to move the message back

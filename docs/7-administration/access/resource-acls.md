@@ -185,7 +185,7 @@ respond:
     extension action: task
     extension request:
       sid: '{{ .routing.sid }}'
-      task: 'os_version'
+      task: '{{ "os_version" }}'
 acl_scopes:
   - mailsec
 ```

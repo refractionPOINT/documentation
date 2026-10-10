@@ -845,6 +845,7 @@ Spawns a Claude AI session for automated investigation and response. Supports tw
 - action: start ai agent
   prompt: "Investigate this detection and provide a summary..."
   anthropic_secret: hive://secret/my-anthropic-key
+  lc_api_key_secret: hive://secret/lc-api-key
 ```
 
 **Definition Mode:**

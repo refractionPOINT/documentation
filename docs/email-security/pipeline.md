@@ -230,7 +230,7 @@ misinterpret the queue.
 | Dimension | Values | Changed by |
 |---|---|---|
 | **Verdict** | `malicious`, `suspicious`, `graymail`, `benign`, `unknown`, `error` | The scoring pass, then any revision |
-| **Decision mode** | `auto`, `analyst`, `ai`, `detonation` | Who last decided. `auto` is the rule pack; `detonation` is what a link turned out to lead to |
+| **Decision mode** | `auto`, `analyst`, `api`, `detonation` | Who last decided. `auto` is the rule pack; `analyst` is a signed-in person and `api` an API key; `detonation` is what a link turned out to lead to. Older records can read `ai` |
 | **Revision history** | An append-only sequence | Each revision, with its rationale |
 | **Report status** | `open`, `triaging`, `resolved`, plus a disposition | The [abuse-mailbox queue](user-reports.md) |
 | **Remediation state** | `delivered`, `quarantined`, `trashed`, `restored`, `bannered`, `spam` | Where the provider had the message when it was collected (`spam` if it was already in the provider's spam folder, otherwise `delivered`), then actions performed at the provider |

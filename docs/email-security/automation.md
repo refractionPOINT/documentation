@@ -75,7 +75,7 @@ is your abuse mailbox. The person who sent the report is `event/reporter`.
 | Event | Emitted when |
 |---|---|
 | `EMAIL_MESSAGE` | Once per message, at ingest. Carries the whole parsed model — headers, sender, recipients, body, links, attachments, authentication, hops — plus the enrichments and the verdict. It is the record that this mail arrived |
-| `EMAIL_VERDICT` | On **every** verdict decision: the rule pack's own, at ingest right after the `EMAIL_MESSAGE` (`revision/seq: 0`, `revision/mode: auto`), and then once per override afterwards (`seq: 1…`, mode `analyst`, `ai` or `detonation`) |
+| `EMAIL_VERDICT` | On **every** verdict decision: the rule pack's own, at ingest right after the `EMAIL_MESSAGE` (`revision/seq: 0`, `revision/mode: auto`), and then once per override afterwards (`seq: 1…`, mode `analyst`, `api` or `detonation`, and `ai` on older records) |
 | `EMAIL_ANALYSIS_COMPLETE` | When the initial analysis window closes, including messages with nothing pending. Carries terminal outcomes, final verdict snapshot and timing |
 | `EMAIL_ACTION` | On every remediation outcome, including failures and skips, **and on every raw-message download** (`action: get_eml`), served or refused. Who asked, what was attempted, what happened |
 | `EMAIL_USER_REPORT` | When a message reaches the abuse mailbox and becomes a report |
@@ -115,7 +115,7 @@ of them.
 | `event/campaign_joined_late` | Present and `true` only when this event exists *because* the campaign above was identified after the message had already been delivered and reported. See [A message that joins a campaign late](#a-message-that-joins-a-campaign-late) |
 | `event/cluster_reason` | The cluster keys that agreed — why this message is in that campaign. Carried on a late join, which is the event the question gets asked about |
 | `event/revision/seq` | `0` for the rule pack's verdict, `1…` for each override |
-| `event/revision/mode` | `auto`, `analyst`, `ai` or `detonation` |
+| `event/revision/mode` | `auto`, `analyst`, `api` or `detonation`. Older records can also read `ai`. See [Who is recorded](#who-is-recorded) |
 | `event/revision/verdict`, `event/revision/score` | The decision |
 | `event/revision/rationale` | The reasons, strongest first. For an override these are what the analyst or agent wrote; for `seq 0` they are the names of the signals that fired — so it is **absent** on a benign message that matched nothing, which is the common case |
 | `event/revision/top_signals`, `event/revision/engine_version` | `seq 0` only — the rule ids that fired and the engine that decided (rule-pack version plus the library build it ran with). An override has neither: nothing *matched*, somebody decided |
@@ -374,8 +374,9 @@ The same actions requested by a person or an API key through
 `mailsec.act` (in addition to `ext.request`), and the audit row names them.
 Campaign actions (`quarantine_campaign`, `trash_campaign`, `restore_campaign`)
 need a person and cannot be driven by a rule. In a rule, write a `reason` as a
-template such as `"{{ .routing.event_type }}"`; a plain string is read as a
-path into the event, so unless it matches one it is dropped.
+template. A plain string is read as a path into the event and dropped unless it
+matches one, so a fixed reason is written `'{{ "Reviewed by rule" }}'`. See
+[Writing the request](#writing-the-request).
 
 !!! tip "Which seat should this rule sit in?"
     A rule that should **change the verdict** belongs in `dr-mail` as a
@@ -714,12 +715,268 @@ Resolution events carry `report_id`. Both carry `msg_uuid`, provider, and mailbo
 when an indexed message supplies it. An unlinked resolution retains its explicit
 report identity; it never invents a mailbox. Durable retries retain `job_id`.
 
-The Email Security extension exposes `set_disposition`, `revise_verdict`,
-`release_message`, and `resolve_report` as typed actions. They use the caller's
-permissions and authenticated identity. A D&R rule may record disposition or
-request a release; releases obey alert-only/force and retain the action audit.
-Automated revisions and releases require explicit `mode: ai` and preserve the
-rule attribution. Report resolution requires an interactive analyst decision.
-The revise action takes `mode: analyst|ai`, a verdict, and a nonempty list of
-rationale strings. Resolve accepts the same five dispositions and optional
-message/campaign remediation with preview/confirm.
+The Email Security extension has four typed actions that write feedback back to a message or report:
+
+| Action | What it does | Permission | From a D&R rule |
+|---|---|---|---|
+| `revise_verdict` | Replaces the engine's verdict with yours and appends the change to the message's [revision history](detections.md#revising-a-verdict) | `mailsec.act` | Yes |
+| `set_disposition` | Records, or clears, an independent [disposition](messages.md#analyst-disposition). The engine verdict is untouched and no automation runs | `mailsec.set` | Yes |
+| `release_message` | Restores the message and records a benign verdict revision and a benign disposition. See [Release a message](messages.md#release-a-message) | `mailsec.act` | Yes |
+| `resolve_report` | Closes a [user report](user-reports.md) with a disposition, with optional remediation | `mailsec.set`, plus `mailsec.act` when it remediates | No, interactive only |
+
+None of them takes a `mode`. A rule that still sends one is rejected as an
+unknown parameter, so remove it from any rule written for an earlier version.
+
+#### Who is recorded
+
+The decision mode on a revision or release comes from the credential that made
+the call. You cannot declare it.
+
+| Caller | Recorded mode | Recorded as the actor |
+|---|---|---|
+| A person signed in (the console, or the CLI after `limacharlie auth login`) | `analyst` | That person |
+| Any API key, including a script, or the CLI configured with an API key | `api` | The key |
+| A D&R rule | `api` | The extension's own key. The rule name is recorded in the text, see below |
+
+Older records can read `ai`, from the time callers chose a mode. `auto` and
+`detonation` are written only by the engine and no caller can claim them.
+
+Every caller that holds the permission gets the same effect. A revision or a
+release credits or repairs the sender's history the same way for a person, a key
+and a rule, and counts the same as a decision on a message that was flagged only
+because a user reported it. The mode is provenance for audit, not a different
+level of authority.
+
+Run interactively, an action uses your permissions (plus `ext.request` to call the
+extension) and your identity, and the
+audit names you. Run from a rule in the `dr-general` Hive, it uses the Email
+Security extension's own credential, because the organization authorized it by
+writing the rule. The rule name goes into the record as the first rationale
+bullet of a revision, and as a prefix (`D&R rule <name>:`) on the reason of a
+release or the note of a disposition. The name includes the Hive, so a rule saved
+as `my-rule` in `dr-general` appears as `general.my-rule`. Reading the revision
+history or the audit row tells you which rule to edit.
+
+#### Writing the request
+
+The `extension request` block of a rule is a template, and one detail of it
+causes silent failures. This is how every `extension request` works, and the
+[general rule](../8-reference/response-actions.md#writing-the-request-values) is
+documented with the action. For these actions it matters most, because a dropped
+`verdict` or `disposition` is the difference between a working rule and one that
+does nothing. A top-level string value that has no `{{ }}` in it is
+read as a path into the event, not as text. If the path matches nothing, the key
+is silently left out of the request. `verdict: malicious` therefore does not send
+the word `malicious`. It looks for a field named `malicious` in the event, finds
+none, and sends no verdict at all. The platform then refuses the request because
+`verdict` is missing. See [Errors show up when the rule runs](#errors-show-up-when-the-rule-runs).
+
+To send a fixed string, write it as a template literal:
+
+```yaml
+extension request:
+  msg_uuid: '{{ .event.msg_uuid }}'   # a value from the event
+  verdict: '{{ "malicious" }}'        # a fixed string
+  score: 90                           # numbers and booleans are always literal
+  rationale:
+    - Matched my phishing rule        # strings inside a list are literal
+    - '{{ .event.sender_email }}'     # unless they contain {{ }}
+```
+
+Numbers and booleans (`score: 90`, `clear: true`, `force: true`) are literal.
+Strings inside a list, which is where the rationale bullets live, are also
+literal unless they contain `{{ }}`. A template that names a field the event does
+not have is not an error. It renders as the text `<no value>` and is recorded
+that way. Use the template literal form for every
+top-level fixed string: `verdict`, `disposition`, `note` and `reason`.
+
+#### Values and limits
+
+| Field | Allowed values and limits |
+|---|---|
+| `msg_uuid` | Required on every action except `resolve_report`. At most 36 characters |
+| `verdict` | Required on `revise_verdict`. `benign`, `graymail`, `suspicious`, `malicious` or `unknown`. `unknown` is an honest abstention that escalates to a human queue. `error` is not accepted, because it means the engine failed to judge |
+| `rationale` | Required on `revise_verdict`. A list of short strings, at least one non-blank. A person gets up to 10 bullets of 280 characters, and more is refused. A rule gets 9 of its own, because the rule name takes the first of the 10. A rule that goes over is not refused: extra bullets and extra characters are clipped, and the revision is marked `rationale_truncated` |
+| `score` | Optional integer from 0 to 100. Leave it out to keep the engine's score beside the new verdict |
+| `disposition` | `malicious`, `spam`, `graymail`, `benign` or `simulation`. Leave it out when clearing |
+| `clear` | `true` removes the current disposition. Send it instead of `disposition`, never with it |
+| `note` | Text, at most 1024 characters including the rule prefix. A person who goes over is refused. A rule's note is clipped and ends in `[truncated]` |
+| `reason`, `force` | On `release_message`. `force: true` performs the release in an organization that is in [alert-only mode](remediation.md#forcing-an-action-in-alert-only-mode); without it the release is recorded as `alert_only` and nothing changes. Only a real boolean `true` forces. If the message was never moved, the restore is `skipped` and the benign verdict and disposition are still recorded |
+
+`resolve_report` takes `report_id`, `disposition` and an optional remediation
+(`scope` of `message`, `group` or `campaign`, and an `action` from the
+[remediation actions](#acting-on-mail-from-a-dr-rule)). Closing a report is a
+decision someone has to own, so it runs only interactively. A rule that calls it
+is refused.
+
+#### Errors show up when the rule runs
+
+Saving a rule does not check the request against the extension. A rule with
+`verdict: '{{ "malcious" }}'`, with a `mode` field, or with a required field
+missing, saves without complaint. The request is checked each time the rule
+fires, and a bad one is refused and writes nothing. The refusal is recorded as an
+organization error. Look at it right after the rule fires:
+
+```bash
+limacharlie org errors --oid $OID
+```
+
+A plain-string `verdict: malicious`, the trap described above, produces this:
+
+```text
+request 'revise_verdict' from DR:general.my-rule failed: lc_error_code:INVALID_PARAMETER - missing one of verdict
+```
+
+A misspelled value reads `invalid value for verdict: value not in enum`, and a
+leftover `mode` reads `unknown parameter name: mode`. The error always names the
+action. A refusal by the platform, as in these examples, also names the rule.
+
+Three things limit what you see there:
+
+- All errors from rule-driven Email Security requests go to one entry, labeled
+  `extensions/ext-email-security`. A newer error from any rule or action replaces
+  the previous one, so you see the latest error only.
+- An identical message is recorded once per 15 minutes. Firing the same broken
+  rule again right away does not add anything.
+- A refusal that comes from the extension itself reads `EXTENSION_ERROR`
+  followed by the extension's message. If the entry does not say which rule
+  fired, match its time against your rules' reports.
+
+So test one rule at a time and read the error straight after it fires. To
+confirm what a rule did, or that it did nothing, check the message itself:
+`limacharlie mailsec message revisions <msg_uuid>` for a revision, or the
+`actions` and `disposition_info` fields of `limacharlie mailsec message get
+<msg_uuid>` for a release or a disposition. Try a new rule on a message you can
+afford to change before you rely on it.
+
+#### Examples
+
+Revise the verdict of mail the engine rated suspicious when it belongs to a
+campaign. The detect matches `revision/seq: 0`, the engine's own verdict, so the
+revision this rule writes (at `seq 1`) does not trigger it again.
+
+```yaml
+# Detect
+op: and
+rules:
+  - op: is
+    path: routing/event_type
+    value: EMAIL_VERDICT
+  - op: is
+    path: event/revision/seq
+    value: 0
+  - op: is
+    path: event/revision/verdict
+    value: suspicious
+  - op: exists
+    path: event/campaign_id
+```
+
+```yaml
+# Respond
+- action: report
+  name: email-suspicious-campaign-escalated
+- action: extension request
+  extension name: ext-email-security
+  extension action: revise_verdict
+  extension request:
+    msg_uuid: '{{ .event.msg_uuid }}'
+    verdict: '{{ "malicious" }}'
+    rationale:
+      - Engine rated the message suspicious
+      - 'Member of campaign {{ .event.campaign_id }}'
+```
+
+The revision is recorded with mode `api`, names the rule in its first rationale
+bullet, and emits an `EMAIL_VERDICT` at the next `revision/seq`.
+
+Record a disposition on mail from a sender you know is your own phishing
+simulation:
+
+```yaml
+# Detect
+op: and
+rules:
+  - op: is
+    path: routing/event_type
+    value: EMAIL_MESSAGE
+  - op: is
+    path: event/sender/email/domain/root
+    value: phish-sim.example.com
+```
+
+```yaml
+# Respond
+- action: extension request
+  extension name: ext-email-security
+  extension action: set_disposition
+  extension request:
+    msg_uuid: '{{ .event.msg_uuid }}'
+    disposition: '{{ "simulation" }}'
+    note: '{{ "Known phishing simulation sender" }}'
+```
+
+Clear a disposition when link detonation later finds the message malicious, so
+that the verdict is no longer overruled by an earlier "benign":
+
+```yaml
+# Detect
+op: and
+rules:
+  - op: is
+    path: routing/event_type
+    value: EMAIL_VERDICT
+  - op: is
+    path: event/revision/mode
+    value: detonation
+  - op: is
+    path: event/revision/verdict
+    value: malicious
+```
+
+```yaml
+# Respond
+- action: extension request
+  extension name: ext-email-security
+  extension action: set_disposition
+  extension request:
+    msg_uuid: '{{ .event.msg_uuid }}'
+    clear: true
+```
+
+Release mail from a vetted partner that the engine rated suspicious. The example
+sets `force: true` so it also works in an organization in alert-only mode, which
+would otherwise record the release and withhold it:
+
+```yaml
+# Detect
+op: and
+rules:
+  - op: is
+    path: routing/event_type
+    value: EMAIL_VERDICT
+  - op: is
+    path: event/revision/seq
+    value: 0
+  - op: is
+    path: event/revision/verdict
+    value: suspicious
+  - op: is
+    path: event/sender_root_domain
+    value: partner.example.com
+```
+
+```yaml
+# Respond
+- action: extension request
+  extension name: ext-email-security
+  extension action: release_message
+  extension request:
+    msg_uuid: '{{ .event.msg_uuid }}'
+    reason: '{{ "Vetted partner sender" }}'
+    force: true   # remove this line if your organization is in enforce mode
+```
+
+A rule acts with the extension's own credential, so whoever can save rules in
+`dr-general` can cause these writes. Keep that in mind when you decide who gets
+that permission.

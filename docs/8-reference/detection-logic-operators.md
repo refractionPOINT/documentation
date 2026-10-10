@@ -338,7 +338,7 @@ detect:
       value: -enc
     - op: ask ai
       definition: hive://ai_agent/cmdline-triage
-      prompt: "Is this command line malicious? {{ .event.COMMAND_LINE }}"
+      prompt: "Is the command line in the event data malicious?"
       data:
         cmd: "{{ .event.COMMAND_LINE }}"
         parent: "{{ .event.PARENT.FILE_PATH }}"
@@ -367,7 +367,7 @@ Create an enabled `ai_agent` record named `cmdline-triage` with a system `prompt
 |-----------|----------|---------|
 | `definition` | Yes | Literal `hive://ai_agent/<name>` reference. The name uses ASCII letters, digits, underscores, hyphens or dots; paths, percent encoding, `..` and a standalone `.` are rejected. Inline credentials and templated definitions are unsupported. |
 | `prompt` | No | User prompt, evaluated as a template against the event. |
-| `data` | No | Dictionary of event extraction mappings, with the same semantics as `start ai agent`. Rule keys override the record's extracted keys. |
+| `data` | No | Dictionary of event extraction mappings, with the same semantics as `start ai agent`. Write each value as a `{{ }}` template. A plain string is read as a path into the event. Rule keys override the record's extracted keys. This is where event fields belong: the platform marks `data` as untrusted for the model and does not mark `prompt`. |
 | `questions` | No | List of typed decision questions. Mutually exclusive with `response_schema` and rule-level `max_tokens`; see [Decision questions](#decision-questions). |
 | `response_schema` | No | JSON Schema dictionary for structured output, passed through the provider's native structured-output API. Use a schema supported by your selected model/provider. |
 | `max_tokens` | No | Integer output token limit, 1–32768. Overrides the record's `max_tokens`; otherwise the record or service default (512) applies. |
@@ -377,13 +377,13 @@ Create an enabled `ai_agent` record named `cmdline-triage` with a system `prompt
 
 Schemas must be self-contained and are limited to 16 KiB, 256 JSON nodes and 16 levels of nesting. External references cannot fetch network or file resources. Responses are validated against the original schema even when provider-specific structured-output grammars need a transformed version. A schema outside these limits is not rejected when the rule is saved; it produces an operator error when `ask ai` is evaluated.
 
-For calls without `questions`, the record's `prompt` supplies the system message. The rule's rendered `prompt` and the merged extracted data supply the user message; data is appended as an **Event data:** fenced JSON block. The model is instructed to return a single JSON object. The operator makes no tool calls and starts no agent session.
+For calls without `questions`, the record's `prompt` supplies the system message. The rule's rendered `prompt` and the merged extracted data supply the user message. The data is appended as a block marked as untrusted, with random BEGIN and END markers and an instruction not to follow what is inside. See [Untrusted event data](../9-ai-sessions/dr-sessions.md#untrusted-event-data). The model is instructed to return a single JSON object. The operator makes no tool calls and starts no agent session.
 
 For calls without `questions`, if the answer parses as a JSON object, that object is the metadata. Without `response_schema`, other answers become `{"text": "<answer>"}`, which you can inspect at `path: text`. With a schema, non-object or schema-invalid answers produce an operator error and no match. Metadata paths are relative to this object, so use `verdict`, rather than `event/verdict`. On a match, the answer is attached to the detection's `mtd` under `ai_agent_<name>`, like lookup metadata. Answers are bounded to 64 KiB; oversized replies produce an operator error. A reply that the provider cuts off at the output token limit, or that the model refuses, is treated as incomplete and also produces an operator error, so set `max_tokens` high enough for the complete answer. A nested metadata operator can contribute its own metadata using the same behavior as `lookup`.
 
 With `metadata_rules`, the operator matches only when the call succeeds **and** the metadata rule matches. Without it, any successful call matches; that does not itself establish whether an event is malicious. `not: true` reverses a successful match decision. A timeout, provider/authentication error, unavailable definition, saturation or resource ACL refusal produces an operator error and no match, including with `not: true`.
 
-Treat event fields as untrusted input: they can contain instructions designed to influence the model. Keep classification instructions in the system prompt, combine model decisions with deterministic predicates, and validate behavior before using AI verdicts to trigger automated response actions.
+Treat event fields as untrusted input: they can contain instructions designed to influence the model. Put them in `data`, which the platform marks as untrusted, and not in `prompt` with `{{ }}`, which it does not. This lowers the risk of prompt injection and does not remove it. Keep classification instructions in the system prompt, combine model decisions with deterministic predicates, and validate behavior before using AI verdicts to trigger automated response actions.
 
 **Latency and cost:** `and` evaluates rules in order and short-circuits. Put `ask ai` last, after event type, platform and literal-field filters. An uncached evaluation waits for the model and consumes provider tokens. Keep the output limit as small as the complete answer allows and extract only the data the model needs. Response caching is bounded and scoped to the organization and the effective request, including the agent definition; it is an optimization, so even within the TTL an evicted entry or another service instance can make a new call. Setting `cache_ttl: 0` increases calls and cost. In-flight limits fail fast instead of queueing excess calls.
 
@@ -407,7 +407,9 @@ detect:
       value: https://
     - op: ask ai
       definition: hive://ai_agent/cmdline-triage
-      prompt: "Command: {{ .event.COMMAND_LINE }}"
+      prompt: "Assess the command in the event data."
+      data:
+        command: "{{ .event.COMMAND_LINE }}"
       questions:
         - name: malicious
           type: predicate

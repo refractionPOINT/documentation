@@ -327,7 +327,7 @@ error: `submission get` returns `submission: null` and `submission withdraw` ret
 
 ### Revising a verdict is `mailsec.act`, not `mailsec.set`
 
-`message revise` records a human verdict revision over the scorer's, appending to the
+`message revise` records a verdict revision over the scorer's, appending to the
 message's history rather than overwriting it. `--rationale` is required and
 audited — at least one, at most ten, each 280 characters or fewer.
 
@@ -337,9 +337,11 @@ limacharlie mailsec message revise <msg_uuid> \
 limacharlie mailsec message revisions <msg_uuid> --output yaml
 ```
 
-The CLI always revises as `analyst`, because the operator of a CLI is a person.
-An autonomous agent revises with its **own** key and `mode: ai` through the API,
-so the audit can always say whether a person or a model decided.
+There is no mode to pass. The revision is recorded as `analyst` when you ran the
+CLI signed in as yourself, and as `api` when you ran it with an API key, which is
+how an agent or a script runs. The audit can still tell the two apart, and both
+have the same effect. `message release` works the same way. Earlier CLI releases
+accepted `--mode` on `message release`. The server ignores it now.
 
 `applied: false` is an honest outcome and not an error: the message already
 carried that verdict and nothing changed. See
@@ -445,7 +447,7 @@ limacharlie mailsec message disposition <msg_uuid> --disposition benign --note "
 limacharlie mailsec message disposition <msg_uuid> --clear
 limacharlie mailsec message list --disposition none
 limacharlie mailsec message bulk-disposition --msg-uuids <id1> --msg-uuids <id2> --disposition spam
-limacharlie mailsec message release <msg_uuid> --reason "Reviewed as safe" --mode analyst
+limacharlie mailsec message release <msg_uuid> --reason "Reviewed as safe"
 ```
 
 Disposition accepts `malicious`, `spam`, `graymail`, `benign`, or `simulation` and

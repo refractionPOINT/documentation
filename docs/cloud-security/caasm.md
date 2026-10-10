@@ -225,7 +225,7 @@ respond:
     extension name: ext-cloud-security
     extension action: caasm_ingest
     extension request:
-      source: okta
+      source: '{{ "okta" }}'
       record: "{{ .event }}"
     suppression:
       keys:
