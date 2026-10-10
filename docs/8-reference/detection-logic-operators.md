@@ -470,6 +470,38 @@ severity:
 
 Probabilities and confidence range from 0 to 1. A score is the probability-weighted average of 0-based level indices, so it can fall between levels. Metadata paths are relative to this object, including values containing spaces, as in `category/probabilities/remote access`. On a match, the object appears in the detection's `mtd` under `ai_agent_<name>`, where `<name>` is the agent record name. If the model refuses any question, or an answer is missing or has an invalid type or field value, the entire evaluation errors and produces no match, including with `not: true`.
 
+### pivot
+
+Asks the organization's [Entities](../cloud-security/entity-pivot.md) for one value about an identifier in the event, and matches when at least one value is found. Requires Cloud Security.
+
+```yaml
+op: pivot
+path: routing/sid
+from: sensor_id
+to: owner.email
+name: owner
+metadata_rules:
+  op: matches
+  re: '@example\.com$'
+  path: values/?
+```
+
+| Parameter | Required | Meaning |
+|-----------|----------|---------|
+| `path` | Yes | Where the identifier is read in the event. If it yields several values, each is pivoted (up to 16) and the answers are merged. |
+| `from` | Yes | Literal identifier type of the value at `path`, such as `sensor_id`, `hostname`, `email` or `ip`. |
+| `to` | Yes | Literal value to return, such as `entity`, `name`, an identifier type, `owner.<identifier type>` or `owned.<identifier type>`. |
+| `name` | No | Names the result in the detection's metadata. |
+| `metadata_rules` | No | Detection logic evaluated against the result. Omit to match on any answer. |
+
+The operator does not match when no value is found. On a match, the result is attached to the detection's `mtd` under `pivot_<from>_<to>`, or `pivot_<name>` when `name` is set, with non-alphanumeric characters replaced by `_`. The result is `{values: [...], count: n, truncated: bool, approximate: bool}`, and `metadata_rules` paths are relative to it, for example `count` or `values/?`. Two `pivot` operators in one rule that would write the same key are refused when the rule is saved; give each a distinct `name`.
+
+`from: ip` is an address pivot: it answers which sensors reported an address in about the last two hours, and the answer is always `approximate`. It cannot be placed under `not: true`, on itself or on an enclosing operator.
+
+Saving a rule that contains a pivot needs `cloudsec.get` in addition to `dr.set`. Put `pivot` after cheaper conditions in an `and`, because each new lookup counts against an organization budget. In Replay and rule tests, an event whose evaluation reaches a pivot is counted as not evaluated.
+
+See [Pivots in Rules and Outputs](../cloud-security/rule-pivots.md) for the vocabulary, address pivots, permissions, behavior when a pivot cannot be answered, and examples.
+
 ### scope
 
 In some cases, you may want to limit the scope of the matching and the `path` you use to be within a specific part of the event. The `scope` operator allows you to do just that, reset the root of the `event/` in paths to be a sub-path of the event.

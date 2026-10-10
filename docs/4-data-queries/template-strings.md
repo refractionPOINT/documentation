@@ -29,6 +29,10 @@ Template strings also support some LimaCharlie-specific functions:
 - `replace`: replace all string into the other.
 - `base`: return the file name in a file path.
 - `dir`: return the base directory path from a file path.
+- `pivot`: look up one value for an identifier in your organization's Entities and render it as a string, like `{{ pivot "sensor_id" .routing.sid "owner.email" }}`. Several values are joined with `,`.
+- `pivots`: same lookup, but returns a list to use with `range`, `index`, `join` and `json`.
+
+`pivot` and `pivots` require Cloud Security and take literal `from` and `to` strings. See [Pivots in Rules and Outputs](../cloud-security/rule-pivots.md) for where they work, which permissions saving needs, and what happens when a lookup cannot be answered.
 
 The `token` and `anon` functions can be used to partially anonymize data anywhere a template string is supported, for example:
 
@@ -337,6 +341,8 @@ or
     "custom_transform": "some text {{json .event.some_field }}"
 }
 ```
+
+The `pivot` and `pivots` functions work in `custom_transform`. See [Pivots in Rules and Outputs](../cloud-security/rule-pivots.md#outputs).
 
 ### Custom Modifiers
 

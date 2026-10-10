@@ -360,6 +360,10 @@ To check that a rule using a lookup compiles, without testing what it matches, s
 
 The same request without the `lookups` field fails with the `lookup "suspicious-domains" is not available in replay` error shown above.
 
+## Pivots in Replay
+
+Replay validates [pivots](../../cloud-security/rule-pivots.md) in a rule but does not answer them. An event whose evaluation reaches a pivot is counted as not evaluated and is not a match. The response `results` list `{"action": "pivot", "data": {"oid": ..., "from": ..., "to": ...}}` once per `from` and `to` pair, and the response stats include `events_pivot_not_evaluated`. See [Testing rules and Replay](../../cloud-security/rule-pivots.md#testing-rules-and-replay).
+
 ## Billing
 
 The Replay service is billed on a per event evaluated.
