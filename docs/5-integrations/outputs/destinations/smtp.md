@@ -25,7 +25,7 @@ Output individually each event, detection, audit, deployment or log through an e
 - `is_readable`: if 'true' the email format will be HTML and designed to be readable by a human instead of a machine.
 - `is_starttls`: if 'true', use the Start TLS method of securing the connection instead of pure SSL.
 - `is_authlogin`: if 'true', authenticate using `AUTH LOGIN` instead of `AUTH PLAIN`.
-- `subject`: is specified, use this as the alternate "subject" line.
+- `subject`: is specified, use this as the alternate "subject" line. It can use the `pivot` and `pivots` functions; see [Pivots in Rules and Outputs](../../../cloud-security/rule-pivots.md#outputs).
 
 Example:
 
