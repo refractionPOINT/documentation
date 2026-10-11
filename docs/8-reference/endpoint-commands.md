@@ -871,7 +871,7 @@ Get current network connections on the endpoint (similar to netstat command).
 
 **Parameters:** None
 
-**Response Event:** NETWORK_CONNECTIONS
+**Response Event:** NETSTAT_REP (a single event; each connection is an entry in its `NETWORK_ACTIVITY` list)
 
 **Usage Example:**
 
@@ -886,13 +886,17 @@ limacharlie sensor task <SID> netstat
   "event": {
     "NETWORK_ACTIVITY": [
       {
-        "STATE": "ESTABLISHED",
-        "LOCAL_ADDRESS": "192.168.1.100",
-        "LOCAL_PORT": 50234,
-        "REMOTE_ADDRESS": "93.184.216.34",
-        "REMOTE_PORT": 443,
-        "PID": 1234,
-        "PROCESS": "chrome.exe"
+        "PROTOCOL": "tcp4",
+        "STATE": 5,
+        "SOURCE": {
+          "IP_ADDRESS": "192.168.1.100",
+          "PORT": 50234
+        },
+        "DESTINATION": {
+          "IP_ADDRESS": "93.184.216.34",
+          "PORT": 443
+        },
+        "PROCESS_ID": 1234
       }
     ]
   }
@@ -979,7 +983,7 @@ Get a list of all running processes with detailed information.
 
 **Parameters:** None
 
-**Response Event:** EXISTING_PROCESS (multiple events, one per process)
+**Response Event:** OS_PROCESSES_REP (a single event; every running process is an entry in its `PROCESSES` list)
 
 **Usage Example:**
 
@@ -992,11 +996,20 @@ limacharlie sensor task <SID> os_processes
 ```json
 {
   "event": {
-    "PROCESS_ID": 1234,
-    "PARENT_PROCESS_ID": 5678,
-    "COMMAND_LINE": "C:\\Windows\\System32\\notepad.exe",
-    "FILE_PATH": "C:\\Windows\\System32\\notepad.exe",
-    "USER_NAME": "DOMAIN\\user"
+    "PROCESSES": [
+      {
+        "PROCESS_ID": 1234,
+        "PARENT_PROCESS_ID": 5678,
+        "FILE_PATH": "C:\\Windows\\System32\\notepad.exe",
+        "COMMAND_LINE": "C:\\Windows\\System32\\notepad.exe",
+        "USER_NAME": "DOMAIN\\user",
+        "HASH": "<sha256 of the executable>",
+        "FILE_IS_SIGNED": 1,
+        "MEMORY_USAGE": 12263424,
+        "THREADS": 4,
+        "CREATION_TIME": 1789012750786
+      }
+    ]
   }
 }
 ```
