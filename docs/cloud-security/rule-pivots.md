@@ -323,7 +323,7 @@ custom_transform: |-
   }
 ```
 
-When the value is not already cached, an output waits a very short time, about 50 milliseconds, for the lookup. In normal conditions the first event for an identifier already carries the value.
+When the value is not already cached, an output waits a very short time, about 50 milliseconds, for the lookup. Usually the first event for an identifier already carries the value, but not always.
 
 - If the lookup does not finish in that time, the event is delivered right away with an empty value. Later events carry the value once it is cached.
 - If the lookup cannot run, the event is also delivered right away with an empty value. This happens when the organization's lookup budget is exceeded, when Entities are not ready, or when the output was not saved with the permission.
