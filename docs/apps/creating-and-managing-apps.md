@@ -6,8 +6,9 @@ the **Apps** page, and reading the consent screen that appears before an app run
 You manage everything from **Apps** in your organization sidebar
 (`/orgs/<your-org>/apps`). The page header reads:
 
-> Custom mini apps for this organization. Apps run in a sandboxed frame and act on
-> your behalf only within the permissions you approve.
+!!! info "Custom mini apps for this organization" 
+    Apps are scoped to the organization they're installed in. They're run in a sandboxed 
+    frame and act on your behalf only within the permissions you approve.
 
 ## Building an app with the AI assistant
 
