@@ -328,6 +328,11 @@ respond:
 
 This can be used in conjunction with the `deleted_sensor` event to allow sensors to rejoin the fleet.
 
+Sensors created by Adapters do not need this action: they never produce the
+`deleted_sensor` event and are restored automatically when the adapter
+reconnects. See
+[Deleting an Adapter's Sensor](../2-sensors-deployment/adapters/usage.md#deleting-an-adapters-sensor).
+
 Two things to know when relying on this:
 
 - The [`deleted_sensor`](platform-events.md#deleted_sensor) event that triggers

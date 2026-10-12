@@ -88,6 +88,11 @@ Deleted Sensor deployment events are produced when a sensor that was previously 
 > lapses. To test, add the rule first, then delete a sensor and let it
 > reconnect.
 
+Sensors created by [Adapters](../2-sensors-deployment/adapters/index.md) never
+produce this event. When an adapter reconnects for a deleted sensor, the sensor
+is restored automatically. See
+[Deleting an Adapter's Sensor](../2-sensors-deployment/adapters/usage.md#deleting-an-adapters-sensor).
+
 **Sample Event:**
 
 ```json
