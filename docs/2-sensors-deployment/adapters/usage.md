@@ -467,6 +467,20 @@ USP Clients generate LimaCharlie Sensors at runtime. The ID of those sensors (SI
 
 This implies that if want to re-key an IID (perhaps it was leaked), you may replace the IID with a new valid one. As long as you use the same OID and Sensor Seed Key, the generated SIDs will be stable despite the IID change.
 
+### Deleting an Adapter's Sensor
+
+Deleting a sensor that was created by an adapter does not stop the adapter. Adapter sensors are not refused once deleted the way Endpoint Agents are: every time an adapter connects for a sensor, LimaCharlie clears that sensor's deleted state. Because the SID is derived from the same inputs every time (see [Sensor IDs](#sensor-ids)), the adapter reconnects as the same sensor, and the sensor reappears in the sensor list with the same SID.
+
+In practice:
+
+- If the adapter is still running and sending data, deleting its sensor disconnects it, the adapter reconnects and the sensor comes back almost immediately.
+- If the adapter was stopped first, the sensor stays deleted until that adapter, or another adapter with the same OID, Sensor Seed Key and sensor key, sends data again. That can be days or months later.
+- For a multiplexed adapter, each sensor key comes back independently, the next time events for that key arrive.
+
+To remove an adapter sensor for good, stop the source first: uninstall or stop the on-prem adapter, or delete or disable the cloud sensor (Cloud Adapter) configuration. Then delete the sensor.
+
+Adapter sensors never produce the [`deleted_sensor`](../../8-reference/platform-events.md#deleted_sensor) deployment event, so an [`undelete sensor`](../../8-reference/response-actions.md#undelete-sensor) rule is not needed to bring them back.
+
 ### Discovering adapter types and finding an adapter's sensor
 
 The CLI can enumerate the supported adapter types, describe their configuration schema, and locate the sensor an adapter produced. These commands work for both `cloud-adapter` (the hosted set) and `external-adapter` (the on-prem set); the examples below use `cloud-adapter`.
