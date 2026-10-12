@@ -18,6 +18,25 @@ Release notes for LimaCharlie platform components, organized by date.
 
     For discussion and email notification of the same releases, set the [Platform Updates category](https://community.limacharlie.com/c/platform-updates/5) in the community forum to Watching. For service availability rather than releases, subscribe on the [status page](https://status.limacharlie.io/).
 
+## 2026-10-11
+
+### Web App 6.6.1
+
+Product-aware onboarding, more accurate Cloud Security sensor coverage, and mail in the provider's spam folder in Email Security.
+
+#### New Features
+
+- **Product-aware onboarding**: when you create an organization, you now pick what to protect: Endpoint, Cloud Security, Email Security, or Code Security. "Just exploring" creates a demo org. Each product has its own setup screen, turns on the extensions it needs, and opens that product's setup when the org is ready. A new org without sensors that uses only Cloud Security or only Email Security now opens on that product.
+- **Email Security spam folder**: Messages and Groups now hide mail that the provider already filed in its spam folder. A notice next to the result count says so and has a Show action. You can also use the "Include mail in the spam folder" checkbox in the filter bar. A group is hidden only when every copy is in the spam folder. By default, the Overview verdict numbers also leave out spam-folder mail, with the same checkbox to include it.
+- **Cloud Security sensor coverage**: coverage now counts only running machines that can run a sensor. Serverless and managed workloads, stopped machines, and Kubernetes clusters whose nodes are already listed are no longer counted as gaps. The stats row shows how many assets were set aside and how many were matched to a sensor by hostname only. The Unmonitored compute list adds a Type column, a Next step column (install keys, instance group template, or the Kubernetes deployment guide), and a CSV export.
+- **Cloud inventory age**: the Sensor coverage page shows when the cloud inventory was last collected, and adds a "Re-scan now" button. If nothing in the cloud can run a sensor, the Cloud compute lane now says "Not applicable" instead of "Unknown".
+
+#### Bug Fixes
+
+- On Sensor coverage, "Work compute gaps" now scrolls to the list of unmonitored compute instead of doing nothing.
+
+---
+
 ## 2026-10-09
 
 ### Web App 6.6.0
