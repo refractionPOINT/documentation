@@ -21,7 +21,7 @@ No additional setup is required to begin receiving cases. Detections start flowi
 The full API specification is available as an OpenAPI document at [cases.limacharlie.io/openapi](https://cases.limacharlie.io/openapi).
 
 !!! info "Permissions"
-    The cases extension uses LimaCharlie's existing RBAC permissions. Analysts need `investigation.get` to view cases and reports, and `investigation.set` to update cases, add notes, and manage investigation data. Configuration management requires `org.conf.get` to read and `org.conf.set` to update organization settings.
+    The cases extension uses LimaCharlie's existing RBAC permissions. Analysts need `investigation.get` to view cases and reports, and `investigation.set` to update cases, add notes, and manage investigation data. Configuration management requires `org.conf.get` to read and `org.conf.set` to update organization settings. In the web console, the assignee picker lists your teammates when you have `user.list` (or `user.ctrl`); any user with `investigation.set` can still assign a case by typing an email address.
 
 ## How Cases Are Created
 
