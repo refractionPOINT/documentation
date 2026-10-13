@@ -49,6 +49,24 @@ message index it draws on lives for 35, so the count is the historical spread of
 the attack rather than a count of messages still in the index. A campaign whose
 members have aged out still tells you how big the attack was.
 
+## Current member context
+
+Campaign detail shows how many retained copies are delivered, quarantined,
+trashed or in another recorded placement, their verdicts, and how many were
+reported. Its sender summary shows distinct known addresses and the ten most
+frequent senders. These describe retained copies; historical `member_count`
+continues to describe the campaign's lifetime spread.
+
+For a campaign with more retained copies than the detail scan budget permits,
+`member_stats.complete` and `senders.complete` are false. Read those counts as
+“at least”; the number of aged-out copies is unknown until the scan is complete.
+See the [API field definitions](api-reference.md#campaign-context).
+
+Use [`GET /campaigns/{campaign_id}/members`](api-reference.md#campaign-members)
+to page the complete recorded membership, newest first. Members whose message
+index rows expired remain in the list with `message: null`. Membership fields
+record the join; a non-null message summary describes the current indexed copy.
+
 ## Messages that join after the fact
 
 Clustering runs while a message is being ingested. Two copies of one attack that

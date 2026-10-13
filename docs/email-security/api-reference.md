@@ -52,9 +52,10 @@ Shared behaviours:
 | `GET /messages/{msg_uuid}/revisions` | `{revisions, revisions_truncated}` — one message's whole verdict-revision history, oldest first: who decided (`actor`, `mode`), when, the structured rationale, and the `prior` state each one displaced. The first revision's `prior` is the engine's own verdict and the pack version that produced it. Not paginated — revisions are few by nature — but an optional `limit` is accepted and `revisions_truncated` reports the pathological history that exceeded the backend's ceiling. Gated on `mailsec.get`: a revision is the product's structured record of a decision about a message you can already open |
 | `GET /actions/bulk/{bulk_id}` | The running truth of a bulk remediation — see [Bulk Remediation](remediation.md). An unknown bulk id, or an ordinary `action_id` passed here, returns a typed not-found rather than a partial answer |
 | `GET /campaigns` | `{campaigns, next_cursor}`. Filters: `state[]`, `verdict[]`, `min_members`, `since`, `until`, `cursor`, `limit`. Every campaign has at least two members, so `min_members` only narrows past that; values below `2` have no effect |
-| `GET /campaigns/{campaign_id}` | `{campaign}` — span, membership, verdict, and the keys that bound the messages together |
-| `GET /reports` | The user-report queue. Params: `status[]` (`open`, `triaging`, `resolved`), `oldest_first`, `cursor`, `limit` |
-| `GET /reports/{report_id}` | One report: who reported it, the message they reported, the original once located across the tenant's mailboxes, and its triage state |
+| `GET /campaigns/{campaign_id}` | `{campaign}` — span, historical membership, verdict, clustering keys, `member_stats` and `senders`; see [Campaign context](#campaign-context) |
+| `GET /campaigns/{campaign_id}/members` | `{members, next_cursor}` — complete membership, newest first, with current retained message summaries or null. Params: `limit` (1–200, default 50), `cursor` (one opaque value, at most 512 bytes). Requires `mailsec.get`; see [Campaign members](#campaign-members) |
+| `GET /reports` | The user-report queue, including `original` and `original_retained` on each report. Params: `status[]` (`open`, `triaging`, `resolved`), `oldest_first`, `cursor`, `limit` |
+| `GET /reports/{report_id}` | One report: who reported it, the message they reported, the original once located across the tenant's mailboxes, its triage state, `original`, `original_retained`, and bounded `other_reports`; see [Report context](#report-context) |
 | `GET /senders/{key}` | The accumulated profile for one correspondent. `key` is qualified (`email:someone@corp.example` or `domain:corp.example`) or a bare address or domain. A key with no profile says so explicitly rather than returning a zeroed profile |
 | `GET /submissions` | `{enabled, available, submissions, next_cursor}` — the samples your organization copied to LimaCharlie. Filters: `category` (`missed_threat`, `false_positive`, `other`), `since`, `until` (RFC 3339), `limit` (1-200, default 50), `cursor`. `enabled` is whether the organization opted in and `available` is whether the datacenter has a submissions store; both are always present. See [Sample Submission](sample-submission.md). Requires `mailsec.get` |
 | `GET /submissions/{submission_id}` | `{submission, reviews, reviews_truncated}` — one submission and up to 200 review-access timestamps (never who); counts and latest-review time include all accesses. An unknown id is not an error: it returns `{"submission": null, "reviews": []}`. Requires `mailsec.get` |
@@ -62,7 +63,7 @@ Shared behaviours:
 | `GET /onboarding` | `{scopes, steps, script}` — the setup steps, OAuth scopes and `gcloud` commands for connecting a tenant, for rendering in a setup flow. Each step carries a `console` and, where verifiable, a `verified_by` naming the connection-test check that proves it. Params: `provider` (`gworkspace` default, or `m365`), `project_id`, `sa_email`, `topic`, `subscription` — supply them and the commands come back ready to run rather than templated |
 | `GET /tenant` | `{confirmation, expires_in_seconds, warning}` — the tenant-purge preview. Returns the warning describing exactly what a purge removes, and mints the single-use `confirmation` token that [`DELETE /tenant`](#delete-tenant) requires. **It changes nothing.** The token expires after `expires_in_seconds` (300). Requires Owner-level authority, not `mailsec.get` |
 
-**Numeric and boolean parameters are validated.** `limit` is 1-1000 (the backend serves 200 by default), `min_score` is 0-100, `min_members` is 0 or more, and `user_reported` and `oldest_first` take `true`/`false`. A value that is unparseable, out of range, or given more than once is refused with **400** and a response body naming the parameter, for example `{"parameter": "limit", "error": "limit: \"all\" is not an integer"}`. It is not silently dropped, so a filter you sent is always a filter that was applied.
+**Numeric and boolean parameters are validated.** `limit` is 1-1000 (the backend serves 200 by default), except campaign member and sample submission pages (1–200, default 50); `min_score` is 0-100, `min_members` is 0 or more, and `user_reported` and `oldest_first` take `true`/`false`. A value that is unparseable, out of range, or given more than once is refused with **400** and a response body naming the parameter, for example `{"parameter": "limit", "error": "limit: \"all\" is not an integer"}`. It is not silently dropped, so a filter you sent is always a filter that was applied.
 
 `lane` selects where a message was judged: `live` for ordinary incoming mail or
 `backfill` for the initial history walk. Omit it to include either. It works with
@@ -72,6 +73,67 @@ time-window, verdict, `sender_root_domain`, `link_domain` and
 combinations return a non-retryable typed refusal with
 `error_code: "lane_unsupported"` and name the `conflicting_dimension` rather
 than returning an unfiltered page.
+
+### Message summaries
+
+`MessageSummary` is the retained message index projection used by reports and
+campaign members. It contains `msg_uuid`, `ts`, `subject`, `sender_email`,
+`sender_root_domain`, `mailbox_address`, `direction`, `verdict`, `score`,
+`top_signal_name`, `state` and `user_reported`, plus `disposition` and
+`mail_type` when recorded. It does not include message bodies or the full
+parsed model. Fetch message detail for that evidence.
+
+### Report context
+
+List and detail reports include `original` (`MessageSummary` or null) and
+`original_retained` (true exactly when the summary exists).
+
+| `original_found` | `original_retained` | Meaning |
+|---|---|---|
+| false | false | The original was never located |
+| true | false | The original was located, but its index row is no longer retained |
+| true | true | The original's current index context is available |
+
+Report detail also includes `other_reports: {items, truncated}` for reports
+with the same original Internet Message-ID, excluding the report being read.
+Items are newest first and contain `report_id`, `reporter`, `ts`, `status`,
+and `disposition` when recorded. At most 50 items are returned. `truncated`
+is true whenever that cap is reached; it does not prove there are exactly
+50 other reports. A report without an Internet Message-ID has an empty list.
+
+### Campaign context
+
+Campaign detail includes two aggregates of the **currently retained** members:
+
+- `member_stats: {retained, aged_out, states, user_reported, verdicts, complete}`.
+  `states` and `verdicts` map each recorded value to its count. `user_reported`
+  counts retained copies marked reported, rather than the number of report rows.
+- `senders: {distinct, top, complete}`. `top` contains at most ten
+  `{sender_email, count}` objects ordered by count descending, then address.
+  Unknown sender addresses do not count toward `distinct`.
+
+A detail read scans at most 20,000 retained copies. If it reaches that budget,
+both `complete` flags are false, even at the exact boundary. Treat the counts
+as lower bounds. `aged_out` is unknown in that case; its zero value must not
+be displayed as proof that every historical copy is retained.
+
+When complete, `aged_out = max(0, member_count - retained)`. The historical
+`member_count` may lag newly joined members by about one fold interval;
+retained counts use the current message rows. Placement is the last state
+observed by Email Security and may lag manual moves at the provider.
+
+### Campaign members
+
+`GET /campaigns/{campaign_id}/members` pages durable membership, including
+members whose message index rows have expired. Each member has `msg_uuid`,
+`ts`, `verdict`, `score`, `mailbox_address` and `joined_at` as recorded when
+it joined, plus `message` with its current retained `MessageSummary` or null.
+A null summary never means that the original was benign.
+
+Pass `next_cursor` back unchanged until it is null. Cursors are bound to the
+organization and campaign; changing either requires a fresh walk. The default
+page size is 50 and the maximum is 200. A full final page may carry a cursor
+followed by an empty terminal page.
 
 ### `GET /messages/{msg_uuid}/eml`
 
