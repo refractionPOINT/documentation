@@ -16,4 +16,4 @@ Sensor deployment and management.
 - [Endpoint Agents](endpoint-agent/windows/installation.md)
 - [Adapters](adapters/index.md)
 - [Sensor Tags](sensor-tags.md)
-- [Entity Pivot](../cloud-security/entity-pivot.md) - Pivot from a sensor ID, hostname or IP address to its Host, owner and activity
+- [Entities](../cloud-security/entity-pivot.md) - Pivot from a sensor ID, hostname or IP address to its Host, owner and activity

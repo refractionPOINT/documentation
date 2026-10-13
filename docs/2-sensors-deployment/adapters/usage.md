@@ -155,8 +155,9 @@ The following configurations allow you to customize the way data is ingested by 
 
 !!! note "Availability"
     Built-in parser declarations need no adapter change. A custom
-    `sensor_identity_type` requires an adapter version that supports it. Entity
-    associations require a Cloud Security subscription with Entity Pivot.
+    `sensor_identity_type` requires adapter version 1.32.40 or later. Entity
+    associations require a Cloud Security subscription with
+    [Entities](../../cloud-security/entity-pivot.md#adapter-identities-and-external-actors).
 
 A multiplexed adapter creates a separate sensor for each sensor key. A declaration
 explains whether that sensor represents a user or a device, allowing Entity Pivot
@@ -169,8 +170,7 @@ to associate its telemetry with the corresponding entity.
 | `github_login` | A mutable GitHub login, normalized to lowercase with a terminal `[bot]` suffix preserved. Built-in parser evidence links only when exactly one current collected GitHub identity holds the login; stable numeric IDs prevent renamed or reclaimed logins from joining different people. |
 | `device` | The vendor's device identifier. The sensor hostname supplies the device name; the vendor identifier does not link devices across providers. |
 
-Built-in parsers declare `github_login` for `github`, `email` for `1password` and
-for Email Security mailbox sensors (the mailbox address), and `device` for `crowdstrike`, `sentinel_one`, `carbon_black`, `msdefender`,
+Built-in parsers declare `github_login` for `github`, `email` for `1password`, and `device` for `crowdstrike`, `sentinel_one`, `carbon_black`, `msdefender`,
 `trend_worryfree` and `fortigate`. Other parsers leave the declaration empty unless
 configured explicitly. An empty declaration does not infer an identity from the
 platform or hostname.

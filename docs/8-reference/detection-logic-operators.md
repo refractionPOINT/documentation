@@ -488,17 +488,17 @@ metadata_rules:
 
 | Parameter | Required | Meaning |
 |-----------|----------|---------|
-| `path` | Yes | Where the identifier is read in the event. If it yields several values, each is pivoted (up to 16) and the answers are merged. |
-| `from` | Yes | Literal identifier type of the value at `path`, such as `sensor_id`, `hostname`, `email` or `ip`. |
+| `path` | Yes | Where the identifier is read in the event. If it yields several values, each is pivoted and the answers are merged. More than 16 distinct values cannot be answered. |
+| `from` | Yes | Literal identifier type of the value at `path`, such as `sensor_id`, `hostname`, `email` or `ip`. `username` is not accepted. |
 | `to` | Yes | Literal value to return, such as `entity`, `name`, an identifier type, `owner.<identifier type>` or `owned.<identifier type>`. |
-| `name` | No | Names the result in the detection's metadata. |
+| `name` | No | Names the result in the detection's metadata: 1 to 64 letters, digits or underscores. |
 | `metadata_rules` | No | Detection logic evaluated against the result. Omit to match on any answer. |
 
 The operator does not match when no value is found. On a match, the result is attached to the detection's `mtd` under `pivot_<from>_<to>`, or `pivot_<name>` when `name` is set, with non-alphanumeric characters replaced by `_`. The result is `{values: [...], count: n, truncated: bool, approximate: bool}`, and `metadata_rules` paths are relative to it, for example `count` or `values/?`. Two `pivot` operators in one rule that would write the same key are refused when the rule is saved; give each a distinct `name`.
 
 `from: ip` is an address pivot: it answers which sensors reported an address in about the last two hours, and the answer is always `approximate`. It cannot be placed under `not: true`, on itself or on an enclosing operator.
 
-Saving a rule that contains a pivot needs `cloudsec.get` in addition to `dr.set`. Put `pivot` after cheaper conditions in an `and`, because each new lookup counts against an organization budget. In Replay and rule tests, an event whose evaluation reaches a pivot is counted as not evaluated.
+Saving a rule that contains a pivot needs `cloudsec.get` in addition to `dr.set`. Put `pivot` after cheaper conditions in an `and`, because each new lookup counts against an organization budget. In Replay, an event whose evaluation reaches a pivot is counted as not evaluated. A rule's own `tests` cannot reach a pivot: such a rule is refused when it is saved.
 
 See [Pivots in Rules and Outputs](../cloud-security/rule-pivots.md) for the vocabulary, address pivots, permissions, behavior when a pivot cannot be answered, and examples.
 
