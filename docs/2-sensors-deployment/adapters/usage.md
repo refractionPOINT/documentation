@@ -160,7 +160,7 @@ The following configurations allow you to customize the way data is ingested by 
     [Entities](../../cloud-security/entity-pivot.md#adapter-identities-and-external-actors).
 
 A multiplexed adapter creates a separate sensor for each sensor key. A declaration
-explains whether that sensor represents a user or a device, allowing Entity Pivot
+explains whether that sensor represents a user or a device, allowing Entities
 to associate its telemetry with the corresponding entity.
 
 | `sensor_identity_type` | Meaning of the sensor key |
@@ -177,7 +177,7 @@ platform or hostname.
 
 Built-in parser declarations record `identity_source: parser`. The GitHub parser
 also supplies the audit event's immutable numeric actor ID as `identity_id`,
-which becomes an authoritative `github_user_id` identifier in Entity Pivot.
+which becomes an authoritative `github_user_id` identifier in Entities.
 A login alone is corroborated evidence subject to the uniqueness guard, never an
 authoritative identifier. Device parsers can supply an immutable vendor device ID;
 it remains vendor evidence rather than a cross-provider identity link.

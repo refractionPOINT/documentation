@@ -148,7 +148,7 @@ to: hostname
 
 How to read the answer:
 
-- **Several sensors can hold one address.** Home networks, overlapping ranges, and a shared office or VPN address all produce this. All of them are returned, and the answer is always flagged `approximate`. A rule that needs exactly one sensor uses `to: sensor_id` and tests `count`. `count` counts distinct values, so with `to: hostname` two sensors that share a name count once.
+- **Several sensors can hold one address.** Home networks, overlapping ranges, and a shared office or VPN address all produce this. All of them are returned, and the answer is always flagged `approximate`. The answer is about the Hosts behind those sensors: `to: hostname` or `to: sensor_id` returns every hostname or sensor ID of those Hosts. A rule that needs exactly one machine uses `to: entity` and tests `count`; with `to: hostname`, one Host with two names counts as 2 and two Hosts that share a name count as 1.
 - **A very common address is capped.** The answer is flagged `truncated` and means "at least these".
 - **The answer is about the present.** An event older than about two hours, or one with a missing or badly wrong time, is not answered, and the operator does not match for it.
 - **No match is not proof.** The device behind the address can be unmanaged, or its sensor can be offline. No match never shows that no managed device has the address.
@@ -185,7 +185,7 @@ respond:
 
 ### Require a single host for failed logons
 
-On a server, report failed logons from an internal address, but only when exactly one sensor reported that address. The pivot returns sensor IDs, so `count` is the number of sensors, and `metadata_rules` tests it.
+On a server, report failed logons from an internal address, but only when the address belongs to exactly one managed machine. The pivot returns entity IDs, so `count` is the number of Hosts, and `metadata_rules` tests it.
 
 ```yaml
 detect:
@@ -200,7 +200,7 @@ detect:
     - op: pivot
       path: event/EVENT/EventData/IpAddress
       from: ip
-      to: sensor_id
+      to: entity
       metadata_rules:
         op: is
         path: count
@@ -209,7 +209,7 @@ respond:
   - action: report
     name: failed-logon-from-managed-host
     metadata:
-      source_sensor: '{{ index .mtd.pivot_ip_sensor_id.values 0 }}'
+      source_entity: '{{ index .mtd.pivot_ip_entity.values 0 }}'
 ```
 
 ### Check the kind of host at the other end of a connection

@@ -18,7 +18,7 @@ returns HTTP 403.
 | `POST /cloudsec/{oid}/entities/resolve` | JSON body: `identifiers` (1–100 objects with `value`, optional `type`), optional `at` in Unix seconds, optional `observation_selectors` (at most 4, see [Look up a device with selectors](#look-up-a-device-with-selectors)). Each value is at most 1024 bytes and cannot be blank. Returns per-input `detected_types`, confirmed `matches`, unconfirmed `possible` and `ambiguous`, plus readiness and source freshness. With selectors, or with `insight.evt.get` and an explicit `hostname` the inventory does not know, it also returns `observed_matches` and `observations`. Omit `type` to detect plausible identifier types. |
 | `GET /cloudsec/{oid}/entities/search` | Required `q` prefix; optional `kind` (`user` or `host`), `limit` (1–100, default 50), `cursor`. Returns `entities` with the matched identifier and optional `next_cursor`. |
 | `GET /cloudsec/{oid}/entities/{entity_id}` | Optional `sightings_days` (1–365, default 30). Returns `card`, `index_ready` and optional `redirect_to` or `sightings` restriction. With `insight.evt.get` the card can carry `also_seen_as` and `cloud_sign_ins`, and the response `observations`. |
-| `GET /cloudsec/{oid}/entities/{entity_id}/sightings` | Optional `kind` (`user`, `logon`, `int_ip`, `ext_ip`, `hostname`), `since`, `until`, `limit` (1–500, default 100), `cursor`. Without `since` and `until`, the window is the last 30 days; the window can span at most 365 days. Returns `sightings`, optional `next_cursor`, and `best_effort: true`. A row is returned when its observed interval overlaps the window. A User's sightings are only `user` and `logon` rows; address and hostname rows belong to Hosts. |
+| `GET /cloudsec/{oid}/entities/{entity_id}/sightings` | Optional `kind` (`user`, `logon`, `int_ip`, `ext_ip`, `hostname`), `since`, `until`, `limit` (1–500, default 100), `cursor`. Without `since` and `until`, the window is the last 30 days; the window can span at most 365 days. Returns `sightings`, optional `next_cursor`, and `best_effort: true`. A row is returned when its observed interval overlaps the window, so rows that began shortly before `since` can appear. A User's sightings are only `user` and `logon` rows; address and hostname rows belong to Hosts. |
 | `GET /cloudsec/{oid}/entities/{entity_id}/activity` | Optional `since`, `until`, `sources` (comma-separated `email,detections,sensor,cloud`; default all). An unknown or repeated source returns HTTP 400. Default window is the last 30 days; maximum window is 30 days. Returns per-source status, bounded items, truncation and full-view links. |
 
 All timestamps are Unix **seconds**.
@@ -29,7 +29,9 @@ All timestamps are Unix **seconds**.
   the address and were alive in the last 7 days. With `insight.evt.get`, it also
   returns sensors whose sightings held the address in the last 30 days.
 - With `at` and `insight.evt.get`, resolution uses only sightings that held the
-  address in the two hours up to `at`, and marks those matches `approximate`.
+  address in the two hours up to `at`.
+- Matches derived from sightings are always `approximate` and carry the `sid`
+  that reported the address.
 - Without `insight.evt.get`, only current holders are available and `at` is
   ignored for addresses.
 
@@ -269,16 +271,15 @@ sensor's current name matched).
 - A daily record keeps only its first and last times. They are samples; no sign-in is
   inferred between them. Use the product's own events for the full timeline.
 - Failed and unknown outcomes are listed apart and correlate no endpoint.
-- `user.reason` is one of:
-    - `entra_object_id` or `okta_user_id`: the provider's user ID matched. `corroborated` when
-      the User's identifier is strong, otherwise `possible`.
-    - `email`: the address matched a strong identifier on an Office 365 or Entra ID sign-in
-      (`corroborated`).
-    - `email_possible`, `username`, `username_local_part`, `conflicting_exact_matches`
-      (`possible`).
-    - `no_known_user` (`unlinked`), `incomplete_facts` or `inconsistent_facts` (`unknown`).
+- A principal never creates or merges a User.
 
-    A principal never creates or merges a User.
+| `user.reason` | Meaning |
+|---|---|
+| `entra_object_id`, `okta_user_id` | The provider's user ID matched. `corroborated` when the User's identifier is strong, otherwise `possible`. |
+| `email` | The address matched a strong identifier on an Office 365 or Entra ID sign-in (`corroborated`). |
+| `email_possible`, `username`, `username_local_part`, `conflicting_exact_matches` | Weaker or conflicting matches (`possible`). |
+| `no_known_user` | No User matched (`unlinked`). |
+| `incomplete_facts`, `inconsistent_facts` | Evidence was missing or contradictory (`unknown`). |
 
 ### Look up a device with selectors
 

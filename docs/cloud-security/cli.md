@@ -80,7 +80,7 @@ limacharlie cloudsec compliance assignments
 limacharlie cloudsec resolve sensors $SID1 $SID2
 limacharlie cloudsec resolve assets "lcrn:..."
 
-# Entity Pivot: identifier -> User / Host, then card and activity
+# Entities: identifier -> User / Host, then card and activity
 limacharlie cloudsec entity resolve --identifier alice@example.com
 limacharlie cloudsec entity get --entity-id eu_k5xw4zdpnvsxe3tl
 limacharlie cloudsec entity activity --entity-id eu_k5xw4zdpnvsxe3tl --source detections

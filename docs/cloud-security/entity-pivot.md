@@ -62,8 +62,8 @@ The search page and the entity page have a **List** / **Graph** switch. The grap
 starts from the entities that match your search, or from the entity you are
 viewing. Select **Show connections** on a User or Host to draw its neighbours:
 owned Hosts, accounts active on or logged on to a Host, possible matches, attached
-sensors, cloud resources, vendor devices (**Also seen as**) and cloud sign-ins.
-Unconfirmed links are drawn as possible. Large neighbourhoods fold into a
+sensors, cloud resources, and, with `insight.evt.get`, vendor devices (**Also seen
+as**) and cloud sign-ins. Unconfirmed links are drawn as possible. Large neighbourhoods fold into a
 **+N more** node, and the graph stops growing at 600 nodes; narrow the search or
 hide connections to see others.
 
@@ -71,7 +71,8 @@ hide connections to see others.
 
 A message from a suspicious sender reached `alice@example.com`. Which machine does
 she own, what did it do, and is there cloud exposure? The values below are
-synthetic.
+synthetic. The fields named in each step are described in the
+[Entities API reference](entities-api.md#response-reference).
 
 1. **Resolve the mailbox to a User.** Search for the address in **Entities**, or
    resolve it with no `type`. One confirmed, unambiguous match gives a User ID such
@@ -336,14 +337,14 @@ identifier, and nothing is stored as a relationship.
 | Resolve, `observation_selectors` | Look up a vendor device ID or a hostname another product reports. See [Look up a device with selectors](entities-api.md#look-up-a-device-with-selectors). |
 
 All of this needs `insight.evt.get` (no new permission). Each panel shows at most
-20 rows, newest day first, from the last 30 days.
+20 rows, newest day first, from the last 30 days; selectors look back up to 31 days.
 
 - Only one case is `corroborated`: exactly one Host had a sensor that reported the
   same hostname **and** the same internal IP on the same UTC day. A public address
   never counts.
-- Everything else is `possible` or unlinked: a hostname-only match, several
-  qualifying Hosts, conflicting names, or missing evidence. Every qualifying Host
-  is listed and none is selected for you.
+- Everything else is `possible`, unlinked or unknown: a hostname-only match,
+  several qualifying Hosts, conflicting names, or missing evidence. Every
+  qualifying Host is listed and none is selected for you.
 - A sign-in's Hosts are always `possible`, even when there is only one: shared NAT,
   VPN or proxy egress identifies an office, not an endpoint.
 
