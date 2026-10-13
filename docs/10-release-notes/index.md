@@ -18,6 +18,28 @@ Release notes for LimaCharlie platform components, organized by date.
 
     For discussion and email notification of the same releases, set the [Platform Updates category](https://community.limacharlie.com/c/platform-updates/5) in the community forum to Watching. For service availability rather than releases, subscribe on the [status page](https://status.limacharlie.io/).
 
+## 2026-10-13
+
+### Web App 6.6.2
+
+A redesigned Email Security overview, case assignment without user management rights, and a new permission for listing org users.
+
+#### New Features
+
+- **Email Security overview redesign**: the overview now opens with four summary cards, recent threat groups, and a full breakdown of message verdicts. Each verdict shows its count and percentage and links to the matching messages. Detailed collection health moves into one Pipeline health section, and the status summary links straight to each issue. Each card is labelled "Current status" or "Selected period", so it is clear what the number measures.
+- **Email Security period selector**: the overview uses the same Time Period selector as the Dashboard, with Past Day, Past Week, and Past Month. It now opens on Past Month. The selected period and the spam-folder filter carry through to threat groups and to message and group drilldowns.
+- **`user.list` permission**: a new read-only permission that lets a user list the email addresses of an org's users. It is included in the Owner, Administrator, and Operator roles.
+- **Case assignment without `user.ctrl`**: users who can edit cases (`investigation.set`) can now assign them without `user.ctrl`. Both assignee pickers list existing case assignees and yourself, and accept a typed email address. With `user.list` or `user.ctrl`, the pickers also list the org's users.
+
+#### Bug Fixes
+
+- Email Security dialogs opened from the Message, Campaign, or Group drawer, such as Quarantine or "Override this verdict", now show above the drawer instead of behind it.
+- Email Security action timelines, verdict history, report "resolved by", and submissions now show the person's email instead of a user ID. Showing other users' emails requires `user.ctrl`.
+- "Recent suspicious and malicious mail" on the Email Security overview shows the real subject line instead of a lower-cased, masked version.
+- Changing the Email Security overview period no longer opens drilldowns with the previous date range while new data loads.
+
+---
+
 ## 2026-10-11
 
 ### Web App 6.6.1
