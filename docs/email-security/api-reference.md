@@ -117,7 +117,10 @@ both `complete` flags are false, even at the exact boundary. Treat the counts
 as lower bounds. `aged_out` is unknown in that case; its zero value must not
 be displayed as proof that every historical copy is retained.
 
-When complete, `aged_out = max(0, member_count - retained)`. The historical
+When complete, `aged_out = max(0, member_count - retained)`. It counts
+historical members not in the retained message index **for this campaign**.
+This includes expired rows and rows later assigned to another campaign; the
+field does not prove that every counted message expired. The historical
 `member_count` may lag newly joined members by about one fold interval;
 retained counts use the current message rows. Placement is the last state
 observed by Email Security and may lag manual moves at the provider.

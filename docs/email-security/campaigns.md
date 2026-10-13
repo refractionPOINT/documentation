@@ -59,7 +59,9 @@ continues to describe the campaign's lifetime spread.
 
 For a campaign with more retained copies than the detail scan budget permits,
 `member_stats.complete` and `senders.complete` are false. Read those counts as
-“at least”; the number of aged-out copies is unknown until the scan is complete.
+“at least”; the number of historical copies outside the retained campaign index
+is unknown until the scan is complete. The `aged_out` field includes expired
+rows and rows later assigned to another campaign.
 See the [API field definitions](api-reference.md#campaign-context).
 
 Use [`GET /campaigns/{campaign_id}/members`](api-reference.md#campaign-members)
