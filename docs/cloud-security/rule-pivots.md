@@ -133,7 +133,7 @@ Address pivots are not available as template functions. See [Address pivots](#ad
 
 ## Address pivots
 
-`from: ip` answers the question "which of my sensors reported this address within about the last two hours?" The answer is built from the internal and external addresses that sensors report.
+`from: ip` answers the question "which of my machines had a sensor report this address within about the last two hours?" The answer is built from the internal and external addresses that sensors report, and is about the Hosts behind those sensors.
 
 Address pivots are available only through the `pivot` operator in a rule. They cannot be used in templates or in outputs.
 
