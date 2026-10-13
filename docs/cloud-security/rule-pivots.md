@@ -19,7 +19,9 @@ A pivot is a triple: `from`, a value, and `to`.
 
 ### `from`
 
-`from` is one of the [identifier types](entity-pivot.md#identifiers-and-confidence): `sensor_id`, `hostname`, `fqdn`, `email`, `ad_account`, `ad_account_short`, `username`, `windows_sid`, `device_id`, `serial`, `mac`, `cloud_instance_id`, `aws_arn`, `graph_urn`, `entra_object_id`, `okta_user_id`, `gws_user_id`, `github_login` or `github_user_id`.
+`from` is one of the [identifier types](entity-pivot.md#identifiers-and-confidence): `sensor_id`, `hostname`, `fqdn`, `email`, `ad_account`, `ad_account_short`, `windows_sid`, `device_id`, `serial`, `mac`, `cloud_instance_id`, `aws_arn`, `graph_urn`, `entra_object_id`, `okta_user_id`, `gws_user_id`, `github_login` or `github_user_id`.
+
+`username` is not accepted: a bare account name never confirms an entity, so pivot from `email` or `ad_account` instead.
 
 `ip` is also accepted, with different behavior. See [Address pivots](#address-pivots).
 
@@ -29,7 +31,7 @@ A pivot is a triple: `from`, a value, and `to`.
 |------|---------|
 | `entity` | The entity ID. |
 | `name` | The entity's display name. |
-| An identifier type, such as `hostname`, `email` or `sensor_id` | The other identifiers of that type on the same entity. |
+| An identifier type, such as `hostname`, `email` or `sensor_id` | The other identifiers of that type on the same entity. `username` and `ip` cannot be returned. |
 | `owner.entity`, `owner.name`, `owner.<identifier type>` | Starting from a Host, the same value for the Users that own it. |
 | `owned.entity`, `owned.name`, `owned.<identifier type>` | Starting from a User, the same value for the Hosts they own. |
 
@@ -40,8 +42,8 @@ A pair that does not exist is refused when the rule or output is saved.
 ### What an answer contains
 
 - Only confirmed links are followed. A [possible match](entity-pivot.md#identifiers-and-confidence) is never used.
-- An identifier that resolves to more than one entity is ambiguous. It returns nothing.
-- An answer holds at most 32 values. When more exist, `truncated` is `true`.
+- An identifier that resolves to more than one entity is ambiguous. The pivot cannot be answered; see [When a pivot cannot be answered](#when-a-pivot-cannot-be-answered).
+- An answer holds at most 32 values for each identifier. When more exist, `truncated` is `true`.
 
 ## The `pivot` operator
 
@@ -64,10 +66,10 @@ metadata_rules:
 | `path` | Yes | Where the identifier is read in the event. |
 | `from` | Yes | Literal identifier type of the value at `path`. |
 | `to` | Yes | Literal value to return. |
-| `name` | No | Names the result in the detection's metadata. |
+| `name` | No | Names the result in the detection's metadata: 1 to 64 letters, digits or underscores. |
 | `metadata_rules` | No | Detection logic evaluated against the result. Omit it to match on any answer. |
 
-If `path` yields several values, each one is pivoted, up to 16, and the answers are merged. If `path` yields no value, or the answer is empty, the operator does not match.
+If `path` yields several values, each one is pivoted and the answers are merged, so `count` can exceed 32. More than 16 distinct values cannot be answered and are treated like any other [unanswered pivot](#when-a-pivot-cannot-be-answered). Only string values are used. If `path` yields no value, or the answer is empty, the operator does not match.
 
 ### The result
 
@@ -85,8 +87,8 @@ pivot_owner:
 | Field | Meaning |
 |-------|---------|
 | `values` | The values found. |
-| `count` | The number of values. |
-| `truncated` | `true` when more than 32 values exist and only some are returned. |
+| `count` | The number of distinct values. |
+| `truncated` | `true` when more values exist than were returned. |
 | `approximate` | `true` when the answer is a best guess. It is always `true` for address pivots. |
 
 `metadata_rules` use paths relative to this result, so write `count` or `values/?`, not `mtd/...`. A path with `?` is tested against every element of the list.
@@ -95,7 +97,9 @@ Two `pivot` operators in one rule that would write the same key are refused when
 
 The result is part of the detection, so outputs, cases and playbooks that receive the detection already have it under `mtd`. Copying it into a report's `metadata` is optional.
 
-In response actions the result is available under `.mtd`. The `values` of a stored result are a generic list, and `join` only accepts a list of strings, so `join` does not apply to it. Read it with `index`, `json` or `range` instead:
+In the response half, `.mtd` is available in a `report`'s `metadata`, and in an `extension request` or `service request` that sets `based on report: true` after the `report`. It is not available in the report `name`, `add tag`, `task` or a request without `based on report`; there it renders as `<no value>` or fails. To use a pivoted value in those actions, call the [`pivot` template function](#template-functions) instead.
+
+The `values` of a stored result are a generic list, and `join` only accepts a list of strings, so `join` does not apply to it. Read it with `index`, `json` or `range` instead:
 
 - One value: `{{ index .mtd.pivot_owner.values 0 }}`.
 - All values as JSON: `{{ json .mtd.pivot_owner.values }}`, which renders like `["alice@example.com","bob@example.com"]`.
@@ -122,14 +126,14 @@ Both take `from`, the identifier and `to`.
 
 The functions are available:
 
-- In D&R rule templates: values in the detection half, and fields in the response half such as a `report` name and metadata, extension request payloads, and the `prompt` and `data` of `ask ai`.
+- In D&R rule templates: values in the detection half, including the `prompt` and `data` of the `ask ai` operator, and fields in the response half such as a `report` name and metadata, extension request payloads, and the fields of `start ai agent`.
 - In [outputs](#outputs).
 
 Address pivots are not available as template functions. See [Address pivots](#address-pivots).
 
 ## Address pivots
 
-`from: ip` answers the question "which of my sensors reported this address within about the last two hours?" The answer is built from the internal and external addresses that sensors report.
+`from: ip` answers the question "which of my machines had a sensor report this address within about the last two hours?" The answer is built from the internal and external addresses that sensors report, and is about the Hosts behind those sensors.
 
 Address pivots are available only through the `pivot` operator in a rule. They cannot be used in templates or in outputs.
 
@@ -144,14 +148,14 @@ to: hostname
 
 How to read the answer:
 
-- **Several sensors can hold one address.** Home networks, overlapping ranges, and a shared office or VPN address all produce this. All of them are returned, and the answer is always flagged `approximate`. A rule that needs exactly one host tests `count`.
+- **Several sensors can hold one address.** Home networks, overlapping ranges, and a shared office or VPN address all produce this. All of them are returned, and the answer is always flagged `approximate`. The answer is about the Hosts behind those sensors: `to: hostname` or `to: sensor_id` returns every hostname or sensor ID of those Hosts. A rule that needs exactly one machine uses `to: entity` and tests `count`; with `to: hostname`, one Host with two names counts as 2 and two Hosts that share a name count as 1.
 - **A very common address is capped.** The answer is flagged `truncated` and means "at least these".
 - **The answer is about the present.** An event older than about two hours, or one with a missing or badly wrong time, is not answered, and the operator does not match for it.
 - **No match is not proof.** The device behind the address can be unmanaged, or its sensor can be offline. No match never shows that no managed device has the address.
 
 Because no match proves nothing, an address pivot cannot be placed under `not: true`, either on the operator itself or on any operator that encloses it. Such a rule is refused when it is saved.
 
-For questions about the past, such as who had an address yesterday at 14:02, use the [Entity Pivot](entity-pivot.md) API or CLI with a time. A rule cannot ask that question.
+For questions about the past, such as who had an address yesterday at 14:02, use [resolve with `at`](entities-api.md#ip-resolution) in the Entities API or CLI. A rule cannot ask that question.
 
 ## Examples
 
@@ -181,7 +185,7 @@ respond:
 
 ### Require a single host for failed logons
 
-On a server, report failed logons from an internal address, but only when exactly one sensor reported that address. `metadata_rules` tests the `count` of the answer.
+On a server, report failed logons from an internal address, but only when the address belongs to exactly one managed machine. The pivot returns entity IDs, so `count` is the number of Hosts, and `metadata_rules` tests it.
 
 ```yaml
 detect:
@@ -196,7 +200,7 @@ detect:
     - op: pivot
       path: event/EVENT/EventData/IpAddress
       from: ip
-      to: hostname
+      to: entity
       metadata_rules:
         op: is
         path: count
@@ -205,7 +209,7 @@ respond:
   - action: report
     name: failed-logon-from-managed-host
     metadata:
-      source_host: '{{ index .mtd.pivot_ip_hostname.values 0 }}'
+      source_entity: '{{ index .mtd.pivot_ip_entity.values 0 }}'
 ```
 
 ### Check the kind of host at the other end of a connection
@@ -323,7 +327,7 @@ custom_transform: |-
   }
 ```
 
-When the value is not already cached, an output waits a very short time, about 50 milliseconds, for the lookup. Usually the first event for an identifier already carries the value, but not always.
+When the value is not already cached, an output waits a very short time, about 50 milliseconds, for the lookup. (A rule waits up to 2 seconds; a lookup that takes longer cannot be answered.) Usually the first event for an identifier already carries the value, but not always.
 
 - If the lookup does not finish in that time, the event is delivered right away with an empty value. Later events carry the value once it is cached.
 - If the lookup cannot run, the event is also delivered right away with an empty value. This happens when the organization's lookup budget is exceeded, when Entities are not ready, or when the output was not saved with the permission.
@@ -336,11 +340,11 @@ Saving a rule or an output that contains a pivot needs `cloudsec.get` in additio
 
 This includes rules with an address pivot. The same applies to [API keys](../7-administration/access/api-keys.md) used by automation that pushes rules. A rule or an output saved without the permission is refused, and the message names the missing permission. Enabling, disabling or tagging a rule does not need it.
 
-See [Permissions](../8-reference/permissions.md) for the full list.
+See [Cloud Security permissions](index.md#permissions) for `cloudsec.get`, and [Permissions](../8-reference/permissions.md) for the others.
 
 ## When a pivot cannot be answered
 
-A pivot cannot be answered when Entities are not ready for the organization (see [Readiness](entity-pivot.md#readiness-history-and-incomplete-results)), when a lookup fails temporarily, when the organization's lookup budget is exceeded, when the identifier is ambiguous, or when the rule or output was not saved with the required permission.
+A pivot cannot be answered when Entities are not ready for the organization (see [Readiness](entity-pivot.md#readiness-history-and-incomplete-results)), when a lookup fails temporarily, when the organization's lookup budget is exceeded, when the identifier is ambiguous, when `path` yields more than 16 distinct values, when a rule's lookup takes longer than 2 seconds, or when the rule or output was not saved with the required permission.
 
 What happens depends on where the pivot is.
 
@@ -352,7 +356,7 @@ What happens depends on where the pivot is.
 | Response half, an action that acts with the value, such as `add tag`, `task` with an investigation ID, an extension request, or the fields of `start ai agent` | The action fails for that event. The other actions still run. |
 | Outputs | The event is delivered. The value renders empty when the lookup did not finish within the short wait described in [Outputs](#outputs) or could not run. |
 
-Each failure is reported to the organization's error stream, at most about once per rule per minute. A stale event on an address pivot is not reported.
+Each failure is reported to the organization's error stream, at most about once per minute for each rule and kind of failure. A stale event on an address pivot is not reported, and neither is an output value that missed the short wait.
 
 ## Cost and placement
 
@@ -366,19 +370,22 @@ To stay within the budget:
 
 ## Testing rules and Replay
 
-[Replay](../5-integrations/services/replay.md) and rule tests validate pivots, so unknown pairs and the refusals described on this page are reported. They do not answer pivots.
+[Replay](../5-integrations/services/replay.md) validates pivots, so unknown pairs and the refusals described on this page are reported. It does not answer pivots.
 
-- An event whose evaluation reaches a pivot is counted as not evaluated. It is not a match.
+- An event whose detection reaches a pivot is counted as not evaluated. It is not a match.
+- A pivot in a response action keeps the match and skips that action. A pivot in a `report` renders as its template text.
 - The results list `{action: "pivot", data: {oid, from, to}}` once per `from` and `to` pair.
 - The Replay response stats include `events_pivot_not_evaluated`.
 
 Order matters. In `or: [pivot, X]`, an event that `X` would have matched is reported as not matched.
 
+A rule's own `tests` cannot reach a pivot either: saving a rule whose test events would evaluate a pivot fails with `pivot is not supported in this context`. Write tests whose events are decided before the pivot, for example by an earlier condition in an `and`.
+
 To check what a pivot returns, test the rule on live events.
 
 ## See Also
 
-- [Entity Pivot](entity-pivot.md)
+- [Entities](entity-pivot.md)
 - [Detection Logic Operators: pivot](../8-reference/detection-logic-operators.md#pivot)
 - [Template Strings and Transforms](../4-data-queries/template-strings.md)
 - [Outputs](../5-integrations/outputs/index.md)
