@@ -252,3 +252,17 @@ templates:
 `EMAIL_USER_REPORT` is ordinary telemetry, so a D&R rule can act the moment
 someone reports something — page a channel, open a case, or drive remediation
 through the extension. See [Events & Automation](automation.md).
+
+## Original message and related reporters
+
+Each report list row and report detail carries `original`, the original's
+current retained message summary, and `original_retained`. A located original
+whose index row has expired has `original_found: true`,
+`original_retained: false` and `original: null`. An original that was never
+located has both flags false. Neither case provides a current verdict.
+
+Report detail's `other_reports` lists other reports with the same original
+Internet Message-ID, newest first, excluding itself. It returns at most 50
+reporters with their report IDs, times, statuses and recorded dispositions.
+`truncated: true` means the list reached its cap; more reporters may exist.
+See [Report context](api-reference.md#report-context) for the response fields.
