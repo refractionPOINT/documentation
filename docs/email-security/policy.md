@@ -296,6 +296,10 @@ Addresses and domains are lowercased on save.
 
 ## `vips`
 
+Optional `platform_identities` bind VIP names to independently confirmed GitHub
+logins or Google account emails. See [VIP Identity Protection](vips.md) for setup,
+supported notifications and the authentication boundary.
+
 The protected identities that impersonation detection compares against — the
 display names and addresses a `Finance` request is most damaging in the name of.
 

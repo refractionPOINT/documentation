@@ -613,6 +613,7 @@ nav:
       - Detection Rules: email-security/custom-rules.md
       - Rule Reference: email-security/rule-reference.md
       - IOC & Reputation Feeds: email-security/ioc-feeds.md
+      - VIP Identity Protection: email-security/vips.md
       - Policy Reference: email-security/policy.md
       - Events & Automation: email-security/automation.md
       - Command Line Interface: email-security/cli.md
