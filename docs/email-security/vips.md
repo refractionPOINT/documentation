@@ -32,7 +32,9 @@ A matching display name alone never establishes account ownership. Email Securit
 requires a supported canonical notification, receiver-verified aligned platform
 DMARC and DKIM, and a provider-controlled actor identifier covered by the message's
 signature. GitHub PR, issue and comment notifications can supply a signed sender
-login. Google Drive/Docs/Sheets share notifications can supply the sharing account's
+login only when the signature covers that header and the MIME structure.
+Notifications whose signatures omit those fields remain unverified even when
+DKIM and DMARC pass. Google Drive/Docs/Sheets share notifications can supply the sharing account's
 email in the provider's invitation header.
 
 Supported notifications from a configured account receive **Verified VIP account**
