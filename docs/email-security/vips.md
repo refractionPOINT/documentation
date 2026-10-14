@@ -68,6 +68,10 @@ email-keyed and name-keyed entries. Inline VIP settings take precedence over
 lookup entries for the same identity. Invalid account metadata preserves name/email
 protection and reports a configuration problem; it never grants verification.
 
+Treat write access to referenced VIP lookup lists like access to VIP policy settings.
+Anyone who can edit a referenced list can add account bindings that grant verified
+VIP credit. Reference only lists whose writers you trust to make that decision.
+
 ## Preview limitations
 
 `mailsec analyze --with-org-context` can read current VIP bindings and reports
