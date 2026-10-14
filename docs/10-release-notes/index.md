@@ -20,6 +20,26 @@ Release notes for LimaCharlie platform components, organized by date.
 
 ## 2026-10-13
 
+### Endpoint Agent 5.4.0
+
+#### New Features
+
+- Application allowlisting: the sensor can now enforce an application control policy on Windows and macOS, blocking executions the policy does not allow, with a permissive mode that reports would-be blocks without enforcing.
+- Application control reports each blocked or would-be-blocked execution as an event carrying what is needed to approve it: file hash, signer details, matched rule, parent process, user and application metadata.
+- Application control: repeated blocks of the same execution within 5 minutes are folded into a single summary event with a count and first/last timestamps.
+- Application control: trusted installers — naming an updater in the policy lets the software it installs run, so self-updating applications keep working under an allowlist.
+- Application control: when a policy is first applied, already-running processes it would deny are reported, or terminated if the policy asks for it while enforcing.
+- Application control: users are now notified with a desktop toast when one of their executions is blocked, with an optional system tray icon that keeps a history of blocks.
+- New `force_sync` command sends the sensor's sync immediately, so configuration changes reach a host right away instead of at the next interval (up to five minutes later).
+
+#### Bug Fixes
+
+- Fixed a Windows sensor crash loop at startup on hosts low on memory, caused by an oversized allocation when processing kernel process snapshots.
+- The sensor now honours backoff requests from the cloud; previously they could be silently ignored.
+- Windows autoruns entries now report their strings with the correct encoding, so they are properly identified and displayed.
+- macOS launchd services now report their correct process ID instead of 0.
+- Fixed lost block reports on macOS when many blocks occurred in quick succession.
+
 ### Web App 6.6.2
 
 A redesigned Email Security overview, case assignment without user management rights, and a new permission for listing org users.
