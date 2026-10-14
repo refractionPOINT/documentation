@@ -11,31 +11,27 @@ Titles provide context; they do not establish identity.
 
 A platform notification may show a VIP's name even when an outside account acted.
 Account bindings let Email Security distinguish configured accounts from namesakes.
-Edit the VIP and use **Add platform account** to enter:
-
-- **GitHub:** the account's login, without `@` or a profile URL.
-- **Google:** the exact Google account email used to share the document or file.
+Edit the VIP and use **Add platform account** to enter the exact Google account
+email used to share the document or file. **Only Google Workspace share
+notifications are supported.** GitHub and other platform identities are rejected.
 
 Add only accounts you have independently confirmed belong to that VIP. Each VIP
-supports up to eight accounts. Values are trimmed and lowercased. GitHub logins
-contain 1–39 ASCII letters or digits with single internal hyphens. Google values
-must be plain ASCII email addresses. Wildcards and bot names are unsupported;
-Google aliases, plus tags and dotted addresses are compared exactly.
-
-Update or remove bindings after an account rename, reassignment or ownership
-change. GitHub's old usernames can become available to other people after a
-[username change](https://docs.github.com/en/account-and-profile/concepts/username-changes).
+supports up to eight accounts. Values are trimmed and lowercased and must be plain
+ASCII email addresses. Google aliases, plus tags and dotted addresses are compared
+exactly. Keep the VIP display name configured: an account binding only applies to
+a matching protected name. Update or remove bindings after account reassignment,
+email changes or ownership changes.
 
 ## What verification proves
 
 A matching display name alone never establishes account ownership. Email Security
 requires a supported canonical notification, receiver-verified aligned platform
 DMARC and DKIM, and a provider-controlled actor identifier covered by the message's
-signature. GitHub PR, issue and comment notifications can supply a signed sender
-login only when the signature covers that header and the MIME structure.
-Notifications whose signatures omit those fields remain unverified even when
-DKIM and DMARC pass. Google Drive/Docs/Sheets share notifications can supply the sharing account's
-email in the provider's invitation header.
+signature. Google Drive/Docs/Sheets share notifications can supply the sharing
+account's email in the provider's invitation header. The signature must also cover
+the MIME structure and Reply-To witness. Unsupported or unsigned fields cannot
+verify an account. GitHub notification actor fields are not supported; GitHub
+notifications keep their existing checks.
 
 Supported notifications from a configured account receive **Verified VIP account**
 in the message drawer when their name findings were interpreted. This removes
@@ -62,8 +58,6 @@ vips:
     email: executive@example.test
     title: Finance director
     platform_identities:
-      - platform: github
-        login: executive-example
       - platform: google
         email: executive@example.test
 ```
