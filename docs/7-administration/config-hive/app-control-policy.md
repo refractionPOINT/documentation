@@ -43,6 +43,9 @@ A sensor receives one policy. LimaCharlie takes the enabled policies, orders the
 
 Because the first match wins, you stage a rollout by putting narrow policies (a pilot tag) ahead of a broad one. See [Staged rollout by tag](#staged-rollout-by-tag).
 
+!!! note "Reserved policy name: `install-mode`"
+    The web console uses a policy named `install-mode` for [install mode](../../5-integrations/extensions/limacharlie/app-control.md#install-mode), a temporary window in which a host only reports. It matches the tag `appctl-install-mode`, is `permissive`, and has a `priority` below every other policy. Keep it enabled and ordered first, and do not use the name for anything else.
+
 ## Which policy produced an event
 
 The policy name is sent to the sensor as the policy's label. The sensor adds it to every `APP_CONTROL_DENIED`, `APP_CONTROL_UNRESOLVED` and `APP_CONTROL_DENIED_SUMMARY` event as the `APP_CONTROL_POLICY_LABEL` field, which is how you tell apart the events of the policies in a staged rollout. The name is not truncated, which is why it is limited to 128 bytes: the record is refused on save if its name is longer.
