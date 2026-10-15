@@ -138,10 +138,10 @@ over.
 
 | | Microsoft 365 | Google Workspace |
 |---|---|---|
-| **Quarantine** | Move to a hidden `LC Quarantine` folder. Restorable, and the user does not see the folder | Remove `INBOX`, add a **visible** `LC Quarantine` label. Restorable, and the user can still find the message under that label |
-| **Trash** | Move to Recoverable Items — invisible to the user, recoverable by an admin. Distinct from Deleted Items | Add `TRASH` |
-| **Move to spam** | Move to the Junk Email folder | Add `SPAM` |
-| **Restore** | Move back to the folder we recorded, falling back to the Inbox | Invert the labels |
+| **Quarantine** | Move to a hidden `LC Quarantine` folder. Restorable, and the user does not see the folder | Remove `INBOX` **and `SPAM`**, add a **visible** `LC Quarantine` label, so mail the provider had already filed as junk leaves the Spam folder too. Restorable, and the user can still find the message under that label |
+| **Trash** | Move to Recoverable Items — invisible to the user, recoverable by an admin. Distinct from Deleted Items | Add `TRASH`, and remove `SPAM` if the message was in the Spam folder |
+| **Move to spam** | Move to the Junk Email folder | Add `SPAM`, remove `INBOX` and any `LC Quarantine` label |
+| **Restore** | Move back to the folder we recorded, falling back to the Inbox. A message we quarantined from the provider's own spam folder goes to the **Inbox**, not back to Spam | Invert the labels, with the same Inbox rule for mail quarantined from Spam |
 | **Banner** | Edited **in place**; the message keeps its provider id | Gmail cannot edit a stored message, so the message is **replaced** and gets a **new provider id**. Requires the optional `https://mail.google.com/` scope; without it the action is refused by name, never reported as a silent success |
 | **Notification state** | Graph subscriptions can be listed, so reconciliation compares against the provider's own view | Gmail **cannot enumerate active watches**, so reconciliation uses stored state with correspondingly lower assurance. Every Workspace connection row says so |
 | **Reporter replies** | Need the optional `Mail.Send` application permission | Need the optional `https://mail.google.com/` scope |

@@ -155,11 +155,12 @@ The following configurations allow you to customize the way data is ingested by 
 
 !!! note "Availability"
     Built-in parser declarations need no adapter change. A custom
-    `sensor_identity_type` requires an adapter version that supports it. Entity
-    associations require a Cloud Security subscription with Entity Pivot.
+    `sensor_identity_type` requires adapter version 1.32.40 or later. Entity
+    associations require a Cloud Security subscription with
+    [Entities](../../cloud-security/entity-pivot.md#adapter-identities-and-external-actors).
 
 A multiplexed adapter creates a separate sensor for each sensor key. A declaration
-explains whether that sensor represents a user or a device, allowing Entity Pivot
+explains whether that sensor represents a user or a device, allowing Entities
 to associate its telemetry with the corresponding entity.
 
 | `sensor_identity_type` | Meaning of the sensor key |
@@ -169,15 +170,14 @@ to associate its telemetry with the corresponding entity.
 | `github_login` | A mutable GitHub login, normalized to lowercase with a terminal `[bot]` suffix preserved. Built-in parser evidence links only when exactly one current collected GitHub identity holds the login; stable numeric IDs prevent renamed or reclaimed logins from joining different people. |
 | `device` | The vendor's device identifier. The sensor hostname supplies the device name; the vendor identifier does not link devices across providers. |
 
-Built-in parsers declare `github_login` for `github`, `email` for `1password` and
-for Email Security mailbox sensors (the mailbox address), and `device` for `crowdstrike`, `sentinel_one`, `carbon_black`, `msdefender`,
+Built-in parsers declare `github_login` for `github`, `email` for `1password`, and `device` for `crowdstrike`, `sentinel_one`, `carbon_black`, `msdefender`,
 `trend_worryfree` and `fortigate`. Other parsers leave the declaration empty unless
 configured explicitly. An empty declaration does not infer an identity from the
 platform or hostname.
 
 Built-in parser declarations record `identity_source: parser`. The GitHub parser
 also supplies the audit event's immutable numeric actor ID as `identity_id`,
-which becomes an authoritative `github_user_id` identifier in Entity Pivot.
+which becomes an authoritative `github_user_id` identifier in Entities.
 A login alone is corroborated evidence subject to the uniqueness guard, never an
 authoritative identifier. Device parsers can supply an immutable vendor device ID;
 it remains vendor evidence rather than a cross-provider identity link.
@@ -463,9 +463,23 @@ This is the list of currently supported index types:
 
 ### Sensor IDs
 
-USP Clients generate LimaCharlie Sensors at runtime. The ID of those sensors (SID) is generated based on the Organization ID (OID) and the Sensor Seed Key.
+USP Clients generate LimaCharlie Sensors at runtime. The ID of those sensors (SID) is generated based on the Organization ID (OID), the Sensor Seed Key and, for adapters that create one sensor per sensor key, that sensor key.
 
 This implies that if want to re-key an IID (perhaps it was leaked), you may replace the IID with a new valid one. As long as you use the same OID and Sensor Seed Key, the generated SIDs will be stable despite the IID change.
+
+### Deleting an Adapter's Sensor
+
+Deleting a sensor that was created by an adapter does not stop the adapter. A deleted adapter sensor is not refused when it reconnects: every time an adapter connects for a sensor, LimaCharlie clears that sensor's deleted state. Because the SID is derived from the same inputs every time (see [Sensor IDs](#sensor-ids)), the adapter reconnects as the same sensor, and the sensor reappears in the sensor list with the same SID.
+
+In practice:
+
+- If the adapter is still running, deleting its sensor disconnects it, the adapter reconnects on its own and the sensor comes back shortly after. An adapter that creates a single sensor keeps that sensor connected even when its source has no new data, so this happens even if no new events arrive.
+- If the adapter was stopped first, the sensor stays deleted until that adapter, or another adapter with the same OID, Sensor Seed Key and sensor key, runs again and connects for that sensor. That can be days or months later.
+- For a multiplexed adapter, each sensor key comes back independently. A key that had events in the last few minutes comes back shortly after it is deleted; a key that has been idle comes back when its next event arrives.
+
+To remove an adapter sensor for good, stop the source first: uninstall or stop the on-prem adapter, or delete or disable the cloud sensor (Cloud Adapter) configuration. Then delete the sensor.
+
+Adapter sensors never produce the [`deleted_sensor`](../../8-reference/platform-events.md#deleted_sensor) deployment event, so an [`undelete sensor`](../../8-reference/response-actions.md#undelete-sensor) rule is not needed to bring them back.
 
 ### Discovering adapter types and finding an adapter's sensor
 

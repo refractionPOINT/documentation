@@ -177,7 +177,7 @@ limacharlie sensor list --selector 'plat == windows'
 
 ### Entity Pivot
 
-Resolve an email address, hostname, IP address or sensor ID to the User and Host entities behind it across endpoint, email and cloud data, then read the entity's card, sightings and activity. Requires `cloudsec.get` and Cloud Security. See [Entity Pivot](../cloud-security/entity-pivot.md#mcp-and-cli).
+Resolve an email address, hostname, IP address or sensor ID to the User and Host entities behind it across endpoint, email and cloud data, then read the entity's card, sightings and activity. Requires `cloudsec.get` and Cloud Security. See [Entities](../cloud-security/entity-pivot.md#mcp-and-cli).
 
 ```bash
 limacharlie cloudsec entity resolve --identifier alice@example.com

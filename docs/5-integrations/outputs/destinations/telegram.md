@@ -5,7 +5,7 @@ Output detections and audit (only) to a Telegram chat, group, or channel.
 - `bot_token`: the Telegram Bot API token obtained from @BotFather.
 - `chat_id`: the target chat, group, or channel ID to send messages to.
 - `parse_mode`: (optional) message formatting mode: `Markdown`, `MarkdownV2`, or `HTML`.
-- `message`: (optional) a template string for custom message formatting.
+- `message`: (optional) a template string for custom message formatting. It can use the `pivot` and `pivots` functions; see [Pivots in Rules and Outputs](../../../cloud-security/rule-pivots.md#outputs).
 
 Example:
 

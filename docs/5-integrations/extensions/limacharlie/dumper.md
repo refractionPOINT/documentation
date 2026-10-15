@@ -22,8 +22,8 @@ Dumper requests can also be made via D&R rules. Here is is example of a D&R rule
   extension name: ext-dumper
   extension action: request_dump
   extension request:
-    target: memory
-    sid: <<routing.sid>>
+    target: '{{ "memory" }}'
+    sid: '{{ .routing.sid }}'
     retention: 30 #default 30
     ignore_cert: true # default false
 ```

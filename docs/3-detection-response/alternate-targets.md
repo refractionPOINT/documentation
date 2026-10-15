@@ -241,7 +241,7 @@ respond:
     extension request:
       sid: '{{ .entity.sid }}'
       ttl: 604800
-      task: 'run --payload-name cleanup.cmd'
+      task: '{{ "run --payload-name cleanup.cmd" }}'
 ```
 
 ## Target: billing

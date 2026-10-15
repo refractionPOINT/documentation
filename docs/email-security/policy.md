@@ -53,6 +53,16 @@ visible; an ignored field is not.
 The validator's own wording is what you get back — in the CLI, in the API, and
 verbatim in the console's Policy page.
 
+### A disabled record is not applied
+
+A record's Hive `enabled` flag is your off switch, and a disabled record
+contributes nothing to the resolved policy. A record written without
+`--enabled` is stored disabled, which is an easy way to write an `enforce`
+automation that never takes effect. So a disabled record is reported to the
+organization's error stream, under component `mailsec/policy`, and repeated about
+once a day while it stays disabled — see
+[Troubleshooting](troubleshooting.md#a-policy-record-has-no-effect).
+
 ### Editing preserves what you did not touch
 
 The console's **Policy** page edits every record type, and saves are
@@ -101,9 +111,44 @@ automations:
 | `directions` | `inbound`, `outbound`, `internal` |
 | `min_score` | 0–100 |
 | `user_reported` | Tri-state: omit to ignore, `true` for mail a human flagged, `false` for mail nobody reported |
+| `provider_spam` | Tri-state: omit to ignore where the mail provider filed the message, `true` for mail the provider had **already put in its spam folder** (Gmail's Spam label, Microsoft 365's Junk Email folder) when it was collected, `false` for mail it had not |
 
 An **empty match matches everything**. An enforcing rule with an empty match is
 refused at save — "quarantine all mail" is never what someone meant to write.
+`user_reported: false` and `provider_spam: false` are not constraints on their own
+(most mail is unreported and not in spam), so a rule whose only condition is one
+of them counts as an empty match; combine it with a verdict, tag, direction or
+score.
+
+### Provider spam placement
+
+A large share of inbound mail is already in the provider's spam folder when it is
+collected, and the user never saw it. `provider_spam` lets an automation aim at the
+mail a person actually received, or deliberately at the rest:
+
+```yaml
+policy_type: automations
+automations:
+  # Suspicious mail the provider already put in spam: removing it costs the user nothing.
+  - name: suspicious-in-provider-spam-quarantine
+    match:
+      verdicts: [suspicious]
+      provider_spam: true
+    actions: [quarantine_message]
+  # Warn about suspicious mail that reached the inbox; a banner on mail nobody reads is wasted.
+  - name: suspicious-banner
+    match:
+      verdicts: [suspicious]
+      provider_spam: false
+    actions: [banner_message]
+```
+
+`provider_spam` is a **condition, not evidence**: it never changes a message's
+threat score, because an attacker's mail lands in spam too and being in the inbox
+does not clear a message. The placement is the one recorded at collection; a user
+who later rescues the message from spam is not reflected. The same fact is
+available to your own [detection rules](rule-reference.md#presence-and-missing-evidence)
+as `external/spam_folder`.
 
 Every matching automation applies, in record-name and rule order. Matching typed
 mail-rule actions join the same action union. Conflicting permitted placement
@@ -250,6 +295,10 @@ Addresses and domains are lowercased on save.
 ---
 
 ## `vips`
+
+Optional `platform_identities` bind VIP names to independently confirmed Google
+account emails in supported Workspace share notifications. See [VIP Identity Protection](vips.md) for setup,
+supported notifications and the authentication boundary.
 
 The protected identities that impersonation detection compares against — the
 display names and addresses a `Finance` request is most damaging in the name of.
@@ -443,16 +492,26 @@ preview is available from the API as `POST /banner/preview`.
 
 ### Switch
 
-`enabled` is what lets **automation** banner this organization's mail: with it
-off, an automation, a D&R rule or the AI triage agent asking for
-`banner_message` is decided and audited but the mailbox is not touched
-(`alert_only`). It does **not** gate a banner somebody asked for — from the
-console, the API or the CLI — because the switch exists to stop the product
-rewriting mail on its own, not to stop an operator from acting on a message in
-front of them. An organization that has never written this record still has
+`enabled` is what lets Email Security banner this organization's mail **on its
+own**: with it off, a `banner_message` from an [automation](#automations) or a
+[`dr-mail` rule](custom-rules.md) is decided and audited but the mailbox is not
+touched (`alert_only`). It does **not** gate a banner requested through the API,
+because the switch exists to stop the product rewriting mail on its own, not to
+stop someone from acting on a message in front of them. A request through the
+API covers the console, the CLI, an API key, the
+[AI triage agent](ai-triage.md), and a D&R rule in the `dr-general` Hive that
+calls `banner_message` through
+[`extension request`](automation.md#acting-on-mail-from-a-dr-rule). Those requests
+are recorded with `source: api`. They are still subject to
+[alert-only mode](#mode). To stop a `dr-general` rule or the agent from bannering,
+remove `banner_message` from the rule, or don't give the agent's key `mailsec.act`.
+An organization that has never written this record still has
 working `banner_message` from the console with explicit override consent when
 the organization is alert-only; it simply has no automated bannering, and the
-wording is the packaged sentence.
+wording is the packaged sentence. A
+[forced](remediation.md#forcing-an-action-in-alert-only-mode) `banner_message`,
+including one from a D&R rule that sets `force: true`, is performed regardless of
+this switch.
 
 Bannering also needs the provider capability: `Mail.ReadWrite` is enough on
 Microsoft 365 (edited in place), while Google Workspace additionally needs the
