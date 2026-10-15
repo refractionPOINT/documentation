@@ -138,7 +138,7 @@ Install mode uses nothing beyond what this page already describes. It is a polic
 
 | Piece | What it is |
 | --- | --- |
-| The `install-mode` policy | A reserved policy record in `app_control_policy`: `mode: permissive`, `stance: allowlist`, `trust_os_vendor: true`, no platform filter, matching the tag `appctl-install-mode`. Its `priority` is one below every other policy, so a sensor resolves it first. |
+| The `install-mode` policy | A reserved policy record in `app_control_policy`: `mode: permissive`, `stance: allowlist`, `trust_os_vendor: true`, no platform filter, matching the tag `appctl-install-mode`. Its `priority` is one below every other policy except the [lockdown](#lockdown) policy, which is ordered before it, so a sensor resolves it first. |
 | The `appctl-install-mode` tag | Added to the host with a time to live equal to the window. A host that carries it gets the `install-mode` policy. When the tag expires, the host matches its normal policy again. |
 | The `appctl-install-mode-until-<epoch seconds>` tag | Added in the same call with the same time to live. It records when the window ends so the console can show the time left. It expires together with the tag that does the work. |
 
@@ -146,17 +146,75 @@ Because the `install-mode` policy is `permissive`, executions that your normal p
 
 ### The `install-mode` policy
 
-The console creates the policy the first time you start install mode. It appears on the **Policies** tab with a **System: install mode** badge. For install mode to work the policy must stay enabled, in a mode that does not enforce, matching only the `appctl-install-mode` tag, with no platform filter, and ordered before every other enabled policy. If a policy is later created with a lower `priority` number, or the record is edited into something that would not work, the Policies tab flags it with **Needs attention**, and starting install mode lists what is wrong and offers to repair the policy. The console never starts a window on top of a policy that would still block.
+The console creates the policy the first time you start install mode. It appears on the **Policies** tab with a **System: install mode** badge. For install mode to work the policy must stay enabled, in a mode that does not enforce, matching only the `appctl-install-mode` tag, with no platform filter, and ordered before every other enabled policy except `lockdown`. If a policy is later created with a lower `priority` number, or the record is edited into something that would not work, the Policies tab flags it with **Needs attention**, and starting install mode lists what is wrong and offers to repair the policy. The console never starts a window on top of a policy that would still block.
 
 Anyone who holds `sensor.tag` can add the `appctl-install-mode` tag to a host, with or without a time to live, and the `install-mode` policy then applies to that host ahead of every other policy. The `app_control.set` requirement is enforced by the console only. The **Policies** tab shows how many hosts carry the tag right now, so review that count and the hosts behind it regularly.
 
 If another policy already has the lowest possible priority (`-2147483648`), no policy can be ordered before it. Raise that policy's `priority` number first.
 
+Lockdown takes priority over install mode. A host that carries both the `appctl-lockdown` and `appctl-install-mode` tags stays in [lockdown](#lockdown) until the lockdown tag is removed.
+
 Deleting the `install-mode` policy stops install mode from working until the policy exists again. Starting install mode on a host recreates it. Hosts that are in a window when you delete it return to their normal policy.
 
 ### Without the console
 
-Install mode is not a separate feature, so you can do the same through the API. Create the `install-mode` policy with the fields above and a `priority` below your other policies, then add the `appctl-install-mode` tag to a sensor with the `ttl` parameter of the sensor tag API, which is a number of seconds. See [Sensor tags](../../../2-sensors-deployment/sensor-tags.md). The countdown in the console needs the `appctl-install-mode-until-<epoch seconds>` tag as well. Without it the console still shows the host as in install mode, but reports that no end time is known.
+Install mode is not a separate feature, so you can do the same through the API. Create the `install-mode` policy with the fields above and a `priority` below your other policies (but above the `lockdown` policy, if you use it), then add the `appctl-install-mode` tag to a sensor with the `ttl` parameter of the sensor tag API, which is a number of seconds. See [Sensor tags](../../../2-sensors-deployment/sensor-tags.md). The countdown in the console needs the `appctl-install-mode-until-<epoch seconds>` tag as well. Without it the console still shows the host as in install mode, but reports that no end time is known.
+
+## Lockdown
+
+**Lock down host…** on a sensor page, or in the sensor list's bulk actions, requests incident-response containment through Application Control. The host can still use the network. Application Control enforces on **Windows and macOS only**; the bulk dialog skips other platforms, including Linux.
+
+The console creates a reserved, explicitly enabled `lockdown` policy in `app_control_policy` before adding the sensor tag `appctl-lockdown`:
+
+```yaml
+priority: -2  # Example only: must be lower than every other policy, including install-mode.
+platforms: []
+tags: [appctl-lockdown]
+mode: enforcing
+stance: allowlist
+trust_os_vendor: true
+on_enable: terminate
+```
+
+The console chooses a priority strictly lower than every other policy, including disabled policies and the reserved `install-mode` policy. It refuses if the lowest possible priority is already occupied. It creates the record conditionally so an existing policy is not overwritten; an altered or disabled lockdown policy needs an explicit repair before containment starts. Repair affects all hosts carrying the lockdown tag.
+
+When the policy reaches the host:
+
+- OS-vendor software and the LimaCharlie sensor can keep running.
+- Enabled, unexpired Application Control rules apply if their `policies` list is empty (every policy) or names `lockdown`. Allow rules authorize software; deny rules still take precedence. Rules scoped only to the host's ordinary policy do not carry over.
+- Applicable trusted-installer rules can also allow installer descendants and files written by those installers. Review these rules when defining containment. Already-running installer descendants whose lineage is no longer retained are reported and left running unless a deny rule matches, as described in [Programs that are already running](#programs-that-are-already-running).
+- Other running programs refused by the policy are reported and terminated, except the programs that are never stopped, as listed in [Programs that are already running](#programs-that-are-already-running). New executions refused by the policy are blocked.
+
+Use the Rules tab or rule editor to name `lockdown` when authorizing incident-response tools specifically during containment. A signer or path allow rule can authorize more software than a single-file hash rule; choose the scope deliberately.
+
+The dialog requires a reason. It stores a short URI-encoded reason in a companion sensor tag, visible in sensor tags, events and tag audit records. The reason tag shares any chosen TTL and is removed on release. Do not put secrets in the reason. By default, containment has **no user-selected TTL** and requires an explicit release; you can choose a limited duration instead, as a whole number of hours up to 168. Changes take effect on the next sensor sync, so the presence of a tag is not confirmation that the sensor has already applied containment. The sensor-page banner checks that the lockdown policy remains applicable.
+
+**Release lockdown** removes the tag, checking the host's current tags even if the sensor list is stale. The host receives its next matching enabled policy on its next sync. If install mode is still tagged and matches, that policy can apply again; install mode cannot override lockdown while both tags are present. Terminated programs are not restarted.
+
+!!! warning "Keep a fallback policy"
+    Keep an enabled policy that matches the host after release. If no other policy matches, the sensor keeps enforcing the last policy it received, including lockdown. Deleting or disabling the lockdown policy does not guarantee release either. Use a matching replacement policy, or set enforcement to `off` and let the sensor sync before removing the policy.
+
+### Automate lockdown with D&R
+
+First create the reserved policy **once per organization** using **Set up lockdown** on the Policies tab. This only sets up the policy; it does not tag hosts. Starting lockdown from a host dialog also creates it. Keep the policy enabled and correctly configured before relying on automation: adding a tag alone does not create or repair the policy.
+
+A D&R [add tag response](../../../8-reference/response-actions.md#add-tag-remove-tag) with `tag: appctl-lockdown` requests lockdown automatically. Use a sensor event as the trigger so the response can identify the host. The following example locks down a host executing a confirmed malicious file; replace the placeholder hash and adapt the trigger to your incident signal before enabling it:
+
+```yaml
+detect:
+  event: NEW_PROCESS
+  op: is
+  path: event/HASH
+  value: REPLACE_WITH_CONFIRMED_MALICIOUS_SHA256
+respond:
+  - action: add tag
+    tag: appctl-lockdown
+    ttl: 3600
+```
+
+Here `ttl: 3600` gives the tag a one-hour lifetime. `ttl` is optional and measured in seconds; **omit that line to require explicit release**. Adding the tag again with a `ttl` restarts its lifetime from that moment. Adding it again without a `ttl` does not remove a lifetime the tag already has. Automated tagging does not require the console dialog's reason or add its companion reason tag. Include incident context in your detection reports or case records.
+
+The console action needs `app_control.get`, `app_control.set`, and `sensor.tag`, and an Application Control subscription. Policy-only setup needs Application Control read/write access. Restrict `sensor.tag` access, and write access to D&R rules: anyone who can add or remove this tag, or who can create a rule that does, can request or release containment.
 
 ## Reading would-be blocks
 
@@ -304,7 +362,7 @@ Examples of both record types are on the [policy](../../../7-administration/conf
 
 By default the Owner, Administrator and Operator roles have both. The Viewer role has `app_control.get`.
 
-Two console actions need more than the App Control permissions alone. [Install mode](#install-mode) also needs `sensor.tag`, because it tags the host. [Blocking a file from the console](#blocking-a-file-from-the-console) needs both `app_control.get` and `app_control.set`.
+Three console actions need more than the App Control permissions alone. [Install mode](#install-mode) and [lockdown](#lockdown) also need `sensor.tag`, because they tag the host. [Blocking a file from the console](#blocking-a-file-from-the-console) needs both `app_control.get` and `app_control.set`.
 
 ## Limits
 
