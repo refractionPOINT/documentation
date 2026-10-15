@@ -46,7 +46,7 @@ raw EML download, provider diagnostics, campaign preview, verdict revisions and
 responses. Profiles select tools; each API still checks its own permissions.
 
 The `email_security` and `email_security_readonly` profiles also include the
-read-only [Entity Pivot tools](../cloud-security/entity-pivot.md#mcp-and-cli), so
+read-only [Entities tools](../cloud-security/entity-pivot.md#mcp-and-cli), so
 an assistant can pivot from a sender or mailbox to the User, their Hosts and
 endpoint activity. These need `cloudsec.get` and Cloud Security.
 

@@ -613,6 +613,7 @@ nav:
       - Detection Rules: email-security/custom-rules.md
       - Rule Reference: email-security/rule-reference.md
       - IOC & Reputation Feeds: email-security/ioc-feeds.md
+      - VIP Identity Protection: email-security/vips.md
       - Policy Reference: email-security/policy.md
       - Events & Automation: email-security/automation.md
       - Command Line Interface: email-security/cli.md
@@ -666,7 +667,9 @@ nav:
       - Security Graph & Queries: cloud-security/graph.md
       - Compliance: cloud-security/compliance.md
       - CAASM: cloud-security/caasm.md
-      - Entity Pivot: cloud-security/entity-pivot.md
+      - Entities: cloud-security/entity-pivot.md
+      - Entities API Reference: cloud-security/entities-api.md
+      - Pivots in Rules and Outputs: cloud-security/rule-pivots.md
       - Custom Posture Rules: cloud-security/custom-rules.md
       - Mail Posture Rules: cloud-security/mail-posture-rules.md
       - Configuration Reference: cloud-security/configuration.md

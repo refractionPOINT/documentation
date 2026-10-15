@@ -18,6 +18,98 @@ Release notes for LimaCharlie platform components, organized by date.
 
     For discussion and email notification of the same releases, set the [Platform Updates category](https://community.limacharlie.com/c/platform-updates/5) in the community forum to Watching. For service availability rather than releases, subscribe on the [status page](https://status.limacharlie.io/).
 
+## 2026-10-13
+
+### Endpoint Agent 5.4.0
+
+#### New Features
+
+- Application allowlisting: the sensor can now enforce an application control policy on Windows and macOS, blocking executions the policy does not allow, with a permissive mode that reports would-be blocks without enforcing.
+- Application control reports each blocked or would-be-blocked execution as an event carrying what is needed to approve it: file hash, signer details, matched rule, parent process, user and application metadata.
+- Application control: repeated blocks of the same execution within 5 minutes are folded into a single summary event with a count and first/last timestamps.
+- Application control: trusted installers — naming an updater in the policy lets the software it installs run, so self-updating applications keep working under an allowlist.
+- Application control: when a policy is first applied, already-running processes it would deny are reported, or terminated if the policy asks for it while enforcing.
+- Application control: users are now notified with a desktop toast when one of their executions is blocked, with an optional system tray icon that keeps a history of blocks.
+- New `force_sync` command sends the sensor's sync immediately, so configuration changes reach a host right away instead of at the next interval (up to five minutes later).
+
+#### Bug Fixes
+
+- Fixed a Windows sensor crash loop at startup on hosts low on memory, caused by an oversized allocation when processing kernel process snapshots.
+- The sensor now honours backoff requests from the cloud; previously they could be silently ignored.
+- Windows autoruns entries now report their strings with the correct encoding, so they are properly identified and displayed.
+- macOS launchd services now report their correct process ID instead of 0.
+- Fixed lost block reports on macOS when many blocks occurred in quick succession.
+
+### Web App 6.6.2
+
+A redesigned Email Security overview, case assignment without user management rights, and a new permission for listing org users.
+
+#### New Features
+
+- **Email Security overview redesign**: the overview now opens with four summary cards, recent threat groups, and a full breakdown of message verdicts. Each verdict shows its count and percentage and links to the matching messages. Detailed collection health moves into one Pipeline health section, and the status summary links straight to each issue. Each card is labelled "Current status" or "Selected period", so it is clear what the number measures.
+- **Email Security period selector**: the overview uses the same Time Period selector as the Dashboard, with Past Day, Past Week, and Past Month. It now opens on Past Month. The selected period and the spam-folder filter carry through to threat groups and to message and group drilldowns.
+- **`user.list` permission**: a new read-only permission that lets a user list the email addresses of an org's users. It is included in the Owner, Administrator, and Operator roles.
+- **Case assignment without `user.ctrl`**: users who can edit cases (`investigation.set`) can now assign them without `user.ctrl`. Both assignee pickers list existing case assignees and yourself, and accept a typed email address. With `user.list` or `user.ctrl`, the pickers also list the org's users.
+
+#### Bug Fixes
+
+- Email Security dialogs opened from the Message, Campaign, or Group drawer, such as Quarantine or "Override this verdict", now show above the drawer instead of behind it.
+- Email Security action timelines, verdict history, report "resolved by", and submissions now show the person's email instead of a user ID. Showing other users' emails requires `user.ctrl`.
+- "Recent suspicious and malicious mail" on the Email Security overview shows the real subject line instead of a lower-cased, masked version.
+- Changing the Email Security overview period no longer opens drilldowns with the previous date range while new data loads.
+
+---
+
+## 2026-10-11
+
+### Web App 6.6.1
+
+Product-aware onboarding, more accurate Cloud Security sensor coverage, and mail in the provider's spam folder in Email Security.
+
+#### New Features
+
+- **Product-aware onboarding**: when you create an organization, you now pick what to protect: Endpoint, Cloud Security, Email Security, or Code Security. "Just exploring" creates a demo org. Each product has its own setup screen, turns on the extensions it needs, and opens that product's setup when the org is ready. A new org without sensors that uses only Cloud Security or only Email Security now opens on that product.
+- **Email Security spam folder**: Messages and Groups now hide mail that the provider already filed in its spam folder. A notice next to the result count says so and has a Show action. You can also use the "Include mail in the spam folder" checkbox in the filter bar. A group is hidden only when every copy is in the spam folder. By default, the Overview verdict numbers also leave out spam-folder mail, with the same checkbox to include it.
+- **Cloud Security sensor coverage**: coverage now counts only running machines that can run a sensor. Serverless and managed workloads, stopped machines, and Kubernetes clusters whose nodes are already listed are no longer counted as gaps. The stats row shows how many assets were set aside and how many were matched to a sensor by hostname only. The Unmonitored compute list adds a Type column, a Next step column (install keys, instance group template, or the Kubernetes deployment guide), and a CSV export.
+- **Cloud inventory age**: the Sensor coverage page shows when the cloud inventory was last collected, and adds a "Re-scan now" button. If nothing in the cloud can run a sensor, the Cloud compute lane now says "Not applicable" instead of "Unknown".
+
+#### Bug Fixes
+
+- On Sensor coverage, "Work compute gaps" now scrolls to the list of unmonitored compute instead of doing nothing.
+
+---
+
+## 2026-10-09
+
+### Web App 6.6.0
+
+A major expansion of Application Control, a triage-first Email Security console, richer Entity pages, Linux vulnerability verification coverage, and a clearer Cloud and Code Security experience.
+
+#### New Features
+
+- **Email Security overview**: the overview now leads with the work that needs an analyst: mail still in inboxes, open user reports, flagged campaigns, protection mode, and recent suspicious or malicious messages. A compact coverage strip, clearer health summaries, actionable plan warnings, flatter navigation, and a compact status table for bulk group actions round it out.
+- **Email Security verdicts**: decisions made through an API key now show as "API key", and the mail provider's own spam placement (Google or Microsoft junk folder) is shown and usable in the console. Triage queues, verdict evidence, and action consent are clearer.
+- **Entities**: the Recent activity table shows when, where, who, and how an activity was observed, and why a row is unconfirmed. Entity graphs draw attached sensors, possible activity, and cloud sign-ins, and show filter chips only for kinds that are present. The Email activity table lists only flagged mail, with verdict, disposition, and a link to the message. The breadcrumb returns you to the search, view, and page you came from.
+- **Entities availability**: subscribed Cloud Security orgs now see Entities before connecting a cloud provider, as long as sensors and adapters can supply entities.
+- **Vulnerability verification**: Linux vulnerability views show distro-verification badges, a separate unverified count, status filters, and per-host coverage. Grouped kernel findings list the contributing packages, and older installed kernel builds are labelled "installed, likely not running" with a host toggle to include them.
+- **Sensor Kind**: the Sensors list adds a Kind column and filter: Endpoint agents, Browsers, Third-party EDR devices, Identity / email sources, and Cloud / log feeds.
+- **Cloud Security**: Risks gets a collapsible filter rail with counts, full finding titles, and clearer finding explanations. Finding counts show the age of their source, failed reads recover and partial dashboards still render, and unknown data-store providers are explained.
+- **Hive editor Markdown view**: SOPs, Org Notes, AI skills, and agent prompts can be viewed as rendered Markdown.
+- **Cases**: the case detail page stays usable for cases with a very large number of detections, and auto-grouping now defaults to on in the settings form.
+
+#### Bug Fixes
+
+- The case queue SLA column now uses the org's configured SLA targets instead of the built-in defaults.
+- Mark False Positive no longer opens the testing workspace over the generated rule.
+- Query Console warns about an unknown source instead of crashing.
+- The floating assistant no longer covers drawers, pagination, or bulk-action bars.
+- After a deploy, an open tab recovers from stale page chunks with a single reload.
+- Compliance stays usable when some reads fail, and stops retrying failed scroll loads.
+- Email Security sparse searches stay complete, and status badges in queue cells are spaced and stacked correctly.
+- Bulk action bars stay on one line, with responsive overflow.
+
+---
+
 ## 2026-10-06
 
 ### Endpoint Agent: Changes from 4.33.25 to 5.3.12

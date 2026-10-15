@@ -95,7 +95,7 @@ inventory grant below can be added separately.
 | **Policy.Read.DeviceConfiguration** | — | The device registration policy. |
 | **AccessReview.Read.All** | — | Access review definitions (guest and privileged-role reviews). |
 | **RoleManagementPolicy.Read.Directory** | — | PIM role settings (activation approval, duration). |
-| **DeviceManagementManagedDevices.Read.All** | — | Optional Intune managed-device inventory: device identity, reported posture and primary-user ownership for [Entity Pivot](../entity-pivot.md). |
+| **DeviceManagementManagedDevices.Read.All** | — | Optional Intune managed-device inventory: device identity, reported posture and primary-user ownership for [Entities](../entity-pivot.md). |
 | **DeviceManagementConfiguration.Read.All** | — | Intune device compliance settings. |
 | **DeviceManagementServiceConfig.Read.All** | — | Intune enrollment restrictions. |
 | **OrgSettings-AppsAndServices.Read.All** | — | Microsoft 365 admin center settings for apps and services. |
@@ -113,7 +113,7 @@ PASS.
 
 ### Intune managed-device inventory (optional)
 
-To add Intune device evidence to [Entity Pivot](../entity-pivot.md) and the
+To add Intune device evidence to [Entities](../entity-pivot.md) and the
 [CAASM device inventory](../caasm.md), grant the provider app Microsoft Graph
 **Application** permission `DeviceManagementManagedDevices.Read.All` and
 select **Grant admin consent**. Add it to the existing provider app; no separate

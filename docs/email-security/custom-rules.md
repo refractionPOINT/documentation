@@ -259,6 +259,22 @@ change the score. Automated remediation still follows the organization's
 [automation mode](policy.md#mode). Adding this rule does not itself enable
 `enforce`.
 
+To have a rule act even while the organization is in alert-only mode, add
+`force: true` to the `extension request`. Only a real boolean `true` forces; a
+quoted `"true"` does not. The action is recorded as forced, and its
+`EMAIL_ACTION` carries `forced: true` — see
+[Forcing an action in alert-only mode](remediation.md#forcing-an-action-in-alert-only-mode).
+
+```yaml
+respond:
+  - action: extension request
+    extension name: ext-email-security
+    extension action: quarantine_message
+    extension request:
+      msg_uuid: "{{ .msg_uuid }}"
+      force: true
+```
+
 Everything sensor-shaped — task, tag, isolate, seal, re-enroll, set variable —
 **fails loudly** in a mail rule with a message saying so. There is no sensor
 behind a message, and remediation goes through `extension request`.
@@ -514,7 +530,8 @@ fields that distinguish them:
 |---|---|
 | Only the rule pack's own decision | `path: event/revision/seq`, `value: 0` |
 | Only overrides | `op: is greater than`, `path: event/revision/seq`, `value: 0` |
-| Only what a human decided | `path: event/revision/mode`, `value: analyst` |
+| Only what a signed-in person decided | `path: event/revision/mode`, `value: analyst` |
+| Only what an API key decided, including an agent or a D&R rule | `path: event/revision/mode`, `value: api` |
 | Only a *change* to malicious | `path: event/revision/prior/verdict`, `op: is`, `not: true`, `value: malicious` |
 | A specific rule that fired | `op: is`, `path: event/revision/top_signals/?/rule_id`, `value: ms-link-credentials-in-url` — the `?` matches any element of the list (`seq 0` only; an override carries no signals) |
 
