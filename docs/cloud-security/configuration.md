@@ -65,7 +65,25 @@ Use `limacharlie cloudsec provider test` to preflight a record before saving it
 ## cloudsec_policy
 
 Each record declares exactly one `policy_type` and fills the matching
-sub-object.
+sub-object. Every policy type honours the record's `usr_mtd.enabled` flag:
+a disabled record does not apply. This includes Cloud Security and Code
+Security policies, regardless of any switches inside their policy bodies.
+
+A new `cloudsec_policy` record created without any `usr_mtd` is enabled.
+Metadata you send is stored as sent, so `usr_mtd.enabled: false`, or a metadata
+block that has no `enabled` key, creates a disabled record. Passing `--comment`
+or `--tag-add` to `hive set` on creation sends metadata, so add `--enabled` as
+well. Updating only a record's data keeps its existing metadata.
+
+To stage a new policy, pass `--disabled` to `hive set`. To disable or re-enable
+an existing policy:
+
+```bash
+limacharlie hive disable --hive-name cloudsec_policy --key my-policy
+limacharlie hive enable --hive-name cloudsec_policy --key my-policy
+```
+
+Pass `--enabled` on creation to make the choice explicit.
 
 ### Rule matchers — read this first
 

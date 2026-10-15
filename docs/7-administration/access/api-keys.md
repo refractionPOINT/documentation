@@ -4,7 +4,7 @@ LimaCharlie Cloud has a concept of API keys. Those are secret keys that can be c
 
 This allows construction of headless applications able to securely acquire time-restricted REST authentication tokens it can then use.
 
-The list of available permissions can be programmatically retrieved from this URL: <https://app.limacharlie.io/owner_permissions>
+The list of available permissions can be programmatically retrieved from the `permissions` field of the unauthenticated ontology endpoint: <https://api.limacharlie.io/v1/ontology>
 
 ## Managing
 
@@ -66,9 +66,11 @@ In some instances, the JWT resulting from a User API key may be to large for nor
 
 `curl -X POST "https://jwt.limacharlie.io" -H "Content-Type: application/x-www-form-urlencoded" -d "oid=<YOUR_OID>&uid=<YOUR_USER_ID>&secret=<YOUR_API_KEY>"`
 
-You may also use a User API Key to get the list of organizations available to it by querying the following REST endpoint:
+You may also use a User API Key to get the list of organizations available to it. Exchange the key for a JWT as shown above, then query the following REST endpoint with it:
 
-`https://app.limacharlie.io/user_key_info?secret=<YOUR_USER_API_KEY>&uid=<YOUR_USER_ID>&with_names=true`
+`curl "https://api.limacharlie.io/v1/user/orgs?fields=oid,name&limit=1000" -H "Authorization: Bearer <YOUR_JWT>"`
+
+The response is a JSON object with an `orgs` list, each entry carrying the requested `oid` and `name`. Use `offset` and `limit` to page through large lists.
 
 #### Ingestion Keys
 

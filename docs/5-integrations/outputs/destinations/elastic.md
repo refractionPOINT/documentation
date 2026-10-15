@@ -3,7 +3,7 @@
 Output events and detections to [Elastic](https://www.elastic.co/).
 
 - `addresses`: the IPs or DNS where to send the data to.
-- `index`: the index name to send data to.
+- `index`: the index name to send data to. It cannot use the `pivot` and `pivots` template functions.
 - `username`: user name if using username/password auth. (use either username/password -or- API key)
 - `password`: password if using username/password auth.
 - `cloud_id`: Cloud ID from Elastic.

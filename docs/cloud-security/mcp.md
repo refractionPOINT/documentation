@@ -85,8 +85,9 @@ activity: `cloudsec_entity_pivot`, `cloudsec_entity_resolve`, `cloudsec_entity_g
 Start with `cloudsec_entity_pivot`; resolve and pivot also take `observation_selectors` for
 [leads from adapter events](entity-pivot.md#leads-from-adapter-events). They are in the `cloud_security` and
 `cloud_security_readonly` profiles, and also in `historical_data`,
-`historical_data_readonly`, `email_security` and `email_security_readonly`. See
-[Entity Pivot](entity-pivot.md#mcp-and-cli) for arguments and how to read results.
+`historical_data_readonly`, `email_security` and `email_security_readonly`. The
+hosted server has all six; a self-hosted server needs v2.5.0 or later. See
+[Entities](entity-pivot.md#mcp-and-cli) for arguments and how to read results.
 
 ## Permissions
 
@@ -267,4 +268,4 @@ and the tool schema for exact receipt fields and capability prerequisites.
 
 - [Code Security](code-security/index.md) — the product these tools read
 - [Command Line Interface](cli.md) — the same surface, without an assistant
-- [Entity Pivot](entity-pivot.md) — resolving identifiers to Users and Hosts
+- [Entities](entity-pivot.md) — resolving identifiers to Users and Hosts

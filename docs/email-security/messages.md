@@ -45,8 +45,9 @@ group scope to its default.
 | `verdict` | Repeatable: `malicious`, `suspicious`, `graymail`, `benign`, `unknown` |
 | `severity` | Repeatable rule severity: `informational`, `low`, `medium`, `high`, `critical` |
 | `disposition` | Repeatable analyst disposition: `malicious`, `spam`, `graymail`, `benign`, `simulation`; `none` selects copies without a disposition |
-| `state` | Repeatable: `delivered`, `quarantined`, `trashed`, `restored`, `bannered`, `spam` |
+| `state` | Repeatable: `delivered`, `quarantined`, `trashed`, `restored`, `bannered`, `spam`. `spam` is a message in the provider's spam folder: one the provider had already filed there when it was collected, or one moved there by `move_to_spam` |
 | `direction` | Repeatable: `inbound`, `outbound`, `internal` |
+| `exclude_state` | Repeatable, same values as `state`: hides messages in those states, for example `exclude_state=spam` to leave out mail the provider already filed as junk. Combines with `state` (the `state` list applies first); naming the same value in both is refused with a 400. In Groups, a group is hidden only when **every** copy is in an excluded state; a group with at least one other copy stays, and its counts still describe the whole group |
 | `lane` | `live` for ordinary incoming mail or `backfill` for the initial history walk; omit for either |
 | `mailbox` | One protected mailbox address |
 | `sender_email` | One sender address |
@@ -115,7 +116,7 @@ walk:
 - or a **single** `verdict`. Two or more verdicts is not a lookup either, so it
   does not count.
 
-`state`, `direction`, `user_reported`, `min_score` and `sender_root_domain`
+`state`, `exclude_state`, `direction`, `user_reported`, `min_score` and `sender_root_domain`
 narrow the *answer* rather than the *scan*, so they do not satisfy the
 requirement.
 
@@ -162,7 +163,7 @@ limacharlie mailsec message list --attachment-sha256 <sha256> --oid $OID
 ### Pivot from a sender or mailbox
 
 When a message's sender or recipient mailbox needs context beyond mail, resolve
-the address in [Entity Pivot](../cloud-security/entity-pivot.md). It maps the
+the address in [Entities](../cloud-security/entity-pivot.md). It maps the
 address to a User, their owned Hosts, endpoint detections and cloud findings. It
 needs `cloudsec.get` and Cloud Security, in addition to `mailsec.get`.
 
@@ -266,7 +267,7 @@ provider, and audited.
 | `quarantine_message` | Out of the inbox into a product-owned quarantine location, restorable. On Microsoft 365 the location is a hidden folder, so the user does not see the message. On Google Workspace it is a visible `LC Quarantine` label, so the user can still find the message under that label |
 | `trash_message` | To the provider's recoverable trash |
 | `move_to_spam` | To the provider's junk/spam location |
-| `restore_message` | Back to where it was before we moved it, falling back to the Inbox when that is unknown |
+| `restore_message` | Back to where it was before we moved it, falling back to the Inbox when that is unknown or was the provider's spam folder |
 | `banner_message` | Prepend the organization's warning banner. Its look and default wording come from the `banners` [policy record](policy.md#banners) and are escaped into a fixed template; an optional plain-text `text` replaces the wording for this one banner. No caller supplies HTML |
 | `unbanner_message` | Remove it |
 
@@ -561,9 +562,10 @@ limacharlie mailsec message release <msg_uuid> --reason "Reviewed as safe" --oid
 
 `release_message` restores provider placement and records both a benign verdict
 revision and a benign disposition. It repairs sender history and records one
-idempotent action. The revision mode is `analyst` by default; an AI caller can
-choose `--mode ai`. It requires `mailsec.act` and follows restore's enforcement
-rule: in alert-only mode it is recorded and withheld; `--force` is explicit consent
+idempotent action. The revision mode comes from your credential, `analyst` for
+a signed-in person and `api` for an API key, and there is no mode to pass. Every
+caller has the same effect. It requires `mailsec.act` and follows restore's
+enforcement rule: in alert-only mode it is recorded and withheld; `--force` is explicit consent
 to perform it. The withheld action changes neither verdict nor disposition.
 
 Use ordinary `restore_message` when you intend only to move the message back

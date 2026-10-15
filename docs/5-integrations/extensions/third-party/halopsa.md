@@ -173,7 +173,7 @@ Example response action that opens a HaloPSA ticket for a detection:
 ```
 
 > **Wrap literal strings in `{{ "..." }}`.**
-> Values under `extension request` are evaluated as templates. A bare string without `{{ }}` is interpreted as a [gjson](https://github.com/tidwall/gjson) path against the event and, if it doesn't resolve, the key is silently dropped from the payload.
+> Values under `extension request` are evaluated as templates. A bare string without `{{ }}` is interpreted as a [gjson](https://github.com/tidwall/gjson) path against the event and, if it doesn't resolve, the key is silently dropped from the payload. See [Writing the request values](../../../8-reference/response-actions.md#writing-the-request-values).
 
 `extension request` actions are fire-and-forget — the rule engine does not surface the response back into the rule's evaluation context, so the freshly-created ticket id is not available to a subsequent action in the same rule. Workflows that need to chain (open a ticket, then link an asset, then add a note) belong in a [Playbook](../limacharlie/playbook.md) or an AI agent, which can hold the ticket id between calls.
 

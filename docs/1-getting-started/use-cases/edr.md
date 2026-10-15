@@ -20,4 +20,4 @@ Endpoint Detection and Response (EDR) solutions are crucial for organizations to
 
 ### Related Resources
 
-- [Entity Pivot](../../cloud-security/entity-pivot.md) - Start from a hostname, IP address, sensor ID or account and find the related Users, Hosts, detections and cloud findings (requires Cloud Security)
+- [Entities](../../cloud-security/entity-pivot.md) - Start from a hostname, IP address, sensor ID or account and find the related Users, Hosts, detections and cloud findings (requires Cloud Security)

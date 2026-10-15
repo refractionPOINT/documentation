@@ -9,9 +9,10 @@
     [First-time setup and verification](../getting-started.md) explains the full journey.
 
 Collects the Google Cloud estate across every project in scope — compute,
-serverless (Cloud Run and Cloud Functions), storage, networking, IAM, KMS,
-databases, secrets, Pub/Sub — plus CIEM (who can reach what), Vertex AI
-inventory, and agentless workload vulnerabilities from VM Manager.
+serverless (Cloud Run and Cloud Functions), Kubernetes (GKE clusters and the
+workloads running inside them), storage, networking, IAM, KMS, databases,
+secrets, Pub/Sub — plus CIEM (who can reach what), Vertex AI inventory, and
+agentless workload vulnerabilities from VM Manager.
 
 **Auth model:** a **service-account key** (JSON) granted read-only roles at the
 **organization**, **folder**, or **project** you want enumerated. The collector
@@ -76,6 +77,7 @@ same list; you only need to follow one method.
       containeranalysis.googleapis.com \
       run.googleapis.com \
       cloudfunctions.googleapis.com \
+      container.googleapis.com \
       aiplatform.googleapis.com \
       notebooks.googleapis.com \
       recommender.googleapis.com \
@@ -110,6 +112,7 @@ same list; you only need to follow one method.
 | Container Analysis API | `containeranalysis.googleapis.com` |
 | Cloud Run Admin API | `run.googleapis.com` |
 | Cloud Functions API | `cloudfunctions.googleapis.com` |
+| Kubernetes Engine API | `container.googleapis.com` |
 | Vertex AI API | `aiplatform.googleapis.com` |
 | Notebooks API | `notebooks.googleapis.com` |
 | Recommender API | `recommender.googleapis.com` |
@@ -235,7 +238,7 @@ Each adds one inventory or analysis surface. Skipping one leaves that surface
 | `roles/secretmanager.viewer` | Secret **metadata** inventory (names/rotation posture — never secret values) | `secret_manager` |
 | `roles/osconfig.vulnerabilityReportViewer` | Agentless workload vulnerabilities from VM Manager | `osconfig_vuln` |
 | `roles/osconfig.inventoryViewer` | The OS-inventory join that attaches package name + installed/fixed version to each CVE | *(not probed — exercised during the sweep)* |
-| `roles/containeranalysis.occurrences.viewer` | **Container image** vulnerabilities from Artifact Analysis, for images in Artifact Registry and Container Registry | `artifact_analysis` |
+| `roles/containeranalysis.occurrences.viewer` | **Container image** vulnerability and signed Cloud Build provenance occurrences from Artifact Analysis, for images in Artifact Registry and Container Registry | `artifact_analysis` |
 | `roles/artifactregistry.reader` | [Code Security](../code-security/index.md) pulling your **private container images** to scan them. Already included in `roles/viewer`; add it if you use the required least-privilege roles | *(not probed — exercised when an image is scanned)* |
 | `roles/recommender.iamViewer` | Unused-privilege findings (activity-based CIEM) | `activity_ciem` |
 | `roles/policyanalyzer.activityAnalysisViewer` | Dormant-identity / last-authentication findings | `activity_ciem` |
@@ -243,6 +246,7 @@ Each adds one inventory or analysis surface. Skipping one leaves that surface
 | `roles/run.viewer` | Cloud Run service inventory **and its public-access verdict** (`run.services.list` + `run.services.getIamPolicy`) | `serverless` |
 | `roles/cloudfunctions.viewer` | Cloud Functions inventory (1st and 2nd gen) plus their invoker policies (`cloudfunctions.functions.list` + `cloudfunctions.functions.getIamPolicy`) | `serverless` |
 | `roles/cloudidentity.groups.readonly` | Google-group **membership expansion**, so `group:` IAM bindings resolve to real people | `cloud_identity` |
+| `roles/container.viewer` | Only needed to reach a cluster through its **DNS-based control-plane endpoint** (`container.clusters.connect`). In-cluster collection itself already works on the required roles — see the Kubernetes notes below | *(not probed — exercised during the sweep)* |
 
 !!! note "What container image scanning gives you, and what it does not"
     With `roles/containeranalysis.occurrences.viewer` granted **and** Artifact
@@ -253,9 +257,9 @@ Each adds one inventory or analysis surface. Skipping one leaves that surface
 
     Three limits are worth knowing up front:
 
-    - **Images are not inventoried yet.** A vulnerable image appears as a
-      finding subject, not in Inventory or the topology, and nothing links it to
-      the workloads that run it.
+    - **Artifact Analysis is not a registry catalog.** Use the
+      [Code Security](../code-security/index.md) image browser for image
+      inventory and links to workloads running a digest.
     - **An enabled verdict is about the API, not every repository.** We read
       whether Artifact Analysis answers for the project. That does not prove
       on-push scanning is configured for every repository.
@@ -299,6 +303,90 @@ Each adds one inventory or analysis surface. Skipping one leaves that surface
     let `provider test` confirm it: the `serverless` check exercises both APIs and
     reports each separately, so it will tell you if one half is missing rather
     than leaving you to reason about role contents.
+
+!!! note "Kubernetes needs no in-cluster setup"
+    Reading what runs inside a GKE cluster needs **nothing installed in the
+    cluster**: no kubeconfig, no ClusterRoleBinding, no agent, no manifest to
+    apply. GKE's API server authorizes a Google OAuth token against **Cloud
+    IAM** in addition to Kubernetes RBAC, so the same service-account key you
+    already connected reaches each cluster's Kubernetes API directly.
+
+    **The required `roles/iam.securityReviewer` grant already covers it** — `container.pods.list`,
+    `container.namespaces.list`, `container.deployments.list`,
+    `container.statefulSets.list`, `container.daemonSets.list`,
+    `container.cronJobs.list`, `container.jobs.list`,
+    `container.replicaSets.list`. Since `roles/iam.securityReviewer` is
+    required, **no extra role is needed for the Kubernetes object reads**.
+    Google lists them under the
+    [Security Reviewer role](https://docs.cloud.google.com/iam/docs/roles-permissions/iam#iam.securityReviewer).
+
+    `roles/container.viewer` is worth adding for exactly one case: it is the
+    read-only role that carries `container.clusters.connect`, which is
+    required to reach a cluster through its **DNS-based control-plane
+    endpoint**. `roles/viewer` also carries it. If you are using that endpoint
+    (see below) and have not granted `roles/viewer`, grant it. See Google's
+    [DNS endpoint access guidance](https://docs.cloud.google.com/kubernetes-engine/docs/how-to/latest/network-isolation#dns-based-endpoint).
+
+    Collection uses **read-only list requests** for namespaces, controllers
+    and pods. It retains workload configuration (replica counts, service
+    accounts, security settings, host-path mounts), namespace and workload
+    labels and annotations (bounded in size), and the images pods are running.
+    It does not read environment variables, command lines, Secrets,
+    ConfigMaps, pod logs or `exec`, and the listed roles do not grant
+    Kubernetes write access.
+
+!!! warning "A cluster we cannot reach on the network is reported as partial, not empty"
+    The connection talks to each cluster's **control-plane endpoint**. Two
+    common configurations block that, and in both cases the cluster keeps its
+    cloud-side posture assessment but **nothing inside it is collected**:
+
+    - a **private control plane** with no externally reachable endpoint;
+    - **control-plane authorized networks** whose allowlist does not include us.
+
+    When that happens the project's Kubernetes workload inventory is marked
+    **partial** — whatever was collected before is preserved rather than deleted,
+    and the connection's notes name the cluster and the reason. It is never
+    reported as a cluster that runs nothing. The same is true of a cluster whose
+    API simply did not answer this pass: the view goes stale, it is never
+    emptied.
+
+    Two ways to open it, if you want in-cluster coverage on such a cluster:
+
+    - enable the cluster's **DNS-based control-plane endpoint** and allow
+      external traffic on it. It is served by Google's front end, so it works
+      for a private control plane and is not subject to authorized networks —
+      this is the option we recommend, and it needs no addresses from us. It
+      does need `roles/container.viewer` on the connection's service account,
+      because that endpoint additionally checks `container.clusters.connect`.
+      VPC Service Controls can still restrict access; allow the connection
+      identity through any applicable service perimeter;
+    - or allowlist our egress in the cluster's **authorized networks**. Ask
+      support for the current addresses for your region rather than inferring
+      them: they are per-datacenter and they change.
+
+!!! note "What in-cluster collection gives you, and what it does not"
+    Collected: **namespaces** (including their Pod Security Admission labels)
+    and **workloads** — Deployments, StatefulSets, DaemonSets, CronJobs and
+    standalone Jobs — with their replica counts, service accounts, pod-security
+    settings, and the **image digest their pods are actually running**. That
+    last one is what populates **Running On** in the image browser, so a
+    vulnerable image can be traced to the Kubernetes workloads running it.
+
+    Not collected: **Services**, **RBAC objects** (Roles, ClusterRoles and their
+    bindings), **NetworkPolicies** and **admission webhooks**. Kubernetes RBAC
+    therefore does not appear in identity or attack-path analysis.
+
+    Three deliberate modelling choices worth knowing:
+
+    - a **Job created by a CronJob** and a **ReplicaSet created by a
+      Deployment** are not listed as workloads of their own; their pods are
+      attributed to the CronJob or Deployment that owns them, which is the
+      object you actually operate;
+    - a pod that none of those five kinds owns (a bare pod, or one managed by
+      a custom controller) is listed as a workload of unspecified kind, named
+      after the pod or after the top-level object that owns it;
+    - a workload **scaled to zero** is inventoried with no image link. That is
+      "nothing is running", not "no image".
 
 !!! note "`osconfig_vuln` does not prove the inventory join"
     The `osconfig_vuln` check probes the vulnerability-report read only, so it
@@ -355,11 +443,33 @@ Registry, so the same role covers it.
   Cloud Storage. There the service account needs `roles/storage.objectViewer`
   on the project's `artifacts.<project>.appspot.com` bucket instead.
 
-Without the role, the image is not scanned and its status reads
-`registry_permission_denied`, naming the registry and this role. The code
+To verify Google Cloud Build provenance for those images, also grant this
+connection's service account `roles/containeranalysis.occurrences.viewer` on
+the **project that stores the image and its Artifact Analysis occurrences**.
+It is a read-only role. A grant on the project where the workload runs is not
+enough when the image lives in a different project. The role appears in the
+optional permissions list above and in the web app's generated GCP grant list.
+Without it, Code Security can still scan an image when registry access is
+available, but its Cloud Build lineage cannot be verified.
+
+For a project-level grant, use the service account and image project you
+selected during setup:
+
+```bash
+gcloud projects add-iam-policy-binding "IMAGE_PROJECT_ID" \
+  --member "serviceAccount:COLLECTOR_SERVICE_ACCOUNT_EMAIL" \
+  --role roles/containeranalysis.occurrences.viewer
+```
+
+Enable `containeranalysis.googleapis.com` in the project that owns the service
+account, as described under [Enable the APIs](#enable-the-apis), and in the
+image project if it is disabled there.
+
+Without registry pull access, the image is not scanned and its status reads
+`registry_permission_denied`, naming the registry and missing pull role. The code
 security status shows `image_registry_permission`. A refused image is retried
 less and less often, down to once a day. It keeps being retried, so granting
-the role fixes it without any other change. To retry right away, use
+the image pull role fixes it without any other change. To retry right away, use
 **Sync now** on the source-control connection (for example GitHub) whose
 scans reference the image.
 
