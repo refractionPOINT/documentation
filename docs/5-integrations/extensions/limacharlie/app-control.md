@@ -47,12 +47,15 @@ A deny rule always wins.
 
 ### Modes
 
-| Mode | What the sensor does |
-| --- | --- |
-| `off` | Evaluates nothing. |
-| `permissive` | Evaluates executions asynchronously after the process starts. Reports would-be blocks. Blocks nothing and adds no latency. |
-| `permissive_sync` | Runs the same blocking path as `enforcing`, then always allows. The recommended last step before enforcing. |
-| `enforcing` | Blocks executions the policy denies. |
+The console and evidence reports use the following labels. Configuration and raw
+JSON retain the API values.
+
+| Console label | API value | What the sensor does |
+| --- | --- | --- |
+| Off | `off` | Evaluates nothing. |
+| Audit | `permissive` | Evaluates executions asynchronously after the process starts. Reports would-be blocks. Blocks nothing and adds no latency. |
+| Rehearsal | `permissive_sync` | Runs the same blocking path as `enforcing`, then always allows. The recommended last step before enforcing. |
+| Enforcing | `enforcing` | Blocks executions the policy denies. |
 
 ## Self-updating software and trusted installers
 
@@ -105,9 +108,9 @@ The sensor checks the process creation time before it stops a process, so a reus
 
 Start in a mode that cannot block and move forward only once the reports are quiet. Tags make this easy because a policy can target a tag, and moving a sensor between stages is a tag change. The [policy page](../../../7-administration/config-hive/app-control-policy.md#staged-rollout-by-tag) has the three policies for this flow.
 
-1. **Observe in `permissive`.** Create an allowlist policy for the platform with no tag filter. Add the rules you already know you need (your software publishers, your standard install locations). Every execution that the policy would deny shows up as an `APP_CONTROL_DENIED` event with `APP_CONTROL_IS_ENFORCED` set to `0`. Nothing is blocked and process start is not slowed.
+1. **Observe in Audit (`permissive`).** Create an allowlist policy for the platform with no tag filter. Add the rules you already know you need (your software publishers, your standard install locations). Every execution that the policy would deny shows up as an `APP_CONTROL_DENIED` event with `APP_CONTROL_IS_ENFORCED` set to `0`. Nothing is blocked and process start is not slowed.
 2. **Fix the rules.** Read the would-be blocks (see [Reading would-be blocks](#reading-would-be-blocks)). For each legitimate program, add an allow rule. Prefer a `signer` rule for software that updates, and use a `path` rule only for locations ordinary users cannot write to. Repeat until the legitimate noise is gone. Use a [temporary exception](../../../7-administration/config-hive/app-control-rule.md#a-temporary-exception) for one-off cases.
-3. **Soak a pilot in `permissive_sync`.** Add a policy that targets a pilot tag, such as `app-control-soak`, in `permissive_sync`. These sensors run the full blocking path but still allow everything. This is the last chance to find a problem before blocking.
+3. **Soak a pilot in Rehearsal (`permissive_sync`).** Add a policy that targets a pilot tag, such as `app-control-soak`, in `permissive_sync`. These sensors run the full blocking path but still allow everything. This is the last chance to find a problem before blocking.
 4. **Enforce the pilot.** Add a policy with a lower priority number than the other two that targets `app-control-enforce` in `enforcing`. Tag a small group of machines and watch them.
 5. **Widen.** Tag more machines. Keep a broad `permissive` policy at the end of the order so that untagged machines keep reporting.
 
@@ -242,7 +245,7 @@ Useful fields on `APP_CONTROL_DENIED`:
 | `APP_CONTROL_MATCHED_RULE` | Optional. The rule that matched, when there is one. |
 | `APP_CONTROL_MATCHED_RULE_ID` | Optional. The id (record name) of the rule that matched. |
 | `APP_CONTROL_POLICY_LABEL` | The name of the policy that produced the event. |
-| `APP_CONTROL_SIGNATURE_STATUS` | What the signature check concluded: `1` valid, `2` unsigned, `3` invalid, `4` untrusted, `5` expired. |
+| `APP_CONTROL_SIGNATURE_STATUS` | What the signature check concluded: `0` not checked, `1` valid, `2` unsigned, `3` invalid, `4` untrusted, `5` expired. |
 | `APP_CONTROL_MODE` | The mode of the policy in effect, as a number: `0` off, `1` permissive, `2` permissive_sync, `3` enforcing. |
 | `APP_CONTROL_GENERATION` | The generation of the policy the sensor was running. |
 
@@ -369,6 +372,137 @@ Three console actions need more than the App Control permissions alone. [Install
 - 10,000 rules may apply to a single policy.
 - Policy record names are limited to 128 bytes and rule ids to 64 bytes.
 - A policy can list at most 64 tags.
+
+## Exporting compliance evidence
+
+Open **Application Control**, select **Export compliance evidence**, and choose a
+start and end time in UTC. Select **Collect evidence**. The dialog shows collection
+progress, including the number of sensors read, and lets you cancel. Once the
+files are ready, select **Download evidence bundle** to save a ZIP archive.
+The default window is the preceding 30 days.
+
+The export reads data without changing policies, rules, sensors, or observation
+triage. Sensor collection pages through the entire organization, including sensors
+that have never reported Application Control. It does not export only the Fleet
+page currently visible. If pagination fails, repeats records, or returns a changed
+sensor total, that section's partial results are discarded and marked unavailable.
+If the sensor count changes during collection, the report identifies inventory
+changes as the reason. Retry when sensor enrollment and removal are quieter.
+Retry the export to collect the section again. Canceling discards the export.
+
+### Files and evidence
+
+The archive contains:
+
+- **report.pdf**: the report metadata, requirement coverage, policies, rule summaries,
+  enforcement coverage, observations, and available change history.
+- **report.html**: the same localized report as selectable, searchable text. The PDF
+  renders text with browser fonts to preserve all supported languages; use the HTML
+  companion for text selection and accessibility.
+- **evidence.json**: the evidence, section availability, timestamps, and localized
+  report content. Its `formatNotes` explicitly identify the raw sections: machine-readable
+  field names, API enum values, numeric codes, and boolean flags remain unchanged.
+  The `report` field uses the same localized labels as the PDF and HTML.
+- **rules.csv**, when policy/rule read permission is available: the complete rule
+  list, including action, kind, value, policy scope, enabled state, expiry, comment,
+  and hive change metadata. Disabled and expired rules are included.
+- **fleet.csv**, when sensor-list permission is available and collection completes:
+  every collected sensor's identity and last-reported Application Control posture,
+  using console labels for mode, enforcement connection, break-glass, and issues.
+- **observations.csv**, when observation collection completes: every retained
+  application selected by the window, with console labels for signature status,
+  vendor trust (Yes, No, or Unknown), enforcement, and triage status. Executions
+  use the console's lower-bound display (for example, **1,234+**), or **none seen** when no executions were reported.
+
+The report identifies the organization, exporting user, generation time, collection
+start, and selected window. Policies include targeting, priority, mode, stance,
+OS vendor trust, behavior for programs already running, **Notify users of blocks**,
+**Show tray icon**, enabled state, and the last
+change timestamp and author returned in hive `sys_mtd`. Rule summaries distinguish
+all rules from active rules, temporary allow exceptions from other rules, and
+trusted installer rules. The PDF, HTML, and CSV values use the current console labels
+in the selected language. Omitted notification and tray settings default to No;
+the report describes configuration, not proof that an end-user notification appeared.
+
+Fleet evidence counts reporting sensors by mode and held policy, sensors with no
+Application Control report, refused policies, break-glass, and degraded enforcement.
+It also identifies posture reports older than 24 hours. The inventory includes
+unsupported platforms; their presence or absence of a report does not establish
+protection. Policy and rule configuration and Fleet posture are current snapshots,
+collected at different times, **not proof of continuous enforcement throughout the
+selected window**.
+
+Observations count distinct retained applications whose `last_seen` is in the
+selected window and whose retained dispositions include a block or would-block.
+The report includes the top applications ranked by retained execution lower bounds,
+plus the last ingestion time and retained shedding count. **These are not exact
+block-event or would-block-event totals for the window.** Dispositions and execution
+lower bounds span retained history, and an application can appear in both groups.
+An application seen again after the window can be absent from this selection.
+Retention, discarded observations, and delayed ingestion can omit activity.
+The observation actions do not provide time-bucketed event totals, so the report
+explicitly identifies those totals as unavailable.
+
+If retained observations change between pages (for example, an application's
+`last_seen` moves past the window end), that section is marked unavailable with
+this reason and its partial results are discarded. An earlier end time can reduce
+changes caused by applications running during collection.
+
+Available change history comes from retained organization audit entries for
+Application Control policy and rule hives in the chosen window. Entries may not
+contain before/after values. Missing retained entries do not establish that no
+changes occurred, and the export does not reconstruct historical policy state.
+The PDF and HTML show the newest 100 matching entries and the total returned;
+`evidence.json` includes every fetched matching entry.
+
+### Permissions and unavailable sections
+
+The export respects the exporting user's permissions. It keeps unavailable
+sections in the report with an explanation rather than presenting missing data as
+zero activity or failing the whole export.
+
+| Section | Required permission |
+| --- | --- |
+| Policies and rules | `app_control.get` |
+| Fleet enforcement coverage | `sensor.list` |
+| Observations | `app_control.get` and `ext.request` |
+| Change history | `audit.get` |
+
+For example, an export without `audit.get` states
+**Not available: missing permission audit.get** in the change-history section.
+A section whose collection fails is marked unavailable and includes no partial
+inventory. Its CSV is omitted; the PDF, HTML, and JSON explain the omission.
+
+### Coverage statements for an auditor
+
+The report presents evidence and **capability coverage**, not a compliance
+certification, a pass/fail decision about the organization, or an Essential Eight
+maturity rating. An auditor must assess the actual scope, authorization process,
+exceptions, and enforcement gaps. An enforcing allowlist policy can deny program
+execution by default and permit exceptions. A blocklist policy, or a policy in Audit or Rehearsal mode, does
+not implement allow-by-exception.
+
+| Requirement or application type | Capability coverage | Reason |
+| --- | --- | --- |
+| CIS Controls v8 2.5, Allowlist Authorized Software | Partially covered | Windows and macOS program execution can be allowlisted. Fleet scope, exceptions, and enforcement must be assessed; scripts and libraries are not controlled. |
+| CIS Controls v8 2.7, Allowlist Authorized Scripts | Not covered | Scripts are **not controlled**. Only program execution is controlled. Allowing an interpreter does not authorize or constrain the scripts it runs. |
+| Australian Essential Eight, Application control | Partially covered | Executables are supported; the other application types below are not covered. No maturity level is claimed. |
+| Executables | Covered capability | Process-start control on supported Windows/macOS sensors. Blocking requires an enforcing policy; allow-by-exception requires allowlist stance. |
+| Software libraries / DLLs | Not covered | Library and DLL loading is not controlled. |
+| Scripts | Not covered | Script content and execution within an allowed interpreter are not controlled. |
+| Installers (MSI) | Not covered | MSI packages are not controlled. Trusted installer rules provide executable trust exceptions, not MSI allowlisting. |
+| Compiled HTML / HTA | Not covered | CHM and HTA execution is not controlled. |
+| Control panel applets | Not covered | CPL applets are not controlled. |
+| NIST SP 800-53 CM-7(5), Authorized Software — Allow-by-exception | Partially covered | Enforcing allowlist policies support deny-by-default with exceptions. This export does not establish the organization's approved inventory, review process, or continuous enforcement. |
+
+Trusted installer rules can trust program descendants or written executables. Treat
+them as broad trust exceptions when assessing the allowlist, alongside vendor,
+signer, and path-based trust. They do not add script, library, or MSI package control.
+
+The requirement references are the
+[CIS Controls v8](https://www.cisecurity.org/controls/v8),
+[ASD application control guidance](https://www.cyber.gov.au/business-government/protecting-devices-systems/hardening-systems-applications/system-hardening/implementing-application-control),
+and [NIST SP 800-53 Rev. 5](https://csrc.nist.gov/pubs/sp/800/53/r5/upd1/final).
 
 ## See Also
 
