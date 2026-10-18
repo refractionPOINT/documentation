@@ -314,7 +314,7 @@ Search for files matching a specific hash across a directory tree.
 **Usage Example:**
 
 ```bash
-limacharlie sensor task <SID> dir_findhash --dir_path "/var" --hash <HASH_VALUE>
+limacharlie task send --sid <SID> --task 'dir_findhash --dir_path "/var" --hash <HASH_VALUE>'
 ```
 
 ---
@@ -334,7 +334,7 @@ Perform DNS resolution on the endpoint to determine what DNS server responds.
 **Usage Example:**
 
 ```bash
-limacharlie sensor task <SID> dns_resolve --hostname "example.com"
+limacharlie task send --sid <SID> --task 'dns_resolve --hostname "example.com"'
 ```
 
 ---
@@ -354,7 +354,7 @@ Retrieve a previously cached document from the sensor's local cache.
 **Usage Example:**
 
 ```bash
-limacharlie sensor task <SID> doc_cache_get --hash <DOC_HASH>
+limacharlie task send --sid <SID> --task 'doc_cache_get --hash <DOC_HASH>'
 ```
 
 ---
@@ -378,7 +378,7 @@ Add an exfiltration detection watch for specific event types and patterns.
 **Usage Example:**
 
 ```bash
-limacharlie sensor task <SID> exfil_add --event "DNS_REQUEST" --operator "contains" --path "event/DOMAIN_NAME" --value "malware" --expire 3600
+limacharlie task send --sid <SID> --task 'exfil_add --event "DNS_REQUEST" --operator "contains" --path "event/DOMAIN_NAME" --value "malware" --expire 3600'
 ```
 
 ---
@@ -398,7 +398,7 @@ Remove an exfiltration detection watch by its ID.
 **Usage Example:**
 
 ```bash
-limacharlie sensor task <SID> exfil_del --id <WATCH_ID>
+limacharlie task send --sid <SID> --task 'exfil_del --id <WATCH_ID>'
 ```
 
 ---
@@ -416,7 +416,7 @@ List all active exfiltration detection watches on the sensor.
 **Usage Example:**
 
 ```bash
-limacharlie sensor task <SID> exfil_get
+limacharlie task send --sid <SID> --task 'exfil_get'
 ```
 
 ---
@@ -436,7 +436,7 @@ Delete a file from the endpoint filesystem.
 **Usage Example:**
 
 ```bash
-limacharlie sensor task <SID> file_del --file_path "/tmp/suspicious_file"
+limacharlie task send --sid <SID> --task 'file_del --file_path "/tmp/suspicious_file"'
 ```
 
 ---
@@ -456,7 +456,7 @@ Retrieve a file from the endpoint and upload it to LimaCharlie cloud storage.
 **Usage Example:**
 
 ```bash
-limacharlie sensor task <SID> file_get --file_path "C:\\Windows\\System32\\calc.exe"
+limacharlie task send --sid <SID> --task 'file_get --file_path "C:\\Windows\\System32\\calc.exe"'
 ```
 
 ---
@@ -544,7 +544,7 @@ Calculate cryptographic hashes (MD5, SHA1, SHA256) for a file.
 **Usage Example:**
 
 ```bash
-limacharlie sensor task <SID> file_hash --file_path "/etc/passwd"
+limacharlie task send --sid <SID> --task 'file_hash --file_path "/etc/passwd"'
 ```
 
 **Sample Response:**
@@ -578,7 +578,7 @@ Get detailed metadata about a file without retrieving its contents.
 **Usage Example:**
 
 ```bash
-limacharlie sensor task <SID> file_info --file_path "C:\\Program Files\\app.exe"
+limacharlie task send --sid <SID> --task 'file_info --file_path "C:\\Program Files\\app.exe"'
 ```
 
 **Sample Response:**
@@ -613,7 +613,7 @@ Move or rename a file on the endpoint filesystem.
 **Usage Example:**
 
 ```bash
-limacharlie sensor task <SID> file_mov --src_path "/tmp/file.txt" --dst_path "/tmp/renamed.txt"
+limacharlie task send --sid <SID> --task 'file_mov --src_path "/tmp/file.txt" --dst_path "/tmp/renamed.txt"'
 ```
 
 ---
@@ -633,7 +633,7 @@ Add a File Integrity Monitoring (FIM) watch for a specific path or pattern.
 **Usage Example:**
 
 ```bash
-limacharlie sensor task <SID> fim_add --file_path "C:\\Windows\\System32\\*.dll"
+limacharlie task send --sid <SID> --task 'fim_add --file_path "C:\\Windows\\System32\\*.dll"'
 ```
 
 ---
@@ -653,7 +653,7 @@ Remove a File Integrity Monitoring watch.
 **Usage Example:**
 
 ```bash
-limacharlie sensor task <SID> fim_del --file_path "C:\\Windows\\System32\\*.dll"
+limacharlie task send --sid <SID> --task 'fim_del --file_path "C:\\Windows\\System32\\*.dll"'
 ```
 
 ---
@@ -671,7 +671,7 @@ List all active File Integrity Monitoring watches on the sensor.
 **Usage Example:**
 
 ```bash
-limacharlie sensor task <SID> fim_get
+limacharlie task send --sid <SID> --task 'fim_get'
 ```
 
 ---
@@ -689,7 +689,7 @@ Retrieve internal sensor debug data for troubleshooting.
 **Usage Example:**
 
 ```bash
-limacharlie sensor task <SID> get_debug_data
+limacharlie task send --sid <SID> --task 'get_debug_data'
 ```
 
 Sensors running version 5.3.6 or later include a `LOSS_ACCOUNTING` sequence in the reply, reporting how many events the sensor's outbound queue has evicted or refused (in events and in bytes), how deep the queue currently is, and the bounds it is enforcing. See [the LOSS_ACCOUNTING field reference](edr-events.md#loss_accounting) for a description of each value.
@@ -711,7 +711,7 @@ Scan for hidden or stealthy modules loaded in process memory that may not appear
 **Usage Example:**
 
 ```bash
-limacharlie sensor task <SID> hidden_module_scan --pid 1234
+limacharlie task send --sid <SID> --task 'hidden_module_scan --pid 1234'
 ```
 
 ---
@@ -729,7 +729,7 @@ Export a dump of recent events from the sensor's local event cache.
 **Usage Example:**
 
 ```bash
-limacharlie sensor task <SID> history_dump
+limacharlie task send --sid <SID> --task 'history_dump'
 ```
 
 ---
@@ -751,10 +751,10 @@ Retrieve Windows Event Logs or macOS Unified Logs from the endpoint.
 
 ```bash
 # Windows
-limacharlie sensor task <SID> log_get --source "Security"
+limacharlie task send --sid <SID> --task 'log_get --source "Security"'
 
 # macOS
-limacharlie sensor task <SID> log_get --predicate "eventType == logEvent"
+limacharlie task send --sid <SID> --task 'log_get --predicate "eventType == logEvent"'
 ```
 
 ---
@@ -775,7 +775,7 @@ Search process memory for specific string patterns.
 **Usage Example:**
 
 ```bash
-limacharlie sensor task <SID> mem_find_string --pid 1234 --strings "password"
+limacharlie task send --sid <SID> --task 'mem_find_string --pid 1234 --strings "password"'
 ```
 
 ---
@@ -796,7 +796,7 @@ Find handles (file, registry, process) held by a process on Windows.
 **Usage Example:**
 
 ```bash
-limacharlie sensor task <SID> mem_find_handle --pid 1234 --needle "malware.exe"
+limacharlie task send --sid <SID> --task 'mem_find_handle --pid 1234 --needle "malware.exe"'
 ```
 
 ---
@@ -816,7 +816,7 @@ Get memory map of a process showing loaded modules and memory regions.
 **Usage Example:**
 
 ```bash
-limacharlie sensor task <SID> mem_map --pid 1234
+limacharlie task send --sid <SID> --task 'mem_map --pid 1234'
 ```
 
 ---
@@ -838,7 +838,7 @@ Read raw memory from a process at a specific address.
 **Usage Example:**
 
 ```bash
-limacharlie sensor task <SID> mem_read --pid 1234 --base_address 0x00400000 --size 1024
+limacharlie task send --sid <SID> --task 'mem_read --pid 1234 --base_address 0x00400000 --size 1024'
 ```
 
 ---
@@ -858,7 +858,7 @@ Extract all readable strings from a process's memory.
 **Usage Example:**
 
 ```bash
-limacharlie sensor task <SID> mem_strings --pid 1234
+limacharlie task send --sid <SID> --task 'mem_strings --pid 1234'
 ```
 
 ---
@@ -876,7 +876,7 @@ Get current network connections on the endpoint (similar to netstat command).
 **Usage Example:**
 
 ```bash
-limacharlie sensor task <SID> netstat
+limacharlie task send --sid <SID> --task 'netstat'
 ```
 
 **Sample Response:**
@@ -914,7 +914,7 @@ Get aggregated network statistics and active connections summary.
 **Usage Example:**
 
 ```bash
-limacharlie sensor task <SID> network_summary
+limacharlie task send --sid <SID> --task 'network_summary'
 ```
 
 ---
@@ -934,7 +934,7 @@ Terminate a running process.
 **Usage Example:**
 
 ```bash
-limacharlie sensor task <SID> os_kill_process --pid 1234
+limacharlie task send --sid <SID> --task 'os_kill_process --pid 1234'
 ```
 
 ---
@@ -950,7 +950,7 @@ List installed software packages on the endpoint.
 **Usage Example:**
 
 ```bash
-limacharlie sensor task <SID> os_packages
+limacharlie task send --sid <SID> --task 'os_packages'
 ```
 
 **Sample Response:**
@@ -984,7 +984,7 @@ Get a list of all running processes with detailed information.
 **Usage Example:**
 
 ```bash
-limacharlie sensor task <SID> os_processes
+limacharlie task send --sid <SID> --task 'os_processes'
 ```
 
 **Sample Response:**
@@ -1018,7 +1018,7 @@ Resume a suspended process.
 **Usage Example:**
 
 ```bash
-limacharlie sensor task <SID> os_resume --pid 1234
+limacharlie task send --sid <SID> --task 'os_resume --pid 1234'
 ```
 
 ---
@@ -1036,7 +1036,7 @@ List all services/daemons running on the endpoint.
 **Usage Example:**
 
 ```bash
-limacharlie sensor task <SID> os_services
+limacharlie task send --sid <SID> --task 'os_services'
 ```
 
 ---
@@ -1056,7 +1056,7 @@ Suspend (pause) a running process.
 **Usage Example:**
 
 ```bash
-limacharlie sensor task <SID> os_suspend --pid 1234
+limacharlie task send --sid <SID> --task 'os_suspend --pid 1234'
 ```
 
 ---
@@ -1074,7 +1074,7 @@ List programs configured to run automatically at system startup.
 **Usage Example:**
 
 ```bash
-limacharlie sensor task <SID> os_autoruns
+limacharlie task send --sid <SID> --task 'os_autoruns'
 ```
 
 ---
@@ -1092,7 +1092,7 @@ List all loaded kernel drivers/modules.
 **Usage Example:**
 
 ```bash
-limacharlie sensor task <SID> os_drivers
+limacharlie task send --sid <SID> --task 'os_drivers'
 ```
 
 ---
@@ -1110,7 +1110,7 @@ Get detailed operating system version information.
 **Usage Example:**
 
 ```bash
-limacharlie sensor task <SID> os_version
+limacharlie task send --sid <SID> --task 'os_version'
 ```
 
 **Sample Response:**
@@ -1140,7 +1140,7 @@ Re-enable network connectivity for a sensor that was previously isolated.
 **Usage Example:**
 
 ```bash
-limacharlie sensor task <SID> rejoin_network
+limacharlie task send --sid <SID> --task 'rejoin_network'
 ```
 
 ---
@@ -1175,8 +1175,8 @@ The reply's `ERROR` answers whether the service configuration is what it should 
 **Usage Example:**
 
 ```bash
-limacharlie sensor task <SID> repair_core_config --dry-run
-limacharlie sensor task <SID> repair_core_config
+limacharlie task send --sid <SID> --task 'repair_core_config --dry-run'
+limacharlie task send --sid <SID> --task 'repair_core_config'
 ```
 
 ---
@@ -1284,7 +1284,7 @@ A refusal always produces a reply, with `ERROR` set to `50` and `ERROR_MESSAGE` 
 **Usage Example:**
 
 ```bash
-limacharlie sensor task <SID> restart_core --is-confirmed
+limacharlie task send --sid <SID> --task 'restart_core --is-confirmed'
 ```
 
 ---
@@ -1304,7 +1304,7 @@ Execute a command or script on the endpoint (out-of-band execution).
 **Usage Example:**
 
 ```bash
-limacharlie sensor task <SID> run --command "ps aux | grep chrome"
+limacharlie task send --sid <SID> --task 'run --command "ps aux | grep chrome"'
 ```
 
 ---
@@ -1322,7 +1322,7 @@ Isolate a sensor from the network (except LimaCharlie cloud connectivity).
 **Usage Example:**
 
 ```bash
-limacharlie sensor task <SID> segregate_network
+limacharlie task send --sid <SID> --task 'segregate_network'
 ```
 
 ---
@@ -1350,8 +1350,8 @@ By default, the sensor uninstalls itself by running a shell command that invokes
 **Usage Example:**
 
 ```bash
-limacharlie sensor task <SID> uninstall --is-confirmed
-limacharlie sensor task <SID> uninstall --is-confirmed --native
+limacharlie task send --sid <SID> --task 'uninstall --is-confirmed'
+limacharlie task send --sid <SID> --task 'uninstall --is-confirmed --native'
 ```
 
 ---
@@ -1433,8 +1433,8 @@ Task the sensor to upgrade its own on-disk agent (the installed service) to a ne
 **Usage Example:**
 
 ```bash
-limacharlie sensor task <SID> upgrade_core --beta
-limacharlie sensor task <SID> upgrade_core --beta --version 5.3.3
+limacharlie task send --sid <SID> --task 'upgrade_core --beta'
+limacharlie task send --sid <SID> --task 'upgrade_core --beta --version 5.3.3'
 ```
 
 ---
@@ -1458,10 +1458,10 @@ Scan files or process memory with YARA rules.
 
 ```bash
 # Scan a file
-limacharlie sensor task <SID> yara_scan --file_path "C:\\suspicious.exe" --rule "rule test { strings: $a = \"malware\" condition: $a }"
+limacharlie task send --sid <SID> --task 'yara_scan --file_path "C:\\suspicious.exe" --rule "rule test { strings: $a = \"malware\" condition: $a }"'
 
 # Scan process memory
-limacharlie sensor task <SID> yara_scan --pid 1234 --rule "rule test { strings: $a = \"malware\" condition: $a }"
+limacharlie task send --sid <SID> --task 'yara_scan --pid 1234 --rule "rule test { strings: $a = \"malware\" condition: $a }"'
 ```
 
 ---
@@ -1479,7 +1479,7 @@ List available network interfaces for packet capture.
 **Usage Example:**
 
 ```bash
-limacharlie sensor task <SID> pcap_ifaces
+limacharlie task send --sid <SID> --task 'pcap_ifaces'
 ```
 
 ---
@@ -1500,7 +1500,7 @@ Start capturing network packets on a specified interface.
 **Usage Example:**
 
 ```bash
-limacharlie sensor task <SID> pcap_start --iface eth0 --max_size 100
+limacharlie task send --sid <SID> --task 'pcap_start --iface eth0 --max_size 100'
 ```
 
 ---
@@ -1520,7 +1520,7 @@ Stop an active packet capture and upload the PCAP file.
 **Usage Example:**
 
 ```bash
-limacharlie sensor task <SID> pcap_stop
+limacharlie task send --sid <SID> --task 'pcap_stop'
 ```
 
 ---
@@ -1540,7 +1540,7 @@ List Windows registry keys and values.
 **Usage Example:**
 
 ```bash
-limacharlie sensor task <SID> reg_list "hklm\\software\\microsoft\\windows\\currentversion\\run"
+limacharlie task send --sid <SID> --task 'reg_list "hklm\\software\\microsoft\\windows\\currentversion\\run"'
 ```
 
 ---
@@ -1563,7 +1563,7 @@ Fetch a single named value from a Windows registry key. Complements `reg_list`, 
 **Usage Example:**
 
 ```bash
-limacharlie sensor task <SID> reg_get "hklm\\software\\microsoft\\windows\\currentversion\\run" "OneDrive"
+limacharlie task send --sid <SID> --task 'reg_get "hklm\\software\\microsoft\\windows\\currentversion\\run" "OneDrive"'
 ```
 
 ---
@@ -1583,7 +1583,7 @@ Trigger an Endpoint Protection (EPP) scan on a file or directory.
 **Usage Example:**
 
 ```bash
-limacharlie sensor task <SID> epp_scan --file_path "C:\\Users\\Public"
+limacharlie task send --sid <SID> --task 'epp_scan --file_path "C:\\Users\\Public"'
 ```
 
 ---
@@ -1601,7 +1601,7 @@ List EPP scan exclusions currently configured on the sensor.
 **Usage Example:**
 
 ```bash
-limacharlie sensor task <SID> epp_list_exclusions
+limacharlie task send --sid <SID> --task 'epp_list_exclusions'
 ```
 
 ---
@@ -1622,8 +1622,8 @@ Add a path, process or file extension to EPP scan exclusions.
 **Usage Example:**
 
 ```bash
-limacharlie sensor task <SID> epp_add_exclusion "C:\\safe_app" --type path
-limacharlie sensor task <SID> epp_add_exclusion "safe_app.exe" --type process
+limacharlie task send --sid <SID> --task 'epp_add_exclusion "C:\\safe_app" --type path'
+limacharlie task send --sid <SID> --task 'epp_add_exclusion "safe_app.exe" --type process'
 ```
 
 ---
@@ -1644,7 +1644,7 @@ Remove a path, process or file extension from EPP scan exclusions.
 **Usage Example:**
 
 ```bash
-limacharlie sensor task <SID> epp_rem_exclusion "C:\\safe_app" --type path
+limacharlie task send --sid <SID> --task 'epp_rem_exclusion "C:\\safe_app" --type path'
 ```
 
 ---
@@ -1662,7 +1662,7 @@ List files currently in EPP quarantine.
 **Usage Example:**
 
 ```bash
-limacharlie sensor task <SID> epp_list_quarantine
+limacharlie task send --sid <SID> --task 'epp_list_quarantine'
 ```
 
 ---
@@ -1672,7 +1672,15 @@ limacharlie sensor task <SID> epp_list_quarantine
 **General Syntax:**
 
 ```bash
-limacharlie sensor task <SENSOR_ID> <COMMAND_NAME> [--param value ...]
+limacharlie task send --sid <SENSOR_ID> --task '<COMMAND_NAME> [--param value ...]'
+```
+
+`task send` queues the command and returns immediately. A sensor that is offline receives it when it next connects, and its reply arrives as the response event listed for the command. Quote the whole command string, as in the examples above, so your shell passes it to the sensor unchanged.
+
+To wait for the reply and print it in your terminal, use `task request` instead. It takes the command string as `--command` rather than `--task`, and waits up to `--timeout` seconds (default: 30):
+
+```bash
+limacharlie task request --sid <SENSOR_ID> --command '<COMMAND_NAME> [--param value ...]' --timeout 60
 ```
 
 **Platform Abbreviations:**

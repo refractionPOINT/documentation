@@ -70,7 +70,7 @@ Instead of running an installer on the host, you can task a sensor to upgrade it
 The native upgrade procedure is currently in beta, so the `--beta` flag is required; the command is rejected without it.
 
 ```bash
-limacharlie sensor task <SID> upgrade_core --beta
+limacharlie task send --sid <SID> --task 'upgrade_core --beta'
 ```
 
 Optional flags:
@@ -88,8 +88,8 @@ See the [endpoint commands reference](../../8-reference/endpoint-commands.md#upg
 An upgrade replaces the sensor's binary but leaves the service configuration written at install untouched. To bring that configuration up to what the current sensor expects on hosts that were installed earlier, task the `repair_core_config` command. Run it with `--dry-run` first to find the hosts that need it without changing anything:
 
 ```bash
-limacharlie sensor task <SID> repair_core_config --dry-run
-limacharlie sensor task <SID> repair_core_config
+limacharlie task send --sid <SID> --task 'repair_core_config --dry-run'
+limacharlie task send --sid <SID> --task 'repair_core_config'
 ```
 
 The command requires sensor version **5.3.10 or later**. See the [endpoint commands reference](../../8-reference/endpoint-commands.md#repair_core_config) for the settings it covers and how to read its reply.
