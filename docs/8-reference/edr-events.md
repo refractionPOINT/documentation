@@ -1544,12 +1544,18 @@ Each entry in `PACKAGES` can include the following fields. Availability depends 
 
 **Sample Event:**
 
-```text
-"PACKAGES": [
-  {
-    "PACKAGE_NAME": "Microsoft Windows Driver Development Kit Uninstall"
-  }
-]
+```json
+{
+  "PACKAGES": [
+    {
+      "PACKAGE_NAME": "Example App",
+      "PACKAGE_VERSION": "1.0",
+      "OS_PACKAGE_PUBLISHER": "Example Software",
+      "OS_PACKAGE_UNINSTALL_STRING": "\"C:\\Program Files\\Example App\\uninstall.exe\"",
+      "OS_PACKAGE_INSTALL_LOCATION": "C:\\Program Files\\Example App"
+    }
+  ]
+}
 ```
 
 ### OS\_PROCESSES\_REP
