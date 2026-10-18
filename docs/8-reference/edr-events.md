@@ -1522,7 +1522,23 @@ Response from an `os_kill_process` request.
 
 ### OS\_PACKAGES\_REP
 
-List of packages installed on the system. This is currently Windows only but will be expanded to MacOS and Linux in the future.
+List of packages installed on the system, returned by the [`os_packages`](endpoint-commands.md#os_packages) command.
+
+Each entry in `PACKAGES` can include the following fields. Availability depends on the platform, package source, and sensor build.
+
+| Field | RPCM tag | Description |
+|-------|----------|-------------|
+| `PACKAGE_NAME` | 105 | Package name. |
+| `PACKAGE_VERSION` | 106 | Package version, when available. |
+| `OS_PACKAGE_PUBLISHER` | 286 | Publisher from the Windows uninstall-registry `Publisher` value. |
+| `OS_PACKAGE_UNINSTALL_STRING` | 287 | Uninstall command from the Windows uninstall-registry `UninstallString` value. |
+| `OS_PACKAGE_INSTALL_LOCATION` | 288 | Installation directory from the Windows uninstall-registry `InstallLocation` value. |
+| `OS_PACKAGE_SOURCE` | 296 | Package inventory source, such as a package manager. |
+| `OS_PACKAGE_ARCHITECTURE` | 297 | Package architecture, when available. |
+| `OS_PACKAGE_PATH` | 298 | Exact file path associated with the package, when available. |
+| `OS_PACKAGE_ORIGIN` | 299 | Package origin reported by the inventory source, when available. |
+
+`OS_PACKAGE_PUBLISHER`, `OS_PACKAGE_UNINSTALL_STRING`, and `OS_PACKAGE_INSTALL_LOCATION` are Windows-only and are only sent by newer Windows sensors. Each field is optional and omitted when its registry value is empty. `OS_PACKAGE_INSTALL_LOCATION` (288) is an installation directory, distinct from the exact file path in `OS_PACKAGE_PATH` (298).
 
 **Platforms:**
 
