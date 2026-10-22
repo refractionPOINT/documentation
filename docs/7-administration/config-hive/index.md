@@ -79,7 +79,7 @@ Records come in record name order. `next_cursor` is empty on the last page. A pa
         --data-urlencode "limit=100" \
         --data-urlencode "cursor=$CURSOR")
       echo "$PAGE" | jq -r '.records | keys[]'
-      CURSOR=$(echo "$PAGE" | jq -r '.next_cursor')
+      CURSOR=$(echo "$PAGE" | jq -r '.next_cursor // empty')
       [ -z "$CURSOR" ] && break
     done
     ```
