@@ -105,7 +105,7 @@ Manual updates can move a case from `resolved` only to `closed`. Auto-grouping (
 A new case's severity comes from its detection, in this order:
 
 1. **The detection's `priority`** (integer 0--10, including an explicit `0`), mapped to four severity levels with the thresholds below. The thresholds are configurable per organization.
-2. **Otherwise, the level its rule declares** (`metadata.level` on the rule's `report` action, which reaches Cases as `detect_mtd.level`): `critical`, `high`, `medium` and `low` give the severity of the same name, case-insensitive, and `informational` gives `low`. Sigma rules and Shadow AI rules set a level and no priority.
+2. **Otherwise, the level its rule declares** (`metadata.level` on the rule's `report` action, which reaches Cases as `detect_mtd.level`): `critical`, `high`, `medium` and `low` give the severity of the same name, case-insensitive, and `informational` gives `low`. Sigma rules set a level and no priority.
 3. **Otherwise** (no priority, and no level or an unrecognized one): `low`.
 
 A fifth level, `info`, exists for manual use only.
@@ -933,6 +933,7 @@ respond:
       detect_id: detect_id
       cat: cat
       source: source
+      priority: priority
       routing: routing
       detect: detect
       detect_mtd: detect_mtd
@@ -954,6 +955,7 @@ respond:
         detect_id: detect_id
         cat: cat
         source: source
+        priority: priority
         routing: routing
         detect_mtd: detect_mtd
 ```
@@ -1098,7 +1100,7 @@ Tracked event types:
 | `case_note_visibility_changed` | Note public visibility toggled |
 | `case_detection_added` | Detection grouped into case |
 | `case_detection_removed` | Detection removed from case |
-| `case_severity_upgraded` | Severity increased due to a higher-severity detection |
+| `case_severity_upgraded` | Severity increased by a higher-severity detection or a merge |
 | `case_merged_into` | Case merged into another case |
 | `case_merged_from` | Case received merge from another case |
 | `case_entity_added` | IOC/entity attached |
