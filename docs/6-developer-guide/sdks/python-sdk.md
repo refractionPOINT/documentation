@@ -602,10 +602,14 @@ from limacharlie.sdk.hive import Hive, HiveRecord
 # Access a hive (e.g., secrets)
 hive = Hive(org, "secret")
 
-# List all records
+# List all records, with their data
 records = hive.list()
 for name, record in records.items():
     print(name, record.data)
+
+# List names and metadata only (the data is never loaded)
+for name, record in hive.list_mtd().items():
+    print(name, record.tags)
 
 # Get a specific record
 record = hive.get("my-secret")
@@ -627,6 +631,39 @@ hive.set(new_record)
 # Delete a record
 hive.delete("old-record")
 ```
+
+### Large Hives
+
+A whole-hive listing has a size limit on the server (see [Large Hives](../../7-administration/config-hive/index.md#large-hives)). `Hive.list()` and `Hive.list_mtd()` handle this for you: when the API refuses the listing as too large (HTTP 413, `HIVE_LISTING_TOO_LARGE`), they read the hive page by page and return the combined result. To bound memory on a very large hive, walk it yourself.
+
+| Method | Description |
+|--------|-------------|
+| `list()` | All records, with data. Falls back to pages if the listing is too large. |
+| `list_mtd()` | All records without their data (`record.data` is `None`). Falls back to pages if needed. |
+| `list_page(limit=None, cursor=None, mtd_only=False, tag_prefix=None, max_bytes=None)` | One page. Returns `(records, next_cursor)`. An empty `next_cursor` means the last page. `limit` defaults to 50, maximum 500. |
+| `iter_pages(limit=None, mtd_only=False, tag_prefix=None, max_bytes=None, cursor=None)` | Iterator over pages, so only one page is in memory at a time. |
+
+```python
+--8<-- "snippets/python/hive_pages.py"
+```
+
+Names and metadata only:
+
+```python
+--8<-- "snippets/python/hive_names.py"
+```
+
+A page can hold fewer records than `limit`; `iter_pages()` continues until the last page. An invalid `cursor` raises `ApiError` (HTTP 400, `INVALID_CURSOR`). `list_page`, `iter_pages` and `list_mtd` require `python-limacharlie` 5.9.0 or later.
+
+The CLI exposes the same through `--metadata-only`:
+
+```bash
+limacharlie hive list --hive-name lookup --metadata-only
+limacharlie lookup list --metadata-only
+limacharlie dr list --metadata-only
+```
+
+All the hive shortcut `list` commands (`secret`, `lookup`, `playbook`, `fp`, `sop`, ...) accept it.
 
 ## Search (LCQL)
 

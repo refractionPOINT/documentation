@@ -139,6 +139,9 @@ value: web-server-2
     limacharlie fp list
     ```
 
+!!! tip "Very large rule sets"
+    The REST API returns every rule in one response. A hive that is too large for that is refused with HTTP `413` (`HIVE_LISTING_TOO_LARGE`). Page through it with `limit` and `cursor`, or list names only with `mtd_only=true`. The Python and Go SDKs and `limacharlie fp list` do this automatically. See [Listing Records](../7-administration/config-hive/index.md#listing-records).
+
 ### Get an FP Rule
 
 === "REST API"

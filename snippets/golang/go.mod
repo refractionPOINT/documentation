@@ -1,9 +1,9 @@
 module github.com/refractionPOINT/documentation/snippets/golang
 
-go 1.25.9
+go 1.27.1
 
 require (
-	github.com/refractionPOINT/go-limacharlie/limacharlie v0.0.0-20260730214850-66dd27031dd3
+	github.com/refractionPOINT/go-limacharlie/limacharlie v0.0.0-20261021040350-8413bf1fa358
 	github.com/refractionPOINT/lc-extension v0.0.0-20260819145616-21c5f9d953bf
 	github.com/stretchr/testify v1.11.1
 )

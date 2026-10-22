@@ -109,6 +109,12 @@ limacharlie api 'orgs/{oid}/acl/mailsec/resources'
 
 This returns metadata only, grouped by hive, and requires `acl.get`. Use `limacharlie tag find --tag acl:mailsec` for sensors.
 
+If some Hives cannot be read while the list is built, the list would be missing resources, so the call fails with the error code `INCOMPLETE_RESULT` and a `skipped_hives` map of Hive name to error code: HTTP `503` when a retry can help, HTTP `413` when the matching records of those Hives are too large to read in one answer. Pass `allow_partial=true` to get the partial list instead (HTTP `200`, with `"partial": true` and `skipped_hives` in the body). Hives you have no permission to read are never reported.
+
+```bash
+limacharlie api 'orgs/{oid}/acl/mailsec/resources' -f allow_partial=true
+```
+
 ## Scope records
 
 | Field | Description |

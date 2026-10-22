@@ -1470,6 +1470,34 @@ for key, record := range records {
 }
 ```
 
+`List` returns the whole hive. A whole-hive listing has a size limit on the server (see [Large Hives](../../7-administration/config-hive/index.md#large-hives)): when the API refuses it as too large (HTTP 413, `HIVE_LISTING_TOO_LARGE`), `List` reads the hive page by page and returns the combined result.
+
+For large hives, list metadata only, or walk the hive page by page so that only one page is in memory:
+
+| Method | Description |
+|--------|-------------|
+| `ListMtd(args)` | All records without their data. Falls back to pages if the listing is too large. |
+| `ListPage(args, opts)` | One page. Returns the records and the next cursor; an empty cursor means the last page. |
+| `ListPages(args, opts, fn)` | Calls `fn` with each page until the last one. Returning an error from `fn` stops the walk. |
+| `ListAllPages(args, opts)` | Walks every page and returns the combined map. |
+
+`ListPageOptions` has `Limit` (default 50, maximum 500), `Cursor`, `MtdOnly`, `TagPrefix` and `MaxBytes`. A page can hold fewer records than `Limit`.
+
+```go
+--8<-- "snippets/golang/hive_pages/main.go"
+```
+
+Names and metadata only:
+
+```go
+--8<-- "snippets/golang/hive_names/main.go"
+```
+
+`limacharlie.IsHiveListingTooLarge(err)` reports whether an error is a refused whole-hive listing. An invalid cursor is an HTTP 400 error (`INVALID_CURSOR`).
+
+!!! note "SDK version"
+    `ListMtd`, `ListPage`, `ListPages`, `ListAllPages` and the 413 fallback are on the `master` branch of `go-limacharlie` and are not in a tagged release yet. Use `go get github.com/refractionPOINT/go-limacharlie/limacharlie@master` to get them.
+
 #### Get Specific Hive Record
 
 ```go

@@ -71,7 +71,7 @@ jobs:
         # reorganizes modules fails the PR that bumps it, not an unrelated PR.
         run: |
           pip install --upgrade pip
-          pip install 'limacharlie==5.6.2'
+          pip install 'limacharlie==5.9.0'
 
       - name: Byte-compile (do not run) the Python snippets
         run: python -m py_compile snippets/python/*.py
