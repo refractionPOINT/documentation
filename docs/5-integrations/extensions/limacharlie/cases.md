@@ -1069,7 +1069,7 @@ The API enforces a rate limit of 20 requests per second (sustained) with a burst
 
 Detection ingestion is separately rate-limited per organization at 100 detections per minute. Organizations on the free tier (sensor quota of 2 or fewer) are limited to 5 detections per minute.
 
-Detections over that limit are not turned into cases. They are still in LimaCharlie, but no case is opened for them. When this happens, Cases reports it in the **Platform Logs** section under **Errors**, with the key `extensions/ext-cases`: how many detections were not turned into cases and the limit that applied. Cases reports at most once every 15 minutes while detections are being dropped, and each report replaces the previous one.
+Detections over that limit are not turned into cases. They are still in LimaCharlie, but no case is opened for them. When this happens, Cases reports it in the **Platform Logs** section under **Errors**, with the key `extensions/ext-cases`: at least how many detections were not turned into cases, and the limit that applied. Cases reports right away on the first dropped detection, again about a minute later, then about once every 15 minutes while detections are still being dropped. Each report replaces the previous one. The entry shows when it was last reported, and it is not cleared when the drops stop.
 
 Auto-grouping does not raise the limit, because the limit counts detections before they are grouped. To stay under it, tune or suppress the D&R rules that detect the most, or use the [`tailored` ingestion mode](#ingestion-mode) to forward only the detections you want as cases. To discuss the limit, contact LimaCharlie support.
 
