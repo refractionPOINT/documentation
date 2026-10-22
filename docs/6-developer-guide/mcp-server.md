@@ -335,7 +335,7 @@ The tools that list Hive records are paged, so a large organization cannot flood
 - `list_lookups` returns metadata only by default, because lookup tables can be very large. Pass `include_data=true` to include table data, or use `get_lookup` for one table.
 - `list_secrets` returns secret names only. Secret values are never returned by a listing: `list_rules` on the `secret` hive is metadata-only as well.
 
-See [Listing Records](../7-administration/config-hive/index.md#listing-records) for the underlying API.
+See [Listing Records](../7-administration/config-hive/index.md#listing-records) for the underlying API, and [Large and Incomplete Results](../8-reference/faq/large-and-incomplete-results.md) for the errors it can return.
 
 ---
 

@@ -1493,7 +1493,7 @@ Names and metadata only:
 --8<-- "snippets/golang/hive_names/main.go"
 ```
 
-`limacharlie.IsHiveListingTooLarge(err)` reports whether an error is a refused whole-hive listing. An invalid cursor is an HTTP 400 error (`INVALID_CURSOR`).
+`limacharlie.IsHiveListingTooLarge(err)` reports whether an error is a refused whole-hive listing. An invalid cursor is an HTTP 400 error (`INVALID_CURSOR`). See [Large and Incomplete Results](../../8-reference/faq/large-and-incomplete-results.md) for what each error means and what to do.
 
 !!! note "SDK version"
     `ListMtd`, `ListPage`, `ListPages`, `ListAllPages` and the 413 fallback are on the `master` branch of `go-limacharlie` and are not in a tagged release yet. Use `go get github.com/refractionPOINT/go-limacharlie/limacharlie@master` to get them.

@@ -11,5 +11,6 @@ Common questions about LimaCharlie.
 - [Privacy](privacy.md)
 - [Sensor Installation](sensor-installation.md)
 - [Troubleshooting](troubleshooting.md)
+- [Large and Incomplete Results](large-and-incomplete-results.md)
 - [Sensor Removal](sensor-removal.md)
 - [Detect and Respond Rules](dr-rules.md)

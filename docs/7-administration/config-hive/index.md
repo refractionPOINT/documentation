@@ -128,6 +128,14 @@ Metadata-only listing returns each record's name, tags, enabled state and system
 
     The `list` command of every hive shortcut (`secret`, `lookup`, `playbook`, `fp`, `sop`, ...) and `limacharlie dr list` accept `--metadata-only` too.
 
+    To read a hive one page at a time, add `--limit` (page size), `--cursor` (the `next_cursor` of the previous page), `--max-bytes` and `--tag-prefix`. With `--output json` the result is `{"records": {...}, "next_cursor": "..."}`; with `table`, `csv` or `jsonl` the records print as usual and `next_cursor: ...` goes to stderr. Page flags need `python-limacharlie` 5.10.0 or later.
+
+    ```bash
+    limacharlie hive list --hive-name lookup --limit 100 --output json
+    limacharlie hive list --hive-name lookup --limit 100 --cursor "NEXT_CURSOR" --output json
+    limacharlie lookup list --limit 100 --metadata-only --tag-prefix prod
+    ```
+
 ### Large Hives
 
 A whole-hive listing (no `limit` or `cursor`) has a size limit. A hive whose stored records add up to more than about 8 MiB is refused with HTTP `413` and the error code `HIVE_LISTING_TOO_LARGE`. The limit applies to the stored, compressed size, so the JSON you would receive is considerably larger. A metadata-only whole-hive listing is refused the same way past roughly 100,000 records. The exact limits are server settings and can change.
@@ -137,7 +145,7 @@ Retrying the same request does not help. Do one of these instead:
 - Page through the hive with `limit` and `cursor`. Each page is bounded in size, whatever the hive holds.
 - Use `mtd_only=true` if you only need names and metadata, then fetch the records you need one by one.
 
-The Python and Go SDKs and the `limacharlie` CLI do this for you. See the [Python SDK](../../6-developer-guide/sdks/python-sdk.md#hive-operations) and the [Go SDK](../../6-developer-guide/sdks/go-sdk.md#list-hive-records) pages.
+The Python and Go SDKs and the `limacharlie` CLI do this for you. See the [Python SDK](../../6-developer-guide/sdks/python-sdk.md#hive-operations) and the [Go SDK](../../6-developer-guide/sdks/go-sdk.md#list-hive-records) pages. For what each error means, how it looks in the CLI and the web app, and what to do, see [Large and Incomplete Results](../../8-reference/faq/large-and-incomplete-results.md).
 
 ### Errors
 
@@ -147,6 +155,8 @@ The Python and Go SDKs and the `limacharlie` CLI do this for you. See the [Pytho
 | `400` | none | `limit` or `max_bytes` is not a positive integer, or `mtd_only` is not `true` or `false`. |
 | `413` | `HIVE_LISTING_TOO_LARGE` | A whole-hive listing is over the size limit. Page through the hive or use `mtd_only=true`. Not retriable. |
 | `504` | none | The hive did not answer in time. Retry a paged call shortly. For a whole-hive listing, page or use `mtd_only=true` instead of retrying. |
+
+Answers built from several hives (Stories, access-control resources) use `INCOMPLETE_RESULT` with HTTP `503` or `413` and an `allow_partial=true` option. See [Large and Incomplete Results](../../8-reference/faq/large-and-incomplete-results.md#incomplete_result).
 
 ---
 

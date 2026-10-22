@@ -655,15 +655,19 @@ Names and metadata only:
 
 A page can hold fewer records than `limit`; `iter_pages()` continues until the last page. An invalid `cursor` raises `ApiError` (HTTP 400, `INVALID_CURSOR`). `list_page`, `iter_pages` and `list_mtd` require `python-limacharlie` 5.9.0 or later.
 
-The CLI exposes the same through `--metadata-only`:
+The CLI exposes the same through `--metadata-only`, and page by page through `--limit` and `--cursor` (`--max-bytes` and `--tag-prefix` too, `python-limacharlie` 5.10.0 or later):
 
 ```bash
 limacharlie hive list --hive-name lookup --metadata-only
 limacharlie lookup list --metadata-only
 limacharlie dr list --metadata-only
+limacharlie lookup list --limit 100 --output json            # {"records": ..., "next_cursor": ...}
+limacharlie lookup list --limit 100 --cursor "NEXT_CURSOR" --output json
 ```
 
-All the hive shortcut `list` commands (`secret`, `lookup`, `playbook`, `fp`, `sop`, ...) accept it.
+All the hive shortcut `list` commands (`secret`, `lookup`, `playbook`, `fp`, `sop`, ...) accept them.
+
+When the API answers `HIVE_LISTING_TOO_LARGE`, `INVALID_CURSOR` or `INCOMPLETE_RESULT`, the `ApiError` has `status_code`, `error_code`, `response_body` and, for `INCOMPLETE_RESULT`, `skipped_hives`, and its `suggestion` names the fix and links to [Large and Incomplete Results](../../8-reference/faq/large-and-incomplete-results.md). The CLI prints it as a `Suggestion:` line.
 
 ## Search (LCQL)
 

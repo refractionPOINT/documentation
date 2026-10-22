@@ -192,7 +192,7 @@ curl -s "https://api.limacharlie.io/v1/orgs/YOUR_OID/stories/prod-pipeline?allow
   -H "Authorization: Bearer $LC_JWT"
 ```
 
-`allow_partial` must be `true` or `false`; any other value is a `400`.
+`allow_partial` must be `true` or `false`; any other value is a `400`. See [Large and Incomplete Results](faq/large-and-incomplete-results.md#incomplete_result) for what to do about each answer, including the web app notices.
 
 ## Worked example
 
