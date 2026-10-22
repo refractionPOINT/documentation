@@ -325,6 +325,18 @@ Once connected, AI assistants can:
 - **Pivot on an identifier** — Resolve an email address, hostname, IP address or sensor ID to Users and Hosts, then read their [activity](../cloud-security/entity-pivot.md)
 - **Triage MailSec** — Review coverage, messages, campaigns and action history
 
+### Listing Configuration Records
+
+The tools that list Hive records are paged, so a large organization cannot flood the assistant's context. This covers `list_rules`, `list_lookups`, `list_secrets`, `list_playbooks`, `list_sops`, `list_org_notes`, `list_saved_queries`, `list_ai_skills`, `list_cloud_sensors`, `list_external_adapters`, `list_extension_configs` and `list_investigations`.
+
+- Each call returns one page, 50 records by default (200 when no record data is returned), at most 500. Pass `limit` to change it. A page can hold fewer records than `limit`.
+- The result carries `count`, `has_more`, and, when there are more records, `next_cursor`. Pass it back as `cursor` to get the next page.
+- Most list tools take `metadata_only=true` to return each record's enabled state, tags, comment and system metadata without its data. Fetch one record by name with the matching `get_*` tool to read its data.
+- `list_lookups` returns metadata only by default, because lookup tables can be very large. Pass `include_data=true` to include table data, or use `get_lookup` for one table.
+- `list_secrets` returns secret names only. Secret values are never returned by a listing: `list_rules` on the `secret` hive is metadata-only as well.
+
+See [Listing Records](../7-administration/config-hive/index.md#listing-records) for the underlying API.
+
 ---
 
 ## Troubleshooting

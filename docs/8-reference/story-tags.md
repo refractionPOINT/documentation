@@ -168,6 +168,32 @@ If the same `(from, to)` edge is both derived and declared, the assembler emits 
 - **LimaCharlie web app** — any page that wants to render a story uses the same shared `StoryGraph` component. Future surfaces (an org-level "Story Library", per-extension landing pages) will plug into the same shape.
 - **API** — `GET /v1/orgs/{oid}/stories` returns the catalog (story names found in the org). `GET /v1/orgs/{oid}/stories/{name}` returns the assembled `{ name, nodes, edges }` graph; each edge carries an `origin` field (`"derived"` or `"declared"`). Per-Hive read permissions are enforced server-side; the response is scoped to what the caller can read.
 
+### Incomplete results
+
+A story is built by reading the tags of components across several Hives. If some Hives cannot be read while the story is assembled, the result would look complete while missing components, so both story endpoints refuse to return it by default and answer with the error code `INCOMPLETE_RESULT` and a `skipped_hives` map of Hive name to the error code that left it out:
+
+| Status | Meaning |
+|--------|---------|
+| `503` | The Hives could not be read, possibly a transient failure. Retry. |
+| `413` | The matching records of the skipped Hives are too large to read in one answer (`HIVE_LISTING_TOO_LARGE`). Retrying returns the same answer: reduce the number of matching records in those Hives. |
+
+```json
+{
+  "error": "the result is incomplete: the hives [playbook] could not be read. Reduce the number of matching records in the listed hives, or pass allow_partial=true to accept a partial result",
+  "error_code": "INCOMPLETE_RESULT",
+  "skipped_hives": { "playbook": "HIVE_LISTING_TOO_LARGE" }
+}
+```
+
+Pass `allow_partial=true` to accept a partial result instead. The call returns HTTP `200` with the usual body plus `"partial": true` and `skipped_hives`. Hives you have no permission to read are never reported: they are not an incomplete result.
+
+```bash
+curl -s "https://api.limacharlie.io/v1/orgs/YOUR_OID/stories/prod-pipeline?allow_partial=true" \
+  -H "Authorization: Bearer $LC_JWT"
+```
+
+`allow_partial` must be `true` or `false`; any other value is a `400`.
+
 ## Worked example
 
 Three Hive records carry tags. Together they form the `prod-pipeline` story:
