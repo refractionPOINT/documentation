@@ -11,7 +11,7 @@ Some lists are too big to return in one answer, and some answers are built from 
 | [`INCOMPLETE_RESULT`](#incomplete_result), HTTP `503` | Stories, access-control resources | Retry. Or accept the partial result with `allow_partial=true`. |
 | [`INCOMPLETE_RESULT`](#incomplete_result), HTTP `413` | Stories, access-control resources | Retrying does not help. Reduce the records in the named hives, or accept the partial result with `allow_partial=true`. |
 | [`FP_LISTING_TOO_LARGE`](#fp_listing_too_large) | `GET /v1/fp/{oid}` | Use the paged hive API: `GET /v1/hive/fp/{oid}?limit=100`. |
-| [Web app notices](#web-app-notices): "Couldn't load the complete result", "This list is incomplete" | Web app | **Try again** when it says the problem is temporary. **Show what could be read** to see the partial result. |
+| [Web app notices](#web-app-notices): "Couldn't load the complete result", "This list is incomplete" | Web app | **Retry** when the notice says the problem is temporary ("Try again"). **Show what could be read** to see the partial result. |
 | [HTTP 504 on a hive listing](#http-504-on-a-hive-listing) | API | Page through the hive with `limit`, or use `mtd_only=true`. |
 
 ## HIVE_LISTING_TOO_LARGE
@@ -195,8 +195,8 @@ The web app shows these notices when a Story, the list of Stories or a list of a
 
 | Notice | Meaning | What to do |
 |--------|---------|------------|
-| "Couldn't load the complete result" with "Part of what this story is built from couldn't be read right now ..." (or "Some of your configuration couldn't be read right now ...") and "This is usually temporary" | The `503` case: a hive could not be read right now. | Click **Try again**. If it keeps failing, click **Show what could be read** and treat the result as incomplete. |
-| "Couldn't load the complete result" with "... is too large to read ... Trying again won't help" | The `413` case: a hive is too large to read. There is no **Try again** button. | Click **Show what could be read** to see the partial result, and reduce the records in the hives the notice names. |
+| "Couldn't load the complete result" with "Part of what this story is built from couldn't be read right now ..." (or "Some of your configuration couldn't be read right now ...") and "This is usually temporary" | The `503` case: a hive could not be read right now. | Click **Retry**. If it keeps failing, click **Show what could be read** and treat the result as incomplete. |
+| "Couldn't load the complete result" with "... is too large to read ... Trying again won't help" | The `413` case: a hive is too large to read. There is no **Retry** button. | Click **Show what could be read** to see the partial result, and reduce the records in the hives the notice names. |
 | "Showing an incomplete result", "This story is incomplete" or "This list is incomplete. ... couldn't be read, so some stories, or parts of them, may be missing" | You chose **Show what could be read**. The result is shown, and the hives named in the notice are missing from it. | Use it as a lower bound. Fix the cause (retry later, or reduce the records) and reload. |
 | "The full list could not be loaded, so nothing is shown rather than a partial list. Reload to try again." | A list of records could not be read completely. | Reload the page. If it persists, page through the hive with the [CLI](#paging-in-the-cli) or API. |
 
