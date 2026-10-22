@@ -1098,7 +1098,7 @@ Tracked event types:
 | `case_note_visibility_changed` | Note public visibility toggled |
 | `case_detection_added` | Detection grouped into case |
 | `case_detection_removed` | Detection removed from case |
-| `case_severity_upgraded` | Severity increased due to higher-priority detection |
+| `case_severity_upgraded` | Severity increased due to a higher-severity detection |
 | `case_merged_into` | Case merged into another case |
 | `case_merged_from` | Case received merge from another case |
 | `case_entity_added` | IOC/entity attached |
