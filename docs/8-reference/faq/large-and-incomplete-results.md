@@ -123,13 +123,13 @@ An answer that is built by reading several hives (the [Stories](../story-tags.md
 
 ### HTTP 503: a hive could not be read right now
 
-**Why it happens.** A temporary failure, for example a backend that was restarting or busy.
+**Why it happens.** At least one hive failed to read, usually a temporary failure such as a backend that was restarting or busy. The answer is `503` whenever any skipped hive failed for a reason other than size, so check `skipped_hives`: if one of them says `HIVE_LISTING_TOO_LARGE`, that hive will still be skipped on every retry, and only `allow_partial=true` or reducing its records helps.
 
 **What to do.** Retry in a moment. If you would rather have what could be read than wait, add `allow_partial=true`.
 
 ### HTTP 413: a hive is too large to read
 
-**Why it happens.** The records of the named hive that matter to this answer are more than one answer can hold (`HIVE_LISTING_TOO_LARGE` in `skipped_hives`). This does not go away by itself.
+**Why it happens.** Every hive that was left out was too large: the records that matter to this answer are more than one answer can hold (`HIVE_LISTING_TOO_LARGE` in `skipped_hives`). This does not go away by itself.
 
 **What to do.** Retrying returns the same answer. Reduce the number of records in the named hives (delete records you no longer use), or add `allow_partial=true` to accept a result without them.
 
@@ -191,14 +191,15 @@ A whole-hive listing that did not finish in time answers `504`. Do not repeat th
 
 ## Web App Notices
 
-The web app shows these notices when a Story, the list of Stories or a list of access-control resources is built from hives that could not all be read. Nothing is shown rather than a result that silently misses records.
+The web app shows these notices when a Story, the list of Stories, a list of access-control resources or a list of hive records (Lookups, Playbooks, SOPs, Org Notes, External Adapters, AI Agents, the rule sidebar, ...) cannot be loaded completely. Nothing is shown rather than a result that silently misses records.
 
 | Notice | Meaning | What to do |
 |--------|---------|------------|
 | "Couldn't load the complete result" with "Part of what this story is built from couldn't be read right now ..." (or "Some of your configuration couldn't be read right now ...") and "This is usually temporary" | The `503` case: a hive could not be read right now. | Click **Retry**. If it keeps failing, click **Show what could be read** and treat the result as incomplete. |
 | "Couldn't load the complete result" with "... is too large to read ... Trying again won't help" | The `413` case: a hive is too large to read. There is no **Retry** button. | Click **Show what could be read** to see the partial result, and reduce the records in the hives the notice names. |
 | "Showing an incomplete result", "This story is incomplete" or "This list is incomplete. ... couldn't be read, so some stories, or parts of them, may be missing" | You chose **Show what could be read**. The result is shown, and the hives named in the notice are missing from it. | Use it as a lower bound. Fix the cause (retry later, or reduce the records) and reload. |
-| "The full list could not be loaded, so nothing is shown rather than a partial list. Reload to try again." | A list of records could not be read completely. | Reload the page. If it persists, page through the hive with the [CLI](#paging-in-the-cli) or API. |
+| "This list is too large to load." | The `HIVE_LISTING_TOO_LARGE` case for a list of hive records: the hive is too big for the web app to load. | Page through the hive or list names only with the [CLI](#paging-in-the-cli) or API, as in [HIVE_LISTING_TOO_LARGE](#hive_listing_too_large). |
+| "The full list could not be loaded, so nothing is shown rather than a partial list. Reload to try again." | A list of records could not be read completely. | Click **Retry**, or reload the page. If it persists, page through the hive with the [CLI](#paging-in-the-cli) or API. |
 
 The hives the notice names ("Lookups", "Secrets", "Detection & Response rules", ...) are the ones to look at: they are the `skipped_hives` of the API answer.
 
