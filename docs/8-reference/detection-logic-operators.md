@@ -285,6 +285,7 @@ Takes a `name` parameter for the platform name. The current platforms are:
 **Other:**
 
 - `lc_event` (LimaCharlie internal events)
+- `detonation` (sample-analysis telemetry, independent of the guest operating system)
 
 Example:
 
@@ -294,6 +295,12 @@ name: 1password
 ```
 
 Note: Platform names are case-sensitive and should be lowercase.
+
+Detonation sources match the `detonation` platform. A Windows, Linux or macOS guest
+does not make their events match those operating-system platform predicates. To
+select a particular guest, combine the Detonation platform with an ordinary
+field condition on `event/sandbox/guest_os`. Rules without a platform restriction
+can still match detonation events; use an explicit exclusion where needed.
 
 ### is tagged
 

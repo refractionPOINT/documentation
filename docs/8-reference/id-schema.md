@@ -53,6 +53,10 @@ The Organization ID (OID) is a UUID which identifies a unique organization.
 
 ## Platform
 
+Detonation telemetry uses its own source platform, `detonation`. A guest operating
+system is recorded separately at `event/sandbox/guest_os`; it does not make the
+source a Windows, Linux or macOS sensor. See [platform detection operators](detection-logic-operators.md#is-platform).
+
 The platform is a 32-bit integer (in its hex format) which identifies the exact platform the sensor runs on. Sensor telemetry will display the `plat` value in decimal format. Although it is structured with a major and minor platform, the important values are:
 
 | Hex ID     | Decimal    | API Name                     | Platform Name                |
@@ -105,6 +109,7 @@ The platform is a 32-bit integer (in its hex format) which identifies the exact 
 | 0x31000000 | 822083584  | harmony                      | Check Point Harmony          |
 | 0x32000000 | 838860800  | threatlocker                 | ThreatLocker                 |
 | 0x33000000 | 855638016  | halopsa                      | HaloPSA                      |
+| 0x37000000 | 922746880  | detonation                   | Detonation                   |
 | 0x10000000 | 268435456  | windows                      | Windows                      |
 | 0x20000000 | 536870912  | linux                        | Linux                        |
 | 0x30000000 | 805306368  | macos                        | MacOS                        |
