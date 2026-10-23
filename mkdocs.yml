@@ -259,7 +259,9 @@ nav:
           - Chrome: 2-sensors-deployment/endpoint-agent/chrome/installation.md
           - Edge: 2-sensors-deployment/endpoint-agent/edge/installation.md
           - Docker: 2-sensors-deployment/endpoint-agent/docker/installation.md
-          - Containers: 2-sensors-deployment/endpoint-agent/containers/clusters.md
+          - Containers:
+              - Container Clusters: 2-sensors-deployment/endpoint-agent/containers/clusters.md
+              - Amazon EKS on Bottlerocket: 2-sensors-deployment/endpoint-agent/containers/eks-bottlerocket.md
           - VDI Templates: 2-sensors-deployment/endpoint-agent/vdi/templates.md
           - Payloads: 2-sensors-deployment/endpoint-agent/payloads.md
           - Versioning & Upgrades: 2-sensors-deployment/endpoint-agent/versioning-upgrades.md

@@ -212,6 +212,10 @@ The manifest above works as-is on **GKE Standard** clusters and has been validat
 
 Nodes running gVisor-sandboxed pods (GKE Sandbox) can run the sensor, but activity inside the sandboxed pods is executed by the gVisor user-space kernel and is largely invisible to host-level kernel telemetry.
 
+## Amazon EKS on Bottlerocket
+
+Bottlerocket nodes (read-only root filesystem, SELinux enforcing) need a slightly different manifest. See [Amazon EKS on Bottlerocket](eks-bottlerocket.md).
+
 ## Verifying eBPF is active
 
 After deployment, verify that sensors are using kernel-level (eBPF) acquisition and not the usermode fallback:
