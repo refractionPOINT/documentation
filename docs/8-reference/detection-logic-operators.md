@@ -502,6 +502,69 @@ Saving a rule that contains a pivot needs `cloudsec.get` in addition to `dr.set`
 
 See [Pivots in Rules and Outputs](../cloud-security/rule-pivots.md) for the vocabulary, address pivots, permissions, behavior when a pivot cannot be answered, and examples.
 
+### domain age
+
+Matches when a domain found in the event was registered recently. The age comes from LimaCharlie's domain intelligence: the registry's registration date when it is known, otherwise an estimate from the day the domain first appeared in its top-level domain's zone.
+
+```yaml
+event: DNS_REQUEST
+op: domain age
+path: event/DOMAIN_NAME
+younger than: 14
+```
+
+| Parameter | Required | Meaning |
+|-----------|----------|---------|
+| `path` | Yes | Where the domain is read in the event. It can hold a hostname, a URL or an email address, and may be a string or a list of strings. Values that are not strings are ignored. |
+| `younger than` | Yes | Whole number of days, from 1 to 36500. |
+
+Each value is reduced to its registered domain (for example `login.example.co.uk` becomes `example.co.uk`). Only the first 16 distinct values at `path` are looked up (sorted alphabetically when there are more), so a value past that limit never matches.
+
+The operator matches when at least one value has a known age that is below `younger than`, using the best estimate of the age:
+
+| Evidence (`age_source`) | Used for the age | Can match |
+|-------------------------|------------------|-----------|
+| `rdap` | Exact registration date from the registry. | Yes |
+| `zone_first_seen` | Estimate from the day the domain first appeared in its zone. | Yes |
+| `zone_readded` | Estimate from the day the domain re-appeared in its zone after being removed. | Yes |
+| `zone_baseline` | The domain was already in the zone when tracking began, so only a minimum age is known. | No |
+| `absent_from_fresh_zone` | The domain is not registered at the moment. | No |
+
+An unknown age never matches. If the domain cannot be placed (not a domain, no evidence yet, or the lookup timed out or failed), the operator does not match, and with `not: true` it matches: the rule means "not known to be young", never "old". Do not use `not: true` to mean "known to be old".
+
+The operator accepts no `case sensitive`, `file name` or `sub domain` modifier.
+
+On a match, the result for the youngest matching value is attached to the detection's `mtd` under `domain_age`, where `mtd` is available to report templates:
+
+| Field | Meaning |
+|-------|---------|
+| `domain` | The registered domain. |
+| `age_source` | The evidence kind, from the table above. |
+| `age_days` | The best estimate of the age, in days. |
+| `min_days` | The minimum known age, in days. |
+| `registered_at` | The registration time (RFC 3339), only present for `rdap`. |
+
+Two `domain age` operators matching in the same rule write the same key, and the later one wins.
+
+Example: detect a process that contacts a domain registered in the last week and report how young it is.
+
+```yaml
+detect:
+  event: DNS_REQUEST
+  op: and
+  rules:
+    - op: is windows
+    - op: domain age
+      path: event/DOMAIN_NAME
+      younger than: 7
+respond:
+  - action: report
+    name: Recently registered domain
+    metadata:
+      domain: '{{ .mtd.domain_age.domain }}'
+      age_days: '{{ .mtd.domain_age.age_days }}'
+```
+
 ### scope
 
 In some cases, you may want to limit the scope of the matching and the `path` you use to be within a specific part of the event. The `scope` operator allows you to do just that, reset the root of the `event/` in paths to be a sub-path of the event.
