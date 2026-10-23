@@ -18,6 +18,20 @@ Release notes for LimaCharlie platform components, organized by date.
 
     For discussion and email notification of the same releases, set the [Platform Updates category](https://community.limacharlie.com/c/platform-updates/5) in the community forum to Watching. For service availability rather than releases, subscribe on the [status page](https://status.limacharlie.io/).
 
+## 2026-10-22
+
+### Endpoint Agent 5.3.13
+
+#### Bug Fixes
+
+- The sensor now sends the server name (SNI) on every cloud connection, so new installs enroll behind firewalls and proxies that route TLS traffic by server name.
+
+#### Improvements
+
+- Updated the sensor's embedded TLS, certificate-validation and archive libraries to pick up upstream security fixes, including a TLS downgrade issue, distrusted certificate authorities and unsafe archive extraction.
+
+---
+
 ## 2026-10-13
 
 ### Endpoint Agent 5.4.0
