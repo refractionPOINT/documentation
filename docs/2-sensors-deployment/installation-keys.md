@@ -9,6 +9,25 @@ There are four components of an Installation Key:
 - **Tags**: A list of Tags automatically applied to sensors enrolling with the key.
 - **Description**: The description used to help you differentiate uses of various keys.
 
+## Key Record Fields
+
+Listing or getting an installation key through the API or CLI returns these fields:
+
+| Field | Meaning |
+|-------|---------|
+| `iid` | The key's ID (UUID). Adapters use this value as `client_options.identity.installation_key`. Sensors enrolled with the key report it as their `iid`. |
+| `key` | Base64 key for native sensor installers, for example `lc_sensor -i <key>`. |
+| `json_key` | Base64 JSON key for browser sensors. |
+| `desc` | The key's description. |
+| `tags` | Comma-separated tags applied to sensors at enrollment. |
+| `created` | Unix timestamp in **seconds**. It is set when the key is created and reset when the key is edited. |
+| `use_public_root_ca` | Whether the key enrolls sensors without pinned certificates (see below). |
+| `quota_total`, `quota_remaining` | Present only when the key has an enrollment quota. Enrollment is refused once `quota_remaining` reaches 0. |
+
+Installation keys do not expire. A key keeps working until it is deleted or its quota is used up.
+
+Deleting a key stops new enrollments with it. Native sensors that already enrolled keep working, but adapters configured with the key's `iid` are refused the next time they connect.
+
 ## Management
 
 Installation keys can be managed on the **Sensors > Installation Keys** page in the web app.
