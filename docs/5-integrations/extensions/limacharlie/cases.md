@@ -166,12 +166,14 @@ The following settings are available through the REST API (`GET/PUT /api/v1/conf
 | `sla_config.info.mttr_minutes` | int | `10080` | MTTR target for info cases (minutes) |
 | `retention_days` | int | `90` | Days to keep a case after it is created before it is permanently deleted (1–3650) |
 | `auto_close_resolved_after_days` | int | `7` | Automatically close resolved cases after this many days. Set to `0` to disable |
-| `auto_grouping_enabled` | bool | `false` | Enable auto-grouping of related detections into single cases (see [Auto-Grouping](#auto-grouping)) |
+| `auto_grouping_enabled` | bool | `true` | Enable auto-grouping of related detections into single cases (see [Auto-Grouping](#auto-grouping)) |
 | `auto_grouping_include_sensor` | bool | `true` | Only applies when auto-grouping is enabled. When true, only detections from the same sensor group together |
 | `auto_grouping_include_category` | bool | `false` | Only applies when auto-grouping is enabled. When true, only detections of the same category group together |
 | `auto_grouping_window_minutes` | int | `1440` | Only applies when auto-grouping is enabled. Maximum time span used to group detections (1--10080 minutes) |
 | `auto_grouping_window_mode` | string | `"sliding"` | Only applies when auto-grouping is enabled. `"sliding"` resets the window on each new detection; `"fixed"` buckets by wall-clock boundaries |
 | `auto_grouping_reopen_closed` | bool | `true` | Only applies when auto-grouping is enabled. When true, a matching detection reopens an already resolved/closed case instead of creating a new one |
+
+Auto-grouping is enabled by default; an organization's saved configuration may disable it.
 
 The following settings are managed through the extension configuration page in the LimaCharlie web UI (not through the REST API):
 
