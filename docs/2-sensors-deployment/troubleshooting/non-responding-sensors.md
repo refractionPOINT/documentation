@@ -138,6 +138,7 @@ secret_key: my-shared-secret
 cat_white_list: |
   sensor-data-silent
   sensor-data-resumed
+  sensor-data-check-error
 ```
 
 The same `cat_white_list` setting works on other destinations, such as [Slack](../../5-integrations/outputs/destinations/slack.md), [Microsoft Teams](../../5-integrations/outputs/destinations/ms-teams.md) or [email (SMTP)](../../5-integrations/outputs/destinations/smtp.md).
@@ -158,7 +159,8 @@ The detection is raised by the Playbook extension, and what the playbook returne
         "sensors": [
           {"sid": "36690639-573d-46d0-a867-6a1e2fa97591", "hostname": "fw-branch-02"}
         ],
-        "recovered": []
+        "recovered": [],
+        "errors": []
       }
     },
     "routing": {
@@ -220,6 +222,6 @@ To see the alert path end to end, use a short `threshold_minutes` (such as `10`)
 
 - **Large numbers of sensors.** The playbook makes one API call per sensor, eight at a time. For several thousand sensors, split them into more than one D&R rule with narrower selectors.
 - **Sensors that never sent data.** A per-device sensor is created when the first log for that device arrives, so a device that has never sent a log has no sensor and cannot be reported.
-- **Errors.** If checking or tagging one sensor fails, for example because it was deleted during the run, the playbook skips it, lists it under `errors` in the run summary, and checks it again on the next run. The other sensors are still checked.
+- **Errors.** If checking or tagging a sensor fails, for example because it was deleted during the run or the API key lacks a permission, the playbook skips it and checks the other sensors. It raises a `sensor-data-check-error` detection listing the failures, so a broken check does not look like a quiet one. When the same run also finds newly silent sensors, the failures are listed under `errors` in the `sensor-data-silent` detection instead. The sensor is checked again on the next run.
 - **Deleted sensors** are not checked.
 - **Removing a sensor from the watch list.** Remove its tag or change the selector. If the sensor still has the `data-silent` tag, remove that tag too.

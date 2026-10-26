@@ -109,8 +109,22 @@ def playbook(sdk, data):
                 "threshold_minutes": threshold_minutes,
                 "sensors": newly_silent,
                 "recovered": recovered,
+                "errors": errors[:20],
             },
             "cat": "sensor-data-silent",
+            "data": summary,
+        }
+    if errors:
+        # Sensors that could not be checked are reported too, so a broken
+        # check (missing permission, API outage) does not look like a quiet one.
+        return {
+            "detection": {
+                "summary": f"{len(errors)} of {len(sensors)} sensor(s) could not be checked",
+                "selector": selector,
+                "errors": errors[:20],
+                "recovered": recovered,
+            },
+            "cat": "sensor-data-check-error",
             "data": summary,
         }
     if recovered and report_recovery:
