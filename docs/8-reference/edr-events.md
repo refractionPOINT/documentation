@@ -16,8 +16,10 @@ These are the events emitted by the endpoint agent for each supported operating 
 | [APP\_CONTROL\_RESIDENT](#app_control_resident) | ☑️ | ☑️ |  |  |  |
 | [APP\_CONTROL\_UNRESOLVED](#app_control_unresolved) | ☑️ | ☑️ |  |  |  |
 | [AUTORUN\_CHANGE](#autorun_change) |  | ☑️ |  |  |  |
+| [CERT\_STORE\_LIST\_REP](#cert_store_list_rep) | ☑️ | ☑️ | ☑️ |  |  |
 | [CLOUD\_NOTIFICATION](#cloud_notification) | ☑️ | ☑️ | ☑️ | ☑️ | ☑️ |
 | [CODE\_IDENTITY](#code_identity) | ☑️ | ☑️ | ☑️ |  |  |
+| [CONFIG\_EXTRACT\_REP](#config_extract_rep) | ☑️ | ☑️ | ☑️ |  |  |
 | [CONNECTED](#connected) | ☑️ | ☑️ | ☑️ | ☑️ | ☑️ |
 | [CONTAINER\_LIST\_REP](#container_list_rep) |  |  | ☑️ |  |  |
 | DATA\_DROPPED | ☑️ | ☑️ | ☑️ |  |  |
@@ -80,6 +82,7 @@ These are the events emitted by the endpoint agent for each supported operating 
 | [OS\_PACKAGES\_REP](#os_packages_rep) |  | ☑️ |  |  |  |
 | [OS\_PROCESSES\_REP](#os_processes_rep) | ☑️ | ☑️ | ☑️ |  |  |
 | [OS\_RESUME\_REP](#os_resume_rep) | ☑️ | ☑️ | ☑️ |  |  |
+| [OS\_SECURITY\_STATE\_REP](#os_security_state_rep) | ☑️ | ☑️ | ☑️ |  |  |
 | [OS\_SERVICES\_REP](#os_services_rep) | ☑️ | ☑️ | ☑️ |  |  |
 | [OS\_SUSPEND\_REP](#os_suspend_rep) | ☑️ | ☑️ | ☑️ |  |  |
 | [OS\_USERS\_REP](#os_users_rep) |  | ☑️ |  |  |  |
@@ -241,6 +244,75 @@ Generated when an Autorun is changed.
 }
 ```
 
+### CERT\_STORE\_LIST\_REP
+
+Response event for the [`cert_store_list`](endpoint-commands.md#cert_store_list)
+sensor command. Requires sensor version 5.4.2 or later.
+
+**Platforms:** macOS | Windows | Linux
+
+`CERTIFICATES` holds one entry per certificate per store. A certificate present
+in two stores appears twice, once under each.
+
+- `CERT_STORE`: the store it was found in, such as `LocalMachine\ROOT`,
+  `/etc/ssl/certs/ca-certificates.crt` or `System.keychain`
+- `HASH`: the SHA-256 fingerprint of the certificate, in hexadecimal
+- `HASH_SHA1`: the SHA-1 fingerprint, which is the thumbprint Windows displays
+- `CERT_SUBJECT`, `CERT_ISSUER`: the subject and issuer names
+- `CERT_SERIAL`: the serial number, in hexadecimal
+- `CERT_NOT_BEFORE`, `CERT_NOT_AFTER`: the validity period, in milliseconds
+  since the epoch. Absent for a date before 1970
+- `CERT_IS_CA`: `1` when the certificate is a certificate authority. Absent
+  otherwise
+- `CERT_SELF_SIGNED`: `1` when its subject and issuer are the same, as for a
+  root. Absent otherwise
+- `CERT_IS_PARSE_ERROR`: `1` when the certificate could not be parsed. Such an
+  entry carries only `CERT_STORE`, `HASH`, `HASH_SHA1` and this flag
+
+The reply also describes the listing itself:
+
+- `SCHEMA_VERSION`: the version of this reply's layout, currently `1`
+- `CERT_STORES_READ`: how many stores were read
+- `CERT_STORES_FAILED`: how many stores exist but could not be read
+- `IS_TRUNCATED`: `1` when a bound stopped the listing early
+- `SCAN_STOPPED_REASON`: `complete`, or the bound that stopped it:
+  `max_results` (the `--max-results` limit), `max_bytes` (the total size of the
+  certificates parsed), `max_store_certs` (a single store holding more
+  certificates than the agent reads from one store) or `max_entries` (an anchor
+  directory, the keystore locations or the total amount of files read reached
+  the agent's limit). Any of them means some certificates were not listed
+
+When `ERROR` is present, the listing was refused or failed, and the reply
+carries no certificates and none of the fields above.
+
+**Sample Event:**
+
+```json
+{
+  "event": {
+    "CERTIFICATES": [
+      {
+        "CERT_STORE": "/etc/ssl/certs/ca-certificates.crt",
+        "HASH": "96bcec06264976f37460779acf28c5a7cfe8a3c0aae11a8ffcee05c0bddf08c6",
+        "HASH_SHA1": "cabd2a79a1076a31f21d253635cb039d4329a5e8",
+        "CERT_SUBJECT": "C=US, O=Internet Security Research Group, CN=ISRG Root X1",
+        "CERT_ISSUER": "C=US, O=Internet Security Research Group, CN=ISRG Root X1",
+        "CERT_SERIAL": "8210cfb0d240e3594463e0bb63828b00",
+        "CERT_NOT_BEFORE": 1433415878000,
+        "CERT_NOT_AFTER": 2064567878000,
+        "CERT_IS_CA": 1,
+        "CERT_SELF_SIGNED": 1
+      }
+    ],
+    "CERT_STORES_READ": 1,
+    "CERT_STORES_FAILED": 0,
+    "SCHEMA_VERSION": 1,
+    "IS_TRUNCATED": 0,
+    "SCAN_STOPPED_REASON": "complete"
+  }
+}
+```
+
 ### CLOUD\_NOTIFICATION
 
 This event is a receipt from the agent that it has received the task sent to it, and includes high-level errors (if any).
@@ -286,6 +358,90 @@ The `ONGOING_IDENTITY` event emits code signature information even if not newly 
     "CERT_SUBJECT": "C=US, S=Washington, L=Redmond, O=Microsoft Corporation, OU=MOPR, CN=Microsoft Corporation"
   },
   "HASH": "4ab4024eb555b2e4c54d378a846a847bd02f66ac54849bbce5a1c8b787f1d26c"
+}
+```
+
+### CONFIG\_EXTRACT\_REP
+
+Response event for the [`config_extract`](endpoint-commands.md#config_extract)
+sensor command. Requires sensor version 5.4.2 or later.
+
+**Platforms:** macOS | Windows | Linux
+
+`CONFIG_MATCHES` holds one entry per value found, grouped by selector in the
+order the selectors were given, and one entry for each selector that found
+nothing. Nothing else from the file is ever included.
+
+- `CONFIG_SELECTOR`: the selector, as given in the request
+- `CONFIG_IS_FOUND`: `1` when the selector matched, `0` for its "not found"
+  entry, which carries nothing else
+- `CONFIG_KEY`: the key the value was found under, spelled as in the file and
+  with any wildcard resolved, such as `services.web.privileged` or `ports[1]`
+- `CONFIG_VALUE`: the value, as written in the file. Absent when the selector
+  named a block, a mapping or a list holding other structures
+- `CONFIG_VALUE_KIND`: `0` a value, `1` a block or mapping, `2` a list, `3` a
+  YAML alias, which is never expanded. Only kind `0` carries a value
+- `CONFIG_IS_VALUE_TRUNCATED`: `1` when the value was longer than 4096 bytes and
+  was cut
+- `LINE_NUMBER`: the line the value is on, counting from 1
+- `CONFIG_CONTEXT`: where the value sits, when it is not at the top level: the
+  `Match` line in `sshd_config`, the `[section]` in an INI file, the enclosing
+  blocks in nginx, or `document N` for a YAML file's second document onward
+
+The reply also describes the read itself:
+
+- `SCHEMA_VERSION`: the version of this reply's layout, currently `1`
+- `FILE_PATH`, `CONFIG_FORMAT`, `CONFIG_SELECTORS`: the request, echoed back
+- `FILE_SIZE`: the size of the file, in bytes
+- `CONFIG_PARSE_STATUS`: `ok`, or why the file could not be parsed:
+  `syntax_error`, `too_deep` (nested more than 64 levels), `too_large` (a line
+  over 64 KiB), `binary` (the file is not text) or `invalid_encoding` (it is not
+  UTF-8). A file that does not parse carries no values
+- `CONFIG_PARSE_ERROR_LINE`: the line where parsing failed, when known
+- `IS_TRUNCATED`: `1` when `--max-results` stopped the reply before every value
+  was reported
+
+When `ERROR` is present, the file could not be read (it does not exist, is not
+a regular file, is larger than 4 MiB or is not accessible) or the request was
+refused. The reply then carries no values and none of the fields above other
+than the echoed request.
+
+**Sample Event:**
+
+```json
+{
+  "event": {
+    "FILE_PATH": "/etc/ssh/sshd_config",
+    "CONFIG_FORMAT": "sshd",
+    "CONFIG_SELECTORS": ["PermitRootLogin", "Ciphers"],
+    "CONFIG_MATCHES": [
+      {
+        "CONFIG_SELECTOR": "PermitRootLogin",
+        "CONFIG_IS_FOUND": 1,
+        "CONFIG_KEY": "PermitRootLogin",
+        "CONFIG_VALUE": "no",
+        "CONFIG_VALUE_KIND": 0,
+        "LINE_NUMBER": 33
+      },
+      {
+        "CONFIG_SELECTOR": "PermitRootLogin",
+        "CONFIG_IS_FOUND": 1,
+        "CONFIG_KEY": "PermitRootLogin",
+        "CONFIG_VALUE": "yes",
+        "CONFIG_VALUE_KIND": 0,
+        "LINE_NUMBER": 122,
+        "CONFIG_CONTEXT": "Match User backup"
+      },
+      {
+        "CONFIG_SELECTOR": "Ciphers",
+        "CONFIG_IS_FOUND": 0
+      }
+    ],
+    "FILE_SIZE": 3289,
+    "SCHEMA_VERSION": 1,
+    "CONFIG_PARSE_STATUS": "ok",
+    "IS_TRUNCATED": 0
+  }
 }
 ```
 
@@ -647,13 +803,23 @@ Response event for the `file_get` sensor command.
 
 **Platforms:**
 
+- `FILE_CONTENT`: the bytes read, base64-encoded. Absent when nothing was read
+- `FILE_SIZE`: the size of the file. For a Linux kernel file whose reported size
+  is wrong (most of `/proc`, `/sys` and `/sys/kernel/security`), sensors from
+  version 5.4.2 report the size they actually read instead
+- `IS_TRUNCATED`: `1` when the file continues past `FILE_CONTENT`. Use it,
+  rather than comparing `FILE_SIZE` with the content, to tell whether the whole
+  file was returned. Sensors from version 5.4.2 only
+- `ERROR`: present only when the read failed
+
 **Sample Event:**
 
 ```json
 {
   "FILE_CONTENT": "$BASE64_ENCODED_FILE_CONTENTS",
   "FILE_PATH": "C:\\windows\\system32\\svchost.exe",
-  "FILE_SIZE": 78880
+  "FILE_SIZE": 78880,
+  "IS_TRUNCATED": 0
 }
 ```
 
@@ -1561,6 +1727,74 @@ Response from an `os_process` request.
 Response from an `os_resume` request.
 
 **Platforms:**
+
+### OS\_SECURITY\_STATE\_REP
+
+Response event for the [`os_security_state`](endpoint-commands.md#os_security_state)
+sensor command. Requires sensor version 5.4.2 or later. The items each platform
+reports are listed with the command.
+
+**Platforms:** macOS | Windows | Linux
+
+`SECURITY_ITEMS` holds one entry per setting:
+
+- `NAME`: the item's stable, dotted name, such as
+  `linux.sysctl.kernel.yama.ptrace_scope`
+- `SECURITY_ITEM_STATUS`: `0` read, `1` absent from this host, `2` unreadable,
+  `3` present but not in a known shape
+- `SECURITY_ITEM_VALUE`: the raw value. Present only when the status is `0`, so
+  a setting that could not be read never looks like one that is off
+- `SECURITY_ITEM_SOURCE`: where the value was read from, such as a file path, a
+  registry value or a WMI class
+
+On Linux the reply also carries:
+
+- `KERNEL_MODULES`: each loaded kernel module, as a `MODULE_NAME`
+- `KERNEL_MODULE_RULES`: each `blacklist` and `install` rule in the modprobe
+  configuration, with `KERNEL_MODULE_RULE_KIND` (`blacklist` or `install`),
+  `MODULE_NAME`, `COMMAND_LINE` (the command an `install` rule runs instead of
+  loading the module), and `FILE_PATH` and `LINE_NUMBER` locating the rule
+
+The reply also carries `SCHEMA_VERSION`, the version of its layout, currently
+`1`, and `IS_TRUNCATED`, which is `1` when a bound left items, modules or rules
+out. When `ERROR` is present, the snapshot could not be taken and the reply
+carries none of these fields.
+
+**Sample Event:**
+
+```json
+{
+  "event": {
+    "SECURITY_ITEMS": [
+      {
+        "NAME": "linux.sysctl.kernel.yama.ptrace_scope",
+        "SECURITY_ITEM_STATUS": 0,
+        "SECURITY_ITEM_VALUE": "1",
+        "SECURITY_ITEM_SOURCE": "/proc/sys/kernel/yama/ptrace_scope"
+      },
+      {
+        "NAME": "linux.efi.secure_boot",
+        "SECURITY_ITEM_STATUS": 1,
+        "SECURITY_ITEM_SOURCE": "/sys/firmware/efi/efivars/SecureBoot-8be4df61-93ca-11d2-aa0d-00e098032b8c"
+      }
+    ],
+    "KERNEL_MODULES": [
+      { "MODULE_NAME": "ksmbd" }
+    ],
+    "KERNEL_MODULE_RULES": [
+      {
+        "KERNEL_MODULE_RULE_KIND": "install",
+        "MODULE_NAME": "ksmbd",
+        "COMMAND_LINE": "/bin/false",
+        "FILE_PATH": "/etc/modprobe.d/ksmbd.conf",
+        "LINE_NUMBER": 1
+      }
+    ],
+    "SCHEMA_VERSION": 1,
+    "IS_TRUNCATED": 0
+  }
+}
+```
 
 ### OS\_SERVICES\_REP
 
