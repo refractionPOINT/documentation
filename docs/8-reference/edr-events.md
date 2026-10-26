@@ -19,7 +19,6 @@ These are the events emitted by the endpoint agent for each supported operating 
 | [CERT\_STORE\_LIST\_REP](#cert_store_list_rep) | ☑️ | ☑️ | ☑️ |  |  |
 | [CLOUD\_NOTIFICATION](#cloud_notification) | ☑️ | ☑️ | ☑️ | ☑️ | ☑️ |
 | [CODE\_IDENTITY](#code_identity) | ☑️ | ☑️ | ☑️ |  |  |
-| [CONFIG\_EXTRACT\_REP](#config_extract_rep) | ☑️ | ☑️ | ☑️ |  |  |
 | [CONNECTED](#connected) | ☑️ | ☑️ | ☑️ | ☑️ | ☑️ |
 | [CONTAINER\_LIST\_REP](#container_list_rep) |  |  | ☑️ |  |  |
 | DATA\_DROPPED | ☑️ | ☑️ | ☑️ |  |  |
@@ -358,90 +357,6 @@ The `ONGOING_IDENTITY` event emits code signature information even if not newly 
     "CERT_SUBJECT": "C=US, S=Washington, L=Redmond, O=Microsoft Corporation, OU=MOPR, CN=Microsoft Corporation"
   },
   "HASH": "4ab4024eb555b2e4c54d378a846a847bd02f66ac54849bbce5a1c8b787f1d26c"
-}
-```
-
-### CONFIG\_EXTRACT\_REP
-
-Response event for the [`config_extract`](endpoint-commands.md#config_extract)
-sensor command. Requires sensor version 5.4.2 or later.
-
-**Platforms:** macOS | Windows | Linux
-
-`CONFIG_MATCHES` holds one entry per value found, grouped by selector in the
-order the selectors were given, and one entry for each selector that found
-nothing. Nothing else from the file is ever included.
-
-- `CONFIG_SELECTOR`: the selector, as given in the request
-- `CONFIG_IS_FOUND`: `1` when the selector matched, `0` for its "not found"
-  entry, which carries nothing else
-- `CONFIG_KEY`: the key the value was found under, spelled as in the file and
-  with any wildcard resolved, such as `services.web.privileged` or `ports[1]`
-- `CONFIG_VALUE`: the value, as written in the file. Absent when the selector
-  named a block, a mapping or a list holding other structures
-- `CONFIG_VALUE_KIND`: `0` a value, `1` a block or mapping, `2` a list, `3` a
-  YAML alias, which is never expanded. Only kind `0` carries a value
-- `CONFIG_IS_VALUE_TRUNCATED`: `1` when the value was longer than 4096 bytes and
-  was cut
-- `LINE_NUMBER`: the line the value is on, counting from 1
-- `CONFIG_CONTEXT`: where the value sits, when it is not at the top level: the
-  `Match` line in `sshd_config`, the `[section]` in an INI file, the enclosing
-  blocks in nginx, or `document N` for a YAML file's second document onward
-
-The reply also describes the read itself:
-
-- `SCHEMA_VERSION`: the version of this reply's layout, currently `1`
-- `FILE_PATH`, `CONFIG_FORMAT`, `CONFIG_SELECTORS`: the request, echoed back
-- `FILE_SIZE`: the size of the file, in bytes
-- `CONFIG_PARSE_STATUS`: `ok`, or why the file could not be parsed:
-  `syntax_error`, `too_deep` (nested more than 64 levels), `too_large` (a line
-  over 64 KiB), `binary` (the file is not text) or `invalid_encoding` (it is not
-  UTF-8). A file that does not parse carries no values
-- `CONFIG_PARSE_ERROR_LINE`: the line where parsing failed, when known
-- `IS_TRUNCATED`: `1` when `--max-results` stopped the reply before every value
-  was reported
-
-When `ERROR` is present, the file could not be read (it does not exist, is not
-a regular file, is larger than 4 MiB or is not accessible) or the request was
-refused. The reply then carries no values and none of the fields above other
-than the echoed request.
-
-**Sample Event:**
-
-```json
-{
-  "event": {
-    "FILE_PATH": "/etc/ssh/sshd_config",
-    "CONFIG_FORMAT": "sshd",
-    "CONFIG_SELECTORS": ["PermitRootLogin", "Ciphers"],
-    "CONFIG_MATCHES": [
-      {
-        "CONFIG_SELECTOR": "PermitRootLogin",
-        "CONFIG_IS_FOUND": 1,
-        "CONFIG_KEY": "PermitRootLogin",
-        "CONFIG_VALUE": "no",
-        "CONFIG_VALUE_KIND": 0,
-        "LINE_NUMBER": 33
-      },
-      {
-        "CONFIG_SELECTOR": "PermitRootLogin",
-        "CONFIG_IS_FOUND": 1,
-        "CONFIG_KEY": "PermitRootLogin",
-        "CONFIG_VALUE": "yes",
-        "CONFIG_VALUE_KIND": 0,
-        "LINE_NUMBER": 122,
-        "CONFIG_CONTEXT": "Match User backup"
-      },
-      {
-        "CONFIG_SELECTOR": "Ciphers",
-        "CONFIG_IS_FOUND": 0
-      }
-    ],
-    "FILE_SIZE": 3289,
-    "SCHEMA_VERSION": 1,
-    "CONFIG_PARSE_STATUS": "ok",
-    "IS_TRUNCATED": 0
-  }
 }
 ```
 
