@@ -29,6 +29,7 @@
 # Run with --help for options.
 
 set -euo pipefail
+trap 'printf "\n\033[31mERROR:\033[0m the script stopped unexpectedly at line %s. Please report this with the output above.\n" "$LINENO" >&2' ERR
 
 SCRIPT_NAME="limacharlie-gworkspace-setup.sh"
 
@@ -193,7 +194,7 @@ for tool in gcloud python3 openssl curl; do
 done
 ok "gcloud, python3, openssl and curl are available"
 
-GCLOUD_ACCOUNT="$(gcloud auth list --filter=status:ACTIVE --format='value(account)' 2>/dev/null | head -n1)"
+GCLOUD_ACCOUNT="$(gcloud auth list --filter=status:ACTIVE --format='value(account)' 2>/dev/null | head -n1 || true)"
 [ -n "$GCLOUD_ACCOUNT" ] || die "gcloud is not signed in. Run: gcloud auth login"
 ok "Signed in to Google Cloud as $GCLOUD_ACCOUNT"
 
@@ -289,7 +290,8 @@ else
 fi
 
 step "Letting Gmail publish to the topic"
-policy="$(gcloud pubsub topics get-iam-policy "$TOPIC" --project="$PROJECT" --format=json)"
+policy="$(gcloud pubsub topics get-iam-policy "$TOPIC" --project="$PROJECT" --format=json)" \
+  || die "Could not read the topic's permissions. $GCLOUD_ACCOUNT needs the Pub/Sub Admin role (or Owner) on $PROJECT."
 if [ "$(printf '%s' "$policy" | policy_has "serviceAccount:$GMAIL_PUSH_SA" roles/pubsub.publisher)" = yes ]; then
   ok "$GMAIL_PUSH_SA already has Pub/Sub Publisher on the topic"
 else
@@ -306,7 +308,8 @@ else
       *) die "Could not grant $GMAIL_PUSH_SA the Pub/Sub Publisher role on the topic." ;;
     esac
   fi
-  policy="$(gcloud pubsub topics get-iam-policy "$TOPIC" --project="$PROJECT" --format=json)"
+  policy="$(gcloud pubsub topics get-iam-policy "$TOPIC" --project="$PROJECT" --format=json)" \
+  || die "Could not read the topic's permissions. $GCLOUD_ACCOUNT needs the Pub/Sub Admin role (or Owner) on $PROJECT."
   [ "$(printf '%s' "$policy" | policy_has "serviceAccount:$GMAIL_PUSH_SA" roles/pubsub.publisher)" = yes ] \
     || die "The publisher grant did not appear on the topic. Check the topic's permissions in the Google Cloud console."
   ok "Granted $GMAIL_PUSH_SA the Pub/Sub Publisher role on the topic"
@@ -333,7 +336,8 @@ else
 fi
 
 step "Letting the service account read the subscription"
-policy="$(gcloud pubsub subscriptions get-iam-policy "$SUBSCRIPTION" --project="$PROJECT" --format=json)"
+policy="$(gcloud pubsub subscriptions get-iam-policy "$SUBSCRIPTION" --project="$PROJECT" --format=json)" \
+  || die "Could not read the subscription's permissions. $GCLOUD_ACCOUNT needs the Pub/Sub Admin role (or Owner) on $PROJECT."
 if [ "$(printf '%s' "$policy" | policy_has "serviceAccount:$SA_EMAIL" roles/pubsub.subscriber)" = yes ]; then
   ok "Already granted"
 else
@@ -429,7 +433,7 @@ CURRENT_KID="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["
 other_keys() {
   gcloud iam service-accounts keys list --iam-account="$SA_EMAIL" --project="$PROJECT" \
     --managed-by=user --format='value(name.basename(),validAfterTime)' 2>/dev/null \
-    | awk -v cur="$CURRENT_KID" '$1 != cur'
+    | awk -v cur="$CURRENT_KID" '$1 != cur' || true
 }
 
 # Old keys still carry the same domain-wide access, so once LimaCharlie uses
@@ -633,8 +637,11 @@ fi
   || die "LimaCharlie rejected the organization ID / API key pair. Check both and run the script again (everything done so far is reused)."
 ok "Authenticated to LimaCharlie organization $OID"
 
-if ! "${LC[@]}" extension list --oid "$OID" --output json 2>/dev/null | grep -q '"ext-email-security"'; then
-  warn "Email Security does not look enabled in this organization."
+# Listing extensions needs ext.conf.get, which the documented key may lack;
+# only warn when the list was readable. The connection test catches it anyway.
+if ext_list="$("${LC[@]}" extension list --oid "$OID" --output json 2>/dev/null)" && \
+   ! printf '%s' "$ext_list" | grep -q '"ext-email-security"'; then
+  warn "Email Security is not enabled in this organization."
   info "Subscribe to it first (Email Security in the web app, or: limacharlie extension subscribe --name ext-email-security --oid $OID)."
   confirm "    Continue anyway?" || exit 1
 fi
@@ -673,7 +680,7 @@ try:
     print(find(json.load(sys.stdin)))
 except Exception:
     print("")
-')"
+' || true)"
   if [ "$kept_cred" != "hive://secret/$SECRET_NAME" ]; then
     uses_our_secret=""
     warn "Connection $CONNECTION_NAME reads '${kept_cred:-an unknown credential}', not hive://secret/$SECRET_NAME."
@@ -703,7 +710,7 @@ try:
     print(json.loads(find(json.load(sys.stdin))).get("client_email", ""))
 except Exception:
     print("")
-')"
+' || true)"
   if [ -n "$prior_email" ] && [ "$prior_email" != "$SA_EMAIL" ]; then
     if ! confirm_no "    Secret $SECRET_NAME holds a key for $prior_email, not $SA_EMAIL. Replace it?"; then
       die "Secret $SECRET_NAME was left unchanged because it holds a key for $prior_email.
@@ -783,6 +790,8 @@ for c in d.get("checks", []):
     test_ok=1
     break
   fi
+  # A refusal (not a test result) will not fix itself by waiting.
+  [ "$first" = ERROR ] && break
   [ "$attempt" -lt 6 ] || break
   info "Not passing yet. Google can take a few minutes to apply new permissions; retrying in 30s ($attempt/5)..."
   sleep 30
