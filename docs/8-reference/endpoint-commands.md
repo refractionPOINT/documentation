@@ -29,6 +29,7 @@ For commands which emit a report/reply event type from the agent, the correspond
 | [fim\_add](#fim_add) | [FIM\_ADD](edr-events.md#fim_add) | ☑️ | ☑️ | ☑️ |  |  |
 | [fim\_del](#fim_del) | [FIM\_REMOVE](edr-events.md#fim_remove) | ☑️ | ☑️ | ☑️ |  |  |
 | [fim\_get](#fim_get) | [FIM\_LIST\_REP](edr-events.md#fim_list_rep) | ☑️ | ☑️ | ☑️ |  |  |
+| [force\_sync](#force_sync) | FORCE\_SYNC\_REP | ☑️ | ☑️ | ☑️ |  |  |
 | [hidden\_module\_scan](#hidden_module_scan) | [HIDDEN\_MODULE\_DETECTED](edr-events.md#hidden_module_detected) |  | ☑️ | ☑️ |  |  |
 | [history\_dump](#history_dump) | [HISTORY\_DUMP\_REP](edr-events.md#history_dump_rep) | ☑️ | ☑️ | ☑️ | ☑️ | ☑️ |
 | [log\_get](#log_get) | N/A |  | ☑️ |  |  |  |
@@ -911,6 +912,33 @@ List all active File Integrity Monitoring watches on the sensor.
 
 ```bash
 limacharlie sensor task <SID> fim_get
+```
+
+---
+
+### force_sync
+
+Make the sensor send its sync to the cloud now, instead of at the next sync interval (up to five minutes later). Use it so that a configuration change, such as a new exfil or FIM rule, reaches a host right away.
+
+The forced sync is an extra one: the regular sync keeps its own schedule. To keep a rule that fires on every sync, or on this command's own reply, from flooding the cloud, the sensor refuses a forced sync within 10 seconds of the previous one.
+
+**Platforms:** macOS | Windows | Linux
+
+**Parameters:** None
+
+**Response Event:** FORCE_SYNC_REP
+
+| `ERROR` | Meaning |
+| --- | --- |
+| `0` | The sync was sent |
+| `170` | Refused: the previous forced sync was less than 10 seconds ago |
+
+> **Note:** Requires sensor version 5.4.0 or later. Older sensors silently drop the request.
+
+**Usage Example:**
+
+```bash
+limacharlie sensor task <SID> force_sync
 ```
 
 ---
