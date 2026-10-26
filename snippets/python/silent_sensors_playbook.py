@@ -25,7 +25,9 @@ SILENT_TAG = "data-silent"
 # Report a sensor again if it is still silent after this many hours.
 # 0 reports it only once per outage.
 REALERT_HOURS = 24
-# Also report sensors that start sending data again.
+# Also report sensors that start sending data again. A run returns a single
+# detection, so when the same run also finds newly silent sensors, the
+# recovered ones are listed in that sensor-data-silent detection instead.
 REPORT_RECOVERY = False
 # Number of sensors checked in parallel.
 WORKERS = 8
@@ -62,29 +64,41 @@ def playbook(sdk, data):
     def has_data(info):
         # The overview lists the times at which data from this sensor was
         # stored. An empty list means nothing arrived during the window.
-        return len(Sensor(sdk, info["sid"]).get_overview(start, end)) > 0
+        # An error (for example a sensor deleted since it was listed) skips
+        # that sensor for this run instead of failing the whole run.
+        try:
+            return len(Sensor(sdk, info["sid"]).get_overview(start, end)) > 0
+        except Exception as e:
+            return e
 
     with ThreadPoolExecutor(max_workers=WORKERS) as pool:
         results = list(pool.map(has_data, sensors))
 
     newly_silent = []
     recovered = []
+    errors = []
     for info, sent_data in zip(sensors, results):
         sensor = Sensor(sdk, info["sid"])
         entry = {"sid": info["sid"], "hostname": info.get("hostname", "")}
-        if not sent_data and info["sid"] not in already_silent:
-            # The tag expiring after REALERT_HOURS is what re-arms the alert.
-            sensor.add_tag(silent_tag, ttl=realert_hours * 3600 if realert_hours else None)
-            newly_silent.append(entry)
-        elif sent_data and info["sid"] in already_silent:
-            sensor.remove_tag(silent_tag)
-            recovered.append(entry)
+        try:
+            if isinstance(sent_data, Exception):
+                raise sent_data
+            if not sent_data and info["sid"] not in already_silent:
+                # The tag expiring after REALERT_HOURS is what re-arms the alert.
+                sensor.add_tag(silent_tag, ttl=realert_hours * 3600 if realert_hours else None)
+                newly_silent.append(entry)
+            elif sent_data and info["sid"] in already_silent:
+                sensor.remove_tag(silent_tag)
+                recovered.append(entry)
+        except Exception as e:
+            errors.append({**entry, "error": str(e)})
 
     summary = {
         "checked": len(sensors),
         "silent": results.count(False),
         "newly_silent": newly_silent,
         "recovered": recovered,
+        "errors": errors,
     }
 
     if newly_silent:

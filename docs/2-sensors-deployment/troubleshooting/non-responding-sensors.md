@@ -117,7 +117,7 @@ Write text values as templates (`'{{ "..." }}'`): a plain string such as `select
 | `selector` | `` `firewall` in tags `` | Sensors to check. |
 | `threshold_minutes` | `60` | Report a sensor once no data arrived from it for this many minutes. |
 | `realert_hours` | `24` | Report a sensor again if it is still silent after this many hours. `0` reports it once per outage. |
-| `report_recovery` | `false` | Also raise a `sensor-data-resumed` detection when a silent sensor sends data again. |
+| `report_recovery` | `false` | Also raise a `sensor-data-resumed` detection when a silent sensor sends data again. A run raises a single detection, so if the same run also finds newly silent sensors, the recovered ones are listed in `recovered` of that `sensor-data-silent` detection instead. |
 | `silent_tag` | `data-silent` | Tag that marks silent sensors. |
 
 To watch groups of sensors with different thresholds, for example firewalls after 1 hour and servers after 3 hours, create one D&R rule per group with its own `selector` and `threshold_minutes`. If the selectors of two rules can match the same sensor, give each rule its own `silent_tag`.
@@ -206,6 +206,7 @@ data:
     - hostname: fw-branch-02
       sid: 36690639-573d-46d0-a867-6a1e2fa97591
     recovered: []
+    errors: []
     silent: 1
   detection:
     ...
@@ -219,5 +220,6 @@ To see the alert path end to end, use a short `threshold_minutes` (such as `10`)
 
 - **Large numbers of sensors.** The playbook makes one API call per sensor, eight at a time. For several thousand sensors, split them into more than one D&R rule with narrower selectors.
 - **Sensors that never sent data.** A per-device sensor is created when the first log for that device arrives, so a device that has never sent a log has no sensor and cannot be reported.
+- **Errors.** If checking or tagging one sensor fails, for example because it was deleted during the run, the playbook skips it, lists it under `errors` in the run summary, and checks it again on the next run. The other sensors are still checked.
 - **Deleted sensors** are not checked.
 - **Removing a sensor from the watch list.** Remove its tag or change the selector. If the sensor still has the `data-silent` tag, remove that tag too.
