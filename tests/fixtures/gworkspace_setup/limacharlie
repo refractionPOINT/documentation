@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# Stateful stand-in for the limacharlie CLI. Output shapes follow the real CLI
+# (5.10.1). Switches: EXTFAIL (extension list not permitted), NOEXT (Email
+# Security not subscribed: list is {} and the connection test is refused).
+S="$STUB_STATE"
+echo "limacharlie $*" >> "$S/log"
+case "$*" in
+  "auth whoami"*) echo ok ;;
+  "extension list"*)
+    [ -n "$EXTFAIL" ] && { echo "Authentication failed: missing one of [ext.conf.get]" >&2; exit 2; }
+    if [ -n "$NOEXT" ]; then echo '{}'; else echo '{"ext-email-security": {"extension_name": "ext-email-security"}}'; fi ;;
+  "secret set"*) cat > "$S/secret_in" ;;
+  "secret get"*)
+    [ -f "$S/secret_in" ] || { echo "Error: RECORD_NOT_FOUND" >&2; exit 1; }
+    printf '{"data": %s}' "$(cat "$S/secret_in")" ;;
+  "hive get"*)
+    [ -f "$S/rec" ] || { echo "Error: RECORD_NOT_FOUND" >&2; exit 1; }
+    printf '{"data": %s, "usr_mtd": {"enabled": true}}' "$(cat "$S/rec")" ;;
+  "hive set"*) f=$(echo "$*" | sed -E 's/.*--input-file ([^ ]+).*/\1/'); cp "$f" "$S/rec" ;;
+  "mailsec connection test"*)
+    echo x >> "$S/tests_run"
+    [ -n "$NOEXT" ] && { echo "Error: Permission denied: email security is not enabled" >&2; exit 1; }
+    echo '{"checks":[{"id":"credential","required":true,"status":"passed"},{"id":"directory","required":true,"status":"passed"},{"id":"mail_full","required":false,"status":"skipped"},{"id":"pubsub_watch","required":true,"status":"passed"}],"ok":true,"summary":"Connection is fully configured."}' ;;
+  *) echo "UNHANDLED limacharlie $*" >&2; exit 2 ;;
+esac

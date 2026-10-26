@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# Stand-in for the Google token endpoint used by the delegation check.
+# DWD_FAIL=1 answers like a client ID that is not authorized yet.
+if [ -n "$DWD_FAIL" ]; then
+  echo '{"error":"unauthorized_client","error_description":"Client is unauthorized to retrieve access tokens using this method, or client not authorized for any of the scopes requested."}'
+else
+  echo '{"access_token":"stub-token","expires_in":3599}'
+fi

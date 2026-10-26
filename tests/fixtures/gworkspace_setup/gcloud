@@ -1,0 +1,84 @@
+#!/usr/bin/env bash
+# Stateful stand-in for gcloud used by tests/test_gworkspace_setup_script.py.
+# State lives in $STUB_STATE. Behaviour switches (env): LEGACY / MANAGED (DRS
+# constraints enforced), DOTERR (constraint name ends a sentence), CUSTOM
+# (unsupported constraint), BAREFP (unrelated FAILED_PRECONDITION), TOPICGONE
+# (topic disappears once an exception is in place), NOKEYS (key creation
+# banned), NOPOLADMIN (set-policy refused), DESCFAIL (describe fails with
+# something other than NOT_FOUND).
+S="$STUB_STATE"
+echo "gcloud $*" >> "$S/log"
+args="$*"
+blocked_by() {
+  if [ -n "$LEGACY" ] && [ ! -f "$S/exc_iam.allowedPolicyMemberDomains" ]; then echo iam.allowedPolicyMemberDomains; return; fi
+  if [ -n "$LEGACY" ]; then
+    # The exception takes two more attempts to propagate.
+    n=$(cat "$S/prop" 2>/dev/null || echo 0)
+    if [ "$n" -lt 2 ]; then echo $((n + 1)) > "$S/prop"; echo iam.allowedPolicyMemberDomains; return; fi
+  fi
+  if [ -n "$MANAGED" ] && [ ! -f "$S/exc_iam.managed.allowedPolicyMembers" ]; then echo iam.managed.allowedPolicyMembers; return; fi
+  if [ -n "$CUSTOM" ]; then echo custom.restrictMembers; return; fi
+  if [ -n "$TOPICGONE" ] && [ -f "$S/exc_iam.allowedPolicyMemberDomains" ]; then echo GONE; return; fi
+}
+case "$args" in
+  "auth list"*) echo admin@example.com ;;
+  "config get-value project"*) echo demo-proj ;;
+  "projects describe"*) echo demo-proj ;;
+  "services enable"*) ;;
+  "iam service-accounts describe"*) [ -f "$S/sa" ] || exit 1 ;;
+  "iam service-accounts create"*) touch "$S/sa" ;;
+  "pubsub topics describe"*) [ -f "$S/topic" ] || exit 1 ;;
+  "pubsub topics create"*) touch "$S/topic" ;;
+  "pubsub topics get-iam-policy"*)
+    if [ -f "$S/pub" ]; then echo '{"bindings":[{"role":"roles/pubsub.publisher","members":["serviceAccount:gmail-api-push@system.gserviceaccount.com"]}]}'; else echo '{"etag":"x"}'; fi ;;
+  "pubsub topics add-iam-policy-binding"*)
+    [ -n "$BAREFP" ] && { echo "ERROR: FAILED_PRECONDITION: topic is being deleted" >&2; exit 1; }
+    c=$(blocked_by)
+    if [ "$c" = GONE ]; then echo "ERROR: NOT_FOUND: Resource not found (resource=mailsec-gmail-push)." >&2; exit 1; fi
+    if [ -n "$c" ]; then
+      if [ -n "$DOTERR" ]; then
+        printf 'ERROR: FAILED_PRECONDITION: the request violates constraints/%s.\n' "$c" >&2
+      else
+        # Shape of the real error seen on a project with Domain Restricted Sharing.
+        printf 'ERROR: (gcloud.pubsub.topics.add-iam-policy-binding) FAILED_PRECONDITION: One or more users named in the policy do not belong to a permitted customer.\n  violations:\n  - description: User gmail-api-push@system.gserviceaccount.com is not in permitted organization.\n    subject: orgpolicy:projects/demo-proj/topics/mailsec-gmail-push\n    type: constraints/%s\n' "$c" >&2
+      fi
+      exit 1
+    fi
+    touch "$S/pub" ;;
+  "pubsub subscriptions describe"*) [ -f "$S/sub" ] || exit 1; echo '{"topic":"projects/demo-proj/topics/mailsec-gmail-push","pushConfig":{}}' ;;
+  "pubsub subscriptions create"*) touch "$S/sub" ;;
+  "pubsub subscriptions get-iam-policy"*)
+    if [ -f "$S/subr" ]; then echo '{"bindings":[{"role":"roles/pubsub.subscriber","members":["serviceAccount:limacharlie-mail@demo-proj.iam.gserviceaccount.com"]}]}'; else echo '{}'; fi ;;
+  "pubsub subscriptions add-iam-policy-binding"*) touch "$S/subr" ;;
+  "org-policies describe"*)
+    c="$3"
+    [ -n "$DESCFAIL" ] && { echo "ERROR: (gcloud.org-policies.describe) PERMISSION_DENIED: Permission 'orgpolicy.policies.get' denied" >&2; exit 1; }
+    if [ -f "$S/own_$c" ]; then cat "$S/own_$c"; else echo "ERROR: (gcloud.org-policies.describe) NOT_FOUND: A Policy of constraint constraints/$c on resource projects/1 does not exist." >&2; exit 1; fi ;;
+  "org-policies set-policy"*)
+    f="$3"
+    [ -n "$NOPOLADMIN" ] && { echo "ERROR: (gcloud.org-policies.set-policy) PERMISSION_DENIED: orgpolicy.policies.create" >&2; exit 1; }
+    c=$(grep -oE 'policies/[A-Za-z0-9_.]+' "$f" | head -1 | sed 's#policies/##')
+    echo "$c" >> "$S/setpolicy_calls"
+    if grep -q 'allowAll\|enforce: false' "$f"; then touch "$S/exc_$c"; else rm -f "$S/exc_$c"; cp "$f" "$S/restored_$c"; fi ;;
+  "org-policies delete"*) rm -f "$S/exc_$3"; touch "$S/deleted_$3" ;;
+  "iam service-accounts keys list"*validAfterTime*) cat "$S/kids" 2>/dev/null ;;
+  "iam service-accounts keys list"*) awk '{print $1}' "$S/kids" 2>/dev/null ;;
+  "iam service-accounts keys delete"*) grep -v "^$5 " "$S/kids" > "$S/kids.n"; mv "$S/kids.n" "$S/kids" ;;
+  "iam service-accounts keys create"*)
+    if [ -n "$NOKEYS" ] && [ ! -f "$S/exc_iam.disableServiceAccountKeyCreation" ]; then
+      echo "ERROR: (gcloud.iam.service-accounts.keys.create) FAILED_PRECONDITION: Key creation is not allowed on this service account. type: constraints/iam.disableServiceAccountKeyCreation" >&2; exit 1
+    fi
+    out="$5"
+    [ -f "$S/pk.pem" ] || openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:2048 -out "$S/pk.pem" 2>/dev/null
+    n=$(( $(wc -l < "$S/kids" 2>/dev/null || echo 0) + 1 ))
+    kid="key$n$RANDOM"
+    echo "$kid 2026-10-26T19:0$((n % 10)):00Z" >> "$S/kids"
+    python3 -c '
+import json, sys
+json.dump({"type": "service_account", "project_id": "demo-proj", "private_key_id": sys.argv[3],
+           "private_key": open(sys.argv[2]).read(),
+           "client_email": "limacharlie-mail@demo-proj.iam.gserviceaccount.com",
+           "client_id": "112233445566778899", "token_uri": "https://oauth2.googleapis.com/token"},
+          open(sys.argv[1], "w"))' "$out" "$S/pk.pem" "$kid" ;;
+  *) echo "UNHANDLED gcloud $args" >&2; exit 2 ;;
+esac

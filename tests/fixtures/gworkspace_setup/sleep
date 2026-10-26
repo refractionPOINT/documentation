@@ -1,0 +1,4 @@
+#!/bin/sh
+# Waits are skipped unless a test needs real time to pass (REAL_SLEEP).
+[ -n "$REAL_SLEEP" ] && exec /bin/sleep 0.2
+exit 0
