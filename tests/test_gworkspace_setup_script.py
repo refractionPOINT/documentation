@@ -263,13 +263,19 @@ def test_interrupt_while_waiting_restores_the_policy(env, sig):
     proc = subprocess.Popen(argv, cwd=env.cwd, env=env.environ(LEGACY=1, REAL_SLEEP=1),
                             stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                             text=True, start_new_session=True)
-    deadline = time.time() + 60
-    while not env.has("exc_iam.allowedPolicyMemberDomains"):
-        assert time.time() < deadline, "exception was never applied"
-        time.sleep(0.1)
-    time.sleep(1)
-    proc.send_signal(sig)
-    out, _ = proc.communicate(timeout=60)
+    try:
+        deadline = time.time() + 60
+        while not env.has("exc_iam.allowedPolicyMemberDomains"):
+            assert time.time() < deadline, "exception was never applied"
+            time.sleep(0.1)
+        time.sleep(1)
+        proc.send_signal(sig)
+        out, _ = proc.communicate(timeout=60)
+    finally:
+        # The script leads its own session; never leave it looping after a failure.
+        if proc.poll() is None:
+            os.killpg(proc.pid, signal.SIGKILL)
+            proc.wait()
     assert env.has("deleted_iam.allowedPolicyMemberDomains"), out
     assert not env.has("exc_iam.allowedPolicyMemberDomains")
 
@@ -353,10 +359,16 @@ def test_secret_holding_another_service_account_is_not_overwritten(env):
     assert json.loads(env.read("secret_in")) == other
 
 
-def test_no_unexpected_failure_is_silent(env):
-    """Every run in this file ends with a clear message; this guards the ERR trap."""
+def test_unexpected_failure_is_never_silent(env):
+    """A failure no check anticipates must still say so (the ERR trap).
+
+    The existing subscription's description is not JSON, which no `|| die`
+    guards, so only the trap can explain why the run stopped."""
+    (env.state / "sub").touch()
     gcloud = env.bin / "gcloud"
-    gcloud.write_text(gcloud.read_text().replace('"services enable"*) ;;', '"services enable"*) ;;\n  "pubsub topics get-iam-policy"*) exit 1 ;;'))
+    gcloud.write_text(gcloud.read_text().replace(
+        """[ -f "$S/sub" ] || exit 1; echo '{"topic":"projects/demo-proj/topics/mailsec-gmail-push","pushConfig":{}}'""",
+        """[ -f "$S/sub" ] || exit 1; echo 'not json'"""))
     proc = env.run(*ADMIN)
-    assert proc.returncode == 1
-    assert "ERROR" in proc.output
+    assert proc.returncode != 0
+    assert "stopped unexpectedly at line" in proc.output
