@@ -69,6 +69,9 @@ Follow the guide for the service that hosts your mail:
   account, authorize it in Workspace, and set up notification delivery in Google
   Cloud. The guide explains which console to use at each step. **The Workspace
   Admin delegation step is required even if you run every Cloud Shell command.**
+  The fastest route is the guide's [setup script](provider-setup/google-workspace.md#fastest-path-one-setup-script),
+  which does the Google Cloud steps, gives your Super Admin a one-click
+  delegation link, and can save the credential and connection here for you.
 
 Each guide shows the credential JSON you will save in the wizard. You can also
 use an existing secret from **Organization Settings → Secrets Manager**.
