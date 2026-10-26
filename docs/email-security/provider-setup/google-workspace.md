@@ -54,6 +54,103 @@ A **Pub/Sub topic** receives Gmail's new-mail notifications. A **pull subscripti
 lets LimaCharlie retrieve those notifications. Both belong to your Google Cloud
 project; they do not replace or reroute email.
 
+## Fastest path: one setup script
+
+One script does the whole Google Cloud side, walks you through the single
+browser step Google requires, and can finish the LimaCharlie side too. It:
+
+1. Enables the Gmail, Admin SDK, Pub/Sub and IAM APIs.
+2. Creates the service account and its JSON key.
+3. Creates the notification topic, lets Gmail publish to it, creates the pull
+   subscription, and lets the service account read it.
+4. Prints a **pre-filled Google Admin link** for domain-wide delegation. A
+   Workspace Super Admin opens it and clicks **Authorize**; the script then
+   checks that the authorization works.
+5. Optionally stores the credential as a LimaCharlie secret, creates the
+   connection, and runs the connection test including notification delivery.
+
+It is safe to re-run: existing resources are reused, and a key file left by
+an earlier run is reused. When the script has to create a new key, it offers
+to delete the service account's older keys once the connection test passes
+with the new one, so stale keys with mail access do not pile up. When something is
+blocked, such as an organization policy, the script stops and says who needs to
+change what.
+
+### Get gcloud
+
+The script needs the Google Cloud CLI (`gcloud`), signed in as someone who can
+create service accounts, keys and Pub/Sub resources in the project. The
+project **Owner** role covers everything; otherwise you need Service Usage
+Admin, Service Account Admin, Service Account Key Admin and Pub/Sub Admin.
+
+=== "Google Cloud Shell (no install)"
+
+    1. Open [Cloud Shell](https://shell.cloud.google.com/) in your browser and
+       sign in with your Google Cloud account. `gcloud`, `python3`, `openssl`
+       and `curl` are already installed and signed in.
+    2. If you have more than one project, select the one to use:
+       `gcloud config set project <YOUR_PROJECT_ID>`. List them with
+       `gcloud projects list`. A new, empty project is fine:
+       `gcloud projects create <NEW_PROJECT_ID>`.
+
+=== "Your own computer"
+
+    1. Install the Google Cloud CLI by following
+       [Google's install guide](https://cloud.google.com/sdk/docs/install)
+       for your operating system. `python3`, `openssl` and `curl` must also be
+       installed (they are on macOS and most Linux distributions).
+    2. Sign in: `gcloud auth login`. This opens a browser to authorize the CLI.
+    3. Select the project: `gcloud config set project <YOUR_PROJECT_ID>`.
+
+### Run it
+
+```bash
+curl -fsSLO https://docs.limacharlie.io/assets/files/limacharlie-gworkspace-setup.sh
+bash limacharlie-gworkspace-setup.sh
+```
+
+The script asks for the project, the Workspace administrator address the
+service account acts as, and whether to include the optional
+`https://mail.google.com/` scope. You can read it before running it; every
+step is commented. Run `bash limacharlie-gworkspace-setup.sh --help` for flags
+that answer the questions up front.
+
+**To finish in LimaCharlie from the same run**, have two values ready when the
+script asks:
+
+- Your organization ID (UUID), shown in the web app under **Organization
+  Settings → Access Management → REST API**.
+- An organization API key, created on that same page, with `secret.get`,
+  `secret.set`, `mailsec_provider.get`, `mailsec_provider.set` and
+  `mailsec.act`. `secret.get` lets the script check an existing secret before
+  replacing it, so a key for another service account is never overwritten
+  without asking. The key is read without being echoed and is not saved.
+  You can also pass it as the `LC_API_KEY` environment variable.
+
+The script then asks which mailboxes to protect (press Enter for every
+mailbox; billing is per protected mailbox), saves the credential as the
+`gws-mail` secret and the connection as `gworkspace`, and runs the
+connection test with notification delivery. When the test passes it deletes
+the local key file.
+
+If you skip the LimaCharlie part, the script prints what to paste into
+**Email Security → Settings → Add connection → Google Workspace**: the
+credential file it wrote (already including `admin_email`), the topic and
+the subscription. In Cloud Shell, `cloudshell download
+limacharlie-gworkspace-credential.json` downloads the file. Delete it once the
+connection test passes.
+
+!!! note "The delegation link"
+    The link opens **Google Admin → Security → Access and data control → API
+    controls → Manage Domain Wide Delegation** with the client ID and scopes
+    filled in. It replaces any scopes already authorized for that client ID,
+    which is what you want for a service account dedicated to LimaCharlie.
+    Google can take a few minutes, and occasionally up to 24 hours, to apply
+    the change; the script keeps checking for a couple of minutes and you can
+    re-run it later.
+
+The rest of this page describes the same steps done by hand.
+
 ## Setup steps
 
 Choose **Web console** to use browser forms or **Cloud Shell / CLI** to run
