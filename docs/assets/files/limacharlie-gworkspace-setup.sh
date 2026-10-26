@@ -74,9 +74,9 @@ LimaCharlie (optional; without these the script stops after the Google side
 and tells you what to paste into the web app):
   --oid UUID             Organization ID (or set LC_OID)
                          The API key is read from LC_API_KEY, or prompted for.
-                         It needs secret.set, mailsec_provider.get,
-                         mailsec_provider.set and mailsec.act. With secret.get
-                         it also checks an existing secret before replacing it.
+                         It needs secret.get, secret.set, mailsec_provider.get,
+                         mailsec_provider.set and mailsec.act. (secret.get lets
+                         it check an existing secret before replacing it.)
   --secret-name NAME     Secret to store the credential in (default: $SECRET_NAME)
   --connection NAME      Connection record name (default: $CONNECTION_NAME)
   --mailboxes LIST       Comma-separated mailboxes to protect. Empty means every
@@ -605,7 +605,8 @@ fi
 LC_API_KEY="${LC_API_KEY:-}"
 if [ -z "$LC_API_KEY" ]; then
   info "An organization API key is needed (Organization Settings > Access Management > REST API)"
-  info "with secret.set, mailsec_provider.get, mailsec_provider.set and mailsec.act."
+  info "with secret.get, secret.set, mailsec_provider.get, mailsec_provider.set and mailsec.act."
+  info "(secret.get lets the script check an existing secret before replacing it.)"
   ask_secret LC_API_KEY "LimaCharlie API key (input hidden)"
 fi
 [ -n "$LC_API_KEY" ] || { warn "No API key given."; lc_manual_instructions; exit 0; }

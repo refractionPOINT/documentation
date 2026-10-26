@@ -120,8 +120,11 @@ script asks:
 
 - Your organization ID (UUID), shown in the web app under **Organization
   Settings → Access Management → REST API**.
-- An organization API key, created on that same page, with `secret.set`, `mailsec_provider.get`, `mailsec_provider.set`
-  and `mailsec.act`. The key is read without being echoed and is not saved.
+- An organization API key, created on that same page, with `secret.get`,
+  `secret.set`, `mailsec_provider.get`, `mailsec_provider.set` and
+  `mailsec.act`. `secret.get` lets the script check an existing secret before
+  replacing it, so a key for another service account is never overwritten
+  without asking. The key is read without being echoed and is not saved.
   You can also pass it as the `LC_API_KEY` environment variable.
 
 The script then asks which mailboxes to protect (press Enter for every
