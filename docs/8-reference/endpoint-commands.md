@@ -6,9 +6,11 @@ For commands which emit a report/reply event type from the agent, the correspond
 
 | Command | Report/Reply Event | macOS | Windows | Linux | Chrome | Edge |
 | --- | --- | --- | --- | --- | --- | --- |
+| [app\_control\_policy](#app_control_policy) | [APP\_CONTROL\_POLICY\_REP](edr-events.md#app_control_policy_rep) | ☑️ | ☑️ |  |  |  |
 | [artifact\_get](#artifact_get) | [LOG\_GET\_REP](edr-events.md#log_get_rep) | ☑️ | ☑️ | ☑️ |  |  |
 | [cert\_store\_list](#cert_store_list) | [CERT\_STORE\_LIST\_REP](edr-events.md#cert_store_list_rep) | ☑️ | ☑️ | ☑️ |  |  |
 | [container\_list](#container_list) | [CONTAINER\_LIST\_REP](edr-events.md#container_list_rep) |  |  | ☑️ |  |  |
+| [crash\_dump\_info](#crash_dump_info) | [CRASH\_DUMP\_INFO\_REP](edr-events.md#crash_dump_info_rep) |  | ☑️ |  |  |  |
 | deny\_tree | N/A | ☑️ | ☑️ | ☑️ |  |  |
 | [dir\_find](#dir_find) | [DIR\_FIND\_REP](edr-events.md#dir_find_rep) | ☑️ | ☑️ | ☑️ |  |  |
 | [dir\_find\_hash](#dir_findhash) | [DIR\_FINDHASH\_REP](edr-events.md#dir_findhash_rep) | ☑️ | ☑️ | ☑️ |  |  |
@@ -62,6 +64,7 @@ For commands which emit a report/reply event type from the agent, the correspond
 | [segregate\_network](#segregate_network) | [SEGREGATE\_NETWORK](edr-events.md#segregate_network) | ☑️ | ☑️ | ☑️ | ☑️ | ☑️ |
 | set\_performance\_mode | N/A | ☑️ | ☑️ | ☑️ |  |  |
 | shutdown |  | ☑️ | ☑️ | ☑️ |  |  |
+| [toaster\_notify](#toaster_notify) | [TOASTER\_NOTIFY\_REP](edr-events.md#toaster_notify_rep) | ☑️ | ☑️ |  |  |  |
 | [uninstall](#uninstall) | N/A | ☑️ | ☑️ | ☑️ |  |  |
 | [usb\_list\_devices](#usb_list_devices) | [USB\_DEVICE\_LIST\_REP](edr-events.md#usb_device_list_rep) | ☑️ | ☑️ | ☑️ |  |  |
 | [upgrade\_core](#upgrade_core) | N/A | ☑️ | ☑️ | ☑️ |  |  |
@@ -75,6 +78,54 @@ For commands which emit a report/reply event type from the agent, the correspond
 | [epp\_list\_quarantine](#epp_list_quarantine) | [EPP\_LIST\_QUARANTINE\_REP] | ☑️ |  |  |  |  |
 
 ## Command Descriptions
+
+### app_control_policy
+
+Report the [Application Control](../5-integrations/extensions/limacharlie/app-control.md)
+policy the sensor is actually running: its mode, stance and generation, the
+signing keys the sensor accepts a policy from, where the cached copy of the
+policy lives on the host, and the rules themselves. Use it to confirm that a
+host received the policy you expect, or to find out why a sensor refuses the
+policies it is sent.
+
+A host with no policy installed still answers, with mode `0` (off) and no
+rules. That is the expected state before the first policy reaches it.
+
+The command only reads. It changes nothing on the host.
+
+> **Note:** Requires sensor version 5.4.0 or later. Older sensors silently drop the request.
+
+**Platforms:** macOS | Windows
+
+**Parameters:** None
+
+**Reading the reply.** `APP_CONTROL_STATUS` is the same status block the sensor
+sends in its `SYNC`, plus `APP_CONTROL_KEY_ID`, the ids of the policy signing
+keys the sensor holds. When a policy was refused, `APP_CONTROL_STATUS` carries
+`APP_CONTROL_REFUSED` with the refused generation and the reason. Compare the
+two to tell the causes apart:
+
+| What the reply shows | Likely cause |
+| --- | --- |
+| Refusal reason `24` (unknown signing key), and the policy's key id is not in `APP_CONTROL_KEY_ID` | A key rotation reached the cloud before this sensor |
+| `APP_CONTROL_KEY_ID` absent | The sensor was never given a policy signing key |
+| Refusal reason `21` (invalid signature), and the key id is in `APP_CONTROL_KEY_ID` | The policy was altered after it was signed |
+
+The refusal reasons are listed under [Managed alerts](../5-integrations/extensions/limacharlie/app-control.md#managed-alerts).
+
+The reply lists at most 256 rules. `APP_CONTROL_N_RULES` always gives the
+policy's true rule count, so a reply listing fewer rules than that was
+capped.
+
+**Response Event:** [APP_CONTROL_POLICY_REP](edr-events.md#app_control_policy_rep)
+
+**Usage Example:**
+
+```bash
+limacharlie task send --sid <SID> --task 'app_control_policy'
+```
+
+---
 
 ### artifact_get
 
@@ -291,6 +342,86 @@ limacharlie task send --sid <SID> --task 'container_list --runtime docker --incl
     "SCAN_IS_TRUNCATED": 0
   }
 }
+```
+
+---
+
+### crash_dump_info
+
+List and analyze the kernel crash dumps (blue screens) a Windows host has
+written. For each dump the sensor reports the stop code and its parameters,
+when the crash happened and on which Windows build, the drivers that were
+loaded, the crashing thread's stack resolved to modules, and the drivers the
+evidence implicates, strongest first. Use it to answer "which driver crashed
+this host?" without collecting the dump and opening it in a debugger.
+
+The analysis runs on the host and needs no debugging symbols. The command only
+reads: it never deletes or changes a dump.
+
+> **Note:** Requires sensor version 5.4.2 or later. Older sensors silently drop the request.
+
+**Platforms:** Windows
+
+**Parameters:**
+
+- `--file-path <path>` (optional): Analyze this one dump instead of listing.
+- `--limit <n>` (optional): Maximum number of dumps to report, from 1 to 50.
+  When omitted the agent reports up to 10. A value above 50 is rejected when
+  the command is issued.
+- `--force` (optional): List every dump on the host, newest first, instead of
+  only the dumps written since the last listing.
+
+**Where it looks.** The sensor reads the dump locations Windows is configured
+with under `HKLM\SYSTEM\CurrentControlSet\Control\CrashControl`:
+
+- the small memory dumps, in `MinidumpDir` (by default `%SystemRoot%\Minidump`)
+- the memory dump, `DumpFile` (by default `%SystemRoot%\MEMORY.DMP`)
+- the live kernel reports under `%SystemRoot%\LiveKernelReports`. The kernel
+  writes these without stopping the machine, so they are not crashes, and the
+  reply marks them with `CRASH_DUMP_IS_LIVE`
+
+Only a small memory dump carries the driver list and the stack. For a dump of
+any other kind the reply carries the stop code, its parameters and the machine
+details, but no driver, stack or culprit fields: finding them in a larger dump
+needs symbols an endpoint does not have.
+
+**The three ways to run it:**
+
+| Invocation | What it reports |
+| --- | --- |
+| `crash_dump_info` | The dumps written since the previous plain `crash_dump_info`, oldest first |
+| `crash_dump_info --force` | Every dump on the host, newest first |
+| `crash_dump_info --file-path <path>` | That one dump |
+
+A plain listing remembers where it stopped, so calling it repeatedly pages
+through a backlog of dumps without skipping or repeating one. This makes it
+suitable for running on a schedule to collect each new crash once. `--force`
+and `--file-path` do not move that position.
+
+The position moves when the reply is built, not when it reaches the cloud. If
+a reply to a plain listing is lost, run the command with `--force` to see the
+dumps it held.
+
+**Response Event:** [CRASH_DUMP_INFO_REP](edr-events.md#crash_dump_info_rep)
+
+**Usage Examples:**
+
+The dumps written since the last listing:
+
+```bash
+limacharlie task send --sid <SID> --task 'crash_dump_info'
+```
+
+The 5 most recent dumps on the host:
+
+```bash
+limacharlie task send --sid <SID> --task 'crash_dump_info --force --limit 5'
+```
+
+One dump:
+
+```bash
+limacharlie task send --sid <SID> --task 'crash_dump_info --file-path "C:\\Windows\\Minidump\\102526-12345-01.dmp"'
 ```
 
 ---
@@ -1605,6 +1736,67 @@ Isolate a sensor from the network (except LimaCharlie cloud connectivity).
 
 ```bash
 limacharlie sensor task <SID> segregate_network
+```
+
+---
+
+### toaster_notify
+
+Show a notice on the desktop of every user signed in to the host, as a system
+notification. Use it to tell users about an investigation in progress, an
+upcoming reboot, or why a host was isolated.
+
+The sensor delivers the notice through a small per-user tray application that
+it installs and starts in each session when there is something to show. The
+tray is removed again after about 10 minutes with nothing to show. A notice
+sent while no tray is running yet is held and shown as each tray starts.
+
+> **Note:** Requires sensor version 5.4.0 or later. Older sensors silently drop the request.
+
+**Platforms:** macOS | Windows
+
+**Parameters:**
+
+- `-t, --title <text>` (optional): One-line heading, at most 80 characters.
+- `-m, --text <text>` (optional): The message, at most 240 characters. Line
+  breaks are kept. Windows line endings (CRLF) are accepted and shown as one
+  line break.
+- `-p, --priority <level>` (optional): How urgent the notice is, defaulting to
+  `information`. An `information` notice goes away on its own, a `warning`
+  stays on screen longer, and a `critical` notice stays until the user
+  dismisses it.
+
+At least one of `--title` and `--text` must contain something other than
+whitespace.
+
+**Rejected when issued.** The command is refused before it reaches the sensor
+when:
+
+| Error | Cause |
+| --- | --- |
+| `MISSING_MESSAGE` | Neither `--title` nor `--text` contains anything to show |
+| `INVALID_PRIORITY` | `--priority` is not `information`, `warning` or `critical` |
+| `TITLE_TOO_LONG`, `TEXT_TOO_LONG` | The title is over 80 characters, or the text is over 240 |
+| `TITLE_INVALID_CHARACTER`, `TEXT_INVALID_CHARACTER` | The string contains a control character, or a character that changes how text displays without being visible (bidirectional overrides, zero-width characters). A line break is allowed in the text only |
+| `TITLE_INVALID_UTF8`, `TEXT_INVALID_UTF8` | The string is not valid UTF-8 |
+
+**Rate limit.** To keep a rule from flooding users' desktops, the sensor
+refuses a notice identical to one shown in the last 30 seconds, and any notice
+once 5 have been shown in the last minute. A refused notice is answered with
+`ERROR` `170`.
+
+**Response Event:** [TOASTER_NOTIFY_REP](edr-events.md#toaster_notify_rep)
+
+**Usage Examples:**
+
+```bash
+limacharlie task send --sid <SID> --task 'toaster_notify --title "Security notice" --text "IT Security is investigating this computer. Please save your work and keep it powered on."'
+```
+
+A notice that stays until the user dismisses it:
+
+```bash
+limacharlie task send --sid <SID> --task 'toaster_notify -p critical -t "Reboot required" -m "This computer will restart at 18:00 to finish a security update."'
 ```
 
 ---
