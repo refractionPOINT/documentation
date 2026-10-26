@@ -7,6 +7,8 @@ For commands which emit a report/reply event type from the agent, the correspond
 | Command | Report/Reply Event | macOS | Windows | Linux | Chrome | Edge |
 | --- | --- | --- | --- | --- | --- | --- |
 | [artifact\_get](#artifact_get) | [LOG\_GET\_REP](edr-events.md#log_get_rep) | ☑️ | ☑️ | ☑️ |  |  |
+| [cert\_store\_list](#cert_store_list) | [CERT\_STORE\_LIST\_REP](edr-events.md#cert_store_list_rep) | ☑️ | ☑️ | ☑️ |  |  |
+| [config\_extract](#config_extract) | [CONFIG\_EXTRACT\_REP](edr-events.md#config_extract_rep) | ☑️ | ☑️ | ☑️ |  |  |
 | [container\_list](#container_list) | [CONTAINER\_LIST\_REP](edr-events.md#container_list_rep) |  |  | ☑️ |  |  |
 | deny\_tree | N/A | ☑️ | ☑️ | ☑️ |  |  |
 | [dir\_find](#dir_find) | [DIR\_FIND\_REP](edr-events.md#dir_find_rep) | ☑️ | ☑️ | ☑️ |  |  |
@@ -44,6 +46,7 @@ For commands which emit a report/reply event type from the agent, the correspond
 | [os\_packages](#os_packages) | [OS\_PACKAGES\_REP](edr-events.md#os_packages_rep) |  | ☑️ | ☑️ | ☑️ | ☑️ |
 | [os\_processes](#os_processes) | [OS\_PROCESSES\_REP](edr-events.md#os_processes_rep) | ☑️ | ☑️ | ☑️ |  |  |
 | [os\_resume](#os_resume) | [OS\_RESUME\_REP](edr-events.md#os_resume_rep) | ☑️ | ☑️ | ☑️ |  |  |
+| [os\_security\_state](#os_security_state) | [OS\_SECURITY\_STATE\_REP](edr-events.md#os_security_state_rep) | ☑️ | ☑️ | ☑️ |  |  |
 | [os\_services](#os_services) | [OS\_SERVICES\_REP](edr-events.md#os_services_rep) | ☑️ | ☑️ | ☑️ |  |  |
 | [os\_suspend](#os_suspend) | [OS\_SUSPEND\_REP](edr-events.md#os_suspend_rep) | ☑️ | ☑️ | ☑️ |  |  |
 | os\_users | [OS\_USERS\_REP](edr-events.md#os_users_rep) |  | ☑️ |  |  |  |
@@ -140,6 +143,219 @@ limacharlie task send --sid <SID> --task 'artifact_get --root-dir /etc -x "*.con
 Each entry reports the per-file upload status in `ERROR` (200 on success), with
 `ERROR_MESSAGE` present when an individual file fails. A partial run still
 returns the files it did upload.
+
+---
+
+### cert_store_list
+
+List the certificates a host trusts, store by store: each certificate's SHA-256
+and SHA-1 fingerprints, subject, issuer, serial number and validity period. Use
+it to find hosts that still trust a distrusted root, to spot a root certificate
+planted for TLS interception by diffing hosts against a baseline, or to inventory
+which certificates are about to expire.
+
+The command only reads. It never adds, removes or changes a certificate, and it
+starts no process on the host.
+
+> **Note:** Requires sensor version 5.4.2 or later. Older sensors silently drop the request.
+
+**Platforms:** macOS | Windows | Linux
+
+**Parameters:**
+
+- `--store <text>` (optional): Only list the stores whose label contains this
+  text. The match is case-insensitive and on part of the label, not the whole of
+  it. Omit it to list every store on the host. An explicitly empty value
+  (`--store ''`) is rejected rather than read as "every store".
+- `--max-results <n>` (optional): Maximum number of certificates to report, from
+  1 to 10000. When omitted the agent reports up to 2000. A value above 10000 is
+  rejected when the command is issued.
+
+**Store labels.** Each certificate in the reply carries the label of the store it
+was found in, as `CERT_STORE`, and `--store` matches against that label. Running
+the command once without `--store` shows the exact labels on a host.
+
+| Platform | Stores read | Label |
+| --- | --- | --- |
+| Windows | The machine certificate stores `ROOT`, `CA`, `AuthRoot`, `Disallowed`, `TrustedPublisher` and `TrustedPeople` | `LocalMachine\ROOT`, `LocalMachine\CA`, and so on |
+| Windows | Certificates pushed into those stores by Group Policy | `LocalMachineGroupPolicy\ROOT`, `LocalMachineGroupPolicy\CA`, ... |
+| Windows | Certificates pushed into those stores by enterprise (Active Directory) policy | `LocalMachineEnterprise\ROOT`, `LocalMachineEnterprise\CA`, ... |
+| Linux | The system CA bundles that exist on the host: `/etc/ssl/certs/ca-certificates.crt`, `/etc/pki/tls/certs/ca-bundle.crt`, `/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem`, `/etc/ssl/ca-bundle.pem`, `/etc/ssl/cert.pem`, `/etc/pki/tls/cacert.pem` | The file's path |
+| Linux | Every certificate file in the trust anchor directories, where an administrator places a root before the bundle is regenerated: `/usr/local/share/ca-certificates`, `/etc/pki/ca-trust/source/anchors`, `/usr/share/pki/trust/anchors`, `/etc/ca-certificates/trust-source/anchors` | The file's path |
+| Linux | Java keystores: `/etc/ssl/certs/java/cacerts`, `/etc/pki/ca-trust/extracted/java/cacerts`, and the `cacerts` of each JDK under `/usr/lib/jvm` | The file's path |
+| macOS | The system root certificates | `SystemRoots` |
+| macOS | The administrator and system trust settings | `TrustSettings.Admin`, `TrustSettings.System` |
+| macOS | The System keychain | `System.keychain` |
+| macOS | Each user's login keychain | Its path, such as `/Users/jdoe/Library/Keychains/login.keychain-db` |
+
+On Windows, a certificate is reported once, under the store it is actually
+stored in: a root pushed by Group Policy appears as
+`LocalMachineGroupPolicy\ROOT` and not a second time as `LocalMachine\ROOT`.
+Per-user Windows certificate stores are not read.
+
+Because the match is on part of the label:
+
+| `--store` value | Matches |
+| --- | --- |
+| `ROOT` | `LocalMachine\ROOT`, `LocalMachineGroupPolicy\ROOT`, `LocalMachineEnterprise\ROOT`, and also `LocalMachine\AuthRoot` |
+| `LocalMachine\ROOT` | `LocalMachine\ROOT` only |
+| `Disallowed` | The Windows certificates explicitly distrusted on the host |
+| `ca-certificates.crt` | The Debian and Ubuntu system bundle |
+| `anchors` | Every file in the Red Hat, SUSE and Arch anchor directories |
+| `cacerts` | Every Java keystore |
+| `keychain` | `System.keychain` and every login keychain |
+
+**What each certificate carries.** The fingerprints are computed over the
+certificate's exact bytes, so they match what `openssl x509 -fingerprint`,
+`certutil` or `security` print for the same certificate. A certificate that
+cannot be parsed is still reported, with its fingerprints and a parse-error
+flag, because a malformed certificate in a trust store is itself worth knowing
+about. The fields are described under
+[CERT_STORE_LIST_REP](edr-events.md#cert_store_list_rep).
+
+**Bounds.** The listing is bounded so it cannot run away on a host with an
+unusually large store. When a bound stops it, the reply says so with
+`IS_TRUNCATED` set to `1` and `SCAN_STOPPED_REASON` naming the bound, so a
+truncated listing is never mistaken for a complete one.
+
+**Response Event:** [CERT_STORE_LIST_REP](edr-events.md#cert_store_list_rep)
+
+**Usage Examples:**
+
+Every certificate on the host:
+
+```bash
+limacharlie task send --sid <SID> --task 'cert_store_list'
+```
+
+Only the Windows trusted root stores:
+
+```bash
+limacharlie task send --sid <SID> --task 'cert_store_list --store ROOT'
+```
+
+Only the Debian or Ubuntu system bundle, reporting at most 500 certificates:
+
+```bash
+limacharlie task send --sid <SID> --task 'cert_store_list --store ca-certificates.crt --max-results 500'
+```
+
+---
+
+### config_extract
+
+Read one configuration file on the host and return only the values you ask
+for. Use it to check a handful of settings, such as `PermitRootLogin` in
+`sshd_config`, `privileged` in a `docker-compose.yml` or `server_tokens` in
+`nginx.conf`, without the rest of the file leaving the host.
+
+Configuration files often hold secrets: passwords in a compose file's
+`environment:` block, keys in an `.ini`, credentials in a proxy header. Fetching
+the whole file with `file_get` sends all of that to the cloud. `config_extract`
+parses the file on the host and replies with the requested values only. The
+rest of the file, comments included, is never sent.
+
+The command only reads. It never changes the file, and it starts no process on
+the host.
+
+> **Note:** Requires sensor version 5.4.2 or later. Older sensors silently drop the request.
+
+**Platforms:** macOS | Windows | Linux
+
+**Parameters:**
+
+- `--path <file>` (required): The configuration file to read. It must be a
+  regular file: a directory or a device is refused, as is a file larger than
+  4 MiB, and so is a path whose file or parent directory is a symbolic link.
+  Symbolic links higher up the path are followed, so paths such as macOS's
+  `/etc/ssh/sshd_config` work. Quote a path that contains spaces.
+- `--format <format>` (required): How to parse the file. One of `sshd`, `ini`,
+  `json`, `yaml` or `nginx`, in lowercase. See the per-format rules below.
+- `-s, --selector <selector>` (required, repeatable): A value to return. Give it
+  once per value, between 1 and 64 times. Each selector is at most 256 bytes and
+  may not contain control characters. Its syntax depends on the format.
+- `--max-results <n>` (optional): Maximum number of values to report, from 1 to
+  1024. When omitted the agent reports up to 256. A selector that found nothing
+  always gets its "not found" entry, in addition to this limit.
+
+Out-of-range values, an unknown format and an invalid selector are rejected
+when the command is issued.
+
+**Selectors by format:**
+
+| Format | Use for | Selector | Example |
+| --- | --- | --- | --- |
+| `sshd` | `sshd_config` | A keyword, matched case-insensitively | `PermitRootLogin` |
+| `ini` | `php.ini`, `my.cnf`, systemd units and other INI files | A key, or `section.key` | `expose_php`, `PHP.expose_php` |
+| `json` | JSON files | A dotted path | `log.level`, `servers.0.port` |
+| `yaml` | YAML files, such as Docker Compose or Kubernetes manifests | A dotted path | `services.web.privileged` |
+| `nginx` | `nginx.conf` and its included files | A directive name, or a block path | `server_tokens`, `http.server.listen` |
+
+- **`sshd`**: Every occurrence of the keyword is reported, in file order, with
+  its line number. A directive inside a `Match` block carries that `Match` line
+  as its context, so `PermitRootLogin yes` under `Match User backup` can be told
+  apart from the global setting. Keep in mind that for a global directive, sshd
+  itself uses the first occurrence.
+- **`ini`**: A bare `key` matches that key wherever it appears, at the top of
+  the file or in any section. `section.key` matches it only in that section.
+  Keys are case-sensitive. Every occurrence is reported, with its `[section]` as
+  context. Most INI readers, PHP and MySQL included, use the last occurrence.
+- **`json`** and **`yaml`**: A dotted path from the top of the document. A number
+  selects an element of a list (`servers.0.port`, which can also be written
+  `servers[0].port`). `*` matches any key or element at its level
+  (`services.*.privileged` checks every service), but not as the last segment of
+  the path, so a selector always names the value it returns. Keys are
+  case-sensitive. A YAML file with several documents is searched in full, and a
+  value from the second document onward carries `document N` as its context.
+- **`nginx`**: A bare directive name matches it at any depth. A dotted path
+  matches it only under that chain of blocks, from the top: `http.server.listen`
+  is `listen` inside a `server` block inside `http`. `*` may stand for a block,
+  but not as the last segment. Each value carries its enclosing blocks as
+  context, with the `server_name` of its server block, for example
+  `http > server (server_name example.com) > location /api`. `include`
+  directives are reported but not followed.
+
+**What is returned for a selector:**
+
+| The selector names | Reply |
+| --- | --- |
+| A single value | The value, its line number and its context |
+| A list of plain values, such as `ports` in a compose file | One entry per element, with its key written `ports[0]`, `ports[1]`, ... |
+| A block, a mapping or a list of mappings | One entry saying what kind of node it is, with no value. Its contents are never returned |
+| Nothing in the file | One entry marked not found |
+
+A file that cannot be parsed is not an error: the reply says so in
+`CONFIG_PARSE_STATUS`, with the line where parsing failed when it is known, and
+carries no values. The fields are described under
+[CONFIG_EXTRACT_REP](edr-events.md#config_extract_rep).
+
+**Response Event:** [CONFIG_EXTRACT_REP](edr-events.md#config_extract_rep)
+
+**Usage Examples:**
+
+Whether root can log in over SSH, and whether password authentication is on:
+
+```bash
+limacharlie task send --sid <SID> --task 'config_extract --path /etc/ssh/sshd_config --format sshd --selector PermitRootLogin --selector PasswordAuthentication'
+```
+
+Which services in a Docker Compose file run privileged:
+
+```bash
+limacharlie task send --sid <SID> --task 'config_extract --path /srv/app/docker-compose.yml --format yaml --selector "services.*.privileged"'
+```
+
+Whether PHP advertises its version, from a path with a space in it on Windows:
+
+```bash
+limacharlie task send --sid <SID> --task 'config_extract --path "C:\\Program Files\\PHP\\php.ini" --format ini --selector PHP.expose_php'
+```
+
+Whether nginx advertises its version, and what each server listens on:
+
+```bash
+limacharlie task send --sid <SID> --task 'config_extract --path /etc/nginx/nginx.conf --format nginx -s server_tokens -s http.server.listen'
+```
 
 ---
 
@@ -451,12 +667,35 @@ Retrieve a file from the endpoint and upload it to LimaCharlie cloud storage.
 
 - `file_path` (required): Path to the file to retrieve
 
-**Response Event:** FILE_GET_REP
+**Response Event:** [FILE_GET_REP](edr-events.md#file_get_rep)
+
+**Linux kernel files.** On Linux, most files under `/proc`, and those under
+`/sys/kernel/security`, report a size of 0 even though they hold data. Files
+under `/sys` report 4096 whatever they hold. Sensors from version 5.4.2 read
+such a file to its end, up to the usual size limit, and report the size they
+actually read. Kernel state such as `/proc/sys/kernel/yama/ptrace_scope`,
+`/proc/modules`, `/proc/cmdline` and `/sys/kernel/security/lockdown` can
+therefore be retrieved with `file_get`. Older sensors return no content for
+these files.
+
+Sensors from version 5.4.2 also add `IS_TRUNCATED` to the reply. It is `1`
+when the file continues past what was returned, because of the size limit or
+because the read failed partway. Use it, rather than comparing `FILE_SIZE` with
+the size of the content, to tell whether you received the whole file. Other
+things that report a size of 0, such as an empty file, a device or a named
+pipe, come back empty and are never read, since reading one could wait
+forever.
 
 **Usage Example:**
 
 ```bash
 limacharlie sensor task <SID> file_get --file_path "C:\\Windows\\System32\\calc.exe"
+```
+
+Reading a Linux kernel setting:
+
+```bash
+limacharlie task send --sid <SID> --task 'file_get /proc/sys/kernel/yama/ptrace_scope'
 ```
 
 ---
@@ -1019,6 +1258,139 @@ Resume a suspended process.
 
 ```bash
 limacharlie sensor task <SID> os_resume --pid 1234
+```
+
+---
+
+### os_security_state
+
+Take a snapshot of the host's security posture: the kernel, firmware and
+operating system settings that decide whether common privilege-escalation and
+credential-theft techniques work on it. Examples are unprivileged user
+namespaces and eBPF on Linux, Secure Boot and Credential Guard on Windows, and
+System Integrity Protection on macOS.
+
+The command only reads. It changes no setting, and it starts no process on the
+host. Everything is read from files, the registry, WMI or system calls, so it
+does not depend on tools such as `sysctl`, `mokutil` or `csrutil` being
+installed or allowed to run.
+
+> **Note:** Requires sensor version 5.4.2 or later. Older sensors silently drop the request.
+
+**Platforms:** macOS | Windows | Linux
+
+**Parameters:** None.
+
+**How to read the reply.** The reply is a list of items, each with a stable
+dotted name such as `linux.sysctl.kernel.yama.ptrace_scope`, a status, the raw
+value and where it was read from. The status is what keeps an unknown setting
+from being mistaken for a disabled one:
+
+| Status | Meaning | Value |
+| --- | --- | --- |
+| `0` | Read | The raw value, exactly as the operating system reports it |
+| `1` | Absent: the setting does not exist on this host, such as an efivar on a BIOS machine or a registry value that was never set | None |
+| `2` | Unreadable: the setting exists, or should, but could not be read | None |
+| `3` | Invalid: the setting was read but is not in a known shape | None |
+
+A value is present only when the status is `0`. Interpret values against the
+operating system's own documentation: they are reported raw, not scored. A
+missing registry value, for example, means Windows applies its default, which is
+not always "off".
+
+**Items reported on Linux:**
+
+| Item | What it is |
+| --- | --- |
+| `linux.sysctl.kernel.unprivileged_userns_clone` | Whether unprivileged users may create user namespaces (Debian and Ubuntu) |
+| `linux.sysctl.user.max_user_namespaces` | The per-user limit on user namespaces; `0` disables them |
+| `linux.sysctl.kernel.yama.ptrace_scope` | Who may `ptrace` another process: `0` anyone with the same user, `1` only a parent, `2` only administrators, `3` nobody |
+| `linux.sysctl.kernel.unprivileged_bpf_disabled` | Whether unprivileged users may load eBPF programs |
+| `linux.sysctl.kernel.io_uring_disabled` | Whether `io_uring` is disabled for all (`2`), for unprivileged users (`1`) or for nobody (`0`) |
+| `linux.sysctl.fs.protected_hardlinks`, `linux.sysctl.fs.protected_symlinks` | Link-following protections |
+| `linux.sysctl.kernel.kptr_restrict` | Whether kernel addresses are hidden from unprivileged users |
+| `linux.sysctl.kernel.dmesg_restrict` | Whether the kernel log is restricted to administrators |
+| `linux.sysctl.kernel.modules_disabled` | Whether loading kernel modules has been disabled until the next boot |
+| `linux.sysctl.kernel.kexec_load_disabled` | Whether loading a new kernel with `kexec` has been disabled |
+| `linux.sysctl.kernel.perf_event_paranoid` | How much of `perf` unprivileged users may use |
+| `linux.sysctl.kernel.randomize_va_space` | Address space layout randomization: `2` is full |
+| `linux.kernel.cmdline` | The kernel's boot command line |
+| `linux.kernel.release` | The running kernel's release |
+| `linux.lsm.list` | The active Linux security modules |
+| `linux.lsm.lockdown` | The kernel lockdown mode, for example `none [integrity] confidentiality`, where the bracketed mode is active |
+| `linux.selinux.enforce` | `1` when SELinux is enforcing, `0` when permissive |
+| `linux.apparmor.enabled` | Whether AppArmor is enabled |
+| `linux.apparmor.profiles_enforce`, `linux.apparmor.profiles_complain` | How many AppArmor profiles are loaded in enforce and in complain mode |
+| `linux.efi.present` | `1` when the host booted through UEFI, `0` for BIOS |
+| `linux.efi.secure_boot` | `1` when Secure Boot is on |
+| `linux.efi.setup_mode` | `1` when the firmware is in setup mode, in which Secure Boot keys can be replaced |
+| `linux.efi.mok_sb_state` | Present when Secure Boot validation has been disabled through the shim's Machine Owner Key settings |
+| `linux.kvm.dev_mode`, `linux.kvm.dev_owner` | The permissions and owner of `/dev/kvm` |
+| `linux.modules.count` | How many kernel modules are loaded |
+
+On Linux the reply also lists every loaded kernel module, and every `blacklist`
+and `install` rule in the modprobe configuration (`/etc/modprobe.d`,
+`/run/modprobe.d`, `/usr/lib/modprobe.d`, `/lib/modprobe.d`), each with the file
+and line it came from. Together they show whether a vulnerable module, such as
+one an exploit relies on, is loaded or blocked from loading.
+
+**Items reported on Windows:**
+
+| Item | What it is |
+| --- | --- |
+| `windows.secureboot.enabled` | `1` when Secure Boot is on |
+| `windows.secureboot.uefica2023status` | Progress of the update to the 2023 Microsoft Secure Boot certificates, which replace the 2011 certificates expiring in 2026 |
+| `windows.secureboot.uefica2023error` | The error recorded by that update, when it failed |
+| `windows.secureboot.available_updates` | The Secure Boot updates pending on the host |
+| `windows.deviceguard.enable_vbs` | Whether virtualization-based security (VBS) is configured on |
+| `windows.deviceguard.require_platform_security_features` | Which hardware protections VBS is configured to require |
+| `windows.deviceguard.hvci_enabled` | Whether memory integrity (HVCI) is configured on |
+| `windows.deviceguard.credential_guard_enabled` | Whether Credential Guard is configured on |
+| `windows.vbs.status` | Whether VBS is actually running: `0` off, `1` configured but not running, `2` running |
+| `windows.vbs.services_running`, `windows.vbs.services_configured` | The VBS services running and configured, as a comma-separated list: `1` is Credential Guard, `2` is HVCI |
+| `windows.vbs.credential_guard_running`, `windows.vbs.hvci_running` | `1` when Credential Guard or HVCI is actually running, `0` when not |
+| `windows.ci.policy_enforcement_status`, `windows.ci.um_policy_enforcement_status` | Whether a kernel-mode and a user-mode code integrity policy are enforced |
+| `windows.ci.vulnerable_driver_blocklist` | Whether the Microsoft vulnerable driver blocklist is on |
+| `windows.ci.smart_app_control` | Smart App Control: `0` off, `1` enforcing, `2` evaluating |
+| `windows.lsa.runasppl` | Whether LSA runs as a protected process |
+| `windows.lsa.lsacfgflags` | The Credential Guard configuration flags |
+| `windows.wdigest.uselogoncredential` | `1` when WDigest keeps plaintext credentials in memory |
+| `windows.smb1.server` | Whether the SMBv1 server is enabled |
+| `windows.smb1.client_start` | The start type of the SMBv1 client driver; absent when the driver is not installed |
+| `windows.bitlocker.volumes` | How many volumes BitLocker knows of |
+| `windows.bitlocker.<drive>.protection_status` | For each lettered volume, such as `windows.bitlocker.c.protection_status`: `0` unprotected, `1` protected, `2` unknown |
+| `windows.bitlocker.<drive>.volume_type` | `0` operating system volume, `1` fixed data volume, `2` removable volume |
+
+The items that say whether VBS, HVCI and Credential Guard are *configured* come
+from the registry. The ones that say whether they are *running* come from the
+system itself. The two differ on a host whose hardware cannot run what its
+policy asks for.
+
+**Items reported on macOS:**
+
+| Item | What it is |
+| --- | --- |
+| `macos.sip.config` | The raw System Integrity Protection configuration, in hexadecimal |
+| `macos.sip.enabled` | `1` when System Integrity Protection is fully on |
+| `macos.gatekeeper.prefs_enabled` | Whether Gatekeeper is enabled |
+| `macos.gatekeeper.managed_enable_assessment` | The Gatekeeper setting enforced by a configuration profile, when there is one |
+| `macos.firewall.globalstate` | The application firewall state. Usually absent on macOS 15 and later, which no longer keep it where it can be read |
+| `macos.firewall.managed_enable` | The firewall setting enforced by a configuration profile, when there is one |
+| `macos.mdm.dep_activation_record` | Whether the Mac received an Automated Device Enrollment activation record |
+| `macos.mdm.profiles_installed` | Whether configuration profiles are installed |
+| `macos.filevault.enabled` | Always unreadable (status `2`): only the `fdesetup` tool can report it, and the command starts no process |
+| `macos.mdm.enrolled` | Always unreadable (status `2`), for the same reason |
+
+**Bounds.** The snapshot is bounded, including the module and rule lists. When a
+bound cuts it short, `IS_TRUNCATED` is `1` in the reply. The fields are
+described under [OS_SECURITY_STATE_REP](edr-events.md#os_security_state_rep).
+
+**Response Event:** [OS_SECURITY_STATE_REP](edr-events.md#os_security_state_rep)
+
+**Usage Example:**
+
+```bash
+limacharlie task send --sid <SID> --task 'os_security_state'
 ```
 
 ---
