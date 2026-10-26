@@ -375,12 +375,18 @@ EOF
   fi
   spec="$WORKDIR/exception-$c.yaml"
   printf 'name: projects/%s/policies/%s\nspec:\n  rules:\n%s\n' "$PROJECT" "$c" "$rule" >"$spec"
+  # Track it before the call: an interrupt or timeout can land after the server
+  # applied the change, and restoring is safe to repeat. Only a refusal (which
+  # certainly changed nothing) is untracked again.
+  POLICY_ACTIVE="$POLICY_ACTIVE $c"
   if ! out="$(gcloud org-policies set-policy "$spec" --quiet 2>&1)"; then
     printf '%s\n' "$out" >&2
+    case "$out" in
+      *PERMISSION_DENIED*|*[Pp]ermission*denied*|*INVALID_ARGUMENT*) POLICY_ACTIVE="${POLICY_ACTIVE% "$c"}" ;;
+    esac
     warn "Could not change the policy. $GCLOUD_ACCOUNT needs the Organization Policy Administrator role (roles/orgpolicy.policyAdmin) on the organization."
     return 1
   fi
-  POLICY_ACTIVE="$POLICY_ACTIVE $c"
   ok "Temporary exception for $c applied to $PROJECT"
 }
 
@@ -395,6 +401,12 @@ retry_until_policy_applies() {
     if out="$("$@" 2>&1)"; then
       return 0
     fi
+    # Keep waiting only while it still looks like a policy block; any other
+    # error (permissions, a missing resource, the key limit) will not go away.
+    case "$out" in
+      *FAILED_PRECONDITION*|*allowedPolicyMember*|*disableServiceAccountKeyCreation*|*"permitted customer"*|*"not in permitted organization"*) ;;
+      *) printf '%s\n' "$out" >&2; warn "$what failed for a reason other than the organization policy."; return 1 ;;
+    esac
     c="$(constraint_from_error "$out")"
     if [ -n "$c" ]; then
       case " $POLICY_ACTIVE " in
