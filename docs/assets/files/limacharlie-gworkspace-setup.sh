@@ -164,6 +164,14 @@ confirm() { # confirm "Question" -> 0 for yes. Defaults to yes without a termina
 }
 
 PAUSE_ANSWER=""
+confirm_no() { # confirm_no "Question" -> 0 only for an explicit yes.
+  local ans=""
+  [ -n "$INTERACTIVE" ] || return 1
+  printf '%s [y/N]: ' "$1" >&2
+  IFS= read -r ans <&3 || true
+  case "$ans" in [yY]*) return 0 ;; *) return 1 ;; esac
+}
+
 pause() {
   PAUSE_ANSWER=""
   [ -n "$INTERACTIVE" ] || return 0
@@ -432,7 +440,7 @@ retire_old_keys() {
   step "Older keys on $SA_EMAIL"
   info "LimaCharlie now uses key $CURRENT_KID. These older keys are still valid and carry the same access:"
   printf '%s\n' "$old" | awk '{print "      " $1 "  (created " $2 ")"}'
-  if [ -n "$DELETE_OLD_KEYS" ] || { [ -n "$INTERACTIVE" ] && confirm "    Delete them? Say no if anything else uses this service account."; }; then
+  if [ -n "$DELETE_OLD_KEYS" ] || confirm_no "    Delete them? Answer no if anything else uses this service account."; then
     for kid in $(printf '%s\n' "$old" | awk '{print $1}'); do
       if gcloud iam service-accounts keys delete "$kid" --iam-account="$SA_EMAIL" \
           --project="$PROJECT" --quiet >/dev/null 2>&1; then
@@ -649,6 +657,34 @@ if "${LC[@]}" hive get --hive-name mailsec_provider --key "$CONNECTION_NAME" --o
   fi
 fi
 
+# Old keys may only be retired when the connection reads the secret this run
+# just wrote. A kept connection can point at another secret holding an older key.
+uses_our_secret=1
+if [ -z "$write_record" ]; then
+  kept_cred="$("${LC[@]}" hive get --hive-name mailsec_provider --key "$CONNECTION_NAME" \
+    --oid "$OID" --output json 2>/dev/null | python3 -c '
+import json, sys
+def find(o):
+    if isinstance(o, dict):
+        if isinstance(o.get("credentials"), str):
+            return o["credentials"]
+        for v in o.values():
+            r = find(v)
+            if r:
+                return r
+    return ""
+try:
+    print(find(json.load(sys.stdin)))
+except Exception:
+    print("")
+')"
+  if [ "$kept_cred" != "hive://secret/$SECRET_NAME" ]; then
+    uses_our_secret=""
+    warn "Connection $CONNECTION_NAME uses credential '${kept_cred:-unknown}', not hive://secret/$SECRET_NAME."
+    info "The new key was stored in $SECRET_NAME but this connection does not read it; the test below checks the connection's own credential."
+  fi
+fi
+
 if [ -n "$write_record" ]; then
   if [ -z "$MAILBOXES_SET" ] && [ -n "$INTERACTIVE" ]; then
     info "Which mailboxes should be protected? Billing is per protected mailbox."
@@ -724,7 +760,11 @@ if [ -n "$test_ok" ]; then
   ok "Connection test passed"
   rm -f "$KEY_FILE"
   ok "Deleted $KEY_FILE (LimaCharlie now holds the credential in secret $SECRET_NAME)"
-  retire_old_keys
+  if [ -n "$uses_our_secret" ]; then
+    retire_old_keys
+  elif [ -n "$(other_keys)" ]; then
+    warn "Older keys on $SA_EMAIL were not deleted because connection $CONNECTION_NAME reads another secret, which may hold one of them."
+  fi
   step "Done"
   info "Mail should start appearing in Email Security within a few minutes."
 else
