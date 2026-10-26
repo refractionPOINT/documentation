@@ -220,6 +220,9 @@ if [ -z "$ADMIN_EMAIL" ]; then
     *.gserviceaccount.com|*@gmail.com|*@googlemail.com) ;;
     *@*) admin_default="$GCLOUD_ACCOUNT" ;;
   esac
+  # Only suggest it to a person at a terminal: a Cloud admin is often not a
+  # Workspace admin, so never pick it silently.
+  [ -n "$INTERACTIVE" ] || admin_default=""
   info "Enter a Workspace user with admin rights (a person's account like admin@yourdomain.com,"
   info "not a service account). LimaCharlie acts as this user to list your domain's mailboxes."
   ask ADMIN_EMAIL "Workspace administrator email" "$admin_default"
@@ -257,18 +260,43 @@ WORKDIR="$(mktemp -d)"
 # exactly what was there before (the project's own policy, or inheritance).
 
 POLICY_ACTIVE=""   # constraints currently overridden by this script (space separated)
+BLOCKED_BY=""      # a further constraint that stopped retry_until_policy_applies
 
 constraint_from_error() { # prints the constraint named in a gcloud error, if any
-  printf '%s' "$1" | grep -oE 'constraints/[A-Za-z0-9_.]+' | head -n1 | sed 's#^constraints/##' || true
+  printf '%s' "$1" | grep -oE 'constraints/[A-Za-z0-9_.]+' | head -n1 | sed -e 's#^constraints/##' -e 's/\.*$//' || true
 }
 
 policy_console_url() {
   printf 'https://console.cloud.google.com/iam-admin/orgpolicies/%s?project=%s' "$1" "$PROJECT"
 }
 
+# Constraints the script knows how to override temporarily.
+policy_supported() {
+  case "$1" in
+    iam.allowedPolicyMemberDomains|iam.managed.allowedPolicyMembers|iam.disableServiceAccountKeyCreation|iam.managed.disableServiceAccountKeyCreation) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
+policy_label() { # constraint -> readable name
+  case "$1" in
+    iam.allowedPolicyMemberDomains|iam.managed.allowedPolicyMembers) printf '%s (Domain Restricted Sharing)' "$1" ;;
+    *) printf '%s' "$1" ;;
+  esac
+}
+
 policy_manual_help() { # constraint -> how an administrator does it by hand
   local action="Enforcement Off"
   [ "$1" = iam.allowedPolicyMemberDomains ] && action="Allow All"
+  if ! policy_supported "$1"; then
+    cat <<EOF
+       This script cannot change $1 for you. Ask your organization policy administrator
+       to allow this step for project $PROJECT under that policy:
+         $(policy_console_url "$1")
+       then run this script again.
+EOF
+    return
+  fi
   cat <<EOF
        To fix it, someone with the Organization Policy Administrator role can either:
          - re-run this script with --allow-policy-exception (it applies the exception
@@ -320,12 +348,9 @@ json.dump(strip(json.load(open(sys.argv[1]))), open(sys.argv[2], "w"))
 offer_policy_exception() {
   local c="$1" why="$2" rule spec saved out
   case " $POLICY_ACTIVE " in *" $c "*) return 0 ;; esac
-  case "$c" in
-    iam.allowedPolicyMemberDomains) rule="  - allowAll: true" ;;
-    iam.managed.allowedPolicyMembers|iam.disableServiceAccountKeyCreation|iam.managed.disableServiceAccountKeyCreation)
-      rule="  - enforce: false" ;;
-    *) return 1 ;;
-  esac
+  policy_supported "$c" || return 1
+  rule="  - enforce: false"
+  [ "$c" = iam.allowedPolicyMemberDomains ] && rule="  - allowAll: true"
   cat <<EOF
 
     The organization policy $c blocks this step.
@@ -337,7 +362,17 @@ EOF
     return 1
   fi
   saved="$WORKDIR/previous-$c.json"
-  gcloud org-policies describe "$c" --project="$PROJECT" --format=json >"$saved" 2>/dev/null || : >"$saved"
+  # Only "not found" means the project has no policy of its own. Any other read
+  # error would make the restore guess wrong, so change nothing in that case.
+  if ! gcloud org-policies describe "$c" --project="$PROJECT" --format=json >"$saved" 2>"$WORKDIR/describe-$c.err"; then
+    if grep -qiE 'NOT_FOUND|not found' "$WORKDIR/describe-$c.err"; then
+      : >"$saved"
+    else
+      cat "$WORKDIR/describe-$c.err" >&2
+      warn "Could not read the current $c policy on $PROJECT, so it could not be restored afterwards. No change was made."
+      return 1
+    fi
+  fi
   spec="$WORKDIR/exception-$c.yaml"
   printf 'name: projects/%s/policies/%s\nspec:\n  rules:\n%s\n' "$PROJECT" "$c" "$rule" >"$spec"
   if ! out="$(gcloud org-policies set-policy "$spec" --quiet 2>&1)"; then
@@ -364,7 +399,7 @@ retry_until_policy_applies() {
     if [ -n "$c" ]; then
       case " $POLICY_ACTIVE " in
         *" $c "*) ;;
-        *) offer_policy_exception "$c" "$why" || { printf '%s\n' "$out" >&2; return 1; } ;;
+        *) offer_policy_exception "$c" "$why" || { printf '%s\n' "$out" >&2; BLOCKED_BY="$c"; return 1; } ;;
       esac
     fi
     if [ $((SECONDS - start)) -ge 900 ]; then
@@ -463,7 +498,8 @@ else
           restore_policy_exception
         else
           restore_policy_exception
-          die "The organization policy $c (Domain Restricted Sharing) blocks granting $GMAIL_PUSH_SA access to the topic.
+          c="${BLOCKED_BY:-$c}"
+          die "The organization policy $(policy_label "$c") blocks granting $GMAIL_PUSH_SA access to the topic.
        This Google-owned account is how Gmail delivers new-mail notifications, and Google Workspace has no polling alternative.
 $(policy_manual_help "$c")
        Details: https://developers.google.com/workspace/gmail/api/guides/push"
@@ -565,6 +601,7 @@ else
           restore_policy_exception
         else
           restore_policy_exception
+          c="${BLOCKED_BY:-$c}"
           die "The organization policy $c blocks creating service account keys in $PROJECT.
        LimaCharlie needs a key to call the Gmail API on your behalf.
 $(policy_manual_help "$c")"
