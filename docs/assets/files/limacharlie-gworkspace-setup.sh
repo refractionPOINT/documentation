@@ -404,7 +404,7 @@ retry_until_policy_applies() {
     # Keep waiting only while it still looks like a policy block; any other
     # error (permissions, a missing resource, the key limit) will not go away.
     case "$out" in
-      *FAILED_PRECONDITION*|*allowedPolicyMember*|*disableServiceAccountKeyCreation*|*"permitted customer"*|*"not in permitted organization"*) ;;
+      *constraints/*|*allowedPolicyMember*|*disableServiceAccountKeyCreation*|*"permitted customer"*|*"not in permitted organization"*) ;;
       *) printf '%s\n' "$out" >&2; warn "$what failed for a reason other than the organization policy."; return 1 ;;
     esac
     c="$(constraint_from_error "$out")"
@@ -499,7 +499,7 @@ else
       --member="serviceAccount:$GMAIL_PUSH_SA" --role=roles/pubsub.publisher --quiet 2>&1)"; then
     printf '%s\n' "$out" >&2
     case "$out" in
-      *allowedPolicyMember*|*FAILED_PRECONDITION*|*"not in permitted organization"*|*"does not belong to a permitted customer"*)
+      *allowedPolicyMember*|*"not in permitted organization"*|*"permitted customer"*)
         c="$(constraint_from_error "$out")"
         c="${c:-iam.allowedPolicyMemberDomains}"
         if offer_policy_exception "$c" "grant Gmail's publisher account ($GMAIL_PUSH_SA) access to the topic" \
