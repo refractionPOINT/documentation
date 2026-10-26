@@ -17,7 +17,8 @@
 #      a secret, creates the connection, and runs the connection test.
 #
 # Safe to re-run: existing resources are reused, and a key saved by an earlier
-# run is reused instead of creating another one.
+# run is reused. When a new key is needed, the older keys are offered for
+# deletion once LimaCharlie works with the new one.
 #
 # Easiest place to run it is Google Cloud Shell, which already has gcloud and is
 # signed in:
@@ -49,6 +50,8 @@ CONNECTION_NAME="gworkspace"
 MAILBOXES=""
 MAILBOXES_SET=""
 BACKFILL_DAYS="14"
+BACKFILL_SET=""
+DELETE_OLD_KEYS=""
 SKIP_LC=""
 ASSUME_YES=""
 
@@ -79,6 +82,9 @@ and tells you what to paste into the web app):
                          mailbox in the domain.
   --backfill-days N      Days of existing mail to scan at setup, 0-90 (default: $BACKFILL_DAYS)
   --skip-limacharlie     Only do the Google side.
+  --delete-old-keys      After the connection test passes, delete this service
+                         account's other keys without asking. Without a
+                         terminal they are otherwise only listed.
 
 Other:
   --yes                  Do not ask questions; use flags and defaults.
@@ -105,13 +111,19 @@ while [ $# -gt 0 ]; do
     --secret-name) SECRET_NAME="${2:-}"; shift 2 ;;
     --connection) CONNECTION_NAME="${2:-}"; shift 2 ;;
     --mailboxes) MAILBOXES="${2:-}"; MAILBOXES_SET=1; shift 2 ;;
-    --backfill-days) BACKFILL_DAYS="${2:-}"; shift 2 ;;
+    --backfill-days) BACKFILL_DAYS="${2:-}"; BACKFILL_SET=1; shift 2 ;;
+    --delete-old-keys) DELETE_OLD_KEYS=1; shift ;;
     --skip-limacharlie) SKIP_LC=1; shift ;;
     --yes|-y) ASSUME_YES=1; shift ;;
     -h|--help) usage; exit 0 ;;
     *) usage; die "Unknown option: $1" ;;
   esac
 done
+
+case "$BACKFILL_DAYS" in
+  ''|*[!0-9]*) die "--backfill-days must be a whole number from 0 to 90." ;;
+esac
+[ "$BACKFILL_DAYS" -le 90 ] || die "--backfill-days must be a whole number from 0 to 90."
 
 # Questions are read from the terminal, so the script also works when piped.
 INTERACTIVE=""
@@ -351,6 +363,17 @@ fi
 if [ -n "$reuse" ]; then
   ok "Reusing the key saved in $KEY_FILE"
 else
+  key_count="$(gcloud iam service-accounts keys list --iam-account="$SA_EMAIL" --project="$PROJECT" \
+    --managed-by=user --format='value(name.basename())' 2>/dev/null | grep -c . || true)"
+  if [ "${key_count:-0}" -ge 10 ]; then
+    die "$SA_EMAIL already has $key_count keys, the most Google allows. Delete the ones nothing uses:
+       gcloud iam service-accounts keys list --iam-account=$SA_EMAIL --project=$PROJECT --managed-by=user
+       gcloud iam service-accounts keys delete <KEY_ID> --iam-account=$SA_EMAIL --project=$PROJECT
+       Keep the key LimaCharlie uses (its private_key_id), then run this script again."
+  fi
+  if [ "${key_count:-0}" -gt 0 ]; then
+    info "This service account already has $key_count key(s). A new one is created; the script offers to delete the old ones once LimaCharlie uses the new one."
+  fi
   RAW_KEY="$WORKDIR/raw-key.json"
   if ! out="$(gcloud iam service-accounts keys create "$RAW_KEY" --iam-account="$SA_EMAIL" \
       --project="$PROJECT" --quiet 2>&1)"; then
@@ -360,6 +383,8 @@ else
         die "An organization policy (iam.disableServiceAccountKeyCreation) blocks creating service account keys in $PROJECT.
        LimaCharlie needs a key to call the Gmail API on your behalf.
        Ask your Google Cloud organization policy administrator to allow key creation for project $PROJECT, then run this script again." ;;
+      *[Mm]aximum*|*"limit"*)
+        die "Google refused another key for $SA_EMAIL: it has reached its key limit. Delete unused keys (gcloud iam service-accounts keys list --iam-account=$SA_EMAIL --managed-by=user), then run this script again." ;;
       *) die "Could not create a key. $GCLOUD_ACCOUNT needs the Service Account Key Admin role (or Owner) on $PROJECT." ;;
     esac
   fi
@@ -388,6 +413,38 @@ json.dump(d, open(p, "w"), indent=2)
 chmod 600 "$KEY_FILE"
 
 CLIENT_ID="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["client_id"])' "$KEY_FILE")"
+CURRENT_KID="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["private_key_id"])' "$KEY_FILE")"
+
+# The service account's user-managed keys other than the one in $KEY_FILE, as
+# "KEY_ID CREATED" lines.
+other_keys() {
+  gcloud iam service-accounts keys list --iam-account="$SA_EMAIL" --project="$PROJECT" \
+    --managed-by=user --format='value(name.basename(),validAfterTime)' 2>/dev/null \
+    | awk -v cur="$CURRENT_KID" '$1 != cur'
+}
+
+# Old keys still carry the same domain-wide access, so once LimaCharlie uses
+# the new key, offer to delete them.
+retire_old_keys() {
+  local old kid
+  old="$(other_keys)"
+  [ -n "$old" ] || return 0
+  step "Older keys on $SA_EMAIL"
+  info "LimaCharlie now uses key $CURRENT_KID. These older keys are still valid and carry the same access:"
+  printf '%s\n' "$old" | awk '{print "      " $1 "  (created " $2 ")"}'
+  if [ -n "$DELETE_OLD_KEYS" ] || { [ -n "$INTERACTIVE" ] && confirm "    Delete them? Say no if anything else uses this service account."; }; then
+    for kid in $(printf '%s\n' "$old" | awk '{print $1}'); do
+      if gcloud iam service-accounts keys delete "$kid" --iam-account="$SA_EMAIL" \
+          --project="$PROJECT" --quiet >/dev/null 2>&1; then
+        ok "Deleted key $kid"
+      else
+        warn "Could not delete key $kid"
+      fi
+    done
+  else
+    info "To delete one later: gcloud iam service-accounts keys delete <KEY_ID> --iam-account=$SA_EMAIL --project=$PROJECT"
+  fi
+}
 
 # ---------------------------------------------------------------------------
 # Domain-wide delegation check: ask Google for a token that acts as the admin
@@ -505,6 +562,17 @@ lc_manual_instructions() {
       4. Save, then run the connection test with "Verify notification delivery".
     Delete $KEY_FILE once the connection test passes.
 EOF
+  local old
+  old="$(other_keys)"
+  if [ -n "$old" ]; then
+    cat <<EOF
+
+    $SA_EMAIL also has older keys that are still valid. Once the connection
+    test passes with the new key ($CURRENT_KID), delete them unless something
+    else uses them:
+EOF
+    printf '%s\n' "$old" | awk -v sa="$SA_EMAIL" -v p="$PROJECT" '{print "      gcloud iam service-accounts keys delete " $1 " --iam-account=" sa " --project=" p "   # created " $2}'
+  fi
 }
 
 if [ -n "$SKIP_LC" ]; then
@@ -570,11 +638,14 @@ ok "Stored"
 step "Connection $CONNECTION_NAME"
 write_record=1
 if "${LC[@]}" hive get --hive-name mailsec_provider --key "$CONNECTION_NAME" --oid "$OID" >/dev/null 2>&1; then
-  if [ -n "$INTERACTIVE" ] && confirm "    Connection $CONNECTION_NAME already exists. Replace its settings?"; then
-    write_record=1
-  else
+  if [ -n "$INTERACTIVE" ]; then
+    confirm "    Connection $CONNECTION_NAME already exists. Replace its settings?" || write_record=""
+  elif [ -z "$MAILBOXES_SET" ] && [ -z "$BACKFILL_SET" ]; then
+    # Without a terminal, only replace it when the settings were passed explicitly.
     write_record=""
-    ok "Keeping the existing connection settings"
+  fi
+  if [ -z "$write_record" ]; then
+    ok "Keeping the existing connection settings (pass --mailboxes or --backfill-days to replace them)"
   fi
 fi
 
@@ -653,6 +724,7 @@ if [ -n "$test_ok" ]; then
   ok "Connection test passed"
   rm -f "$KEY_FILE"
   ok "Deleted $KEY_FILE (LimaCharlie now holds the credential in secret $SECRET_NAME)"
+  retire_old_keys
   step "Done"
   info "Mail should start appearing in Email Security within a few minutes."
 else

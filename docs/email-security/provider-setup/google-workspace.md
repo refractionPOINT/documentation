@@ -69,8 +69,10 @@ browser step Google requires, and can finish the LimaCharlie side too. It:
 5. Optionally stores the credential as a LimaCharlie secret, creates the
    connection, and runs the connection test including notification delivery.
 
-It is safe to re-run: existing resources are reused, and a key saved by an
-earlier run is reused instead of creating another one. When something is
+It is safe to re-run: existing resources are reused, and a key file left by
+an earlier run is reused. When the script has to create a new key, it offers
+to delete the service account's older keys once the connection test passes
+with the new one, so stale keys with mail access do not pile up. When something is
 blocked, such as an organization policy, the script stops and says who needs to
 change what.
 
