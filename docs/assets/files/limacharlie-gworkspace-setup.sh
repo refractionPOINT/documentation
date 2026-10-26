@@ -75,7 +75,8 @@ and tells you what to paste into the web app):
   --oid UUID             Organization ID (or set LC_OID)
                          The API key is read from LC_API_KEY, or prompted for.
                          It needs secret.set, mailsec_provider.get,
-                         mailsec_provider.set and mailsec.act.
+                         mailsec_provider.set and mailsec.act. With secret.get
+                         it also checks an existing secret before replacing it.
   --secret-name NAME     Secret to store the credential in (default: $SECRET_NAME)
   --connection NAME      Connection record name (default: $CONNECTION_NAME)
   --mailboxes LIST       Comma-separated mailboxes to protect. Empty means every
@@ -637,12 +638,6 @@ if ! "${LC[@]}" extension list --oid "$OID" --output json 2>/dev/null | grep -q 
   confirm "    Continue anyway?" || exit 1
 fi
 
-step "Storing the credential as secret $SECRET_NAME"
-python3 -c 'import json,sys; print(json.dumps({"secret": open(sys.argv[1]).read()}))' "$KEY_FILE" \
-  | "${LC[@]}" secret set --key "$SECRET_NAME" --enabled --oid "$OID" >/dev/null \
-  || die "Could not store the secret. The API key needs secret.set."
-ok "Stored"
-
 step "Connection $CONNECTION_NAME"
 write_record=1
 if "${LC[@]}" hive get --hive-name mailsec_provider --key "$CONNECTION_NAME" --oid "$OID" >/dev/null 2>&1; then
@@ -657,8 +652,8 @@ if "${LC[@]}" hive get --hive-name mailsec_provider --key "$CONNECTION_NAME" --o
   fi
 fi
 
-# Old keys may only be retired when the connection reads the secret this run
-# just wrote. A kept connection can point at another secret holding an older key.
+# A kept connection may read another secret. Then the new credential is not
+# stored at all, nothing is retired, and the test checks the connection as is.
 uses_our_secret=1
 if [ -z "$write_record" ]; then
   kept_cred="$("${LC[@]}" hive get --hive-name mailsec_provider --key "$CONNECTION_NAME" \
@@ -680,9 +675,45 @@ except Exception:
 ')"
   if [ "$kept_cred" != "hive://secret/$SECRET_NAME" ]; then
     uses_our_secret=""
-    warn "Connection $CONNECTION_NAME uses credential '${kept_cred:-unknown}', not hive://secret/$SECRET_NAME."
-    info "The new key was stored in $SECRET_NAME but this connection does not read it; the test below checks the connection's own credential."
+    warn "Connection $CONNECTION_NAME reads '${kept_cred:-an unknown credential}', not hive://secret/$SECRET_NAME."
+    info "The new credential is not stored, and the test below checks the connection's own credential."
+    info "To switch the connection to the new key, re-run and replace its settings."
   fi
+fi
+
+if [ -n "$uses_our_secret" ]; then
+  step "Storing the credential as secret $SECRET_NAME"
+  # Do not silently replace a secret that holds another service account's key:
+  # a working connection may depend on it. Reading it needs secret.get; when
+  # the key cannot be read, the secret is replaced as before.
+  prior_email="$("${LC[@]}" secret get --key "$SECRET_NAME" --oid "$OID" --output json 2>/dev/null | python3 -c '
+import json, sys
+def find(o):
+    if isinstance(o, dict):
+        v = o.get("secret")
+        if isinstance(v, str):
+            return v
+        for x in o.values():
+            r = find(x)
+            if r:
+                return r
+    return ""
+try:
+    print(json.loads(find(json.load(sys.stdin))).get("client_email", ""))
+except Exception:
+    print("")
+')"
+  if [ -n "$prior_email" ] && [ "$prior_email" != "$SA_EMAIL" ]; then
+    if ! confirm_no "    Secret $SECRET_NAME holds a key for $prior_email, not $SA_EMAIL. Replace it?"; then
+      die "Secret $SECRET_NAME was left unchanged because it holds a key for $prior_email.
+       Pass --secret-name <another name> (and --connection <another name>) to set up this service account separately,
+       or run the script in a terminal to confirm the replacement."
+    fi
+  fi
+  python3 -c 'import json,sys; print(json.dumps({"secret": open(sys.argv[1]).read()}))' "$KEY_FILE" \
+    | "${LC[@]}" secret set --key "$SECRET_NAME" --enabled --oid "$OID" >/dev/null \
+    || die "Could not store the secret. The API key needs secret.set."
+  ok "Stored"
 fi
 
 if [ -n "$write_record" ]; then
@@ -758,12 +789,14 @@ done
 
 if [ -n "$test_ok" ]; then
   ok "Connection test passed"
-  rm -f "$KEY_FILE"
-  ok "Deleted $KEY_FILE (LimaCharlie now holds the credential in secret $SECRET_NAME)"
   if [ -n "$uses_our_secret" ]; then
+    rm -f "$KEY_FILE"
+    ok "Deleted $KEY_FILE (LimaCharlie now holds the credential in secret $SECRET_NAME)"
     retire_old_keys
-  elif [ -n "$(other_keys)" ]; then
-    warn "Older keys on $SA_EMAIL were not deleted because connection $CONNECTION_NAME reads another secret, which may hold one of them."
+  else
+    warn "Connection $CONNECTION_NAME does not use the key in $KEY_FILE ($CURRENT_KID), so it was kept and no keys were deleted."
+    info "A re-run reuses it. If you do not need it, delete both the key and the file:"
+    info "  gcloud iam service-accounts keys delete $CURRENT_KID --iam-account=$SA_EMAIL --project=$PROJECT && rm -f $KEY_FILE"
   fi
   step "Done"
   info "Mail should start appearing in Email Security within a few minutes."
