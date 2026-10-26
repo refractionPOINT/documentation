@@ -13,6 +13,7 @@ These are the events emitted by the endpoint agent for each supported operating 
 | EDR Event Type | macOS | Windows | Linux | Chrome | Edge |
 | --- | --- | --- | --- | --- | --- |
 | [APP\_CONTROL\_DENIED](#app_control_denied) | ☑️ | ☑️ |  |  |  |
+| [APP\_CONTROL\_POLICY\_REP](#app_control_policy_rep) | ☑️ | ☑️ |  |  |  |
 | [APP\_CONTROL\_RESIDENT](#app_control_resident) | ☑️ | ☑️ |  |  |  |
 | [APP\_CONTROL\_UNRESOLVED](#app_control_unresolved) | ☑️ | ☑️ |  |  |  |
 | [AUTORUN\_CHANGE](#autorun_change) |  | ☑️ |  |  |  |
@@ -21,6 +22,7 @@ These are the events emitted by the endpoint agent for each supported operating 
 | [CODE\_IDENTITY](#code_identity) | ☑️ | ☑️ | ☑️ |  |  |
 | [CONNECTED](#connected) | ☑️ | ☑️ | ☑️ | ☑️ | ☑️ |
 | [CONTAINER\_LIST\_REP](#container_list_rep) |  |  | ☑️ |  |  |
+| [CRASH\_DUMP\_INFO\_REP](#crash_dump_info_rep) |  | ☑️ |  |  |  |
 | DATA\_DROPPED | ☑️ | ☑️ | ☑️ |  |  |
 | [DEBUG\_DATA\_REP](#debug_data_rep) |  | ☑️ |  |  |  |
 | DELETED\_SENSOR | ☑️ | ☑️ | ☑️ |  |  |
@@ -109,6 +111,7 @@ These are the events emitted by the endpoint agent for each supported operating 
 | [TERMINATE\_UDP4\_CONNECTION](#terminate_udp4_connection) | ☑️ | ☑️ | ☑️ |  |  |
 | [TERMINATE\_UDP6\_CONNECTION](#terminate_udp6_connection) | ☑️ | ☑️ | ☑️ |  |  |
 | [THREAD\_INJECTION](#thread_injection) |  | ☑️ |  |  |  |
+| [TOASTER\_NOTIFY\_REP](#toaster_notify_rep) | ☑️ | ☑️ |  |  |  |
 | [USB\_DEVICE\_LIST\_REP](#usb_device_list_rep) | ☑️ | ☑️ | ☑️ |  |  |
 | [USER\_LOGIN](#user_login) | ☑️ |  |  |  |  |
 | [USER\_LOGOUT](#user_logout) | ☑️ |  |  |  |  |
@@ -229,6 +232,51 @@ It describes the first occurrence in the window. It carries `FILE_PATH`, `PROCES
 The per-execution context (user, launching process, command line, version information) is not repeated on a summary, since it differs between the occurrences it stands for.
 
 Available on Windows and macOS.
+
+### APP\_CONTROL\_POLICY\_REP
+
+Response event for the [`app_control_policy`](endpoint-commands.md#app_control_policy)
+sensor command. Requires sensor version 5.4.0 or later.
+
+**Platforms:** macOS | Windows
+
+| Field | Description |
+| --- | --- |
+| `ERROR` | `0`. The command succeeds even when no policy is installed. |
+| `APP_CONTROL_STATUS` | The sensor's Application Control status, the same block it sends in `SYNC`. See below. |
+| `FILE_PATH` | Where the sensor keeps its cached copy of the policy on the host. Reported even when no policy is installed. |
+| `APP_CONTROL_N_RULES` | The number of rules in the installed policy. Always present, `0` when there is no policy. |
+| `APP_CONTROL_RULES` | The rules, as a list of `APP_CONTROL_RULE` entries. At most 256 are listed; compare their number with `APP_CONTROL_N_RULES` to tell whether the list was capped. Absent when the policy has no rules. |
+
+`APP_CONTROL_STATUS` holds, among others:
+
+- `APP_CONTROL_MODE`: `0` off, `1` permissive, `2` permissive_sync, `3` enforcing
+- `APP_CONTROL_STANCE`: `0` blocklist, `1` allowlist
+- `APP_CONTROL_GENERATION`: the generation of the installed policy, which is
+  the time the cloud issued it, in seconds since the epoch
+- `APP_CONTROL_POLICY_AGE_SEC`: how old the installed policy is, in seconds
+- `APP_CONTROL_N_EVALUATED`, `APP_CONTROL_N_DENIED`, `APP_CONTROL_N_UNRESOLVED`:
+  counts of the executions judged, denied and left unresolved
+- `APP_CONTROL_KEY_ID`: the ids of the policy signing keys this sensor accepts,
+  8 bytes each, concatenated. Absent when the sensor holds no key. Only the
+  `app_control_policy` reply carries it; `SYNC` does not
+- `APP_CONTROL_REFUSED`: present when the sensor declined a policy, with the
+  refused `APP_CONTROL_GENERATION`, the `APP_CONTROL_REASON` (listed under
+  [Managed alerts](../5-integrations/extensions/limacharlie/app-control.md#managed-alerts))
+  and the `TIMESTAMP` of the refusal
+
+Each `APP_CONTROL_RULE` carries:
+
+- `APP_CONTROL_RULE_ACTION`: `0` allow, `1` deny
+- `APP_CONTROL_RULE_KIND`: what the rule matches: `0` path (an exact path, or
+  a directory when the value ends in a separator), `1` signer (Apple Team ID on
+  macOS, Authenticode publisher on Windows), `2` signing identifier (macOS),
+  `3` signer root (SHA-256 thumbprint of a certificate in the chain), `4`
+  SHA-256 of the file
+- `APP_CONTROL_RULE_VALUE`: the value matched
+- `APP_CONTROL_RULE_ID`: the rule's record name in the
+  [`app_control_rule`](../7-administration/config-hive/app-control-rule.md)
+  hive. Absent when the policy carried no id for it
 
 ### AUTORUN\_CHANGE
 
@@ -423,6 +471,78 @@ apply to Docker and Podman only.
   }
 }
 ```
+
+### CRASH\_DUMP\_INFO\_REP
+
+Response event for the [`crash_dump_info`](endpoint-commands.md#crash_dump_info)
+sensor command. Requires sensor version 5.4.2 or later.
+
+**Platforms:** Windows
+
+A host with no dumps is a success with an empty `CRASH_DUMPS` list. When
+`ERROR` is not `0`, for example because the path given with `--file-path` is
+not a dump, the reply carries no list.
+
+| Field | Description |
+| --- | --- |
+| `ERROR` | `0` on success. |
+| `CRASH_DUMPS` | One `CRASH_DUMP` entry per dump. See below. |
+| `SCAN_IS_TRUNCATED` | `1` when more dumps were waiting than `--limit` allowed. Run the command again for the next ones. |
+| `CRASH_DUMPS_ALREADY_LISTED` | How many dumps on the host an earlier plain listing already reported, and were left out. |
+| `CRASH_DUMPS_SINCE` | For a plain listing, the time the listing started from: dumps modified after it are reported. In milliseconds since the epoch. Absent on a first listing. |
+
+Each `CRASH_DUMP` describes one dump. Fields the dump does not contain are
+absent rather than empty.
+
+The file and the stop:
+
+- `FILE_PATH`, `FILE_SIZE`, `MODIFICATION_TIME`: the dump file
+- `CRASH_DUMP_TYPE`: the kind of dump: `1` complete, `2` kernel, `4` small,
+  `5` bitmap, `6` live bitmap, `8` kernel memory, `9` kernel and user memory,
+  `10` complete memory
+- `CRASH_DUMP_IS_LIVE`: `1` for a live kernel report, which Windows writes
+  without stopping the machine. Absent for a real crash
+- `CRASH_TIME`: when the crash happened, in milliseconds since the epoch
+- `SYSTEM_UPTIME`: how long the host had been up, in milliseconds
+- `BUGCHECK_CODE`, `BUGCHECK_NAME`, `BUGCHECK_DESCRIPTION`: the stop code, for
+  example `209` (`0xD1`), `DRIVER_IRQL_NOT_LESS_OR_EQUAL`, with a description
+- `BUGCHECK_PARAMETERS`: the stop code's four parameters
+- `ERROR_MESSAGE`: notes about what could not be read from the dump
+
+The machine:
+
+- `VERSION_MAJOR`, `BUILD_NUMBER`, `SERVICE_PACK`, `PRODUCT_TYPE`, `SUITE`:
+  the Windows version that crashed
+- `MACHINE_TYPE`, `CRASH_ARCHITECTURE`, `NUMBER_OF_PROCESSORS`
+
+The analysis, for a small memory dump only:
+
+- `PROBABLE_CAUSE`: the strongest candidate from `CRASH_CANDIDATES`
+- `CRASH_CANDIDATES`: the drivers the evidence implicates, strongest first.
+  Each carries `MODULE_NAME`, `BASE_ADDRESS`, `MEMORY_SIZE`, `TIMESTAMP`, the
+  `MEMORY_ADDRESS` that implicated it, a `REASON` in words, and a
+  `CONFIDENCE`: `high` when Windows named the driver or a stop code parameter
+  points inside it, `low` when it is only the first driver found on the
+  crashing thread's stack. When the driver is found on the host's disk, it
+  also carries its `FILE_PATH`, its signer as `CERT_SUBJECT`, `FILE_IS_SIGNED`,
+  and `IMAGE_MATCHES_DUMP`, `1` when the file on disk is the same build that
+  was loaded at the crash
+- `CRASH_CULPRIT`: the driver Windows itself blamed, when it named one
+- `INSTRUCTION_POINTER`, `STACK_POINTER`, `CRASH_EXCEPTION` (with its
+  `EXCEPTION_CODE`): where the crashing thread was
+- `STACK_TRACE`: the crashing thread's stack, as frames with a
+  `MEMORY_ADDRESS` and, when a loaded driver holds it, the `MODULE_NAME`,
+  `BASE_ADDRESS` and `MODULE_OFFSET`. `SCAN_IS_TRUNCATED` is `1` when the stack
+  was longer than the sensor reads
+- `MODULES`: the drivers loaded at the crash, each with `MODULE_NAME`,
+  `FILE_PATH`, `BASE_ADDRESS`, `MEMORY_SIZE` and its link `TIMESTAMP`. The size
+  and link time identify the exact build of a driver to a symbol server
+- `UNLOADED_MODULES`: drivers unloaded before the crash. Their address range
+  may have been reused, so a stack frame can resolve to a different driver than
+  the one that was really there
+- `CRASH_DATA_BLOCKS`: extra memory Windows saved in the dump, each block with
+  its `MEMORY_ADDRESS`, `MEMORY_SIZE` and the `STACK_TRACE` of driver
+  addresses found in it
 
 ### DEBUG\_DATA\_REP
 
@@ -2330,6 +2450,43 @@ This event is generated when the sensor detects what looks like a thread injecti
     ]
   }
   "ts": "2024-01-10 18:43:39"
+}
+```
+
+### TOASTER\_NOTIFY\_REP
+
+Response event for the [`toaster_notify`](endpoint-commands.md#toaster_notify)
+sensor command. Requires sensor version 5.4.0 or later.
+
+**Platforms:** macOS | Windows
+
+The reply repeats the request's `TOAST_PRIORITY` (`0` information, `1`
+warning, `2` critical), `TOAST_TITLE` and `TOAST_TEXT`, and adds:
+
+| Field | Description |
+| --- | --- |
+| `ERROR` | `0` when the notice was accepted. See below. |
+| `TOAST_DELIVERED` | How many users' trays showed the notice at once. `0` is a success too, and the usual answer when no tray was running: the notice is held and shown as each tray starts. |
+| `ERROR_MESSAGE` | Why the notice was refused. Present only when `ERROR` is not `0`. |
+
+| `ERROR` | Meaning |
+| --- | --- |
+| `0` | The notice was shown, or held for the trays being started |
+| `50` | The sensor could not start the notification service |
+| `87` | Nothing was left to show once the title and text were cleaned, or the priority was invalid |
+| `170` | Refused by the rate limit: the same notice was shown in the last 30 seconds, or more than 5 notices were shown in the last minute. Also returned when the notification service could not be reached |
+
+**Sample Event:**
+
+```json
+{
+  "event": {
+    "TOAST_PRIORITY": 1,
+    "TOAST_TITLE": "Security notice",
+    "TOAST_TEXT": "IT Security is investigating this computer.",
+    "ERROR": 0,
+    "TOAST_DELIVERED": 1
+  }
 }
 ```
 
