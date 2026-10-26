@@ -73,8 +73,25 @@ It is safe to re-run: existing resources are reused, and a key file left by
 an earlier run is reused. When the script has to create a new key, it offers
 to delete the service account's older keys once the connection test passes
 with the new one, so stale keys with mail access do not pile up. When something is
-blocked, such as an organization policy, the script stops and says who needs to
-change what.
+blocked, the script stops and says who needs to change what.
+
+**Organization policies.** Two common Google Cloud organization policies block
+setup: Domain Restricted Sharing (`iam.allowedPolicyMemberDomains` or
+`iam.managed.allowedPolicyMembers`), which rejects Gmail's Google-owned
+publisher account, and the ban on service account keys
+(`iam.disableServiceAccountKeyCreation`). When one blocks a step, the script
+offers to apply a temporary exception **on this project only**. It does the
+blocked step, then restores the policy exactly as it was, even if the run is
+interrupted. The publisher grant and the key keep working after the policy is
+restored. Accepting this needs the **Organization Policy Administrator** role
+(`roles/orgpolicy.policyAdmin`) on the organization. Without a terminal, pass
+`--allow-policy-exception` to accept. Policy changes can take up to 15 minutes
+to apply, and the script waits for them.
+
+Organization policies are configured under **IAM & Admin → Organization
+Policies**. The legacy and managed Domain Restricted Sharing policies are
+separate entries. Changing one has no effect on the other, so check the
+constraint the error names.
 
 ### Get gcloud
 
@@ -111,7 +128,9 @@ bash limacharlie-gworkspace-setup.sh
 
 The script asks for the project, the Workspace administrator address the
 service account acts as, and whether to include the optional
-`https://mail.google.com/` scope. You can read it before running it; every
+`https://mail.google.com/` scope. The administrator address is a **person's
+Workspace account with admin rights**, such as the one you sign in to Google
+Admin with. It is not a service account address. You can read it before running it; every
 step is commented. Run `bash limacharlie-gworkspace-setup.sh --help` for flags
 that answer the questions up front.
 
@@ -322,7 +341,9 @@ your organization; do not substitute your service account.
     publisher in `system.gserviceaccount.com`. Ask your organization policy
     administrator to make a temporary exception at this project, apply the
     publisher binding, then restore the restriction. Existing bindings survive
-    restoration, but later IAM edits may require another exception.
+    restoration, but later IAM edits may require another exception. The
+    [setup script](#fastest-path-one-setup-script) can apply and restore this
+    exception for you.
 
     For `iam.managed.allowedPolicyMembers` or a custom constraint, have the
     administrator allow this principal under the applicable policy. See

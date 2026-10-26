@@ -53,6 +53,7 @@ MAILBOXES_SET=""
 BACKFILL_DAYS="14"
 BACKFILL_SET=""
 DELETE_OLD_KEYS=""
+ALLOW_POLICY_EXCEPTION=""
 SKIP_LC=""
 ASSUME_YES=""
 
@@ -70,6 +71,11 @@ Google Cloud:
                          and reporter replies). Broader access; optional.
   --key-file PATH        Where the credential JSON is written
                          (default: ./$KEY_FILE)
+  --allow-policy-exception
+                         If an organization policy blocks a step, apply a
+                         temporary exception on this project only, then put
+                         the policy back. Asked interactively otherwise.
+                         Needs the Organization Policy Administrator role.
 
 LimaCharlie (optional; without these the script stops after the Google side
 and tells you what to paste into the web app):
@@ -115,6 +121,7 @@ while [ $# -gt 0 ]; do
     --mailboxes) MAILBOXES="${2:-}"; MAILBOXES_SET=1; shift 2 ;;
     --backfill-days) BACKFILL_DAYS="${2:-}"; BACKFILL_SET=1; shift 2 ;;
     --delete-old-keys) DELETE_OLD_KEYS=1; shift ;;
+    --allow-policy-exception) ALLOW_POLICY_EXCEPTION=1; shift ;;
     --skip-limacharlie) SKIP_LC=1; shift ;;
     --yes|-y) ASSUME_YES=1; shift ;;
     -h|--help) usage; exit 0 ;;
@@ -208,9 +215,18 @@ gcloud projects describe "$PROJECT" --format='value(projectId)' >/dev/null 2>&1 
 ok "Using project $PROJECT"
 
 if [ -z "$ADMIN_EMAIL" ]; then
-  ask ADMIN_EMAIL "Workspace administrator email the service account acts as"
+  admin_default=""
+  case "$GCLOUD_ACCOUNT" in
+    *.gserviceaccount.com|*@gmail.com|*@googlemail.com) ;;
+    *@*) admin_default="$GCLOUD_ACCOUNT" ;;
+  esac
+  info "Enter a Workspace user with admin rights (a person's account like admin@yourdomain.com,"
+  info "not a service account). LimaCharlie acts as this user to list your domain's mailboxes."
+  ask ADMIN_EMAIL "Workspace administrator email" "$admin_default"
 fi
 case "$ADMIN_EMAIL" in
+  *.gserviceaccount.com)
+    die "$ADMIN_EMAIL is a service account. The administrator must be a Workspace user with admin rights, such as admin@yourdomain.com (often the account you sign in to admin.google.com with)." ;;
   *@*.*) ;;
   *) die "A Workspace administrator email is required (--admin-email admin@yourdomain.com)." ;;
 esac
@@ -229,8 +245,145 @@ SCOPES="$SCOPE_DIRECTORY,$SCOPE_MAIL_MODIFY"
 [ -n "$BANNERS" ] && SCOPES="$SCOPES,$SCOPE_MAIL_FULL"
 
 WORKDIR="$(mktemp -d)"
-cleanup() { rm -rf "$WORKDIR"; }
+
+# ---------------------------------------------------------------------------
+# Temporary organization-policy exceptions.
+#
+# Some organizations block a step with a policy, most often Domain Restricted
+# Sharing (Gmail's publisher account is outside the organization) or a ban on
+# service account keys. Both only gate the moment a grant or key is CREATED:
+# once it exists it keeps working after the policy is restored. So the script
+# can override the policy on this project only, do the one step, and put back
+# exactly what was there before (the project's own policy, or inheritance).
+
+POLICY_ACTIVE=""   # constraints currently overridden by this script (space separated)
+
+constraint_from_error() { # prints the constraint named in a gcloud error, if any
+  printf '%s' "$1" | grep -oE 'constraints/[A-Za-z0-9_.]+' | head -n1 | sed 's#^constraints/##' || true
+}
+
+policy_console_url() {
+  printf 'https://console.cloud.google.com/iam-admin/orgpolicies/%s?project=%s' "$1" "$PROJECT"
+}
+
+policy_manual_help() { # constraint -> how an administrator does it by hand
+  local action="Enforcement Off"
+  [ "$1" = iam.allowedPolicyMemberDomains ] && action="Allow All"
+  cat <<EOF
+       To fix it, someone with the Organization Policy Administrator role can either:
+         - re-run this script with --allow-policy-exception (it applies the exception
+           on this project only and restores the policy right after), or
+         - open $(policy_console_url "$1")
+           choose Manage policy > Override parent's policy > Add a rule > $action,
+           save, wait a few minutes, re-run this script, then set the policy back to
+           "Inherit parent's policy" (or its previous setting).
+EOF
+}
+
+# Puts back every policy this script overrode: the project's own previous
+# policy when it had one, otherwise inheritance from the parent.
+restore_policy_exception() {
+  local c saved restored
+  for c in $POLICY_ACTIVE; do
+    saved="$WORKDIR/previous-$c.json"
+    restored=""
+    if [ -s "$saved" ]; then
+      python3 -c '
+import json, sys
+def strip(o):
+    if isinstance(o, dict):
+        return {k: strip(v) for k, v in o.items() if k not in ("etag", "updateTime")}
+    if isinstance(o, list):
+        return [strip(v) for v in o]
+    return o
+json.dump(strip(json.load(open(sys.argv[1]))), open(sys.argv[2], "w"))
+' "$saved" "$WORKDIR/restore-$c.json" \
+        && gcloud org-policies set-policy "$WORKDIR/restore-$c.json" --quiet >/dev/null 2>&1 && restored=1
+    else
+      gcloud org-policies delete "$c" --project="$PROJECT" --quiet >/dev/null 2>&1 && restored=1
+    fi
+    if [ -n "$restored" ]; then
+      ok "Restored the $c policy on $PROJECT"
+    elif [ -s "$saved" ]; then
+      cp "$saved" "./$c-previous-policy.json" 2>/dev/null || true
+      warn "Could not restore the $c policy on $PROJECT. Its previous setting is in ./$c-previous-policy.json;"
+      info "put it back with: gcloud org-policies set-policy ./$c-previous-policy.json"
+    else
+      warn "Could not restore the $c policy on $PROJECT. Put it back with:"
+      info "  gcloud org-policies delete $c --project=$PROJECT"
+    fi
+  done
+  POLICY_ACTIVE=""
+}
+
+# offer_policy_exception CONSTRAINT "what it unblocks" -> 0 when the exception is in place.
+offer_policy_exception() {
+  local c="$1" why="$2" rule spec saved out
+  case " $POLICY_ACTIVE " in *" $c "*) return 0 ;; esac
+  case "$c" in
+    iam.allowedPolicyMemberDomains) rule="  - allowAll: true" ;;
+    iam.managed.allowedPolicyMembers|iam.disableServiceAccountKeyCreation|iam.managed.disableServiceAccountKeyCreation)
+      rule="  - enforce: false" ;;
+    *) return 1 ;;
+  esac
+  cat <<EOF
+
+    The organization policy $c blocks this step.
+    The script can override it on project $PROJECT only, $why, and then
+    restore the policy exactly as it was. What it creates keeps working after
+    the policy is restored. The rest of your organization is not affected.
+EOF
+  if [ -z "$ALLOW_POLICY_EXCEPTION" ] && ! confirm_no "    Apply this temporary exception now?"; then
+    return 1
+  fi
+  saved="$WORKDIR/previous-$c.json"
+  gcloud org-policies describe "$c" --project="$PROJECT" --format=json >"$saved" 2>/dev/null || : >"$saved"
+  spec="$WORKDIR/exception-$c.yaml"
+  printf 'name: projects/%s/policies/%s\nspec:\n  rules:\n%s\n' "$PROJECT" "$c" "$rule" >"$spec"
+  if ! out="$(gcloud org-policies set-policy "$spec" --quiet 2>&1)"; then
+    printf '%s\n' "$out" >&2
+    warn "Could not change the policy. $GCLOUD_ACCOUNT needs the Organization Policy Administrator role (roles/orgpolicy.policyAdmin) on the organization."
+    return 1
+  fi
+  POLICY_ACTIVE="$POLICY_ACTIVE $c"
+  ok "Temporary exception for $c applied to $PROJECT"
+}
+
+# retry_until_policy_applies "description" "why" cmd... : policy changes take up
+# to 15 minutes to reach every Google service, so retry the blocked step until
+# then. If a second policy turns out to block it too, offer an exception for it.
+retry_until_policy_applies() {
+  local what="$1" why="$2" start=$SECONDS out c last_min=0 min
+  shift 2
+  info "Waiting for the exception to take effect (usually a minute or two, up to 15)..."
+  while :; do
+    if out="$("$@" 2>&1)"; then
+      return 0
+    fi
+    c="$(constraint_from_error "$out")"
+    if [ -n "$c" ]; then
+      case " $POLICY_ACTIVE " in
+        *" $c "*) ;;
+        *) offer_policy_exception "$c" "$why" || { printf '%s\n' "$out" >&2; return 1; } ;;
+      esac
+    fi
+    if [ $((SECONDS - start)) -ge 900 ]; then
+      printf '%s\n' "$out" >&2
+      warn "$what still fails after 15 minutes."
+      return 1
+    fi
+    sleep 20
+    min=$(( (SECONDS - start) / 60 ))
+    if [ "$min" -gt "$last_min" ]; then
+      info "  still waiting ($min min)..."
+      last_min=$min
+    fi
+  done
+}
+
+cleanup() { restore_policy_exception; rm -rf "$WORKDIR"; }
 trap cleanup EXIT
+trap 'exit 130' INT TERM
 
 # Runs gcloud, retrying a few times: new service accounts and APIs take a
 # moment to become visible to the rest of Google Cloud.
@@ -300,11 +453,21 @@ else
     printf '%s\n' "$out" >&2
     case "$out" in
       *allowedPolicyMember*|*FAILED_PRECONDITION*|*"not in permitted organization"*|*"does not belong to a permitted customer"*)
-        die "An organization policy (Domain Restricted Sharing) blocked granting $GMAIL_PUSH_SA access to the topic.
+        c="$(constraint_from_error "$out")"
+        c="${c:-iam.allowedPolicyMemberDomains}"
+        if offer_policy_exception "$c" "grant Gmail's publisher account ($GMAIL_PUSH_SA) access to the topic" \
+           && retry_until_policy_applies "Granting $GMAIL_PUSH_SA" \
+                "grant Gmail's publisher account ($GMAIL_PUSH_SA) access to the topic" \
+                gcloud pubsub topics add-iam-policy-binding "$TOPIC" --project="$PROJECT" \
+                --member="serviceAccount:$GMAIL_PUSH_SA" --role=roles/pubsub.publisher --quiet; then
+          restore_policy_exception
+        else
+          restore_policy_exception
+          die "The organization policy $c (Domain Restricted Sharing) blocks granting $GMAIL_PUSH_SA access to the topic.
        This Google-owned account is how Gmail delivers new-mail notifications, and Google Workspace has no polling alternative.
-       Ask your Google Cloud organization policy administrator to allow it for project $PROJECT
-       (a temporary project exception to constraints/iam.allowedPolicyMemberDomains is enough: the grant stays after the policy is restored),
-       then run this script again. Details: https://developers.google.com/workspace/gmail/api/guides/push" ;;
+$(policy_manual_help "$c")
+       Details: https://developers.google.com/workspace/gmail/api/guides/push"
+        fi ;;
       *) die "Could not grant $GMAIL_PUSH_SA the Pub/Sub Publisher role on the topic." ;;
     esac
   fi
@@ -393,9 +556,19 @@ else
     printf '%s\n' "$out" >&2
     case "$out" in
       *disableServiceAccountKeyCreation*)
-        die "An organization policy (iam.disableServiceAccountKeyCreation) blocks creating service account keys in $PROJECT.
+        c="$(constraint_from_error "$out")"
+        c="${c:-iam.disableServiceAccountKeyCreation}"
+        if offer_policy_exception "$c" "create the one key LimaCharlie needs" \
+           && retry_until_policy_applies "Creating the key" "create the one key LimaCharlie needs" \
+                gcloud iam service-accounts keys create "$RAW_KEY" --iam-account="$SA_EMAIL" \
+                --project="$PROJECT" --quiet; then
+          restore_policy_exception
+        else
+          restore_policy_exception
+          die "The organization policy $c blocks creating service account keys in $PROJECT.
        LimaCharlie needs a key to call the Gmail API on your behalf.
-       Ask your Google Cloud organization policy administrator to allow key creation for project $PROJECT, then run this script again." ;;
+$(policy_manual_help "$c")"
+        fi ;;
       *[Mm]aximum*|*"limit"*)
         die "Google refused another key for $SA_EMAIL: it has reached its key limit. Delete unused keys (gcloud iam service-accounts keys list --iam-account=$SA_EMAIL --managed-by=user), then run this script again." ;;
       *) die "Could not create a key. $GCLOUD_ACCOUNT needs the Service Account Key Admin role (or Owner) on $PROJECT." ;;
