@@ -110,7 +110,7 @@ The SDK used to *call* a playbook is independent of the SDK the playbook itself 
 A playbook is a normal python script. The only required component is a top level function called `playbook` which takes 2 arguments:
 
 - `sdk`: an instance of the LC Python SDK, pre-authenticated to the relevant Organization based on the credentials provided, if any, `None` otherwise. With SDK v4 (the default) it is a `limacharlie.Manager`; with SDK v5 it is a `limacharlie.sdk.organization.Organization`. See [Python SDK version](#python-sdk-version).
-- `data`: the optional JSON dictionary provided as context to your playbook.
+- `data`: the extension request that started the playbook. The optional JSON dictionary provided as context is in `data["data"]`; the other keys, such as `name` and `credentials`, come from the request itself.
 
 The function must return a dictionary with the following optional keys:
 
@@ -176,8 +176,9 @@ def playbook(sdk, data):
   # Get the secret we need from LimaCharlie.
   mySecret = limacharlie.Hive(sdk, "secret").get("my-secret-name").data["secret"]
 
-  # Send the Webhook.
-  request = urllib.request.Request("https://example.com/webhook", data=json.dumps(data).encode('utf-8'), headers={
+  # Send the Webhook with the context passed to the playbook (data["data"]),
+  # not the whole request, which also holds the credentials.
+  request = urllib.request.Request("https://example.com/webhook", data=json.dumps(data.get("data") or {}).encode('utf-8'), headers={
     "Content-Type": "application/json",
     "Authorization": f"Bearer {mySecret}"
   }, method="POST")
@@ -203,15 +204,16 @@ def playbook(sdk, data):
 
 When a playbook generates a detection, you can customize the detection category name that appears in the UI by setting the `cat` field at the top level of the return dictionary. This is particularly useful when you want detections from different playbooks to have descriptive names instead of the generic "playbook-detection".
 
-The following example checks if a server sensor has missed a check-in and creates a detection with a custom category name:
+The following example reports sensors that have not been seen online in the last hour and creates a detection with a custom category name. It uses the sensors' online status; to alert when a sensor stops sending data, see [Alerting on sensors that stop sending data](../../../2-sensors-deployment/troubleshooting/non-responding-sensors.md).
 
 ```python
+import time
+from datetime import datetime, timezone
+
 def playbook(sdk, data):
   if not sdk:
     return {"error": "LC API key required"}
 
-  # Check for sensors that haven't checked in recently
-  import time
   current_time = time.time()
   threshold = 3600  # 1 hour in seconds
 
@@ -219,7 +221,8 @@ def playbook(sdk, data):
   # Manager.sensors() is a v4 generator yielding Sensor objects.
   for sensor in sdk.sensors():
     info = sensor.getInfo()
-    last_seen = info.get('last_seen', 0)
+    # "alive" is the last time the sensor was seen online, in UTC.
+    last_seen = datetime.strptime(info["alive"], "%Y-%m-%d %H:%M:%S").replace(tzinfo=timezone.utc).timestamp()
     if (current_time - last_seen) > threshold:
       missing_sensors.append({
         "sid": sensor.sid,
