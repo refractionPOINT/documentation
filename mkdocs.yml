@@ -343,7 +343,7 @@ nav:
               - Google Cloud Logs: 2-sensors-deployment/adapters/tutorials/google-cloud-logs.md
               - Cloud Telemetry: 2-sensors-deployment/adapters/tutorials/cloud-telemetry.md
       - Troubleshooting:
-          - Non-Responding Sensors: 2-sensors-deployment/troubleshooting/non-responding-sensors.md
+          - Sensors That Stop Sending Data: 2-sensors-deployment/troubleshooting/non-responding-sensors.md
       - Tutorials:
           - Windows Event Logs: 2-sensors-deployment/tutorials/windows-event-logs.md
           - Sysmon Logs: 2-sensors-deployment/tutorials/sysmon-logs.md
