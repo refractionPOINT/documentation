@@ -1,6 +1,6 @@
 # Output Stream Structures
 
-LimaCharlie routes data through four distinct output streams, each with a different structure and purpose. Understanding these structures is essential for:
+LimaCharlie routes data through several output streams. The four main ones (`event`, `detect`, `audit` and `deployment`) each have a different structure and purpose, and are documented below. Understanding these structures is essential for:
 
 - Configuring output destinations correctly
 - Building parsers in external systems (SIEM, data lake, etc.)
@@ -15,6 +15,8 @@ LimaCharlie routes data through four distinct output streams, each with a differ
 | `detect` | Alerts from D&R rules | Low-Medium | SIEM, SOAR, incident response platforms |
 | `audit` | Platform management actions | Low | Compliance logging, audit trails |
 | `deployment` | Sensor lifecycle events | Very Low | Asset management, deployment tracking |
+
+Outputs can also use the `log` stream (artifacts and logs), the `tailored` stream (events forwarded by a D&R [`output`](../../8-reference/response-actions.md#output) action) and the `billing` stream. This page does not describe their structures. They appear here only because an output on any of them can report dropped records through `output_drop`.
 
 ## 1. Event Stream Structure
 
@@ -344,6 +346,62 @@ Deployment events track sensor installations, removals, and updates:
 | `sensor_uninstalled` | Sensor removal | `action`, `reason`, `uninstall_time` |
 | `sensor_upgraded` | Sensor version update | `old_version`, `new_version`, `upgrade_method` |
 | `sensor_checkin` | Periodic sensor heartbeat | `last_seen`, `connectivity_status` |
+| `output_drop` | One or more records were dropped by an output that could not keep up or whose retries were exhausted | `output`, `module`, `stream`, `count`, `bytes` |
+
+### `output_drop` Events
+
+An output drops records when it cannot keep up (its in-flight queue is saturated)
+or when a send still fails after the platform's bounded retry budget. Sending one
+deployment event per dropped record would flood the stream under sustained
+pressure, so drops are aggregated and the platform publishes one summary event per
+output about once a minute.
+
+```json
+{
+  "routing": {
+    "oid": "8cbe27f4-aaaa-aaaa-aaaa-138cd51389cd",
+    "sid": "00000000-0000-0000-0000-000000000000",
+    "event_type": "output_drop",
+    "event_time": 1709308800123,
+    "event_id": "f3e7a1c2-aaaa-aaaa-aaaa-9d2b8f4c5e10",
+    "tags": []
+  },
+  "event": {
+    "output": "splunk-events",
+    "module": "webhook_bulk",
+    "stream": "event",
+    "count": 1742,
+    "bytes": 9483120
+  }
+}
+```
+
+#### Event body fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `output` | string | Name of the output that dropped data |
+| `module` | string | Output module type (`webhook`, `s3`, `kafka`, etc.) |
+| `stream` | string | Stream the dropped records belonged to: `event`, `detect`, `audit`, `log`, `tailored` or `billing`. Never `deployment` (see below) |
+| `count` | integer | Number of records dropped in the aggregation window |
+| `bytes` | integer | Total serialized bytes dropped in the window. May be 0 for saturation drops where the record is dropped before serialization. |
+
+#### Behavior notes
+
+- **Aggregated, not per-record.** Drops are coalesced over a window of about one
+  minute per output. An output that fails on every record still produces at most
+  one event a minute, and `count` holds the whole window's losses.
+- **Drops on the deployment stream itself are not reported.** A broken
+  deployment-stream output would otherwise emit drop events that get dropped in
+  turn, forever.
+- **Live tail outputs are not reported.** Transient outputs whose names start
+  with `tmp_live_` are excluded.
+
+`output_drop` events arrive on the deployment stream next to the sensor lifecycle
+events. You can filter them, alert on them, or route them with
+[D&R rules](../../3-detection-response/alternate-targets.md#target-deployment)
+(`target: deployment`, `event: output_drop`) like any other deployment event,
+for example to page on-call when a high-value output starts losing data.
 
 ### Use Cases
 
@@ -351,6 +409,7 @@ Deployment events track sensor installations, removals, and updates:
 - **Compliance**: Ensure all required endpoints have sensors
 - **Lifecycle Management**: Track sensor versions and upgrades
 - **Alerting**: Detect unexpected sensor removals
+- **Output Health**: Catch outputs that are dropping data (`output_drop`) before users notice missing telemetry downstream
 
 ---
 
