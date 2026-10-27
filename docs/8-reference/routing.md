@@ -111,7 +111,7 @@ These answer **"what happened and when?"**
 |-------|------|-------------|
 | `plat` | integer | Platform code as an integer (e.g. `268435456` = Windows, `536870912` = Linux). See [ID Schema](id-schema.md#platform) for the full table. |
 | `arch` | integer | Architecture code (e.g. `1` = x86, `2` = x64). See [ID Schema](id-schema.md#architecture). |
-| `ext_plat` | string | **Extended platform** (only on multi-platform adapters, e.g. Carbon Black / CrowdStrike). Indicates the OS the *reported* endpoint runs, while `plat` describes the adapter itself. |
+| `ext_plat` | integer | **Extended platform code**, using the same numeric IDs as `plat`. Indicates the OS the *reported* endpoint runs, while `plat` describes the adapter itself. Present only when an extended platform has been identified. See [ID Schema](id-schema.md#platform). |
 
 ### Correlation Fields
 
