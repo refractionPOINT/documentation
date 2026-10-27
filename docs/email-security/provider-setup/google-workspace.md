@@ -89,8 +89,10 @@ it can; otherwise check the policy under **IAM & Admin → Organization
 Policies**. The publisher grant and the key keep working after the policy is
 restored. Accepting this needs the **Organization Policy Administrator** role
 (`roles/orgpolicy.policyAdmin`) on the organization. Without a terminal, pass
-`--allow-policy-exception` to accept. Policy changes can take up to 15 minutes
-to apply, and the script waits for them.
+`--allow-policy-exception` to accept. To read and change the policy, the script
+enables the Organization Policy API (`orgpolicy.googleapis.com`) on the project
+if it is not already on. Policy changes can take up to 15 minutes to apply, and
+the script waits for them.
 
 Organization policies are configured under **IAM & Admin → Organization
 Policies**. The legacy and managed Domain Restricted Sharing policies are

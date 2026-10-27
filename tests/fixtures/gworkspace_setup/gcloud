@@ -5,7 +5,9 @@
 # (unsupported constraint), BAREFP (unrelated FAILED_PRECONDITION), TOPICGONE
 # (topic disappears once an exception is in place), NOKEYS (key creation
 # banned), NOPOLADMIN (set-policy refused), DESCFAIL (describe fails with
-# something other than NOT_FOUND).
+# something other than NOT_FOUND), ORGPOLOFF (the Organization Policy API is
+# disabled until enabled, then answers SERVICE_DISABLED twice more while it
+# propagates), ORGPOLNOENABLE (enabling that API is refused).
 S="$STUB_STATE"
 echo "gcloud $*" >> "$S/log"
 args="$*"
@@ -20,10 +22,22 @@ blocked_by() {
   if [ -n "$CUSTOM" ]; then echo custom.restrictMembers; return; fi
   if [ -n "$TOPICGONE" ] && [ -f "$S/exc_iam.allowedPolicyMemberDomains" ]; then echo GONE; return; fi
 }
+if [ -n "$ORGPOLOFF" ] && [ "${args#org-policies}" != "$args" ]; then
+  lag=$(cat "$S/orgpol_lag" 2>/dev/null || echo 0)
+  if [ ! -f "$S/orgpol_on" ] || [ "$lag" -gt 0 ]; then
+    [ -f "$S/orgpol_on" ] && echo $((lag - 1)) > "$S/orgpol_lag"
+    # Shape of the real error on a project that never used the API.
+    printf 'ERROR: (gcloud.org-policies.describe) PERMISSION_DENIED: Organization Policy API has not been used in project demo-proj before or it is disabled.\n  reason: SERVICE_DISABLED\n' >&2
+    exit 1
+  fi
+fi
 case "$args" in
   "auth list"*) echo admin@example.com ;;
   "config get-value project"*) echo demo-proj ;;
   "projects describe"*) echo demo-proj ;;
+  "services enable"*orgpolicy.googleapis.com*)
+    [ -n "$ORGPOLNOENABLE" ] && { echo "ERROR: (gcloud.services.enable) PERMISSION_DENIED: Permission denied to enable service [orgpolicy.googleapis.com]" >&2; exit 1; }
+    [ -f "$S/orgpol_on" ] || { touch "$S/orgpol_on"; echo 2 > "$S/orgpol_lag"; } ;;
   "services enable"*) ;;
   "iam service-accounts describe"*) [ -f "$S/sa" ] || exit 1 ;;
   "iam service-accounts create"*) touch "$S/sa" ;;

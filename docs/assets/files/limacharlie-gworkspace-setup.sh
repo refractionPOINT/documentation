@@ -344,9 +344,23 @@ json.dump(strip(json.load(open(sys.argv[1]))), open(sys.argv[2], "w"))
   POLICY_ACTIVE=""
 }
 
+# The Organization Policy API is off by default in most projects, and gcloud
+# cannot read or change a policy without it. Enable it only once a policy
+# exception is actually needed.
+ORGPOLICY_API_READY=""
+ensure_orgpolicy_api() {
+  [ -n "$ORGPOLICY_API_READY" ] && return 0
+  info "Enabling the Organization Policy API on $PROJECT (needed to read and change the policy)"
+  if ! gcloud_retry services enable orgpolicy.googleapis.com --project="$PROJECT" >/dev/null; then
+    warn "Could not enable the Organization Policy API (orgpolicy.googleapis.com) on $PROJECT. No change was made."
+    return 1
+  fi
+  ORGPOLICY_API_READY=1
+}
+
 # offer_policy_exception CONSTRAINT "what it unblocks" -> 0 when the exception is in place.
 offer_policy_exception() {
-  local c="$1" why="$2" rule spec saved out
+  local c="$1" why="$2" rule spec saved out err tries
   case " $POLICY_ACTIVE " in *" $c "*) return 0 ;; esac
   policy_supported "$c" || return 1
   rule="  - enforce: false"
@@ -361,18 +375,28 @@ EOF
   if [ -z "$ALLOW_POLICY_EXCEPTION" ] && ! confirm_no "    Apply this temporary exception now?"; then
     return 1
   fi
+  ensure_orgpolicy_api || return 1
   saved="$WORKDIR/previous-$c.json"
+  err="$WORKDIR/describe-$c.err"
   # Only "not found" means the project has no policy of its own. Any other read
   # error would make the restore guess wrong, so change nothing in that case.
-  if ! gcloud org-policies describe "$c" --project="$PROJECT" --format=json >"$saved" 2>"$WORKDIR/describe-$c.err"; then
-    if grep -qiE 'NOT_FOUND|not found' "$WORKDIR/describe-$c.err"; then
-      : >"$saved"
-    else
-      cat "$WORKDIR/describe-$c.err" >&2
-      warn "Could not read the current $c policy on $PROJECT, so it could not be restored afterwards. No change was made."
-      return 1
+  # A just-enabled API can take a few minutes to answer, so wait for that.
+  tries=0
+  while ! gcloud org-policies describe "$c" --project="$PROJECT" --format=json --quiet >"$saved" 2>"$err"; do
+    if grep -qE 'SERVICE_DISABLED|has not been used in project' "$err" && [ "$tries" -lt 20 ]; then
+      [ "$tries" -eq 0 ] && info "Waiting for the Organization Policy API to become available..."
+      tries=$((tries + 1))
+      sleep 15
+      continue
     fi
-  fi
+    if grep -qiE 'NOT_FOUND|not found' "$err"; then
+      : >"$saved"
+      break
+    fi
+    cat "$err" >&2
+    warn "Could not read the current $c policy on $PROJECT, so it could not be restored afterwards. No change was made."
+    return 1
+  done
   spec="$WORKDIR/exception-$c.yaml"
   printf 'name: projects/%s/policies/%s\nspec:\n  rules:\n%s\n' "$PROJECT" "$c" "$rule" >"$spec"
   # Track it before the call: an interrupt or timeout can land after the server
