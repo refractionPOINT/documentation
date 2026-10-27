@@ -130,9 +130,12 @@ POST /v1/sessions
   },
   "provider": "openai",
   "allowed_tools": ["Bash", "Read", "Write"],
-  "denied_tools": ["WebFetch"]
+  "denied_tools": ["WebFetch"],
+  "system_prompt_suffix": "For this session, only investigate hosts tagged prod-web."
 }
 ```
+
+`system_prompt_suffix` is optional text appended to the system prompt for this session only. When the profile also has a suffix, the profile suffix comes first, then a blank line, then this value. Maximum 65536 bytes; a longer value returns `400 system_prompt_suffix_too_long`.
 
 `provider` is optional: one of `anthropic`, `openai`, `google`, `openrouter`. It overrides the profile's provider for this session; when both are omitted the session runs on Claude. See [AI Providers](providers.md).
 
@@ -514,6 +517,20 @@ PUT /v1/profiles/{profileId}/memories/content?path=<memory-path>
 
 Returns `201` on insert, `200` on update or no-op (when the supplied content matches the existing body byte-for-byte).
 
+```json
+{
+  "path": "projects/acme.md",
+  "size": 63,
+  "content_hash": "9b2f…",
+  "created": true,
+  "changed": true,
+  "created_at": "2026-05-01T10:14:32Z",
+  "updated_at": "2026-05-01T10:14:32Z"
+}
+```
+
+`created` is `true` on first insert. `changed` is `false` when the content matched the stored entry and nothing was written.
+
 | Failure | Response |
 |---|---|
 | Invalid path | `400 invalid_memory_path` |
@@ -637,10 +654,11 @@ Routes Claude through AWS Bedrock for this user. The body matches the `BedrockCo
   "region": "us-east-1",
   "access_key_id": "AKIA...",
   "secret_access_key": "...",
-  "session_token": "...",
-  "bearer_token": "..."
+  "session_token": "..."
 }
 ```
+
+`session_token` is optional. To authenticate with a Bedrock API key instead, replace the three credential fields with `"bearer_token": "..."`.
 
 ##### Response: 200 OK
 

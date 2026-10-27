@@ -1,5 +1,3 @@
-title: Profile Memory Bank · LimaCharlie AI Sessions
-
 # Profile Memory Bank
 
 User-scoped AI Sessions are not associated with any specific organisation, so they cannot use the org-scoped [`ai_memory` Hive](memory.md). To give Claude durable context across user sessions, each [Session Profile](user-sessions.md#session-profiles) carries a **memory bank**: a small set of markdown files mounted into the runner's workspace at `/workspace/.memory/` whenever a session is launched from that profile.
