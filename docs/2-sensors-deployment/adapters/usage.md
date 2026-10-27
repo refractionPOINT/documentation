@@ -140,9 +140,9 @@ The following configurations allow you to customize the way data is ingested by 
 
 - `client_options.mapping.parsing_re`: regular expression with [named capture groups](https://github.com/StefanSchroeder/Golang-Regex-Tutorial/blob/master/01-chapter2.markdown#named-matches). The name of each group will be used as the key in the converted JSON parsing.
 - `client_options.mapping.parsing_grok:`  grok pattern parsing for structured data extraction from unstructured log messages. Grok patterns combine regular expressions with predefined patterns to simplify log parsing and field extraction.
-- `client_options.mapping.sensor_key_path`: indicates which component of the events represent unique sensor identifiers. Each distinct value creates its own Sensor, for example one per firewall when logs from several devices arrive through the same adapter. The online status of these Sensors follows the adapter and the flow of logs, not the devices; to be alerted when a device stops reporting, see [Alerting on sensors that stop sending data](../troubleshooting/non-responding-sensors.md).
+- `client_options.mapping.sensor_key_path`: indicates which component of the events represent unique sensor identifiers. Each distinct value creates its own Sensor, for example one per firewall when logs from several devices arrive through the same adapter. The online status of these Sensors follows the adapter and the flow of logs, not the devices; to be alerted when a device stops reporting, see [Alerting on sensors that stop sending data](../troubleshooting/non-responding-sensors.md). It also supports template strings based on each event. Some platforms set the sensor key in their parser; see [Using One Sensor for All Devices](#using-one-sensor-for-all-devices) to report all their events as a single Sensor.
 - `client_options.mapping.sensor_identity_type`: optionally declares the meaning of that sensor key: `email`, `username`, `github_login` or `device`. It overrides the built-in declaration only when `sensor_key_path` is also supplied. See [Sensor identity declarations](#sensor-identity-declarations).
-- `client_options.mapping.sensor_hostname_path`: indicates which component of the event represents the hostname of the resulting Sensor in LimaCharlie.
+- `client_options.mapping.sensor_hostname_path`: indicates which component of the event represents the hostname of the resulting Sensor in LimaCharlie. It also supports template strings based on each event.
 - `client_options.mapping.event_type_path`: indicates which component of the event represents the Event Type of the resulting event in LimaCharlie. It also supports template strings based on each event.
 - `client_options.mapping.event_time_path`: indicates which component of the event represents the Event Time of the resulting event in LimaCharlie.
 - `client_options.mapping.event_time_timezone`: specifies the timezone for parsing timestamps that don't include timezone information. Uses IANA timezone names (e.g., `America/New_York`, `Europe/London`, `UTC`). If not specified, timestamps without timezone info are treated as UTC.
@@ -466,6 +466,30 @@ This is the list of currently supported index types:
 USP Clients generate LimaCharlie Sensors at runtime. The ID of those sensors (SID) is generated based on the Organization ID (OID), the Sensor Seed Key and, for adapters that create one sensor per sensor key, that sensor key.
 
 This implies that if want to re-key an IID (perhaps it was leaked), you may replace the IID with a new valid one. As long as you use the same OID and Sensor Seed Key, the generated SIDs will be stable despite the IID change.
+
+### Using One Sensor for All Devices
+
+Some platforms create a separate Sensor for each device, agent or user found in the logs, even when `sensor_key_path` is not set. Their built-in parser reads the sensor key and hostname from each event. For example, `fortigate` uses the `devid` and `devname` fields, and `cef` uses the CEF host. Other platforms that do this include `crowdstrike`, `sentinel_one`, `carbon_black`, `msdefender`, `github` and `1password`.
+
+When the logs of many devices pass through one collector, such as FortiAnalyzer or a syslog relay, you may want a single Sensor for the collector instead of one per device. Removing `sensor_key_path` does not do this, because the parser still sets the key. Instead, set both the sensor key and the hostname to a constant template:
+
+```yaml
+client_options:
+  platform: fortigate
+  mapping:
+    sensor_key_path: '{{ "fortianalyzer" }}'
+    sensor_hostname_path: '{{ "fortianalyzer" }}'
+```
+
+- The value must be a template, with the constant in quotes inside `{{ }}`. A plain value such as `fortianalyzer` is read as a field path. No event has that field, so the parser's own key is used and nothing changes.
+- Set `sensor_hostname_path` too. If you only set the key, the parser keeps setting the hostname from each event, and the single Sensor's hostname keeps changing between device names.
+- The parser still runs and the event data is not changed. The fields that identify each device, such as `devid` and `devname` for `fortigate`, stay in every event, so D&R rules, searches and Outputs can still tell devices apart.
+- Leave `sensor_identity_type` unset. A constant key does not identify a user or a device, so the parser's [identity declaration](#sensor-identity-declarations) is dropped.
+- The sensor key is part of the Sensor ID (see [Sensor IDs](#sensor-ids)), so the change creates a new Sensor. The per-device Sensors created before the change stop receiving data and show as offline. Delete them once the new Sensor is receiving events. They do not come back, because no event carries their key anymore.
+
+The single Sensor shows as online as long as logs from any device keep arriving, so its status no longer tells you whether one particular device is reporting. A per-sensor check like the one in [Alerting on sensors that stop sending data](../troubleshooting/non-responding-sensors.md) cannot tell devices apart once they share a Sensor. Base per-device monitoring on the device field in the events instead.
+
+To try the change without touching the adapter you use in production, run a second adapter with the new mapping and a different `sensor_seed_key`, and send it some of the same logs, or point it at a test organization. Confirm that only one Sensor appears, that its hostname is the constant you set, and that the device fields are still in its events. Then apply the same mapping to the production adapter.
 
 ### Deleting an Adapter's Sensor
 
