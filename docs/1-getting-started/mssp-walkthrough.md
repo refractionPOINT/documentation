@@ -163,7 +163,7 @@ See [Estimating Data Ingestion](../7-administration/billing/data-estimation.md) 
 
 1. **Start with identity + cloud + EDR.** Highest signal, lowest volume.
 2. **Filter at the source.** Don't ingest "all firewall traffic" — ingest "denies + threat-tagged + anomalous". The customer's firewall is almost always the noisiest source.
-3. **Use the [Usage Alerts extension](../5-integrations/extensions/limacharlie/usage-alerts.md) (covered in Part 17)** to fire a detection when any SKU crosses a threshold.
+3. **Use the [Usage Alerts extension](../5-integrations/extensions/limacharlie/usage-alerts.md) (covered in Part 16)** to fire a detection when any SKU crosses a threshold.
 
 ### Enable Strict SSO on your domain
 
@@ -181,41 +181,42 @@ In the control org, do the following one-time setup. You'll get value from each 
 
 ```bash
 pip install limacharlie
-limacharlie login
+limacharlie auth login --oauth
 ```
 
-`login` walks you through creating an Organization API key with the permissions it needs and stores credentials in `~/.limacharlie`. Generated keys are scoped to a single org and a specific permission set — not to your user — which is the right default. See [API Keys](../7-administration/access/api-keys.md) for the full pattern.
+`auth login --oauth` signs you in through your browser (Google or Microsoft) and stores the credentials in `~/.limacharlie.d/config.yaml`. Add `--no-browser` on a headless machine to get the URL printed instead. For scripts and CI, log in with an Organization API key instead: `limacharlie auth login --oid <OID> --api-key <KEY>`, or set the `LC_OID` and `LC_API_KEY` environment variables. Organization keys are scoped to a single org and a specific permission set — not to your user — which is the right default for automation. See [API Keys](../7-administration/access/api-keys.md) for the full pattern.
 
 Confirm it works:
 
 ```bash
-limacharlie use            # shows orgs you can reach
-limacharlie sensor list    # in the control org, will return [] for now
+limacharlie auth whoami            # who you are authenticated as
+limacharlie auth list-orgs         # orgs you can reach
+limacharlie auth use-org <OID>     # make one the default for later commands
+limacharlie sensor list            # in the control org, returns an empty list for now
 ```
 
 ### Create a baseline Organization API key for automation
 
 Eventually you'll have webhooks, CI scripts, and automation calling the API on behalf of an organization. Use an Organization API key for those, never a user API key — the permission scope is narrower and the key dies with the org, not with the human.
 
-Via REST (the CLI command is `limacharlie api-key create`, but seeing the REST shape is useful):
+With the CLI, pass the permissions as a comma-separated list. `--store-secret` writes the new key straight into the `secret` hive, because the key value is only shown once:
+
+```bash
+limacharlie api-key create --name automation-readonly \
+  --permissions "org.get,sensor.list,sensor.get,dr.list,insight.det.get,insight.evt.get,investigation.get" \
+  --store-secret automation-readonly-key
+```
+
+The same call over REST takes form fields, not JSON: `key_name` and a comma-separated `perms`. Seeing the REST shape is useful when you build the call into your own tooling:
 
 ```bash
 curl -X POST "https://api.limacharlie.io/v1/orgs/$YOUR_OID/keys" \
   -H "Authorization: Bearer $LC_JWT" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "automation-readonly",
-    "permissions": [
-      "org.get",
-      "sensor.list",
-      "sensor.get",
-      "dr.list",
-      "insight.det.get",
-      "insight.evt.get",
-      "investigation.get"
-    ]
-  }'
+  -d "key_name=automation-readonly" \
+  -d "perms=org.get,sensor.list,sensor.get,dr.list,insight.det.get,insight.evt.get,investigation.get"
 ```
+
+Creating keys needs the `apikey.ctrl` permission, and `--store-secret` also needs `secret.set`.
 
 To exchange an API key for a JWT (everything in LimaCharlie speaks JWT-Bearer):
 
@@ -226,7 +227,7 @@ curl -X POST "https://jwt.limacharlie.io" \
   -d "oid=$YOUR_OID&secret=$YOUR_API_KEY"
 ```
 
-The JWT lasts 30 minutes; cache it, refresh on 401. The CLI handles this for you.
+The JWT is valid for one hour; cache it and refresh on a 401. The CLI and SDKs handle this for you.
 
 A couple of useful flairs for advanced cases:
 
@@ -238,12 +239,12 @@ A couple of useful flairs for advanced cases:
 You'll be storing secrets (Anthropic API keys, GitHub deploy keys, third-party tokens, output credentials) in the [Hive `secret`](../7-administration/config-hive/secrets.md) namespace. Even before you need one, prove it works:
 
 ```bash
-echo "test-value" > /tmp/example.txt
-limacharlie hive set secret --key example-secret \
-  --data /tmp/example.txt --data-key secret
-limacharlie secret list
+limacharlie secret set --key example-secret --value "test-value" --enabled
+limacharlie secret list --metadata-only
 limacharlie secret delete --key example-secret --confirm
 ```
+
+`--value` puts the secret in your shell history, so use it for this test only. For real credentials, pipe the value in from stdin or point `--input-file` at a YAML file containing `secret: <value>`. `--enabled` activates the record; new hive records are disabled by default in most hives. `secret list --metadata-only` lists names without returning the values.
 
 Anywhere a config field would normally take a credential, you'll instead use the syntax `hive://secret/<name>`. This means rules, outputs, and adapter configs **never** contain a literal credential — they contain a reference. That's the only way an IaC repo of these configs can be committed to Git without leaking.
 
@@ -468,26 +469,20 @@ office365:
   domain: acme.onmicrosoft.com
   endpoint: enterprise
   start_time: "2026-01-01T00:00:00Z"
-  content_types:
-    - Audit.AzureActiveDirectory
-    - Audit.Exchange
-    - Audit.SharePoint
-    - Audit.General
-    - DLP.All
+  # A comma-separated string, not a YAML list. Omit it to ingest all five.
+  content_types: "Audit.AzureActiveDirectory,Audit.Exchange,Audit.SharePoint,Audit.General,DLP.All"
   client_options:
     identity:
       oid: <CUSTOMER_OID>
       installation_key: <INSTALLATION_KEY>
     hostname: ms-o365-adapter
-    platform: json
+    platform: office365
     sensor_seed_key: office365-audit-sensor
-    mapping:
-      sensor_hostname_path: ClientIP
-      event_type_path:      Operation
-      event_time_path:      CreationTime
 ```
 
-The customer's M365 admin creates an Azure AD App Registration with the `Office 365 Management APIs` permission and provides the four secrets. Your `secret` hive holds the actual values; this YAML carries only references.
+Always set `platform: office365` for this adapter. The `office365` parser pulls the event type (`Operation`) and timestamp (`CreationTime`) out of the audit records for you, so there is no `mapping` block, and the events show up under `plat == office365` in D&R rules and queries.
+
+The customer's M365 admin creates an Azure AD App Registration with the `ActivityFeed.Read` permission from the Office 365 Management APIs (plus `ActivityFeed.ReadDlp` if you want `DLP.All`) and gives you four values: tenant ID, client ID, client secret, and publisher ID (for single-tenant apps the publisher ID is the tenant ID). Your `secret` hive holds the actual values; this YAML carries only references. The `domain` is not sensitive and stays inline.
 
 #### Okta adapter — concrete config
 
@@ -521,7 +516,7 @@ s3:
     platform: aws
     sensor_seed_key: cloudtrail-seed
   bucket_name: globex-cloudtrail-logs
-  region_name: us-east-1
+  region: us-east-1
   access_key:  hive://secret/globex-aws-access-key
   secret_key:  hive://secret/globex-aws-secret-key
 ```
@@ -589,7 +584,7 @@ plat == windows and int_ip matches '^10\.3\..*'  # by network range
 ext_plat == windows                              # third-party EDR adapters reporting Windows
 ```
 
-You'll use these in Exfil watch rules, in installation keys, in `--selector` flags on sensor commands, in sensor-cull rules, everywhere.
+You'll use these in `limacharlie sensor list --selector`, Sensor Cull rules, Reliable Tasking requests, Velociraptor collections, and anywhere else a sensor selector is accepted.
 
 ### Tune what you collect with the Exfil extension
 
@@ -633,7 +628,7 @@ Before declaring telemetry "working", run this 5-minute smoke test on each conne
 | Windows EDR | Run `cmd.exe /c whoami /all` on the host | A `NEW_PROCESS` event with that command line in the sensor's Live Feed within ~5 seconds. |
 | Linux EDR | `cat /etc/passwd` | `SENSITIVE_PROCESS_ACCESS` or `NEW_PROCESS` event in Live Feed. |
 | macOS EDR | `id` from a Terminal | `NEW_PROCESS` event. If nothing appears, Full Disk Access wasn't granted — re-prompt the user. |
-| M365 adapter | Sign in to the customer's M365 portal as a test user | `UserLoggedIn` event under platform `json` with `event_type=UserLoggedIn` within ~5 minutes (M365 has API delay). |
+| M365 adapter | Sign in to the customer's M365 portal as a test user | A `UserLoggedIn` event under platform `office365` within ~5 minutes (M365 has API delay). |
 | Okta adapter | Trigger an Okta event (e.g., MFA challenge) | `user.session.start` event within ~2 minutes. |
 | CloudTrail adapter | `aws sts get-caller-identity` (or any API call) | A CloudTrail event in the platform within ~5 minutes (S3 batch delivery time). |
 
@@ -892,10 +887,12 @@ respond:
 Save any of the above as `exec-from-downloads.yaml`, then:
 
 ```bash
-limacharlie dr set --key exec-from-downloads --input-file exec-from-downloads.yaml
-limacharlie dr list
+limacharlie dr set --key exec-from-downloads --input-file exec-from-downloads.yaml --enabled
+limacharlie dr list --metadata-only
 limacharlie dr get --key exec-from-downloads
 ```
+
+New rules are created disabled unless you pass `--enabled` (or set `usr_mtd.enabled` in the file), so a rule you forgot to enable looks exactly like a rule that never fires. The input file holds the whole rule, with `detect` and `respond` keys.
 
 For bulk push from your IaC repo, use the Infrastructure extension (Part 15).
 
@@ -904,22 +901,24 @@ For bulk push from your IaC repo, use the Infrastructure extension (Part 15).
 The cleanest feedback loop is the [Replay service](../5-integrations/services/replay.md). Two flavors:
 
 ```bash
-# Replay the saved rule against the last 24h of all events on this org
+# Replay the saved rule against the last 24h of events in this org
 limacharlie replay run --name exec-from-downloads \
   --start "$(date -d '24 hours ago' +%s)" \
   --end "$(date +%s)"
 
-# Replay an inline rule file against a single sensor's events
+# Replay a rule that is not saved yet, from separate detect and respond files
 limacharlie replay run --detect-file ./detect.yaml \
   --respond-file ./respond.yaml \
   --start "$(date -d '24 hours ago' +%s)" --end "$(date +%s)"
 
-# Replay against a local file of sample events (CI-friendly)
-limacharlie dr test --events events.json \
-  --detect-file detect.yaml --respond-file respond.yaml
+# Run a rule file against a local file of sample events (CI-friendly)
+limacharlie dr test --events events.json --input-file rule.yaml --trace
+
+# Same, against a rule that is already saved
+limacharlie dr test --events events.json --name exec-from-downloads
 ```
 
-Every replay returns counts of matches and traces of which conditions tripped. Read the trace, especially for noisy rules — the trace tells you *why* a non-malicious event matched.
+A replay returns the number of events processed and the detections the rule would have produced, plus any errors. `dr test --trace` adds a step-by-step evaluation trace. Read the trace, especially for noisy rules. It tells you *why* a non-malicious event matched.
 
 ### Step 8: Layer false-positive rules instead of editing detections
 
@@ -941,7 +940,7 @@ That rule lives only in ACME's tenant; the underlying detection lives globally. 
 
 ### Step 9: Unit-test the rules you care about
 
-For rules where regression risk is real, embed a `tests:` block. This lives next to the rule in the same hive record and runs on every `dr validate` and in CI.
+For rules where regression risk is real, embed a `tests:` block. It lives next to the rule in the same hive record, and LimaCharlie simulates the rule against it every time the rule is created or updated, including through `dr set` and `sync push`. A failing test rejects the change.
 
 ```yaml
 detect:
@@ -961,23 +960,24 @@ respond:
 tests:
   match:
     - [{
-        "routing": {"plat": 268435456},
+        "routing": {"event_type": "CODE_IDENTITY", "plat": 268435456},
         "event": {"FILE_PATH": "C:\\Users\\Admin\\Downloads\\malicious.cpl"}
       }]
   non_match:
     - [{
-        "routing": {"plat": 268435456},
+        "routing": {"event_type": "CODE_IDENTITY", "plat": 268435456},
         "event": {"FILE_PATH": "C:\\Windows\\System32\\legitimate.cpl"}
       }]
 ```
 
-Run:
+To check the rule before it reaches an org, compile it with `dr validate` and run it against sample events with `dr test`:
 
 ```bash
 limacharlie dr validate --detect detect.yaml --respond respond.yaml
+limacharlie dr test --input-file rule.yaml --events events.json
 ```
 
-Any test failure blocks the validation, which means it blocks the CI sync push. See [Unit Tests](../3-detection-response/unit-tests.md) for the assertion grammar.
+Because a failing `tests:` block rejects the save, it also fails the CI sync push. Rules that use stateful operators (`with child`, `with events`) cannot carry `tests:`; cover those with Replay. See [Unit Tests](../3-detection-response/unit-tests.md) for the assertion grammar.
 
 ### Common pitfalls when writing rules
 
@@ -999,7 +999,7 @@ If you're an MSSP coming from Splunk / Sigma / Kusto / Sentinel and have an exis
 
 Detections are the streaming layer; queries are the batch / interactive layer. As an MSSP you need both — a detection fires when a known pattern matches in real time, but a *query* answers the question "did this thing — that we just learned about — happen anywhere in our customer base in the last 30 days?" That's where LimaCharlie's query language, [LCQL](../4-data-queries/lcql-examples.md), earns its keep.
 
-LCQL runs against any of the four streams that Insight retains for a year by default: `event`, `detect`, `audit`, `deployment`. No SIEM required.
+LCQL runs against the `event`, `detect`, and `audit` streams (the `--stream` flag in the CLI), which Insight retains for a year by default. No SIEM required.
 
 ### The shape of an LCQL query
 
@@ -1048,7 +1048,7 @@ The console UI shows the estimate live as you type. The cure for an expensive qu
 
 ### A 15-query MSSP-baseline hunt library
 
-Commit these as saved queries in `hives/query.yaml` in your IaC repo so they ship with every customer:
+Commit these as saved queries in `query.yaml` in your IaC repo (the `query` hive) so they ship with every customer:
 
 ```text
 # 1. DNS prevalence — domains that appear on many sensors are usually benign;
@@ -1056,7 +1056,7 @@ Commit these as saved queries in `hives/query.yaml` in your IaC repo so they shi
 -24h | plat == windows | DNS_REQUEST | event/DOMAIN_NAME contains 'pastebin' | event/DOMAIN_NAME as domain COUNT_UNIQUE(routing/sid) as hosts GROUP BY(domain)
 
 # 2. Unsigned binaries seen in user-land
--24h | plat == windows | CODE_IDENTITY | event/SIGNATURE/FILE_IS_SIGNED != 1 | event/FILE_PATH as Path event/HASH as Hash event/ORIGINAL_FILE_NAME as OriginalFileName COUNT_UNIQUE(Hash) as Count GROUP BY(Path Hash OriginalFileName)
+-24h | plat == windows | CODE_IDENTITY | event/SIGNATURE/FILE_IS_SIGNED != 1 | event/FILE_PATH as Path event/HASH as Hash event/ORIGINAL_FILE_NAME as OriginalFileName COUNT(event) as Count GROUP BY(Path Hash OriginalFileName)
 
 # 3. Process command lines mentioning psexec
 -1h | plat == windows | NEW_PROCESS EXISTING_PROCESS | event/COMMAND_LINE contains "psexec" | event/FILE_PATH as path event/COMMAND_LINE as cli routing/hostname as host
@@ -1065,7 +1065,7 @@ Commit these as saved queries in `hives/query.yaml` in your IaC repo so they shi
 -12h | plat == windows | NEW_PROCESS | event/PARENT/FILE_PATH contains "cmd.exe" | event/PARENT/FILE_PATH as parent event/FILE_PATH as child COUNT_UNIQUE(event) as count GROUP BY(parent child)
 
 # 5. WEL — service installations (T1543.003 persistence)
--12h | plat == windows | WEL | event/EVENT/System/EventID == "7045" | event/EVENT/EventData/ServiceName as svc event/EVENT/EventData/ImagePath as path routing/hostname as host GROUP BY(host svc path)
+-12h | plat == windows | WEL | event/EVENT/System/EventID == "7045" | event/EVENT/EventData/ServiceName as svc event/EVENT/EventData/ImagePath as path routing/hostname as host COUNT(event) as count GROUP BY(host svc path)
 
 # 6. WEL — %COMSPEC% in service path (cmd-as-service trick)
 -12h | plat == windows | WEL | event/EVENT/System/EventID == "7045" and event/EVENT/EventData/ImagePath contains "COMSPEC"
@@ -1085,26 +1085,36 @@ Commit these as saved queries in `hives/query.yaml` in your IaC repo so they shi
 # 11. Org-wide psexec usage
 -24h | * | NEW_PROCESS EXISTING_PROCESS | event/COMMAND_LINE contains "psexec" | routing/hostname as host event/COMMAND_LINE as cmd COUNT(event) as count GROUP BY(host cmd)
 
-# 12. Network — unusual destination ports (filter to interesting ones)
--6h | plat == windows | NETWORK_CONNECTIONS | event/NETWORK_ACTIVITY/?/IP_PORT not in [80, 443, 22, 3389, 445, 135] | event/NETWORK_ACTIVITY/?/IP_ADDRESS as ip event/NETWORK_ACTIVITY/?/IP_PORT as port COUNT_UNIQUE(routing/sid) as count GROUP BY(ip port)
+# 12. Network: connections to high destination ports, rarest first
+#     (an IP/port pair seen from one host is more interesting than one seen from fifty)
+-6h | plat == windows | NETWORK_CONNECTIONS | event/NETWORK_ACTIVITY/?/DESTINATION/PORT > 1024 | event/NETWORK_ACTIVITY/?/DESTINATION/IP_ADDRESS as ip event/NETWORK_ACTIVITY/?/DESTINATION/PORT as port COUNT_UNIQUE(routing/sid) as hosts GROUP BY(ip port) ORDER BY(hosts asc) LIMIT 100
 
-# 13. Hash prevalence — same hash on multiple hosts
--24h | plat == windows | CODE_IDENTITY | event/HASH as hash routing/hostname as host COUNT_UNIQUE(host) as prevalence GROUP BY(hash) | prevalence > 1
+# 13. Hash prevalence: how many hosts loaded each hash (low numbers are the interesting tail)
+-24h | plat == windows | CODE_IDENTITY | event/HASH exists | event/HASH as hash COUNT_UNIQUE(routing/sid) as prevalence GROUP BY(hash) ORDER BY(prevalence asc) LIMIT 100
 
 # 14. Registry writes to Run keys (persistence)
 -24h | plat == windows | REGISTRY_WRITE | event/REGISTRY_KEY contains "Run" | event/REGISTRY_KEY as key routing/hostname as host COUNT(event) as count GROUP BY(host key)
 
-# 15. M365 — sign-ins from improbable geographies
--24h | plat == office365 | UserLoggedIn | event/ClientIP as ip event/UserId as user GROUP BY(user ip)
+# 15. M365: users signing in from the most distinct IP addresses. Use it to pick
+#     accounts for impossible-travel review; LCQL has no geo lookup (Pattern 7 does it in D&R)
+-24h | plat == office365 | UserLoggedIn | event/UserId exists | event/UserId as user COUNT_UNIQUE(event/ClientIP) as distinct_ips GROUP BY(user) ORDER BY(distinct_ips desc) LIMIT 50
 ```
 
 Manage like any hive record:
 
 ```bash
-limacharlie search saved-create --name lolbin-stacked-by-parent --input-file q4.yaml
+limacharlie search saved-create --name lolbin-stacked-by-parent --stream event \
+  --query "-12h | plat == windows | NEW_PROCESS | event/PARENT/FILE_PATH contains \"cmd.exe\" | event/PARENT/FILE_PATH as parent event/FILE_PATH as child COUNT_UNIQUE(event) as count GROUP BY(parent child)"
 limacharlie search saved-list
-limacharlie search saved-run --name lolbin-stacked-by-parent \
-  --start "$(date -d '24 hours ago' +%s)" --end "$(date +%s)"
+limacharlie search saved-get --name lolbin-stacked-by-parent
+```
+
+`saved-run` replays the query with the `--start` and `--end` stored in the record, which go stale. For a reusable library, leave them off and run the stored text with fresh times:
+
+```bash
+Q=$(limacharlie search saved-get --name lolbin-stacked-by-parent --output json | jq -r '.data.query')
+limacharlie search run --query "$Q" --stream event \
+  --start "$(date -d '12 hours ago' +%s)" --end "$(date +%s)"
 ```
 
 ### Template strings and projections
@@ -1134,7 +1144,7 @@ Most rule and query work uses [Go-style template strings](../4-data-queries/temp
 
 ### Hand queries to AI agents
 
-Saved queries are addressable from D&R-driven AI sessions. The pattern that compounds: an agent's prompt instructs Claude to "run the saved query `m365-impossible-travel` for sensor `<sid>` over the last 24 hours" via the LimaCharlie MCP server. The agent reads the result, decides whether to escalate, and writes a note on the case. Every saved query you commit becomes a tool every AI agent can wield — your hunting library is your agent toolbox.
+Saved queries are addressable from D&R-driven AI sessions. The pattern that compounds: an agent's prompt instructs Claude to "run the saved query `m365-multi-ip-signins` over the last 24 hours" via the LimaCharlie MCP server. The agent reads the result, decides whether to escalate, and writes a note on the case. Every saved query you commit becomes a tool every AI agent can wield — your hunting library is your agent toolbox.
 
 ---
 
@@ -1423,7 +1433,7 @@ A pragmatic starter set, drawn from the `mssp-demo` reference layout:
 | **Administrators** | Senior detection engineers, platform admins | All permissions | Every customer org + control org |
 | **Analysts** | All analysts (L1, L2) | All permissions **except** `apikey.ctrl`, `billing.ctrl`, `user.ctrl` | Every customer org |
 | **Viewers** | Sales, leadership, customer success | Read-only: `org.get`, `sensor.list`, `sensor.get`, `dr.list`, `insight.det.get`, `insight.evt.get`, `investigation.get` | Every customer org |
-| **Auditors** | Compliance | Audit-log read + sensor list | Every customer org |
+| **Auditors** | Compliance | `audit.get`, `sensor.list` | Every customer org |
 | **Break-Glass: active-responders** | Empty by default; populated during an active incident | `sensor.task` only | Every customer org |
 
 Strengths of this layout:
@@ -1435,11 +1445,12 @@ Strengths of this layout:
 
 Workflow once the groups exist:
 
-1. Create each group once: `limacharlie group create --name <name>`.
-2. Add every customer org to each relevant group: `limacharlie group org-add --gid <id> --oid <customer_oid>`.
-3. Set the group's permissions in the **Groups** page or via CLI.
-4. Add a user to exactly the group(s) matching their job: `limacharlie group member-add --gid <id> --email <address>`.
-5. When you onboard a new customer, just add the new org to each staff group — every staff member instantly has the right access on the new tenant.
+1. Create each group once: `limacharlie group create --name <name>`. Use lowercase names (`administrators`, `analysts`, `viewers`, `auditors`, `active-responders`) so the onboarding script below can find them.
+2. Find each group's ID: `limacharlie group list`. It lists the groups you own.
+3. Add every customer org to each relevant group: `limacharlie group org-add --gid <gid> --oid <customer_oid>`.
+4. Set the group's permissions in the **Groups** page or with `limacharlie group permissions-set --gid <gid> --permissions "sensor.list,sensor.get,dr.list"`.
+5. Add a user to exactly the group(s) matching their job: `limacharlie group member-add --gid <gid> --email <address>`.
+6. When you onboard a new customer, just add the new org to each staff group — every staff member instantly has the right access on the new tenant.
 
 ### Customer access goes directly on their org
 
@@ -1449,7 +1460,7 @@ If a customer needs access to multiple of their own orgs (multi-business-unit sh
 
 ### Use Organization API keys for automation, never user keys
 
-Every CI pipeline, every webhook, every adapter, every IaC script you write should authenticate with an [Organization API key](../7-administration/access/api-keys.md#organization-api-keys) scoped to the *minimum* permissions it needs and *only* on the org it operates against. A user API key has the user's full reach across every org they can see — if the user leaves, the key dies; if the key leaks, you've exposed every customer.
+Every CI pipeline, every webhook, every adapter, every IaC script you write should authenticate with an [Organization API key](../7-administration/access/api-keys.md#privileges) scoped to the *minimum* permissions it needs and *only* on the org it operates against. A user API key has the user's full reach across every org they can see — if the user leaves, the key dies; if the key leaks, you've exposed every customer.
 
 Permission groupings to use as starting points:
 
@@ -1462,13 +1473,18 @@ insight.det.get, insight.evt.get, investigation.get
 above + sensor.task, ext.request, investigation.set
 
 # Detection-engineer — for IaC sync push
-above + dr.set, dr.del, hive.set, hive.del
+above + dr.set, dr.del, plus the .set permission of every hive and
+resource type the sync touches, for example fp.ctrl, lookup.set,
+query.set, secret.set, ai_agent.set, ext.conf.set, ext.sub,
+output.set, ikey.set
 
 # AI-agent operator — what the lc-essentials/ai-agent runners need
 org.get, sensor.list, sensor.get, sensor.task, dr.list,
 insight.det.get, insight.evt.get, investigation.get,
 investigation.set, ext.request, ai_agent.operate, sop.get,
 org_notes.get, org_notes.set
+
+# Add lookup.get, lookup.set for a responder that maintains block-lists
 ```
 
 ### Automate the new-customer onboarding
@@ -1483,22 +1499,30 @@ CUSTOMER_NAME="$1"
 NEW_OID="$2"
 PRIMARY_CONTACT="$3"
 
+# Same resource-type flags as Part 15. No --hive-secret: customer secrets are
+# provisioned out-of-band and must not be touched by --force.
+SYNC_FLAGS="--outputs --integrity --exfil --artifact --resources --extensions \
+  --org-values --installation-keys --yara --hive-dr-general --hive-fp \
+  --hive-lookup --hive-query --hive-extension-config --hive-cloud-sensor \
+  --hive-ai-agent"
+
 # 1. Add the new org to every staff group
 for GROUP_NAME in administrators analysts viewers auditors active-responders; do
-  GID=$(limacharlie group list --output json | jq -r ".[] | select(.name == \"$GROUP_NAME\") | .id")
+  GID=$(limacharlie group list --output json \
+    | jq -r --arg n "$GROUP_NAME" '.[] | select(.name == $n) | (.gid // .group_id)')
   limacharlie group org-add --gid "$GID" --oid "$NEW_OID"
 done
 
 # 2. Apply the IaC template (see Part 15 for template structure)
-limacharlie sync push --oid "$NEW_OID" \
-  --config "iac-repo/templates/customer-baseline.yaml" \
-  --is-force --is-dry-run                # remove --is-dry-run when reviewed
-limacharlie sync push --oid "$NEW_OID" \
-  --config "iac-repo/templates/customer-baseline.yaml" --is-force
+limacharlie --oid "$NEW_OID" sync push $SYNC_FLAGS \
+  --config-file "iac-repo/templates/customer-baseline.yaml" \
+  --force --dry-run                      # review the diff, then run it again without --dry-run
+limacharlie --oid "$NEW_OID" sync push $SYNC_FLAGS \
+  --config-file "iac-repo/templates/customer-baseline.yaml" --force
 
 # 3. Subscribe to the standard extension kit
 for EXT in ext-cases ext-exfil ext-lookup-manager ext-usage-alerts ext-sensor-cull ext-artifact ext-reliable-tasking ext-infrastructure ext-git-sync; do
-  limacharlie --oid "$NEW_OID" extension subscribe --extension "$EXT"
+  limacharlie --oid "$NEW_OID" extension subscribe --name "$EXT"
 done
 
 # 4. Invite the customer's primary contact directly on their own org
@@ -1524,7 +1548,7 @@ Once that script lives in your team's repo, onboarding a new customer is a 10-mi
 Every quarter, run the [verification checklist](../7-administration/access/user-access.md#verifying-and-reviewing-access) on every production org. Wrap it in a script that posts to a Slack channel, review the same week each quarter:
 
 ```bash
-for OID in $(limacharlie use --output json | jq -r '.[].oid'); do
+for OID in $(limacharlie auth list-orgs --output json | jq -r '.[].oid'); do
   echo "=== $OID ==="
   limacharlie --oid "$OID" user list
   limacharlie --oid "$OID" user permissions list
@@ -1539,84 +1563,64 @@ Telemetry's the foundation, detections fire on what you collect — but eventual
 
 ### The commands you'll use most
 
-```bash
-# === Process control ===
-os_kill_process --pid <PID>             # kill a process by ID
-deny_tree                               # add a tree of processes to deny list (set by detection)
+| Command | What it does |
+| --- | --- |
+| `os_processes`, `os_services`, `os_version`, `netstat` | Enumerate processes, services (Windows), OS version and architecture, and network connections. |
+| `os_kill_process` | Kill a process by ID. |
+| `deny_tree` | Block a process tree. Used from D&R rules, for example `deny_tree <<routing/parent>>`. |
+| `file_get`, `file_hash`, `file_del`, `dir_list` | Pull, hash, or delete a file, and walk a directory. |
+| `mem_map`, `mem_strings`, `mem_find_string` | Memory map of a process, strings in its memory, and a string search. |
+| `dns_resolve` | Resolve a name from the sensor's point of view. |
+| `segregate_network`, `rejoin_network` | Isolate the host and un-isolate it. |
+| `yara_scan` | Scan a file or a process with a YARA rule, for example `yara_scan hive://yara/malware-rule --pid 4812`. |
+| `history_dump` | Dump events from the sensor's local cache. |
+| `fim_add`, `exfil_add` | Add a file-integrity pattern or an Exfil watch rule at runtime. |
 
-# === File operations ===
-file_get --file <FILE_PATH>             # exfil a file from the host
-file_delete --file <FILE_PATH>          # delete a file
-file_hash --file <FILE_PATH>            # hash a file (SHA256/MD5)
-dir_list --dir_path <PATH> --depth <N>  # walk a directory tree
-
-# === Memory analysis ===
-mem_map --pid <PID>                     # memory map of a process
-mem_strings --pid <PID>                 # extract strings from process memory
-mem_find_string --pid <PID> --string <S>
-
-# === System enumeration ===
-os_processes                            # list running processes
-os_services                             # list services (Windows)
-os_version                              # OS version + arch
-
-# === Network ===
-dns_resolve --hostname <HOST>           # DNS resolve from the sensor's perspective
-netstat                                 # network connection snapshot
-segregate_network                       # isolate the host
-rejoin_network                          # un-isolate
-
-# === Detection ===
-yara_scan --rules <ARL_OR_HIVE> --pid <PID>      # scan a process
-yara_scan --rules <ARL_OR_HIVE> --dir <DIR>      # scan a directory
-
-# === Forensics ===
-history_dump                            # dump captured events from local cache
-fim_add --pattern '<glob>'              # add a FIM pattern at runtime
-exfil_add --event <TYPE> --operator <OP> --value <V>  # add a watch rule at runtime
-
-# === IR / sleeper ===
-re-enroll                               # re-enroll a sensor (use with sensor_clone)
-```
-
-Run any command from the **Console** view in the web app, or from the CLI:
+The arguments differ per command and are listed in the [Endpoint Commands reference](../8-reference/endpoint-commands.md). Run any of them from the **Console** view in the web app, or from the CLI:
 
 ```bash
-limacharlie sensor task --sid <SID> --task "os_processes"
-limacharlie sensor task --sid <SID> --task "file_get --file /etc/passwd"
-limacharlie sensor task --sid <SID> --task "yara_scan hive://yara/malware-rule --pid 4812"
+# Fire and forget: the response arrives as an event in the sensor's timeline
+limacharlie task send --sid <SID> --task "os_processes"
+limacharlie task send --sid <SID> --task 'file_hash "C:\\suspect.exe"'
+limacharlie task send --sid <SID> --task "yara_scan hive://yara/malware-rule --pid 4812"
+
+# Wait for the answer (30 seconds by default)
+limacharlie task request --sid <SID> --command "os_version" --timeout 60
 ```
 
-### Cross-fleet tasking with selectors
+### Cross-fleet tasking
 
-When you need to run a command across many sensors (e.g., audit-time `file_hash` on `/etc/sudoers` for every Linux host):
+There is no fleet-wide form of `task send`. To run a command on many sensors (say, an audit-time `file_hash` of `/etc/sudoers` on every Linux production host), let the server filter with a [sensor selector](../8-reference/sensor-selector-expressions.md) and loop over the result:
 
 ```bash
-limacharlie sensor task \
-  --selector "plat == linux and prod in tags" \
-  --task "file_hash --file /etc/sudoers"
+limacharlie sensor list --online \
+  --selector 'plat == linux and "prod" in tags' --output json \
+  | jq -r '.[].sid' \
+  | while read -r SID; do
+      limacharlie task send --sid "$SID" \
+        --task 'file_hash /etc/sudoers' \
+        --investigation-id audit-2026-Q2
+    done
 ```
 
-For sensors that may be offline at command time, use [Reliable Tasking](../5-integrations/extensions/limacharlie/reliable-tasking.md). It queues the task and executes when the sensor checks in:
+`--online` skips sensors that are offline right now, and `--investigation-id` tags every response so you can find them together in the timeline.
+
+For sensors that may be offline at command time, use [Reliable Tasking](../5-integrations/extensions/limacharlie/reliable-tasking.md). It queues the task and executes it when the sensor checks in. It takes a selector itself, so no loop is needed:
 
 ```bash
-curl --location 'https://api.limacharlie.io/v1/extension/request/ext-reliable-tasking' \
-  --header "Authorization: Bearer $LC_JWT" \
-  --header 'Content-Type: application/x-www-form-urlencoded' \
-  --data 'oid=$YOUR_OID' \
-  --data 'action=task' \
-  --data 'data={"context":"audit-2026-Q2","selector":"plat==linux and production in tags","task":"file_get -f /etc/sudoers","ttl":172800}'
+limacharlie extension request --name ext-reliable-tasking --action task \
+  --data '{"context":"audit-2026-Q2","selector":"plat==linux and production in tags","task":"file_get -f /etc/sudoers","ttl":172800}'
 ```
 
-`ttl` is in seconds. The task waits up to `ttl` for an offline sensor to check in. Use a unique `context` per audit/IR engagement so you can correlate results.
+`ttl` is in seconds. The task waits up to `ttl` for an offline sensor to check in. Use a unique `context` per audit or IR engagement so you can correlate results. For a single known sensor, `limacharlie task reliable-send --sid <SID> --command "<task>" --ttl 172800` does the same thing.
 
 ### Network isolation as a response action
 
 The most common live-response action is "isolate this host from everything except LimaCharlie". You can task it manually:
 
 ```bash
-limacharlie sensor isolate --sid <SID>
-limacharlie sensor rejoin --sid <SID>
+limacharlie endpoint-policy isolate --sid <SID>
+limacharlie endpoint-policy rejoin --sid <SID>
 ```
 
 Or trigger it automatically from a D&R rule:
@@ -1638,7 +1642,7 @@ respond:
     extension name: ext-dumper
     extension action: request_dump
     extension request:
-      target: memory
+      target: '{{ "memory" }}'
       sid: '{{ .routing.sid }}'
       retention: 30
 ```
@@ -1663,7 +1667,7 @@ Configure once per customer; artifacts are billable per GB stored.
 
 ### Memory dumps on demand
 
-The [Dumper extension](../5-integrations/extensions/limacharlie/dumper.md) does a memory dump (full or process) and stores it for the configured retention. Common D&R-driven pattern: when a critical detection fires, dump and isolate.
+The [Dumper extension](../5-integrations/extensions/limacharlie/dumper.md) works on Windows hosts only. It has one action, `request_dump`, and two targets: `memory` (a full memory dump of the host) and `mft` (the NTFS Master File Table, converted to CSV). The dump is uploaded to the [Artifact](../5-integrations/extensions/limacharlie/artifact.md) system for the retention you set, and the local copy is deleted. There is no single-process target. For one process, use `mem_map`, `mem_strings`, or `yara_scan` from Part 11. Common D&R-driven pattern: when a critical detection fires, dump and isolate.
 
 ```yaml
 respond:
@@ -1671,13 +1675,12 @@ respond:
     extension name: ext-dumper
     extension action: request_dump
     extension request:
-      target: memory
+      target: '{{ "memory" }}'    # or '{{ "mft" }}'
       sid: '{{ .routing.sid }}'
-      retention: 30           # days to keep
-      ignore_cert: true
+      retention: 30               # days to keep
 ```
 
-For process-only dumps, set `target: process` and `pid: <pid>`.
+Add `ignore_cert: true` only when the host sits behind a TLS-intercepting proxy. The extension does not check for free disk space before a full dump, and the uploaded dumps are billed as external logs, so a multi-gigabyte dump on every detection adds up. Pair the rule with a `suppression` block.
 
 ### Velociraptor for deep DFIR
 
@@ -1697,7 +1700,7 @@ respond:
       ignore_cert: false
 ```
 
-The collection lands in a Velociraptor server LimaCharlie operates on your behalf.
+Velociraptor runs on the endpoint through the LimaCharlie sensor. It zips what it collects, and the ZIP is ingested into the [Artifact](../5-integrations/extensions/limacharlie/artifact.md) system, where you can download it. Follow the collection on the `ext-velociraptor` sensor timeline.
 
 ### Atomic Red Team for testing detections
 
@@ -1774,7 +1777,7 @@ hives:
         enabled: true
 ```
 
-Hourly the manager re-fetches each feed and updates the corresponding `lookup` hive record.
+Every 24 hours the manager re-fetches each feed and updates the corresponding `lookup` hive record. A newly added feed is not fetched until the next cycle unless you click **Manual Sync** on the extension page, so do that after the first deploy.
 
 ### Lookup-driven D&R
 
@@ -1796,12 +1799,27 @@ The `?` in the path is the wildcard — match any element of the array.
 
 ### Your own block-lists
 
-When your responder agent (Part 14) confirms a malicious IP, it adds the IP to a `soc-blocked-ips` lookup:
+When your responder agent (Part 14) confirms a malicious IP, it adds the IP to a `soc-blocked-ips` lookup. A lookup is one hive record holding all of its entries, and `lookup set` writes the whole record, so create it once with its first entry:
 
 ```bash
-limacharlie lookup --name soc-blocked-ips --add \
-  --key "203.0.113.42" --value "Blocked by SOC - case 142" \
-  --oid <oid>
+cat > soc-blocked-ips.yaml <<'EOF'
+data:
+  lookup_data:
+    "203.0.113.42": {mtd: "Blocked by SOC - case 142"}
+usr_mtd:
+  enabled: true
+EOF
+limacharlie lookup set --key soc-blocked-ips --input-file soc-blocked-ips.yaml
+```
+
+To add an entry later, read the record, add the key, and write it back. Passing the `etag` makes the write fail instead of silently overwriting if another agent changed the lookup in between; re-run the command if that happens:
+
+```bash
+limacharlie lookup get --key soc-blocked-ips --output json \
+  | jq --arg k "198.51.100.7" \
+       '{data: (.data | .lookup_data[$k] = {mtd: "Blocked by SOC - case 143"}),
+         usr_mtd: .usr_mtd, etag: .sys_mtd.etag}' \
+  | limacharlie lookup set --key soc-blocked-ips
 ```
 
 A standing rule:
@@ -1842,8 +1860,8 @@ This is the part that will surprise people coming from older platforms. LimaChar
 
 The [`refractionPOINT/lc-ai`](https://github.com/refractionPOINT/lc-ai) repo ships with two pre-built **AI team** recipes you can deploy as IaC:
 
-- **[Lean SOC](https://github.com/refractionPOINT/lc-ai/tree/main/ai-teams/lean-soc)** — four agents (triage / investigator / responder / reporter). Cheap, simple. The right starting point for an MSSP whose SOC capacity is "me and one other person".
-- **[Tiered SOC](https://github.com/refractionPOINT/lc-ai/tree/main/ai-teams/tiered-soc)** — eight agents matching a traditional L1/L2/L3 + malware analyst + threat hunter + SOC manager + shift reporter shape. Right when you have a real analyst team and want AI to amplify each tier.
+- **[Lean SOC](https://github.com/refractionPOINT/lc-ai/tree/master/ai-teams/lean-soc)** — four agents (triage / investigator / responder / reporter). Cheap, simple. The right starting point for an MSSP whose SOC capacity is "me and one other person".
+- **[Tiered SOC](https://github.com/refractionPOINT/lc-ai/tree/master/ai-teams/tiered-soc)** — eight agents: triage, L1 investigator, L2 analyst, containment, malware analyst, threat hunter, SOC manager, and shift reporter. Right when you have a real analyst team and want AI to amplify each tier.
 
 Both deploy via the `lc-essentials` Claude Code plugin (the easiest path) or directly as `ai_agent` Hive records (the IaC path).
 
@@ -2049,17 +2067,16 @@ Core actions inside the responder's prompt:
 
 ```bash
 # Network isolation
-limacharlie sensor isolate --sid <sid> --oid <oid>
+limacharlie endpoint-policy isolate --sid <sid> --oid <oid>
 
 # Block hashes / IPs / domains via SOC-managed lookups
-limacharlie lookup --name soc-blocked-hashes --add \
-  --key "<sha256>" --value "Blocked by SOC - case <n>" --oid <oid>
-
-limacharlie lookup --name soc-blocked-ips --add \
-  --key "<ip>" --value "Blocked by SOC - case <n>" --oid <oid>
-
-limacharlie lookup --name soc-blocked-domains --add \
-  --key "<domain>" --value "Blocked by SOC - case <n>" --oid <oid>
+# (the get | jq | set pattern from Part 13, once per lookup: soc-blocked-hashes,
+#  soc-blocked-ips, soc-blocked-domains)
+limacharlie lookup get --key soc-blocked-ips --output json --oid <oid> \
+  | jq --arg k "<ip>" \
+       '{data: (.data | .lookup_data[$k] = {mtd: "Blocked by SOC - case <n>"}),
+         usr_mtd: .usr_mtd, etag: .sys_mtd.etag}' \
+  | limacharlie lookup set --key soc-blocked-ips --oid <oid>
 
 # Human-in-the-loop approval before destructive actions
 limacharlie feedback request-approval \
@@ -2281,10 +2298,18 @@ mkdir mssp-iac && cd mssp-iac
 git init
 mkdir -p configs/global configs/customers templates
 
-# Export everything from the control org
-limacharlie sync fetch \
+# The resource types we manage as code. --hive-secret is left out on purpose,
+# see the note below.
+SYNC_FLAGS="--outputs --integrity --exfil --artifact --resources --extensions \
+  --org-values --installation-keys --yara --hive-dr-general --hive-fp \
+  --hive-lookup --hive-query --hive-extension-config --hive-cloud-sensor \
+  --hive-ai-agent"
+
+# Export the control org's configuration
+limacharlie sync pull \
   --oid <control-oid> \
-  --output configs/customers/control/main.yaml
+  --config-file configs/customers/control/main.yaml \
+  $SYNC_FLAGS
 
 # Or use the Git Sync extension's "Push to Git" button
 # in the control org's web UI — produces an `exports/` subtree.
@@ -2292,26 +2317,28 @@ limacharlie sync fetch \
 git add . && git commit -m "Initial export from control org"
 ```
 
+`--all` would also cover the `secret` hive. Name the types you want instead, so secret records never end up in the repo, and so that `--force` on a push can never delete a customer's secrets just because they are not in the YAML. Use the same `$SYNC_FLAGS` for every `sync pull` and `sync push` in this part.
+
 From there, refactor the export: pull rules that are reusable into `configs/global/rules.yaml`, write a slim `main.yaml` for the control org that includes them, and you have your first reusable global rule set.
 
 ### Validate before you push
 
 ```bash
-# Always dry-run first; --is-force makes the org an exact mirror of the YAML
+# Always dry-run first; --force makes the org an exact mirror of the YAML
+# for the selected resource types
 limacharlie sync push \
   --oid <customer-oid> \
-  --config configs/customers/acme/main.yaml \
-  --is-force --is-dry-run
+  --config-file configs/customers/acme/main.yaml \
+  $SYNC_FLAGS --force --dry-run
 ```
 
-Read the diff. Then drop `--is-dry-run`. In CI, run dry-run on every PR; gate merges on a clean diff.
+Read the diff. Then drop `--dry-run`. In CI, run dry-run on every PR; gate merges on a clean diff.
 
-Selective sync flags (apply only to a subset of resource types):
+Each resource type has its own flag, so you can push a subset. This pushes only D&R rules, outputs, and false-positive rules:
 
 ```bash
-limacharlie sync push --oid <oid> --config main.yaml \
-  --sync-dr --sync-outputs --sync-fp \
-  --is-force
+limacharlie sync push --oid <oid> --config-file main.yaml \
+  --hive-dr-general --outputs --hive-fp --force
 ```
 
 ### Schedule recurring sync via Git Sync
@@ -2333,9 +2360,9 @@ cat ~/.ssh/gitsync/id_ed25519.pub
 # (paste into GitHub Settings → Deploy keys, check "Allow write access")
 
 # 3. Store the private key as a Hive Secret in each customer org
-limacharlie hive set secret --key github-deploy-key \
-  --data ~/.ssh/gitsync/id_ed25519 --data-key secret \
-  --oid <customer_oid>
+jq -Rs '{secret: .}' ~/.ssh/gitsync/id_ed25519 \
+  | limacharlie secret set --key github-deploy-key --enabled \
+      --oid <customer_oid>
 
 # 4. Wire Git Sync via the web UI:
 #    Settings → Git Sync → SSH Key: select github-deploy-key
@@ -2365,13 +2392,21 @@ jobs:
       - run: pip install limacharlie
       - name: Dry-run sync against every customer
         env:
-          LC_API_KEY: ${{ secrets.LC_CI_API_KEY }}
+          # JSON map of customer OID -> that customer's Organization API key.
+          # An org key only works on its own org, so CI needs one per customer.
+          LC_CUSTOMER_KEYS: ${{ secrets.LC_CUSTOMER_KEYS }}
+          SYNC_FLAGS: >-
+            --outputs --integrity --exfil --artifact --resources --extensions
+            --org-values --installation-keys --yara --hive-dr-general --hive-fp
+            --hive-lookup --hive-query --hive-extension-config
+            --hive-cloud-sensor --hive-ai-agent
         run: |
           for DIR in configs/customers/*/; do
-            CUSTOMER=$(basename "$DIR")
             OID=$(grep -E "^# oid: " "$DIR/main.yaml" | awk '{print $3}')
-            limacharlie sync push --oid "$OID" \
-              --config "$DIR/main.yaml" --is-force --is-dry-run
+            export LC_OID="$OID"
+            export LC_API_KEY=$(jq -r --arg oid "$OID" '.[$oid]' <<<"$LC_CUSTOMER_KEYS")
+            limacharlie sync push --config-file "$DIR/main.yaml" \
+              $SYNC_FLAGS --force --dry-run
           done
 ```
 
@@ -2414,27 +2449,25 @@ Sync runs every hour; first sync is manual via the **Sync Usage Alert Rules** bu
 
 ### Sensor Cull keeps fleets clean
 
-The [Sensor Cull extension](../5-integrations/extensions/limacharlie/sensor-cull.md) automatically removes sensors that haven't checked in for N days. Without it, decommissioned hosts pile up and you keep paying their connectivity fee. Default to 30 days, deploy on every customer:
+The [Sensor Cull extension](../5-integrations/extensions/limacharlie/sensor-cull.md) automatically removes sensors that haven't checked in for N days. Without it, decommissioned hosts pile up and you keep paying their connectivity fee. Rules run once a day and live in the extension's config. Each rule has a `rule_name`, a `ttl` in days, and a `tag` or a `selector`. A sensor is culled as soon as *any* rule that matches it has expired, so rules must not overlap: a catch-all 30-day rule would cull VIP hosts at 30 days no matter what a longer VIP rule says. Default to 30 days for everything except VIP hosts, keep those 90, and deploy on every customer:
 
-```json
-{
-  "action": "add_rule",
-  "name": "stale-30d",
-  "tag": "*",
-  "ttl": 30
-}
+```yaml
+hives:
+  extension_config:
+    ext-sensor-cull:
+      data:
+        rules:
+          - rule_name: stale-30d
+            selector: '"vip" not in tags'
+            ttl: 30
+          - rule_name: vip-stale-90d
+            tag: vip
+            ttl: 90
+      usr_mtd:
+        enabled: true
 ```
 
-For VIP-tagged hosts, keep them longer:
-
-```json
-{
-  "action": "add_rule",
-  "name": "vip-stale-90d",
-  "tag": "vip",
-  "ttl": 90
-}
-```
+You can also run the rules on demand with the extension's `run` action.
 
 ### Audit trail review on a cadence
 
@@ -2519,13 +2552,12 @@ Trigger another detection. Watch the **AI Sessions** view (or `limacharlie ai se
 ### 8. IaC export round-trip
 
 ```bash
-limacharlie sync fetch --oid <customer_oid> --output /tmp/customer.yaml
-diff /tmp/customer.yaml <(limacharlie sync push \
-  --oid <customer_oid> --config /tmp/customer.yaml --is-force --is-dry-run \
-  --output yaml 2>/dev/null)
+limacharlie sync pull --oid <customer_oid> --config-file /tmp/customer.yaml $SYNC_FLAGS
+limacharlie sync push --oid <customer_oid> --config-file /tmp/customer.yaml \
+  $SYNC_FLAGS --force --dry-run
 ```
 
-Expected: nothing different (the customer's live config matches the YAML you just exported). If there's a diff, you have drift — find out why before declaring this done.
+Expected: the dry run reports no additions, modifications, or removals (the customer's live config matches the YAML you just exported). If it lists changes, you have drift. Find out why before declaring this done.
 
 ### 9. Audit log forwarding works
 
@@ -2558,7 +2590,7 @@ The org:
   [ ] Run onboarding script (Part 10)
     - Adds to staff Organization Groups
     - Subscribes standard extension kit
-    - Pushes IaC baseline (--is-force --is-dry-run, then real)
+    - Pushes IaC baseline (--force --dry-run, then real)
     - Creates per-tier installation keys
     - Invites customer's primary contact
   [ ] Configure Git Sync against repo path configs/customers/<name>/
@@ -2637,7 +2669,7 @@ What to read next, in priority order, when you finish this article:
 
 What to do next, in priority order, in your control org:
 
-1. Bootstrap a Git repo from your control org with `limacharlie sync fetch`.
+1. Bootstrap a Git repo from your control org with `limacharlie sync pull`.
 2. Onboard a real friendly customer end-to-end with the playbook above. Time it. Improve the slow steps.
 3. Wire `audit` stream forwarding on every org. Stop waiting until you need it.
 4. Deploy the lean-soc triage agent. Get one full week of automated triage data before deciding whether to deploy the rest of the team.
