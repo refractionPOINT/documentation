@@ -20,6 +20,8 @@ Adapter Type: `box`
 - `client_id`: your Box app's Client ID.
 - `client_secret`: your Box app's Client Secret.
 - `subject_id`: your Box **Enterprise ID** — the adapter authenticates as the enterprise (`box_subject_type=enterprise`).
+- `events_url`: optional override for the events endpoint. Defaults to `https://api.box.com/2.0/events`.
+- `token_url`: optional override for the OAuth2 token endpoint. Defaults to `https://api.box.com/oauth2/token`.
 
 The adapter authenticates with the OAuth2 Client Credentials Grant (CCG) against `https://api.box.com/oauth2/token` and polls `https://api.box.com/2.0/events?stream_type=admin_logs`.
 
