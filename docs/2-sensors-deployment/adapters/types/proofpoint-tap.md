@@ -19,6 +19,7 @@ Adapter Type: `proofpoint_tap`
 
 - `principal`: your Proofpoint TAP **Service Principal**.
 - `secret`: the **Secret** paired with the Service Principal.
+- `url`: optional override for the SIEM endpoint. Defaults to `https://tap-api-v2.proofpoint.com/v2/siem/all`.
 
 The adapter authenticates with HTTP Basic auth (`principal` / `secret`) and polls `https://tap-api-v2.proofpoint.com/v2/siem/all`.
 
