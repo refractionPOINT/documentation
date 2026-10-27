@@ -17,59 +17,59 @@ BigQuery dataset containing Hayabusa results:
 1. You will need a Google Cloud project
 2. You will need to create a service account within your Google Cloud project
 
-   1. Navigate to your project
-   2. Navigate to IAM
-   3. Navigate to Service Accounts > Create Service Account
-   4. Click on newly created Service Account and create a new key
+    1. Navigate to your project
+    2. Navigate to IAM
+    3. Navigate to Service Accounts > Create Service Account
+    4. Click on newly created Service Account and create a new key
 
-      1. ![image.png](../../assets/images/image(188).png)
-      2. This will provide you with the JSON format secret key you will later setup in your LimaCharlie output.
-   5. In BigQuery, create a Dataset, Table, & Schema similar to the screenshot below. Keep in mind, the name of your dataset and table are arbitrary but they need to match what you configure in your output in LimaCharlie.
+        1. ![image.png](../../assets/images/image(188).png)
+        2. This will provide you with the JSON format secret key you will later setup in your LimaCharlie output.
+    5. In BigQuery, create a Dataset, Table, & Schema similar to the screenshot below. Keep in mind, the name of your dataset and table are arbitrary but they need to match what you configure in your output in LimaCharlie.
 
-      1. Project - `your_project_name`
-      2. Dataset - `hayabusa`
-      3. Table - `hayabusa`
-      4. Schema - `computer:STRING, message:STRING, timestamp:STRING, details:STRING, channel:STRING, event_id:STRING, level:STRING, mitre_tactics:STRING, mitre_tags:STRING, extra:STRING`
-
-         1. Note that this can be any of the fields from the Hayabusa event that you wish to use. **This schema and transform are based on the CSV output using the** `timesketch-verbose` **profile.**
-3. Now we're ready to create our LimaCharlie Events Output
-
-   1. In the side navigation menu, click "Outputs" then add a new ouput
-
-      1. **Output stream**: Events
-      2. **Destination**: Google Cloud BigQuery
-
-         1. **Name**: `hayabusa-bigquery`
-
-            1. You can change this, but it affects a subsequent step so take note of the output name
-         2. **schema**: `computer:STRING, message:STRING, timestamp:STRING, details:STRING, channel:STRING, event_id:STRING, level:STRING, mitre_tactics:STRING, mitre_tags:STRING, extra:STRING`
+        1. Project - `your_project_name`
+        2. Dataset - `hayabusa`
+        3. Table - `hayabusa`
+        4. Schema - `computer:STRING, message:STRING, timestamp:STRING, details:STRING, channel:STRING, event_id:STRING, level:STRING, mitre_tactics:STRING, mitre_tags:STRING, extra:STRING`
 
             1. Note that this can be any of the fields from the Hayabusa event that you wish to use. **This schema and transform are based on the CSV output using the** `timesketch-verbose` **profile.**
-         3. **Dataset**: *whatever you named BQ your dataset above*
-         4. **Table**: *whatever you named your BQ table above*
-         5. **Project**: *your* GCP *project name*
-         6. **Secret Key**: *provide the JSON secret key for your GCP service account*
-         7. **Advanced Options**
+3. Now we're ready to create our LimaCharlie Events Output
 
-            1. **Custom Transform**: paste in this JSON
+    1. In the side navigation menu, click "Outputs" then add a new ouput
 
-               1. Note that this can be any of the fields from the Hayabusa event that you wish to use. **This schema and transform are based on the CSV output using the** `timesketch-verbose` **profile.**
+        1. **Output stream**: Events
+        2. **Destination**: Google Cloud BigQuery
 
-               ```json
-               {
-               "channel": "event.results.Channel",
-               "computer": "event.results.Computer",
-               "message": "event.results.message",
-               "timestamp": "event.results.datetime",
-               "details": "event.results.Details",
-               "event_id": "event.results.EventID",
-               "level": "event.results.Level",
-               "mitre_tactics": "event.results.MitreTactics",
-               "mitre_tags": "event.results.MitreTags",
-               "extra": "event.results.ExtraFieldInfo",
-               }
-               ```
+            1. **Name**: `hayabusa-bigquery`
 
-            2. **Specific Event Types**: `hayabusa_event`
-            3. **Sensor**: `ext-hayabusa`
+                1. You can change this, but it affects a subsequent step so take note of the output name
+            2. **schema**: `computer:STRING, message:STRING, timestamp:STRING, details:STRING, channel:STRING, event_id:STRING, level:STRING, mitre_tactics:STRING, mitre_tags:STRING, extra:STRING`
+
+                1. Note that this can be any of the fields from the Hayabusa event that you wish to use. **This schema and transform are based on the CSV output using the** `timesketch-verbose` **profile.**
+            3. **Dataset**: *whatever you named BQ your dataset above*
+            4. **Table**: *whatever you named your BQ table above*
+            5. **Project**: *your* GCP *project name*
+            6. **Secret Key**: *provide the JSON secret key for your GCP service account*
+            7. **Advanced Options**
+
+                1. **Custom Transform**: paste in this JSON
+
+                    1. Note that this can be any of the fields from the Hayabusa event that you wish to use. **This schema and transform are based on the CSV output using the** `timesketch-verbose` **profile.**
+
+                    ```json
+                    {
+                    "channel": "event.results.Channel",
+                    "computer": "event.results.Computer",
+                    "message": "event.results.message",
+                    "timestamp": "event.results.datetime",
+                    "details": "event.results.Details",
+                    "event_id": "event.results.EventID",
+                    "level": "event.results.Level",
+                    "mitre_tactics": "event.results.MitreTactics",
+                    "mitre_tags": "event.results.MitreTags",
+                    "extra": "event.results.ExtraFieldInfo"
+                    }
+                    ```
+
+                2. **Specific Event Types**: `hayabusa_event`
+                3. **Sensor**: `ext-hayabusa`
 4. You are now ready to send Hayabusa events to BigQuery!

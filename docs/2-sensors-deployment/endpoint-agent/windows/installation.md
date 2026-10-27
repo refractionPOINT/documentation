@@ -237,15 +237,15 @@ Remove-Item $InstallerPath -Force -ErrorAction SilentlyContinue
 1. Open PowerShell as Administrator
 2. If you haven't already, allow script execution:
 
-   ```powershell
-   Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
-   ```
+    ```powershell
+    Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+    ```
 
 3. Run the script with your Installation Key:
 
-   ```powershell
-   .\Install-LimaCharlie.ps1 -InstallationKey "YOUR_INSTALLATION_KEY_GOES_HERE"
-   ```
+    ```powershell
+    .\Install-LimaCharlie.ps1 -InstallationKey "YOUR_INSTALLATION_KEY_GOES_HERE"
+    ```
 
 ## Verifying Installation
 
