@@ -241,6 +241,16 @@ def test_org_policy_api_is_left_alone_when_no_exception_is_needed(env):
     assert "orgpolicy.googleapis.com" not in env.log()
 
 
+def test_org_policy_api_that_never_answers_means_no_change(env):
+    (env.state / "orgpol_on").touch()
+    (env.state / "orgpol_lag").write_text("99999")
+    proc = env.run(*ADMIN, "--allow-policy-exception", LEGACY=1, ORGPOLOFF=1)
+    assert proc.returncode == 1
+    assert "No change was made" in proc.output
+    assert env.log().count("org-policies describe") == 21, "20 retries after the first read, then stop"
+    assert env.policy_calls() == []
+
+
 def test_org_policy_api_that_cannot_be_enabled_means_no_change(env):
     proc = env.run(*ADMIN, "--allow-policy-exception", LEGACY=1, ORGPOLOFF=1, ORGPOLNOENABLE=1)
     assert proc.returncode == 1
