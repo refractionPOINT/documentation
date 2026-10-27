@@ -30,49 +30,49 @@ Sophos documentation - <https://developer.sophos.com/getting-started-tenant>
 2. Get your client ID and client secret from the credentials you just created
 3. Get your JWT -- be sure to replace the values with the client ID and secret from the last step
 
-   ```bash
-   curl -XPOST -H "Content-Type:application/x-www-form-urlencoded" -d "grant_type=client_credentials&client_id=YOUR_CLIENT_ID&client_secret=YOUR_CLIENT_SECRET&scope=token" https://id.sophos.com/api/v2/oauth2/token
-   ```
+    ```bash
+    curl -XPOST -H "Content-Type:application/x-www-form-urlencoded" -d "grant_type=client_credentials&client_id=YOUR_CLIENT_ID&client_secret=YOUR_CLIENT_SECRET&scope=token" https://id.sophos.com/api/v2/oauth2/token
+    ```
 
-   Response content -- grab the `access_token` from the output:
+    Response content -- grab the `access_token` from the output:
 
-   ```json
-   {
-      "access_token": "SAVE_THIS_VALUE",
-      "errorCode": "success",
-      "expires_in": 3600,
-      "message": "OK",
-      "refresh_token": "<token>",
-      "token_type": "bearer",
-      "trackingId": "<uuid>"
-   }
-   ```
+    ```json
+    {
+       "access_token": "SAVE_THIS_VALUE",
+       "errorCode": "success",
+       "expires_in": 3600,
+       "message": "OK",
+       "refresh_token": "<token>",
+       "token_type": "bearer",
+       "trackingId": "<uuid>"
+    }
+    ```
 
 4. Get your tenant ID -- you will need the `access_token` (JWT) from the last step.
 
-   ```bash
-   curl -XGET -H "Authorization: Bearer YOUR_JWT_HERE" https://api.central.sophos.com/whoami/v1
-   ```
+    ```bash
+    curl -XGET -H "Authorization: Bearer YOUR_JWT_HERE" https://api.central.sophos.com/whoami/v1
+    ```
 
-   Response content -- grab the `id` (`tenant_id`) and `dataRegion` (`url`) from the output. You will need these for your LimaCharlie Sophos adapter configuration.
+    Response content -- grab the `id` (`tenant_id`) and `dataRegion` (`url`) from the output. You will need these for your LimaCharlie Sophos adapter configuration.
 
-   ```json
-   {
-       "id": "57ca9a6b-885f-4e36-95ec-290548c26059",
-       "idType": "tenant",
-       "apiHosts": {
-           "global": "https://api.central.sophos.com",
-           "dataRegion": "https://api-us03.central.sophos.com"
-       }
-   }
-   ```
+    ```json
+    {
+        "id": "57ca9a6b-885f-4e36-95ec-290548c26059",
+        "idType": "tenant",
+        "apiHosts": {
+            "global": "https://api.central.sophos.com",
+            "dataRegion": "https://api-us03.central.sophos.com"
+        }
+    }
+    ```
 
 5. Now you have all the pieces for your adapter:
 
-   1. `client_id`
-   2. `client_secret`
-   3. `tenant_id`
-   4. `url`
+    1. `client_id`
+    2. `client_secret`
+    3. `tenant_id`
+    4. `url`
 
 ### Infrastructure as Code Deployment
 

@@ -115,30 +115,30 @@ If you use the LimaCharlie [Dumper](../limacharlie/dumper.md) extension, a good 
 
 1. Configure a D&R rule to watch for MFT collection events upon ingestion, and then trigger the Plaso extension:
 
-   **Detect:**
+    **Detect:**
 
-   ```yaml
-   op: and
-   target: artifact_event
-   rules:
-       - op: is
-         path: routing/log_type
-         value: mftcsv
-       - op: is
-         not: true
-         path: routing/event_type
-         value: export_complete
-   ```
+    ```yaml
+    op: and
+    target: artifact_event
+    rules:
+        - op: is
+          path: routing/log_type
+          value: mftcsv
+        - op: is
+          not: true
+          path: routing/event_type
+          value: export_complete
+    ```
 
-   **Respond:**
+    **Respond:**
 
-   ```yaml
-   - action: extension request
-     extension action: generate
-     extension name: ext-plaso
-     extension request:
-         artifact_id: '{{ .routing.log_id }}'
-   ```
+    ```yaml
+    - action: extension request
+      extension action: generate
+      extension name: ext-plaso
+      extension request:
+          artifact_id: '{{ .routing.log_id }}'
+    ```
 
 2. Launch an MFT dump in the LimaCharlie Dumper extension.
    ![plaso ext 1](../../../assets/images/plaso-ext-1.png)
