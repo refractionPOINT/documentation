@@ -1225,7 +1225,9 @@ List installed software packages on the endpoint.
 
 **Platforms:** Windows (via registry) | macOS (future) | Linux (future)
 
-**Response Event:** OS_PACKAGES_REP
+**Response Event:** [OS_PACKAGES_REP](edr-events.md#os_packages_rep)
+
+Package entries may include `OS_PACKAGE_PUBLISHER`, `OS_PACKAGE_UNINSTALL_STRING`, and `OS_PACKAGE_INSTALL_LOCATION` on newer Windows sensors. These Windows-only fields are optional and omitted when their registry values are empty; see the response event reference for field descriptions and RPCM tags.
 
 **Usage Example:**
 
@@ -1240,9 +1242,9 @@ limacharlie sensor task <SID> os_packages
   "event": {
     "PACKAGES": [
       {
-        "NAME": "Google Chrome",
-        "VERSION": "120.0.6099.130",
-        "PUBLISHER": "Google LLC"
+        "PACKAGE_NAME": "Google Chrome",
+        "PACKAGE_VERSION": "120.0.6099.130",
+        "OS_PACKAGE_PUBLISHER": "Google LLC"
       }
     ]
   }
