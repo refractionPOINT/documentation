@@ -66,7 +66,7 @@ BigQuery dataset containing Hayabusa results:
                     "level": "event.results.Level",
                     "mitre_tactics": "event.results.MitreTactics",
                     "mitre_tags": "event.results.MitreTags",
-                    "extra": "event.results.ExtraFieldInfo",
+                    "extra": "event.results.ExtraFieldInfo"
                     }
                     ```
 
