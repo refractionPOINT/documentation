@@ -175,6 +175,15 @@ Run every rule:
       -d data='{}'
     ```
 
+=== "D&R response"
+
+    ```yaml
+    - action: extension request
+      extension name: ext-sensor-cull
+      extension action: run
+      extension request: {}
+    ```
+
 Run only the rules named `Delete Linux sensors after 120 days`:
 
 === "CLI"
@@ -204,7 +213,8 @@ Run only the rules named `Delete Linux sensors after 120 days`:
     - action: extension request
       extension name: ext-sensor-cull
       extension action: run
-      extension request: {}
+      extension request:
+        rule_name: '{{ "Delete Linux sensors after 120 days" }}'
     ```
 
 The call returns once the first batch is processed. On a large organization the extension schedules the remaining batches itself.
