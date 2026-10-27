@@ -280,7 +280,7 @@ gmail:
     hostname: "gmail-sensor"
 ```
 
-The credential file path in the record is resolved on the host running the adapter, so the key file must be present there.
+The credential file path in the record is resolved on the host running the adapter, so the key file must be present there. Prefer `service_account_file` over the inline `service_account_credentials` in a record: an inline key is stored in the record itself and is readable by anyone who can read that record.
 
 ## Sample Rule
 
