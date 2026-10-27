@@ -8,6 +8,12 @@ Each signal is an independent, opt-in **capability** that ships its own event ty
 
 With the service-account flow the adapter can watch **many mailboxes at once** — an explicit list, or every mailbox in a Google Workspace domain via auto-discovery — and ships each mailbox to its own LimaCharlie sensor.
 
+## Availability
+
+The Gmail adapter runs through the LimaCharlie Adapter, either the [adapter binary or the Docker image](../deployment.md#adapter-binaries), on a host you control. It can be configured on the command line, from a local configuration file, or from an [External Adapter record](../deployment.md#on-prem-cloud-management) managed in LimaCharlie.
+
+It is **not available as a cloud-to-cloud (Cloud Sensor) adapter** at this time, so there is no `cloud_sensor` record type for it.
+
 ## Capabilities
 
 Enable any combination with the `collect_*` flags. If you set none, the adapter defaults to message telemetry only (`collect_messages`).
@@ -29,11 +35,28 @@ The configuration-state capabilities (filters, forwarding, send-as, delegates, I
 
 ## Authentication
 
-Choose one of two modes.
+The adapter needs read access to the mailbox through the Gmail API. Choose **one** of two modes. Providing both sets of credentials is rejected at startup.
 
 ### OAuth 2.0 refresh token (a single mailbox)
 
-For collecting one user's mailbox. Create an OAuth client (Desktop or Web) in the Google Cloud console, enable the Gmail API, and complete the authorization-code flow once to obtain a refresh token for the `gmail.readonly` scope.
+Use this when you want to monitor one user's mailbox and that user can complete a Google consent screen once.
+
+**1. Create a project and enable the Gmail API.** In the [Google Cloud console](https://console.cloud.google.com/), create or select a project. Under **APIs & Services → Library**, find **Gmail API** and click **Enable**.
+
+**2. Configure the OAuth consent screen.** Under **APIs & Services → OAuth consent screen**, choose **Internal** if the project belongs to the same Google Workspace organization as the mailbox, otherwise **External**. Add the scope `https://www.googleapis.com/auth/gmail.readonly`. For an External app, add the mailbox owner as a test user.
+
+!!! warning
+    For an External app left in the **Testing** publishing status, Google expires refresh tokens after 7 days, and the adapter stops collecting that mailbox once the token is rejected. Use an Internal app, or move the app to production, for a long-running deployment.
+
+**3. Create an OAuth client.** Under **APIs & Services → Credentials → Create Credentials → OAuth client ID**, choose **Web application** and add `https://developers.google.com/oauthplayground` as an authorized redirect URI. Record the **Client ID** and **Client secret**.
+
+**4. Obtain a refresh token.** The simplest route is the [Google OAuth 2.0 Playground](https://developers.google.com/oauthplayground):
+
+1. Click the gear icon, select **Use your own OAuth credentials**, set the access type to **Offline**, and enter the client ID and secret.
+2. In Step 1, enter the scope `https://www.googleapis.com/auth/gmail.readonly` and authorize as the mailbox owner.
+3. In Step 2, click **Exchange authorization code for tokens** and copy the **Refresh token**.
+
+You can remove the Playground redirect URI from the client afterwards.
 
 | Field | Description |
 | --- | --- |
@@ -43,7 +66,20 @@ For collecting one user's mailbox. Create an OAuth client (Desktop or Web) in th
 
 ### Service account with domain-wide delegation (Google Workspace)
 
-For monitoring Workspace mailboxes without per-user consent. Create a service account, enable domain-wide delegation, and in the Workspace Admin console authorize its client id for the `https://www.googleapis.com/auth/gmail.readonly` scope.
+Use this to monitor Workspace mailboxes without per-user consent. It is required for `collect_delegates` and for collecting more than one mailbox.
+
+**1. Enable the APIs.** In a Google Cloud project, enable the **Gmail API**. If you plan to use mailbox auto-discovery, also enable the **Admin SDK API**.
+
+**2. Create a service account and key.** Under **APIs & Services → Credentials → Create Credentials → Service account**, create the account. Open it, go to **Keys → Add key → Create new key → JSON**, and download the key file. Treat it as a secret. Note the service account's numeric **Client ID** (shown as the unique ID on its details page).
+
+**3. Authorize domain-wide delegation.** As a super administrator, open the [Workspace Admin console](https://admin.google.com/) and go to **Security → Access and data control → API controls → Manage Domain Wide Delegation**. Click **Add new** and enter:
+
+- **Client ID**: the numeric Client ID from step 2. Using the service account's email address instead causes `unauthorized_client` errors.
+- **OAuth scopes**: `https://www.googleapis.com/auth/gmail.readonly`. For auto-discovery, add `https://www.googleapis.com/auth/admin.directory.user.readonly` as well, separated by a comma.
+
+Delegation usually takes a few minutes to apply but can take up to 24 hours.
+
+The adapter signs a JWT assertion that impersonates each configured mailbox owner.
 
 | Field | Description |
 | --- | --- |
@@ -52,6 +88,8 @@ For monitoring Workspace mailboxes without per-user consent. Create a service ac
 | `subject` | A single mailbox owner to impersonate, e.g. `user@yourdomain.com` |
 
 Provide the mailbox(es) with `subject` (one), `subjects` (a list), and/or `discover_mailboxes` (the whole domain). At least one of these is required.
+
+> **Least privilege:** `gmail.readonly` covers every capability. The narrower `gmail.metadata` scope cannot read message bodies or the settings sub-resources.
 
 ## Multiple mailboxes
 
@@ -71,12 +109,13 @@ If a discovery pass fails or comes back empty while mailboxes are already being 
 
 ## Deployment Configurations
 
-All adapters support the same `client_options`, which you should always specify if using the binary adapter:
+All adapters support the same `client_options`, which you should always specify when running the adapter binary or container:
 
 - `client_options.identity.oid`: the LimaCharlie Organization ID (OID) this adapter is used with.
 - `client_options.identity.installation_key`: the LimaCharlie Installation Key this adapter should use to identify with LimaCharlie.
 - `client_options.platform`: `gmail`.
 - `client_options.sensor_seed_key`: an arbitrary name for this adapter which Sensor IDs (SID) are generated from.
+- `client_options.hostname`: a hostname for the sensor. With more than one mailbox, the adapter sets this to each mailbox address instead.
 
 ### Adapter-specific Options
 
@@ -123,6 +162,8 @@ Adapter Type: `gmail`
 
 [Adapter downloads](../deployment.md) are available on the deployment page.
 
+Single mailbox with an OAuth refresh token:
+
 ```bash
 chmod +x /path/to/lc_adapter
 
@@ -131,6 +172,7 @@ chmod +x /path/to/lc_adapter
   client_options.identity.installation_key=$INSTALLATION_KEY \
   client_options.platform=gmail \
   client_options.sensor_seed_key=gmail \
+  client_options.hostname=gmail \
   client_id=$GMAIL_CLIENT_ID \
   client_secret=$GMAIL_CLIENT_SECRET \
   refresh_token=$GMAIL_REFRESH_TOKEN \
@@ -138,18 +180,37 @@ chmod +x /path/to/lc_adapter
   poll_interval=5m
 ```
 
-## Infrastructure as Code Deployment
+Single Workspace mailbox with a service account key file:
 
-Full BEC monitoring of a Workspace mailbox — message telemetry plus the persistence, exfiltration, and tamper signals:
+```bash
+/path/to/lc_adapter gmail \
+  client_options.identity.oid=$OID \
+  client_options.identity.installation_key=$INSTALLATION_KEY \
+  client_options.platform=gmail \
+  client_options.sensor_seed_key=gmail \
+  client_options.hostname=gmail \
+  service_account_file=/secrets/gmail-collector.json \
+  subject=soc-mailbox@yourdomain.com \
+  collect_filters=true \
+  collect_forwarding=true \
+  collect_history=true
+```
+
+Lists such as `subjects` are easier to set in a configuration file, shown next.
+
+## Configuration File Deployment
+
+Put the configuration in a YAML file whose root key is `gmail`, and pass the file after the adapter type:
+
+```bash
+/path/to/lc_adapter gmail /path/to/gmail.yaml
+```
+
+Full BEC monitoring of a Workspace mailbox, with message telemetry plus the persistence, exfiltration, and tamper signals:
 
 ```yaml
-# For cloud sensor deployment, store credentials as hive secrets:
-#
-#   service_account_credentials: "hive://secret/gmail-service-account"
-
-sensor_type: "gmail"
 gmail:
-  service_account_credentials: "hive://secret/gmail-service-account"
+  service_account_file: "/secrets/gmail-collector.json"
   subject: "soc-mailbox@yourdomain.com"
   collect_messages: true
   collect_filters: true
@@ -167,14 +228,14 @@ gmail:
       installation_key: "YOUR_LC_INSTALLATION_KEY_GMAIL"
     platform: "gmail"
     sensor_seed_key: "gmail-sensor"
+    hostname: "gmail-sensor"
 ```
 
-Domain-wide auto-discovery — every mailbox in the Workspace, each on its own sensor:
+Domain-wide auto-discovery, with every mailbox on its own sensor:
 
 ```yaml
-sensor_type: "gmail"
 gmail:
-  service_account_credentials: "hive://secret/gmail-service-account"
+  service_account_file: "/secrets/gmail-collector.json"
   discover_mailboxes: true
   admin_subject: "admin@yourdomain.com"
   discovery_interval: 1h
@@ -189,6 +250,37 @@ gmail:
     platform: "gmail"
     sensor_seed_key: "gmail-sensor"
 ```
+
+## Docker Deployment
+
+The adapter is published as the [`refractionpoint/lc-adapter`](https://hub.docker.com/r/refractionpoint/lc-adapter) image. Mount the configuration file and the service account key into the container:
+
+```bash
+docker run -d --rm \
+  -v /path/to/gmail.yaml:/conf/gmail.yaml:ro \
+  -v /path/to/gmail-collector.json:/secrets/gmail-collector.json:ro \
+  refractionpoint/lc-adapter gmail /conf/gmail.yaml
+```
+
+## Cloud-Managed Deployment
+
+The adapter binary can also fetch its configuration from LimaCharlie, so you can update it remotely. Create a record in the `external_adapter` Hive with `sensor_type: gmail` and the same `gmail:` block as the configuration file above, then start the adapter against that record's GUID. See [On-Prem + Cloud Management](../deployment.md#on-prem-cloud-management).
+
+```yaml
+sensor_type: gmail
+gmail:
+  service_account_file: "/secrets/gmail-collector.json"
+  subject: "soc-mailbox@yourdomain.com"
+  client_options:
+    identity:
+      oid: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+      installation_key: "YOUR_LC_INSTALLATION_KEY_GMAIL"
+    platform: "gmail"
+    sensor_seed_key: "gmail-sensor"
+    hostname: "gmail-sensor"
+```
+
+The credential file path in the record is resolved on the host running the adapter, so the key file must be present there.
 
 ## Sample Rule
 
