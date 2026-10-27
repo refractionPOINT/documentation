@@ -15,10 +15,16 @@ All adapters support the same `client_options`, which you should always specify 
 
 ### Adapter-specific Options
 
-Adapter Type: `trendmicro`
+Adapter Type: `trendmicro` for the CLI adapter, `trend_micro` for the cloud sensor. The name differs by deployment method:
+
+- CLI adapter type: `trendmicro`, like `./lc_adapter trendmicro ...`, with the options under a `trendmicro:` block in a config file.
+- Cloud sensor (Infrastructure as Code): `sensor_type: "trend_micro"`, with the options under a `trend_micro:` block.
+
+The options are the same in both cases.
 
 - `api_token`: your Trend Micro Vision One API key (sent as a Bearer token).
 - `region`: the Vision One data region your tenant lives in. One of `us` (default), `eu`, `sg`, `jp`, `in`, `au`.
+- `url`: optional override for the Vision One API root, like `https://api.xdr.trendmicro.com`. When empty, the root comes from `region`.
 
 The `region` selects the API base URL:
 
@@ -31,7 +37,7 @@ The `region` selects the API base URL:
 | `in` | `https://api.in.xdr.trendmicro.com` |
 | `au` | `https://api.au.xdr.trendmicro.com` |
 
-The adapter polls `<base_url>/v3.0/workbench/alerts`.
+The adapter polls `<base_url>/v3.0/workbench/alerts` every 60 seconds. The first poll looks back 24 hours.
 
 ### Getting Your Credentials
 
@@ -46,8 +52,8 @@ The adapter polls `<base_url>/v3.0/workbench/alerts`.
 
 #   api_token: "hive://secret/trendmicro-api-token"
 
-sensor_type: "trendmicro"
-trendmicro:
+sensor_type: "trend_micro"
+trend_micro:
   api_token: "hive://secret/trendmicro-api-token"
   region: "us"
   client_options:
