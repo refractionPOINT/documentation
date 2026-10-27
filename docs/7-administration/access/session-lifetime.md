@@ -15,13 +15,13 @@ This is typically used by enterprise and regulated customers who require periodi
 
 - The setting is configured per email domain. All users authenticating with an email in the enrolled domain are subject to the same limit.
 - Customers with multiple email domains (for example, primary and secondary brands) can enroll each domain independently.
-- The setting can be combined with [Strict SSO Enforcement](sso.md) and other per-domain authentication controls.
+- The setting can be combined with [Strict SSO Enforcement](sso.md#strict-sso-enforcement) and other per-domain authentication controls.
 
 ## User Experience
 
 - During the session, no banner or countdown is shown — the experience is identical to a normal session.
 - At expiry, the user sees a short message indicating that the session has reached its maximum lifetime, and is redirected to the sign-in page.
-- For users who are already signed in at the moment the policy is first enabled for their domain, the countdown applies from their most recent sign-in. They will typically be signed out shortly after enablement and asked to sign in once; subsequent sessions follow the configured limit.
+- For users who are already signed in at the moment the policy is first enabled for their domain, the countdown applies from their most recent sign-in. If that sign-in is already older than the configured limit, they are signed out shortly after enablement and asked to sign in again. Subsequent sessions follow the configured limit.
 
 ## Requesting Enrollment
 
