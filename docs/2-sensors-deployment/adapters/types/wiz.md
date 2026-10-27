@@ -79,8 +79,9 @@ wiz:
     }
   variables:
     first: 100
-    # Set orderBy to a descending createdAt order. See the Wiz API reference
-    # for the IssueOrder values. The adapter needs newest items first.
+    # REQUIRED before you deploy: add an orderBy entry that sorts by createdAt,
+    # newest first. The IssueOrder values are in the Wiz API reference, so they
+    # are not filled in here.
   time_field: "createdAt"
   data_path: ["data", "issues", "nodes"]
   id_field: "id"
@@ -93,7 +94,7 @@ wiz:
     sensor_seed_key: "wiz-sensor"
 ```
 
-The query, `data_path`, `time_field` and `id_field` above are an illustrative Issues example. Adjust them to the query you want to pull. The query must declare `$filterBy` and return newest items first, and `data_path` must point at the array of items.
+This example is incomplete until you add the `orderBy` variable. Without it Wiz returns its default order, which the adapter cannot use to track its watermark. The query, `data_path`, `time_field` and `id_field` are an illustrative Issues example. Adjust them to the query you want to pull. The query must declare `$filterBy` and return newest items first, and `data_path` must point at the array of items.
 
 ## API Doc
 
