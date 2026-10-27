@@ -10,6 +10,13 @@ This is useful when:
 
 This page is about running **Claude** through your cloud agreement. To run user sessions on other vendors' models (OpenAI, Google Gemini, OpenRouter), see [AI Providers](providers.md).
 
+## Where to configure
+
+Both providers can be configured at two scopes:
+
+- **Org-scoped (D&R rules and integrations).** The `bedrock:` / `vertex:` blocks on an `ai_agent` Hive record, or directly on a `SessionRequest`. This page is primarily about that path.
+- **User-scoped (per-user BYOK sessions).** The same provider blocks, posted to `POST /v1/auth/claude/bedrock` and `POST /v1/auth/claude/vertex`. See [User AI Sessions, Step 2: Store AI Provider Credentials](user-sessions.md#step-2-store-ai-provider-credentials) for the user-side flow. The IAM, region, and model ID guidance in the rest of this page applies to that path as well. Only the credential entry mechanism differs.
+
 ## Two configuration formats
 
 There are two ways to point a session at Bedrock or Vertex:
