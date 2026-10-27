@@ -18,6 +18,25 @@ Release notes for LimaCharlie platform components, organized by date.
 
     For discussion and email notification of the same releases, set the [Platform Updates category](https://community.limacharlie.com/c/platform-updates/5) in the community forum to Watching. For service availability rather than releases, subscribe on the [status page](https://status.limacharlie.io/).
 
+## 2026-10-27
+
+### Adapters 1.32.50
+
+#### Improvements
+
+- Adapter logs no longer flood the host when a connection keeps failing, for example on a TLS error or an unreachable API. The first occurrence of a message is printed as before. Repeats within a minute are folded into one `last message repeated N more time(s)` line carrying the latest text. Each level is rate limited per adapter, and every line held back is counted and reported, so no error goes unseen. Set the environment variable `USP_LOG_NO_DEDUP=1` to print every line unchanged.
+- Syslog over TLS: a sender failing the TLS handshake is reported once per connection as `tls handshake with <address> failed`, naming the sender. A client that connects but never completes the handshake is dropped after 30 seconds. Load balancer and probe health checks that connect and close are not reported.
+- Slack, Cato and Google Cloud Pub/Sub adapters now wait longer after each consecutive failure, up to 5 minutes, instead of retrying every few seconds.
+
+#### Bug Fixes
+
+- Slack: the adapter no longer stops when the API is unreachable, and a failed page no longer skips the pages after it. A page that keeps failing is retried from where it stopped, then given up on after 5 attempts with an error.
+- Cato: the adapter no longer exits after 11 failed requests, no longer crashes when a query keeps failing, and stops promptly when closed.
+- Okta: the adapter follows every page of results and keeps its place through retries and rate limits.
+- Microsoft Defender, Entra ID and Azure Event Hubs: collection keeps making progress through vendor retries and paginated results instead of stalling or skipping pages.
+
+---
+
 ## 2026-10-22
 
 ### Endpoint Agent 5.3.13
