@@ -859,8 +859,8 @@ detect:
 respond:
   - action: add var
     name: admin-active
-    value: "true"
-    ttl: 1800   # expires after 30 minutes
+    value: <<routing/sid>>   # remember which sensor it was
+    ttl: 1800                # expires after 30 minutes
 ```
 
 ```yaml
@@ -873,8 +873,8 @@ detect:
       path: event/COMMAND_LINE
       value: net localgroup administrators /add
     - op: is
-      path: var/admin-active
-      value: "true"
+      path: routing/sid
+      value: '[[admin-active]]'   # true while this sensor's ID is in the variable
 respond:
   - action: report
     name: privilege-escalation-while-admin-active
@@ -951,9 +951,11 @@ detect:
     - op: ends with
       path: event/FILE_PATH
       value: .cpl
+      case sensitive: false
     - op: not contains
       path: event/FILE_PATH
       value: "C:\\windows\\"
+      case sensitive: false
 respond:
   - action: report
     name: suspicious-cpl-execution
@@ -1497,7 +1499,7 @@ set -euo pipefail
 
 CUSTOMER_NAME="$1"
 NEW_OID="$2"
-PRIMARY_CONTACT="$3"
+PRIMARY_CONTACT="$3"      # optional 4th argument: --apply
 
 # Same resource-type flags as Part 15. No --hive-secret: customer secrets are
 # provisioned out-of-band and must not be touched by --force.
@@ -1505,6 +1507,21 @@ SYNC_FLAGS="--outputs --integrity --exfil --artifact --resources --extensions \
   --org-values --installation-keys --yara --hive-dr-general --hive-fp \
   --hive-lookup --hive-query --hive-extension-config --hive-cloud-sensor \
   --hive-ai-agent"
+
+# 0. Safety checks. --force below makes the org an exact mirror of the template for
+#    the selected types, so refuse to run against an org that already has keys or
+#    sensors (a re-run would delete the keys step 5 creates and any per-customer
+#    outputs or FP rules). Then show the diff and stop unless --apply was passed.
+[ "$(limacharlie --oid "$NEW_OID" installation-key list --output json | jq 'length')" -eq 0 ] \
+  || { echo "$NEW_OID already has installation keys; not a new customer" >&2; exit 1; }
+[ "$(limacharlie --oid "$NEW_OID" sensor list --limit 1 --output json | jq 'length')" -eq 0 ] \
+  || { echo "$NEW_OID already has sensors; not a new customer" >&2; exit 1; }
+limacharlie --oid "$NEW_OID" sync push $SYNC_FLAGS \
+  --config-file "iac-repo/templates/customer-baseline.yaml" --force --dry-run
+if [ "${4:-}" != "--apply" ]; then
+  echo "Dry run only. Review the diff above, then re-run with --apply as the 4th argument."
+  exit 0
+fi
 
 # 1. Add the new org to every staff group
 for GROUP_NAME in administrators analysts viewers auditors active-responders; do
@@ -1514,9 +1531,6 @@ for GROUP_NAME in administrators analysts viewers auditors active-responders; do
 done
 
 # 2. Apply the IaC template (see Part 15 for template structure)
-limacharlie --oid "$NEW_OID" sync push $SYNC_FLAGS \
-  --config-file "iac-repo/templates/customer-baseline.yaml" \
-  --force --dry-run                      # review the diff, then run it again without --dry-run
 limacharlie --oid "$NEW_OID" sync push $SYNC_FLAGS \
   --config-file "iac-repo/templates/customer-baseline.yaml" --force
 
@@ -1609,7 +1623,7 @@ For sensors that may be offline at command time, use [Reliable Tasking](../5-int
 
 ```bash
 limacharlie extension request --name ext-reliable-tasking --action task \
-  --data '{"context":"audit-2026-Q2","selector":"plat==linux and production in tags","task":"file_get -f /etc/sudoers","ttl":172800}'
+  --data '{"context":"audit-2026-Q2","selector":"plat==linux and prod in tags","task":"file_hash /etc/sudoers","ttl":172800}'
 ```
 
 `ttl` is in seconds. The task waits up to `ttl` for an offline sensor to check in. Use a unique `context` per audit or IR engagement so you can correlate results. For a single known sensor, `limacharlie task reliable-send --sid <SID> --command "<task>" --ttl 172800` does the same thing.
@@ -1836,10 +1850,11 @@ respond:
     name: connection-to-soc-blocked-ip
     metadata:
       level: high
-  - action: isolate network
 ```
 
 Same pattern for `soc-blocked-hashes` and `soc-blocked-domains`. This is how an MSSP turns a one-time investigation into ongoing protection automatically.
+
+The rule reports and stops there on purpose. An AI agent fills these lists, and one wrong entry (a shared CDN address, a cloud egress IP, an internal resolver) would cut off every host that talks to it. Let the responder decide on isolation, or gate it behind a human approval (the Feedback extension, below). If you do add `isolate network` here, scope it to a tag such as `vip` or `server`, put a per-sensor `suppression` on it, and tell your analysts that an entry in this list can take a host offline.
 
 ### Threat-feed-rule pattern
 
@@ -2191,6 +2206,8 @@ mssp-iac/
 │   │   ├── query.yaml              # saved query library
 │   │   ├── yara.yaml
 │   │   └── ai_agent.yaml           # lean-soc agent definitions
+│   ├── control/
+│   │   └── main.yaml           # the control org (not a customer)
 │   └── customers/
 │       ├── acme/
 │       │   ├── main.yaml           # customer index — references global + locals
@@ -2229,6 +2246,7 @@ include:
 Each customer's `main.yaml` includes the globals plus its own overrides:
 
 ```yaml
+# oid: <ACME_OID>              # CI reads the customer's OID from this comment
 version: 3
 include:
   - ../../global/all.yaml      # everything global
@@ -2237,9 +2255,10 @@ include:
   - custom_outputs.yaml        # ACME's SIEM
 ```
 
-Initech's pure-inheritance customer is a one-liner:
+Initech's pure-inheritance customer is only the OID comment and one include:
 
 ```yaml
+# oid: <INITECH_OID>
 version: 3
 include:
   - ../../global/all.yaml
@@ -2268,22 +2287,22 @@ installation_keys:
     tags: [chrome]
 ```
 
-From the mssp-demo `outputs.yaml`:
+An `outputs.yaml` in the same style (the destination is a documentation address, not a real host):
 
 ```yaml
 version: 3
 outputs:
-  testscp:
-    dest_host: 155.138.134.12
-    dir: /root/output/
+  archive-scp:
+    dest_host: 203.0.113.10
+    dir: /srv/lc-output/
     for: event
     is_built_in: false
     module: scp
     password: hive://secret/scp-password
-    username: root
+    username: lc-export
 ```
 
-(In the real mssp-demo the password is literal; in *your* repo, substitute a `hive://secret/` reference.)
+Use a dedicated, least-privileged account on the destination host, and always reference the password through `hive://secret/`.
 
 ### Secrets do not live in the repo
 
@@ -2296,7 +2315,7 @@ You've been clicking buttons in the control org. To turn that into the repo:
 ```bash
 mkdir mssp-iac && cd mssp-iac
 git init
-mkdir -p configs/global configs/customers templates
+mkdir -p configs/global configs/control configs/customers templates
 
 # The resource types we manage as code. --hive-secret is left out on purpose,
 # see the note below.
@@ -2308,7 +2327,7 @@ SYNC_FLAGS="--outputs --integrity --exfil --artifact --resources --extensions \
 # Export the control org's configuration
 limacharlie sync pull \
   --oid <control-oid> \
-  --config-file configs/customers/control/main.yaml \
+  --config-file configs/control/main.yaml \
   $SYNC_FLAGS
 
 # Or use the Git Sync extension's "Push to Git" button
@@ -2390,27 +2409,30 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: pip install limacharlie
-      - name: Dry-run sync against every customer
+      - name: Sync every customer (dry run on pull requests, real push on main)
         env:
           # JSON map of customer OID -> that customer's Organization API key.
           # An org key only works on its own org, so CI needs one per customer.
           LC_CUSTOMER_KEYS: ${{ secrets.LC_CUSTOMER_KEYS }}
+          SYNC_MODE: ${{ github.event_name == 'push' && ' ' || '--dry-run' }}
           SYNC_FLAGS: >-
             --outputs --integrity --exfil --artifact --resources --extensions
             --org-values --installation-keys --yara --hive-dr-general --hive-fp
             --hive-lookup --hive-query --hive-extension-config
             --hive-cloud-sensor --hive-ai-agent
         run: |
+          set -euo pipefail
           for DIR in configs/customers/*/; do
-            OID=$(grep -E "^# oid: " "$DIR/main.yaml" | awk '{print $3}')
-            export LC_OID="$OID"
-            export LC_API_KEY=$(jq -r --arg oid "$OID" '.[$oid]' <<<"$LC_CUSTOMER_KEYS")
-            limacharlie sync push --config-file "$DIR/main.yaml" \
-              $SYNC_FLAGS --force --dry-run
+            OID=$(grep -E "^# oid: " "${DIR}main.yaml" | awk '{print $3}' || true)
+            [ -n "$OID" ] || { echo "no '# oid:' line in ${DIR}main.yaml" >&2; exit 1; }
+            KEY=$(jq -r --arg oid "$OID" '.[$oid] // empty' <<<"$LC_CUSTOMER_KEYS")
+            [ -n "$KEY" ] || { echo "no API key for $OID" >&2; exit 1; }
+            LC_OID="$OID" LC_API_KEY="$KEY" limacharlie sync push \
+              --config-file "${DIR}main.yaml" $SYNC_FLAGS --force $SYNC_MODE
           done
 ```
 
-On `pull_request`: dry-run only, post diff to PR. On `push` to `main`: actual push (or rely on Git Sync's pull schedule, in which case CI is purely validation).
+On `pull_request` the job adds `--dry-run`, so it only reports what would change; read the output before merging. On `push` to `main` it applies the change. If you rely on Git Sync's pull schedule instead, drop the push and keep CI as validation only. The job exits with an error when a customer folder has no `# oid:` line or no API key, so a missing OID can never turn into a push against the wrong org.
 
 That's the whole IaC loop. The Git repo is the source of truth, your IdP gates who can merge to `main`, every change is reviewed, every deploy is replayable.
 
