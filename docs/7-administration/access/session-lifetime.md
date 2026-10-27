@@ -9,7 +9,7 @@ This is typically used by enterprise and regulated customers who require periodi
 - The configured maximum lifetime is applied to every user whose email belongs to the enrolled domain.
 - The countdown starts when the user authenticates (entering password, completing SSO, or completing MFA). Background token refreshes do **not** reset it.
 - When the limit is reached, the web app shows a brief notice and signs the user out. The user can sign back in immediately and a new countdown begins.
-- The control affects the web app only. API tokens, sensor enrollment, and integrations are not impacted.
+- The limit applies to web app sign-in sessions only. It does not limit API keys or tokens, sensor enrollment, or integrations, so it is not a server-side cap on all access to your organization.
 
 ## Scope
 
