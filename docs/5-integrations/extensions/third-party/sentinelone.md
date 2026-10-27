@@ -7,6 +7,8 @@ The extension provides two layers:
 - **Typed actions** for the common EDR/SecOps workflows, with friendly parameter names and built-in safety rails.
 - A generic **`api_call`** passthrough for any SentinelOne endpoint not covered by a typed action.
 
+The extension acts on SentinelOne and does not ingest telemetry. To bring SentinelOne threats, alerts and activities into LimaCharlie, use the [SentinelOne adapter](../../../2-sensors-deployment/adapters/types/sentinelone.md).
+
 ## Setup
 
 ### 1. Create a SentinelOne API token

@@ -2,6 +2,8 @@
 
 This Adapter allows you to stream SentinelOne activities, threats, and alerts to LimaCharlie via SentinelOne API. It can optionally be scoped to specific SentinelOne sites/accounts (a single tenant of an MSP console) and pull the agent inventory so every endpoint in scope appears as an individual LimaCharlie sensor.
 
+Use this adapter to ingest SentinelOne telemetry into LimaCharlie. To take actions in SentinelOne, such as isolating an endpoint or mitigating a threat, use the [SentinelOne extension](../../../5-integrations/extensions/third-party/sentinelone.md).
+
 ## Deployment Configurations
 
 All adapters support the same `client_options`, which you should always specify if using the binary adapter or creating a webhook adapter. If you use any of the Adapter helpers in the web app, you will not need to specify these values.
