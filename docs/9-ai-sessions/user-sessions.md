@@ -30,7 +30,11 @@ curl -X POST https://ai.limacharlie.io/v1/register \
 
 ### Step 2: Store AI Provider Credentials
 
-AI Sessions uses a Bring Your Own Key (BYOK) model. Sessions run on Claude by default: you provide your Anthropic credentials—either an API key or via Claude Max OAuth. You can also connect OpenAI, Azure OpenAI, Google Gemini, or OpenRouter credentials and run sessions on those providers instead; see [AI Providers](providers.md). Credentials for every provider can be managed in the web application under **User Settings → AI Terminal**.
+AI Sessions uses a Bring Your Own Key (BYOK) model. Sessions run on Claude by default. You can supply your Anthropic credentials as an API key or through Claude Max OAuth, or route Claude through your own cloud account with Amazon Bedrock or Google Cloud Vertex AI. You can also connect OpenAI, Azure OpenAI, Google Gemini, or OpenRouter credentials and run sessions on those providers instead; see [AI Providers](providers.md). Credentials for every provider can be managed in the web application under **User Settings → AI Terminal**.
+
+A user holds one Claude credential at a time. Storing an API key, OAuth token, Bedrock config, or Vertex config replaces whichever of the four was stored before. Credentials for the other vendors are stored separately and do not affect it.
+
+The `credential_type` field returned by `GET /v1/auth/claude/status` is one of `api_key`, `oauth_token`, `bedrock`, or `vertex`.
 
 #### Option A: API Key
 
@@ -72,6 +76,56 @@ curl -X POST https://ai.limacharlie.io/v1/auth/claude/code \
   -H "Content-Type: application/json" \
   -d '{"session_id": "<oauth_session_id>", "code": "<authorization_code>"}'
 ```
+
+#### Option C: Amazon Bedrock
+
+Route Claude through your AWS account. The Bedrock model IDs differ from the standard Anthropic IDs (e.g. `us.anthropic.claude-sonnet-4-5-20250929-v1:0`); set the appropriate ID on your profile via the `model` field.
+
+You must supply **either** the access-key pair (`access_key_id` + `secret_access_key`, with optional `session_token` for STS / SSO) **or** a `bearer_token`. `region` is always required.
+
+```bash
+# Access-key pair
+curl -X POST https://ai.limacharlie.io/v1/auth/claude/bedrock \
+  -H "Authorization: Bearer $LC_JWT" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "region": "us-east-1",
+    "access_key_id": "AKIA...",
+    "secret_access_key": "..."
+  }'
+
+# Bearer token
+curl -X POST https://ai.limacharlie.io/v1/auth/claude/bedrock \
+  -H "Authorization: Bearer $LC_JWT" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "region": "us-east-1",
+    "bearer_token": "..."
+  }'
+```
+
+The runner sets `CLAUDE_CODE_USE_BEDROCK=1` and the appropriate `AWS_*` environment variables on the Claude subprocess automatically.
+
+See [Alternative AI Providers: Amazon Bedrock](alternative-providers.md#amazon-bedrock) for the IAM permissions, region selection, and model ID format. Those instructions apply to the user-side flow too; only the credential entry path differs (this endpoint instead of an `ai_agent` Hive record).
+
+#### Option D: Google Cloud Vertex AI
+
+Route Claude through your GCP project. Authentication is a service-account JSON key with the appropriate Vertex AI permissions; the runner materializes it on disk and points `GOOGLE_APPLICATION_CREDENTIALS` at it for each session. Set the Vertex-style model ID on your profile (e.g. `claude-sonnet-4-5@20250929`).
+
+```bash
+curl -X POST https://ai.limacharlie.io/v1/auth/claude/vertex \
+  -H "Authorization: Bearer $LC_JWT" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "project_id": "my-gcp-project",
+    "region": "us-east5",
+    "service_account_json": "{\"type\":\"service_account\",\"project_id\":\"...\",\"private_key\":\"...\"}"
+  }'
+```
+
+`service_account_json` is the **literal contents** of the service-account JSON key file, embedded as a JSON string. The credential is encrypted at rest; it is never returned by `GET /v1/auth/claude/status`.
+
+See [Alternative AI Providers: Google Cloud Vertex AI](alternative-providers.md#google-cloud-vertex-ai) for GCP-side setup, region selection, and model ID format.
 
 ### Step 3: Create a Session
 
@@ -149,6 +203,21 @@ curl -X POST https://ai.limacharlie.io/v1/profiles \
 | `ttl_seconds` | integer | Maximum session lifetime in seconds |
 | `environment` | map | Environment variables passed to the session |
 | `mcp_servers` | map | External/third-party MCP server configurations. LimaCharlie access is handled by the auto-installed `limacharlie` CLI and does not need an entry here. |
+| `system_prompt_suffix` | string | Free-form text appended to the agent's system prompt for sessions launched from this profile. Use it for a persona, project context, or house rules. Maximum 65536 bytes (64 KiB). The suffix is copied onto the session when it is created, so editing the profile later does not change sessions already running. To add text for a single session, pass `system_prompt_suffix` on the create-session request instead (see [Per-session system prompt suffix](#per-session-system-prompt-suffix)). |
+
+### Per-session system prompt suffix
+
+`POST /v1/sessions` also accepts `system_prompt_suffix`, which adds text to the system prompt for that one session only. It does not replace the suffix on the profile. When both are set, the profile suffix comes first, then a blank line, then the per-session suffix. Each is capped at 65536 bytes on its own, and a longer value returns `400 system_prompt_suffix_too_long`.
+
+```bash
+curl -X POST https://ai.limacharlie.io/v1/sessions \
+  -H "Authorization: Bearer $LC_JWT" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "profile_id": "<profile_id>",
+    "system_prompt_suffix": "For this session, only investigate hosts tagged prod-web."
+  }'
+```
 
 ### Setting a Default Profile
 
@@ -167,6 +236,12 @@ curl -X POST https://ai.limacharlie.io/v1/sessions/{sessionId}/capture-profile \
   -H "Content-Type: application/json" \
   -d '{"name": "My Session Config"}'
 ```
+
+### Profile Memory Bank
+
+Each profile can carry a small set of markdown files that are mounted into the session's workspace at `/workspace/.memory/` whenever a session is launched from that profile. Edits Claude makes there during the session are synced back automatically. This is the user-side analog of the org-scoped [AI Memory hive](memory.md).
+
+See [Profile Memory Bank](profile-memory.md) for the full reference, including REST endpoints, naming rules, and limits.
 
 ## Session Lifecycle
 
