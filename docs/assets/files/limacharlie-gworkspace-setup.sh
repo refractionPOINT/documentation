@@ -908,6 +908,8 @@ name = sys.argv[1]
 try:
     d = json.load(sys.stdin)
     if isinstance(d.get("records"), dict) and "next_cursor" in d:
+        if d["next_cursor"]:
+            raise ValueError("more pages than were read")
         d = d["records"]
     mine = d.get(name) or {}
     if not (mine.get("usr_mtd") or {}).get("enabled"):
@@ -953,6 +955,7 @@ except Exception:
     [ "$n" -lt 3 ] && sleep 5
   done
   printf '%s\n' "$out" >&2
+  restart_left_disabled=1
   warn "The connection is now DISABLED and could not be enabled again. Enable it now, or mail is not protected:"
   info "  limacharlie hive enable --hive-name mailsec_provider --key $CONNECTION_NAME --oid $OID"
   info "or open the connection in the Email Security page of the web app and enable it."
@@ -964,6 +967,7 @@ restart_manual_help() {
   info "disable and enable the connection in the Email Security page of the web app."
 }
 
+restart_left_disabled=""
 step "Connection $CONNECTION_NAME"
 write_record=1
 record_existed=""
@@ -1138,7 +1142,12 @@ if [ -n "$test_ok" ]; then
     info "  gcloud iam service-accounts keys delete $CURRENT_KID --iam-account=$SA_EMAIL --project=$PROJECT && rm -f $KEY_FILE"
   fi
   step "Done"
-  info "Mail should start appearing in Email Security within a few minutes."
+  if [ -n "$restart_left_disabled" ]; then
+    warn "Connection $CONNECTION_NAME is still DISABLED, so no mail is protected until you enable it:"
+    info "  limacharlie hive enable --hive-name mailsec_provider --key $CONNECTION_NAME --oid $OID"
+  else
+    info "Mail should start appearing in Email Security within a few minutes."
+  fi
 else
   warn "The connection test has not passed yet. Fix the items above, then re-run this script"
   info "or run: limacharlie mailsec connection test $CONNECTION_NAME --include-watch --oid $OID"

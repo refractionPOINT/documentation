@@ -4,7 +4,7 @@
 # Security not subscribed: list is {} and the connection test is refused),
 # TESTFAIL_FIRST=n (the first n connection tests fail), DISABLEFAIL and
 # ENABLEFAIL (that hive call is refused), OTHER_TAGS (a second enabled record
-# in the hive, with those tags). The record's enabled flag is kept in
+# in the hive, with those tags), LIST_CURSOR (the paged listing shape). The record's enabled flag is kept in
 # $S/enabled (absent = enabled) and every change to it is logged.
 S="$STUB_STATE"
 ENABLED=true; [ -f "$S/enabled" ] && ENABLED=$(cat "$S/enabled")
@@ -25,7 +25,14 @@ case "$*" in
     other=""
     [ -n "$OTHER_TAGS" ] && other=', "other-conn": {"usr_mtd": {"enabled": true, "tags": ['"$OTHER_TAGS"']}}'
     [ -f "$S/rec" ] || { echo "{${other#, }}"; exit 0; }
-    printf '{"gworkspace": {"usr_mtd": {"enabled": %s, "tags": ["mailsec:provider:gworkspace"]}}%s}' "$ENABLED" "$other" ;;
+    body=$(printf '{"gworkspace": {"usr_mtd": {"enabled": %s, "tags": ["mailsec:provider:gworkspace"]}}%s}' "$ENABLED" "$other")
+    # LIST_CURSOR: the paged shape, with this next_cursor ("none" = last page).
+    if [ -n "$LIST_CURSOR" ]; then
+      [ "$LIST_CURSOR" = none ] && LIST_CURSOR=""
+      printf '{"records": %s, "next_cursor": "%s"}' "$body" "$LIST_CURSOR"
+    else
+      printf '%s' "$body"
+    fi ;;
   "hive disable"*)
     [ -n "$DISABLEFAIL" ] && { echo "Error: UNAUTHORIZED" >&2; exit 1; }
     echo false > "$S/enabled" ;;

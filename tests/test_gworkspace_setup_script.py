@@ -518,6 +518,8 @@ def test_failed_enable_warns_loudly_and_still_exits_zero(env):
     assert f"limacharlie hive enable --hive-name mailsec_provider --key gworkspace --oid {OID}" in proc.output
     assert env.restart_calls() == ["disable", "enable", "enable", "enable"], "the enable is retried"
     assert "Done" in proc.output
+    tail = proc.output.split("Done", 1)[1]
+    assert "still DISABLED" in tail, "the warning is repeated at the very end, below the key cleanup lines"
 
 
 def test_conflicting_enabled_connection_prevents_the_restart(env):
@@ -533,5 +535,21 @@ def test_conflicting_enabled_connection_prevents_the_restart(env):
 def test_connection_for_another_provider_does_not_prevent_the_restart(env):
     env.connect_once()
     proc = env.run(*ADMIN, lc=True, OTHER_TAGS='"mailsec:provider:m365"')
+    assert proc.returncode == 0, proc.output
+    assert env.restart_calls() == ["disable", "enable"]
+
+
+def test_paged_listing_with_more_pages_prevents_the_restart(env):
+    """A conflicting connection could be on a page that was not read."""
+    env.connect_once()
+    proc = env.run(*ADMIN, lc=True, LIST_CURSOR="next-page")
+    assert proc.returncode == 0, proc.output
+    assert env.restart_calls() == []
+    assert "up to 6 hours" in proc.output
+
+
+def test_paged_listing_on_its_last_page_is_read(env):
+    env.connect_once()
+    proc = env.run(*ADMIN, lc=True, LIST_CURSOR="none")
     assert proc.returncode == 0, proc.output
     assert env.restart_calls() == ["disable", "enable"]
