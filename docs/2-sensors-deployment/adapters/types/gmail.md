@@ -180,7 +180,7 @@ chmod +x /path/to/lc_adapter
   poll_interval=5m
 ```
 
-Single Workspace mailbox with a service account key file:
+Single Workspace mailbox with a service account key file, collecting only the configuration and change signals. Because a capability flag is set and `collect_messages` is not, no message telemetry is collected:
 
 ```bash
 /path/to/lc_adapter gmail \
@@ -284,7 +284,7 @@ The credential file path in the record is resolved on the host running the adapt
 
 ## Sample Rule
 
-The BEC capabilities ship each signal under its own event type, so D&R rules can route directly on the signal. For example, flag every change to the account-wide auto-forwarding setting:
+The BEC capabilities ship each signal under its own event type, so D&R rules can route directly on the signal. For example, flag the account-wide auto-forwarding setting being turned on:
 
 ```yaml
 # Detection
