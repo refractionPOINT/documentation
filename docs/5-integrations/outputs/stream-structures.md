@@ -348,12 +348,11 @@ Deployment events track sensor installations, removals, and updates:
 
 ### `output_drop` Events
 
-When an output cannot keep up with incoming data (saturated in-flight queue) or its
-per-record send fails after the platform's bounded retry budget, the affected
-records are dropped to protect the rest of the pipeline. Rather than emit one
-deployment event per dropped record — which would flood the stream under
-sustained pressure — drops are aggregated and a single summary event is
-published per output approximately once per minute.
+An output drops records when it cannot keep up (its in-flight queue is saturated)
+or when a send still fails after the platform's bounded retry budget. Sending one
+deployment event per dropped record would flood the stream under sustained
+pressure, so drops are aggregated and the platform publishes one summary event per
+output about once a minute.
 
 ```json
 {
@@ -375,33 +374,31 @@ published per output approximately once per minute.
 }
 ```
 
-**Event Body Fields**
+#### Event body fields
 
 | Field | Type | Description |
 |-------|------|-------------|
 | `output` | string | Name of the output that dropped data |
 | `module` | string | Output module type (`webhook`, `s3`, `kafka`, etc.) |
-| `stream` | string | Stream the dropped records belonged to (`event`, `detect`, `audit`, `artifact`, `billing`) |
+| `stream` | string | Stream the dropped records belonged to: `event`, `detect`, `audit`, `log`, `tailored` or `billing`. Never `deployment` (see below) |
 | `count` | integer | Number of records dropped in the aggregation window |
 | `bytes` | integer | Total serialized bytes dropped in the window. May be 0 for saturation drops where the record is dropped before serialization. |
 
-**Behavior Notes**
+#### Behavior notes
 
-- **Aggregated, not per-record.** Drops are coalesced across an approximate
-  one-minute window per output, so a high-throughput output that's failing
-  on every record still produces at most ~1 event per minute on the
-  deployment stream — with `count` reflecting the full window's losses.
-- **Drops on the deployment stream itself are not reported.** This avoids a
-  feedback loop where a broken deployment-stream output would emit drop
-  events that immediately get dropped again.
+- **Aggregated, not per-record.** Drops are coalesced over a window of about one
+  minute per output. An output that fails on every record still produces at most
+  one event a minute, and `count` holds the whole window's losses.
+- **Drops on the deployment stream itself are not reported.** A broken
+  deployment-stream output would otherwise emit drop events that get dropped in
+  turn, forever.
 - **Live tail outputs are not reported.** Transient outputs whose names start
   with `tmp_live_` are excluded.
 
-`output_drop` events arrive on the deployment stream alongside the existing
-sensor lifecycle events and can be filtered, alerted on, or routed via
-[D&R rules](../../3-detection-response/index.md) like any other deployment
-event — for example, paging an on-call when a specific high-value output
-starts losing data.
+`output_drop` events arrive on the deployment stream next to the sensor lifecycle
+events. You can filter them, alert on them, or route them with
+[D&R rules](../../3-detection-response/index.md) like any other deployment event,
+for example to page on-call when a high-value output starts losing data.
 
 ### Use Cases
 
