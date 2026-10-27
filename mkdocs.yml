@@ -142,6 +142,7 @@ plugins:
         'docs/user-access.md': '7-administration/access/user-access.md'
         'docs/billing.md': '7-administration/billing/options.md'
         'docs/add-ons.md': '5-integrations/index.md'
+        'docs/release-notes.md': '10-release-notes/index.md'
         # 2026-04-28 integrations refactor
         '5-integrations/add-ons/index.md': '5-integrations/index.md'
         '5-integrations/extensions/labs/playbook.md': '5-integrations/extensions/limacharlie/playbook.md'
