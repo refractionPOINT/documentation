@@ -892,9 +892,83 @@ if ext_list="$("${LC[@]}" extension list --oid "$OID" --output json 2>/dev/null)
   confirm "    Continue anyway?" || exit 1
 fi
 
+# Restarts the connection's session so mailboxes that failed before this run's
+# fixes are retried now, rather than at the next full pass (up to 6 hours).
+# Disabling and re-enabling the record is the restart: a re-save of identical
+# settings does not restart it. Settings, tags and comment are not changed, and
+# a failure here never fails the run.
+restart_connection() {
+  local listing state
+  step "Restarting the connection"
+  listing="$("${LC[@]}" hive list --hive-name mailsec_provider --metadata-only \
+    --oid "$OID" --output json 2>/dev/null)" || listing=""
+  state="$(printf '%s' "$listing" | python3 -c '
+import json, sys
+name = sys.argv[1]
+try:
+    d = json.load(sys.stdin)
+    if isinstance(d.get("records"), dict) and "next_cursor" in d:
+        d = d["records"]
+    mine = d.get(name) or {}
+    if not (mine.get("usr_mtd") or {}).get("enabled"):
+        print("not-enabled"); sys.exit()
+    for k, v in d.items():
+        mtd = (v or {}).get("usr_mtd") or {}
+        if k == name or not mtd.get("enabled"):
+            continue
+        provs = [t for t in mtd.get("tags") or [] if str(t).startswith("mailsec:provider:")]
+        if not provs or "mailsec:provider:gworkspace" in provs:
+            print("conflict"); sys.exit()
+    print("ok")
+except Exception:
+    print("unknown")
+' "$CONNECTION_NAME" 2>/dev/null || true)"
+  case "$state" in
+    ok) ;;
+    not-enabled)
+      info "Connection $CONNECTION_NAME is disabled, so it was left alone. Enable it in the web app when you want it running."
+      return 0 ;;
+    conflict)
+      warn "The connection was not restarted: another enabled connection could stop it from being enabled again."
+      restart_manual_help
+      return 0 ;;
+    *)
+      warn "The connection was not restarted: its state could not be read, so re-enabling it could not be confirmed safe."
+      restart_manual_help
+      return 0 ;;
+  esac
+  info "Restarting the connection so mailboxes that failed before are retried now."
+  if ! out="$("${LC[@]}" hive disable --hive-name mailsec_provider --key "$CONNECTION_NAME" --oid "$OID" 2>&1)"; then
+    printf '%s\n' "$out" >&2
+    warn "Could not restart the connection (the API key may lack mailsec_provider.set). Nothing was changed."
+    restart_manual_help
+    return 0
+  fi
+  local n
+  for n in 1 2 3; do
+    if out="$("${LC[@]}" hive enable --hive-name mailsec_provider --key "$CONNECTION_NAME" --oid "$OID" 2>&1)"; then
+      ok "Restarted. Mailboxes that failed before should recover within a few minutes."
+      return 0
+    fi
+    [ "$n" -lt 3 ] && sleep 5
+  done
+  printf '%s\n' "$out" >&2
+  warn "The connection is now DISABLED and could not be enabled again. Enable it now, or mail is not protected:"
+  info "  limacharlie hive enable --hive-name mailsec_provider --key $CONNECTION_NAME --oid $OID"
+  info "or open the connection in the Email Security page of the web app and enable it."
+  return 0
+}
+
+restart_manual_help() {
+  info "Mailboxes that failed before are retried at the next full pass (up to 6 hours). To retry now,"
+  info "disable and enable the connection in the Email Security page of the web app."
+}
+
 step "Connection $CONNECTION_NAME"
 write_record=1
+record_existed=""
 if "${LC[@]}" hive get --hive-name mailsec_provider --key "$CONNECTION_NAME" --oid "$OID" >/dev/null 2>&1; then
+  record_existed=1
   if [ -n "$INTERACTIVE" ]; then
     confirm "    Connection $CONNECTION_NAME already exists. Replace its settings?" || write_record=""
   elif [ -z "$MAILBOXES_SET" ] && [ -z "$BACKFILL_SET" ]; then
@@ -1008,6 +1082,7 @@ fi
 
 step "Connection test (includes a real Gmail notification check)"
 test_ok=""
+test_attempts=0
 for attempt in 1 2 3 4 5 6; do
   result="$("${LC[@]}" mailsec connection test "$CONNECTION_NAME" --include-watch \
     --oid "$OID" --output json 2>&1 || true)"
@@ -1034,6 +1109,7 @@ for c in d.get("checks", []):
   printf '%s\n' "${verdict#*$'\n'}" | sed 's/^/  /'
   if [ "$first" = PASS ]; then
     test_ok=1
+    test_attempts=$attempt
     break
   fi
   # A refusal (not a test result) will not fix itself by waiting.
@@ -1045,6 +1121,13 @@ done
 
 if [ -n "$test_ok" ]; then
   ok "Connection test passed"
+  # The connection's session may have started before this run's fixes took
+  # effect: a connection that already existed keeps its session when its
+  # settings are unchanged, and a new one may have started while Google was
+  # still applying permissions. Restart it, but only when it is ours to manage.
+  if [ -n "$uses_our_secret" ] && { [ -n "$record_existed" ] || [ "$test_attempts" -gt 1 ]; }; then
+    restart_connection
+  fi
   if [ -n "$uses_our_secret" ]; then
     rm -f "$KEY_FILE"
     ok "Deleted $KEY_FILE (LimaCharlie now holds the credential in secret $SECRET_NAME)"

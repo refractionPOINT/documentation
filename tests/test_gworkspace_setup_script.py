@@ -77,6 +77,18 @@ class Env:
             return []
         return [line.split()[0] for line in self.read("kids").splitlines() if line.strip()]
 
+    def lc_calls(self, verb):
+        return [l for l in self.log().splitlines() if l.startswith(f"limacharlie {verb}")]
+
+    def restart_calls(self):
+        return [l.split()[2] for l in self.log().splitlines()
+                if l.startswith(("limacharlie hive disable", "limacharlie hive enable"))]
+
+    def connect_once(self):
+        """A completed first run, then a clean log for the run under test."""
+        assert self.run(*ADMIN, "--mailboxes", "a@example.com", lc=True).returncode == 0
+        (self.state / "log").write_text("")
+
     def policy_calls(self):
         return [line for line in self.log().splitlines() if "org-policies set-policy" in line or "org-policies delete" in line]
 
@@ -91,6 +103,7 @@ def env(tmp_path):
 
 
 ADMIN = ["--admin-email", "admin@example.com"]
+RESTART_MSG = "Restarting the connection so mailboxes that failed before are retried now"
 
 
 # --- Inputs -----------------------------------------------------------------
@@ -410,3 +423,115 @@ def test_unexpected_failure_is_never_silent(env):
     proc = env.run(*ADMIN)
     assert proc.returncode != 0
     assert "stopped unexpectedly at line" in proc.output
+
+
+# --- Restarting the connection --------------------------------------------------------
+
+def test_kept_connection_is_restarted_after_the_test_passes(env):
+    env.connect_once()
+    proc = env.run(*ADMIN, lc=True)
+    assert proc.returncode == 0, proc.output
+    assert "Keeping the existing connection settings" in proc.output
+    assert RESTART_MSG in proc.output
+    assert env.restart_calls() == ["disable", "enable"]
+    calls = env.log().splitlines()
+    test_at = max(i for i, l in enumerate(calls) if "mailsec connection test" in l)
+    disable_at = next(i for i, l in enumerate(calls) if "hive disable" in l)
+    assert test_at < disable_at, "the restart only follows a passed test"
+    assert env.read("enabled").strip() == "true", "the connection ends enabled"
+
+
+def test_restart_leaves_the_connection_settings_unchanged(env):
+    env.connect_once()
+    before = env.read("rec")
+    assert env.run(*ADMIN, lc=True).returncode == 0
+    assert env.restart_calls() == ["disable", "enable"]
+    assert env.read("rec") == before
+    assert not env.lc_calls("hive set"), "the restart must not rewrite the record"
+
+
+def test_no_restart_when_the_connection_test_fails(env):
+    env.connect_once()
+    proc = env.run(*ADMIN, lc=True, TESTFAIL_FIRST=99)
+    assert proc.returncode == 1
+    assert "The connection test has not passed yet" in proc.output
+    assert env.restart_calls() == []
+    assert RESTART_MSG not in proc.output
+
+
+def test_replaced_connection_is_restarted_too(env):
+    """Saving identical settings does not restart a connection, so a replaced one is restarted as well."""
+    env.connect_once()
+    proc = env.run(*ADMIN, "--mailboxes", "a@example.com", lc=True)
+    assert proc.returncode == 0, proc.output
+    assert env.restart_calls() == ["disable", "enable"]
+
+
+def test_new_connection_that_passes_at_once_is_not_restarted(env):
+    proc = env.run(*ADMIN, lc=True)
+    assert proc.returncode == 0, proc.output
+    assert env.restart_calls() == []
+
+
+def test_new_connection_is_restarted_when_the_test_needed_a_retry(env):
+    """The session may have started while Google was still applying permissions."""
+    proc = env.run(*ADMIN, lc=True, TESTFAIL_FIRST=1)
+    assert proc.returncode == 0, proc.output
+    assert RESTART_MSG in proc.output
+    assert env.restart_calls() == ["disable", "enable"]
+
+
+def test_connection_on_another_secret_is_never_restarted(env):
+    env.connect_once()
+    rec = json.loads(env.read("rec"))
+    rec["credentials"] = "hive://secret/webapp-cred"
+    (env.state / "rec").write_text(json.dumps(rec))
+    proc = env.run(*ADMIN, lc=True)
+    assert proc.returncode == 0, proc.output
+    assert env.restart_calls() == []
+
+
+def test_disabled_connection_is_not_enabled_by_the_restart(env):
+    env.connect_once()
+    (env.state / "enabled").write_text("false")
+    proc = env.run(*ADMIN, lc=True)
+    assert proc.returncode == 0, proc.output
+    assert env.restart_calls() == []
+    assert env.read("enabled").strip() == "false"
+
+
+def test_failed_disable_warns_and_changes_nothing(env):
+    env.connect_once()
+    proc = env.run(*ADMIN, lc=True, DISABLEFAIL=1)
+    assert proc.returncode == 0, proc.output
+    assert "Could not restart the connection" in proc.output
+    assert "disable and enable the connection in the Email Security page" in proc.output
+    assert env.restart_calls() == ["disable"]
+    assert env.read("enabled").strip() == "true"
+
+
+def test_failed_enable_warns_loudly_and_still_exits_zero(env):
+    env.connect_once()
+    proc = env.run(*ADMIN, lc=True, ENABLEFAIL=1)
+    assert proc.returncode == 0, proc.output
+    assert "now DISABLED" in proc.output
+    assert f"limacharlie hive enable --hive-name mailsec_provider --key gworkspace --oid {OID}" in proc.output
+    assert env.restart_calls() == ["disable", "enable", "enable", "enable"], "the enable is retried"
+    assert "Done" in proc.output
+
+
+def test_conflicting_enabled_connection_prevents_the_restart(env):
+    """Re-enabling can be refused when another enabled connection could clash, so it is not disabled at all."""
+    env.connect_once()
+    proc = env.run(*ADMIN, lc=True, OTHER_TAGS='"mailsec:provider:gworkspace"')
+    assert proc.returncode == 0, proc.output
+    assert env.restart_calls() == []
+    assert "another enabled connection" in proc.output
+    assert "up to 6 hours" in proc.output
+
+
+def test_connection_for_another_provider_does_not_prevent_the_restart(env):
+    env.connect_once()
+    proc = env.run(*ADMIN, lc=True, OTHER_TAGS='"mailsec:provider:m365"')
+    assert proc.returncode == 0, proc.output
+    assert env.restart_calls() == ["disable", "enable"]

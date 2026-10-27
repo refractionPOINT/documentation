@@ -1,8 +1,13 @@
 #!/usr/bin/env bash
 # Stateful stand-in for the limacharlie CLI. Output shapes follow the real CLI
 # (5.10.1). Switches: EXTFAIL (extension list not permitted), NOEXT (Email
-# Security not subscribed: list is {} and the connection test is refused).
+# Security not subscribed: list is {} and the connection test is refused),
+# TESTFAIL_FIRST=n (the first n connection tests fail), DISABLEFAIL and
+# ENABLEFAIL (that hive call is refused), OTHER_TAGS (a second enabled record
+# in the hive, with those tags). The record's enabled flag is kept in
+# $S/enabled (absent = enabled) and every change to it is logged.
 S="$STUB_STATE"
+ENABLED=true; [ -f "$S/enabled" ] && ENABLED=$(cat "$S/enabled")
 echo "limacharlie $*" >> "$S/log"
 case "$*" in
   "auth whoami"*) echo ok ;;
@@ -15,10 +20,24 @@ case "$*" in
     printf '{"data": %s}' "$(cat "$S/secret_in")" ;;
   "hive get"*)
     [ -f "$S/rec" ] || { echo "Error: RECORD_NOT_FOUND" >&2; exit 1; }
-    printf '{"data": %s, "usr_mtd": {"enabled": true}}' "$(cat "$S/rec")" ;;
-  "hive set"*) f=$(echo "$*" | sed -E 's/.*--input-file ([^ ]+).*/\1/'); cp "$f" "$S/rec" ;;
+    printf '{"data": %s, "usr_mtd": {"enabled": %s}}' "$(cat "$S/rec")" "$ENABLED" ;;
+  "hive list"*)
+    other=""
+    [ -n "$OTHER_TAGS" ] && other=', "other-conn": {"usr_mtd": {"enabled": true, "tags": ['"$OTHER_TAGS"']}}'
+    [ -f "$S/rec" ] || { echo "{${other#, }}"; exit 0; }
+    printf '{"gworkspace": {"usr_mtd": {"enabled": %s, "tags": ["mailsec:provider:gworkspace"]}}%s}' "$ENABLED" "$other" ;;
+  "hive disable"*)
+    [ -n "$DISABLEFAIL" ] && { echo "Error: UNAUTHORIZED" >&2; exit 1; }
+    echo false > "$S/enabled" ;;
+  "hive enable"*)
+    [ -n "$ENABLEFAIL" ] && { echo "Error: refused" >&2; exit 1; }
+    echo true > "$S/enabled" ;;
+  "hive set"*) f=$(echo "$*" | sed -E 's/.*--input-file ([^ ]+).*/\1/'); cp "$f" "$S/rec"; echo true > "$S/enabled" ;;
   "mailsec connection test"*)
     echo x >> "$S/tests_run"
+    if [ "$(wc -l < "$S/tests_run")" -le "${TESTFAIL_FIRST:-0}" ]; then
+      echo '{"checks":[{"id":"credential","required":true,"status":"passed"},{"id":"pubsub_watch","required":true,"status":"failed","remediation":"Wait for Google to apply the permission."}],"ok":false,"summary":"Not ready."}'; exit 0
+    fi
     [ -n "$NOEXT" ] && { echo "Error: Permission denied: email security is not enabled" >&2; exit 1; }
     echo '{"checks":[{"id":"credential","required":true,"status":"passed"},{"id":"directory","required":true,"status":"passed"},{"id":"mail_full","required":false,"status":"skipped"},{"id":"pubsub_watch","required":true,"status":"passed"}],"ok":true,"summary":"Connection is fully configured."}' ;;
   *) echo "UNHANDLED limacharlie $*" >&2; exit 2 ;;
