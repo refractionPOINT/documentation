@@ -25,7 +25,14 @@ Adapter Type: `bitwarden`
 
 > `region` and the custom-URL pair are mutually exclusive: set `region` for Bitwarden Cloud (US/EU), or set both `token_endpoint_url` and `events_base_url` for a self-hosted instance — not both.
 
-The adapter authenticates with the OAuth2 `client_credentials` grant against the Bitwarden identity endpoint (`https://identity.bitwarden.com/connect/token` for US, `https://identity.bitwarden.eu/connect/token` for EU) and polls `<events_base_url>/public/events`.
+The adapter authenticates with the OAuth2 `client_credentials` grant against the Bitwarden identity endpoint (`https://identity.bitwarden.com/connect/token` for US, `https://identity.bitwarden.eu/connect/token` for EU) and polls `<events_base_url>/public/events`. On Bitwarden Cloud the events base URL is set from `region`: `https://api.bitwarden.com` for US and `https://api.bitwarden.eu` for EU.
+
+For a self-hosted instance, set both URLs. They usually look like this, but check them against your own deployment:
+
+```yaml
+token_endpoint_url: "https://bitwarden.example.com/identity/connect/token"
+events_base_url: "https://bitwarden.example.com/api"
+```
 
 ### Getting Your Credentials
 
