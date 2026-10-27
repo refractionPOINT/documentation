@@ -39,6 +39,35 @@ Release notes for LimaCharlie platform components, organized by date.
 
 ## 2026-10-22
 
+### Endpoint Agent 5.4.1
+
+#### New Features
+
+- Linux module loads are now captured from kernel mapping events instead of a once-a-second `/proc` sweep, catching short-lived processes at lower I/O cost (requires root and kernel 3.12 or later).
+- Windows software inventory now includes each package's publisher, install location and uninstall command when the installer provides them.
+
+#### Bug Fixes
+
+- The sensor now sends the server name (SNI) on every cloud connection, so new installs enroll behind firewalls and proxies that route TLS traffic by server name.
+- Application control now recognises Windows binaries signed under Microsoft's new "Windows Production PCA 2026" authority, so an enforcing allowlist that trusts the OS vendor no longer blocks them.
+- Linux module load events were never reported on hosts with kernel acquisition running; they now are.
+- Linux: memory regions on NVMe-backed files are no longer dropped from process memory maps, so memory scans and YARA scans now cover them.
+- Linux: module paths containing spaces or belonging to deleted libraries are now reported correctly.
+- Fixed a buffer overflow in process memory collection that could corrupt the sensor's memory when reading a region whose size is not a page multiple.
+- macOS: process memory collection no longer unmaps memory in the target process.
+- 32-bit Linux: reading process memory above 2 GB no longer fails or returns empty data.
+- macOS: hardened DNS parsing in the network extension against malformed packets that could crash it or report incorrect data.
+- Fixed a memory read overrun when the sensor stores the cloud's public key.
+- Linux/macOS install script: now stops cleanly on an unsupported OS or architecture instead of attempting a bad download.
+- Windows install script: `.\install.ps1 -Install` with a key file now works, and running with no arguments shows help.
+- Windows install script: now installs the 64-bit sensor when launched from a 32-bit PowerShell, as RMM tools often do.
+- Windows install script: no longer clears a `$License` or `$Version` variable already set in the calling PowerShell session.
+
+#### Improvements
+
+- Updated the sensor's embedded TLS, certificate-validation and archive libraries to pick up upstream security fixes, including a TLS downgrade issue, distrusted certificate authorities and unsafe archive extraction.
+- The system tray's installation state is now reported in `get_debug_data` and in the sensor's regular status sync.
+
 ### Endpoint Agent 5.3.13
 
 #### Bug Fixes
