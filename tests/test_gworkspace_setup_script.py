@@ -221,6 +221,44 @@ def test_unreadable_policy_means_no_change(env):
     assert env.policy_calls() == []
 
 
+def test_disabled_org_policy_api_is_enabled_and_waited_for(env):
+    # Most projects never used the Organization Policy API; reading the policy
+    # fails until it is enabled, and keeps failing for a moment afterwards.
+    proc = env.run(*ADMIN, "--allow-policy-exception", LEGACY=1, ORGPOLOFF=1)
+    assert proc.returncode == 0, proc.output
+    log = env.log().splitlines()
+    enable = next(i for i, line in enumerate(log) if "services enable orgpolicy.googleapis.com" in line)
+    describe = next(i for i, line in enumerate(log) if "org-policies describe" in line)
+    assert enable < describe, "the API must be enabled before the policy is read"
+    assert env.has("pub")
+    assert env.has("deleted_iam.allowedPolicyMemberDomains")
+    assert not env.has("exc_iam.allowedPolicyMemberDomains")
+
+
+def test_org_policy_api_is_left_alone_when_no_exception_is_needed(env):
+    proc = env.run(*ADMIN)
+    assert proc.returncode == 0, proc.output
+    assert "orgpolicy.googleapis.com" not in env.log()
+
+
+def test_org_policy_api_that_never_answers_means_no_change(env):
+    (env.state / "orgpol_on").touch()
+    (env.state / "orgpol_lag").write_text("99999")
+    proc = env.run(*ADMIN, "--allow-policy-exception", LEGACY=1, ORGPOLOFF=1)
+    assert proc.returncode == 1
+    assert "No change was made" in proc.output
+    assert env.log().count("org-policies describe") == 21, "20 retries after the first read, then stop"
+    assert env.policy_calls() == []
+
+
+def test_org_policy_api_that_cannot_be_enabled_means_no_change(env):
+    proc = env.run(*ADMIN, "--allow-policy-exception", LEGACY=1, ORGPOLOFF=1, ORGPOLNOENABLE=1)
+    assert proc.returncode == 1
+    assert "Organization Policy API" in proc.output
+    assert "No change was made" in proc.output
+    assert env.policy_calls() == []
+
+
 def test_refused_policy_change_points_to_the_role(env):
     proc = env.run(*ADMIN, "--allow-policy-exception", LEGACY=1, NOPOLADMIN=1)
     assert proc.returncode == 1
