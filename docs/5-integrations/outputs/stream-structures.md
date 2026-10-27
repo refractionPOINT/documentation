@@ -1,6 +1,6 @@
 # Output Stream Structures
 
-LimaCharlie routes data through four distinct output streams, each with a different structure and purpose. Understanding these structures is essential for:
+LimaCharlie routes data through several output streams. The four main ones (`event`, `detect`, `audit` and `deployment`) each have a different structure and purpose, and are documented below. Understanding these structures is essential for:
 
 - Configuring output destinations correctly
 - Building parsers in external systems (SIEM, data lake, etc.)
@@ -15,6 +15,8 @@ LimaCharlie routes data through four distinct output streams, each with a differ
 | `detect` | Alerts from D&R rules | Low-Medium | SIEM, SOAR, incident response platforms |
 | `audit` | Platform management actions | Low | Compliance logging, audit trails |
 | `deployment` | Sensor lifecycle events | Very Low | Asset management, deployment tracking |
+
+Outputs can also use the `log` stream (artifacts and logs), the `tailored` stream (events forwarded by a D&R [`output`](../../8-reference/response-actions.md#output) action) and the `billing` stream. This page does not describe their structures. They appear here only because an output on any of them can report dropped records through `output_drop`.
 
 ## 1. Event Stream Structure
 
@@ -397,7 +399,8 @@ output about once a minute.
 
 `output_drop` events arrive on the deployment stream next to the sensor lifecycle
 events. You can filter them, alert on them, or route them with
-[D&R rules](../../3-detection-response/index.md) like any other deployment event,
+[D&R rules](../../3-detection-response/alternate-targets.md#target-deployment)
+(`target: deployment`, `event: output_drop`) like any other deployment event,
 for example to page on-call when a high-value output starts losing data.
 
 ### Use Cases
