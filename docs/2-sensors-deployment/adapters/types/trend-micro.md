@@ -45,9 +45,25 @@ The adapter polls `<base_url>/v3.0/workbench/alerts` every 60 seconds. The first
 2. Create an API key with a role that grants read access to the Workbench.
 3. Copy the generated **Authentication token** — this is your `api_token`.
 
+### CLI Deployment
+
+[Adapter downloads](../deployment.md) are available on the deployment page.
+
+```bash
+chmod +x /path/to/lc_adapter
+
+/path/to/lc_adapter trendmicro client_options.identity.installation_key=$INSTALLATION_KEY \
+client_options.identity.oid=$OID \
+client_options.platform=trend_micro \
+client_options.sensor_seed_key=$SENSOR_NAME \
+client_options.hostname=$SENSOR_NAME \
+api_token=$API_TOKEN \
+region=us
+```
+
 ### Infrastructure as Code Deployment
 
-```python
+```yaml
 # For cloud sensor deployment, store the token as a hive secret:
 
 #   api_token: "hive://secret/trendmicro-api-token"
