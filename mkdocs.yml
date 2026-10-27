@@ -303,6 +303,7 @@ nav:
               - CrowdStrike: 2-sensors-deployment/adapters/types/crowdstrike.md
               - Cylance: 2-sensors-deployment/adapters/types/cylance.md
               - Microsoft Defender: 2-sensors-deployment/adapters/types/microsoft-defender.md
+              - Proofpoint TAP: 2-sensors-deployment/adapters/types/proofpoint-tap.md
               - SentinelOne: 2-sensors-deployment/adapters/types/sentinelone.md
               - Sophos: 2-sensors-deployment/adapters/types/sophos.md
               - Carbon Black: 2-sensors-deployment/adapters/types/carbon-black.md
