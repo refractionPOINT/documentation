@@ -10,9 +10,11 @@ The online status reflects the connection to LimaCharlie, not the data:
 
 - **Endpoint agents** are online while the agent is connected. An agent can be connected while some of the data you expect from it has stopped.
 - **Adapters** that report as a single sensor are online while the adapter is connected. They stay online when the source they read from has stopped producing logs, because the adapter itself is still running.
-- **Per-device sensors** come from an adapter configured with `client_options.mapping.sensor_key_path`, which creates one sensor per device found in the logs. Such a sensor shows online once data arrives for its device. It goes offline after a period with no data for that device, or when the adapter disconnects.
+- **Per-device sensors** come from an adapter configured with `client_options.mapping.sensor_key_path`, or from a platform whose parser sets the sensor key itself, such as `fortigate` or `cef`. Either way, the adapter creates one sensor per device found in the logs. Such a sensor shows online once data arrives for its device. It goes offline after a period with no data for that device, or when the adapter disconnects.
 
 When logs from many devices pass through a single collector, such as a central log manager or a syslog relay, the status of every device follows the collector. They all go offline when the collector stops forwarding and come back online as it resumes, whatever state the devices themselves are in.
+
+If you would rather see the collector as a single sensor, see [Using One Sensor for All Devices](../adapters/usage.md#using-one-sensor-for-all-devices). The data-based check below can then no longer tell the devices apart.
 
 You can't change how LimaCharlie computes the online status. To get an alert that means "this device has not reported for N minutes", use the data-based check below. It does not use the online status.
 
