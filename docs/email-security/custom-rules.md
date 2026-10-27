@@ -154,9 +154,9 @@ including matches beyond the shortened top-signals display, as its
 `rule_severity`. Excluded rules contribute neither impact nor typed actions.
 
 The `severity` shown on a message is the threat severity of its current verdict:
-informational for benign, graymail, unknown and error verdicts, at least `low`
-for suspicious and at least `high` for malicious, raised by `rule_severity` when
-that is higher. A high-impact rule that matches benign mail therefore does not
+informational for benign, graymail, unknown and error verdicts. A suspicious
+verdict has a floor of `low` and a malicious one a floor of `high`, and
+`rule_severity` raises either above its floor when that is higher. A high-impact rule that matches benign mail therefore does not
 make the message a threat. All shipped defaults declare a severity; historical
 messages may have no stored value, which remains unknown.
 

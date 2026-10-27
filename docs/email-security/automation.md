@@ -1003,6 +1003,9 @@ The managed Cases pack opens a Case from `EMAIL_ANALYSIS_COMPLETE` when
 `event/revision/verdict` is suspicious or malicious, or when `event/user_reported`
 is true, and from a human `EMAIL_USER_REPORT`. Severity only sets the priority
 afterwards: a benign message that matched a medium or high impact rule does not
-create a Case. The coverage endpoint's `inspection` block counts `incomplete`,
+create a Case. Copies an analyst has classified benign, graymail or simulation
+are excluded from both triggers; see
+[Opt-in Cases detection pack](groups.md#opt-in-cases-detection-pack). The coverage
+endpoint's `inspection` block counts `incomplete`,
 `unknown` and `total` messages over its `window_start` to `window_end`,
 regardless of the triage queue.
