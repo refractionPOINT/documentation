@@ -23,13 +23,13 @@ Adapter Type: `box`
 - `events_url`: optional override for the events endpoint. Defaults to `https://api.box.com/2.0/events`.
 - `token_url`: optional override for the OAuth2 token endpoint. Defaults to `https://api.box.com/oauth2/token`.
 
-The adapter authenticates with the OAuth2 Client Credentials Grant (CCG) against `https://api.box.com/oauth2/token` and polls `https://api.box.com/2.0/events?stream_type=admin_logs`.
+By default the adapter authenticates with the OAuth2 Client Credentials Grant (CCG) against `https://api.box.com/oauth2/token` and polls `https://api.box.com/2.0/events?stream_type=admin_logs`. `token_url` and `events_url` override these.
 
 ### Getting Your Credentials
 
 1. In the [Box Developer Console](https://app.box.com/developers/console), create a **Custom App** with **Server Authentication (Client Credentials Grant)**.
 2. Under the app's **Configuration**, copy the **Client ID** and **Client Secret**, and enable the **Manage enterprise properties** application scope (required to read the `admin_logs` event stream).
-3. A Box admin must **authorize** the app under **Admin Console → Apps → Custom Apps Manager** (using the app's Client ID).
+3. A Box admin must **authorize** the app under **Admin Console → Integrations → Platform Apps Manager → Server Authentication Apps** (using the app's Client ID). Box has renamed this menu before, so if the labels differ, look for the Platform Apps section of the Admin Console.
 4. Your `subject_id` is the **Enterprise ID**, found in **Admin Console → Account & Billing**.
 
 ### Infrastructure as Code Deployment
