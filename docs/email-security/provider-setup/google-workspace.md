@@ -75,6 +75,12 @@ to delete the service account's older keys once the connection test passes
 with the new one, so stale keys with mail access do not pile up. When something is
 blocked, the script stops and says who needs to change what.
 
+When the connection already existed, or the test needed retries while Google applied
+permissions, the script restarts it after the test passes (a brief disable and enable,
+settings unchanged), so mailboxes that failed earlier are retried now instead of at the
+next full check up to 6 hours later. If the restart fails, the script says so; disable
+and enable the connection in the web app instead.
+
 **Organization policies.** Two common Google Cloud organization policies block
 setup: Domain Restricted Sharing (`iam.allowedPolicyMemberDomains` or
 `iam.managed.allowedPolicyMembers`), which rejects Gmail's Google-owned
