@@ -18,6 +18,14 @@ Release notes for LimaCharlie platform components, organized by date.
 
     For discussion and email notification of the same releases, set the [Platform Updates category](https://community.limacharlie.com/c/platform-updates/5) in the community forum to Watching. For service availability rather than releases, subscribe on the [status page](https://status.limacharlie.io/).
 
+## 2026-10-28
+
+### Adapters 1.32.51
+
+#### New Features
+
+- New Windows build for Windows 7 SP1 and Windows Server 2008 R2 (x64), available at [https://downloads.limacharlie.io/adapter/windows/legacy64](https://downloads.limacharlie.io/adapter/windows/legacy64). The standard Windows adapter requires Windows 10 or Windows Server 2016 or later, because current Go releases no longer run on older Windows. The legacy build is the same adapter, built with a community fork of Go that restores Windows 7 support, and is provided on a best-effort basis. See [Adapter Deployment](../2-sensors-deployment/adapters/deployment.md#windows).
+
 ## 2026-10-27
 
 ### Adapters 1.32.50
