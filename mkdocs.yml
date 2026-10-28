@@ -62,6 +62,8 @@ plugins:
       lang: en
   - redirects:
       redirect_maps:
+        # Short link handed to Grok Bot users ("secure my Grok Bot")
+        'grok-bot.md': '2-sensors-deployment/tutorials/securing-grok-bot.md'
         # Extension landing pages (linked from emails)
         'docs/lc-extensions.md': '5-integrations/extensions/limacharlie/index.md'
         'docs/third-party-extensions.md': '5-integrations/extensions/third-party/index.md'
@@ -361,6 +363,7 @@ nav:
           - Test Sensor Version: 2-sensors-deployment/tutorials/test-sensor-version.md
           - Update Sensors: 2-sensors-deployment/tutorials/update-sensors.md
           - Viberails Deployment (MSSP): 2-sensors-deployment/tutorials/viberails-mssp-deployment.md
+          - Securing Grok Bot: 2-sensors-deployment/tutorials/securing-grok-bot.md
 
   - Detection & Response:
       - Overview: 3-detection-response/index.md
