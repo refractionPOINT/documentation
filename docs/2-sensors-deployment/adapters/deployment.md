@@ -35,7 +35,13 @@ Software-based, or "on-prem" adapters are available in the following formats:
 
 ### Windows
 
-- [Windows x64](https://downloads.limacharlie.io/adapter/windows/64)
+- [Windows x64](https://downloads.limacharlie.io/adapter/windows/64): Windows 10 or Windows Server 2016 and later.
+- [Windows x64 (legacy)](https://downloads.limacharlie.io/adapter/windows/legacy64): Windows 7 SP1 and Windows Server 2008 R2, best-effort.
+
+!!! note "Windows 7 and Windows Server 2008 R2"
+    The standard Windows adapter is built with a current Go release, and Go supports Windows 10 and Windows Server 2016 or later only. The legacy build is the same adapter, built with [go-legacy-win7](https://github.com/thongtech/go-legacy-win7), a community fork of Go that tracks upstream releases and restores Windows 7 support. It is not maintained by the Go team, so it is provided on a best-effort basis. Windows Server 2008 (not R2) is not supported by either build.
+
+    Microsoft no longer ships security updates for these Windows versions. Where possible, forward their event logs to a supported host, for example with Windows Event Forwarding, and run the standard adapter there.
 
 ### Docker
 
