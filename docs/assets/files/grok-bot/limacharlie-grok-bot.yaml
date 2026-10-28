@@ -56,10 +56,12 @@ hives:
           rules:
             # A command line that mentions the sensor: the sensor process
             # (rphcp), its folder, its start script, or the Chrome policy
-            # file that installs the browser extension...
+            # file that installs the browser extension. The folder pattern
+            # skips look-alikes such as .limacharlie-cli (the command-line
+            # tool) and .limacharlie-last-problem (the keep-alive's note)...
             - op: matches
               path: event/COMMAND_LINE
-              re: 'rphcp|\.limacharlie|lc_sensor|lc-start\.sh|chrome_policy\.py|policies/managed/limacharlie'
+              re: 'rphcp|\.limacharlie([^-A-Za-z0-9_.]|$)|lc_sensor|lc-start\.sh|chrome_policy\.py|policies/managed/limacharlie'
             # ...together with something that stops, deletes, replaces,
             # slows down, blocks or spies on it.
             - op: or
@@ -125,6 +127,16 @@ hives:
                   COMMAND_LINE: iptables -A OUTPUT -p tcp -m owner --uid-owner 1000 -m comment --comment rphcp -j DROP
                   FILE_PATH: /usr/sbin/iptables
                   USER_NAME: root
+                routing: *linux_process
+            - - event:
+                  COMMAND_LINE: cd /workspace && rm -rf .limacharlie
+                  FILE_PATH: /usr/bin/bash
+                  USER_NAME: box
+                routing: *linux_process
+            - - event:
+                  COMMAND_LINE: mv /workspace/.limacharlie/sensor /tmp/x
+                  FILE_PATH: /usr/bin/mv
+                  USER_NAME: box
                 routing: *linux_process
             - - event:
                   COMMAND_LINE: chmod 000 /workspace/.limacharlie/rphcp
@@ -213,6 +225,28 @@ hives:
               - event:
                   COMMAND_LINE: chmod +x /workspace/.limacharlie/lc-start.sh
                   FILE_PATH: /usr/bin/chmod
+                  USER_NAME: box
+                routing: *linux_process
+            # The command-line tool and the keep-alive's note live next to
+            # the sensor folder but are not part of it.
+            - - event:
+                  COMMAND_LINE: rm -rf /workspace/.limacharlie-cli
+                  FILE_PATH: /usr/bin/rm
+                  USER_NAME: box
+                routing: *linux_process
+              - event:
+                  COMMAND_LINE: rm -rf /workspace/.limacharlie-cli/venv /workspace/.limacharlie-cli/lib
+                  FILE_PATH: /usr/bin/rm
+                  USER_NAME: box
+                routing: *linux_process
+              - event:
+                  COMMAND_LINE: chmod 0700 /workspace/.limacharlie-cli/limacharlie
+                  FILE_PATH: /usr/bin/chmod
+                  USER_NAME: box
+                routing: *linux_process
+              - event:
+                  COMMAND_LINE: rm -f /home/box/.limacharlie-last-problem
+                  FILE_PATH: /usr/bin/rm
                   USER_NAME: box
                 routing: *linux_process
       usr_mtd:
