@@ -183,14 +183,14 @@ To get an alert when an adapter is disabled, add a D&R rule on the `deployment` 
 target: deployment
 event: cloud_adapter_disabled
 op: exists
-path: event/adapter
+path: routing/oid
 
 # Response
 - action: report
   name: cloud-adapter-disabled
 ```
 
-Use `cloud_adapter_error` as the event instead to be told about every new error.
+Use `cloud_adapter_error` as the event instead to be told about every new error. The two events name the adapter in different fields: `event/adapter` for `cloud_adapter_disabled` and `event/adapter_name` for `cloud_adapter_error`.
 
 ## An adapter in cloud mode does not pick up my changes
 
