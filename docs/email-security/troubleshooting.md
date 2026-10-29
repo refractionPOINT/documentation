@@ -80,37 +80,38 @@ limacharlie mailsec coverage --oid $OID --output yaml --filter 'entitlement'
 |---|---|
 | `resolved` | **Read this first.** `false` means the plan could not be resolved. It is not a claim that you have no limits — it means nothing looked |
 | `subscribed` | Whether the extension subscription was found |
-| `gate_reason` | Present only when mail is **not** being worked, naming why. Absent is the healthy state — branch on the key, not on an empty string. In practice the value you can see here is `trial_expired`: the other one, `not_subscribed`, describes an organization whose `coverage` call is itself refused |
-| `plan` | `paid` or `trial`. Omitted when `resolved` is `false` |
-| `trial_started_at`, `trial_ends_at`, `trial_expired`, `trial_days_remaining` | The clock, where one applies. Days remaining rounds **up** — a trial with four hours to run has not had its last day yet. Omitted when `resolved` is `false` |
-| `mailbox_cap`, `mailbox_cap_enforced` | A protected-mailbox ceiling, and whether it is actually being enforced. Omitted when `resolved` is `false` |
-| `mailboxes_active`, `mailboxes_over_cap`, `mailbox_cap_reached` | How many mailboxes are protected, how many were found and left unprotected because of the cap, and whether the cap is reached. This is the shortfall as a **number** — how much of the estate is not covered — rather than something to infer |
+| `gate_reason` | Present only when mail is **not** being worked, naming why. Absent is the healthy state — branch on the key, not on an empty string. `not_subscribed` describes an organization whose `coverage` call is itself refused, so you will not normally see it here. Older deployments can still send `trial_expired` (collection paused because a former trial ended); treat it as "collection paused, upgrade to resume". Current deployments never send it, because the free tier does not expire |
+| `plan` | `free` (sensor quota 2 or less: perpetual, capped at 10 mailboxes) or `paid`. Older deployments can still send `trial` during a rollout; read it as `free`. There is no trial clock: nothing here counts down or expires. Omitted when `resolved` is `false` |
+| `mailbox_cap`, `mailbox_cap_enforced` | For a free organization, the protected-mailbox ceiling (**10**), and whether it is actually being enforced. Omitted when `resolved` is `false` |
+| `mailboxes_active`, `mailboxes_over_cap`, `mailbox_cap_reached` | For a free organization: how many mailboxes are protected, how many were found and left unprotected because of the cap, and whether the cap is reached. This is the shortfall as a **number** — how much of the estate is not covered — rather than something to infer |
 | `purge_schedule_available` | `false` means the schedule could not be **read**, so the pending-deletion fields are absent rather than rendered as "nothing scheduled" |
 | `purge_scheduled_at`, `purge_reason`, `purge_days_remaining`, `purge_cancellable` | A pending deletion, why, when, and whether undoing the condition withdraws it |
 
-`resolved: false` omits the **plan, the clock and the cap** and nothing else: the
+`resolved: false` omits the **plan and the cap** and nothing else: the
 subscription facts and any pending deletion are still reported, because those are
 read separately and a failure in one does not make the other unknown.
 
-Where a mailbox ceiling applies, mailboxes past it stay in state `discovered` —
-found, and not being watched. Not `excluded` (which is your own scope decision)
-and not `error` (which would be a fault to fix). A cap **bounds activation and
-never deactivation**: nothing un-protects a mailbox that is already protected.
+Where a mailbox ceiling applies, mailboxes past it are found and not being
+watched. That is not `excluded` (your own scope decision) and not `error` (a
+fault to fix). If a free organization has more than 10 protected mailboxes, for
+example after moving down from a paid plan, the extras are moved out of
+protection and the earliest-protected mailboxes are kept. Mail that was already
+analyzed is not deleted.
 
 `mailbox_cap_enforced` is worth reading rather than assuming: a deployment can
 resolve every organization's plan and report what *would* apply while refusing
 nobody, and in that posture the cap is a number to plan against rather than one
 that is turning mailboxes away.
 
-What a trial is, how long it runs and how many mailboxes it covers are in
-[Plans, the free trial, and the mailbox cap](policy.md#plans-the-free-trial-and-the-mailbox-cap).
+The free tier, its mailbox cap and how to raise it are in
+[Plans, the free tier, and the mailbox cap](policy.md#plans-the-free-tier-and-the-mailbox-cap).
 
-!!! note "A lapsed trial is not the same as an unsubscribe"
-    An organization whose trial ended is still **subscribed**, so the API still
-    answers: you can search the queue, read a message and remediate mail that was
-    already ingested. What stops is ingestion. An organization that unsubscribed
-    loses the API as well — that is the difference between the two rows of
-    `gate_reason`.
+!!! note "A paused collection is not the same as an unsubscribe"
+    An organization that is still **subscribed** keeps the API even when
+    collection is paused: you can search the queue, read a message and remediate
+    mail that was already ingested. What stops is ingestion. An organization that
+    unsubscribed loses the API as well — that is the difference between the two
+    rows of `gate_reason`.
 
 ### 3. Check the connection itself
 

@@ -26,16 +26,15 @@ A **credential** is the key the product uses to access your mail provider. A
 **secret** is the securely stored copy of that credential in LimaCharlie. A
 **connection** combines that secret with your provider and mailbox choices.
 
-!!! info "Trial limits"
-    Free-tier organizations can try Email Security for **14 days**, with up to
-    **25 mailboxes**. The clock starts when you subscribe, and resubscribing does
-    not restart it. Prepare your administrator access first. At expiry ingestion
-    pauses; data is removed after a **30-day purge grace period** unless the
-    organization moves off the free tier before the purge. See
-    [trial details](policy.md#plans-the-free-trial-and-the-mailbox-cap).
+!!! info "Free tier: up to 10 mailboxes, forever"
+    Free-tier organizations protect up to **10 mailboxes**, with no trial period
+    and no expiry. The cap covers the whole organization, across every mail
+    connection. Mailboxes beyond 10 are not protected. See
+    [plans and the mailbox cap](policy.md#plans-the-free-tier-and-the-mailbox-cap).
 
-    The free tier means a configured sensor quota of **2 or less**. Raising it
-    above **2** moves the organization to a paid plan and lifts the trial limits.
+    The free tier means a configured sensor quota of **2 or less**. To protect
+    more than 10 mailboxes, raise the sensor quota above **2**: the organization
+    moves to a paid plan and **every** protected mailbox is billed at $1 per month.
     See [pricing and billing](../7-administration/billing/security-products.md).
 
 ## 1. Enable Email Security
@@ -108,7 +107,7 @@ service account email from its key; confirm those values before continuing.
 If **Add New** is unavailable, ask your organization administrator to check your
 Secrets Manager permissions or resolve the displayed loading error.
 
-For a trial, keep your selected mailboxes within the 25-mailbox cap. If you use a
+On the free tier, keep your selected mailboxes within the 10-mailbox cap. If you use a
 reports mailbox, include it in your pilot selection too. A selection in
 LimaCharlie does not narrow the permissions granted to the application at your
 mail provider. See [provider scope](providers.md) for domain, group, and exclusion
@@ -148,7 +147,7 @@ mailboxes by sending test messages to them.
 | State | What it means / what to do |
 |---|---|
 | Protected | The mailbox is being watched. Send it an ordinary new test message. |
-| Discovered | The mailbox was found but is not yet protected. Check setup progress and the trial cap. |
+| Discovered | The mailbox was found but is not yet protected. Check setup progress and the free-tier mailbox cap. |
 | Excluded | The mailbox is outside the configured scope. Check your selection if this is unexpected. |
 | Error | The mailbox could not be protected. Check the connection diagnostic and provider permissions. |
 
@@ -168,7 +167,7 @@ need to wait for all history to finish before checking a new message.
 |---|---|
 | Cannot create the credential or grant access | Send your mail administrator the provider setup guide above. LimaCharlie access does not grant Microsoft or Google administrator access. |
 | Connection saved but tests fail | Recheck the secret's contents and required grants. Saving checks configuration, not working access. |
-| Tests pass but Messages is empty | Check Overview coverage counts, mailbox selection, the trial cap, and notification delivery. Send a new message to a protected mailbox. |
+| Tests pass but Messages is empty | Check Overview coverage counts, mailbox selection, the free-tier mailbox cap, and notification delivery. Send a new message to a protected mailbox. |
 | User reports is empty | Confirm an existing reports mailbox is configured, included in scope, and receiving forwarded messages. |
 
 More fixes: [Troubleshooting](troubleshooting.md).

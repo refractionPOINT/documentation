@@ -664,19 +664,15 @@ server from your verified claims rather than taken from the request.
 | Event | When the data is deleted | What cancels it |
 |---|---|---|
 | The organization unsubscribes from Email Security | **30 days** later | Resubscribing at any point inside those 30 days |
-| The organization's free trial ends and it stays on the free tier | **30 days** later | Moving the organization off the free tier at any point inside those 30 days |
 | The organization itself is deleted | After a **7-day** grace period | The organization is found to exist again before the purge |
 
 Grace periods start when the cleanup process observes the condition. Deletion
 runs asynchronously after the grace period; normal retention policies still apply.
 
 None of them needs anyone to ask. The 30-day delay exists so that unsubscribing
-by mistake, letting a trial lapse over a holiday, or moving billing around is
-recoverable — and undoing the thing that started the clock is all the recovery
-takes. The two cancellations are **not interchangeable**: resubscribing does not
-cancel a deletion scheduled because a trial ended, and upgrading does not cancel
-one scheduled because the organization unsubscribed. Each undoes only what it
-contradicts.
+by mistake is recoverable, and undoing the thing that started the clock is all
+the recovery takes: resubscribing inside those 30 days cancels the deletion. The
+free tier never starts a deletion of its own, because it does not expire.
 
 ### You are told before it happens
 
@@ -696,75 +692,62 @@ watch, and a D&R rule or an output can act on either. Each notice is delivered
 exactly once per scheduled deletion; if the deadline moves, the notices are
 re-sent for the new date.
 
-## Plans, the free trial, and the mailbox cap
+## Plans, the free tier, and the mailbox cap
 
 Email Security is generally available. **Subscribing to the Email Security
 extension is the purchase**. Paid usage costs **$1 per protected mailbox per
 month**, billed daily at **$1/30 per mailbox-day** on that day's protected-mailbox
 count. See [security product billing](../7-administration/billing/security-products.md).
 
-An organization gets the trial when it is on the LimaCharlie free tier: its
-configured sensor quota is **2 or less**. Raising the quota above **2** moves the
-organization to a paid plan, lifts the trial limits, and starts usage billing.
+Email Security has a **perpetual free tier**, like the two free sensors of the
+LimaCharlie Community Edition. An organization is on the free tier when its
+configured sensor quota is **2 or less**. It protects up to **10 mailboxes**,
+with no trial period, no expiry, no pause and no deletion for running out of
+time. Raising the quota above **2** moves the organization to a paid plan, lifts
+the mailbox cap and starts usage billing.
 
-| | Trial | Paid |
+| | Free | Paid |
 |---|---|---|
-| Duration | **14 days** from the day Email Security was enabled | No trial duration limit |
-| Protected mailboxes | **25** | No plan-imposed mailbox cap |
+| Duration | **Perpetual**: no trial, no expiry | Billed per protected mailbox |
+| Protected mailboxes | **10** per organization | No plan-imposed mailbox cap |
 | Everything else — detections, remediation, retention, API, telemetry | Identical | Identical |
 
-Read `coverage.entitlement` for the trial countdown, mailbox coverage and any
-scheduled deletion.
+Read `coverage.entitlement` for the plan, mailbox coverage and any scheduled
+deletion.
 
-### The 14-day clock
+### The 10-mailbox cap
 
-The clock starts the day the organization first subscribes to
-`ext-email-security` and is recorded durably. **Unsubscribing and resubscribing
-does not restart it**: the clock survives an unsubscribe, so a trial is 14 days
-once rather than 14 days per subscription. Moving the organization off the free
-tier clears the limits immediately.
+A free organization protects up to **10 mailboxes**. The cap applies to the whole
+organization, across every connected mail tenant, not per connection.
 
-Read the remaining time from the `entitlement` block of
-[`GET /coverage`](api-reference.md#reads): `trial_ends_at` and
-`trial_days_remaining`.
-
-### What happens when the trial ends
-
-If the organization stays on the free tier at expiry, collection pauses and
-configuration is kept:
-
-- **Ingestion pauses.** No new mail is analyzed, and the mail connections are
-  not renewed, so the provider's own watches expire on their own schedule.
-- **Nothing is deleted, and nothing is changed.** The connections, the policy
-  records and every message already analyzed are intact and follow their normal
-  [retention](#data-retention-and-deletion).
-- **A 30-day purge grace period starts when expiry is observed**, with the
-  notices described above. Data is removed after that grace period unless the
-  organization upgrades.
-
-Raising the configured sensor quota above **2** lifts the trial limits, allows
-collection to resume, and cancels trial-expiry deletion if the upgrade happens
-before the purge. Usage is then billed.
-
-### The 25-mailbox cap
-
-A trial organization protects up to 25 mailboxes. The cap applies to the whole
-organization, across every connected mail tenant, and limits **new mailbox
-protection** only:
-
-- Discovery still finds every mailbox in the tenant — the ones past the cap are
-  reported as `discovered` rather than `protected`, so you can see exactly how
-  much of the estate is not covered.
-- A mailbox that is already protected is **never** dropped to fit a cap. If the
-  cap is reached, further mailboxes stop being protected; the ones already being
-  watched keep being watched.
+- Discovery still finds every mailbox in the tenant. The ones past the cap are
+  not protected, so you can see exactly how much of the estate is not covered.
+- **Mailboxes beyond 10 are not protected.** If a free organization has more than
+  10 protected mailboxes, for example after moving from a paid plan back to the
+  free tier, the extras are moved out of protection. The **earliest-protected
+  mailboxes are kept**.
+- **Already-analyzed mail is not deleted.** It follows its normal
+  [retention](#data-retention-and-deletion); only mailboxes moved out of
+  protection stop being protected.
 - Use [`exclusions`](#exclusions) and the connection's `scope` to choose *which*
-  25 mailboxes matter — the executives and finance addresses attacks aim at are
-  the ones worth spending a trial on.
+  10 mailboxes matter. The executives and finance addresses attacks aim at are
+  the ones worth keeping inside the cap.
 
-`GET /coverage`'s `entitlement` block reports `mailbox_cap`, `mailboxes_active`,
-`mailboxes_over_cap` and `mailbox_cap_reached`, so the shortfall is a number
-rather than a discovery.
+`GET /coverage`'s `entitlement` block reports `mailbox_cap`,
+`mailboxes_active`, `mailboxes_over_cap` and `mailbox_cap_reached` for a free
+organization, so the shortfall is a number rather than a discovery. The console
+shows the same numbers on the Email Security overview, for example
+*10 of 10 mailboxes protected, 4 not protected*.
+
+### Protecting more than 10 mailboxes
+
+Raise the organization's configured sensor quota **above 2**, to at least 3, on
+the console's billing page. The organization is then on a paid plan: the cap is
+lifted and **every protected mailbox is billed at $1 per month**. The free 10 are
+not deducted, the same as sensors.
+
+Lowering the sensor quota back to 2 or less returns the organization to the free
+tier, and the cap applies again as described above.
 
 ### Requesting a purge
 
