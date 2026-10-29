@@ -130,6 +130,7 @@ limacharlie mailsec rule backtest --file rule.json --since 2026-08-01
 limacharlie mailsec analyze --file suspect.eml --org-domain corp.example
 limacharlie mailsec connection test gws-exp
 limacharlie mailsec onboarding --provider gworkspace
+limacharlie mailsec onboarding --provider imap
 limacharlie mailsec onboarding --provider gworkspace \
   --project-id "$GCP_PROJECT" --sa-email "$SERVICE_ACCOUNT_EMAIL" \
   --topic mailsec-gmail-push --subscription mailsec-gmail-push-sub

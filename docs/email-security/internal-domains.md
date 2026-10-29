@@ -57,7 +57,9 @@ to new mail.
 Some domains are never internal, whatever the directory says:
 
 - **Shared mailbox providers**, such as `gmail.com`, `outlook.com` and
-  `yahoo.com`, stay external even if one of your users has an alias there.
+  `yahoo.com`, stay external even if one of your users has an alias there. This
+  is why an [IMAP](provider-setup/imap.md) organization made of personal Gmail
+  mailboxes has no domain of its own: mail between two such mailboxes is not internal.
   Anyone can hold a mailbox on those domains, so treating one as internal would
   exempt every stranger on it from the inbound rules. This applies to a
   mailbox's primary address too: if a protected mailbox is on a shared provider
