@@ -18,6 +18,30 @@ Release notes for LimaCharlie platform components, organized by date.
 
     For discussion and email notification of the same releases, set the [Platform Updates category](https://community.limacharlie.com/c/platform-updates/5) in the community forum to Watching. For service availability rather than releases, subscribe on the [status page](https://status.limacharlie.io/).
 
+## 2026-10-29
+
+### Endpoint Agent 5.4.2
+
+#### New Features
+
+- New `cert_store_list` command lists the certificates in the host's trust stores (Windows machine stores, Linux CA bundles and Java keystores, macOS keychains) with fingerprints and self-signed flags.
+- New Windows `crash_dump_info` command lists the kernel crash dumps on the host and analyzes them: stop code, crash time, loaded drivers, the crashing stack and the most likely culprit drivers with their signers.
+
+#### Bug Fixes
+
+- `file_get` now retrieves files that report a size of zero, such as those under `/proc` and `/sys` on Linux, instead of returning them empty.
+- File hashing and content searches over `/proc` no longer consume kernel log or trace streams.
+- Windows: after an upgrade, the sensor service binary was readable only by SYSTEM and Administrators, so it appeared unsigned to standard users; it now keeps its normal permissions, and already-affected hosts are repaired on their next upgrade.
+- Windows: fixed a crash loop at startup on hosts low on memory, caused by an oversized kernel acquisition buffer for registry events.
+- Fixed a crash on hosts low on memory when an internal list could not grow.
+- Fixed a crash in YARA file scanning when memory runs low; the scan is now reported as an error and skipped.
+
+#### Improvements
+
+- More reliable crash reporting, including crashes in older sensor services running a newer Host Based Sensor.
+
+---
+
 ## 2026-10-28
 
 ### Adapters 1.32.51
