@@ -7,6 +7,12 @@ optional second pass: an agent that reads a message the way an analyst would, pi
 what else it can find, writes a conclusion with the evidence behind it, and — when you
 allow it — acts.
 
+!!! tip "Want a verdict on every flagged message, in seconds?"
+    This page builds an agent that investigates. For a single model call per message,
+    made inside a D&R rule with no agent session or LimaCharlie API key, see
+    [AI Triage with `ask ai`](ask-ai-triage.md). Many organizations run both: `ask ai`
+    on everything the engine flags, and an agent on user reports and hard cases.
+
 Triage is **not** a mailsec feature with a toggle. There is no `enable_triage` button and
 no triage "mode". It is an ordinary [AI Sessions](../9-ai-sessions/index.md) agent that
 watches Email Security events and works under a LimaCharlie API key. Email Security
@@ -208,6 +214,15 @@ safe — it can only investigate.
 The agent does nothing until something starts it. The reference ships three trigger rules
 in `dr-general`, and they answer three different questions. Install them together with the
 agent: a trigger without its agent fires and fails.
+
+!!! note "Restricted mailboxes need `acl_scopes`"
+    If your mailbox sensors carry an `acl:` tag from
+    [Resource ACLs](../7-administration/access/resource-acls.md), the platform refuses
+    `start ai agent` on their events, and the rule stops starting sessions. The refusal
+    shows up only in `limacharlie org errors`. Add an `acl_scopes` list naming those
+    scopes to each trigger rule, next to `detect` and `respond`. See
+    [D&R rules](../7-administration/access/resource-acls.md#dr-rules) and
+    [Step 4 of the `ask ai` walkthrough](ask-ai-triage.md#step-4-allow-the-rule-to-read-restricted-mail).
 
 Each rule targets `edr` (the D&R target the `EMAIL_*` events arrive on), responds with
 `start ai agent` pointing at the record from Step 3, and shares **one** org-local

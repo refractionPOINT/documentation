@@ -552,7 +552,7 @@ The same record can also supply a one-shot model call from the [`ask ai` detecti
 | `credentials` | map | No | Provider credential envelope. Values may be literals or `hive://secret/` references; `auth` selects the authentication mode (default `api_key`). |
 | `bedrock` | object | No | AWS Bedrock provider block (`region`, `access_key_id_secret`, `secret_access_key_secret`, `session_token_secret`, `bearer_token_secret`). Applied on record-based launches — see [Alternative AI Providers](alternative-providers.md#amazon-bedrock). |
 | `vertex` | object | No | Google Cloud Vertex AI provider block (`project_id`, `region`, `service_account_json_secret`). Applied on record-based launches — see [Alternative AI Providers](alternative-providers.md#google-cloud-vertex-ai). |
-| `lc_api_key_secret` | string | Yes | LimaCharlie API key or `hive://secret/` reference. A D&R-started session does not start without it. |
+| `lc_api_key_secret` | string | Yes, for sessions | LimaCharlie API key or `hive://secret/` reference. A D&R-started session does not start without it. A record used only by the `ask ai` operator does not need it. |
 | `lc_uid_secret` | string | No | LimaCharlie User ID or `hive://secret/` reference. Required when `lc_api_key_secret` is a user API key. |
 | `name` | string | No | Session name. Supports template strings. |
 | `data` | map | No | Event data extraction mapping. |
