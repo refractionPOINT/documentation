@@ -149,52 +149,95 @@ hives:
                   USER_NAME: box
                 routing: *linux_process
           non_match:
-            # What the LimaCharlie setup itself runs to keep the sensors up.
+            # What the LimaCharlie setup itself runs to keep the sensors up:
+            # every external command in lc-start.sh, plus the keep-alive
+            # routine's own note handling. Update this list whenever
+            # lc-start.sh changes.
             - &keepalive
               - event:
-                  COMMAND_LINE: pgrep -x rphcp
-                  FILE_PATH: /usr/bin/pgrep
-                  USER_NAME: box
-                routing: *linux_process
-              - event:
-                  COMMAND_LINE: sudo -n /workspace/.limacharlie/lc-start.sh
+                  COMMAND_LINE: 'sudo -n /workspace/.limacharlie/lc-start.sh'
                   FILE_PATH: /usr/bin/sudo
                   USER_NAME: box
                 routing: *linux_process
               - event:
-                  COMMAND_LINE: /bin/bash /workspace/.limacharlie/lc-start.sh
+                  COMMAND_LINE: 'bash /workspace/.limacharlie/lc-start.sh'
                   FILE_PATH: /usr/bin/bash
                   USER_NAME: root
                 routing: *linux_process
               - event:
-                  COMMAND_LINE: mkdir -p /etc/opt/chrome/policies/managed
-                  FILE_PATH: /usr/bin/mkdir
+                  COMMAND_LINE: '/usr/bin/env bash /workspace/.limacharlie/lc-start.sh'
+                  FILE_PATH: /usr/bin/env
                   USER_NAME: root
                 routing: *linux_process
               - event:
-                  COMMAND_LINE: mkdir -p /etc/chromium/policies/managed
-                  FILE_PATH: /usr/bin/mkdir
+                  COMMAND_LINE: 'id -u'
+                  FILE_PATH: /usr/bin/id
                   USER_NAME: root
                 routing: *linux_process
               - event:
-                  COMMAND_LINE: python3 /workspace/.limacharlie/chrome_policy.py
-                  FILE_PATH: /usr/bin/python3
+                  COMMAND_LINE: 'pgrep -x rphcp'
+                  FILE_PATH: /usr/bin/pgrep
                   USER_NAME: root
                 routing: *linux_process
               - event:
-                  COMMAND_LINE: setsid /workspace/.limacharlie/rphcp -d -
+                  COMMAND_LINE: 'setsid /workspace/.limacharlie/rphcp -d -'
                   FILE_PATH: /usr/bin/setsid
                   USER_NAME: root
                 routing: *linux_process
               - event:
-                  COMMAND_LINE: /workspace/.limacharlie/rphcp -d -
+                  COMMAND_LINE: '/workspace/.limacharlie/rphcp -d -'
                   FILE_PATH: /workspace/.limacharlie/rphcp
                   USER_NAME: root
                 routing: *linux_process
               - event:
-                  COMMAND_LINE: test -s /etc/opt/chrome/policies/managed/limacharlie.json
-                  FILE_PATH: /usr/bin/test
+                  COMMAND_LINE: 'seq 1 12'
+                  FILE_PATH: /usr/bin/seq
                   USER_NAME: root
+                routing: *linux_process
+              - event:
+                  COMMAND_LINE: 'ss -tnpH state established'
+                  FILE_PATH: /usr/bin/ss
+                  USER_NAME: root
+                routing: *linux_process
+              - event:
+                  COMMAND_LINE: 'grep "rphcp"'
+                  FILE_PATH: /usr/bin/grep
+                  USER_NAME: root
+                routing: *linux_process
+              - event:
+                  COMMAND_LINE: 'grep -q ":443 "'
+                  FILE_PATH: /usr/bin/grep
+                  USER_NAME: root
+                routing: *linux_process
+              - event:
+                  COMMAND_LINE: 'sleep 5'
+                  FILE_PATH: /usr/bin/sleep
+                  USER_NAME: root
+                routing: *linux_process
+              - event:
+                  COMMAND_LINE: 'python3 /workspace/.limacharlie/chrome_policy.py'
+                  FILE_PATH: /usr/bin/python3
+                  USER_NAME: root
+                routing: *linux_process
+              - event:
+                  COMMAND_LINE: 'tr -d "\\\n'
+                  FILE_PATH: /usr/bin/tr
+                  USER_NAME: root
+                routing: *linux_process
+              - event:
+                  COMMAND_LINE: 'date -u +%Y-%m-%dT%H:%M:%SZ'
+                  FILE_PATH: /usr/bin/date
+                  USER_NAME: root
+                routing: *linux_process
+              - event:
+                  COMMAND_LINE: 'cat /home/box/.limacharlie-last-problem'
+                  FILE_PATH: /usr/bin/cat
+                  USER_NAME: box
+                routing: *linux_process
+              - event:
+                  COMMAND_LINE: 'rm -f /home/box/.limacharlie-last-problem'
+                  FILE_PATH: /usr/bin/rm
+                  USER_NAME: box
                 routing: *linux_process
             # Ordinary work that happens to mention the same words.
             - - event:
@@ -1495,7 +1538,7 @@ hives:
         comment: Known miner programs, stratum:// pool addresses and DNS lookups of mining pools.
 
     # ------------------------------------------------------------------
-    # 11. A new device joined your LimaCharlie organization
+    # 10. A new device joined your LimaCharlie organization
     # ------------------------------------------------------------------
     # The Linux sensor keeps its identity, so after the first setup there
     # should be no new enrollments. Push this rule AFTER the sensors are

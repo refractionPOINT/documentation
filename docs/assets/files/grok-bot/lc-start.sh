@@ -29,8 +29,9 @@ report() {
   detail=$(printf '%s' "$4" | tr -d '"\\\n')
   line=$(printf '{"status":"%s","sensor":"%s","browser_policy":"%s","detail":"%s","checked_at":"%s"}' \
     "$1" "$2" "$policy" "$detail" "$(date -u +%Y-%m-%dT%H:%M:%SZ)")
-  printf '%s\n' "$line" >"$STATUS_FILE"
-  chmod 0644 "$STATUS_FILE"
+  # A umask instead of chmod: the sensor-tamper rule reports any chmod of a
+  # file in the sensor folder.
+  (umask 022; printf '%s\n' "$line" >"$STATUS_FILE")
   printf '%s\n' "$line"
 }
 

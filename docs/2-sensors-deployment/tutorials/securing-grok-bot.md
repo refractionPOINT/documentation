@@ -343,6 +343,8 @@ Priority goes from 1 (for your information) to 5 (look now).
 
 The rules ignore ordinary agent work such as `curl`, `git`, `npm`, `pip`, `python3 -c` and headless Chrome page fetches. Each rule ships with tests: sample events it must catch, and ordinary commands, including the keep-alive script's own, that it must ignore.
 
+Some rules also fire when you ask your Bot to do these things on purpose, for example installing a tool with `curl ... | sh`, scheduling a cron job or sharing a paste. Those alerts are expected: check that the details match what you asked for.
+
 ## How it works
 
 - **The sensor keeps its identity across moves.** Grok Bot computers can restart or move to a new machine. A move keeps `/workspace` and wipes most of the system. The sensor runs from `/workspace/.limacharlie/sensor` with `LC_DATA_DIRECTORY` pointing there, so it reconnects as the same sensor. See [Custom Data Directory](../endpoint-agent/linux/installation.md#custom-data-directory).
