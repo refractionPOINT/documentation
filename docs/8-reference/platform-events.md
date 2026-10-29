@@ -48,18 +48,39 @@ This event is emitted for all kinds of billable records for the Organization.
 
 ### cloud_adapter_disabled
 
-This event is emitted when a Cloud Adapter gets disabled because it has been erroring for a long period of time.
+This event is emitted when a Cloud Adapter gets disabled because it has been erroring for a long period of time (24 hours). See [Adapter Troubleshooting](faq/adapter-troubleshooting.md#a-cloud-adapter-keeps-failing-or-was-disabled).
 
 **Sample Event:**
 
 ```json
 {
   "event":{
+    "adapter": "my-okta-adapter",
     "error": "invalid api key"
   },
   "routing": {
     "event_time": 1644444297696,
     "event_type": "cloud_adapter_disabled",
+    "oid": "8cbe27f4-aaaa-cccc-bbbb-138cd51389cd"
+  }
+}
+```
+
+### cloud_adapter_error
+
+This event is emitted when a Cloud Adapter fails with an error, unless that same error is already recorded on the adapter. A Cloud Adapter that keeps failing with the same error emits it once.
+
+**Sample Event:**
+
+```json
+{
+  "event":{
+    "adapter_name": "my-okta-adapter",
+    "error": "invalid api key"
+  },
+  "routing": {
+    "event_time": 1644444297696,
+    "event_type": "cloud_adapter_error",
     "oid": "8cbe27f4-aaaa-cccc-bbbb-138cd51389cd"
   }
 }
