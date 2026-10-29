@@ -2,28 +2,34 @@
 
 --8<-- "includes/email-security-availability.md"
 
-A mail connection is one `mailsec_provider` Hive record plus one credential in
-the [secret](../7-administration/config-hive/secrets.md) Hive. Two providers are
+A mail connection is one `mailsec_provider` Hive record plus one credential (one
+per mailbox, for IMAP) in
+the [secret](../7-administration/config-hive/secrets.md) Hive. Three providers are
 supported, and an organization may hold **one connection of each**:
 
 | Provider | `provider` | Auth model | Setup |
 |---|---|---|---|
 | Microsoft 365 / Exchange Online | `m365` | Entra ID app registration (client credentials) with Microsoft Graph **application** permissions | [Microsoft 365](provider-setup/microsoft-365.md) |
 | Google Workspace / Gmail | `gworkspace` | Google Cloud service account with **domain-wide delegation**, plus Pub/Sub in the same project | [Google Workspace](provider-setup/google-workspace.md) |
+| Personal Gmail and other IMAP hosts | `imap` | One password or Gmail **app password** per mailbox; no admin API or directory | [IMAP Mailboxes](provider-setup/imap.md) |
 
 !!! info "One enabled record per provider"
     Creating a second enabled record for a provider that already has one is
     refused at write time. Notifications carry a mailbox and a subscription, not
     a credential, so two same-provider connections in one organization would
     make it ambiguous which tenant's credential should fetch a given message.
-    An M365 connection **and** a Workspace connection in the same organization
-    is fully supported and runs concurrently; a campaign can span both.
+    An M365, a Workspace **and** an IMAP connection in the same organization
+    is fully supported and runs concurrently; a campaign can span all of them.
+
+    The IMAP connection still follows the rule: its one record holds a **list of
+    mailboxes**, each with its own login and secret, instead of one record per
+    mailbox. See [the IMAP record](#the-imap-record).
 
 ## The connection record
 
 ```yaml
-provider: m365 | gworkspace
-credentials: hive://secret/<name>
+provider: m365 | gworkspace | imap
+credentials: hive://secret/<name>   # must be empty for imap
 
 scope:
   include_addresses: []
@@ -43,6 +49,37 @@ features:
   pubsub_subscription: ""   # Google Workspace only
 ```
 
+### The IMAP record
+
+An `imap` record replaces the single `credentials` reference with a list of
+mailboxes. Everything else (`ingest`, `features`) works as above.
+
+```yaml
+provider: imap
+imap:
+  mailboxes:
+    - address: alice@gmail.com        # required, unique, the mailbox's identity
+      host: imap.gmail.com            # required, a public DNS name
+      port: 993                       # 993 (default) or 143
+      security: tls                   # tls (default) or starttls; never plaintext
+      username: ""                    # optional, defaults to address
+      credentials: hive://secret/imap-alice   # this mailbox's own secret
+ingest:
+  mode: auto
+  backfill_days: 14
+```
+
+- The top-level `credentials` must be empty. Each mailbox carries its own, so
+  adding or removing a mailbox never reads or rewrites another mailbox's secret.
+- The mailbox list is the scope: `scope.include_addresses`, `scope.domains` and
+  `scope.include_groups` are refused. `scope.exclude_addresses` pauses a mailbox
+  without deleting its entry, and `scope.internal_domains` keeps its meaning.
+- At most 1,000 mailboxes per record. `ingest.mode` accepts `auto` only, and
+  `features.pubsub_*` are refused.
+- `features.reports_mailbox`, when set, must be one of the listed addresses.
+
+Full setup is in [IMAP Mailboxes](provider-setup/imap.md).
+
 The record is decoded strictly: an unknown key is **refused**, not ignored. A
 typo in a security control that silently does nothing is the worst available
 failure mode, so a rejected record is preferred to an ignored field.
@@ -55,7 +92,8 @@ which is what makes it safe to read through the API, mirror and log.
 
 ### `scope`
 
-Which mailboxes the connection covers.
+Which mailboxes the connection covers. (Not applicable to IMAP, where the
+mailbox list is the scope.)
 
 | Field | Meaning |
 |---|---|
@@ -76,10 +114,11 @@ Addresses and domains are lowercased on save.
 
 | Field | Meaning |
 |---|---|
-| `mode` | Microsoft 365 accepts `auto` (the default, resolving to Graph notification push) or explicit `push`. Google Workspace requires explicit `push` plus both Pub/Sub fields. Other values are refused at save. |
+| `mode` | Microsoft 365 accepts `auto` (the default, resolving to Graph notification push) or explicit `push`. Google Workspace requires explicit `push` plus both Pub/Sub fields. IMAP accepts `auto` only (an `IDLE` session plus a periodic sweep) and refuses `push`. Other values are refused at save. |
 | `backfill_days` | Historical bootstrap window, 0–90, default **14**. That history is **judged** with the same rules live mail is judged with, and it seeds sender profiles and campaign statistics — but it **emits no telemetry and performs no actions** (no `EMAIL_MESSAGE`, no `EMAIL_VERDICT`, no automation, no remediation), and it is paced so it cannot compete with live ingestion. `0` disables the setup pass, but expired Gmail history IDs or Graph delta tokens can trigger a 14-day recovery walk even at `0`. It does not delete existing history. See [cleanup guidance](#cleaning-up-an-unwanted-backfill). Disabling setup comes at the cost of an empty queue on day one and first-contact signals being uninformative for the first weeks. |
 
-Push is the only implemented live-delivery path. During a notification-path
+Push is the only implemented live-delivery path for Microsoft 365 and Google
+Workspace; IMAP uses `IDLE` with a 2-minute sweep. During a notification-path
 outage, coverage reports the degradation and recovery resumes from the durable
 provider watermark; the product does not claim a polling fallback it does not
 run.
@@ -114,6 +153,7 @@ Every check carries `id`, `name`, `required`, `status` and — when it fails —
 | Provider | Checks |
 |---|---|
 | Microsoft 365 | `credential` (authenticate to Graph), `mailbox_read` (list mailboxes), `mail_write` (`Mail.ReadWrite` — required), `mail_send` (`Mail.Send` — optional) |
+| IMAP | One block of checks **per mailbox**, ids suffixed with the mailbox's position: network guard and DNS, TLS and certificate, `login`, Inbox open, `UIDPLUS` (these four required), `MOVE` and `IDLE` (optional), folders found (Junk required), `LC Quarantine` creatable (required for quarantine), and an informational note that filters which skip the Inbox are not covered |
 | Google Workspace | `credential` (key well formed), `directory` (`admin.directory.user.readonly`), `mail_modify` (`gmail.modify`), `mail_full` (`https://mail.google.com/` — optional), `mailbox_read` (list mailboxes in the domain), `pubsub_pull` (read the subscription), `pubsub_watch` (Gmail can publish to the topic) |
 
 Three properties are worth knowing:
@@ -136,15 +176,15 @@ It requires `mailsec.act`, because it makes real calls against your provider.
 Provider mechanics differ, and the differences are surfaced rather than papered
 over.
 
-| | Microsoft 365 | Google Workspace |
-|---|---|---|
-| **Quarantine** | Move to a hidden `LC Quarantine` folder. Restorable, and the user does not see the folder | Remove `INBOX` **and `SPAM`**, add a **visible** `LC Quarantine` label, so mail the provider had already filed as junk leaves the Spam folder too. Restorable, and the user can still find the message under that label |
-| **Trash** | Move to Recoverable Items — invisible to the user, recoverable by an admin. Distinct from Deleted Items | Add `TRASH`, and remove `SPAM` if the message was in the Spam folder |
-| **Move to spam** | Move to the Junk Email folder | Add `SPAM`, remove `INBOX` and any `LC Quarantine` label |
-| **Restore** | Move back to the folder we recorded, falling back to the Inbox. A message we quarantined from the provider's own spam folder goes to the **Inbox**, not back to Spam | Invert the labels, with the same Inbox rule for mail quarantined from Spam |
-| **Banner** | Edited **in place**; the message keeps its provider id | Gmail cannot edit a stored message, so the message is **replaced** and gets a **new provider id**. Requires the optional `https://mail.google.com/` scope; without it the action is refused by name, never reported as a silent success |
-| **Notification state** | Graph subscriptions can be listed, so reconciliation compares against the provider's own view | Gmail **cannot enumerate active watches**, so reconciliation uses stored state with correspondingly lower assurance. Every Workspace connection row says so |
-| **Reporter replies** | Need the optional `Mail.Send` application permission | Need the optional `https://mail.google.com/` scope |
+| | Microsoft 365 | Google Workspace | IMAP |
+|---|---|---|---|
+| **Quarantine** | Move to a hidden `LC Quarantine` folder. Restorable, and the user does not see the folder | Remove `INBOX` **and `SPAM`**, add a **visible** `LC Quarantine` label, so mail the provider had already filed as junk leaves the Spam folder too. Restorable, and the user can still find the message under that label | Move to an `LC Quarantine` folder, created on first use (a visible label on Gmail). Restorable |
+| **Trash** | Move to Recoverable Items — invisible to the user, recoverable by an admin. Distinct from Deleted Items | Add `TRASH`, and remove `SPAM` if the message was in the Spam folder | Move to the Trash folder |
+| **Move to spam** | Move to the Junk Email folder | Add `SPAM`, remove `INBOX` and any `LC Quarantine` label | Move to the Junk/Spam folder |
+| **Restore** | Move back to the folder we recorded, falling back to the Inbox. A message we quarantined from the provider's own spam folder goes to the **Inbox**, not back to Spam | Invert the labels, with the same Inbox rule for mail quarantined from Spam | Move back to the folder we recorded |
+| **Banner** | Edited **in place**; the message keeps its provider id | Gmail cannot edit a stored message, so the message is **replaced** and gets a **new provider id**. Requires the optional `https://mail.google.com/` scope; without it the action is refused by name, never reported as a silent success | The message is **replaced** (the banner copy is appended, then the original deleted) and gets a **new provider id**. Needs `UIDPLUS`, which every connected mailbox must have |
+| **Notification state** | Graph subscriptions can be listed, so reconciliation compares against the provider's own view | Gmail **cannot enumerate active watches**, so reconciliation uses stored state with correspondingly lower assurance. Every Workspace connection row says so | An `IDLE` session per mailbox plus a 2-minute sweep; there is no provider-side subscription to enumerate or expire |
+| **Reporter replies** | Need the optional `Mail.Send` application permission | Need the optional `https://mail.google.com/` scope | **Not supported.** IMAP cannot send mail, so replies are refused by name |
 
 !!! note "Provider message ids are live handles"
     A move mints a new provider id and invalidates the old one. The product
@@ -159,7 +199,9 @@ over.
 | Nothing is discovered or ingested | The Hive record was created disabled | `limacharlie hive enable --hive-name mailsec_provider --key <name>` |
 | `coverage` shows mailboxes as `discovered` but not `protected` | Discovery ran, subscription has not yet been established for those mailboxes | Give the subscription sweep a pass; if it persists, run the connection test |
 | Save refused with an unknown-field error | A key that is not in the record contract, or a Workspace-only field on an M365 record | Fix the key; the refusal names it |
-| Second connection for the same provider refused | Only one enabled record per provider is supported | Edit the existing record instead |
+| Second connection for the same provider refused | Only one enabled record per provider is supported | Edit the existing record instead. For IMAP, add the new mailbox to the existing record's `imap.mailboxes` list |
+| An `imap` record is refused for `credentials`, `scope` or `ingest.mode` | IMAP takes credentials per mailbox, uses the mailbox list as its scope, and supports `auto` only | Move `credentials` into each mailbox entry, remove `include_*`/`domains`/`include_groups`, and use `mode: auto` |
+| One IMAP mailbox reports a credential fault | Its app password was revoked or its account password changed | Update that mailbox's secret; other mailboxes are unaffected |
 | `connections.state` is `unconfigured` | No connection record exists, or none has completed a pass | Create/enable the record; an empty list is never reported as healthy |
 
 ## Cleaning up an unwanted backfill

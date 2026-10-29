@@ -297,7 +297,7 @@ provider, and audited.
 
 | Action | Effect |
 |---|---|
-| `quarantine_message` | Out of the inbox into a product-owned quarantine location, restorable. On Microsoft 365 the location is a hidden folder, so the user does not see the message. On Google Workspace it is a visible `LC Quarantine` label, so the user can still find the message under that label |
+| `quarantine_message` | Out of the inbox into a product-owned quarantine location, restorable. On Microsoft 365 the location is a hidden folder, so the user does not see the message. On Google Workspace it is a visible `LC Quarantine` label, so the user can still find the message under that label. On IMAP mailboxes it is an `LC Quarantine` folder (a label on Gmail), visible to the user |
 | `trash_message` | To the provider's recoverable trash |
 | `move_to_spam` | To the provider's junk/spam location |
 | `restore_message` | Back to where it was before we moved it, falling back to the Inbox when that is unknown or was the provider's spam folder |
@@ -314,7 +314,8 @@ The per-provider mechanics differ and are documented in
     in the label list and in message lists, so the user can open the label and
     read the message. If your process assumes the recipient cannot reach a
     quarantined message, that holds for Microsoft 365 mailboxes only. On
-    Workspace, treat quarantine as "out of the inbox", and use `trash_message`
+    Workspace and IMAP mailboxes (where the folder or label is also visible),
+    treat quarantine as "out of the inbox", and use `trash_message`
     if you need the message out of the user's normal view.
 
 ```bash
@@ -475,7 +476,7 @@ nothing here. A refused download is still recorded in the action audit and as an
 | `entity.mailbox_address` | The mailbox the message was read from |
 | `mtd.content` | `mdm` or `eml` |
 | `mtd.actor_kind` | The kind of credential behind `ident`: `user` for an interactive session, `user_api_key` for a user's personal API key, `org_api_key` for an organization API key, or `unknown` when the request carried no identity |
-| `mtd.provider` | `m365` or `gworkspace`, as indexed for the message |
+| `mtd.provider` | `m365`, `gworkspace` or `imap`, as indexed for the message |
 | `mtd.verdict` | The message's verdict at the time of the read |
 | `mtd.mdm_source` | `mdm` reads only: `stored` for the model the engine judged with, `eml_reparse` for a fresh parse of the raw copy. See [Which model you are looking at](#which-model-you-are-looking-at) |
 | `mtd.bytes` | `eml` reads only: the size of the download |

@@ -56,8 +56,8 @@ First subscribe to `ext-email-security` through the console, CLI or administrati
 profile's `subscribe_to_extension`. Every MailSec endpoint, including onboarding
 instructions, requires the extension subscription.
 
-Then use `mailsec_get_onboarding` with `provider: "m365"` or `"gworkspace"` to read
-current setup requirements. Workspace parameters `project_id`, `sa_email`,
+Then use `mailsec_get_onboarding` with `provider: "m365"`, `"gworkspace"` or
+`"imap"` to read current setup requirements. Workspace parameters `project_id`, `sa_email`,
 `topic` and `subscription` fill customer-specific instructions; the tool creates
 no resources. Follow [Getting Started](getting-started.md) or
 [Setup with the CLI](setup-cli.md) to provision credentials and save an enabled
