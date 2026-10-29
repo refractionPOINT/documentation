@@ -641,6 +641,7 @@ nav:
   - Cloud Security:
       - Overview: cloud-security/index.md
       - Getting Started: cloud-security/getting-started.md
+      - Free Tier and Limits: cloud-security/free-tier.md
       - Setup with the CLI: cloud-security/setup-cli.md
       - Connecting Providers: cloud-security/providers.md
       - Code Security:

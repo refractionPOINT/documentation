@@ -77,7 +77,7 @@ Shared behaviors:
 | `GET /caasm/assets` | `{resources, next_cursor}` — the merged third-party asset inventory. Params: `q`, `kind[]`, `source[]` (which observing tool reported the asset), the four repeatable device-posture filters `posture_encryption`, `posture_screen_lock`, `posture_compromised`, `posture_managed`, `sort` (`urn` default, or `last_seen`), paging. Pass an **empty** value to a posture filter to select the assets no source reported that fact for — unreported is not the same as compliant. Also carries `served_from` / `data_as_of` when the page came from the materialized merged view. |
 | `GET /caasm/coverage` | `{findings, next_cursor}` — coverage-gap findings. Params: `status[]`, `severity[]`, `q`, `sort`, `order`, paging. |
 | `GET /caasm/policy` | Resource-list shape: zero rows (no policy) or one row whose `props` is the policy. |
-| `GET /free-tier` | `{is_free_tier, sensor_quota, max_providers, enabled_providers}` — the org's free-tier standing and the limits that apply, for surfacing an upgrade prompt before a limit is hit. Descriptive only: it is not a gate, the collector enforces the limits, and reads keep working after a trial expires. |
+| `GET /free-tier` | `{is_free_tier, sensor_quota, max_providers, enabled_providers}` — the org's free-tier standing and the limits that apply, for surfacing an upgrade prompt before a limit is hit. Descriptive only: it is not a gate, the collector enforces the [free-tier limits](free-tier.md), and reads keep working while a connection is paused over a limit. |
 
 !!! note "`ciem/*` and `providers/*` families"
     `ciem/*` has four members — `public-access`, `facets`, `identities`, and

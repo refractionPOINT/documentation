@@ -9,6 +9,13 @@ It assumes the organization is already subscribed to the `ext-cloud-security`
 extension (step 1 of
 [Getting Started](../getting-started.md#1-enable-cloud-security)).
 
+!!! note "Free tier"
+    On the free tier a connection covers a single AWS account, Google Cloud
+    project or Azure subscription, and limits apply across all connections.
+    Where a guide below describes an AWS Organization, a Google Cloud
+    organization or folder, or several Azure subscriptions, that scope needs a
+    paid plan. See [free tier and limits](../free-tier.md).
+
 ## Pick your platform
 
 | Platform | Surface | What onboarding takes |

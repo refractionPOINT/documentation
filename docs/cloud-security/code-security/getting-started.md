@@ -16,8 +16,9 @@ nothing until a policy selects repositories.
   answers `403`. **Subscribing is the purchase**: paid usage is **$0.80 per
   protected repository per month**, billed daily at **$0.80/30 per repository-day**,
   plus the existing Cloud Security base fee. Free-tier organizations (sensor
-  quota **2 or less**) get a **14-day trial**. See
-  [pricing and trial limits](../../7-administration/billing/security-products.md).
+  quota **2 or less**) use it free, with no trial and no expiry, within the
+  [free-tier limits](../free-tier.md). See
+  [pricing and the free tier](../../7-administration/billing/security-products.md).
 - You have `cloudsec.get` and `cloudsec.set`. Connecting GitHub with the
   automatic setup below needs a few more permissions, listed in that section.
 - Creating or editing the provider record, including enabling it on that write,

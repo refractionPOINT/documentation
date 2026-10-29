@@ -23,12 +23,16 @@ collected data; an empty findings list does not by itself prove collection worke
   connections if those actions are unavailable. Subscribing requires
   `billing.ctrl` and `user.ctrl`; testing requires `cloudsec.set`.
 
-!!! info "Free trial"
-    Free-tier organizations can connect up to **2 providers** for a **14-day**
-    collection trial, starting when Cloud Security is enabled. Prepare provider
-    access first. At trial expiry, or when exceeding the connection limit,
-    affected collection pauses. Review the status in **Settings → Providers**
-    and the trial information in Overview before expanding your setup.
+!!! info "Free tier: no trial, no expiry"
+    Free-tier organizations (a configured sensor quota of **2 or less**) use
+    Cloud Security for free, forever, within limits that apply across all
+    connections: **10 user accounts**, **250 other resources** and **5
+    connections**, each connection covering a single AWS account, Google Cloud
+    project or Azure subscription. It is enough for a home lab or learning
+    environment. A connection that would go over a limit is paused rather than
+    partly synced. Review the status in **Settings → Providers** and the usage
+    shown in Overview before expanding your setup. See
+    [free tier and limits](free-tier.md).
 
 ## 1. Enable Cloud Security
 
@@ -138,7 +142,7 @@ to inspect **Status**, **Resources**, and **Last sync**.
 |---|---|
 | Queued or in progress | Allow time for collection. Large accounts take longer than small ones. |
 | Failed | Read the provider error, edit the connection or grants, and run Test Provider again. |
-| Trial/limit pause | Check your trial standing and provider count. Re-entering credentials will not remove a plan limit. |
+| Paused over a free-tier limit | Read the message on the connection and check your usage against the [free-tier limits](free-tier.md). Re-entering credentials will not remove a plan limit. |
 | Completed, with resources | Open Inventory and confirm a resource you recognize. |
 | Completed, but no expected resources | Check account/project IDs, scope, and optional permission failures. A successful credential check does not guarantee access to everything you intended. |
 
