@@ -32,13 +32,13 @@ Email Security has a **perpetual** free allowance for these organizations:
   plan and every protected mailbox is billed.
 - **Mailboxes beyond 10 are not protected.** If a free organization has more than
   10 protected mailboxes, for example after moving down from a paid plan, the
-  extras are moved out of protection and the earliest-protected mailboxes are
-  kept. Mail that was already analyzed is not deleted.
+  extras are moved out of protection and 10 stay protected. Mail that was
+  already analyzed is not deleted.
 
 To protect more than 10 mailboxes, raise the sensor quota above 2 (see
 [Moving to a paid plan](#moving-to-a-paid-plan)). From then on, **every**
-protected mailbox is billed at $1 per month. The 10 free mailboxes are not
-deducted, the same as sensors.
+protected mailbox is billed at $1 per month, including the first 10: the free
+allowance is not subtracted from the bill, the same as sensors.
 
 ## Cloud Security and Code Security free-tier trials
 

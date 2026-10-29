@@ -91,12 +91,12 @@ limacharlie mailsec coverage --oid $OID --output yaml --filter 'entitlement'
 subscription facts and any pending deletion are still reported, because those are
 read separately and a failure in one does not make the other unknown.
 
-Where a mailbox ceiling applies, mailboxes past it are found and not being
-watched. That is not `excluded` (your own scope decision) and not `error` (a
-fault to fix). If a free organization has more than 10 protected mailboxes, for
-example after moving down from a paid plan, the extras are moved out of
-protection and the earliest-protected mailboxes are kept. Mail that was already
-analyzed is not deleted.
+Where a mailbox ceiling applies, mailboxes past it stay in state `discovered` —
+found, and not being watched. Not `excluded` (your own scope decision) and not
+`error` (a fault to fix). If a free organization has more than 10 protected
+mailboxes, for example after moving down from a paid plan, the extras are moved
+out of protection and reported as `discovered` too, and 10 stay protected. Mail
+that was already analyzed is not deleted.
 
 `mailbox_cap_enforced` is worth reading rather than assuming: a deployment can
 resolve every organization's plan and report what *would* apply while refusing

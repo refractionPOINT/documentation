@@ -672,7 +672,9 @@ runs asynchronously after the grace period; normal retention policies still appl
 None of them needs anyone to ask. The 30-day delay exists so that unsubscribing
 by mistake is recoverable, and undoing the thing that started the clock is all
 the recovery takes: resubscribing inside those 30 days cancels the deletion. The
-free tier never starts a deletion of its own, because it does not expire.
+free tier never starts a deletion of its own, because it does not expire. A deletion that an
+older deployment scheduled because a trial ended is cancelled automatically once
+the organization resolves as free or paid, so it needs no action from you.
 
 ### You are told before it happens
 
@@ -724,8 +726,8 @@ organization, across every connected mail tenant, not per connection.
   not protected, so you can see exactly how much of the estate is not covered.
 - **Mailboxes beyond 10 are not protected.** If a free organization has more than
   10 protected mailboxes, for example after moving from a paid plan back to the
-  free tier, the extras are moved out of protection. The **earliest-protected
-  mailboxes are kept**.
+  free tier, the extras are moved out of protection (they go back to `discovered`)
+  and **10 stay protected**.
 - **Already-analyzed mail is not deleted.** It follows its normal
   [retention](#data-retention-and-deletion); only mailboxes moved out of
   protection stop being protected.
@@ -743,8 +745,9 @@ shows the same numbers on the Email Security overview, for example
 
 Raise the organization's configured sensor quota **above 2**, to at least 3, on
 the console's billing page. The organization is then on a paid plan: the cap is
-lifted and **every protected mailbox is billed at $1 per month**. The free 10 are
-not deducted, the same as sensors.
+lifted and **every protected mailbox is billed at $1 per month**, including the
+first 10: the free allowance is not subtracted from the bill, the same as
+sensors.
 
 Lowering the sensor quota back to 2 or less returns the organization to the free
 tier, and the cap applies again as described above.
