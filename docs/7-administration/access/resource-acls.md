@@ -179,7 +179,7 @@ limacharlie output create --name siem --module syslog --type event --input-file 
 
 D&R rules cannot add or remove `acl:` tags. The `add tag`, `remove tag`, `add hive tag` and `remove hive tag` actions reject them, because rules run without a user identity to check `acl.set` against.
 
-Three response actions send event content outside the platform and are refused on events from restricted sensors: `service request`, `extension request` and `start ai agent`. To allow them, list the scopes in the rule's `acl_scopes` field, next to `detect` and `respond`:
+Three response actions send event content outside the platform and are refused on events from restricted sensors: `service request`, `extension request` and `start ai agent`. The [`ask ai`](../../8-reference/detection-logic-operators.md#ask-ai) detection operator sends event content to an AI provider and is refused the same way: it produces an operator error and the rule does not match. To allow them, list the scopes in the rule's `acl_scopes` field, next to `detect` and `respond`:
 
 ```yaml
 detect:

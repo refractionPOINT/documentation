@@ -121,7 +121,8 @@ data:
     Never call something malicious without specific evidence. When torn between
     malicious and suspicious, choose suspicious.
 
-    Answer with the JSON object requested. The summary is one sentence. Each
+    Answer with the JSON object requested. confidence is a number from 0 to 1.
+    The summary is one sentence. Each
     evidence item is a short, checkable fact from the data (an auth result, a
     domain, a signal). Do not copy message text into the answer.
 ```
@@ -203,7 +204,7 @@ detect:
         type: object
         properties:
           verdict: {type: string, enum: [malicious, suspicious, graymail, benign]}
-          confidence: {type: number}
+          confidence: {type: number, minimum: 0, maximum: 1}
           category: {type: string, enum: [credential_phishing, malware, bec_fraud, callback_phishing, graymail, legitimate, other]}
           summary: {type: string}
           evidence: {type: array, items: {type: string}}
@@ -272,8 +273,10 @@ sees it. That is why event fields go in `data` and never in `prompt`. See
 [Untrusted event data](../9-ai-sessions/dr-sessions.md#untrusted-event-data).
 
 **`response_schema` fixes the shape of the answer.** The model has to return an object
-with exactly these fields, or the call fails. A fixed shape is what lets the response
-read `verdict` without parsing prose.
+with at least these fields, using only the allowed values, or the call fails. Setting
+`confidence` to the range 0 to 1 means a threshold such as `0.8` behaves the same on
+every answer. A fixed shape is what lets the response read `verdict` without parsing
+prose.
 
 **`timeout: 45`** gives the model time on a long message. The default is 20 seconds and
 the maximum is 60.
@@ -327,8 +330,11 @@ Then save the rule again with `limacharlie hive set` as in Step 3.
 - Saving `acl_scopes` requires membership in every listed scope, or the `acl.set`
   permission.
 - The same setting covers the `extension request` in Step 6.
-- Keep `acl_scopes` whenever you rewrite the rule. A full rewrite without it removes the
-  scope, and triage stops again.
+- Keep `acl_scopes` whenever you rewrite the rule. A rewrite that leaves it out counts
+  as removing every scope. That is refused unless you hold `acl.set`, and if you do hold
+  it, the scope is removed and triage stops again. `limacharlie dr set --detect ...
+  --respond ...` writes only `detect` and `respond`, so it counts as removing the scope
+  too. Use `limacharlie hive set` with the whole rule file instead.
 - Detections from restricted sensors are visible only to members of the scope, like the
   mail itself.
 
@@ -346,7 +352,7 @@ callback, and when they reach `ask ai` they report
 
     ```bash
     limacharlie mailsec message list --verdict suspicious --verdict malicious \
-      --direction inbound --lane live --since "$(date -u -d '7 days ago' +%Y-%m-%dT%H:%M:%SZ)" \
+      --direction inbound --lane live --since "$(( $(date +%s) - 7*24*3600 ))" \
       --limit 1000 --oid "$OID" --output yaml
     ```
 
@@ -354,7 +360,7 @@ callback, and when they reach `ask ai` they report
 
     ```bash
     limacharlie detection list --cat mailsec-ai-triage \
-      --start "$(date -d '1 hour ago' +%s)" --end "$(date +%s)" \
+      --start "$(( $(date +%s) - 3600 ))" --end "$(date +%s)" \
       --oid "$OID" --output yaml
     ```
 
