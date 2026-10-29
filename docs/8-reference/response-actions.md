@@ -276,7 +276,10 @@ Reports the match as a detection. Think of it as an alert. Detections go a few p
 - The organization's Detections page (if `insight` is enabled)
 - The D&R rule engine, for chaining detections
 
-The `name`, `metadata` and `detect_data` parameters support [string templates](../4-data-queries/template-transforms.md) like `detected {{ .cat }} on {{ .routing.hostname }}`, note that the context of the transform is the detection itself and not the original event, so you would refer to `.detect.event.USER_NAME` and not `.event.USER_NAME` for example.
+The `name`, `metadata` and `detect_data` parameters support [string templates](../4-data-queries/template-transforms.md). Their contexts differ:
+
+- `name` is templated against the original event, for example `suspicious login by {{ .event.USER_NAME }} on {{ .routing.hostname }}`.
+- `metadata` and `detect_data` are templated against the detection itself, so you refer to `.detect.event.USER_NAME` and not `.event.USER_NAME`, and to metadata from operators such as `lookup` or `ask ai` as `.mtd.<key>`.
 
 The `metadata` is generally used to populate information about the rule, its author, remediation etc.
 

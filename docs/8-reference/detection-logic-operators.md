@@ -363,11 +363,15 @@ respond:
 
 Create an enabled `ai_agent` record named `cmdline-triage` with a system `prompt`, a provider/model and credentials, for example an `anthropic_secret: hive://secret/llm-key` reference. Never put an API key in a detection rule. See [AI agent definitions](../9-ai-sessions/dr-sessions.md#ai-agent-record-fields).
 
+When the record sets no `model`, `ask ai` uses a small default for the provider: `claude-haiku-4-5-20251001` for Anthropic (the Bedrock and Vertex equivalents when the record routes through them), `gpt-4.1-mini` for OpenAI, `gemini-3.5-flash-lite` for Google and `openai/gpt-4.1-mini` for OpenRouter. Decision questions have their own default, described below. The record does not need `lc_api_key_secret`, because `ask ai` makes no tool calls.
+
+For a complete walkthrough on email, see [AI Triage with `ask ai`](../email-security/ask-ai-triage.md).
+
 | Parameter | Required | Meaning |
 |-----------|----------|---------|
 | `definition` | Yes | Literal `hive://ai_agent/<name>` reference. The name uses ASCII letters, digits, underscores, hyphens or dots; paths, percent encoding, `..` and a standalone `.` are rejected. Inline credentials and templated definitions are unsupported. |
 | `prompt` | No | User prompt, evaluated as a template against the event. |
-| `data` | No | Dictionary of event extraction mappings, with the same semantics as `start ai agent`. Write each value as a `{{ }}` template. A plain string is read as a path into the event. Rule keys override the record's extracted keys. This is where event fields belong: the platform marks `data` as untrusted for the model and does not mark `prompt`. |
+| `data` | No | Dictionary of event extraction mappings, with the same semantics as `start ai agent`. A value with `{{ }}` is a template. A plain string is a [GJSON](https://github.com/tidwall/gjson/blob/master/SYNTAX.md) path into the event, which keeps lists and objects intact: `event.auth` passes an object, and `event.links.#.href_url.raw` passes one value per list element. Fields the event does not have are left out. Templates are less forgiving: a template on a missing field renders as the text `<no value>`, and a template that reaches through a list, such as `{{ .event.items.name }}` when `items` is a list, fails the whole mapping and the operator produces an error. Rule keys override the record's extracted keys. This is where event fields belong: the platform marks `data` as untrusted for the model and does not mark `prompt`. |
 | `questions` | No | List of typed decision questions. Mutually exclusive with `response_schema` and rule-level `max_tokens`; see [Decision questions](#decision-questions). |
 | `response_schema` | No | JSON Schema dictionary for structured output, passed through the provider's native structured-output API. Use a schema supported by your selected model/provider. |
 | `max_tokens` | No | Integer output token limit, 1–32768. Overrides the record's `max_tokens`; otherwise the record or service default (512) applies. |
@@ -387,9 +391,35 @@ Treat event fields as untrusted input: they can contain instructions designed to
 
 **Latency and cost:** `and` evaluates rules in order and short-circuits. Put `ask ai` last, after event type, platform and literal-field filters. An uncached evaluation waits for the model and consumes provider tokens. Keep the output limit as small as the complete answer allows and extract only the data the model needs. Response caching is bounded and scoped to the organization and the effective request, including the agent definition; it is an optimization, so even within the TTL an evicted entry or another service instance can make a new call. Setting `cache_ttl: 0` increases calls and cost. In-flight limits fail fast instead of queueing excess calls.
 
-Event data is sent to the configured provider. The same resource ACL egress restrictions as `start ai agent` apply, including data in the prompt and extraction mappings. Keep API credentials in [Hive Secrets](../7-administration/config-hive/secrets.md).
+Event data is sent to the configured provider. The same resource ACL egress restrictions as `start ai agent` apply, including data in the prompt and extraction mappings. On an event from a sensor tagged `acl:<scope>`, the operator produces an error and no match unless the rule's `acl_scopes` lists every scope on the sensor; see [Resource ACLs: D&R rules](../7-administration/access/resource-acls.md#dr-rules). Keep API credentials in [Hive Secrets](../7-administration/config-hive/secrets.md).
 
 **Testing and supported contexts:** saving a valid rule does not call the model. Save-time `tests:` and historical replay have no AI callback; when evaluation reaches `ask ai`, they report `ask ai is not supported in this context`. A test that short-circuits before `ask ai` can still validate earlier filters. Test the AI verdict on live events in a controlled organization. Mail signal and cloud posture policy rules reject this operator when saved.
+
+#### Using the answer in the response
+
+The answer is attached to the detection under `mtd.ai_agent_<name>`. Response templates read it from there:
+
+- In a `report` action's `detect_data` and `metadata`, the template context is the detection, so write `{{ .mtd.ai_agent_<name>.<field> }}`. The original event is at `.detect.event`.
+- An `extension request` or `service request` is built from the event unless it sets `based on report: true`. With it, the request is built from the detection the preceding `report` made, so the same `.mtd.ai_agent_<name>.<field>` paths work.
+- The report's `name` is templated against the event, so it cannot include the answer.
+
+Name the `ai_agent` record with letters, digits and underscores. Go templates cannot read a field name that contains a hyphen, so `{{ .mtd.ai_agent_cmdline-triage.verdict }}` fails. A record named `cmdline_triage` gives `{{ .mtd.ai_agent_cmdline_triage.verdict }}`.
+
+```yaml
+respond:
+  - action: report
+    name: ai-classified-command
+    detect_data:
+      ai_verdict: '{{ .mtd.ai_agent_cmdline_triage.verdict }}'
+      ai_reason: '{{ .mtd.ai_agent_cmdline_triage.reason }}'
+  - action: extension request
+    based on report: true
+    extension name: ext-example
+    extension action: record_verdict
+    extension request:
+      sid: '{{ .detect.routing.sid }}'
+      verdict: '{{ .mtd.ai_agent_cmdline_triage.verdict }}'
+```
 
 #### Decision questions
 
