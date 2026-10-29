@@ -549,6 +549,8 @@ Put the mapping and the sample data in one YAML or JSON file:
 - `indexing`: optional, the same content as `client_options.indexing`.
 - `hostname`: optional, the hostname to use when the mapping does not set one. Defaults to `validation-test`.
 
+A request can contain up to 10 MB of sample data (at most 1000 events), 100 mappings and 50 indexing rules, and must be processed within 30 seconds.
+
 Then run it with the platform the adapter uses (`client_options.platform`):
 
 === "Text with a regular expression"
