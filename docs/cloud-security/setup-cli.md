@@ -48,7 +48,8 @@ Cloud Security for free, with no trial and no expiry: up to **10 user accounts**
 **250 other resources** and **5 connections** across the organization, each
 connection covering a single AWS account, Google Cloud project or Azure
 subscription. The Overview page shows your usage, and
-[`GET /free-tier`](api-reference.md) reports the standing and limits.
+[`GET /free-tier`](api-reference.md) reports whether the organization is on the
+free tier and its connection limit.
 
 A connection that would push the organization over a limit is paused rather than
 partly synced: the reason appears as the provider's status in

@@ -87,6 +87,10 @@ findings look cleaner than they are.
   Its status in **Settings → Providers** explains why, for example:
   *this connection has 37 user accounts; the free tier covers 10 user accounts
   and 250 other resources across all connections*.
+- **Adding a connection can pause an existing one.** Because order follows the
+  connection name, a new connection whose name sorts earlier is evaluated first
+  and can use up the allowance, so a later connection that synced before is
+  paused even though it did not grow. Pick connection names with this in mind.
 - **A connection that was already syncing and then grows past the limit is
   paused too.** The same happens if an organization moves back to the free tier
   from a paid plan. Its last inventory is **kept but no longer updated**, and the
@@ -102,8 +106,8 @@ credential are untouched.
 
 The Cloud Security console shows how much of the allowance is used, for example
 *4 of 10 user accounts, 120 of 250 resources used*, and which connections are
-paused because of the limit. The free-tier standing is also available from the
-[`GET /free-tier`](api-reference.md) route.
+paused because of the limit. The [`GET /free-tier`](api-reference.md) route
+reports whether the organization is on the free tier and the connection limit.
 
 ### Choose what to connect
 
@@ -137,7 +141,8 @@ causes are:
 - The connection spans more than one subscription. On the free tier a connection
   covers a single subscription.
 - The organization already has **5 connections**.
-- An earlier connection, in alphabetical order, used the allowance first.
+- An earlier connection, in alphabetical order, used the allowance first. This
+  includes a connection you added after this one synced.
 
 Re-entering credentials does not lift a plan limit. Remove a connection you no
 longer need, narrow the connection to a single subscription, or upgrade.
@@ -149,8 +154,9 @@ Entra ID account, an Okta account and an AWS IAM user is three accounts.
 
 ### Why is a connection paused when it synced before?
 
-It grew past the limit, or the organization moved back to the free tier. Its last
-inventory is kept and shown as paused. It resumes by itself after you free up
+It grew past the limit, the organization moved back to the free tier, or a
+connection added since then sorts earlier by name and used the allowance first.
+Its last inventory is kept and shown as paused. It resumes by itself after you free up
 allowance or upgrade.
 
 ### Can I use a few user accounts and many cloud resources?
