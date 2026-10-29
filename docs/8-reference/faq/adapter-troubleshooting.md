@@ -146,9 +146,9 @@ text_input: |
 limacharlie usp validate --platform text --input-file test.yaml --output yaml
 ```
 
-Each result shows the `event_type`, `event_time`, `hostname` and the parsed `json_payload`. An empty `results` list means nothing parsed, which usually means the regular expression does not match the lines. For JSON sources, use `json_input` with a sample object instead of `text_input`.
+Each result shows the `event_type`, `event_time`, `hostname` and the parsed `json_payload`. A line that the regular expression does not match comes back with the whole line in `json_payload.text` and an empty `event_type`. For JSON sources, use `json_input` with a sample object instead of `text_input`. If the command fails with a generic `BACKEND_ERROR`, see [Common Validation Issues](../../2-sensors-deployment/adapters/usage.md#common-validation-issues).
 
-See [Parsing and Mapping](../../2-sensors-deployment/adapters/usage.md#parsing-and-mapping) for the options.
+See [Parsing and Mapping](../../2-sensors-deployment/adapters/usage.md#parsing-and-mapping) for the options and [Testing Parsing with Sample Data](../../2-sensors-deployment/adapters/usage.md#testing-parsing-with-sample-data) for the file format.
 
 ## Events have the wrong time
 

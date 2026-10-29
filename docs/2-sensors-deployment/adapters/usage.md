@@ -534,152 +534,125 @@ An empty result means the adapter has not delivered any events yet; the sensor m
 
 ## Validating Configurations
 
-Before deploying an adapter to production, you can validate your configuration and test parsing rules to ensure data will be correctly ingested.
-
-### Validating Adapter Configuration
-
-The adapter binary supports a `--validate` flag that checks your configuration without actually starting the adapter:
-
-```bash
-# Validate a YAML config file
-./lc_adapter --validate syslog config.yaml
-
-# Validate CLI parameters
-./lc_adapter --validate wel evt_sources=Security,System client_options.identity.oid=... client_options.identity.installation_key=... client_options.platform=wel
-```
-
-This will:
-
-1. Parse and validate the configuration structure
-2. Check for required fields (OID, installation key, platform, etc.)
-3. Report any configuration errors without connecting to LimaCharlie
-
-Exit codes:
-
-- `0`: Configuration is valid
-- `1`: Configuration has errors (details printed to stderr)
+Before deploying an adapter to production, test your parsing and mapping against sample data, then confirm the adapter itself starts and connects.
 
 ### Testing Parsing with Sample Data
 
-The adapter also supports a `--test-parsing` flag that sends sample data to the LimaCharlie validation API to verify your parsing rules work correctly:
+`limacharlie usp validate` sends sample data and a mapping to LimaCharlie, which runs them through the same parsing as live adapter data and returns the events it would produce. Nothing is ingested.
 
-```bash
-# Test parsing with a sample log file
-./lc_adapter --test-parsing sample.log syslog config.yaml
+Put the mapping and the sample data in one YAML or JSON file:
+
+- `mapping`: the same content as `client_options.mapping` in your adapter config. A `mapping` (or `mappings`) section with at least one setting is required.
+- `mappings`: a list of mappings, for configs that use `client_options.mappings`.
+- `text_input`: sample lines, one event per line. Use it for text-based platforms such as `text` or `cef`.
+- `json_input`: one sample object, or a list of them. Use it for JSON-based platforms such as `json`.
+- `indexing`: optional, the same content as `client_options.indexing`.
+- `hostname`: optional, the hostname to use when the mapping does not set one. Defaults to `validation-test`.
+
+Then run it with the platform the adapter uses (`client_options.platform`):
+
+=== "Text with a regular expression"
+
+    ```yaml
+    # test.yaml
+    mapping:
+      parsing_re: '^(?P<ts>\S+) (?P<host>\S+) (?P<action>\S+) (?P<msg>.*)$'
+      event_type_path: action
+      event_time_path: ts
+      sensor_hostname_path: host
+    text_input: |
+      2026-10-29T12:00:00Z fw01 DENY blocked 10.0.0.5 -> 8.8.8.8
+      2026-10-29T12:00:01Z fw01 ALLOW allowed 10.0.0.6 -> 1.1.1.1
+    ```
+
+    ```bash
+    limacharlie usp validate --platform text --input-file test.yaml --output yaml
+    ```
+
+=== "JSON"
+
+    ```yaml
+    # test.yaml
+    mapping:
+      event_type_path: action
+      event_time_path: ts
+      sensor_hostname_path: host
+    json_input:
+      - ts: 1793275200
+        host: web01
+        action: LOGIN
+        user: alice
+    ```
+
+    ```bash
+    limacharlie usp validate --platform json --input-file test.yaml --output yaml
+    ```
+
+=== "CEF"
+
+    ```yaml
+    # test.yaml
+    mapping:
+      event_type_path: _cef/evt_name
+    text_input: |
+      CEF:0|Security|threatmanager|1.0|100|worm successfully stopped|10|src=10.0.0.1 dst=2.1.2.2 spt=1232
+    ```
+
+    ```bash
+    limacharlie usp validate --platform cef --input-file test.yaml --output yaml
+    ```
+
+Each event in `results` shows what LimaCharlie would store. For the text example above:
+
+```yaml
+errors: []
+results:
+- event_time: 1793275200000
+  event_type: DENY
+  hostname: fw01
+  index_records: null
+  investigation_id: ''
+  json_payload:
+    action: DENY
+    host: fw01
+    msg: blocked 10.0.0.5 -> 8.8.8.8
+    ts: '2026-10-29T12:00:00Z'
+  sensor_key: ''
+  sid_ccs: null
+- ...
 ```
 
-This will:
+Things to check in the output:
 
-1. Read sample data from the specified file
-2. Send it to the LimaCharlie validation API with your mapping configuration
-3. Display the parsed events or any parsing errors
-4. Exit with error (code 1) if no events were parsed (likely misconfigured parsing rules)
-
-Exit codes:
-
-- `0`: Parsing successful, at least one event was parsed
-- `1`: Parsing failed (API errors) or no events were parsed
-
-Example successful output:
-
-```text
-starting
-loading config from file: config.yaml
-found 1 configs to run
-testing parsing with platform=text
-PARSING SUCCESSFUL
-
-Parsed 3 event(s):
-
-Event 1:
-  {
-    "event_type": "INFO",
-    "hostname": "server01",
-    "json_payload": {
-      "hostname": "server01",
-      "level": "INFO",
-      "message": "User login successful"
-    }
-  }
-```
-
-Example error output when no events are parsed (e.g., regex doesn't match):
-
-```text
-starting
-loading config from file: config.yaml
-found 1 configs to run
-testing parsing with platform=text
-PARSING FAILED
-
-WARNING: No events were parsed from the sample data.
-
-This usually indicates one of the following issues:
-  - The parsing_re regex does not match the input format
-  - The platform type does not match the data format
-  - The sample data is empty or contains only whitespace
-
-Suggestions:
-  - Verify your parsing_re regex matches the sample data
-  - Check that the platform matches your data format (text, json, cef, etc.)
-  - Ensure the sample file contains valid log data
-parsing test failed: no events parsed from sample data
-```
-
-**Note**: The config must contain a valid API key (not just an installation key) in `client_options.identity.installation_key` for API authentication.
-
-### Testing Parsing via Python CLI
-
-You can also test parsing using the LimaCharlie Python CLI:
-
-```bash
-# Validate with a text file containing sample logs
-limacharlie usp validate --platform text --mapping-file mapping.yaml --input-file sample.log
-
-# Validate CEF parsing with inline sample data
-limacharlie usp validate --platform cef --mapping-file cef-mapping.yaml --input "CEF:0|Security|threatmanager|1.0|100|worm|10|src=192.168.1.1"
-
-# Validate JSON parsing
-limacharlie usp validate --platform json --mapping-file mapping.yaml --input-file sample.json --json-input
-
-# Output parsed events as JSON for inspection
-limacharlie usp validate --platform text --mapping-file mapping.yaml --input-file sample.log --output-format json
-```
-
-The validation API processes your sample data through the actual parsing engine and returns:
-
-- **On success**: Parsed events showing how data will be transformed
-- **On failure**: Specific error messages indicating what went wrong
+- A line that `parsing_re` does not match is not rejected. It comes back with the whole line in `json_payload.text` and an empty `event_type`. If every result looks like that, the regular expression does not match your data.
+- `event_time: 0` means `event_time_path` is not set, or its value could not be parsed as a time. Live events in that case get the time at which the adapter read them.
+- `index_records` lists the values LimaCharlie indexes for searching, such as the IP addresses in the CEF example.
+- `errors` lists events that could not be processed at all, for example when a [Transform](#configurations) fails.
 
 ### Common Validation Issues
 
-| Issue | Cause | Solution |
-|-------|-------|----------|
-| `missing platform` | No `platform` field in client_options | Add `client_options.platform` (e.g., `text`, `json`, `cef`) |
-| `missing oid` | No organization ID configured | Add `client_options.identity.oid` |
-| `missing installation_key` | No installation key configured | Add `client_options.identity.installation_key` |
-| `regex pattern did not match` | Parsing regex doesn't match input format | Test regex against actual sample data |
-| `no events parsed from sample data` | Regex doesn't match, wrong platform, or empty input | Verify parsing_re matches your data, check platform type, ensure sample file has content |
+When the request itself is invalid, the command fails with `API error (400)` and a generic `BACKEND_ERROR`, without saying what is wrong. Check these causes:
+
+| Cause | Fix |
+|-------|-----|
+| No `mapping` or `mappings` section, or an empty one (`mapping: {}`) | Add a mapping with at least one setting, such as `event_type_path`. |
+| `parsing_re` or `parsing_grok` does not compile | Fix the expression. Unbalanced parentheses are the usual cause. |
+| No sample data, or both `text_input` and `json_input` | Provide exactly one of them. |
+| `--platform` is not a known platform | Use the same value as `client_options.platform`, for example `text`, `json` or `cef`. |
+
+### Checking the Adapter Configuration
+
+The adapter checks its configuration when it starts, and exits with an error if something is missing or invalid, for example `missing oid`, `missing installation_key` or `missing platform`. It has no dry-run mode. To check a new configuration, run the adapter in the foreground and look for:
+
+1. The `Configs in use` block, which shows the configuration the adapter actually loaded.
+2. A `usp-client connected` line, which means LimaCharlie accepted the connection.
+
+If the adapter exits or does not connect, see [Adapter Troubleshooting](../../8-reference/faq/adapter-troubleshooting.md) for the error messages and their fixes. To see which fields an adapter type accepts, use `limacharlie cloud-adapter schema --type <type>` (see [Discovering adapter types](#discovering-adapter-types-and-finding-an-adapters-sensor)).
 
 ### SDK Validation
 
-For programmatic validation, the Python SDK provides the `validateUSP` method:
+The Python SDK runs the same validation with `USP.validate()`:
 
 ```python
-from limacharlie import Manager
-
-manager = Manager()
-result = manager.validateUSP(
-    platform='text',
-    mapping={
-        'parsing_re': r'(?P<timestamp>\S+) (?P<message>.*)',
-        'event_type_path': 'event_type'
-    },
-    text_input='2024-01-01T12:00:00Z Test message\n2024-01-01T12:00:01Z Another message'
-)
-
-if result.get('errors'):
-    print('Validation failed:', result['errors'])
-else:
-    print('Parsed events:', result['results'])
+--8<-- "snippets/python/usp_validate.py"
 ```

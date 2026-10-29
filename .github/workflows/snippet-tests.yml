@@ -85,5 +85,6 @@ jobs:
           from limacharlie.sdk.hive import Hive, HiveRecord
           from limacharlie.sdk.cloudsec import CloudSec
           from limacharlie.sdk.sensor import Sensor
+          from limacharlie.sdk.usp import USP
           print("SDK import paths used by the documentation snippets all resolve.")
           PY
