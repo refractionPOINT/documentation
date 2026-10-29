@@ -7,6 +7,7 @@ Adapters enable log ingestion from external sources into LimaCharlie. They trans
 - [Deployment Guide](deployment.md) - How to deploy adapters
 - [Adapters as a Service](as-a-service.md) - Cloud-managed adapter deployment
 - [Usage & Configuration](usage.md) - Configuration options and best practices
+- [Troubleshooting](../../8-reference/faq/adapter-troubleshooting.md) - Diagnose adapters that fail to start, connect or send data
 
 ## Adapter Types
 
@@ -98,4 +99,5 @@ Adapters enable log ingestion from external sources into LimaCharlie. They trans
 
 - [Adapter Deployment](deployment.md)
 - [Adapters as a Service](as-a-service.md)
+- [Adapter Troubleshooting](../../8-reference/faq/adapter-troubleshooting.md)
 - [Outputs](../../5-integrations/outputs/index.md)
