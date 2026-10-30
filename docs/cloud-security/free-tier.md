@@ -215,8 +215,9 @@ free up allowance or upgrade.
 
 An Azure or AWS connection also pauses when its credential can no longer see
 the configured subscription or account, for example after its Azure Reader
-access was removed. Fix the ID or the access and it retries automatically within about
-a day; correcting the subscription ID starts a fresh sync right away.
+access was removed. Fix the ID or the access and it retries automatically
+within about a day; correcting the subscription ID starts a fresh sync right
+away.
 
 ### Can I use a few user accounts and many cloud resources?
 
