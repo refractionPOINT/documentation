@@ -81,20 +81,19 @@ Cloud project or a single Azure subscription.
   to scan the member accounts of an AWS Organization. The connection's status
   explains which rule paused it and suggests connecting a single account,
   project or subscription, or upgrading.
-- **An Azure connection must be able to read the subscription it names.** If the
-  subscription ID is wrong, or the credential has no access to it, Cloud
-  Security pauses the connection before collecting anything when Azure
-  successfully lists subscriptions but does not include that ID. It never syncs
-  another subscription instead. The connection's pause message names the
-  subscription and asks you to check the ID or grant Reader access. If listing
-  subscriptions fails, Cloud Security attempts only the configured subscription
-  and reports any collection errors normally.
-
-An AWS connection also pauses without syncing anything if a successful account
-list does not include the account from its configured role as active. Its pause
-message names the account and asks you to check the role and its access. If the
-optional account-list request fails, Cloud Security attempts only the role's own
-account.
+- **An Azure connection must be able to read the subscription it names.** If
+  Azure lists the credential's subscriptions and the named one is not among
+  them, Cloud Security pauses the connection before collecting anything. It
+  never syncs another subscription instead. The pause message names the
+  subscription and asks you to check the ID or grant Reader access. If the
+  subscription list cannot be read, Cloud Security attempts only the configured
+  subscription and shows any collection errors on the connection as usual.
+- **An AWS connection covers its role's own, active account.** When the role can
+  list its AWS Organization's accounts but its own account is missing or not
+  active (for example, suspended), the connection pauses without syncing
+  anything. Its message names the account and asks you to check the configured
+  role, the account's status and its access. If the Organization's account list
+  cannot be read, Cloud Security attempts only the role's own account.
 
 Saving a connection scoped to a Google Cloud organization or folder, or one that
 sets up AWS member-account scanning, is rejected with an explanation of the
@@ -119,10 +118,11 @@ findings look cleaner than they are.
 - **Every pause shows its reason on the connection itself**, whichever rule
   caused it: a user or resource limit, a connection scoped to more than one
   account, project or subscription, an unreadable configured subscription or an
-  account missing from the active account list, or more than 5 connections (only
-  the first 5 by name are collected). A plan-limit pause means the connection
-  has reached a free-tier limit. A configured-scope pause instead asks you to
-  check the scope ID or its access. The
+  AWS account not shown as active in its Organization, or more than 5
+  connections (only the first 5 by name are collected). A plan-limit pause means the connection
+  has reached a free-tier limit; it does not by itself mean the credential
+  failed. A pause for the configured subscription or account instead asks you
+  to check its ID, status or access. The
   connection's status in the `scan-status` API carries the same explanation as
   its error, with the sync not running.
 - **Adding a connection can pause an existing one.** Because order follows the
@@ -143,7 +143,9 @@ findings look cleaner than they are.
   for it, for example when you remove another connection. A connection paused
   because it is too large is otherwise counted again about once a day, so after
   you remove users or resources at the provider it can take up to a day to
-  resume.
+  resume. After you fix access or an account's status for a configured-scope
+  pause, the automatic retry can also take up to about a day. Correcting the
+  configured subscription ID starts a fresh sync.
 
 Nothing is deleted when a connection is paused, and its configuration and
 credential are untouched.
