@@ -83,9 +83,18 @@ Cloud project or a single Azure subscription.
   project or subscription, or upgrading.
 - **An Azure connection must be able to read the subscription it names.** If the
   subscription ID is wrong, or the credential has no access to it, Cloud
-  Security cannot narrow the connection to that subscription and does not sync
-  it as named. Check the ID and give the credential Reader access to that
-  subscription.
+  Security pauses the connection before collecting anything when Azure
+  successfully lists subscriptions but does not include that ID. It never syncs
+  another subscription instead. The connection's pause message names the
+  subscription and asks you to check the ID or grant Reader access. If listing
+  subscriptions fails, Cloud Security attempts only the configured subscription
+  and reports any collection errors normally.
+
+An AWS connection also pauses without syncing anything if a successful account
+list does not include the account from its configured role as active. Its pause
+message names the account and asks you to check the role and its access. If the
+optional account-list request fails, Cloud Security attempts only the role's own
+account.
 
 Saving a connection scoped to a Google Cloud organization or folder, or one that
 sets up AWS member-account scanning, is rejected with an explanation of the
@@ -109,9 +118,11 @@ findings look cleaner than they are.
   allowance is left for it.
 - **Every pause shows its reason on the connection itself**, whichever rule
   caused it: a user or resource limit, a connection scoped to more than one
-  account, project or subscription, or more than 5 connections (only the first 5
-  by name are collected). A paused connection is not a failed one: its
-  credentials are fine and nothing is wrong with the connection. The
+  account, project or subscription, an unreadable configured subscription or an
+  account missing from the active account list, or more than 5 connections (only
+  the first 5 by name are collected). A plan-limit pause means the connection
+  has reached a free-tier limit. A configured-scope pause instead asks you to
+  check the scope ID or its access. The
   connection's status in the `scan-status` API carries the same explanation as
   its error, with the sync not running.
 - **Adding a connection can pause an existing one.** Because order follows the
