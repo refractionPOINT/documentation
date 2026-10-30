@@ -127,8 +127,9 @@ findings look cleaner than they are.
   paused sync, up to **10 user accounts** and **250 other resources**. If the
   sync stopped before it could count everything, the full allowance is reserved
   for any count that is incomplete. Connections that sort after it do not gain
-  that room while it is paused. Disabling or removing the
-  connection frees the reservation.
+  that room while it is paused. The reservation can use the whole allowance
+  and pause later connections that were already syncing. Disabling or removing
+  the connection frees the reservation.
 - **Paused connections are re-checked and resume on their own.** After the
   organization upgrades, a paused connection syncs again within about 15
   minutes, with no action on your part. The same happens when allowance is freed
