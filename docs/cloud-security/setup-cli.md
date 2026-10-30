@@ -52,10 +52,15 @@ subscription. The Overview page shows your usage, and
 free tier and its connection limit.
 
 A connection that would push the organization over a limit is paused rather than
-partly synced: the reason appears as the provider's status in
-**Settings → Providers** and in `scan-status`. Nothing is deleted and none of
-your configuration is touched, so upgrading, or freeing allowance by removing
-another connection, resumes collection within minutes. See
+partly synced: the reason appears on the connection in **Settings → Providers**
+and as that connection's error in `scan-status`, with the sync not running. The
+same applies to a connection scoped to a Google Cloud organization or folder, or
+to an AWS Organization's member accounts, and to connections beyond the fifth.
+A connection that names one Azure subscription, or an AWS role in one account,
+syncs just that scope even if its credential can see more. Nothing is deleted
+and none of your configuration is touched, so upgrading resumes collection
+within about 15 minutes, as does freeing allowance by removing another
+connection. See
 [free tier and limits](free-tier.md).
 
 ## 2. Connect a provider

@@ -30,8 +30,9 @@ collected data; an empty findings list does not by itself prove collection worke
     connections**, each connection covering a single AWS account, Google Cloud
     project or Azure subscription. It is enough for a home lab or learning
     environment. A connection that would go over a limit is paused rather than
-    partly synced. Review the status in **Settings → Providers** and the usage
-    shown in Overview before expanding your setup. See
+    partly synced, and the reason is shown on the connection. Review the status
+    in **Settings → Providers** and the usage shown in Overview before expanding
+    your setup. See
     [free tier and limits](free-tier.md).
 
 ## 1. Enable Cloud Security
@@ -142,7 +143,7 @@ to inspect **Status**, **Resources**, and **Last sync**.
 |---|---|
 | Queued or in progress | Allow time for collection. Large accounts take longer than small ones. |
 | Failed | Read the provider error, edit the connection or grants, and run Test Provider again. |
-| Paused over a free-tier limit | Read the message on the connection and check your usage against the [free-tier limits](free-tier.md). Re-entering credentials will not remove a plan limit. |
+| Paused over a free-tier limit | Read the message on the connection (a user or resource limit, a scope that spans several accounts, projects or subscriptions, or more than 5 connections) and check your usage against the [free-tier limits](free-tier.md). Re-entering credentials will not remove a plan limit. Upgrading resumes the connection within about 15 minutes. |
 | Completed, with resources | Open Inventory and confirm a resource you recognize. |
 | Completed, but no expected resources | Check account/project IDs, scope, and optional permission failures. A successful credential check does not guarantee access to everything you intended. |
 

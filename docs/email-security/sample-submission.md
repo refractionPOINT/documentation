@@ -151,8 +151,8 @@ surviving copy and metadata are deleted and the response says `withdrawn: true`.
 ## If the organization is deleted
 
 Deleting the organization (the Email Security tenant purge) deletes all of its
-submissions too. The automatic deletion that follows an unsubscribe or a trial
-lapse is the same tenant purge, so it deletes submissions as well. See
+submissions too. The automatic deletion that follows an unsubscribe
+is the same tenant purge, so it deletes submissions as well. See
 [Data retention and deletion](policy.md#data-retention-and-deletion).
 
 ## From the command line

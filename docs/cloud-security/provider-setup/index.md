@@ -14,7 +14,9 @@ extension (step 1 of
     project or Azure subscription, and limits apply across all connections.
     Where a guide below describes an AWS Organization, a Google Cloud
     organization or folder, or several Azure subscriptions, that scope needs a
-    paid plan. See [free tier and limits](../free-tier.md).
+    paid plan: name one account, project or subscription, and only that one
+    syncs. A connection scoped to a Google Cloud organization or folder is
+    refused. See [free tier and limits](../free-tier.md).
 
 ## Pick your platform
 

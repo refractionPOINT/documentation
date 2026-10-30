@@ -35,25 +35,20 @@ create automation policy records. With no automation policy, automatic actions
 are off; a new automation rule defaults to `alert_only`, so it records intent
 without moving mail. See [Policy Reference](policy.md).
 
-!!! info "Free trial: 14 days, 25 mailboxes"
-    An organization on the LimaCharlie free tier gets Email Security in full for
-    **14 days** and protects up to **25 mailboxes** while it does. Every feature
-    is the same as on a paid plan; only the duration and the mailbox count
-    differ. The clock starts the day you subscribe and **does not restart if you
-    unsubscribe and resubscribe**, so point the 25 at the mailboxes that matter
-    — start with the executives, finance and the abuse mailbox.
-
-    When the trial ends, ingestion pauses and nothing is deleted; the data is
-    removed after a **30-day purge grace period** unless the organization moves
-    off the free tier before the purge, and
-    you are told before that happens. The full rules, and the exact fields to
-    read the countdown from, are in
-    [Plans, the free trial, and the mailbox cap](policy.md#plans-the-free-trial-and-the-mailbox-cap).
+!!! info "Free tier: up to 10 mailboxes, forever"
+    An organization on the LimaCharlie free tier gets Email Security in full and
+    protects up to **10 mailboxes**, with no trial period and no expiry. Every
+    feature is the same as on a paid plan; only the mailbox count differs.
+    Mailboxes beyond 10 are not protected, so point the 10 at the mailboxes that
+    matter — start with the executives, finance and the abuse mailbox. The full
+    rules are in
+    [Plans, the free tier, and the mailbox cap](policy.md#plans-the-free-tier-and-the-mailbox-cap).
 
     The free tier means a configured sensor quota of **2 or less**. Raising it
-    above **2** moves the organization to a paid plan, lifts the trial limits,
-    and starts usage billing. Check `mailsec coverage` and its `entitlement`
-    block for the trial countdown and any scheduled deletion.
+    above **2** moves the organization to a paid plan, lifts the mailbox cap, and
+    bills **every** protected mailbox at $1 per month. Check `mailsec coverage`
+    and its `entitlement` block for the plan, the mailbox counts and any
+    scheduled deletion.
 
 ## 2. Grant the permissions
 
@@ -259,26 +254,26 @@ parse-degradation rate, backfill progress, the emission backlog, open reports,
 active campaigns, and the effective automation mode.
 
 It also carries an `entitlement` block: which plan the organization is on, when
-a trial ends, how many mailboxes it may protect against how many it is
-protecting, and — if one is scheduled — the date its Email Security data will be
-deleted and what cancels it. On a trial organization this is where you check
-that the 25 mailboxes are the 25 you meant:
+how many mailboxes it may protect against how many it is protecting, and — if
+one is scheduled — the date its Email Security data will be deleted and what
+cancels it. On a free organization this is where you check that the 10 mailboxes
+are the 10 you meant:
 
 ```yaml
 entitlement:
-  plan: trial
-  trial_ends_at: "2026-09-20T14:02:11Z"
-  trial_days_remaining: 12
-  mailbox_cap: 25
-  mailboxes_active: 25
-  mailboxes_over_cap: 118        # discovered, not protected
+  resolved: true
+  plan: free
+  mailbox_cap: 10
+  mailbox_cap_enforced: true
+  mailboxes_active: 10
+  mailboxes_over_cap: 118        # found, not protected
   mailbox_cap_reached: true
 ```
 
 `mailboxes_over_cap` is the number that matters: those mailboxes were found and
-are not being watched. Narrow the connection's `scope`, or move off the free
-tier. See
-[Plans, the free trial, and the mailbox cap](policy.md#plans-the-free-trial-and-the-mailbox-cap).
+are not being watched. Narrow the connection's `scope`, or raise the sensor quota
+above 2. See
+[Plans, the free tier, and the mailbox cap](policy.md#plans-the-free-tier-and-the-mailbox-cap).
 
 !!! note "Backfill is judged, and acts on nothing"
     On connection, the collector walks up to `ingest.backfill_days` (14 by

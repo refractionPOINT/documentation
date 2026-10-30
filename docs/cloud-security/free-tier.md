@@ -67,12 +67,28 @@ Things you do not own, or that come built in, do not use any of your allowance:
 ### One scope per connection
 
 On the free tier, each connection covers a single AWS account, a single Google
-Cloud project or a single Azure subscription. A connection that fans out across
-several accounts, projects or subscriptions is not available on the free tier:
-that means an AWS Organization, a Google Cloud organization or folder, or an
-Azure management group or multiple subscriptions. Create one connection per
-account, project or subscription instead, up to the 5-connection limit, or move
-to a paid plan.
+Cloud project or a single Azure subscription.
+
+- **A connection that names one scope syncs just that scope.** If an Azure
+  connection names one subscription, only that subscription syncs, even when the
+  credential can see others. An AWS connection syncs only the account its role
+  belongs to, even when that is the management account of an AWS Organization.
+  The other accounts and subscriptions the credential can see are not scanned
+  and do not count toward your allowance.
+- **A connection that spans many scopes is paused.** That means a Google Cloud
+  connection scoped to an organization or a folder, an AWS connection set up to
+  scan the member accounts of an AWS Organization, and an Azure connection that
+  does not name a subscription while its credential can see several. The
+  connection shows the message *Free tier connections cover a single AWS account,
+  GCP project or Azure subscription, and this connection is scoped to a GCP
+  organization. Upgrade from the free tier to scan multiple accounts or
+  projects, or connect a single account / project / subscription instead.*
+
+Saving a connection scoped to a Google Cloud organization or folder, or one that
+sets up AWS member-account scanning, is rejected with the same explanation, and
+so is saving a sixth connection. To cover more than one account, project or
+subscription, create one connection per account, project or subscription, up to
+the 5-connection limit, or move to a paid plan.
 
 ## What happens at the limit
 
@@ -87,6 +103,13 @@ findings look cleaner than they are.
   Its status in **Settings → Providers** explains why, for example:
   *this connection has 37 user accounts; the free tier covers 10 user accounts
   and 250 other resources across all connections*.
+- **Every pause shows its reason on the connection itself**, whichever rule
+  caused it: a user or resource limit, a connection scoped to more than one
+  account, project or subscription, or more than 5 connections (only the first 5
+  by name are collected). A paused connection is not a failed one: its
+  credentials are fine and nothing is wrong with the connection. The same
+  message is the connection's error in the `scan-status` API, with the sync not
+  running.
 - **Adding a connection can pause an existing one.** Because order follows the
   connection name, a new connection whose name sorts earlier is evaluated first
   and can use up the allowance, so a later connection that synced before is
@@ -96,8 +119,9 @@ findings look cleaner than they are.
   from a paid plan. Its last inventory is **kept but no longer updated**, and the
   connection shows as paused, so stale data is not mistaken for current data.
 - **Paused connections are re-checked periodically and resume on their own.**
-  That happens within minutes of the organization upgrading, and whenever
-  allowance is freed, for example when you remove another connection.
+  After the organization upgrades, a paused connection syncs again within about
+  15 minutes, with no action on your part. The same happens when allowance is
+  freed, for example when you remove another connection.
 
 Nothing is deleted when a connection is paused, and its configuration and
 credential are untouched.
@@ -121,7 +145,7 @@ Raise the organization's configured sensor quota above **2**, to at least 3, on
 the console's billing page. With Cloud Security subscribed:
 
 - the user, resource, connection and single-scope limits no longer apply
-- paused connections resume automatically, within minutes
+- paused connections resume automatically, within about 15 minutes
 - usage is billed as described in
   [security product billing](../7-administration/billing/security-products.md)
 
@@ -138,14 +162,16 @@ causes are:
 - The connection would push the organization past **10 user accounts** or
   **250 other resources**. An Azure subscription backed by a busy Entra tenant
   is the usual cause, because every user and guest in the directory counts.
-- The connection spans more than one subscription. On the free tier a connection
-  covers a single subscription.
+- The connection does not name a subscription and its credential can see more
+  than one. On the free tier a connection covers a single subscription. If the
+  connection names one subscription, only that one syncs, even when the
+  credential can see others.
 - The organization already has **5 connections**.
 - An earlier connection, in alphabetical order, used the allowance first. This
   includes a connection you added after this one synced.
 
 Re-entering credentials does not lift a plan limit. Remove a connection you no
-longer need, narrow the connection to a single subscription, or upgrade.
+longer need, name a single subscription on the connection, or upgrade.
 
 ### Why is the number of user accounts higher than the number of people?
 

@@ -19,22 +19,26 @@ days on which that coverage is protected.
 The existing Cloud Security base fee applies separately from daily repository
 usage charges.
 
-## Email Security free-tier trial
+## Email Security free tier
 
 An organization is on the LimaCharlie free tier when its **configured sensor
-quota is 2 or less**. Email Security receives a limited **14-day trial** on the
-free tier. Organizations with a sensor quota above **2** are on a paid plan and
-usage is billed.
+quota is 2 or less**, like the two free sensors of the Community Edition.
+Email Security has a **perpetual** free allowance for these organizations:
 
-| Product | Trial limits | At expiry | Purge grace period |
-|---|---|---|---|
-| Email Security | **25 protected mailboxes per organization**, across all connections | Collection pauses; configuration is kept | **30 days** |
+- Up to **10 protected mailboxes per organization**, across all mail connections.
+- No trial, no expiry, no pause. The allowance lasts as long as the organization
+  stays on the free tier.
+- Free tier only. An organization with a sensor quota above **2** is on a paid
+  plan and every protected mailbox is billed.
+- **Mailboxes beyond 10 are not protected.** If a free organization has more than
+  10 protected mailboxes, for example after moving down from a paid plan, the
+  extras are moved out of protection and 10 stay protected. Mail that was
+  already analyzed is not deleted.
 
-Data is removed after the purge grace period unless the organization moves off
-the free tier before the purge. The grace period starts when the cleanup process
-observes trial expiry; deletion runs asynchronously. Normal data-retention
-policies continue to apply during the grace period. Unsubscribing and
-resubscribing does not restart the trial.
+To protect more than 10 mailboxes, raise the sensor quota above 2 (see
+[Moving to a paid plan](#moving-to-a-paid-plan)). From then on, **every**
+protected mailbox is billed at $1 per month, including the first 10: the free
+allowance is not subtracted from the bill, the same as sensors.
 
 ## Cloud Security free tier
 
@@ -56,24 +60,27 @@ The limits are counted across **all** of the organization's connections combined
   organization) and **5 container images** (per organization) for hosted
   scanning.
 
-A connection that would exceed the user or resource limit is paused rather than
-partly synced, and resumes automatically when the organization upgrades or
+A connection that would exceed the user or resource limit, or that is scoped to
+more than one account, project or subscription (a connection that names a single
+Azure subscription or AWS account syncs just that one), is paused rather than
+partly synced. The reason is shown on the connection, and it resumes
+automatically within about 15 minutes of the organization upgrading, or when
 allowance is freed. What counts, what does not, and what happens at the limit
 are in [Cloud Security free tier and limits](../../cloud-security/free-tier.md).
 
 ## Moving to a paid plan
 
-Raise the organization's configured sensor quota above **2** to move off the
-free tier. With the extension subscription in place:
+Raise the organization's configured sensor quota above **2** (to at least 3) to
+move off the free tier. With the extension subscription in place:
 
-- **Email Security**: this lifts the trial limits, allows collection to resume,
-  and starts usage billing. Upgrading before the purge cancels deletion
-  scheduled because the trial expired.
-- **Cloud Security and Code Security**: this lifts the free-tier limits, resumes
-  any connection paused by a limit within minutes, and starts usage billing.
+- **Email Security**: the 10-mailbox cap is lifted and every protected mailbox is
+  billed.
+- **Cloud Security and Code Security**: the free-tier limits are lifted, any
+  connection paused by a limit resumes within about 15 minutes, and usage billing
+  starts.
 
 See [Email Security getting started](../../email-security/getting-started.md),
-[Email Security trial details](../../email-security/policy.md#plans-the-free-trial-and-the-mailbox-cap),
+[Email Security plans and the mailbox cap](../../email-security/policy.md#plans-the-free-tier-and-the-mailbox-cap),
 and [Code Security getting started](../../cloud-security/code-security/getting-started.md)
 for setup instructions, and
 [Cloud Security free tier and limits](../../cloud-security/free-tier.md) for the
