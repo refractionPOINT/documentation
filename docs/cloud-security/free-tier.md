@@ -148,7 +148,7 @@ findings look cleaner than they are.
   you remove users or resources at the provider it can take up to a day to
   resume. After you fix access for a configured-scope pause, the automatic
   retry can also take up to about a day. Correcting the configured
-  subscription ID starts a fresh sync.
+  subscription ID or role ARN starts a fresh sync right away.
 
 Nothing is deleted when a connection is paused, and its configuration and
 credential are untouched.
