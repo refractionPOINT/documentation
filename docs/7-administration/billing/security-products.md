@@ -19,16 +19,34 @@ days on which that coverage is protected.
 The existing Cloud Security base fee applies separately from daily repository
 usage charges.
 
-## Free-tier trials
+## Email Security free tier
 
 An organization is on the LimaCharlie free tier when its **configured sensor
-quota is 2 or less**. These organizations receive a limited **14-day trial**.
-Organizations with a sensor quota above **2** are on a paid plan and usage is
-billed.
+quota is 2 or less**, like the two free sensors of the Community Edition.
+Email Security has a **perpetual** free allowance for these organizations:
+
+- Up to **10 protected mailboxes per organization**, across all mail connections.
+- No trial, no expiry, no pause. The allowance lasts as long as the organization
+  stays on the free tier.
+- Free tier only. An organization with a sensor quota above **2** is on a paid
+  plan and every protected mailbox is billed.
+- **Mailboxes beyond 10 are not protected.** If a free organization has more than
+  10 protected mailboxes, for example after moving down from a paid plan, the
+  extras are moved out of protection and 10 stay protected. Mail that was
+  already analyzed is not deleted.
+
+To protect more than 10 mailboxes, raise the sensor quota above 2 (see
+[Moving to a paid plan](#moving-to-a-paid-plan)). From then on, **every**
+protected mailbox is billed at $1 per month, including the first 10: the free
+allowance is not subtracted from the bill, the same as sensors.
+
+## Cloud Security and Code Security free-tier trials
+
+On the same free tier, Cloud Security and Code Security receive a limited
+**14-day trial**.
 
 | Product | Trial limits | At expiry | Purge grace period |
 |---|---|---|---|
-| Email Security | **25 protected mailboxes per organization**, across all connections | Collection pauses; configuration is kept | **30 days** |
 | Code Security / Cloud Security | **2 provider connections**, **10 repositories per connection**, **5 container images per organization** for hosted scanning | Collection and hosted scanning pause; provider configuration and policies are kept | **7 days** |
 
 Data is removed after the purge grace period unless the organization moves off
@@ -39,13 +57,17 @@ resubscribing does not restart the trial.
 
 ## Moving to a paid plan
 
-Raise the organization's configured sensor quota above **2** to move off the
-free tier. With the extension subscription in place, this lifts the trial
-limits, allows collection or scanning to resume, and starts usage billing.
-Upgrading before the purge cancels deletion scheduled because the trial expired.
+Raise the organization's configured sensor quota above **2** (to at least 3) to
+move off the free tier. With the extension subscription in place:
+
+- **Email Security**: the 10-mailbox cap is lifted and every protected mailbox is
+  billed.
+- **Cloud Security and Code Security**: the trial limits are lifted, collection
+  or scanning resumes, and usage billing starts. Upgrading before the purge
+  cancels deletion scheduled because the trial expired.
 
 See [Email Security getting started](../../email-security/getting-started.md),
-[Email Security trial details](../../email-security/policy.md#plans-the-free-trial-and-the-mailbox-cap),
+[Email Security plans and the mailbox cap](../../email-security/policy.md#plans-the-free-tier-and-the-mailbox-cap),
 and [Code Security getting started](../../cloud-security/code-security/getting-started.md)
 for setup instructions. [Billing options](options.md) explains organization and
 unified billing.
