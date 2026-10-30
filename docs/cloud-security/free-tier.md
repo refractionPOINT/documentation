@@ -88,12 +88,12 @@ Cloud project or a single Azure subscription.
   subscription and asks you to check the ID or grant Reader access. If the
   subscription list cannot be read, Cloud Security attempts only the configured
   subscription and shows any collection errors on the connection as usual.
-- **An AWS connection covers its role's own, active account.** When the role can
-  list its AWS Organization's accounts but its own account is missing or not
-  active (for example, suspended), the connection pauses without syncing
-  anything. Its message names the account and asks you to check the configured
-  role, the account's status and its access. If the Organization's account list
-  cannot be read, Cloud Security attempts only the role's own account.
+- **An AWS connection covers its role's own account.** When the role can list
+  its AWS Organization's accounts but its own account is missing, the connection
+  pauses without syncing anything. Its message names the account and asks you
+  to check the configured role and its access. If the Organization's account
+  list cannot be read, Cloud Security attempts only the role's own account.
+
 
 Saving a connection scoped to a Google Cloud organization or folder, or one that
 sets up AWS member-account scanning, is rejected with an explanation of the
@@ -118,11 +118,11 @@ findings look cleaner than they are.
 - **Every pause shows its reason on the connection itself**, whichever rule
   caused it: a user or resource limit, a connection scoped to more than one
   account, project or subscription, an unreadable configured subscription or an
-  AWS account not shown as active in its Organization, or more than 5
+  AWS account missing from its Organization's account list, or more than 5
   connections (only the first 5 by name are collected). A plan-limit pause means the connection
   has reached a free-tier limit; it does not by itself mean the credential
   failed. A pause for the configured subscription or account instead asks you
-  to check its ID, status or access. The
+  to check its ID or access. The
   connection's status in the `scan-status` API carries the same explanation as
   its error, with the sync not running.
 - **Adding a connection can pause an existing one.** Because order follows the
@@ -143,7 +143,7 @@ findings look cleaner than they are.
   for it, for example when you remove another connection. A connection paused
   because it is too large is otherwise counted again about once a day, so after
   you remove users or resources at the provider it can take up to a day to
-  resume. After you fix access or an account's status for a configured-scope
+  resume. After you fix access for a configured-scope
   pause, the automatic retry can also take up to about a day. Correcting the
   configured subscription ID starts a fresh sync.
 
