@@ -122,10 +122,11 @@ findings look cleaner than they are.
   paused too.** The same happens if an organization moves back to the free tier
   from a paid plan. Its last inventory is **kept but no longer updated**, and the
   connection shows as paused, so stale data is not mistaken for current data.
-  When a free-tier connection grows past the limit, the allowance used by its
-  last successful sync stays reserved: connections that sort after it do not
-  gain that room while it is paused. Disabling or removing the connection frees
-  it.
+  The allowance used by its last successful free-tier sync stays reserved.
+  After a paid plan, the reservation is based on what the paused sync observed,
+  up to **10 user accounts** and **250 other resources**. Connections that sort
+  after it do not gain that room while it is paused. Disabling or removing the
+  connection frees the reservation.
 - **Paused connections are re-checked and resume on their own.** After the
   organization upgrades, a paused connection syncs again within about 15
   minutes, with no action on your part. The same happens when allowance is freed
