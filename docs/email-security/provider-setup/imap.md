@@ -94,13 +94,15 @@ then all mailboxes go into one `mailsec_provider` record.
 
 === "CLI"
 
-    Store one secret per mailbox. `jq -Rs` builds the secret record's envelope
-    without putting the password in process arguments:
+    Store one secret per mailbox. `read -rs` takes the password without echoing it
+    or saving it in shell history, and `jq` builds the secret record's envelope and
+    escapes any special characters, without the password appearing in process
+    arguments:
 
     ```bash
-    printf '{"password":"abcd efgh ijkl mnop"}' \
-      | jq -Rs '{secret: .}' \
-      | limacharlie secret set --key imap-alice --enabled --oid $OID
+    read -rs IMAP_PASSWORD; printf %s "$IMAP_PASSWORD" \
+      | jq -Rs '{secret: ({password: .} | tojson)}' \
+      | limacharlie secret set --key imap-alice --enabled --oid $OID; unset IMAP_PASSWORD
     ```
 
     Save the connection. The top-level `credentials` is left out, and each

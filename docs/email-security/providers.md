@@ -153,7 +153,7 @@ Every check carries `id`, `name`, `required`, `status` and — when it fails —
 | Provider | Checks |
 |---|---|
 | Microsoft 365 | `credential` (authenticate to Graph), `mailbox_read` (list mailboxes), `mail_write` (`Mail.ReadWrite` — required), `mail_send` (`Mail.Send` — optional) |
-| IMAP | One block of checks **per mailbox**, ids suffixed with the mailbox's position: network guard and DNS, TLS and certificate, `login`, Inbox open, `UIDPLUS` (these four required), `MOVE` and `IDLE` (optional), folders found (Junk required), `LC Quarantine` creatable (required for quarantine), and an informational note that filters which skip the Inbox are not covered |
+| IMAP | One block of checks **per mailbox**, ids suffixed with the mailbox's position: network guard and DNS, TLS and certificate, `login`, Inbox open, `UIDPLUS` (these five required), `MOVE` and `IDLE` (optional), folders found (Junk required), `LC Quarantine` creatable (required for quarantine), and an informational note that filters which skip the Inbox are not covered |
 | Google Workspace | `credential` (key well formed), `directory` (`admin.directory.user.readonly`), `mail_modify` (`gmail.modify`), `mail_full` (`https://mail.google.com/` — optional), `mailbox_read` (list mailboxes in the domain), `pubsub_pull` (read the subscription), `pubsub_watch` (Gmail can publish to the topic) |
 
 Three properties are worth knowing:
