@@ -87,7 +87,11 @@ Cloud project or a single Azure subscription.
   never syncs another subscription instead. The pause message names the
   subscription and asks you to check the ID or grant Reader access. If the
   subscription list cannot be read, Cloud Security attempts only the configured
-  subscription and shows any collection errors on the connection as usual.
+  subscription and shows any collection errors on the connection as usual. This
+  also applies when the credential can read the Entra ID directory but no
+  subscription: the Azure connection pauses and syncs nothing, Entra ID
+  included. To collect Entra ID on its own, use an
+  [Entra ID connection](provider-setup/entra.md) instead.
 - **An AWS connection covers its role's own account.** When the role can list
   its AWS Organization's accounts but its own account is missing, the connection
   pauses without syncing anything. Its message names the account and asks you
