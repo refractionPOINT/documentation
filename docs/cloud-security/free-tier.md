@@ -120,8 +120,8 @@ findings look cleaner than they are.
   allowance is left for it.
 - **Every pause shows its reason on the connection itself**, whichever rule
   caused it: a user or resource limit, a connection scoped to more than one
-  account, project or subscription, an unreadable configured subscription or an
-  AWS account missing from its Organization's account list, or more than 5
+  account, project or subscription, a configured Azure subscription or AWS
+  account missing from the account list Azure or AWS returned, or more than 5
   connections (only the first 5 by name are collected). A plan-limit pause
   means the connection has reached a free-tier limit; it does not by itself
   mean the credential failed. A pause for the configured subscription or
@@ -210,8 +210,13 @@ Entra ID account, an Okta account and an AWS IAM user is three accounts.
 
 It grew past the limit, the organization moved back to the free tier, or a
 connection added since then sorts earlier by name and used the allowance first.
-Its last inventory is kept and shown as paused. It resumes by itself after you free up
-allowance or upgrade.
+Its last inventory is kept and shown as paused. It resumes by itself after you
+free up allowance or upgrade.
+
+An Azure or AWS connection also pauses when its credential can no longer see
+the configured subscription or account, for example after its Azure Reader
+access was removed. Fix the ID or the access and it retries automatically within about
+a day; correcting the subscription ID starts a fresh sync right away.
 
 ### Can I use a few user accounts and many cloud resources?
 
