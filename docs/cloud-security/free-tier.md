@@ -46,15 +46,16 @@ Things that belong to you and exist in your environment:
 - applications
 - Kubernetes clusters, namespaces and workloads
 - third-party assets reported by your other tools
-- your own groups, roles, service accounts and managed identities
+- your own groups, service accounts and managed identities, and roles outside
+  Entra ID and Azure
 
 ### What is not counted
 
 Things you do not own, or that come built in, do not use any of your allowance:
 
 - Microsoft's built-in and first-party applications and service principals that
-  exist in every Entra tenant, and the built-in Entra and Azure directory role
-  templates
+  exist in every Entra tenant
+- Entra ID directory roles and Azure role definitions, including custom ones
 - cloud-provider service principals and other principals owned by someone else
 - permissions and relationships between entities
 - vulnerabilities and findings
@@ -69,24 +70,24 @@ Things you do not own, or that come built in, do not use any of your allowance:
 On the free tier, each connection covers a single AWS account, a single Google
 Cloud project or a single Azure subscription.
 
-- **A connection that names one scope syncs just that scope.** If an Azure
-  connection names one subscription, only that subscription syncs, even when the
-  credential can see others. An AWS connection syncs only the account its role
+- **A connection syncs just the scope it names.** Every Azure connection names a
+  subscription, and only that subscription syncs, even when the credential can
+  see others. An AWS connection syncs only the account its role
   belongs to, even when that is the management account of an AWS Organization.
   The other accounts and subscriptions the credential can see are not scanned
   and do not count toward your allowance.
 - **A connection that spans many scopes is paused.** That means a Google Cloud
   connection scoped to an organization or a folder, an AWS connection set up to
-  scan the member accounts of an AWS Organization, and an Azure connection that
-  does not name a subscription while its credential can see several. The
-  connection shows the message *Free tier connections cover a single AWS account,
-  GCP project or Azure subscription, and this connection is scoped to a GCP
-  organization. Upgrade from the free tier to scan multiple accounts or
-  projects, or connect a single account / project / subscription instead.*
+  scan the member accounts of an AWS Organization, and an Azure connection whose
+  credential can see several subscriptions but not the one it names (check that
+  the subscription ID is correct and that the credential can read it). The
+  connection's status explains which rule paused it and suggests connecting a
+  single account, project or subscription, or upgrading.
 
 Saving a connection scoped to a Google Cloud organization or folder, or one that
-sets up AWS member-account scanning, is rejected with the same explanation, and
-so is saving a sixth connection. To cover more than one account, project or
+sets up AWS member-account scanning, is rejected with an explanation of the
+single-scope rule. Saving or enabling a sixth connection is rejected with an
+explanation of the 5-connection limit. To cover more than one account, project or
 subscription, create one connection per account, project or subscription, up to
 the 5-connection limit, or move to a paid plan.
 
@@ -100,16 +101,16 @@ findings look cleaner than they are.
   Each one uses whatever allowance the earlier ones left. Name your most
   important connection so that it sorts first.
 - **A connection that would push the organization over either limit is paused.**
-  Its status in **Settings → Providers** explains why, for example:
-  *this connection has 37 user accounts; the free tier covers 10 user accounts
-  and 250 other resources across all connections*.
+  Its status in **Settings → Providers** explains why: which limit it would
+  exceed, how many user accounts or resources it has, and how much of the
+  allowance is left for it.
 - **Every pause shows its reason on the connection itself**, whichever rule
   caused it: a user or resource limit, a connection scoped to more than one
   account, project or subscription, or more than 5 connections (only the first 5
   by name are collected). A paused connection is not a failed one: its
-  credentials are fine and nothing is wrong with the connection. The same
-  message is the connection's error in the `scan-status` API, with the sync not
-  running.
+  credentials are fine and nothing is wrong with the connection. The
+  connection's status in the `scan-status` API carries the same explanation as
+  its error, with the sync not running.
 - **Adding a connection can pause an existing one.** Because order follows the
   connection name, a new connection whose name sorts earlier is evaluated first
   and can use up the allowance, so a later connection that synced before is
@@ -118,10 +119,16 @@ findings look cleaner than they are.
   paused too.** The same happens if an organization moves back to the free tier
   from a paid plan. Its last inventory is **kept but no longer updated**, and the
   connection shows as paused, so stale data is not mistaken for current data.
-- **Paused connections are re-checked periodically and resume on their own.**
-  After the organization upgrades, a paused connection syncs again within about
-  15 minutes, with no action on your part. The same happens when allowance is
-  freed, for example when you remove another connection.
+  The allowance that inventory used stays reserved for it: connections that sort
+  after it do not gain that room while it is paused. Disabling or removing the
+  connection frees it.
+- **Paused connections are re-checked and resume on their own.** After the
+  organization upgrades, a paused connection syncs again within about 15
+  minutes, with no action on your part. The same happens when allowance is freed
+  for it, for example when you remove another connection. A connection paused
+  because it is too large is otherwise counted again about once a day, so after
+  you remove users or resources at the provider it can take up to a day to
+  resume.
 
 Nothing is deleted when a connection is paused, and its configuration and
 credential are untouched.
@@ -131,7 +138,8 @@ credential are untouched.
 The Cloud Security console shows how much of the allowance is used, for example
 *4 of 10 user accounts, 120 of 250 resources used*, and which connections are
 paused because of the limit. The [`GET /free-tier`](api-reference.md) route
-reports whether the organization is on the free tier and the connection limit.
+reports the same usage and limits, and lists the connections paused over a user
+or resource limit.
 
 ### Choose what to connect
 
@@ -162,16 +170,15 @@ causes are:
 - The connection would push the organization past **10 user accounts** or
   **250 other resources**. An Azure subscription backed by a busy Entra tenant
   is the usual cause, because every user and guest in the directory counts.
-- The connection does not name a subscription and its credential can see more
-  than one. On the free tier a connection covers a single subscription. If the
-  connection names one subscription, only that one syncs, even when the
-  credential can see others.
+- The credential can see several subscriptions but not the one the connection
+  names. Only the named subscription syncs on the free tier, so check that its
+  ID is correct and that the credential can read it.
 - The organization already has **5 connections**.
 - An earlier connection, in alphabetical order, used the allowance first. This
   includes a connection you added after this one synced.
 
 Re-entering credentials does not lift a plan limit. Remove a connection you no
-longer need, name a single subscription on the connection, or upgrade.
+longer need, correct the subscription on the connection, or upgrade.
 
 ### Why is the number of user accounts higher than the number of people?
 

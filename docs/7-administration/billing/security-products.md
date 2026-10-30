@@ -54,7 +54,7 @@ The limits are counted across **all** of the organization's connections combined
 - Up to **10 user accounts**.
 - Up to **250 other resources**, such as virtual machines, storage buckets,
   databases, networks and Kubernetes workloads.
-- Up to **5 connections**, each covering a single AWS account, Google Cloud
+- Up to **5 connections** of any type, each cloud connection covering a single AWS account, Google Cloud
   project or Azure subscription.
 - For Code Security, **10 repositories** (per connected source-control
   organization) and **5 container images** (per organization) for hosted
