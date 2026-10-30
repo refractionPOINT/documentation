@@ -40,20 +40,33 @@ To protect more than 10 mailboxes, raise the sensor quota above 2 (see
 protected mailbox is billed at $1 per month, including the first 10: the free
 allowance is not subtracted from the bill, the same as sensors.
 
-## Cloud Security and Code Security free-tier trials
+## Cloud Security free tier
 
-On the same free tier, Cloud Security and Code Security receive a limited
-**14-day trial**.
+Cloud Security, including Code Security, has a **perpetual** free tier for
+organizations on the free tier (**configured sensor quota of 2 or less**), like
+the two free sensors of the Community Edition. There is no trial period and no
+expiry. It is sized for an individual's home lab or learning environment, for
+example one person with a small AWS account. Teams and companies need a paid
+plan.
 
-| Product | Trial limits | At expiry | Purge grace period |
-|---|---|---|---|
-| Code Security / Cloud Security | **2 provider connections**, **10 repositories per connection**, **5 container images per organization** for hosted scanning | Collection and hosted scanning pause; provider configuration and policies are kept | **7 days** |
+The limits are counted across **all** of the organization's connections combined:
 
-Data is removed after the purge grace period unless the organization moves off
-the free tier before the purge. The grace period starts when the cleanup process
-observes trial expiry; deletion runs asynchronously. Normal data-retention
-policies continue to apply during the grace period. Unsubscribing and
-resubscribing does not restart the trial.
+- Up to **10 user accounts**.
+- Up to **250 other resources**, such as virtual machines, storage buckets,
+  databases, networks and Kubernetes workloads.
+- Up to **5 connections** of any type, each cloud connection covering a single AWS account, Google Cloud
+  project or Azure subscription.
+- For Code Security, **10 repositories** (per connected source-control
+  organization) and **5 container images** (per organization) for hosted
+  scanning.
+
+A connection that would exceed the user or resource limit, or that is scoped to
+more than one account, project or subscription (a connection that names a single
+Azure subscription or AWS account syncs just that one), is paused rather than
+partly synced. The reason is shown on the connection, and it resumes
+automatically within about 15 minutes of the organization upgrading, or when
+allowance is freed. What counts, what does not, and what happens at the limit
+are in [Cloud Security free tier and limits](../../cloud-security/free-tier.md).
 
 ## Moving to a paid plan
 
@@ -62,12 +75,14 @@ move off the free tier. With the extension subscription in place:
 
 - **Email Security**: the 10-mailbox cap is lifted and every protected mailbox is
   billed.
-- **Cloud Security and Code Security**: the trial limits are lifted, collection
-  or scanning resumes, and usage billing starts. Upgrading before the purge
-  cancels deletion scheduled because the trial expired.
+- **Cloud Security and Code Security**: the free-tier limits are lifted, any
+  connection paused by a limit resumes within about 15 minutes, and usage billing
+  starts.
 
 See [Email Security getting started](../../email-security/getting-started.md),
 [Email Security plans and the mailbox cap](../../email-security/policy.md#plans-the-free-tier-and-the-mailbox-cap),
 and [Code Security getting started](../../cloud-security/code-security/getting-started.md)
-for setup instructions. [Billing options](options.md) explains organization and
+for setup instructions, and
+[Cloud Security free tier and limits](../../cloud-security/free-tier.md) for the
+limits and what happens at them. [Billing options](options.md) explains organization and
 unified billing.

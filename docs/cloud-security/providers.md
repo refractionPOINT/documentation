@@ -13,6 +13,18 @@ Either way, run the [credential test](getting-started.md#test-the-credential-bef
 first — it probes every permission a sweep needs and reports exactly which are
 missing.
 
+!!! note "Free tier: one scope per connection"
+    On the free tier, a connection covers a single AWS account, Google Cloud
+    project or Azure subscription, so a Google Cloud connection uses
+    `projects/{id}`, not a folder or organization, and an AWS connection does not
+    use `aws_member_role_name`. Fan-out across an AWS Organization, a Google Cloud
+    organization or folder, or several Azure subscriptions needs a paid plan.
+    A connection that names one Azure subscription, or an AWS role in a single
+    account, syncs just that scope even if the credential can see more; a
+    connection scoped to a Google Cloud organization or folder is refused.
+    The free tier also limits user accounts, resources and connections across the
+    organization. See [free tier and limits](free-tier.md).
+
 ## The fifteen connectors
 
 | `provider_type` | Surface | Scope field(s) | Credential (JSON stored in the secret) |

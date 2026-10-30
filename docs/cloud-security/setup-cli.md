@@ -41,21 +41,27 @@ sidebar, but its pages show an "enable Cloud Security" screen — with a link to
     the other pages redirect there. The full set of pages appears once a
     provider exists and its first sweep has data.
 
-### Free tier and trial
+### Free tier
 
-Organizations on the free tier (a configured sensor quota of 2 or fewer) can
-trial Cloud Security without upgrading: up to **2 provider connections**, with
-collection running for **14 days** from the day Cloud Security was enabled.
-The Overview page shows the trial banner, and
-[`GET /free-tier`](api-reference.md) reports the standing and limits.
+Organizations on the free tier (a configured sensor quota of 2 or fewer) can use
+Cloud Security for free, with no trial and no expiry: up to **10 user accounts**,
+**250 other resources** and **5 connections** across the organization, each
+connection covering a single AWS account, Google Cloud project or Azure
+subscription. The Overview page shows your usage, and
+[`GET /free-tier`](api-reference.md) reports the free-tier limits, current
+usage and the connections paused over a user-account or resource limit.
 
-When the trial ends (or a third provider is added), the affected collection
-pauses rather than erroring: the reason appears as the provider's status in
-**Settings → Providers** and in `scan-status`. Nothing is deleted immediately
-and none of your configuration is touched — provider records, credentials, and
-policies all survive — so upgrading resumes collection where it left off within
-minutes. Trial data does age out eventually if the organization stays on the
-free tier.
+A connection that would push the organization over a limit is paused rather than
+partly synced: the reason appears on the connection in **Settings → Providers**
+and as that connection's error in `scan-status`, with the sync not running. The
+same applies to a connection scoped to a Google Cloud organization or folder, or
+to an AWS Organization's member accounts, and to connections beyond the fifth.
+A connection that names one Azure subscription, or an AWS role in one account,
+syncs just that scope even if its credential can see more. Nothing is deleted
+and none of your configuration is touched, so upgrading resumes collection
+within about 15 minutes, as does freeing allowance by removing another
+connection. See
+[free tier and limits](free-tier.md).
 
 ## 2. Connect a provider
 

@@ -19,19 +19,17 @@ pull requests that upgrade vulnerable dependencies.
     [Get started](getting-started.md) takes about ten minutes on GitHub: the
     console creates the GitHub App for you and turns scanning on.
 
-## Free-tier trial
+## Free tier
 
-Organizations with a configured sensor quota of **2 or less** receive the
-Cloud Security **14-day trial**, with up to **2 provider connections**,
-**10 repositories per connection**, and **5 container images per organization**.
-The repository and image limits apply to hosted scans.
+Organizations with a configured sensor quota of **2 or less** use Cloud Security
+and Code Security for free, with no trial and no expiry. Hosted scanning covers
+up to **10 repositories** per connected source-control organization and **5
+container images** per organization. The other free-tier limits (user accounts,
+resources and connections) are described in
+[free tier and limits](../free-tier.md).
 
-At expiry, collection and hosted scanning pause. Provider configuration and
-policies are kept. Collected data becomes eligible for deletion after a
-**7-day purge grace period**, starting when expiry is observed. Raising the
-sensor quota above **2** moves the organization to a paid plan, lifts the trial
-limits and allows collection and scanning to resume. Upgrading before the purge
-cancels trial-expiry deletion; usage is then billed.
+Raising the sensor quota above **2** moves the organization to a paid plan, lifts
+the free-tier limits and starts usage billing.
 
 ## What it finds
 

@@ -123,6 +123,9 @@ organization you manage.
 
 - [Getting Started](getting-started.md) — enable the product, connect a
   provider, run your first sweep.
+- [Free Tier and Limits](free-tier.md) — Cloud Security is free forever for
+  small environments such as a home lab: what is included, what counts toward
+  the limits and what happens at them.
 - [Connecting Providers](providers.md) — the fifteen connectors, their
   credentials, and what each collects.
 - [Code Security](code-security/index.md) — scan repositories, check pull requests,
