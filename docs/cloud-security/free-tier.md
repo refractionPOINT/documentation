@@ -17,7 +17,7 @@ The limits are counted across **all** of the organization's connections combined
 |---|---|
 | User accounts | Up to **10** |
 | Other resources | Up to **250** |
-| Connections | Up to **5** |
+| Connections | Up to **5**, of any type, including source-control connections such as GitHub, GitLab or Bitbucket |
 | Scope of each connection | A single **AWS account**, **GCP project** or **Azure subscription** |
 | Repositories scanned (Code Security) | The first **10** by name, per connected source-control organization |
 | Container images scanned (Code Security) | The **5** most referenced, per organization |
@@ -194,6 +194,12 @@ resources. Using fewer of one does not raise the other.
 
 No. A connection that cannot sync is paused, and what was already collected is
 kept.
+
+### Does a GitHub, GitLab or Bitbucket connection count toward the 5 connections?
+
+Yes. Every enabled connection counts toward the limit of 5, whatever its type:
+cloud accounts, identity providers and source-control connections alike.
+Disabling a connection frees its slot.
 
 ### Do code repositories and container images use up the 250 resources?
 
