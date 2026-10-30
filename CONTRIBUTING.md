@@ -6,7 +6,19 @@ If you find an error or have a suggestion, please [open an issue](https://github
 
 ## Writing release notes
 
-Release notes live in a single page, `docs/10-release-notes/index.md`, newest first. That page is also the source of the published RSS and JSON feeds (`hooks/release_feed.py` generates them into the built site; they are never committed), and of the announcements posted to the community forum. A few things follow from that.
+Release notes live in one page per component under `docs/10-release-notes/`, newest first:
+
+| Page | Holds |
+|------|-------|
+| `endpoint-agent.md` | Endpoint Agent |
+| `web-app.md` | Web App |
+| `adapters.md` | Adapters |
+| `extensions.md` | Extensions |
+| `platform.md` | Platform announcements, CLI and SDKs |
+
+Put an entry on the page of its component; the build and the heading lint both fail on an entry anywhere else. `index.md` is an overview that holds no entries: its "Latest releases" table is generated at build time from the component pages.
+
+These pages are also the source of the published RSS and JSON feeds (`hooks/release_feed.py` generates them into the built site; they are never committed), and of the announcements posted to the community forum. A few things follow from that.
 
 ### Heading form
 
@@ -24,7 +36,7 @@ Use the canonical component name so the entry reaches the right per-component fe
 
 Always include the version. A heading without one collides with the next release of the same component, and Python-Markdown resolves that collision by renumbering anchors in document order - which silently moves the anchor of the older entry that people have already linked to.
 
-Never edit or renumber an existing entry's heading. Its anchor is linked to from outside the docs, and its text is the identity feed readers dedupe on, so a change re-announces an old release to every subscriber. Historical entries that predate this convention are recorded in `scripts/release-note-headings-baseline.json` and are intentionally left as they are.
+Never edit or renumber an existing entry's heading. Its anchor is linked to from outside the docs (links into the single page the release notes used to be are redirected by `hooks/release_notes_legacy_anchors.json`, which is frozen and matches on the heading), and its text is the identity feed readers dedupe on, so a change re-announces an old release to every subscriber. Historical entries that predate this convention are recorded in `scripts/release-note-headings-baseline.json` and are intentionally left as they are.
 
 ### Flagging breaking and schema changes
 

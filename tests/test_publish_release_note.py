@@ -91,6 +91,24 @@ def test_component_slugs_resolve_to_canonical_headings(slug, expected):
     assert publish.canonical_component(slug) == expected
 
 
+@pytest.mark.parametrize(
+    ("slug", "filename"),
+    [
+        ("sensor", "endpoint-agent.md"),
+        ("web-app", "web-app.md"),
+        ("adapters", "adapters.md"),
+        ("extensions", "extensions.md"),
+        ("cli", "platform.md"),
+        ("python-sdk", "platform.md"),
+    ],
+)
+def test_a_release_goes_to_the_page_of_its_component(slug, filename):
+    path = publish.page_path(publish.canonical_component(slug))
+    assert os.path.basename(path) == filename
+    # Every page a release can be routed to exists in the repository.
+    assert os.path.exists(path)
+
+
 def test_an_unknown_component_is_refused(capsys):
     """Better to fail the publish than to write an entry no feed claims."""
     with pytest.raises(SystemExit) as exc:

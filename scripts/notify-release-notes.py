@@ -2,8 +2,8 @@
 """Announce newly published release notes in the community forum.
 
 RSS answers "let me subscribe"; it does not answer "tell me". This script
-closes that half: when a commit adds entries to
-``docs/10-release-notes/index.md``, each new entry is posted to the forum's
+closes that half: when a commit adds entries to the pages under
+``docs/10-release-notes/``, each new entry is posted to the forum's
 Platform Updates category, where members can watch the category and receive
 email. It is driven by ``.github/workflows/notify-release-notes.yml``.
 
@@ -11,8 +11,9 @@ What counts as new
 ------------------
 The entry identity is the same ``tag:`` guid the feeds use (see
 ``hooks/release_feed.py``), computed from the release date and the heading
-text. An entry is new when its guid is present in the after-image of the page
-and absent from the before-image. Editing an existing entry's body therefore
+text. An entry is new when its guid is present in the after-image of the
+release notes and absent from the before-image. The guid does not depend on
+which page an entry is on, so moving entries between pages announces nothing. Editing an existing entry's body therefore
 announces nothing; editing its heading announces it again, which is the same
 tradeoff feed readers make.
 
@@ -31,8 +32,8 @@ Not posting is always the safe failure
 Usage
 -----
     python scripts/notify-release-notes.py \\
-        --before /tmp/before.md \\
-        --after docs/10-release-notes/index.md \\
+        --before /tmp/before \\
+        --after docs/10-release-notes \\
         --dry-run
 
 Environment: ``DISCOURSE_API_KEY`` and ``DISCOURSE_API_USERNAME``.
@@ -45,13 +46,14 @@ import sys
 import urllib.error
 import urllib.parse
 import urllib.request
-from urllib.parse import urlsplit
+from urllib.parse import urljoin, urlsplit
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "hooks"))
 
 from release_feed import (  # noqa: E402
     absolutize_markdown_links,
     parse_markdown_entries,
+    read_release_notes,
 )
 
 DEFAULT_FORUM_URL = "https://community.limacharlie.com"
@@ -70,25 +72,32 @@ class ForumError(Exception):
     """A Discourse request failed in a way the caller should see."""
 
 
-def read_text(path):
+def read_entries(path):
+    """Entries from a release notes directory, or from a single page.
+
+    Returns None when the path does not exist. A directory is read whole, so a
+    before-image taken from before the per-component split (one ``index.md``)
+    and an after-image taken after it describe the same entries.
+    """
     if not path or not os.path.exists(path):
         return None
+    if os.path.isdir(path):
+        return read_release_notes(path)
     with open(path, encoding="utf-8") as handle:
-        return handle.read()
+        return parse_markdown_entries(handle.read())
 
 
-def new_entries(before_text, after_text, host):
-    """Entries present in `after_text` but not in `before_text`, oldest first.
+def new_entries(before, after, host):
+    """Entries present in `after` but not in `before`, oldest first.
 
     Returns `(entries, has_baseline)`. Without a before-image every entry looks
     new, and the caller refuses to post rather than announce the entire archive.
     """
-    after = parse_markdown_entries(after_text)
-    if before_text is None:
+    if before is None:
         return list(reversed(after)), False
-    known = {entry.guid(host) for entry in parse_markdown_entries(before_text)}
+    known = {entry.guid(host) for entry in before}
     fresh = [entry for entry in after if entry.guid(host) not in known]
-    # The page is newest-first; announce in release order.
+    # The pages are newest-first; announce in release order.
     return list(reversed(fresh)), True
 
 
@@ -103,8 +112,11 @@ def topic_title(entry):
 
 def topic_body(entry, docs_url):
     """Forum post body: the release note itself plus a link back to the docs."""
+    # Links in the body are relative to the source directory, which every page
+    # shares; only the link back to the release notes names the entry's page.
     body = absolutize_markdown_links(entry.body_markdown, docs_url).strip()
-    link = f"{docs_url}#{entry.date}"
+    page_url = urljoin(docs_url, entry.heading.page.filename[: -len(".md")] + "/")
+    link = f"{page_url}#{entry.date}"
     parts = [f"**{entry.title}** was released on {entry.date}."]
     if body:
         parts.append(body)
@@ -171,10 +183,13 @@ def main(argv):
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
     )
     parser.add_argument(
-        "--after", required=True, help="release notes Markdown after the change"
+        "--after",
+        required=True,
+        help="release notes directory (or a single page) after the change",
     )
     parser.add_argument(
-        "--before", help="release notes Markdown before the change (optional)"
+        "--before",
+        help="release notes directory (or a single page) before the change (optional)",
     )
     parser.add_argument("--forum-url", default=DEFAULT_FORUM_URL)
     parser.add_argument("--category-id", type=int, default=DEFAULT_CATEGORY_ID)
@@ -188,13 +203,13 @@ def main(argv):
     )
     args = parser.parse_args(argv[1:])
 
-    after_text = read_text(args.after)
-    if after_text is None:
-        print(f"error: --after file not found: {args.after}", file=sys.stderr)
+    after = read_entries(args.after)
+    if after is None:
+        print(f"error: --after not found: {args.after}", file=sys.stderr)
         return 2
 
     host = urlsplit(args.docs_url).hostname or "docs.limacharlie.io"
-    entries, has_baseline = new_entries(read_text(args.before), after_text, host)
+    entries, has_baseline = new_entries(read_entries(args.before), after, host)
 
     if not entries:
         print("no new release notes to announce")

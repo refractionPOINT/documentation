@@ -27,9 +27,15 @@ properties that interface needs.
    breaking links that already exist in the wild and in already-delivered feed
    items. Including a version in every heading makes collisions impossible.
 
-Structural breakage (an entry that is not under a ``## YYYY-MM-DD`` heading, a
-non-date ``##``) is always fatal and cannot be baselined: the feed generator
-cannot date such an entry.
+Structural breakage is always fatal and cannot be baselined:
+
+* an entry that is not under a ``## YYYY-MM-DD`` heading, or a non-date ``##``
+  on a component page - the feed generator cannot date such an entry;
+* an entry on a page other than its component's (``RELEASE_PAGES`` in
+  ``hooks/release_feed.py``) - a reader of that component's page never sees it;
+* an entry or a date heading on the overview (``index.md``), which only links
+  to the component pages;
+* a page in the directory that is neither the overview nor a component page.
 
 Usage
 -----
@@ -58,7 +64,9 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "hooks"))
 from release_feed import (  # noqa: E402
     COMPONENTS,
     DATE_RE,
+    OVERVIEW_FILENAME,
     PLATFORM_SLUG,
+    RELEASE_PAGES,
     classify_heading,
     iter_markdown_headings,
 )
@@ -87,6 +95,7 @@ def collect(docs_dir):
         + ") or '### <Component>: <announcement>' for a versionless entry"
     )
     findings = defaultdict(list)
+    known_pages = {page.filename for page in RELEASE_PAGES}
 
     for filename in sorted(os.listdir(root)):
         if not filename.endswith(".md"):
@@ -95,6 +104,15 @@ def collect(docs_dir):
         rel = os.path.join(RELEASE_NOTES_DIR, filename)
         with open(path, encoding="utf-8") as handle:
             text = handle.read()
+
+        if filename == OVERVIEW_FILENAME:
+            check_overview(rel, text)
+            continue
+        if filename not in known_pages:
+            raise StructuralError(
+                f"{rel}: not a release notes page. Entries go on the page of "
+                "their component: " + ", ".join(sorted(known_pages))
+            )
 
         current_date = None
         # Slug -> first heading that claimed it, over the whole document. This
@@ -123,6 +141,12 @@ def collect(docs_dir):
                         f"{rel}:{lineno}: entry '### {title}' is not under a "
                         "'## YYYY-MM-DD' date heading"
                     )
+                expected = classify_heading(title).page.filename
+                if filename != expected:
+                    raise StructuralError(
+                        f"{rel}:{lineno}: entry '### {title}' belongs on "
+                        f"{RELEASE_NOTES_DIR}/{expected}, the page of its component"
+                    )
                 entries.append((current_date, title, lineno, slug))
 
         for date, title, lineno, slug in entries:
@@ -146,6 +170,16 @@ def collect(docs_dir):
                 )
 
     return findings
+
+
+def check_overview(rel, text):
+    """The overview links to the component pages; it holds no entries."""
+    for level, title, lineno in iter_markdown_headings(text):
+        if level == 3 or (level == 2 and DATE_RE.match(title)):
+            raise StructuralError(
+                f"{rel}:{lineno}: '{'#' * level} {title}' - the overview holds no "
+                "release entries; put the entry on its component's page"
+            )
 
 
 def baseline_key(rel, kind, date, title):
