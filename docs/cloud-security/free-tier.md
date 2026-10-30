@@ -88,9 +88,9 @@ Cloud project or a single Azure subscription.
   subscription and asks you to check the ID or grant Reader access. If the
   subscription list cannot be read, Cloud Security attempts only the configured
   subscription and shows any collection errors on the connection as usual. This
-  also applies when the credential can read the Entra ID directory but no
-  subscription: the Azure connection pauses and syncs nothing, Entra ID
-  included. To collect Entra ID on its own, use an
+  also applies when the credential can read the Entra ID directory but Azure
+  lists no subscription for it: the Azure connection pauses and syncs nothing,
+  Entra ID included. To collect Entra ID on its own, use an
   [Entra ID connection](provider-setup/entra.md) instead.
 - **An AWS connection covers its role's own account.** When the role can list
   its AWS Organization's accounts but its own account is missing, the connection
@@ -122,11 +122,12 @@ findings look cleaner than they are.
   caused it: a user or resource limit, a connection scoped to more than one
   account, project or subscription, an unreadable configured subscription or an
   AWS account missing from its Organization's account list, or more than 5
-  connections (only the first 5 by name are collected). A plan-limit pause means the connection
-  has reached a free-tier limit; it does not by itself mean the credential
-  failed. A pause for the configured subscription or account instead asks you
-  to check its ID or access. The connection's status in the `scan-status` API carries the same explanation as
-  its error, with the sync not running.
+  connections (only the first 5 by name are collected). A plan-limit pause
+  means the connection has reached a free-tier limit; it does not by itself
+  mean the credential failed. A pause for the configured subscription or
+  account instead asks you to check its ID or access. The connection's status
+  in the `scan-status` API carries the same explanation as its error, with the
+  sync not running.
 - **Adding a connection can pause an existing one.** Because order follows the
   connection name, a new connection whose name sorts earlier is evaluated first
   and can use up the allowance, so a later connection that synced before is
@@ -145,8 +146,9 @@ findings look cleaner than they are.
   for it, for example when you remove another connection. A connection paused
   because it is too large is otherwise counted again about once a day, so after
   you remove users or resources at the provider it can take up to a day to
-  resume. After you fix access for a configured-scope pause, the automatic retry can also take up to about a day. Correcting the
-  configured subscription ID starts a fresh sync.
+  resume. After you fix access for a configured-scope pause, the automatic
+  retry can also take up to about a day. Correcting the configured
+  subscription ID starts a fresh sync.
 
 Nothing is deleted when a connection is paused, and its configuration and
 credential are untouched.
