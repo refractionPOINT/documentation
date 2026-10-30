@@ -61,12 +61,15 @@ jobs:
           if [ -z "${BEFORE_SHA:-}" ] || [ "${BEFORE_SHA}" = "0000000000000000000000000000000000000000" ]; then
             BEFORE_SHA="HEAD~1"
           fi
-          if git show "${BEFORE_SHA}:docs/10-release-notes/index.md" > before.md 2>/dev/null; then
+          # The whole directory: entries live on one page per component, and
+          # the notifier compares every page before and after the push.
+          mkdir before
+          if git archive "${BEFORE_SHA}" docs/10-release-notes 2>/dev/null | tar -x -C before; then
             echo "before-image taken from ${BEFORE_SHA}"
           else
-            # A missing before.md is not an error: the notifier treats it as
+            # A missing before-image is not an error: the notifier treats it as
             # "no baseline" and refuses to announce rather than guessing.
-            rm -f before.md
+            rm -rf before
             echo "no before-image available; the notifier will refuse to post"
           fi
 
@@ -78,6 +81,6 @@ jobs:
         run: |
           set -euo pipefail
           python scripts/notify-release-notes.py \
-            --after docs/10-release-notes/index.md \
-            --before before.md \
+            --after docs/10-release-notes \
+            --before before/docs/10-release-notes \
             ${DRY_RUN}

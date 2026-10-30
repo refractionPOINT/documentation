@@ -21,6 +21,8 @@ DOCS = os.path.join(REPO_ROOT, "docs")
 
 sys.path.insert(0, os.path.join(REPO_ROOT, "hooks"))
 
+from release_feed import classify_heading  # noqa: E402
+
 
 def load_script(path, name):
     """Import a hyphenated script file as a module."""
@@ -33,10 +35,10 @@ def load_script(path, name):
 check = load_script(SCRIPT, "check_release_note_headings")
 
 
-def write_page(tmp_path, body):
+def write_page(tmp_path, body, filename="web-app.md"):
     docs = tmp_path / "docs" / "10-release-notes"
-    docs.mkdir(parents=True)
-    (docs / "index.md").write_text(body, encoding="utf-8")
+    docs.mkdir(parents=True, exist_ok=True)
+    (docs / filename).write_text(body, encoding="utf-8")
     return str(tmp_path / "docs")
 
 
@@ -44,7 +46,7 @@ def run(docs_dir, *args):
     return check.main(["check-release-note-headings.py", "--docs", docs_dir, *args])
 
 
-CANONICAL_PAGE = """# Release Notes
+CANONICAL_PAGE = """# Web App Release Notes
 
 ## 2026-01-05
 
@@ -52,13 +54,13 @@ CANONICAL_PAGE = """# Release Notes
 
 Content.
 
-### Endpoint Agent 5.3.5
+### Web App 6.0.9
 
 Content.
 
 ## 2025-12-01
 
-### Platform: New MITRE Report API
+### Web App 6.0.0
 
 Content.
 """
@@ -77,16 +79,14 @@ def test_non_canonical_component_is_reported(tmp_path, capsys):
 
 
 def test_versionless_component_heading_is_reported(tmp_path, capsys):
-    page = CANONICAL_PAGE.replace("### Endpoint Agent 5.3.5", "### Endpoint Agent")
+    page = CANONICAL_PAGE.replace("### Web App 6.0.9", "### Web App")
     assert run(write_page(tmp_path, page)) == 1
     assert "[naming]" in capsys.readouterr().out
 
 
 def test_colliding_headings_are_reported(tmp_path, capsys):
     """The failure mode this exists for: a new heading stealing an old anchor."""
-    page = CANONICAL_PAGE.replace(
-        "### Platform: New MITRE Report API", "### Web App 6.1.0"
-    )
+    page = CANONICAL_PAGE.replace("### Web App 6.0.0", "### Web App 6.1.0")
     assert run(write_page(tmp_path, page)) == 1
     out = capsys.readouterr().out
     assert out.count("[slug-collision]") == 2
@@ -104,7 +104,7 @@ def test_headings_inside_code_fences_are_ignored(tmp_path):
 
 
 def test_entry_outside_a_date_group_is_a_structural_error(tmp_path, capsys):
-    page = """# Release Notes
+    page = """# Web App Release Notes
 
 ### Web App 6.1.0
 
@@ -115,7 +115,7 @@ Orphaned.
 
 
 def test_non_date_section_heading_is_a_structural_error(tmp_path, capsys):
-    page = """# Release Notes
+    page = """# Web App Release Notes
 
 ## Highlights
 
@@ -136,8 +136,8 @@ def test_baseline_suppresses_known_findings_only(tmp_path):
     assert run(docs, "--baseline", str(baseline)) == 0
 
     # A second, different offender is not covered by the baseline.
-    (tmp_path / "docs" / "10-release-notes" / "index.md").write_text(
-        page.replace("### Endpoint Agent 5.3.5", "### EDR Sensor v5.3.5"),
+    (tmp_path / "docs" / "10-release-notes" / "web-app.md").write_text(
+        page.replace("### Web App 6.0.9", "### Webapp v6.0.9"),
         encoding="utf-8",
     )
     assert run(docs, "--baseline", str(baseline)) == 1
@@ -186,4 +186,62 @@ def test_accepted_heading_forms(tmp_path, heading):
 
 Content.
 """
-    assert run(write_page(tmp_path, page)) == 0
+    filename = classify_heading(heading[len("### "):]).page.filename
+    assert run(write_page(tmp_path, page, filename)) == 0
+
+
+def test_an_entry_on_another_component_s_page_is_a_structural_error(tmp_path, capsys):
+    page = CANONICAL_PAGE.replace("### Web App 6.0.9", "### Endpoint Agent 5.3.5")
+    assert run(write_page(tmp_path, page)) == 2
+    assert "belongs on 10-release-notes/endpoint-agent.md" in capsys.readouterr().err
+
+
+def test_components_without_a_page_of_their_own_share_the_platform_page(tmp_path):
+    page = """# Platform, CLI & SDKs Release Notes
+
+## 2026-01-05
+
+### CLI 5.0.0
+
+Content.
+
+### SDKs 5.0.0
+
+Content.
+
+### Platform: Something newsworthy happened
+
+Content.
+"""
+    assert run(write_page(tmp_path, page, "platform.md")) == 0
+
+
+OVERVIEW = """# Release Notes
+
+## Latest releases
+
+<!-- release-notes:latest -->
+
+## Subscribe
+
+Feeds.
+"""
+
+
+def test_the_overview_may_have_sections_of_its_own(tmp_path):
+    write_page(tmp_path, CANONICAL_PAGE)
+    assert run(write_page(tmp_path, OVERVIEW, "index.md")) == 0
+
+
+@pytest.mark.parametrize(
+    "heading", ["## 2026-01-05", "### Web App 6.1.0", "### Highlights"]
+)
+def test_the_overview_holds_no_entries(tmp_path, capsys, heading):
+    page = OVERVIEW.replace("## Subscribe", heading)
+    assert run(write_page(tmp_path, page, "index.md")) == 2
+    assert "the overview holds no release entries" in capsys.readouterr().err
+
+
+def test_a_page_for_no_known_component_is_a_structural_error(tmp_path, capsys):
+    assert run(write_page(tmp_path, CANONICAL_PAGE, "2025.md")) == 2
+    assert "not a release notes page" in capsys.readouterr().err

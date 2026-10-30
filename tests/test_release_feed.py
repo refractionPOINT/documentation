@@ -31,6 +31,8 @@ import release_feed  # noqa: E402
 from release_feed import (  # noqa: E402
     CANONICAL_FEED_BASE,
     COMPONENTS,
+    OVERVIEW_FILENAME,
+    RELEASE_PAGES,
     PLATFORM_SLUG,
     PluginError,
     Entry,
@@ -51,7 +53,7 @@ from release_feed import (  # noqa: E402
 )
 
 REPO_ROOT = os.path.join(os.path.dirname(__file__), "..")
-RELEASE_NOTES = os.path.join(REPO_ROOT, "docs", "10-release-notes", "index.md")
+RELEASE_NOTES_DIR = os.path.join(REPO_ROOT, "docs", "10-release-notes")
 SITE_URL = "https://docs.limacharlie.io/"
 PAGE_URL = f"{SITE_URL}10-release-notes/"
 
@@ -67,13 +69,22 @@ def render_page(text):
 
 @pytest.fixture(scope="module")
 def release_notes_text():
-    with open(RELEASE_NOTES, encoding="utf-8") as handle:
-        return handle.read()
+    """`{filename: Markdown}` for every page in the repository, overview included."""
+    return {
+        path.name: path.read_text(encoding="utf-8")
+        for path in sorted(Path(RELEASE_NOTES_DIR).glob("*.md"))
+    }
 
 
 @pytest.fixture(scope="module")
 def release_notes_entries(release_notes_text):
-    return extract_html_entries(render_page(release_notes_text), PAGE_URL)
+    entries = []
+    for filename, text in release_notes_text.items():
+        page_url = f"{PAGE_URL}{filename[: -len('.md')]}/"
+        if filename == OVERVIEW_FILENAME:
+            page_url = PAGE_URL
+        entries += extract_html_entries(render_page(text), page_url)
+    return entries
 
 
 # ---------------------------------------------------------------------------
@@ -328,7 +339,9 @@ def test_markdown_and_html_parsers_agree_on_the_real_page(
 ):
     """Both parsers feed guids; a disagreement would split an entry's identity."""
     from_markdown = [
-        (entry.date, entry.title) for entry in parse_markdown_entries(release_notes_text)
+        (entry.date, entry.title)
+        for text in release_notes_text.values()
+        for entry in parse_markdown_entries(text)
     ]
     from_html = [(entry.date, entry.title) for entry in release_notes_entries]
     assert from_markdown == from_html
@@ -768,3 +781,187 @@ def test_real_page_renders_a_usable_feed(release_notes_entries):
         assert item.findtext("link").startswith(PAGE_URL)
         assert item.findtext("description")
         parsedate_to_datetime(item.findtext("pubDate"))
+
+
+# ---------------------------------------------------------------------------
+# One page per component
+# ---------------------------------------------------------------------------
+
+
+def fake_page(filename, url=None):
+    from types import SimpleNamespace
+
+    if url is None:
+        url = "10-release-notes/" if filename == "index.md" else (
+            f"10-release-notes/{filename[: -len('.md')]}/"
+        )
+    return SimpleNamespace(
+        file=SimpleNamespace(src_uri=f"10-release-notes/{filename}"), url=url
+    )
+
+
+@pytest.fixture
+def fresh_state():
+    saved = dict(release_feed._STATE)
+    release_feed.on_pre_build({})
+    yield release_feed._STATE
+    release_feed._STATE.clear()
+    release_feed._STATE.update(saved)
+
+
+def test_every_component_has_exactly_one_page():
+    owners = [slug for page in RELEASE_PAGES for slug in page.slugs]
+    assert sorted(owners) == sorted(component.slug for component in COMPONENTS)
+
+
+@pytest.mark.parametrize(
+    ("title", "filename"),
+    [
+        ("Endpoint Agent 5.3.5", "endpoint-agent.md"),
+        ("EDR Sensor v4.31.1", "endpoint-agent.md"),
+        ("Web App 6.1.0", "web-app.md"),
+        ("LC Adapters v1.30.11", "adapters.md"),
+        ("ext-usage-alerts v1.0.0", "extensions.md"),
+        ("Extensions and Adapters", "extensions.md"),
+        ("CLI 4.9.12", "platform.md"),
+        ("SDKs 5.0.0", "platform.md"),
+        ("New MITRE Report API", "platform.md"),
+    ],
+)
+def test_an_entry_belongs_on_the_page_of_its_primary_component(title, filename):
+    assert classify_heading(title).page.filename == filename
+
+
+def test_every_repository_entry_is_on_its_component_s_page(release_notes_text):
+    for filename, text in release_notes_text.items():
+        for entry in parse_markdown_entries(text):
+            assert entry.heading.page.filename == filename, entry.title
+
+
+def test_the_repository_overview_holds_no_entries(release_notes_text):
+    assert parse_markdown_entries(release_notes_text[OVERVIEW_FILENAME]) == []
+    assert release_feed.LATEST_MARKER in release_notes_text[OVERVIEW_FILENAME]
+
+
+def test_an_entry_links_to_its_own_page(fresh_state):
+    page = "# Web App\n\n## 2026-01-05\n\n### Web App 1.0.0\n\nBody.\n"
+    release_feed.on_page_content(
+        render_page(page), fake_page("web-app.md"), {"site_url": SITE_URL}
+    )
+    (entry,) = fresh_state["entries"]
+    assert entry.link() == f"{PAGE_URL}web-app/#web-app-100"
+    # The channel link handed to the renderer does not override it.
+    assert entry.link(PAGE_URL) == f"{PAGE_URL}web-app/#web-app-100"
+    assert fresh_state["page_urls"] == {"web-app.md": f"{PAGE_URL}web-app/"}
+
+
+def test_an_entry_on_another_component_s_page_fails_the_build(fresh_state):
+    page = "# Web App\n\n## 2026-01-05\n\n### Endpoint Agent 5.3.5\n\nBody.\n"
+    with pytest.raises(PluginError, match="belongs on 10-release-notes/endpoint-agent.md"):
+        release_feed.on_page_content(
+            render_page(page), fake_page("web-app.md"), {"site_url": SITE_URL}
+        )
+
+
+def test_html_comments_are_left_out_of_entry_bodies():
+    page = "## 2026-01-05\n\n### Web App 1.0.0\n\nBody.\n\n<!-- glossary -->\n"
+    (entry,) = extract_html_entries(render_page(page), PAGE_URL)
+    assert "glossary" not in entry.body_html
+    assert "Body." in entry.body_html
+
+
+def page_entry(title, date, filename, anchor=None):
+    entry = make_entry(title=title, date=date)
+    entry.page_url = f"{PAGE_URL}{filename[: -len('.md')]}/"
+    if anchor is not None:
+        entry.anchor = anchor
+    return entry
+
+
+def test_the_latest_table_lists_the_newest_releases_with_relative_links():
+    entries = [
+        page_entry(f"Web App 1.0.{n}", f"2026-01-{n + 1:02d}", "web-app.md")
+        for n in range(release_feed.LATEST_COUNT + 3)
+    ]
+    table = release_feed.render_latest_table(entries, PAGE_URL)
+    rows = table.split("<tr>")[2:]
+
+    assert len(rows) == release_feed.LATEST_COUNT
+    assert "2026-01-15" in rows[0]
+    assert '<a href="web-app/">Web App</a>' in rows[0]
+    assert '<a href="web-app/#web-app-1-0-14">Web App 1.0.14</a>' in rows[0]
+    assert "https://" not in table
+
+
+def test_old_anchors_redirect_to_the_page_that_holds_the_entry(monkeypatch, tmp_path):
+    legacy = tmp_path / "legacy.json"
+    legacy.write_text(
+        '{"web-app-610": ["2026-01-05", "Web App 6.1.0"],'
+        ' "2026-01-05": ["2026-01-05", null],'
+        ' "web-app-600": ["2025-12-01", "Web App 6.0.0"]}',
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(release_feed, "LEGACY_ANCHORS_PATH", legacy)
+    entries = [
+        page_entry("Endpoint Agent 5.3.5", "2026-01-05", "endpoint-agent.md"),
+        page_entry("Web App 6.1.0", "2026-01-05", "web-app.md", anchor="web-app-610"),
+    ]
+
+    assert release_feed.legacy_redirects(entries, PAGE_URL) == {
+        "web-app-610": "web-app/#web-app-610",
+        # A date goes to the page of that date's first entry.
+        "2026-01-05": "endpoint-agent/#2026-01-05",
+        # "web-app-600" names no entry any more and is dropped.
+    }
+
+
+def test_every_old_anchor_still_leads_somewhere(release_notes_entries):
+    """The split must not strand a single link that was already out there."""
+    import json
+
+    with open(release_feed.LEGACY_ANCHORS_PATH, encoding="utf-8") as handle:
+        legacy = json.load(handle)
+    redirects = release_feed.legacy_redirects(release_notes_entries, PAGE_URL)
+
+    assert set(redirects) == set(legacy)
+    rendered_ids = {
+        (entry.page_url, entry.anchor) for entry in release_notes_entries
+    } | {(entry.page_url, entry.date) for entry in release_notes_entries}
+    for anchor, target in redirects.items():
+        page, _, fragment = target.partition("#")
+        assert (PAGE_URL + page, fragment) in rendered_ids, anchor
+
+
+OVERVIEW_HTML = (
+    "<html><body><article><p>Intro</p>"
+    f"{release_feed.LATEST_MARKER}</article></body></html>"
+)
+
+
+def test_the_overview_gets_the_latest_releases_and_the_redirects(fresh_state):
+    fresh_state["entries"].append(
+        page_entry("Endpoint Agent 5.4.2", "2026-10-29", "endpoint-agent.md",
+                   anchor="endpoint-agent-542")
+    )
+    out = release_feed.on_post_page(
+        OVERVIEW_HTML, fake_page("index.md"), {"site_url": SITE_URL}
+    )
+    assert release_feed.LATEST_MARKER not in out
+    assert '<a href="endpoint-agent/#endpoint-agent-542">' in out
+    assert '"endpoint-agent-542": "endpoint-agent/#endpoint-agent-542"' in out
+    assert out.index("<script>") < out.index("</body>")
+
+
+def test_the_overview_must_say_where_the_latest_releases_go(fresh_state):
+    fresh_state["entries"].append(page_entry("Web App 1.0.0", "2026-01-05", "web-app.md"))
+    with pytest.raises(PluginError, match="must contain"):
+        release_feed.on_post_page(
+            "<html><body></body></html>", fake_page("index.md"), {"site_url": SITE_URL}
+        )
+
+
+def test_other_pages_are_left_untouched_after_rendering(fresh_state):
+    fresh_state["entries"].append(page_entry("Web App 1.0.0", "2026-01-05", "web-app.md"))
+    assert release_feed.on_post_page(
+        OVERVIEW_HTML, fake_page("web-app.md"), {"site_url": SITE_URL}
+    ) is None

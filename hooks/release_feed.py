@@ -16,7 +16,9 @@ Into `<site>/10-release-notes/`:
 
 Source shape
 ------------
-The release notes are one page of stacked entries, not one page per release:
+The release notes are one page per component (`RELEASE_PAGES`), each a stack
+of entries rather than one page per release, plus an overview (`index.md`)
+that holds no entries of its own:
 
     ## 2026-08-11                 <- date group (YYYY-MM-DD)
     ### Endpoint Agent 5.3.5      <- one feed item
@@ -62,6 +64,14 @@ any build whose site_url is not production - a `mkdocs serve` preview above all
 a local preview links to its own feeds instead of 404ing against production. A
 production build changes nothing.
 
+The overview
+------------
+`on_post_page` fills two things into the overview once every page has been
+rendered: the latest releases across all pages (at `LATEST_MARKER`), and a
+script that sends an anchor of the old single page
+(`/10-release-notes/#endpoint-agent-542`) to the page that entry lives on now.
+The old anchors are frozen in `release_notes_legacy_anchors.json`.
+
 Failure behavior
 ----------------
 A structural regression (the page renders but yields no entries, a `###`
@@ -71,7 +81,9 @@ worse than a red build. A build that never rendered the release notes page at
 all - `mkdocs serve --dirtyreload` after editing an unrelated page - is not an
 error; the feeds are simply left alone.
 
-Cost: one regex pass over a ~60 KB page plus ~90 KB of XML written at
+An entry on a page other than its component's also fails the build.
+
+Cost: one regex pass over ~130 KB of pages plus ~90 KB of XML written at
 `on_post_build`. Negligible against a full site build.
 """
 
@@ -96,9 +108,8 @@ except ImportError:  # pragma: no cover - exercised only outside a MkDocs build
 
 log = logging.getLogger("mkdocs.hooks.release_feed")
 
-# Source directory (relative to docs_dir) and the page that holds the entries.
+# Source directory (relative to docs_dir) holding the release notes pages.
 RELEASE_NOTES_DIR = "10-release-notes"
-RELEASE_NOTES_SRC = f"{RELEASE_NOTES_DIR}/index.md"
 
 # Feed URLs are written out in full in the documentation source and in
 # mkdocs.yml, because a relative link to a generated (non-page) file does not
@@ -195,6 +206,61 @@ COMPONENTS: tuple[Component, ...] = (
 
 COMPONENTS_BY_SLUG = {c.slug: c for c in COMPONENTS}
 
+
+@dataclass(frozen=True)
+class ReleasePage:
+    """One page of release notes under `docs/10-release-notes/`.
+
+    Every entry lives on the page of its primary component, so a reader who
+    only runs the endpoint agent reads only endpoint agent releases. Components
+    with too few releases to fill a page of their own share one.
+    """
+
+    filename: str
+    title: str
+    slugs: tuple[str, ...]
+
+
+RELEASE_PAGES: tuple[ReleasePage, ...] = (
+    ReleasePage(
+        filename="endpoint-agent.md",
+        title="Endpoint Agent",
+        slugs=("endpoint-agent",),
+    ),
+    ReleasePage(
+        filename="web-app.md",
+        title="Web App",
+        slugs=("web-app",),
+    ),
+    ReleasePage(
+        filename="adapters.md",
+        title="Adapters",
+        slugs=("adapters",),
+    ),
+    ReleasePage(
+        filename="extensions.md",
+        title="Extensions",
+        slugs=("extensions",),
+    ),
+    ReleasePage(
+        filename="platform.md",
+        title="Platform, CLI & SDKs",
+        slugs=(PLATFORM_SLUG, "cli", "sdk"),
+    ),
+)
+
+# The landing page: a guide to the component pages. It holds no entries.
+OVERVIEW_FILENAME = "index.md"
+
+_PAGES_BY_SLUG = {slug: page for page in RELEASE_PAGES for slug in page.slugs}
+if set(_PAGES_BY_SLUG) != set(COMPONENTS_BY_SLUG):
+    raise ValueError("every component must be assigned exactly one release page")
+
+
+def page_for_slug(slug: str) -> ReleasePage:
+    """The page that holds the entries whose primary component is `slug`."""
+    return _PAGES_BY_SLUG[slug]
+
 # Headings that legitimately name more than one component. Keys are normalized
 # spellings, values are canonical slugs.
 MULTI_COMPONENT_ALIASES: dict[str, tuple[str, ...]] = {
@@ -256,6 +322,10 @@ class Heading:
     @property
     def primary_component(self) -> str:
         return self.components[0]
+
+    @property
+    def page(self) -> ReleasePage:
+        return page_for_slug(self.primary_component)
 
     @property
     def is_canonical(self) -> bool:
@@ -333,15 +403,20 @@ class Entry:
     is_breaking: bool = False
     source_line: int = 0
     categories: tuple[str, ...] = field(default_factory=tuple)
+    # Absolute URL of the rendered page the entry is on (set from the HTML).
+    page_url: str = ""
 
     @property
     def title(self) -> str:
         return self.heading.title
 
     def guid(self, host: str) -> str:
+        """Built from (date, heading) only, never the page, so moving an entry
+        between pages does not re-notify anyone."""
         return f"tag:{host},{self.date}:release/{guid_slug(self.title)}"
 
-    def link(self, page_url: str) -> str:
+    def link(self, page_url: str = "") -> str:
+        page_url = self.page_url or page_url
         return f"{page_url}#{self.anchor}" if self.anchor else page_url
 
 
@@ -428,6 +503,20 @@ def parse_markdown_entries(text: str) -> list[Entry]:
     return entries
 
 
+def read_release_notes(directory: str | Path) -> list[Entry]:
+    """Parse every release notes page in `directory`, newest first.
+
+    Reads every `.md` file rather than only `RELEASE_PAGES`, so a directory
+    taken from before the per-component split (one `index.md` holding every
+    entry) yields the same entries as one taken after it. The overview page
+    holds no entries and contributes nothing.
+    """
+    entries: list[Entry] = []
+    for path in sorted(Path(directory).glob("*.md")):
+        entries += parse_markdown_entries(path.read_text(encoding="utf-8"))
+    return sort_entries(entries)
+
+
 def _markdown_is_breaking(body_markdown: str) -> bool:
     return any(
         level == 4 and normalize_name(title) in BREAKING_HEADINGS
@@ -457,6 +546,11 @@ _H4_RE = re.compile(r"<h4\b[^>]*>(?P<inner>.*?)</h4>", re.DOTALL)
 # Dropping the character costs nothing; publishing an invalid feed costs the
 # entire delivery.
 _INVALID_XML_CHARS_RE = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f]")
+
+# HTML comments carry nothing a reader can see. The one that matters is the
+# glossary snippet MkDocs appends to every page, which would otherwise ride
+# along in the body of whichever entry comes last on each page.
+_HTML_COMMENT_RE = re.compile(r"<!--.*?-->\s*", re.DOTALL)
 
 
 def _heading_text(inner_html: str) -> str:
@@ -555,6 +649,7 @@ def extract_html_entries(page_html: str, base_url: str) -> list[Entry]:
         body = page_html[match.end():end]
         body = _HEADERLINK_RE.sub("", body)
         body = _INVALID_XML_CHARS_RE.sub("", body)
+        body = _HTML_COMMENT_RE.sub("", body)
         body = absolutize_html_urls(body, base_url).strip()
         body = _TRAILING_RULE_HTML_RE.sub("", body).strip()
 
@@ -567,6 +662,7 @@ def extract_html_entries(page_html: str, base_url: str) -> list[Entry]:
                 anchor=match.group("id"),
                 is_breaking=_html_is_breaking(body),
                 categories=heading.components,
+                page_url=base_url,
             )
         )
 
@@ -752,7 +848,13 @@ def _assert_matches_source(entries: list[Entry], docs_dir: Path) -> None:
         )
 
 
-_STATE: dict[str, object] = {"entries": [], "rendered": False, "feed_base": ""}
+_STATE: dict[str, object] = {
+    "entries": [],
+    "rendered": False,
+    "feed_base": "",
+    # Release notes file name -> absolute URL of its rendered page.
+    "page_urls": {},
+}
 
 
 def on_config(config, **_kwargs):
@@ -790,14 +892,15 @@ def on_pre_build(config, **_kwargs):
     """Reset per-build state (`mkdocs serve` reuses the process across builds)."""
     _STATE["entries"] = []
     _STATE["rendered"] = False
+    _STATE["page_urls"] = {}
 
 
 def on_page_content(html, page, config, **_kwargs):
     """Collect entries from every rendered release-notes page. Modifies nothing.
 
-    Scoped to the whole `10-release-notes/` directory rather than just the
-    canonical page, so a page added there is published rather than silently
-    left out of the feeds. Links are resolved against each page's own URL.
+    Scoped to the whole `10-release-notes/` directory rather than a fixed list
+    of pages, so a page added there is published rather than silently left out
+    of the feeds. Links are resolved against each page's own URL.
     """
     if not page.file.src_uri.startswith(f"{RELEASE_NOTES_DIR}/"):
         return None
@@ -806,10 +909,134 @@ def on_page_content(html, page, config, **_kwargs):
     if not site_url:
         raise PluginError("release feed: site_url must be set in mkdocs.yml")
 
+    filename = page.file.src_uri[len(RELEASE_NOTES_DIR) + 1:]
     page_url = urljoin(site_url, page.url)
-    _STATE["entries"].extend(extract_html_entries(html, page_url))
+    entries = extract_html_entries(html, page_url)
+    for entry in entries:
+        expected = entry.heading.page.filename
+        if filename != expected:
+            raise PluginError(
+                f"release feed: '{entry.title}' ({entry.date}) is on "
+                f"{RELEASE_NOTES_DIR}/{filename} but belongs on "
+                f"{RELEASE_NOTES_DIR}/{expected}, the page of its component"
+            )
+    _STATE["entries"].extend(entries)
+    _STATE["page_urls"][filename] = page_url
     _STATE["rendered"] = True
     return None
+
+
+# Where the overview page shows the most recent releases across every page.
+LATEST_MARKER = "<!-- release-notes:latest -->"
+LATEST_COUNT = 12
+
+# Anchors the single release notes page published before it was split into
+# one page per component: `{old anchor: [date, entry heading or null]}`. A null
+# heading is a `## YYYY-MM-DD` date group. Frozen - it describes links already
+# out in the wild, and is never regenerated.
+LEGACY_ANCHORS_PATH = Path(__file__).with_name("release_notes_legacy_anchors.json")
+
+
+def _relative_link(entry: Entry, from_url: str) -> str:
+    """Link from the overview to an entry. Every page shares one directory."""
+    target = entry.link()
+    return target[len(from_url):] if target.startswith(from_url) else target
+
+
+def render_latest_table(entries: list[Entry], overview_url: str) -> str:
+    """The overview's "latest releases" table, newest first."""
+    rows = []
+    for entry in sort_entries(entries)[:LATEST_COUNT]:
+        page = entry.heading.page
+        page_link = _relative_link(
+            Entry(date=entry.date, heading=entry.heading, page_url=entry.page_url),
+            overview_url,
+        )
+        rows.append(
+            "<tr>"
+            f"<td>{html.escape(entry.date)}</td>"
+            f'<td><a href="{html.escape(page_link)}">{html.escape(page.title)}</a></td>'
+            f'<td><a href="{html.escape(_relative_link(entry, overview_url))}">'
+            f"{html.escape(entry.title)}</a></td>"
+            "</tr>"
+        )
+    return (
+        '<div class="md-typeset__scrollwrap"><div class="md-typeset__table"><table>'
+        "<thead><tr><th>Date</th><th>Component</th><th>Release</th></tr></thead>"
+        f"<tbody>{''.join(rows)}</tbody></table></div></div>"
+    )
+
+
+def legacy_redirects(entries: list[Entry], overview_url: str) -> dict[str, str]:
+    """Map each anchor of the old single page to where that content lives now.
+
+    A date anchor goes to that date on the page of its first entry. An anchor
+    whose entry no longer exists is dropped: the reader stays on the overview,
+    which is where the link pointed anyway.
+    """
+    legacy = json.loads(LEGACY_ANCHORS_PATH.read_text(encoding="utf-8"))
+    by_key = {(entry.date, entry.title): entry for entry in entries}
+    first_of_date: dict[str, Entry] = {}
+    for entry in entries:  # Page order, so the first entry of each date wins.
+        first_of_date.setdefault(entry.date, entry)
+
+    redirects = {}
+    for anchor, (date, title) in legacy.items():
+        if title is None:
+            entry = first_of_date.get(date)
+            if entry is None:
+                continue
+            target = Entry(date=date, heading=entry.heading, page_url=entry.page_url, anchor=date)
+        else:
+            target = by_key.get((date, title))
+            if target is None:
+                continue
+        redirects[anchor] = _relative_link(target, overview_url)
+    return redirects
+
+
+# Runs on load and on every hash change, and only for an anchor the overview
+# does not have itself, so it never hijacks a link to the page's own sections.
+_REDIRECT_SCRIPT = """<script>
+(function () {
+  var moved = %s;
+  function follow() {
+    var id = decodeURIComponent(location.hash.slice(1));
+    if (id && moved[id] && !document.getElementById(id)) {
+      location.replace(moved[id]);
+    }
+  }
+  follow();
+  window.addEventListener("hashchange", follow);
+})();
+</script>"""
+
+
+def on_post_page(output, page, config, **_kwargs):
+    """Fill in the overview: the latest releases and the old-anchor redirects.
+
+    Done here rather than in the Markdown because it needs every entry with
+    the anchor MkDocs actually gave it, and MkDocs renders the content of every
+    page (`on_page_content`) before it writes the first one out.
+    """
+    if page.file.src_uri != f"{RELEASE_NOTES_DIR}/{OVERVIEW_FILENAME}":
+        return None
+    entries: list[Entry] = _STATE["entries"]  # type: ignore[assignment]
+    if not entries:
+        return None
+
+    overview_url = urljoin(config["site_url"], page.url)
+    if LATEST_MARKER not in output:
+        raise PluginError(
+            f"release feed: {RELEASE_NOTES_DIR}/{OVERVIEW_FILENAME} must contain "
+            f"'{LATEST_MARKER}' where the latest releases are listed"
+        )
+    output = output.replace(LATEST_MARKER, render_latest_table(entries, overview_url), 1)
+
+    # Script-safe JSON: "</" cannot close the <script> element early.
+    redirects = json.dumps(legacy_redirects(entries, overview_url), sort_keys=True)
+    script = _REDIRECT_SCRIPT % redirects.replace("</", "<\\/")
+    return output.replace("</body>", script + "\n</body>", 1)
 
 
 def on_post_build(config, **_kwargs):
@@ -824,7 +1051,7 @@ def on_post_build(config, **_kwargs):
 
     if not entries:
         raise PluginError(
-            f"release feed: no entries parsed from {RELEASE_NOTES_SRC}. The page "
+            f"release feed: no entries parsed from {RELEASE_NOTES_DIR}/. The page "
             "structure ('## YYYY-MM-DD' then '### Component Version') has changed."
         )
 
@@ -881,6 +1108,7 @@ def on_post_build(config, **_kwargs):
         ),
     )
 
+    page_urls: dict[str, str] = _STATE["page_urls"]  # type: ignore[assignment]
     for component in COMPONENTS:
         subset = [e for e in entries if component.slug in e.categories]
         if not subset:
@@ -891,7 +1119,9 @@ def on_post_build(config, **_kwargs):
             render_rss(
                 title=f"LimaCharlie Release Notes: {component.name}",
                 description=component.description,
-                page_url=page_url,
+                page_url=page_urls.get(
+                    page_for_slug(component.slug).filename, page_url
+                ),
                 feed_url=feed_url(filename),
                 entries=subset,
                 generator=generator,

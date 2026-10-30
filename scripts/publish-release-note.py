@@ -2,17 +2,18 @@
 """Publish a release note entry to the documentation.
 
 Called by the publish-release-notes GitHub Actions workflow. Inserts an entry
-into docs/10-release-notes/index.md, under the ``## YYYY-MM-DD`` heading for the
-release date, creating that date heading in the right chronological position
-when it is the first release of the day.
+into the component's page under docs/10-release-notes/ (``endpoint-agent.md``,
+``web-app.md``, ...), under the ``## YYYY-MM-DD`` heading for the release date,
+creating that date heading in the right chronological position when it is the
+first release of the day.
 
-That page is the single source the RSS/JSON feeds are generated from
-(``hooks/release_feed.py``), so an entry written anywhere else would be
-published but never announced. The ``--component`` slug is resolved to its
-canonical display name through the same component registry the feeds use, which
-is what keeps a machine-published entry in the same feed as a hand-written one
-(``--component sensor`` and ``--component endpoint-agent`` both land under
-``### Endpoint Agent``).
+Those pages are the source the RSS/JSON feeds are generated from
+(``hooks/release_feed.py``), and the build fails on an entry that is not on its
+component's page. The ``--component`` slug is resolved to its canonical display
+name, and from there to its page, through the same component registry the feeds
+use, which is what keeps a machine-published entry in the same feed as a
+hand-written one (``--component sensor`` and ``--component endpoint-agent`` both
+land under ``### Endpoint Agent`` on ``endpoint-agent.md``).
 
 Usage:
     python scripts/publish-release-note.py \\
@@ -41,11 +42,11 @@ from release_feed import (  # noqa: E402
     PLATFORM_SLUG,
     iter_markdown_headings,
     normalize_name,
+    page_for_slug,
     parse_markdown_entries,
 )
 
 DOCS_DIR = os.path.join(os.path.dirname(__file__), "..", "docs", "10-release-notes")
-INDEX_MD = os.path.join(DOCS_DIR, "index.md")
 
 # Allowlisted hosts for the release URL. A URL is accepted only when its host is
 # one of these exactly or a subdomain of one (e.g. docs.limacharlie.io). The
@@ -106,6 +107,12 @@ def canonical_component(component: str) -> str:
         file=sys.stderr,
     )
     sys.exit(1)
+
+
+def page_path(component: str) -> str:
+    """Path of the page that holds releases of a canonical component name."""
+    slug = next(c.slug for c in COMPONENTS if c.name == component)
+    return os.path.join(DOCS_DIR, page_for_slug(slug).filename)
 
 
 def build_entry(component: str, version: str, url: str, body: str) -> list[str]:
@@ -310,13 +317,14 @@ def main():
     body = sanitize_body(args.body)
     component = canonical_component(args.component)
 
-    if not os.path.exists(INDEX_MD):
-        print(f"Release notes page not found: {INDEX_MD}", file=sys.stderr)
+    path = page_path(component)
+    if not os.path.exists(path):
+        print(f"Release notes page not found: {path}", file=sys.stderr)
         sys.exit(1)
 
     dt = parse_date(args.date)
-    if insert_entry(INDEX_MD, component, args.version, dt, args.url, body):
-        print(f"Published: {component} {args.version} -> {INDEX_MD}")
+    if insert_entry(path, component, args.version, dt, args.url, body):
+        print(f"Published: {component} {args.version} -> {path}")
     else:
         print(f"Already published, nothing to do: {component} {args.version}")
 
