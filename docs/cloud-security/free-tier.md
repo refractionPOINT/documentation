@@ -120,14 +120,14 @@ findings look cleaner than they are.
   allowance is left for it.
 - **Every pause shows its reason on the connection itself**, whichever rule
   caused it: a user or resource limit, a connection scoped to more than one
-  account, project or subscription, a configured Azure subscription or AWS
-  account missing from the account list Azure or AWS returned, or more than 5
-  connections (only the first 5 by name are collected). A plan-limit pause
-  means the connection has reached a free-tier limit; it does not by itself
-  mean the credential failed. A pause for the configured subscription or
-  account instead asks you to check its ID or access. The connection's status
-  in the `scan-status` API carries the same explanation as its error, with the
-  sync not running.
+  account, project or subscription, a configured Azure subscription or an AWS
+  role's own account missing from the account list Azure or AWS returned, or
+  more than 5 connections (only the first 5 by name are collected). A
+  plan-limit pause means the connection has reached a free-tier limit; it does
+  not by itself mean the credential failed. A pause for the configured
+  subscription or account instead asks you to check the subscription ID or the
+  role, and its access. The connection's status in the `scan-status` API
+  carries the same explanation as its error, with the sync not running.
 - **Adding a connection can pause an existing one.** Because order follows the
   connection name, a new connection whose name sorts earlier is evaluated first
   and can use up the allowance, so a later connection that synced before is
@@ -214,10 +214,10 @@ Its last inventory is kept and shown as paused. It resumes by itself after you
 free up allowance or upgrade.
 
 An Azure or AWS connection also pauses when its credential can no longer see
-the configured subscription or account, for example after its Azure Reader
-access was removed. Fix the ID or the access and it retries automatically
-within about a day; correcting the subscription ID starts a fresh sync right
-away.
+the configured subscription or the role's own account, for example after its
+Azure Reader access was removed. Fix the subscription ID, the role ARN or the
+access and it retries automatically within about a day; correcting the
+subscription ID or role ARN starts a fresh sync right away.
 
 ### Can I use a few user accounts and many cloud resources?
 
