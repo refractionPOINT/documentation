@@ -77,12 +77,15 @@ Cloud project or a single Azure subscription.
   The other accounts and subscriptions the credential can see are not scanned
   and do not count toward your allowance.
 - **A connection that spans many scopes is paused.** That means a Google Cloud
-  connection scoped to an organization or a folder, an AWS connection set up to
-  scan the member accounts of an AWS Organization, and an Azure connection whose
-  credential can see several subscriptions but not the one it names (check that
-  the subscription ID is correct and that the credential can read it). The
-  connection's status explains which rule paused it and suggests connecting a
-  single account, project or subscription, or upgrading.
+  connection scoped to an organization or a folder, and an AWS connection set up
+  to scan the member accounts of an AWS Organization. The connection's status
+  explains which rule paused it and suggests connecting a single account,
+  project or subscription, or upgrading.
+- **An Azure connection must be able to read the subscription it names.** If the
+  subscription ID is wrong, or the credential has no access to it, Cloud
+  Security cannot narrow the connection to that subscription and does not sync
+  it as named. Check the ID and give the credential Reader access to that
+  subscription.
 
 Saving a connection scoped to a Google Cloud organization or folder, or one that
 sets up AWS member-account scanning, is rejected with an explanation of the
@@ -119,9 +122,10 @@ findings look cleaner than they are.
   paused too.** The same happens if an organization moves back to the free tier
   from a paid plan. Its last inventory is **kept but no longer updated**, and the
   connection shows as paused, so stale data is not mistaken for current data.
-  The allowance that inventory used stays reserved for it: connections that sort
-  after it do not gain that room while it is paused. Disabling or removing the
-  connection frees it.
+  When a free-tier connection grows past the limit, the allowance used by its
+  last successful sync stays reserved: connections that sort after it do not
+  gain that room while it is paused. Disabling or removing the connection frees
+  it.
 - **Paused connections are re-checked and resume on their own.** After the
   organization upgrades, a paused connection syncs again within about 15
   minutes, with no action on your part. The same happens when allowance is freed
@@ -170,15 +174,16 @@ causes are:
 - The connection would push the organization past **10 user accounts** or
   **250 other resources**. An Azure subscription backed by a busy Entra tenant
   is the usual cause, because every user and guest in the directory counts.
-- The credential can see several subscriptions but not the one the connection
-  names. Only the named subscription syncs on the free tier, so check that its
-  ID is correct and that the credential can read it.
-- The organization already has **5 connections**.
+- The credential cannot read the subscription the connection names. Check that
+  the subscription ID is correct and that the credential has Reader access to
+  it.
+- The organization has more than **5 connections**, for example after moving
+  back from a paid plan, and this one is not in the first 5 by name.
 - An earlier connection, in alphabetical order, used the allowance first. This
   includes a connection you added after this one synced.
 
 Re-entering credentials does not lift a plan limit. Remove a connection you no
-longer need, correct the subscription on the connection, or upgrade.
+longer need, fix the subscription ID or its access, or upgrade.
 
 ### Why is the number of user accounts higher than the number of people?
 

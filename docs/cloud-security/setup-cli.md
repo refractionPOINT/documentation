@@ -49,7 +49,7 @@ Cloud Security for free, with no trial and no expiry: up to **10 user accounts**
 connection covering a single AWS account, Google Cloud project or Azure
 subscription. The Overview page shows your usage, and
 [`GET /free-tier`](api-reference.md) reports the free-tier limits, current
-usage and any connections paused over a limit.
+usage and the connections paused over a user-account or resource limit.
 
 A connection that would push the organization over a limit is paused rather than
 partly synced: the reason appears on the connection in **Settings → Providers**
