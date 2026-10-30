@@ -616,6 +616,7 @@ nav:
       - Provider Setup:
           - Microsoft 365: email-security/provider-setup/microsoft-365.md
           - Google Workspace: email-security/provider-setup/google-workspace.md
+          - IMAP Mailboxes: email-security/provider-setup/imap.md
       - Messages & Triage: email-security/messages.md
       - Message Groups & Cases: email-security/groups.md
       - Bulk Remediation: email-security/remediation.md

@@ -239,7 +239,7 @@ templates:
 - Acknowledgement and templates are plain text, at most 4096 UTF-8 bytes, with no
   `<` or `>`. Resolution replies use fixed, escaped rendering.
 - Sending needs `Mail.Send` on Microsoft 365 or `https://mail.google.com/` on
-  Google Workspace. Automated senders never receive either reply.
+  Google Workspace. IMAP mailboxes cannot send, so replies are refused for them. Automated senders never receive either reply.
 - Resolution deliveries use a durable claim. A retry of one resolution does not
   send another reply; reopening and resolving again records a new resolution.
   If a provider-send outcome is uncertain, delivery is marked `ambiguous` and is

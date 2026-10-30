@@ -2,8 +2,8 @@
 
 --8<-- "includes/email-security-availability.md"
 
-Connect your organization's Microsoft 365 or Google Workspace mail to analyze
-messages for threats. You do not need to change mail routing or install software
+Connect your organization's Microsoft 365 or Google Workspace mail, or personal
+Gmail and other IMAP mailboxes, to analyze messages for threats. You do not need to change mail routing or install software
 on employees' computers. This walkthrough uses the web app. The provider guides offer **Web console**
 tabs for browser setup and **Cloud Shell / CLI** tabs if you prefer commands.
 No terminal is required for either provider.
@@ -19,8 +19,8 @@ Have these ready before subscribing:
 |---|---|
 | A LimaCharlie account and organization | Sign in to the console and select the organization that should hold the email data. An organization is your team's workspace. |
 | Permission to enable Email Security and configure it | Ask your LimaCharlie organization administrator if you cannot subscribe, save a secret, add a connection, or run its test. |
-| Administrator access to your mail provider | For Microsoft 365, someone must create an app registration and grant Microsoft Graph application permissions. For Google Workspace, you need a Workspace Super Admin and an administrator of a Google Cloud project. |
-| A few mailbox addresses for a first test | Choose mailboxes you administer and can send an ordinary test message to. Personal Gmail and Outlook.com accounts are not this setup path. |
+| Administrator access to your mail provider | For Microsoft 365, someone must create an app registration and grant Microsoft Graph application permissions. For Google Workspace, you need a Workspace Super Admin and an administrator of a Google Cloud project. For personal Gmail or another IMAP host, you need each mailbox's password (a Gmail app password). |
+| A few mailbox addresses for a first test | Choose mailboxes you administer and can send an ordinary test message to. Personal Gmail and other IMAP mailboxes connect through [IMAP Mailboxes](provider-setup/imap.md) instead, using an app password for each mailbox. |
 
 A **credential** is the key the product uses to access your mail provider. A
 **secret** is the securely stored copy of that credential in LimaCharlie. A
