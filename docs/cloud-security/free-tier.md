@@ -123,9 +123,11 @@ findings look cleaner than they are.
   from a paid plan. Its last inventory is **kept but no longer updated**, and the
   connection shows as paused, so stale data is not mistaken for current data.
   The allowance used by its last successful free-tier sync stays reserved.
-  After a paid plan, the reservation is based on what the paused sync observed,
-  up to **10 user accounts** and **250 other resources**. Connections that sort
-  after it do not gain that room while it is paused. Disabling or removing the
+  After a paid plan, the reservation is a capped estimate from the latest
+  paused sync, up to **10 user accounts** and **250 other resources**. If the
+  sync stopped before it could count everything, the full allowance is reserved
+  for any count that is incomplete. Connections that sort after it do not gain
+  that room while it is paused. Disabling or removing the
   connection frees the reservation.
 - **Paused connections are re-checked and resume on their own.** After the
   organization upgrades, a paused connection syncs again within about 15
