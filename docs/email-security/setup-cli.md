@@ -85,6 +85,7 @@ always referenced, never inlined into the connection record.
 |---|---|---|
 | Microsoft 365 | An Entra ID app registration with **application** permissions and a client secret | [Microsoft 365](provider-setup/microsoft-365.md) |
 | Google Workspace | A Google Cloud service account with **domain-wide delegation**, plus a Pub/Sub topic and subscription in the same project | [Google Workspace](provider-setup/google-workspace.md) |
+| IMAP (personal Gmail or any IMAP host) | A password or Gmail **app password** for each mailbox, stored as one secret per mailbox | [IMAP Mailboxes](provider-setup/imap.md) |
 
 !!! tip "The console renders your own setup guide"
     The setup steps, OAuth scopes and `gcloud` commands are served by the
@@ -99,6 +100,7 @@ always referenced, never inlined into the connection record.
     ```bash
     limacharlie mailsec onboarding --provider gworkspace --oid $OID
     limacharlie mailsec onboarding --provider m365 --oid $OID
+    limacharlie mailsec onboarding --provider imap --oid $OID
     ```
 
     Fill the Google commands in advance with your project details:
@@ -189,6 +191,10 @@ limacharlie hive set --hive-name mailsec_provider --key m365-prod \
     disabled `mailsec_provider` record is not a connection — nothing is
     discovered, subscribed or ingested — so a first connection that appears to
     do nothing is usually this.
+
+IMAP is saved the same way, but as one record that lists every mailbox, each
+with its own secret and no top-level `credentials`; see
+[IMAP Mailboxes](provider-setup/imap.md#connect-the-mailboxes).
 
 The full field reference — scope, provider-specific delivery mode, features — is in
 [Connecting Providers](providers.md).

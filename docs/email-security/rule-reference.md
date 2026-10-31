@@ -153,7 +153,7 @@ For example, MDM → sender → email → domain → root becomes
 - **When set**: optional object or pointer; a set numeric pointer can contain zero.
 
 Timestamps are RFC 3339 strings. `direction` is `inbound`, `outbound`, or
-`internal`; `provider` is `m365` or `gworkspace`. The verdict object is available
+`internal`; `provider` is `m365`, `gworkspace` or `imap`. The verdict object is available
 only after scoring. Recursive attachment children and attached messages remain
 subject to parser and analysis depth limits.
 

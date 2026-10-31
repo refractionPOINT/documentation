@@ -2,8 +2,8 @@
 
 --8<-- "includes/email-security-availability.md"
 
-LimaCharlie Email Security protects Microsoft 365 and Google Workspace mailboxes
-from inside the same tenant, permission model, telemetry lake and automation
+LimaCharlie Email Security protects Microsoft 365 and Google Workspace mailboxes,
+as well as personal Gmail and other IMAP mailboxes, from inside the same tenant, permission model, telemetry lake and automation
 surface as the rest of LimaCharlie. It connects to your mail provider's API —
 **no MX change, no mail routing change, nothing in the delivery path** — reads
 every message that arrives, judges it, explains the judgement, and can remediate
@@ -110,7 +110,7 @@ Read [collection and history coverage](pipeline.md#collection-and-history-covera
 | [How a Message Is Processed](pipeline.md) | The pipeline end to end: what is synchronous, what is stored, and how long it takes |
 | [Getting Started](getting-started.md) | Subscribe, connect a tenant, see the first judged message |
 | [Connecting Providers](providers.md) | The connection record, credentials, scope, delivery mode and the connection test |
-| [Microsoft 365](provider-setup/microsoft-365.md) · [Google Workspace](provider-setup/google-workspace.md) | Per-provider setup |
+| [Microsoft 365](provider-setup/microsoft-365.md) · [Google Workspace](provider-setup/google-workspace.md) · [IMAP Mailboxes](provider-setup/imap.md) | Per-provider setup |
 | [Messages & Triage](messages.md) | The queue, the drawer, actions and the audit trail |
 | [Bulk Remediation](remediation.md) | Acting on a set of messages you named: preview, confirm, execute, poll |
 | [Campaigns](campaigns.md) | Clustering and campaign-wide sweeps |
