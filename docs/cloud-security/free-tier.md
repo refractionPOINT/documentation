@@ -81,11 +81,22 @@ Cloud project or a single Azure subscription.
   to scan the member accounts of an AWS Organization. The connection's status
   explains which rule paused it and suggests connecting a single account,
   project or subscription, or upgrading.
-- **An Azure connection must be able to read the subscription it names.** If the
-  subscription ID is wrong, or the credential has no access to it, Cloud
-  Security cannot narrow the connection to that subscription and does not sync
-  it as named. Check the ID and give the credential Reader access to that
-  subscription.
+- **An Azure connection must be able to read the subscription it names.** If
+  Azure lists the credential's subscriptions and the named one is not among
+  them, Cloud Security pauses the connection before collecting anything. It
+  never syncs another subscription instead. The pause message names the
+  subscription and asks you to check the ID or grant Reader access. If the
+  subscription list cannot be read, Cloud Security attempts only the configured
+  subscription and shows any collection errors on the connection as usual. This
+  also applies when the credential can read the Entra ID directory but Azure
+  lists no subscription for it: the Azure connection pauses and syncs nothing,
+  Entra ID included. To collect Entra ID on its own, use an
+  [Entra ID connection](provider-setup/entra.md) instead.
+- **An AWS connection covers its role's own account.** When the role can list
+  its AWS Organization's accounts but its own account is missing, the connection
+  pauses without syncing anything. Its message names the account and asks you
+  to check the configured role and its access. If the Organization's account
+  list cannot be read, Cloud Security attempts only the role's own account.
 
 Saving a connection scoped to a Google Cloud organization or folder, or one that
 sets up AWS member-account scanning, is rejected with an explanation of the
@@ -109,11 +120,14 @@ findings look cleaner than they are.
   allowance is left for it.
 - **Every pause shows its reason on the connection itself**, whichever rule
   caused it: a user or resource limit, a connection scoped to more than one
-  account, project or subscription, or more than 5 connections (only the first 5
-  by name are collected). A paused connection is not a failed one: its
-  credentials are fine and nothing is wrong with the connection. The
-  connection's status in the `scan-status` API carries the same explanation as
-  its error, with the sync not running.
+  account, project or subscription, a configured Azure subscription or an AWS
+  role's own account missing from the account list Azure or AWS returned, or
+  more than 5 connections (only the first 5 by name are collected). A
+  plan-limit pause means the connection has reached a free-tier limit; it does
+  not by itself mean the credential failed. A pause for the configured
+  subscription or account instead asks you to check the subscription ID or the
+  role, and its access. The connection's status in the `scan-status` API
+  carries the same explanation as its error, with the sync not running.
 - **Adding a connection can pause an existing one.** Because order follows the
   connection name, a new connection whose name sorts earlier is evaluated first
   and can use up the allowance, so a later connection that synced before is
@@ -136,7 +150,9 @@ findings look cleaner than they are.
   for it, for example when you remove another connection. A connection paused
   because it is too large is otherwise counted again about once a day, so after
   you remove users or resources at the provider it can take up to a day to
-  resume.
+  resume. After you fix access for a configured-scope pause, the automatic
+  retry can also take up to about a day. Correcting the configured
+  subscription ID or role ARN starts a fresh sync right away.
 
 Nothing is deleted when a connection is paused, and its configuration and
 credential are untouched.
@@ -198,8 +214,14 @@ Entra ID account, an Okta account and an AWS IAM user is three accounts.
 
 It grew past the limit, the organization moved back to the free tier, or a
 connection added since then sorts earlier by name and used the allowance first.
-Its last inventory is kept and shown as paused. It resumes by itself after you free up
-allowance or upgrade.
+Its last inventory is kept and shown as paused. It resumes by itself after you
+free up allowance or upgrade.
+
+An Azure or AWS connection also pauses when its credential can no longer see
+the configured subscription or the role's own account, for example after its
+Azure Reader access was removed. Fix the subscription ID, the role ARN or the
+access and it retries automatically within about a day; correcting the
+subscription ID or role ARN starts a fresh sync right away.
 
 ### Can I use a few user accounts and many cloud resources?
 
