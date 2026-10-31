@@ -737,9 +737,22 @@ organization, across every connected mail tenant, not per connection.
 
 `GET /coverage`'s `entitlement` block reports `mailbox_cap`,
 `mailboxes_active`, `mailboxes_over_cap` and `mailbox_cap_reached` for a free
-organization, so the shortfall is a number rather than a discovery. The console
-shows the same numbers on the Email Security overview, for example
-*10 of 10 mailboxes protected, 4 not protected*.
+organization. `mailboxes_over_cap` counts mailboxes that are still protected
+above the limit while the trim catches up. It returns to zero after the trim;
+zero does not mean every discovered mailbox is protected.
+
+`mailboxes_held_by_cap` counts discovered mailboxes awaiting protection while
+the enforced mailbox cap is full. For example, after a trim, the organization
+can have 10 protected mailboxes, 4 discovered mailboxes awaiting protection,
+and `mailboxes_over_cap: 0`. The console shows the waiting count on the Email
+Security overview and in Settings.
+
+This is a current capacity signal, not a record of which mailboxes were trimmed.
+It includes mailboxes that have never been protected. It is zero when the plan
+is resolved and the enforced cap is not full, and absent when the plan cannot
+be resolved. Older service versions may also omit it; an absent count is unknown,
+not zero. A waiting mailbox may have other setup or provider issues, so raising
+the cap alone does not guarantee it will become protected.
 
 ### Protecting more than 10 mailboxes
 
