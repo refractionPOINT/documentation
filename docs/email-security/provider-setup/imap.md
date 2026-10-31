@@ -92,59 +92,48 @@ copy-and-delete, and to the periodic sweep for new mail.
 Each mailbox needs a `secret` record whose value is JSON with a `password` key,
 then all mailboxes go into one `mailsec_provider` record.
 
-=== "CLI"
+Store one secret per mailbox. `read -rs` takes the password without echoing it
+or saving it in shell history, and `jq` builds the secret record's envelope and
+escapes any special characters, without the password appearing in process
+arguments:
 
-    Store one secret per mailbox. `read -rs` takes the password without echoing it
-    or saving it in shell history, and `jq` builds the secret record's envelope and
-    escapes any special characters, without the password appearing in process
-    arguments:
+```bash
+read -rs IMAP_PASSWORD; printf %s "$IMAP_PASSWORD" \
+  | jq -Rs '{secret: ({password: .} | tojson)}' \
+  | limacharlie secret set --key imap-alice --enabled --oid $OID; unset IMAP_PASSWORD
+```
 
-    ```bash
-    read -rs IMAP_PASSWORD; printf %s "$IMAP_PASSWORD" \
-      | jq -Rs '{secret: ({password: .} | tojson)}' \
-      | limacharlie secret set --key imap-alice --enabled --oid $OID; unset IMAP_PASSWORD
-    ```
+Save the connection. The top-level `credentials` is left out, and each
+mailbox references its own secret:
 
-    Save the connection. The top-level `credentials` is left out, and each
-    mailbox references its own secret:
+```yaml
+# imap.yaml
+provider: imap
+imap:
+  mailboxes:
+    - address: alice@gmail.com
+      host: imap.gmail.com
+      port: 993
+      security: tls
+      credentials: hive://secret/imap-alice
+    - address: bob@mail.example.org
+      host: imap.example.org
+      port: 143
+      security: starttls
+      username: bob
+      credentials: hive://secret/imap-bob
+ingest:
+  mode: auto
+  backfill_days: 14
+```
 
-    ```yaml
-    # imap.yaml
-    provider: imap
-    imap:
-      mailboxes:
-        - address: alice@gmail.com
-          host: imap.gmail.com
-          port: 993
-          security: tls
-          credentials: hive://secret/imap-alice
-        - address: bob@mail.example.org
-          host: imap.example.org
-          port: 143
-          security: starttls
-          username: bob
-          credentials: hive://secret/imap-bob
-    ingest:
-      mode: auto
-      backfill_days: 14
-    ```
+```bash
+limacharlie hive set --hive-name mailsec_provider --key imap \
+  --input-file imap.yaml --enabled --oid $OID
+limacharlie mailsec connection test imap --oid $OID --output yaml
+```
 
-    ```bash
-    limacharlie hive set --hive-name mailsec_provider --key imap \
-      --input-file imap.yaml --enabled --oid $OID
-    limacharlie mailsec connection test imap --oid $OID --output yaml
-    ```
-
-    `hive set` creates records disabled unless you pass `--enabled`.
-
-=== "Web console"
-
-    Open **Email Security → Settings** and add an **IMAP mailboxes**
-    connection. For each mailbox, enter the address and choose a server preset:
-    **Gmail** fills in `imap.gmail.com`, port 993, TLS; **Other** lets you enter
-    the host, port and security. Paste the app password. The console saves it as
-    that mailbox's own secret, saves the connection, and offers the connection
-    test.
+`hive set` creates records disabled unless you pass `--enabled`.
 
 The same guide is available headless, with a Gmail variant and a generic-host
 variant:
@@ -165,12 +154,9 @@ Everything happens in the one record:
   `scope.exclude_addresses`.
 - **Change a password**: update that mailbox's secret. Nothing else changes.
 
-If you use the web console, it edits the list for you.
-
 ## The connection test
 
-`limacharlie mailsec connection test imap` (or **Run connection test** in the
-console) reports a block of checks **per mailbox**. Each check carries a
+`limacharlie mailsec connection test imap` reports a block of checks **per mailbox**. Each check carries a
 remediation when it fails. The checks cover:
 
 | Check | Required |
@@ -197,7 +183,7 @@ the capability that is reduced.
 | `trash_message` | Moves to the Trash folder |
 | `move_to_spam` | Moves to the Junk/Spam folder |
 | `restore_message` | Moves back to the folder it came from |
-| `banner_message` / `unbanner_message` | The message is **replaced**: a copy carrying the banner is added to the same folder, keeping its flags and date, and then the original is deleted. An interruption leaves a duplicate rather than a loss. The provider message id changes and the new one is stored. It follows the same message-rewrite rules as [Google Workspace](google-workspace.md#remediation-semantics) |
+| `banner_message` / `unbanner_message` | **Not available on Gmail mailboxes** (see below). On other IMAP hosts the message is **replaced**: a copy carrying the banner is added to the same folder, keeping its flags and date, and then the original is deleted. An interruption leaves a duplicate rather than a loss. The provider message id changes and the new one is stored. It follows the same message-rewrite rules as [Google Workspace](google-workspace.md#remediation-semantics) |
 
 Every action is idempotent: if the message is already where the action would
 put it, nothing moves. Message identifiers are tied to a folder, so they change
@@ -211,6 +197,12 @@ remediated.
 
 ## What does not work
 
+- **Warning banners on Gmail mailboxes.** Adding or removing a warning banner is
+  refused for personal Gmail accounts connected over IMAP (the request fails with
+  a clear error and is not retried), because Gmail's IMAP server does not let the
+  product replace a message safely. Quarantine, trash, spam and restore work as
+  usual. Banners work on other IMAP hosts. Gmail banner support is planned for a
+  later release; no date is committed.
 - **Reporter auto-replies.** IMAP is read and move only; the product cannot send
   mail from an IMAP mailbox. The [reporter reply](../user-reports.md#reporter-replies)
   policy is refused for these mailboxes by name. Reports themselves can still be

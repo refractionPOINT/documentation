@@ -121,7 +121,7 @@ always referenced, never inlined into the connection record.
 
 Open **Email Security → Settings** and add a connection. The wizard collects the
 provider, the saved credential name, the mailbox scope and — for Google Workspace — the
-project ID used to name its Pub/Sub topic and subscription, and for IMAP the list of mailboxes with an app password for each. It shows the personalized setup guide alongside,
+project ID used to name its Pub/Sub topic and subscription. It shows the personalized setup guide alongside,
 and saves the connection. The connection diagnostic then opens if you have permission to test; click **Run connection test** to verify access.
 Failed saves are reported inline on the review step, with the validator's own
 wording rather than a generic error.
