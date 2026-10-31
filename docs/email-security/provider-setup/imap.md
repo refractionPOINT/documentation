@@ -183,7 +183,7 @@ the capability that is reduced.
 | `trash_message` | Moves to the Trash folder |
 | `move_to_spam` | Moves to the Junk/Spam folder |
 | `restore_message` | Moves back to the folder it came from |
-| `banner_message` / `unbanner_message` | **Not available on Gmail mailboxes** (see below). On other IMAP hosts the message is **replaced**: a copy carrying the banner is added to the same folder, keeping its flags and date, and then the original is deleted. An interruption leaves a duplicate rather than a loss. The provider message id changes and the new one is stored. It follows the same message-rewrite rules as [Google Workspace](google-workspace.md#remediation-semantics) |
+| `banner_message` / `unbanner_message` | The message is **replaced** by a copy carrying the warning banner at the top. The provider message id changes and the new one is stored. On a generic IMAP host the copy is added to the same folder, keeping its flags and date, and then the original is deleted once the copy is confirmed; an interruption leaves a duplicate rather than a loss. On Gmail (`imap.gmail.com`) the copy keeps the original's labels and star and the original is moved to Gmail's **Trash**, never deleted by the product (Gmail empties Trash after 30 days). Removing the banner moves the original back out of Trash and trashes the bannered copy; if the original is no longer in Trash, the original is rebuilt from the copy. Applying or removing a banner on a Gmail mailbox with many labels can take up to about a minute. It follows the same message-rewrite rules as [Google Workspace](google-workspace.md#remediation-semantics) |
 
 Every action is idempotent: if the message is already where the action would
 put it, nothing moves. Message identifiers are tied to a folder, so they change
@@ -197,12 +197,6 @@ remediated.
 
 ## What does not work
 
-- **Warning banners on Gmail mailboxes.** Adding or removing a warning banner is
-  refused for personal Gmail accounts connected over IMAP (the request fails with
-  a clear error and is not retried), because Gmail's IMAP server does not let the
-  product replace a message safely. Quarantine, trash, spam and restore work as
-  usual. Banners work on other IMAP hosts. Gmail banner support is planned for a
-  later release; no date is committed.
 - **Reporter auto-replies.** IMAP is read and move only; the product cannot send
   mail from an IMAP mailbox. The [reporter reply](../user-reports.md#reporter-replies)
   policy is refused for these mailboxes by name. Reports themselves can still be
