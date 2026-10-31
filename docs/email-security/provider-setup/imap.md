@@ -135,8 +135,8 @@ limacharlie mailsec connection test imap --oid $OID --output yaml
 
 `hive set` creates records disabled unless you pass `--enabled`.
 
-The same guide is available headless, with a Gmail variant and a generic-host
-variant:
+The `onboarding` command prints these setup steps, with a Gmail variant and a
+generic-host variant:
 
 ```bash
 limacharlie mailsec onboarding --provider imap --oid $OID
