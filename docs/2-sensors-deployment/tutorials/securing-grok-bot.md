@@ -32,7 +32,7 @@ Your Bot will ask you to do a few things along the way:
 | **Detection rules** | Ten rules written for AI agents. See [The detection rules](#the-detection-rules). |
 | **Alerts in plain English** | Each detection is sent to your Security Manager Bot, which tells you what happened, what it means and what to do. |
 | **Email Security** (optional) | LimaCharlie checks the mail that arrives in the mailboxes you pick for phishing, scams and malware. It starts in alert-only mode: it raises alerts and never moves or deletes a message. |
-| **Email alerts** (optional) | Three more detection rules send a message to your Security Manager when a message is judged malicious or suspicious, including when a slower check changes the verdict later. |
+| **Email alerts** (optional) | Four more detection rules send a message to your Security Manager when a message is judged malicious or suspicious, including when a slower check changes the verdict later. |
 | **Keep-alive routine** | Grok Bot computers do not start anything on boot, so a routine checks every 15 minutes that LimaCharlie is running, and restarts it if needed. |
 
 An alert looks like this:
@@ -361,7 +361,7 @@ Skip this step if the user chose **(d)** in Step 3. Otherwise, do all of it, one
 
 The second command must show `plan: free` and `mailbox_cap: 10`. If it shows anything else, stop and tell the user what it says. Protecting mailboxes on a paid plan costs money, and that is the user's decision.
 
-**12.2 Add the email alert rules.** Email Security records what it finds as events, and events are not alerts. These three rules raise an alert when a message is judged malicious or suspicious, either when its first analysis ends or later, when a slower check changes the verdict, and the output from Step 10 carries it to the Security Manager.
+**12.2 Add the email alert rules.** Email Security records what it finds as events, and events are not alerts. These four rules raise an alert when a message is judged malicious or suspicious, either when its first analysis ends or later, when a slower check changes the verdict, and the output from Step 10 carries it to the Security Manager.
 
 ```bash
 curl -fsSL -o /tmp/lc-grok-bot-email.yaml https://docs.limacharlie.io/assets/files/grok-bot/limacharlie-grok-bot-email.yaml
@@ -375,7 +375,7 @@ print(len(rules), "email rules:", ", ".join(rules))
 '
 ```
 
-It must print `3 email rules: grokbot-email-late-verdict, grokbot-email-malicious, grokbot-email-suspicious`.
+It must print `4 email rules: grokbot-email-late-malicious, grokbot-email-late-suspicious, grokbot-email-malicious, grokbot-email-suspicious`.
 
 **12.3 Connect the mailbox.** Follow the part that matches the user's answer. For all of them, the password or key goes from the user into LimaCharlie directly, never through the chat. LimaCharlie stores it as a [secret](../../7-administration/config-hive/secrets.md), and the connection only refers to the secret by name.
 
@@ -529,13 +529,14 @@ Priority goes from 1 (for your information) to 5 (look now).
 
 The rules ignore ordinary agent work such as `curl`, `git`, `npm`, `pip`, `python3 -c` and headless Chrome page fetches. Each rule ships with tests: sample events it must catch, and ordinary commands, including the keep-alive script's own, that it must ignore.
 
-If you protect your email, three more rules in [`limacharlie-grok-bot-email.yaml`](../../assets/files/grok-bot/limacharlie-grok-bot-email.yaml) turn Email Security's verdicts into alerts:
+If you protect your email, four more rules in [`limacharlie-grok-bot-email.yaml`](../../assets/files/grok-bot/limacharlie-grok-bot-email.yaml) turn Email Security's verdicts into alerts:
 
 | Rule | Priority | Fires when |
 | --- | --- | --- |
 | `grokbot-email-malicious` | 4 | Email Security judges a message in one of your protected mailboxes to be malicious, for example phishing or malware. |
 | `grokbot-email-suspicious` | 2 | Email Security finds signs common in scams but is not sure. |
-| `grokbot-email-late-verdict` | 4 | A slower check that finishes after the first analysis, such as opening links or scanning attachments, changes a message's verdict to malicious or suspicious. |
+| `grokbot-email-late-malicious` | 4 | A slower check that finishes after the first analysis, such as opening links or scanning attachments, finds a message malicious. |
+| `grokbot-email-late-suspicious` | 2 | A slower check finds a message suspicious. It stays quiet if the message was already judged malicious or suspicious. |
 
 These alerts name the mailbox and link to the detection, but they leave out the sender and the subject, because strangers write those. You read them in the alert details.
 
