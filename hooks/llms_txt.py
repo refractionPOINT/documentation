@@ -1,12 +1,15 @@
 """MkDocs hook: write a llmstxt.org-style index to <site>/llms.txt at build time.
 
 Wired in via `hooks:` in mkdocs.yml. The generated file is purely derived from
-mkdocs.yml's nav and each page's first H1, so it is never committed to git.
+mkdocs.yml's nav, each page's first H1 and its optional front-matter
+`description`, so it is never committed to git.
 """
 from __future__ import annotations
 
 import re
 from pathlib import Path
+
+import yaml
 
 
 def _first_h1(md_path: Path) -> str | None:
@@ -18,6 +21,26 @@ def _first_h1(md_path: Path) -> str | None:
             if m:
                 return m.group(1).strip()
     return None
+
+
+def _front_matter_description(md_path: Path) -> str | None:
+    """Return the `description:` from a page's YAML front matter, if any."""
+    if not md_path.exists():
+        return None
+    text = md_path.read_text(encoding="utf-8")
+    m = re.match(r"^---\r?\n(.*?)\r?\n---\r?\n", text, re.DOTALL)
+    if not m:
+        return None
+    try:
+        meta = yaml.safe_load(m.group(1))
+    except yaml.YAMLError:
+        return None
+    if not isinstance(meta, dict):
+        return None
+    desc = meta.get("description")
+    if not isinstance(desc, str):
+        return None
+    return " ".join(desc.split()) or None
 
 
 def _page_url(site_url: str, md_rel: str) -> str:
@@ -77,7 +100,10 @@ def render(site_name: str, site_url: str, site_description: str, nav: list, docs
             for label, md_rel in leaves:
                 title = _first_h1(docs_dir / md_rel) or label
                 url = _page_url(site_url, md_rel)
-                if title.lower() == label.lower():
+                description = _front_matter_description(docs_dir / md_rel)
+                if description:
+                    lines.append(f"- [{label}]({url}): {description}")
+                elif title.lower() == label.lower():
                     lines.append(f"- [{label}]({url})")
                 else:
                     lines.append(f"- [{label}]({url}): {title}")

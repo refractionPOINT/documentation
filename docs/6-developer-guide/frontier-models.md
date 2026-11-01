@@ -9,6 +9,8 @@ The CLI is the recommended integration for agents that aren't Claude Code. Two t
 
 The [MCP server](mcp-server.md) can be added alongside the CLI when you want structured tools with typed results, or used on its own for clients that can't run shell commands.
 
+New to LimaCharlie? Paste one line into your assistant and let it [onboard you](../1-getting-started/ai-assistant-setup.md).
+
 ## The CLI in 60 seconds
 
 ```bash

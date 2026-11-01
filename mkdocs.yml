@@ -64,6 +64,10 @@ plugins:
       redirect_maps:
         # Short link handed to Grok Bot users ("secure my Grok Bot")
         'grok-bot.md': '2-sensors-deployment/tutorials/securing-grok-bot.md'
+        # Short links handed to AI assistants ("set me up with LimaCharlie")
+        'ai-setup.md': '1-getting-started/ai-assistant-setup.md'
+        'claude.md': '1-getting-started/limacharlie-with-claude.md'
+        'codex.md': '1-getting-started/limacharlie-with-codex.md'
         # Extension landing pages (linked from emails)
         'docs/lc-extensions.md': '5-integrations/extensions/limacharlie/index.md'
         'docs/third-party-extensions.md': '5-integrations/extensions/third-party/index.md'
@@ -234,6 +238,10 @@ nav:
       - Overview: 1-getting-started/index.md
       - What is LimaCharlie?: 1-getting-started/what-is-limacharlie.md
       - Quickstart: 1-getting-started/quickstart.md
+      - Set Up with an AI Assistant:
+          - Set Up with Claude or Codex: 1-getting-started/ai-assistant-setup.md
+          - LimaCharlie with Claude: 1-getting-started/limacharlie-with-claude.md
+          - LimaCharlie with Codex: 1-getting-started/limacharlie-with-codex.md
       - Core Concepts: 1-getting-started/core-concepts.md
       - Starting an MSSP — Walkthrough: 1-getting-started/mssp-walkthrough.md
       - Tutorials:
