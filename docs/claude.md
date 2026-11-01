@@ -12,7 +12,7 @@ Paste this into Claude:
 Set me up with LimaCharlie by following https://docs.limacharlie.io/ai-setup/
 ```
 
-That page is the playbook Claude follows. The rest of this page covers how to give Claude the access it needs. Do this first if you can, because it lets Claude do more on its own.
+That page is the playbook Claude follows. It is a normal web page, so Claude can open it directly. The rest of this page covers how to give Claude the access it needs. Do this first if you can, because it lets Claude do more on its own.
 
 ## Which Claude do you use?
 
@@ -37,7 +37,7 @@ Two optional extras:
     claude mcp add --transport http limacharlie https://mcp.limacharlie.io/mcp
     ```
 
-- **Plugin.** Adds ready-made skills for day-to-day work after setup. See [Connecting AI Assistants](../6-developer-guide/mcp-server.md#option-1-claude-code-plugin-recommended).
+- **Plugin.** Adds ready-made skills for day-to-day work after setup. See [Connecting AI Assistants](6-developer-guide/mcp-server.md#option-1-claude-code-plugin-recommended).
 
 ## Claude Desktop and claude.ai
 
@@ -49,10 +49,10 @@ Two optional extras:
     https://mcp.limacharlie.io/mcp
     ```
 
-4. Choose **Continue**, then sign in to LimaCharlie when asked.
+4. Choose **Continue**, accept the detected authentication settings, choose **Continue** again, pick **Sign in now**, then choose **Add** and sign in to LimaCharlie when asked.
 5. In a new chat, turn the connector on with the **+** button, then **Connectors**. Paste the prompt above.
 
-Menu names change. Anthropic's article on [custom connectors](https://support.claude.com/en/articles/11175166-getting-started-with-custom-connectors-using-remote-mcp) has the current ones. On Team and Enterprise plans an owner has to add the connector first. A free Claude plan allows one custom connector.
+Menu names change. Anthropic's article on [custom connectors](https://support.claude.com/en/articles/11175166-getting-started-with-custom-connectors-using-remote-mcp) has the current ones. On Team and Enterprise plans an owner has to add the connector first, under **Organization settings**, then **Connectors**. Members then choose **Connect** under **Customize**, then **Connectors**. A free Claude plan allows one custom connector.
 
 Because Claude cannot run commands in this setup, expect it to ask you to click through some screens in the [LimaCharlie web app](https://app.limacharlie.io). It tells you exactly where.
 
@@ -67,6 +67,6 @@ Claude does not need your passwords or keys in the chat. If it asks for one, ask
 
 ## Related
 
-- [Set up LimaCharlie with an AI assistant](ai-assistant-setup.md), the full playbook
-- [LimaCharlie with Codex](limacharlie-with-codex.md)
-- [Connecting AI Assistants](../6-developer-guide/mcp-server.md), the reference for every connection option
+- [Set up LimaCharlie with an AI assistant](ai-setup.md), the full playbook
+- [LimaCharlie with Codex](codex.md)
+- [Connecting AI Assistants](6-developer-guide/mcp-server.md), the reference for every connection option
