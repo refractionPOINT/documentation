@@ -33,7 +33,7 @@ For commands which emit a report/reply event type from the agent, the correspond
 | [force\_sync](#force_sync) | FORCE\_SYNC\_REP | ☑️ | ☑️ | ☑️ |  |  |
 | [hidden\_module\_scan](#hidden_module_scan) | [HIDDEN\_MODULE\_DETECTED](edr-events.md#hidden_module_detected) |  | ☑️ | ☑️ |  |  |
 | [history\_dump](#history_dump) | [HISTORY\_DUMP\_REP](edr-events.md#history_dump_rep) | ☑️ | ☑️ | ☑️ | ☑️ | ☑️ |
-| [log\_get](#log_get) | N/A |  | ☑️ |  |  |  |
+| [log\_get](#log_get) | [LOG\_GET\_REP](edr-events.md#log_get_rep) | ☑️ | ☑️ | ☑️ |  |  |
 | logoff | N/A | ☑️ | ☑️ | ☑️ |  |  |
 | [mem\_find\_handle](#mem_find_handle) | [MEM\_FIND\_HANDLES\_REP](edr-events.md#mem_find_handles_rep) |  | ☑️ |  |  |  |
 | [mem\_find\_string](#mem_find_string) | [MEM\_FIND\_STRING\_REP](edr-events.md#mem_find_string_rep) | ☑️ | ☑️ | ☑️ |  |  |
@@ -131,16 +131,18 @@ limacharlie task send --sid <SID> --task 'app_control_policy'
 
 Collect one or more artifacts from a sensor and upload them to Artifact Collection.
 
-Exactly one of `--file`, `--source` or `--root-dir` must be given. `--root-dir`
+Exactly one of `--file` or `--root-dir` must be given. `--root-dir`
 selects the bounded multi-file mode, which walks a directory tree and uploads
 every file matching the include expressions, subject to the budgets below.
+
+To collect Windows Event Logs or macOS Unified Logs, either copy the log file with `--file`
+(see the `log_get` example below) or use an Artifact Collection rule for continuous collection.
 
 **Platforms:** macOS | Windows | Linux
 
 **Parameters:**
 
 - `--file`: Single file path to collect from the sensor
-- `--source`: OS-specific artifact source to collect (for example a Windows Event Log channel)
 - `--root-dir`: Root directory for bounded multi-file retrieval
 - `-x, --file-exp` (optional): Glob to retrieve under `--root-dir`, repeatable; defaults to all files
 - `-X, --exclude-exp` (optional): Glob to exclude under `--root-dir`, repeatable
@@ -1016,26 +1018,28 @@ limacharlie sensor task <SID> history_dump
 
 ### log_get
 
-Retrieve Windows Event Logs or macOS Unified Logs from the endpoint.
+Alias of [`artifact_get`](#artifact_get): it accepts the same parameters and returns the same `LOG_GET_REP` response.
 
-**Platforms:** Windows (Event Logs) | macOS (Unified Logs)
+To retrieve a Windows Event Log once, collect its `.evtx` file with `--file`. If the file is locked by the
+operating system, the sensor falls back to raw disk acquisition.
 
-**Parameters:**
+**Platforms:** macOS | Windows | Linux
 
-- `source` (Windows required): Event log source name (e.g., "Security", "System")
-- `predicate` (macOS optional): Unified log filter predicate
+**Parameters:** Same as [`artifact_get`](#artifact_get).
 
-**Response Event:** LOG_GET_REP
+**Response Event:** [LOG_GET_REP](edr-events.md#log_get_rep)
 
 **Usage Example:**
 
 ```bash
-# Windows
-limacharlie sensor task <SID> log_get --source "Security"
-
-# macOS
-limacharlie sensor task <SID> log_get --predicate "eventType == logEvent"
+limacharlie sensor task <SID> log_get --file 'C:\Windows\System32\winevt\Logs\Security.evtx'
 ```
+
+For continuous collection of Windows Event Logs (`wel://<Channel>:<filter>`) or macOS Unified Logs
+(`mul://<predicate>`), use Artifact Collection rules instead. See
+[Ingesting Windows Event Logs](../2-sensors-deployment/tutorials/windows-event-logs.md),
+[macOS Unified Logs](../2-sensors-deployment/tutorials/macos-unified-logs.md) and the
+[Artifact extension](../5-integrations/extensions/limacharlie/artifact.md).
 
 ---
 
