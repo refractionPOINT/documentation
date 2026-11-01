@@ -135,8 +135,8 @@ Exactly one of `--file` or `--root-dir` must be given. `--root-dir`
 selects the bounded multi-file mode, which walks a directory tree and uploads
 every file matching the include expressions, subject to the budgets below.
 
-To collect Windows Event Logs or macOS Unified Logs, either copy the log file with `--file`
-(see the `log_get` example below) or use an Artifact Collection rule for continuous collection.
+To collect a Windows Event Log once, copy its `.evtx` file with `--file` (see the `log_get` example below).
+For continuous collection of Windows Event Logs or macOS Unified Logs, use an Artifact Collection rule.
 
 **Platforms:** macOS | Windows | Linux
 
@@ -1020,8 +1020,8 @@ limacharlie sensor task <SID> history_dump
 
 Alias of [`artifact_get`](#artifact_get): it accepts the same parameters and returns the same `LOG_GET_REP` response.
 
-To retrieve a Windows Event Log once, collect its `.evtx` file with `--file`. If the file is locked by the
-operating system, the sensor falls back to raw disk acquisition.
+To retrieve a Windows Event Log once, collect its `.evtx` file with `--file`. On Windows, if the file is locked by
+the operating system, the sensor reads it through its kernel component when available.
 
 **Platforms:** macOS | Windows | Linux
 
