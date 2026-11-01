@@ -13,14 +13,20 @@
 # moves, so it always comes back as the same sensor.
 #
 # It prints one JSON line and saves it to /workspace/.limacharlie/status.json:
+#   "started"  the first successful start on this computer (setup)
 #   "ok"       everything was already running
 #   "restored" something was missing and is now back
 #   "problem"  something is still missing; "detail" says what
+#
+# The first successful run leaves a marker file in /workspace/.limacharlie. It
+# survives moves like the rest of /workspace, so a later run that has to start
+# the sensor again is reported as "restored", not as a first start.
 set -u
 
 LC_HOME=/workspace/.limacharlie
 SENSOR_DIR="$LC_HOME/sensor"
 STATUS_FILE="$LC_HOME/status.json"
+STARTED_MARKER="$LC_HOME/first-start-done"
 
 report() {
   local line policy detail
@@ -95,7 +101,12 @@ if [ "$connected" != true ]; then
   exit 1
 fi
 
-if [ "$restored" = true ]; then
+if [ ! -e "$STARTED_MARKER" ]; then
+  # A redirect inside a subshell, not touch or chmod: the sensor-tamper rule
+  # reports commands that touch files in the sensor folder.
+  (umask 022; : >"$STARTED_MARKER")
+  report started "$sensor" "$policy" "LimaCharlie started for the first time on this computer"
+elif [ "$restored" = true ]; then
   report restored "$sensor" "$policy" "the computer had restarted or moved; LimaCharlie is running again"
 else
   report ok "$sensor" "$policy" ""

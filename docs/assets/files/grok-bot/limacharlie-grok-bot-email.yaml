@@ -1,0 +1,179 @@
+# LimaCharlie email alert rules for Grok Bot
+# ==========================================
+#
+# Two Detection & Response (D&R) rules that turn Email Security's verdicts into
+# alerts for the Security Manager. Only needed if you protect your email with
+# LimaCharlie Email Security (the optional email step of the Grok Bot guide).
+#
+# Push them into your organization with:
+#
+#   limacharlie sync push --config-file limacharlie-grok-bot-email.yaml --hive-dr-general
+#
+# Like the other Grok Bot rules, this only adds or updates the rules named
+# "grokbot-*" below and never deletes anything else in your org.
+#
+# Why these rules exist
+# ---------------------
+# Email Security records what it finds as events (EMAIL_MESSAGE,
+# EMAIL_ANALYSIS_COMPLETE and so on). Events are not alerts: nothing reaches an
+# alert output until a rule reports a detection. These rules report one
+# detection per message when the final verdict is "malicious" or "suspicious".
+# EMAIL_ANALYSIS_COMPLETE is used because it carries the final verdict, after
+# the slower checks (attachment scans, link detonation) have finished.
+#
+# Safe by design
+# --------------
+# The metadata below is written by this file, not copied from the message. The
+# sender, the subject and the body of a suspicious email are written by an
+# attacker, so they never go into the alert text that the Security Manager
+# reads. The alert says which mailbox and links to the detection, where the
+# person can read the sender and subject themselves.
+#
+# Each rule has `tests`, which LimaCharlie runs every time the rule is saved.
+
+version: 3
+hives:
+  dr-general:
+
+    grokbot-email-malicious:
+      data:
+        detect:
+          event: EMAIL_ANALYSIS_COMPLETE
+          op: is
+          path: event/revision/verdict
+          value: malicious
+          case sensitive: false
+        respond:
+          - action: report
+            name: Malicious email
+            priority: 4
+            suppression:
+              # The final verdict can be delivered more than once, so report
+              # each analysis once.
+              max_count: 1
+              period: 720h
+              is_global: true
+              keys:
+                - grokbot-email-malicious
+                - '{{ .event.completion_id }}'
+            metadata:
+              title: A message in one of your mailboxes looks like phishing or malware
+              what_it_means: >-
+                LimaCharlie Email Security judged a message that reached one of
+                your protected mailboxes to be malicious, for example a
+                phishing message that tries to steal a password or a message
+                that carries malware. Email Security only raised this alert. It
+                has not moved or deleted the message, so the message is still
+                in the mailbox.
+              what_to_do: >-
+                Do not click links, open attachments or reply. Open the alert
+                details to see who sent it and the subject, then delete the
+                message or report it as phishing in your mail app. If you
+                already clicked a link or typed a password, change that
+                password now and turn on two-step verification for the account.
+        tests:
+          match:
+            - - event:
+                  completion_id: 5d0e6d63-0c6c-4a43-8e7e-3f5f4a7a0001
+                  msg_uuid: 0a8d6d1e-71a6-4d2a-9f7e-6a2b1c3d4e01
+                  mailbox:
+                    address: user@example.com
+                  revision:
+                    seq: 0
+                    mode: auto
+                    verdict: malicious
+                    score: 95
+                routing: &email_complete
+                  event_type: EMAIL_ANALYSIS_COMPLETE
+                  hostname: user@example.com
+                  plat: 436207616
+            - - event:
+                  completion_id: 5d0e6d63-0c6c-4a43-8e7e-3f5f4a7a0002
+                  revision:
+                    verdict: Malicious
+                routing: *email_complete
+          non_match:
+            - - event:
+                  completion_id: 5d0e6d63-0c6c-4a43-8e7e-3f5f4a7a0003
+                  revision:
+                    verdict: benign
+                routing: *email_complete
+            - - event:
+                  completion_id: 5d0e6d63-0c6c-4a43-8e7e-3f5f4a7a0004
+                  revision:
+                    verdict: suspicious
+                routing: *email_complete
+            - - event:
+                  completion_id: 5d0e6d63-0c6c-4a43-8e7e-3f5f4a7a0005
+                  revision:
+                    verdict: graymail
+                routing: *email_complete
+      usr_mtd:
+        enabled: true
+        expiry: 0
+        tags:
+          - grokbot
+        comment: Email Security judged a message in a protected mailbox to be malicious.
+
+    grokbot-email-suspicious:
+      data:
+        detect:
+          event: EMAIL_ANALYSIS_COMPLETE
+          op: is
+          path: event/revision/verdict
+          value: suspicious
+          case sensitive: false
+        respond:
+          - action: report
+            name: Suspicious email
+            priority: 2
+            suppression:
+              max_count: 1
+              period: 720h
+              is_global: true
+              keys:
+                - grokbot-email-suspicious
+                - '{{ .event.completion_id }}'
+            metadata:
+              title: A message in one of your mailboxes looks suspicious
+              what_it_means: >-
+                LimaCharlie Email Security found signs in a message that are
+                common in scams, such as a sender pretending to be someone
+                else or a link that does not go where it says. It is not sure
+                the message is harmful. Email Security only raised this alert
+                and has not moved or deleted the message.
+              what_to_do: >-
+                Open the alert details to see who sent it and the subject. If
+                you were not expecting it, do not click links or open
+                attachments, and delete it or report it as phishing. If you
+                know the sender, check with them by another route before you
+                act on what the message asks.
+        tests:
+          match:
+            - - event:
+                  completion_id: 5d0e6d63-0c6c-4a43-8e7e-3f5f4a7a0011
+                  mailbox:
+                    address: user@example.com
+                  revision:
+                    seq: 0
+                    mode: auto
+                    verdict: suspicious
+                    score: 60
+                routing: *email_complete
+          non_match:
+            - - event:
+                  completion_id: 5d0e6d63-0c6c-4a43-8e7e-3f5f4a7a0012
+                  revision:
+                    verdict: benign
+                routing: *email_complete
+            - - event:
+                  completion_id: 5d0e6d63-0c6c-4a43-8e7e-3f5f4a7a0013
+                  revision:
+                    verdict: malicious
+                routing: *email_complete
+      usr_mtd:
+        enabled: true
+        expiry: 0
+        tags:
+          - grokbot
+        comment: Email Security judged a message in a protected mailbox to be suspicious.

@@ -1549,8 +1549,16 @@ hives:
         detect:
           target: deployment
           event: enrollment
-          op: exists
-          path: routing/sid
+          op: and
+          rules:
+            - op: exists
+              path: routing/sid
+            # Email Security (the optional email step) enrolls one sensor per
+            # protected mailbox. Those come from LimaCharlie itself and use
+            # their own key, so they are not new devices.
+            - op: is platform
+              name: email
+              not: true
         respond:
           - action: report
             name: New device joined your account
@@ -1596,6 +1604,15 @@ hives:
                 routing:
                   event_type: NEW_PROCESS
                   sid: a75cc927-bf28-4178-a42d-25ecc8a6be81
+            # A mailbox joining Email Security (platform "email").
+            - - event:
+                  host_name: user@example.com
+                routing:
+                  event_type: enrollment
+                  sid: 5b2f3a64-3c0e-4b32-9a46-2f0d9a1e7c10
+                  iid: 0f6ad2c1-8a65-4a3c-9c11-6d3b6b0c9e55
+                  plat: 436207616
+                  arch: 7
       usr_mtd:
         enabled: true
         expiry: 0
