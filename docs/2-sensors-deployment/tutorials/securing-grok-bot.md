@@ -389,7 +389,7 @@ Send the user this message, filled in:
 > 1. Make sure **2-Step Verification** is on for your Google account.
 > 2. Open <https://myaccount.google.com/apppasswords>, name the password `LimaCharlie`, choose **Create** and copy the 16 letters.
 > 3. Open `https://app.limacharlie.io/orgs/OID/secrets-manager` and sign in with the same account you used with me. Choose **Add Secret**.
-> 4. In **Name**, type `grokbot-imap-1`. In **Secret**, type exactly `{"password": "` then your 16 letters, then `"}`. Keep **Enabled** on and choose **Create**.
+> 4. In **Name**, type `grokbot-imap-1`. In **Secret**, type exactly `{"password": "` then your 16 letters, then `"}`. Use straight quotes: a phone keyboard may turn them into curly ones (“ ”), which LimaCharlie cannot read, so a computer is easier. Keep **Enabled** on and choose **Create**.
 > 5. Tell me "done". Nothing else.
 
 For another IMAP host, also ask for its server name (for example `imap.example.org`) and whether it uses port `993` (the usual) or `143`, and ask the user to use an app-specific password if the host offers one.
@@ -428,7 +428,7 @@ rm -f /tmp/lc-imap.yaml
 /workspace/.limacharlie-cli/limacharlie mailsec connection test imap --output yaml
 ```
 
-`ok: true` means it can sign in and read the mailbox. If a check fails, it names the problem and the fix in `remediation`. The usual cause is a wrong or revoked app password: ask the user to open the secret in the Secrets Manager, replace the password the same way and save, then run the test again. The [IMAP page](../../email-security/provider-setup/imap.md) lists the rest.
+`ok: true` means it can sign in and read the mailbox. If a check fails, it names the problem and the fix in `remediation`. If it says the secret must be JSON, the quotes or braces were mistyped, often turned into curly quotes by a phone keyboard. The usual cause otherwise is a wrong or revoked app password: ask the user to open the secret in the Secrets Manager, replace the password the same way and save, then run the test again. The [IMAP page](../../email-security/provider-setup/imap.md) lists the rest.
 
 #### (b) Microsoft 365 and (c) Google Workspace
 
