@@ -9,7 +9,7 @@ Example:
 
 ```text
 slack_api_token: xoxb-your-bot-token
-slack_channel: #detections
+slack_channel: "#detections"
 ```
 
 ## Provisioning

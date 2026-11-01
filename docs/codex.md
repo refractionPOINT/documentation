@@ -26,7 +26,15 @@ Codex runs commands in a sandbox. OpenAI's documentation says the agent runs wit
     network_access = true
     ```
 
-    You may also need to add the two folders as writable.
+    To let it write `~/.local` and `~/.limacharlie.d`, add `writable_roots` to the same table with full paths. Replace `YOU` with your user name, and do not rely on `~` being expanded:
+
+    ```toml
+    [sandbox_workspace_write]
+    network_access = true
+    writable_roots = ["/home/YOU/.local", "/home/YOU/.limacharlie.d"]
+    ```
+
+    On macOS the home folder is `/Users/YOU`. Codex keeps the installation key in a `.limacharlie-setup` folder inside your working folder, so that folder needs no extra setting.
 
 Check OpenAI's [approvals and security page](https://learn.chatgpt.com/docs/agent-approvals-security) and the rest of the [Codex documentation](https://learn.chatgpt.com/docs) for the current setting names. Do not use a mode that disables the sandbox and approvals for this setup.
 
