@@ -266,13 +266,13 @@ The alert only carries text written by the rules, never the raw command line or 
 
 ### Step 11: Send a test alert
 
-Contact a request-catcher site. This sends nothing and triggers the rule for sites used to hand data to someone else:
+Contact a request-catcher site. This sends nothing and triggers the rule for sites used to hand data to someone else. The name is different on every run, because the rule reports each site only once an hour:
 
 ```bash
-curl -s -o /dev/null https://webhook.site/ || true
+curl -s -o /dev/null "https://lc-test-$(date +%s).requestcatcher.com/" || true
 ```
 
-Within about two minutes the alert routine should receive the alert. Ask the user whether it arrived. If it did not, check that the **POST to** address and **key** were copied exactly, and that the routine is not paused.
+Within about two minutes the alert routine should receive the alert. Ask the user whether it arrived. If it did not, check that the **POST to** address and **key** were copied exactly, and that the routine is not paused, then run the same command again. It uses a new name each time, so the retry is not held back by the once-an-hour limit.
 
 ### Step 12: Finish
 
