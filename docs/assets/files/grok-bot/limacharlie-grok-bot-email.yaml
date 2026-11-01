@@ -1,7 +1,7 @@
 # LimaCharlie email alert rules for Grok Bot
 # ==========================================
 #
-# Two Detection & Response (D&R) rules that turn Email Security's verdicts into
+# Three Detection & Response (D&R) rules that turn Email Security's verdicts into
 # alerts for the Security Manager. Only needed if you protect your email with
 # LimaCharlie Email Security (the optional email step of the Grok Bot guide).
 #
@@ -18,8 +18,12 @@
 # EMAIL_ANALYSIS_COMPLETE and so on). Events are not alerts: nothing reaches an
 # alert output until a rule reports a detection. These rules report one
 # detection per message when the final verdict is "malicious" or "suspicious".
-# EMAIL_ANALYSIS_COMPLETE is used because it carries the final verdict, after
-# the slower checks (attachment scans, link detonation) have finished.
+# EMAIL_ANALYSIS_COMPLETE carries the verdict when the initial analysis window
+# closes. A check that finishes after that window (a slow link detonation or
+# attachment scan, AI triage, an analyst's re-judge) can still change the
+# verdict. It arrives as an EMAIL_VERDICT with after_complete set, and
+# grokbot-email-late-verdict reports it when the new verdict is malicious or
+# suspicious.
 #
 # Safe by design
 # --------------
@@ -177,3 +181,96 @@ hives:
         tags:
           - grokbot
         comment: Email Security judged a message in a protected mailbox to be suspicious.
+
+    grokbot-email-late-verdict:
+      data:
+        detect:
+          event: EMAIL_VERDICT
+          op: and
+          rules:
+            - op: is
+              path: event/after_complete
+              value: true
+            - op: or
+              rules:
+                - op: is
+                  path: event/revision/verdict
+                  value: malicious
+                  case sensitive: false
+                - op: is
+                  path: event/revision/verdict
+                  value: suspicious
+                  case sensitive: false
+        respond:
+          - action: report
+            name: Email verdict changed
+            priority: 4
+            suppression:
+              # Once per message and verdict, so a message raised from
+              # suspicious to malicious still alerts again.
+              max_count: 1
+              period: 720h
+              is_global: true
+              keys:
+                - grokbot-email-late-verdict
+                - '{{ .event.msg_uuid }}'
+                - '{{ .event.revision.verdict }}'
+            metadata:
+              title: A message in one of your mailboxes was found to be harmful after a closer look
+              what_it_means: >-
+                LimaCharlie Email Security finished a slower check on a message
+                that reached one of your protected mailboxes, such as opening
+                its links or scanning its attachments, and now judges it
+                malicious or suspicious. The alert details say which. Email
+                Security only raised this alert. It has not moved or deleted
+                the message, so the message is still in the mailbox.
+              what_to_do: >-
+                Do not click links, open attachments or reply. Open the alert
+                details to see who sent it and the subject, then delete the
+                message or report it as phishing in your mail app. If you
+                already clicked a link or typed a password, change that
+                password now and turn on two-step verification for the account.
+        tests:
+          match:
+            - - event:
+                  msg_uuid: 0a8d6d1e-71a6-4d2a-9f7e-6a2b1c3d4e21
+                  after_complete: true
+                  mailbox:
+                    address: user@example.com
+                  revision:
+                    seq: 2
+                    verdict: malicious
+                routing: &email_verdict
+                  event_type: EMAIL_VERDICT
+                  hostname: user@example.com
+                  plat: 436207616
+            - - event:
+                  msg_uuid: 0a8d6d1e-71a6-4d2a-9f7e-6a2b1c3d4e22
+                  after_complete: true
+                  revision:
+                    seq: 1
+                    verdict: Suspicious
+                routing: *email_verdict
+          non_match:
+            # A downgrade after a closer look is good news, not an alert.
+            - - event:
+                  msg_uuid: 0a8d6d1e-71a6-4d2a-9f7e-6a2b1c3d4e23
+                  after_complete: true
+                  revision:
+                    seq: 2
+                    verdict: benign
+                routing: *email_verdict
+            # Changes before the window closes are already in the
+            # EMAIL_ANALYSIS_COMPLETE verdict the other two rules read.
+            - - event:
+                  msg_uuid: 0a8d6d1e-71a6-4d2a-9f7e-6a2b1c3d4e24
+                  revision:
+                    seq: 1
+                    verdict: malicious
+                routing: *email_verdict
+      usr_mtd:
+        enabled: true
+        expiry: 0
+        tags:
+          - grokbot
+        comment: Email Security changed a message's verdict to malicious or suspicious after its initial analysis.
