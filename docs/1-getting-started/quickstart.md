@@ -11,6 +11,8 @@ That said, the majority of LimaCharlie users require basic endpoint detection an
 
 All of this can be done within our free tier, which offers full platform functionality for up to two (2) sensors. If you haven't already signed up for a free account, please do so at [app.limacharlie.io](https://app.limacharlie.io).
 
+Prefer to have an AI assistant do this for you? See [Set up LimaCharlie with an AI assistant](../ai-setup.md).
+
 Let's get started!
 
 ## Creating an Organization
