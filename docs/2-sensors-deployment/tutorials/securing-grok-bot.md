@@ -21,7 +21,7 @@ Your Bot will ask you to do a few things along the way:
 1. **Sign in to LimaCharlie** with your Google or Microsoft account. The Bot opens the sign-in page in its browser, and you choose **Take over** to pick your account.
 2. **Answer a few quick questions.** Where should alerts go? The default is a new Bot called **Security Manager**, so alerts stay out of your main Bot's chat. Do you want your email checked for phishing too? And later: should your Bot stay signed in to LimaCharlie, so you can [ask it about LimaCharlie later](#ask-your-bot-about-limacharlie)? The default is yes, unless your account already belongs to other LimaCharlie organizations. Then the Bot suggests signing out at the end.
 3. **Copy the alert routine's webhook address and key** from the Grok Bot desktop app, and paste them to your Bot.
-4. **Only if you chose email protection: type your mailbox password into LimaCharlie yourself.** For Gmail that is an app password, which you create in your Google account and type straight into the LimaCharlie web app on your own device. It never goes through the chat. For Microsoft 365 or Google Workspace, your IT administrator does a one-time approval.
+4. **Only if you chose email protection: give LimaCharlie your mailbox password without putting it in the chat.** For Gmail that is an app password, which you create in your Google account. The Bot sends you a secure input box to paste it into, or you type it into the LimaCharlie web app yourself. It never goes through the chat. For Microsoft 365 or Google Workspace, your IT administrator does a one-time approval.
 
 ## What you get
 
@@ -66,7 +66,7 @@ Rules for the whole setup:
 
 - **Never print, log or repeat an installation key, the webhook key or any command output that contains one.** The commands below write keys straight to files that only root can read.
 - Never open `chrome://policy` or the LimaCharlie extension's options page. They display the installation key.
-- **Never ask for, accept or repeat a mailbox password or app password in chat.** The user types it into the LimaCharlie web app themselves (Step 12). If they paste one into the chat anyway, do not repeat it, and tell them to delete that app password in their Google account and create a new one.
+- **Never ask for, accept or repeat a mailbox password or app password in chat.** The user pastes it into a secure input box or types it into the LimaCharlie web app themselves (Step 12). If they paste one into the chat anyway, do not repeat it, and tell them to delete that app password in their Google account and create a new one.
 - Ask the user only where a step says so. Keep your messages short and non-technical.
 
 ### Step 1: Check the computer
@@ -381,9 +381,39 @@ It must print `4 email rules: grokbot-email-late-malicious, grokbot-email-late-s
 
 #### (a) Personal Gmail or another IMAP mailbox
 
-Ask the user for the mailbox address, and for how many mailboxes they want to start with (one is fine; the free plan allows 10). An address is not a secret, so it is fine in chat. Use `OID` from Step 4 for the link below. For each mailbox, use a secret name such as `grokbot-imap-1`, `grokbot-imap-2`.
+Ask the user for the mailbox address, and for how many mailboxes they want to start with (one is fine; the free plan allows 10). An address is not a secret, so it is fine in chat. For each mailbox, use a secret name such as `grokbot-imap-1`, `grokbot-imap-2`.
 
-Send the user this message, filled in:
+For another IMAP host, also ask for its server name (for example `imap.example.org`) and whether it uses port `993` (the usual) or `143`, and ask the user to use an app-specific password if the host offers one.
+
+**The secure input box (use this when you can).** If you can show the user a secure, masked input box, use it instead of the Secrets Manager steps below. What the user types there is saved as an environment variable on your computer and never appears in the chat. Never print that variable, and never pass it on a command line. Send the user this message:
+
+> To check your Gmail, LimaCharlie needs an **app password**. That is a separate 16-letter password that only lets LimaCharlie read your mail, and you can delete it at any time. **Please do not send it to me in the chat.**
+>
+> 1. Make sure **2-Step Verification** is on for your Google account.
+> 2. Open <https://myaccount.google.com/apppasswords>, name the password `LimaCharlie`, choose **Create** and copy the 16 letters.
+> 3. I'll send you a secure input box. What you type there never appears in the chat, and I never see it. Paste the 16 letters there.
+
+Open the secure input box and save the answer in a variable named `LC_IMAP_PASSWORD_1` (`LC_IMAP_PASSWORD_2` for the second mailbox, and so on). Then create the secret from it. This reads the variable, removes the spaces Google shows in app passwords, builds the JSON itself and hands it to LimaCharlie on standard input, so nothing is printed or written to disk. Change the variable name, the secret name and `gmail` (use `other` for an IMAP host other than Gmail, which keeps the password exactly as typed) to match the mailbox:
+
+```bash
+python3 - LC_IMAP_PASSWORD_1 grokbot-imap-1 gmail <<'EOF'
+import json, os, subprocess, sys
+var, key, kind = sys.argv[1:4]
+password = os.environ.get(var, "")
+password = "".join(password.split()) if kind == "gmail" else password.strip("\r\n")
+if not password:
+    sys.exit(var + " is empty or not set. Ask the user to fill in the secure input box again.")
+if kind == "gmail" and len(password) != 16:
+    sys.exit("This is not a 16-letter app password (%d characters). Ask the user to copy it again." % len(password))
+record = json.dumps({"data": {"secret": json.dumps({"password": password})}})
+done = subprocess.run(["/workspace/.limacharlie-cli/limacharlie", "secret", "set", "--key", key, "--enabled", "--output", "yaml"], input=record, text=True)
+sys.exit(done.returncode)
+EOF
+```
+
+It prints only the secret's name and ID, never the password. Do not use `secret set --value`, because that puts the password on the command line. Then check the secret and test the connection, as below.
+
+**The Secrets Manager (if you have no secure input box, or the user would rather do it themselves).** Use `OID` from Step 4 for the link below. Send the user this message, filled in:
 
 > To check your Gmail, LimaCharlie needs an **app password**. That is a separate 16-letter password that only lets LimaCharlie read your mail, and you can delete it at any time. **Please do not send it to me.** Do these steps on your own phone or computer:
 >
@@ -393,11 +423,9 @@ Send the user this message, filled in:
 > 4. In **Name**, type `grokbot-imap-1`. In **Secret**, type exactly `{"password": "` then your 16 letters, then `"}`. Use straight quotes: a phone keyboard may turn them into curly ones (“ ”), which LimaCharlie cannot read, so a computer is easier. Keep **Enabled** on and choose **Create**.
 > 5. Tell me "done". Nothing else.
 
-For another IMAP host, also ask for its server name (for example `imap.example.org`) and whether it uses port `993` (the usual) or `143`, and ask the user to use an app-specific password if the host offers one.
-
 If the user has no other device to do this on, offer the alternative: open the same Secrets Manager page in your own browser, ask the user to choose **Take over**, sign in if asked, type the secret themselves, choose **Create**, and then choose **I'm done**. Do not take screenshots or read the page while they type, and close the page afterwards. The text box shows what is typed, so the first way is safer.
 
-When the user says it is done, check that the secret exists and is enabled. This lists names only, never values. Do not run `secret get`.
+When the secret is created, either way, check that it exists and is enabled. This lists names only, never values. Do not run `secret get`.
 
 ```bash
 /workspace/.limacharlie-cli/limacharlie secret list --metadata-only --output json | python3 -c '
@@ -429,7 +457,7 @@ rm -f /tmp/lc-imap.yaml
 /workspace/.limacharlie-cli/limacharlie mailsec connection test imap --output yaml
 ```
 
-`ok: true` means it can sign in and read the mailbox. If a check fails, it names the problem and the fix in `remediation`. If it says the secret must be JSON, the quotes or braces were mistyped, often turned into curly quotes by a phone keyboard. The usual cause otherwise is a wrong or revoked app password: ask the user to open the secret in the Secrets Manager, replace the password the same way and save, then run the test again. The [IMAP page](../../email-security/provider-setup/imap.md) lists the rest.
+`ok: true` means it can sign in and read the mailbox. If a check fails, it names the problem and the fix in `remediation`. If it says the secret must be JSON, the quotes or braces were mistyped, often turned into curly quotes by a phone keyboard. The usual cause otherwise is a wrong or revoked app password: ask the user to paste it into the secure input box again and run the script again, or to open the secret in the Secrets Manager, replace the password the same way and save. Then run the test again. Once the test passes, LimaCharlie keeps its own copy, so delete the `LC_IMAP_PASSWORD_` variables if your settings let you. The [IMAP page](../../email-security/provider-setup/imap.md) lists the rest.
 
 #### (b) Microsoft 365 and (c) Google Workspace
 
