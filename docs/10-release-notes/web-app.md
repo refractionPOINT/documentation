@@ -5,6 +5,137 @@ Release notes for the LimaCharlie web application. For the latest releases of ev
 !!! tip "Subscribe"
     Get each release as it ships with the [Web App RSS feed](https://docs.limacharlie.io/10-release-notes/web-app.xml).
 
+## 2026-11-02
+
+### Web App 6.6.7
+
+IMAP mailboxes in Email Security, an Automation segment in AI cost reporting, clearer permission messages on AI pages, and a fix for a startup loader that could hang.
+
+#### New Features
+
+- **Email Security: IMAP mailboxes**: you can now protect personal Gmail (with an app password) or any IMAP host. The new "IMAP mailboxes" card in the provider picker creates one IMAP connection that lists all of its mailboxes. You can add, pause, and remove mailboxes. For each mailbox password, pick an existing secret or create a new one in the same field.
+- **AI usage and AI Spend: Automation segment**: the resolution mix now shows an Automation segment for cases handled only by automatic rules, auto-close, or API integrations. These cases are no longer counted as Human-only. They are not counted as analyst work or AI savings. The AI share, totals, and CSV export include them.
+- **AI pages: permission handling**: the AI Agents, AI Usage, Teams, and Sessions pages show a "Missing Permissions" message when a read is refused. The message names the permission.
+- **Email Security: mailboxes awaiting protection**: when the free mailbox limit is reached, the Overview attention banner and the Settings plan card show how many discovered mailboxes are still waiting for protection. This count does not change the protected usage or the over-the-limit numbers.
+- **White-labeled consoles**: on white-labeled consoles, users outside the brand's company no longer see the Billing and Cloud Security Fleet tabs. Opening those pages by URL redirects them to Organizations. A user with no organization is told to contact the brand, instead of getting a link to app.limacharlie.io.
+- **Onboarding questionnaire**: a new optional "Company or website" question. Leaving it blank keeps any value you already saved.
+
+#### Bug Fixes
+
+- Fixed the startup loader that could stay on the LimaCharlie logo screen when several console tabs were open.
+- Fleet Billing no longer shows a $0.00 dashboard and "Syncing tenants… 0/0" before "No billing access" while permissions load.
+- The AI Agents page no longer shows a raw "Failed to load ai agents" error when you lack `ai_agent.get.mtd`. It shows Missing Permissions.
+- Per-agent AI usage cards no longer treat a refused usage request as "no usage".
+- The Bots page now explains a collided auto-approve save in plain words: "This conversation was being changed at the same time, so nothing was saved. Try again."
+- A historical scan or cost estimate on a D&R or FP rule that cannot run now shows only the error. The empty "No match. Processed 0 events" panel is gone.
+- Editing an Email Security connection keeps the connection's own provider. It no longer switches non-Workspace providers to Microsoft 365.
+
+#### Academy
+
+- Course badges are now labelled "Course badge". The verify page says a course badge records completing a course level and is not a certification. Sharing a badge as a post still works.
+
+---
+## 2026-10-30
+
+### Web App 6.6.6
+
+Free tiers for Email Security and Cloud Security, a redesigned organization Diagram, several Cases fixes, and the launch of LimaCharlie Academy.
+
+#### New Features
+
+- **Email Security free plan**: the 14-day trial is replaced by a free plan with no time limit. Free organizations can protect up to 10 mailboxes.
+- **Cloud Security free tier**: the trial is replaced by a free tier with usage limits. The Overview and Settings → Providers show usage as user accounts, other resources, and connections. They also show an at-limit message, an upgrade button, and a list of paused connections. A connection paused by a limit shows "Paused: free tier limit", the limit it reached, and the date of its last inventory. It is no longer shown as Failed. The free tier covers 10 user accounts, 250 other resources, and 5 connections. Paid organizations see no limit information.
+- **Organization Diagram redesign**: the Diagram page uses the same look as Cloud Security Topology.
+- **Online and quota counts in organization lists**: the organization directory and the organization switcher show online sensors and quota usage separately, for example `3 (0/2)` under "Online (quota)". Large numbers use `k`, `M`, `B`, and `T`, and exact values show on hover. Names and search in the switcher work right away while the counts load.
+- **Sensor console command completion**: typing part of a command name lists every command that contains it. For example, `debug` lists `get_debug_data`. The highlighted entry has a left bar and bold text.
+- **Bots spending limits**: routine and bot spending limits follow your choice, including Unlimited, instead of defaulting to $1 per run and $5 per day.
+
+#### Bug Fixes
+
+- Cases settings show "Cases isn't enabled for this organization" with steps to enable the Cases extension, instead of "Failed to load case configuration".
+- Cases load errors show the message from the server instead of `[object Object]`.
+- The Cases Overview sends its report request once, after the list of organizations loads, instead of twice.
+- Time zone conversions use current time zone rules, including for Mexico, Egypt, Iran, Jordan, Syria, and Kazakhstan. Newer zones such as `Europe/Kyiv` no longer cause errors.
+
+#### Academy
+
+- **LimaCharlie Academy launch**: LimaCharlie Academy is live at [academy.limacharlie.io](https://academy.limacharlie.io). It has sign-in, a course catalog, course and step pages, badges, a profile page, scoreboards, and public badge verification.
+- **Lesson films**: a step's film plays above the lesson, and a course's intro film shows on the course page. The outline marks steps that have a film.
+- **Practice in your own organization**: courses with organization tasks ask whether to practice in your own organization or without one. "Check my organization" records the result.
+- **Language choice**: a language menu is in the header, on sign-in pages, and on the Profile page. Course content, badge titles, and feedback follow the chosen language. Share links keep the language.
+- **Report a problem**: course and step pages have a "Report a problem" button. The report includes the course and step.
+- The answer panel shows the question first, then the step data, then the input. The course sidebar section is now called "Additional resources".
+
+---
+
+## 2026-10-26
+
+### Web App 6.6.5
+
+The Cloud Security Entities page opens on the graph, and the User entity page gets a Directory panel.
+
+#### New Features
+
+- **Cloud Security Entities opens on the graph view**: the Entities page opens on the graph instead of the table. The List/Graph toggle switches between them. Links with `view=list` still open the table.
+- **Directory panel on the User entity page**: the Cloud Security User page shows a Directory panel for each directory source behind the user (Entra ID, Google Workspace, Okta).
+- **Eligible Entra roles**: the Directory panel shows an "Eligible (PIM)" row for Entra roles the account can activate but does not hold. Standing directory roles now count as admin roles.
+
+#### Bug Fixes
+
+- The Resolution column on the Vulnerabilities CVEs table and the per-host findings table is no longer sortable. Sorting by it returned an error on CVEs and did nothing on the per-host table.
+- Bots chat autoscroll follows new messages, and "Jump to latest" goes to the end of the chat.
+
+---
+
+## 2026-10-24
+
+### Web App 6.6.4
+
+Email Security and Code Security are now available to everyone. Email Security policies have a new layout, analyst views show more context, and Cloud Security Providers shows more detail per connection.
+
+#### New Features
+
+- **Email Security and Code Security general availability**: Email Security and Code Security are now available to every organization. Both show in the onboarding product picker, in the sidebar, and on their own pages. An organization that uses only Email Security now opens on Email Security.
+- **Email Security policies rework**: the page is now called "Policies", and each policy section has its own URL.
+- **Email Security analyst context**: user reports and campaigns show the message, verdict context, sender and authentication evidence, payload, and affected mailboxes before technical identifiers. Analysts can copy indicators and open Messages searches for a sender, domain, link, attachment, or Reply-To address. These searches include mail the provider marked as spam. Campaign exposure counts come from the server, and capped counts are marked as lower bounds. Campaign actions show how many messages are expected to change. Resolving a report now needs an explicit disposition.
+- **Google accounts on Email Security VIPs**: admins can add up to eight Google account emails to a VIP entry in Email Security settings. The message drawer shows "Verified VIP account" when the verdict used the account.
+- **Cloud Security Providers sync status**: each connection shows its own sync status, including Failed, overdue, last sweep, and diff counts. Before, connections of one type shared one status.
+- **Cloud Security Providers "needs attention" line**: a connection that finished but could not read part of the account shows a yellow line, for example "2 areas not read". The line says what to grant or enable. Click it to copy the fix steps.
+- **Cloud Security policy navigation**: the "Switch policy" dropdown moves into the breadcrumbs. The policy index shows grouped cards with icons, as in Email Security.
+- **Sensors list**: the Kind column is now a narrow icon column after Hostname. Column widths are saved in the browser and apply to all organizations.
+- **Anthropic Workload Identity Federation**: personal Claude credentials and organization AI agents can use Workload Identity Federation. Setup shows copyable trust settings and a Claude Console setup guide.
+- **Large hive lists**: hive list screens now work for hives over the list size limit. Screens such as Secrets Manager, Lookups, YARA rules, External Adapters, and AI Agents load names first and load a record when you open it. The D&R and False Positive rule sidebars load names only, and the test-count badge shows only for the opened rule.
+- **Code Security registry scanning**: the code scanning policy option "In connected registries" is marked "(coming soon)" and cannot be newly selected. When an existing policy selects it, a note says that images found only in a registry are not scanned. The Code page shows a warning when image scanning is limited.
+- **AI Sessions**: org sessions that ended because the runner did not start or stopped responding now show the failure icon and the reason, instead of "Ended". The fork dialog note now says the fork opens without the earlier messages and the agent keeps its context.
+- **Agent workspace status**: a message waiting on AI credentials shows "Authentication needed" with a "Reconnect provider" link. A message blocked because the bot's model is not available shows "Model not available" with an "Edit bot" link. Any other blocked message shows "Paused" and the notice text.
+- **Bots in the corner chat**: the corner chat widget now opens LimaCharlie Bots. You can create a bot or an operations team and continue conversations without leaving the current page. Drafts and pending uploads are kept when you minimize the chat.
+- **Startup loader**: the loader now shows the LimaCharlie logo instead of a random illustration. It works in light and dark mode, and shows a static logo with reduced motion.
+- **Builder Program pop-up removed**: free-tier users no longer get the "Ready to scale?" pop-up. The Builder Program banner stays.
+
+#### Bug Fixes
+
+- Email Security audit history labels are translated and readable, and engine diagnostics are available on request.
+- In Email Security, pressing Escape in a nested message closes only that message and keeps the report open.
+- Email Security outcome chips use the same colors whatever the letter case of the outcome name.
+- Email Security audit actors show as emails, not user IDs, for viewers with `user.list` but without `user.ctrl`.
+- An Email Security Reply-To pivot searches mail sent from that address.
+- Table row numbers are correct after sorting or filtering, including pinned and scrolled rows.
+- Cloud Security topology details keep both the assigned and the PIM-eligible role paths to the same endpoint.
+- In the agent workspace, Stop now stops the tasks that block the conversation, including queued messages. A Stop button is also in the conversation header.
+
+---
+## 2026-10-21
+
+### Web App 6.6.3
+
+A fix for loading the Artifacts list.
+
+#### Bug Fixes
+
+- The Artifacts page and the sensor Artifacts tab no longer fail with a "time range cannot exceed" error.
+
+---
+
 ## 2026-10-13
 
 ### Web App 6.6.2
