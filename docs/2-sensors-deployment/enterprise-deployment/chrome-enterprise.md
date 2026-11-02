@@ -24,6 +24,29 @@ IMPORTANT: Replace the text "KEY" with the actual value of your Installation Key
 *Example*
 ![App_Management_-_Admin_Console.png](../../assets/images/App_Management_-_Admin_Console.png)
 
+## Policy File Example
+
+On Chrome or Chromium without Google Workspace, you can set the same policy in a managed policy file, such as `/etc/opt/chrome/policies/managed/limacharlie.json` for Chrome on Linux or `/etc/chromium/policies/managed/limacharlie.json` for Chromium. A complete file looks like this:
+
+```json
+{
+    "ExtensionInstallForcelist": [
+        "ljdgkaegafdgakkjekimaehhneieecki;https://clients2.google.com/service/update2/crx"
+    ],
+    "3rdparty": {
+        "extensions": {
+            "ljdgkaegafdgakkjekimaehhneieecki": {
+                "installation_key": "\"KEY\""
+            }
+        }
+    }
+}
+```
+
+The `installation_key` value must be the key wrapped in escaped quotes, exactly as shown. The extension parses the value as JSON. If you set the bare key (`"KEY"`), the extension still installs but never enrolls, and its service worker console logs `SyntaxError: ... is not valid JSON` every 30 seconds. If you generate the file with a script, encode the key as a JSON string first, for example `json.dumps(key)` in Python.
+
+A key typed into the extension's options page is used as-is and does not need the extra quotes.
+
 ## Verifying Configuration
 
 ChromeOS endpoints should now start appearing within the related LimaCharlie Organization's sensor list.
