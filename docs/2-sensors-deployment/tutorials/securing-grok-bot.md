@@ -356,10 +356,11 @@ Skip this step if the user chose **(d)** in Step 3. Otherwise, do all of it, one
 
 ```bash
 /workspace/.limacharlie-cli/limacharlie extension subscribe --name ext-email-security
-/workspace/.limacharlie-cli/limacharlie mailsec coverage --output yaml --filter entitlement
+/workspace/.limacharlie-cli/limacharlie mailsec coverage --output yaml \
+  --filter 'entitlement.{plan: plan, mailbox_cap: mailbox_cap}'
 ```
 
-The second command must show `plan: free` and `mailbox_cap: 10`. If it shows anything else, stop and tell the user what it says. Protecting mailboxes on a paid plan costs money, and that is the user's decision.
+The second command must print `plan: free` and `mailbox_cap: 10`. If it prints anything else, stop and tell the user what it says. Protecting mailboxes on a paid plan costs money, and that is the user's decision.
 
 **12.2 Add the email alert rules.** Email Security records what it finds as events, and events are not alerts. These four rules raise an alert when a message is judged malicious or suspicious, either when its first analysis ends or later, when a slower check changes the verdict, and the output from Step 10 carries it to the Security Manager.
 
@@ -477,14 +478,15 @@ Check that the secret exists, as in part (a), then write the connection from the
 **12.4 Check that it works.**
 
 ```bash
-/workspace/.limacharlie-cli/limacharlie mailsec coverage --output yaml
+/workspace/.limacharlie-cli/limacharlie mailsec coverage --output yaml \
+  --filter '{protected: mailboxes.protected, error: mailboxes.error, plan: entitlement.plan, email_actions: overview.automation_mode}'
 ```
 
-The user's mailbox should be counted under `protected` and `entitlement` should still say `plan: free`. It can take a few minutes. The first 14 days of existing mail are looked at to learn what is normal, and they raise no alerts. If the mailbox shows `error`, run the connection test again and read its `remediation`.
+`protected` should count the user's mailboxes, `plan` should still be `free`, and `email_actions` must be `alert_only`. The mailboxes can take a few minutes to be counted. If `error` is more than `0`, run the connection test again and read its `remediation`. If `email_actions` says `enforce`, stop and tell the user: something in this organization is allowed to move mail, and they did not ask for that. The first 14 days of existing mail are looked at to learn what is normal, and they raise no alerts.
 
 To see mail arrive, ask the user to send themselves an ordinary email, then run `limacharlie mailsec message list --limit 5` a couple of minutes later. The alert itself cannot be tested this way: it fires only when a message is judged malicious or suspicious, and the webhook already worked in Step 11. Do not send, forward or create a fake phishing message.
 
-Email Security starts in alert-only mode. Tell the user that it will not move, quarantine or delete any mail unless they later ask for that. Do not turn on enforcement.
+Email Security starts in alert-only mode. Tell the user that it will not move, quarantine or delete any mail unless they later ask for that. Do not turn on enforcement, and do not run message actions yourself (quarantine, move, banner) unless the user asks for that message. Never add `--force` on your own: it carries out the action even in alert-only mode.
 
 ### Step 13: Finish
 
