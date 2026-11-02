@@ -68,7 +68,7 @@ This event is emitted when a Cloud Adapter gets disabled because it has been err
 
 ### cloud_adapter_error
 
-This event is emitted when a Cloud Adapter fails with an error, unless that same error is already recorded on the adapter. A Cloud Adapter that keeps failing with the same error emits it once.
+This event is emitted each time a Cloud Adapter fails, unless the same error was recorded for that adapter less than 30 seconds earlier. An adapter that keeps failing emits it on every retry. See [Adapter Troubleshooting](faq/adapter-troubleshooting.md#a-cloud-adapter-keeps-failing-or-was-disabled).
 
 **Sample Event:**
 
