@@ -39,7 +39,9 @@ def main():
     gid = int(os.environ.get("SUDO_GID", "0"))
     policy = {
         "ExtensionInstallForcelist": [f"{EXTENSION_ID};{UPDATE_URL}"],
-        "3rdparty": {"extensions": {EXTENSION_ID: {"installation_key": key}}},
+        # The extension JSON-parses this value, so it must be the key as a
+        # JSON string ("\"KEY\"" once written), not the bare key.
+        "3rdparty": {"extensions": {EXTENSION_ID: {"installation_key": json.dumps(key)}}},
     }
 
     changed = False
