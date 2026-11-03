@@ -131,7 +131,7 @@ triage reads `event/revision/verdict`, not the MDM's `event/verdict/verdict`.
 `completed`, `changed_verdict`, `skipped`, `shed`, `failed`, or `timed_out`.
 `event/completed_at` and `event/timing` describe the completed window. Empty
 results mean no delayed work was needed. The completion payload does not include
-the seq-0 `analysis` snapshot or `after_complete`.
+`direction`, the seq-0 `analysis` snapshot or `after_complete`.
 
 Start an AI or analyst triage workflow on this event when it needs the initial
 analysis results. Continue handling later `EMAIL_VERDICT` escalations: analyses
