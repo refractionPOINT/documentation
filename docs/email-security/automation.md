@@ -104,7 +104,7 @@ of them.
 |---|---|
 | `event/msg_uuid` | The durable handle every typed action takes. A provider message id is folder-scoped and stops resolving the moment the message is quarantined; this does not |
 | `event/mailbox/{id,address,upn}`, `event/provider` | Whose mail, from where. See [the mailbox object](#the-mailbox-object) |
-| `event/direction` | The stored message direction relative to the protected tenant: `inbound`, `internal` or `outbound`, using the same values as `EMAIL_MESSAGE`. Included on the first verdict and later updates, including recovery resends. Older events may omit it; empty or unfamiliar values do not establish that mail is inbound |
+| `event/direction` | The stored message direction relative to the protected tenant: `inbound`, `internal` or `outbound`, using the same values as `EMAIL_MESSAGE`. Added to the first verdict and later updates, including recovery resends, when the stored direction is available. If the row is gone or the lookup is unavailable, the event still sends without this field. Older events may omit it; empty or unfamiliar values do not establish that mail is inbound |
 | `event/internet_message_id` | The cross-mailbox join key: one message sent to forty people is forty `msg_uuid`s and one of these |
 | `event/sender_email`, `event/sender_root_domain`, `event/subject` | Enough to match on without a lookup |
 | `event/ts` | The message's delivery time. The **event's own** timestamp is when the decision was made, so a hunt can window on either |
