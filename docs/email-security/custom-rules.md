@@ -532,13 +532,9 @@ That fires when the pack decides a message is malicious **and** when an analyst,
 the AI triage agent or a link detonation later decides so. Narrow it with the
 fields that distinguish them:
 
-To alert only on incoming mail, also require `event/direction` to equal
-`inbound`. This applies to the first verdict and later updates. Combine it with
-a positive `event/revision/seq` to match later decisions only. Older events may
-omit direction; an empty or unfamiliar value does not establish incoming mail.
-
 | To match | Add |
 |---|---|
+| Only incoming mail, on the first verdict or a later update | `path: event/direction`, `value: inbound`. Older events may omit direction; empty or unfamiliar values do not establish incoming mail |
 | Only the rule pack's own decision | `path: event/revision/seq`, `value: 0` |
 | Only overrides | `op: is greater than`, `path: event/revision/seq`, `value: 0` |
 | Only what a signed-in person decided | `path: event/revision/mode`, `value: analyst` |
