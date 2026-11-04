@@ -35,6 +35,7 @@ IMAP mailboxes in Email Security, an Automation segment in AI cost reporting, cl
 - Course badges are now labelled "Course badge". The verify page says a course badge records completing a course level and is not a certification. Sharing a badge as a post still works.
 
 ---
+
 ## 2026-10-30
 
 ### Web App 6.6.6
@@ -124,6 +125,7 @@ Email Security and Code Security are now available to everyone. Email Security p
 - In the agent workspace, Stop now stops the tasks that block the conversation, including queued messages. A Stop button is also in the conversation header.
 
 ---
+
 ## 2026-10-21
 
 ### Web App 6.6.3

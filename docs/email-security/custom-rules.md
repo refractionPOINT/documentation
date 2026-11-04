@@ -534,6 +534,7 @@ fields that distinguish them:
 
 | To match | Add |
 |---|---|
+| Only incoming mail, on the first verdict or a later update | `path: event/direction`, `value: inbound`. Older events may omit direction; empty or unfamiliar values do not establish incoming mail |
 | Only the rule pack's own decision | `path: event/revision/seq`, `value: 0` |
 | Only overrides | `op: is greater than`, `path: event/revision/seq`, `value: 0` |
 | Only what a signed-in person decided | `path: event/revision/mode`, `value: analyst` |
