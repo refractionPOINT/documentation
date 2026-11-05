@@ -35,8 +35,9 @@ discovers every active project underneath that node by itself.
   forwarding, project-wide SSH keys, disks without customer-supplied keys.
 - **Data.** Cloud SQL TLS, backups, deletion protection, IAM authentication and
   database flags. BigQuery and Dataproc without customer-managed keys.
-- **GKE.** Cluster level: legacy ABAC, public endpoint, private nodes, audit
-  logging, Secrets encryption, network policy, node hardening and versions.
+- **GKE.** Cluster level: legacy ABAC, public endpoint, private nodes, local
+  accounts, workload identity, audit logging, Secrets encryption, network policy,
+  node hardening and versions.
   Inside the cluster: privileged and host-namespace pods, host path mounts,
   dangerous capabilities, default service account tokens, secrets in environment
   variables, risky RBAC, public Services and Ingress without TLS, no admission

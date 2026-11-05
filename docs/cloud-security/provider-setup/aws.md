@@ -42,9 +42,9 @@ Two topologies:
 - **Databases and managed data services.** RDS and Aurora, DocumentDB, Neptune,
   Redshift, ElastiCache, OpenSearch, MSK, DMS and similar: encryption at rest and
   in transit, public access, public snapshots, authentication and audit logs.
-- **EKS clusters.** Public API endpoint, audit logging, Secrets encryption, network
-  policy enforcement, private nodes, supported versions and cluster-admin access
-  entries. See [Kubernetes](../index.md#what-we-look-for).
+- **EKS clusters.** Public API endpoint, private nodes, local accounts, workload
+  identity, audit logging, Secrets encryption, network policy enforcement,
+  supported versions and cluster-admin access entries. See [Kubernetes](../index.md#what-we-look-for).
 
 Not checked: workloads and RBAC inside EKS clusters.
 
