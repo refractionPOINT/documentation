@@ -27,6 +27,12 @@ Interactive AI sessions accessed through the web interface or API. Use cases inc
 
 [Learn more about User Sessions](user-sessions.md)
 
+#### SOC Bots
+
+SOC Bots are built on User Sessions: named AI specialists in the web app that keep their own conversations and work together in groups. Ready-made teams for service providers, in-house security teams and platform exploration get new users started quickly.
+
+[Learn more about SOC Bots](soc-bots.md)
+
 ## Key Features
 
 | Feature | D&R-Driven Sessions | User Sessions |
@@ -93,6 +99,7 @@ Event fields go in `data:`, which the platform marks as untrusted for the model.
 - [Architecture](architecture.md) - How the platform is organized, the isolation model
 - [D&R-Driven Sessions](dr-sessions.md) - Automated sessions triggered by D&R rules
 - [User Sessions](user-sessions.md) - Interactive sessions via web UI or API, including the session lifecycle
+- [SOC Bots](soc-bots.md) - Named bots, groups and ready-made teams in the web app
 - [AI Providers](providers.md) - Running user sessions on OpenAI, Azure OpenAI, Google Gemini, or OpenRouter with your own keys
 - [Tool Permissions & Profiles](tool-permissions.md) - How `allowed_tools`, `denied_tools`, and `permission_mode` work
 - [Runner Environment](runner-environment.md) - CLI tools, language runtimes, and reference data pre-installed in the session container

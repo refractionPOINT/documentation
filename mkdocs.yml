@@ -596,6 +596,7 @@ nav:
   - AI Sessions:
       - Overview: 9-ai-sessions/index.md
       - Grid - Your AI Field Engineer: 9-ai-sessions/grid.md
+      - SOC Bots: 9-ai-sessions/soc-bots.md
       - Architecture: 9-ai-sessions/architecture.md
       - D&R-Driven Sessions: 9-ai-sessions/dr-sessions.md
       - User Sessions: 9-ai-sessions/user-sessions.md
