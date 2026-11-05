@@ -22,6 +22,14 @@ reads: every API call is a `GET`, and a scan's clone is a fetch.
     Bitbucket Data Center (self-hosted) is a different product with a different API. This
     connector is for Bitbucket Cloud (`bitbucket.org`) only.
 
+## What we check
+
+- The inventory of repositories, for [Code Security](../code-security/index.md).
+
+Not checked: workspace members, groups, app passwords, access keys, repository
+variables and branch restrictions. The branch protection checks that run on GitHub
+do not run on Bitbucket repositories.
+
 ## Prerequisites
 
 - An Atlassian account that is a **member of the workspace** and can read its repositories.

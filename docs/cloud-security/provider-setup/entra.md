@@ -38,6 +38,37 @@ There is no ARM or subscription setup.
     defers its tenant-global directory collectors to it, so the directory is never
     collected twice.
 
+## What we check
+
+- **Conditional Access.** No policy requiring MFA for all users or for
+  administrators, legacy authentication not blocked, no sign-in or user risk
+  policy, no managed-device requirement, device code flow allowed, no token
+  protection. Security Defaults still on, so Conditional Access does not apply.
+- **Identities and roles.** Fewer than two or more than four Global
+  Administrators, administrators with productivity licences, permanent privileged
+  roles instead of PIM, PIM activation without approval, no access reviews for
+  guests or privileged roles, administrators synced from on-premises.
+- **Apps and consent.** Users who can consent to any application or register
+  applications, application secrets that never expire, guests invited from any
+  domain.
+- **Authentication methods.** SMS, voice and email one-time passcodes, no number
+  matching, no custom banned passwords, weak lockout settings, users who are not
+  MFA capable.
+- **Devices.** Any user can join devices, no LAPS, Intune that marks devices
+  without a policy as compliant, personal device enrollment.
+- **Exchange Online and Defender for Office 365.** Safe Links, Safe Attachments,
+  anti-phishing, anti-spam and anti-malware coverage, DKIM, SPF and DMARC, mailbox
+  and unified audit logging, DLP, external forwarding, SMTP authentication and
+  Direct Send.
+- **SharePoint, OneDrive, Teams, Power BI and Fabric.** Anyone links, external
+  sharing, guest access that does not expire, anonymous meeting join, public web
+  publishing, unrestricted service principal access.
+- **Mail posture.** External auto-forwarding, missing or monitor-only DMARC,
+  transport rules that bypass filtering, suspicious mailbox delegates.
+
+Settings that need a licence you do not hold, or a grant you did not give, report
+NOT_ASSESSED. They never report as passing.
+
 ## Authentication modes
 
 The connection authenticates as an **Entra ID app registration** (service

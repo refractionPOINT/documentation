@@ -55,6 +55,57 @@ from the provider record), and the platform sweeps the estate on a schedule, on
 demand, or continuously from a change feed. See
 [Connecting Providers](providers.md) for the per-provider setup.
 
+## What we look for
+
+Cloud Security checks configuration, identity and exposure. The table lists the
+classes of problem it reports for each surface, and what it does not look at.
+Each provider's [setup page](provider-setup/index.md) repeats this list for that
+provider. The list is by category, not by rule. It grows as new checks ship.
+
+| Surface | What we look for | Not checked |
+|---|---|---|
+| **AWS** | **Root and IAM:** root without MFA or with access keys, weak password policy, unused credentials, admin policies attached, missing Access Analyzer, accounts with no guardrail SCP. **Logging and detection:** CloudTrail integrity, encryption and coverage, AWS Config, GuardDuty and Security Hub switched off, missing CIS alarm filters. **Network:** VPC flow logs, default security groups, NACLs, high-risk ports open to the internet, peering, transit gateway and VPN settings. **Compute:** IMDSv1, public or unencrypted EBS volumes, snapshots and AMIs, privileged or root ECS containers, secrets in CodeBuild and Lambda, unauthenticated Lambda URLs. **Data:** S3 public access, TLS, MFA delete, ACLs, logging and cross-account access, EFS, KMS rotation and key policy, Secrets Manager rotation, public resource policies on DynamoDB, SQS, SNS, Glue and Backup. **Databases and managed data services:** RDS and Aurora, DocumentDB, Neptune, Redshift, ElastiCache, OpenSearch, MSK and similar services, for encryption, TLS, public access, public snapshots and audit logs. **EKS clusters:** see Kubernetes below. | Workloads and RBAC inside EKS clusters. |
+| **Azure** | **Governance:** Defender plans and alert emails off, User Access Administrator, wildcard custom roles, too many subscription owners, orphaned role assignments, no Conditional Access on the management plane. **Logging:** activity log not exported, missing categories and alerts, no Network Watcher. **Storage:** shared-key access, stale keys, open firewall, public access, no private endpoint, no SAS expiry policy, soft delete and versioning off, weak SMB. **Key Vault:** public access, keys and secrets without expiry, no rotation, long-lived certificates. **Databases:** SQL, PostgreSQL, MySQL, Cosmos DB and Redis for auditing, Entra authentication, threat protection, TDE and firewall rules. **VMs:** password SSH, no encryption at host, unmanaged disks. **AKS clusters:** see Kubernetes below. | Workloads and RBAC inside AKS clusters. |
+| **Google Cloud** | **IAM:** personal accounts holding access, service account admin and impersonation grants, separation of duties, organization and folder grants, API keys, KMS rotation. **Logging:** audit logs, log sinks, log alerts. **VPC:** default network, flow logs, DNS logging, DNSSEC, VPC Service Controls, SSH and RDP open to the internet. **Compute:** default service account, Shielded VM, OS Login, external IPs, customer-supplied disk keys. **Data:** Cloud SQL flags, TLS and backups, BigQuery and Dataproc customer-managed keys. **GKE clusters and workloads:** see Kubernetes below. | |
+| **Kubernetes** | **Cluster level (GKE, EKS, AKS):** public API endpoint, RBAC and legacy ABAC, audit logs, Secrets encryption, network policy engine, private nodes, node hardening, supported versions. **Inside the cluster (GKE only):** privileged and host-namespace pods, host path mounts, dangerous capabilities, default service account tokens, secrets in environment variables, risky RBAC, public Services and Ingress without TLS, missing admission control. | In-cluster checks on EKS and AKS. |
+| **Microsoft Entra ID and 365** | **Entra ID:** Conditional Access gaps (MFA, legacy authentication, risky sign-ins, managed devices, administrators), Security Defaults, user consent, guests, app registrations and secrets, PIM, Global Administrator count, password and authentication methods, Intune enrollment. **Exchange and Defender for Office 365:** Safe Links, Safe Attachments, anti-phishing, anti-spam and anti-malware coverage, DKIM, SPF and DMARC, audit logging, DLP, forwarding, SMTP and Direct Send. **SharePoint, OneDrive, Teams, Power BI and Fabric:** sharing and external access. | Settings that need a licence you do not have, or a grant you did not give, report NOT_ASSESSED, not pass. |
+| **Mail posture (Entra, Google Workspace)** | External auto-forwarding, DMARC missing or monitor-only, transport rules that bypass filtering (Entra), suspicious mailbox delegates. | |
+| **GitHub** | **Organization:** owner count, default repository permission, member rights to create repositories and teams. **Branch protection:** required reviews, status checks, signed commits, force pushes, deletion, administrator enforcement. **Repositories:** secret scanning, Dependabot and code scanning off, no SECURITY.md or CODEOWNERS, unpinned Actions. **Apps and Actions:** over-permissive Apps, Actions secrets on public repositories, OIDC trust with a wildcard subject. | |
+| **GitLab, Bitbucket** | Repository inventory for [Code Security](code-security/index.md). GitLab also reports whether the group enforces two-factor authentication. | Organization and branch protection checks. |
+| **Okta, Google Workspace, 1Password, Auth0** | Generic identity checks, plus identity attack paths. Okta, Google Workspace and Auth0: users without MFA and privileged accounts with no sign-in for 90 days or more. Okta also checks API tokens that are too old, and Google Workspace app-specific passwords that are too old. Auth0 also flags a tenant MFA policy that is off. 1Password: the user and group directory, and vaults when you connect 1Password Connect, feed the identity graph. | Okta sign-on, password and authenticator policies. Google Workspace tenant policies such as 2-step enforcement. Auth0 attack protection and session lifetimes. 1Password MFA state and sign-in activity. |
+| **Cloudflare** | Zone TLS and SSL mode, minimum TLS version, DNSSEC, origin addresses exposed by unproxied records, public R2 buckets, API tokens without expiry or too old, members without two-factor authentication. Cloudflare Security Center insights appear as findings. | |
+| **OpenAI, Anthropic** | Keys older than 90 days, keys owned by people who left, pending invites (listed as staged seats), audit-log availability. OpenAI also reports keys never used, admin keys never used, and active mTLS certificates past expiry. Anthropic also reports keys that are not limited to a workspace. With an Anthropic Compliance key: SSO not enforced, SCIM off, no IP allowlist, unbounded retention, no domain capture. | Anthropic key usage, so a key that was never used is not flagged. |
+| **LimaCharlie** | MFA not required at sign-in, API keys with no IP restriction, telemetry outputs over unencrypted transport, enrollment keys that are old and unused, configuration records that fail to apply, stored secrets with no expiry. | |
+
+### Across providers
+
+These checks run on the connected estate as a whole, not on one provider.
+
+- **Attack paths.** An exposed workload with a known-exploited vulnerability that
+  can reach sensitive data. Paths that start from a weakly held identity, such as a
+  user without MFA, a key whose owner left or an external principal. A privileged
+  identity whose device fails a posture check.
+- **Public and external access** to sensitive data stores, and the identities that
+  can reach them.
+- **Privilege escalation** and **dormant or unused privileges**. A privileged
+  identity unused for 90 days or more, and grants never exercised in the observed
+  window.
+- **AI services.** Public inference endpoints, no customer-managed key, an
+  over-broad identity, and audit logging off.
+- **Data stores.** Public access, non-TLS connections, soft delete or purge
+  protection off, audit logging off.
+- **Coverage gaps.** Assets seen by one tool and missing another, such as a user
+  or device in your identity provider with no EDR sensor, and places where the
+  platform could not read a surface. See [CAASM](caasm.md) and
+  [Findings & Triage](findings.md).
+- **Device posture.** Unencrypted storage, rooted or jailbroken devices and
+  screen lock off, when your MDM source reports them.
+
+Data sensitivity is declared by you, in the
+[classification policy](configuration.md#classification-crown-jewels). Cloud
+Security does not read your data or classify its content, so a store counts as
+sensitive only when your policy says so.
+
 ## How it works
 
 1. **Enable** the organization for the `ext-cloud-security` extension — the

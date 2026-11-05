@@ -18,6 +18,30 @@ agentless workload vulnerabilities from VM Manager.
 **organization**, **folder**, or **project** you want enumerated. The collector
 discovers every active project underneath that node by itself.
 
+## What we check
+
+- **IAM.** Personal or non-organization accounts holding access, primitive Owner
+  and Editor roles, service account admin and impersonation grants, separation of
+  duties, admin roles at organization and folder level, API keys without
+  restrictions, KMS keys not rotated.
+- **Logging.** Audit logs that skip admin reads or data access, no catch-all log
+  sink, sink buckets without a locked retention policy, missing log alerts for
+  ownership, audit config, custom role, firewall, route, network, bucket IAM and
+  Cloud SQL changes.
+- **VPC.** Default and legacy networks, flow logs, DNS logging, DNSSEC, weak load
+  balancer TLS policies, projects outside a VPC Service Controls perimeter, SSH and
+  RDP open to the internet.
+- **Compute.** Default service account, Shielded VM, OS Login, external IP, IP
+  forwarding, project-wide SSH keys, disks without customer-supplied keys.
+- **Data.** Cloud SQL TLS, backups, deletion protection, IAM authentication and
+  database flags. BigQuery and Dataproc without customer-managed keys.
+- **GKE.** Cluster level: legacy ABAC, public endpoint, private nodes, audit
+  logging, Secrets encryption, network policy, node hardening and versions.
+  Inside the cluster: privileged and host-namespace pods, host path mounts,
+  dangerous capabilities, default service account tokens, secrets in environment
+  variables, risky RBAC, public Services and Ingress without TLS, no admission
+  control. See [Kubernetes](../index.md#what-we-look-for).
+
 ## Prerequisites
 
 For a first connection, choose one project containing resources you recognize.

@@ -17,9 +17,10 @@ limacharlie cloudsec compliance report --framework cis-gcp
 limacharlie cloudsec compliance frameworks
 ```
 
-Fifteen frameworks ship today: `cis-aws`, `cis-azure`, `cis-gcp` (the
-default), `cis-gcp-v5`, `cis-m365`, `cis-m365-v7`, `soc2`, `pci-dss`, `hipaa`,
-`iso-27001`, `nist-csf`, `nist-ai-rmf`, `owasp-llm`, `owasp-top10`, and
+Eighteen frameworks ship today: `cis-aws`, `cis-azure`, `cis-gcp` (the
+default), `cis-gcp-v5`, `cis-m365`, `cis-m365-v7`, `cis-eks-v1-8`,
+`cis-gke-v1-9`, `cis-aks-v1-8`, `soc2`, `pci-dss`, `hipaa`, `iso-27001`,
+`nist-csf`, `nist-ai-rmf`, `owasp-llm`, `owasp-top10`, and
 `cis-supply-chain`. `nist-ai-rmf`
 and `owasp-llm` are AI frameworks: they assess the OpenAI and Anthropic estate
 connected through the [AI providers](providers.md#ai-security-aispm).
@@ -82,6 +83,22 @@ text itself is published by CIS at
   meetings. The non-Graph reads need certificate mode as described above. This
   reuse does not assess every control in those admin centers or change an
   assignment to the v7 benchmark.
+
+### CIS Kubernetes benchmarks
+
+Three frameworks cover managed Kubernetes clusters. Each applies to the cloud
+connection that owns the cluster.
+
+| Framework | Benchmark | Connection | Controls |
+|---|---|---|---|
+| `cis-eks-v1-8` | CIS Amazon EKS Benchmark v1.8.0 | `aws` | 50: 4 partly automated, 46 manual |
+| `cis-gke-v1-9` | CIS Google Kubernetes Engine Benchmark v1.9.0 | `gcp` | 57: 19 automated, 4 partly automated, 34 manual |
+| `cis-aks-v1-8` | CIS Azure Kubernetes Service Benchmark v1.8 | `azure` | 51: 9 partly automated, 42 manual |
+
+They list every control of the benchmark. LimaCharlie grades the ones it can read
+from cluster configuration, such as audit logging, private endpoint, network
+policy and Secrets encryption. Controls that need a shell on a worker node, such as
+kubelet file ownership, are manual. They report NOT_ASSESSED until you attest.
 
 !!! note "Licence-gated Microsoft 365 controls"
     37 `cis-m365-v7` controls grade a feature that exists only with a specific

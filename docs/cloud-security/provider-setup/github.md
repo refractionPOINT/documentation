@@ -20,6 +20,28 @@ assume cloud roles.
 read-only permission set. The App's private key is used to mint short-lived
 installation tokens — no personal access token, no user account in the loop.
 
+## What we check
+
+- **Organization.** More than three owners, base repository permission that allows
+  write, members who can create repositories or teams. Organization MFA is reported
+  when GitHub returns it.
+- **Branch protection.** Default branch without required reviews, status checks,
+  conversation resolution, signed commits or linear history. Force pushes and
+  deletion allowed, push restrictions missing, rules not enforced for
+  administrators. Classic protection and rulesets are both read.
+- **Repositories.** Secret scanning, Dependabot or code scanning off. A public
+  repository with no SECURITY.md, a sensitive repository with no CODEOWNERS.
+  Workflows that use actions without an immutable pin.
+- **Apps and credentials.** Installed Apps with admin or write-all organization
+  permissions, Actions secrets on public repositories, deploy keys that are too
+  old.
+- **Actions OIDC.** Cloud trust that accepts a wildcard subject.
+- **GitHub's own alerts.** Dependabot, code scanning and secret scanning alerts
+  appear as findings when the App has the optional permissions.
+
+See [Organization and branch compliance coverage](#organization-and-branch-compliance-coverage)
+for what a selected-repository install can and cannot prove.
+
 ## Prerequisites
 
 - **Organization owner** access (creating and installing an org-owned App).

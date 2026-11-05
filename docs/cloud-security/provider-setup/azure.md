@@ -22,6 +22,32 @@ licensed, Conditional Access and sign-in activity.
     enumerate, use the [Entra ID](entra.md) provider instead — same app
     registration, none of the ARM setup.
 
+## What we check
+
+- **Governance.** Defender plans off, Defender alert emails off, no security
+  contact, User Access Administrator assignments, custom roles with wildcard
+  actions, more than three subscription owners, role assignments that point at
+  deleted principals, no Conditional Access on the management plane.
+- **Logging.** Activity log not exported, export missing categories, missing
+  activity log alerts, regions with network resources and no Network Watcher.
+- **Storage.** Shared-key access, access keys not rotated, firewall open to all
+  networks, public network access, no private endpoint, no SAS expiry policy, soft
+  delete and versioning off, weak SMB versions.
+- **Key Vault.** Public network access, keys and secrets without an expiry date, no
+  key rotation policy, certificates valid for more than 12 months.
+- **Databases.** SQL, PostgreSQL, MySQL, Cosmos DB and Redis: auditing off, no Entra
+  authentication, threat protection off, TDE with service-managed keys, firewalls
+  that admit every Azure tenant or every network.
+- **VMs.** Password SSH logins, no encryption at host, unmanaged disks, disks that
+  can be exported over the public network.
+- **AKS clusters.** Public API endpoint, Azure RBAC and Entra integration,
+  Defender for Containers, Azure Policy, audit logging, Secrets encryption,
+  network policy, supported versions. See
+  [Kubernetes](../index.md#what-we-look-for).
+- **Entra ID.** The directory is checked too. See [Entra ID](entra.md#what-we-check).
+
+Not checked: workloads and RBAC inside AKS clusters.
+
 ## Prerequisites
 
 - Permission to create an app registration in the tenant (**Application

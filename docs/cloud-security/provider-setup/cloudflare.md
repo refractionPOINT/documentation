@@ -11,6 +11,17 @@
 The lightest provider: a **scoped, read-only API token** plus your **account
 ID**. No infrastructure to stand up.
 
+## What we check
+
+- **Zones.** SSL mode set to Flexible or Off, minimum TLS version below 1.2,
+  DNSSEC off.
+- **Origin exposure.** Proxied zones that also publish unproxied A or AAAA records,
+  which reveal the origin address.
+- **R2.** Buckets with public access.
+- **API tokens and members.** Tokens with no expiry or older than 90 days, members
+  without two-factor authentication.
+- **Security Center.** Cloudflare's own insights appear as findings.
+
 ## Create the API token
 
 Cloudflare has two kinds of token, created in two different places. Use an

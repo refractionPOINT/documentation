@@ -17,6 +17,16 @@ audit-log availability posture.
 **Auth model:** an **Admin API key** created with the read-only
 `api.management.read` scope, calling the OpenAI Administration API.
 
+## What we check
+
+- API keys that are older than 90 days, or never used.
+- Admin keys that were never used.
+- Keys owned by someone who is no longer a member of the organization.
+- Pending invites, listed as staged seats that have never signed in.
+- Active mTLS certificates that are past expiry.
+- Whether the organization audit log is available. See
+  [Optional: enable audit logging](#optional-enable-audit-logging).
+
 ## Prerequisites
 
 - **Organization Owner** on the OpenAI platform account — only owners can
