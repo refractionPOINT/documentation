@@ -237,6 +237,7 @@ Takes a `name` parameter for the platform name. The current platforms are:
 - `falconcloud`
 - `harmony` (Check Point Harmony)
 - `msdefender` (Microsoft Defender)
+- `prisma_saas` (Palo Alto SaaS Security, formerly Prisma SaaS)
 - `sentinel_one`
 - `sophos`
 - `threatlocker`

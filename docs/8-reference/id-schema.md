@@ -105,6 +105,7 @@ The platform is a 32-bit integer (in its hex format) which identifies the exact 
 | 0x31000000 | 822083584  | harmony                      | Check Point Harmony          |
 | 0x32000000 | 838860800  | threatlocker                 | ThreatLocker                 |
 | 0x33000000 | 855638016  | halopsa                      | HaloPSA                      |
+| 0x38000000 | 939524096  | prisma_saas                  | Palo Alto SaaS Security (Prisma SaaS) |
 | 0x10000000 | 268435456  | windows                      | Windows                      |
 | 0x20000000 | 536870912  | linux                        | Linux                        |
 | 0x30000000 | 805306368  | macos                        | MacOS                        |

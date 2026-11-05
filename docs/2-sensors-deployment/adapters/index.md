@@ -50,6 +50,7 @@ Adapters enable log ingestion from external sources into LimaCharlie. They trans
 - [Sublime Security](types/sublime-security.md)
 - [Trend Micro Vision One](types/trend-micro.md)
 - [ThreatLocker](types/threatlocker.md)
+- [Palo Alto SaaS Security (Prisma SaaS)](types/prisma-saas.md)
 
 ### IT & Business Platforms
 
