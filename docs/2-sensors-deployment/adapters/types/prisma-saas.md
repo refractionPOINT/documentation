@@ -175,20 +175,6 @@ prisma_saas:
     sensor_seed_key: "prisma-saas-sensor"
 ```
 
-## Configuring a Palo Alto SaaS Security Adapter in the Web UI
-
-Within the LimaCharlie web application, select `+ Add Sensor`, then choose **Palo Alto SaaS Security (Prisma SaaS)**.
-
-Pick or create an Installation Key for this adapter, then fill in:
-
-| Field | Value |
-| --- | --- |
-| Client ID | The API client ID. |
-| Client Secret | The API client secret (a hive secret reference is accepted). |
-| Region | The region your tenant is hosted in. Defaults to `us`. |
-
-Click `Complete Cloud Installation`. LimaCharlie will authenticate against the Palo Alto Networks API and begin pulling events.
-
 ## Sample Rule
 
 The adapter ships each record under an event type matching its `log_type`, so D&R rules can route directly on it. This rule reports every SaaS Security incident with a severity of 4 or 5:
