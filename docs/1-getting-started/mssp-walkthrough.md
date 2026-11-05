@@ -184,7 +184,7 @@ pip install limacharlie
 limacharlie auth login --oauth
 ```
 
-`auth login --oauth` signs you in through your browser (Google or Microsoft) and stores the credentials in `~/.limacharlie.d/config.yaml`. Add `--no-browser` on a headless machine to get the URL printed instead. For scripts and CI, log in with an Organization API key instead: `limacharlie auth login --oid <OID> --api-key <KEY>`, or set the `LC_OID` and `LC_API_KEY` environment variables. Organization keys are scoped to a single org and a specific permission set — not to your user — which is the right default for automation. See [API Keys](../7-administration/access/api-keys.md) for the full pattern.
+`auth login --oauth` signs you in through your browser (Google or Microsoft) and stores the credentials in `~/.limacharlie.d/config.yaml`. Add `--no-browser` on a headless machine to get the URL printed instead; over SSH, sign in on your own computer and paste the address the browser ends up on back into the terminal (see [Sign in on a remote computer](../6-developer-guide/cli-quickstart.md#sign-in-on-a-remote-computer)). For scripts and CI, log in with an Organization API key instead: `limacharlie auth login --oid <OID> --api-key <KEY>`, or set the `LC_OID` and `LC_API_KEY` environment variables. Organization keys are scoped to a single org and a specific permission set — not to your user — which is the right default for automation. See [API Keys](../7-administration/access/api-keys.md) for the full pattern.
 
 Confirm it works:
 
