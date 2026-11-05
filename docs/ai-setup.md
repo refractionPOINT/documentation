@@ -27,6 +27,8 @@ If this is your first time, pick your assistant for the short version of how to 
 
 Other assistants that can run a terminal or use an MCP server can follow the same page. See [Using the CLI with other Frontier Models](6-developer-guide/frontier-models.md).
 
+To protect only the computer your agent runs on, with rules written for AI agents and alerts on your phone or in chat, use [Securing Your AI Agent's Computer](2-sensors-deployment/tutorials/securing-ai-agents.md) instead. It is a single prompt too.
+
 ## What to expect
 
 1. **A short interview.** A few questions at a time, in plain words. "I don't know" is a fine answer.

@@ -944,7 +944,7 @@ hives:
             metadata:
               title: Something is handing remote control of this computer to another machine
               what_it_means: >-
-                The command line has the shape of a "reverse shell": a trick that
+                The command line has the shape of a reverse shell: a trick that
                 connects this computer's command prompt out to a machine run by
                 someone else, so they can type commands on it from afar. This is
                 one of the clearest signs of a compromise.
