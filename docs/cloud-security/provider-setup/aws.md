@@ -33,7 +33,8 @@ Two topologies:
   VPN without logging.
 - **Compute.** EC2 instances that accept IMDSv1, unencrypted or public EBS volumes,
   snapshots and AMIs, ECS tasks that run privileged or as root, credentials in
-  CodeBuild and Lambda environments, cross-account Lambda layers.
+  CodeBuild and Lambda environments, unauthenticated Lambda URLs, cross-account
+  Lambda layers.
 - **Data.** S3 public access, missing TLS enforcement, MFA delete, ACLs, logging
   and cross-account access. Unencrypted or public EFS, KMS keys without rotation or
   with a public policy, Secrets Manager rotation, and public resource policies on

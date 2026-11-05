@@ -40,9 +40,10 @@ licensed, Conditional Access and sign-in activity.
   that admit every Azure tenant or every network.
 - **VMs.** Password SSH logins, no encryption at host, unmanaged disks, disks that
   can be exported over the public network.
-- **AKS clusters.** Public API endpoint, Azure RBAC and Entra integration,
-  Defender for Containers, Azure Policy, audit logging, Secrets encryption,
-  network policy, supported versions. See
+- **AKS clusters.** Public API endpoint, private nodes, local accounts, Azure RBAC
+  and Entra integration, Defender for Containers, Azure Policy, audit logging,
+  Secrets encryption, network policy, node encryption at host, supported
+  versions. See
   [Kubernetes](../index.md#what-we-look-for).
 - **Entra ID.** The directory is checked too. See [Entra ID](entra.md#what-we-check).
 
