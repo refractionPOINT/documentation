@@ -160,9 +160,27 @@ limacharlie auth login --oauth --provider microsoft
 ```
 
 If the CLI cannot open your browser automatically, add `--no-browser`, then
-open the printed URL in a browser on the same computer. On a remote or headless
-computer, use an API key instead; the OAuth flow waits for a callback on the
-computer running the CLI.
+open the printed URL in a browser.
+
+### Sign in on a remote computer
+
+When the CLI runs on another computer, for example over SSH, you can still sign
+in with your browser. This needs CLI version 5.12.0 or later.
+
+1. Run `limacharlie auth login --oauth --no-browser`. Over SSH with no display,
+   the CLI prints the URL even without `--no-browser`.
+2. Open the printed URL in a browser on your own computer and sign in.
+3. The browser then goes to an address that starts with
+   `http://localhost:8085/callback` (the port can be 8085 to 8089). The page
+   does not load, because the CLI runs on the other computer. This is expected.
+4. Copy the full address from the browser's address bar, paste it into the
+   terminal, and press Enter.
+
+The CLI finishes the sign-in, including the MFA prompt if your account uses
+MFA. If the CLI runs on Windows, pasting is not available: forward the port
+instead, and the browser reaches the CLI directly. Use the port the CLI prints
+when it starts (`OAuth callback server started on port 8085`), for example
+`ssh -L 8085:localhost:8085 <host>`.
 
 ### Sign in with an API key
 
