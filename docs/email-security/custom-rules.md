@@ -294,17 +294,18 @@ behind a message, and remediation goes through `extension request`.
 
 ## Matching one link, not any two links
 
-`dr-mail` rules use `scope` to walk arrays of objects. The Hive rejects paths
-containing `?` or `*`, even though those paths work in ordinary platform D&R
-rules. This restriction applies to every `dr-mail` record, including defaults.
+`dr-mail` rules can walk a list with a literal `?` path segment, such as
+`attachments/?/explode/yara_matches/?`, and use `scope` when several conditions must
+describe the same element. The Hive rejects `*` and other glob segments, even though
+they work in ordinary platform D&R rules. This applies to every `dr-mail` record,
+including defaults.
 
 ### `?` walks a list and compares values
 
-In `dr-general`, `?` is a path segment that matches any element. Two conditions
-using it may match two different elements. For example, a condition on
-`event/links/?/href_url/domain/root` and another on
-`event/links/?/mismatched` need not describe the same link. Use `scope` when the
-conditions must describe one element. In `dr-mail`, use `scope` for either case.
+`?` is a path segment that matches any element. Two conditions using it may match
+two different elements. For example, a condition on `links/?/href_url/domain/root`
+and another on `links/?/mismatched` need not describe the same link. Use `scope`
+when the conditions must describe one element.
 
 ### `scope` re-roots a whole sub-rule onto one element
 
@@ -523,33 +524,45 @@ copy of the `core` package of the public
 yourself, keep `split` set to `false`. Splitting writes one record per rule under
 other keys, and none of them match the selection rule above.
 
-To act on a match, write a platform D&R rule on the emitted event. String arrays
-need a wildcard path, which `dr-mail` does not accept (see
-[the Rule Reference](rule-reference.md)).
+To make a match count toward the verdict, write a `dr-mail` rule that reads it.
+`yara_matches` is a list of strings, so the path ends in `?`:
 
 ```yaml
-# hive: dr-general, record name: email-attachment-yara-match
+# hive: dr-mail, record name: attachment-yara-invoice-dropper
+name: Attachment matches the Invoice_Dropper YARA rule
+phase: pre_verdict
+class: detection
+weight: 90
+confidence: 90
+severity: high
+tags: [malware, yara]
+fp_notes: >
+  Only as good as the YARA rule. A rule that matches a common library or
+  template fires on ordinary mail.
 detect:
-  op: and
-  rules:
-    - op: is
-      path: routing/event_type
-      value: EMAIL_MESSAGE
-    - op: is
-      path: event/attachments/?/explode/yara_matches/?
-      value: Invoice_Dropper
-
-respond:
-  - action: report
-    name: email-attachment-matches-yara
-    priority: 3
+  op: is
+  path: attachments/?/explode/yara_matches/?
+  value: Invoice_Dropper
 ```
 
-An attachment that was not scanned has no `explode/yara_matches`, and neither does
-one that was scanned without a match. Check `explode/scanners` to tell the two
-apart. If your rules were not loaded yet when a message arrived, the attachments
-are rescanned once they load. See
+To match any rule in your set, test that an element exists instead:
+
+```yaml
+detect:
+  op: exists
+  path: attachments/?/explode/yara_matches/?
+```
+
+If your rules were not loaded yet when a message arrived, its attachments are
+rescanned once they load. The message is then judged again with your `dr-mail`
+rules, so a rule like the one above still counts, and a changed verdict is filed as
+a [revision](detections.md#revising-a-verdict). A platform D&R rule on the
+`EMAIL_MESSAGE` event does not see rescan results, because that event is emitted
+once at ingest and never rewritten. Use a `dr-mail` rule for YARA. See
 [Knowing when initial analysis has finished](pipeline.md#knowing-when-initial-analysis-has-finished).
+
+An attachment that was not scanned has no `explode/yara_matches`, and neither does
+one that was scanned without a match. Check `explode/scanners` to tell the two apart.
 
 ## Tuning rules
 

@@ -86,9 +86,9 @@ Scoring classes require `weight` from 1 to 100; graymail records must omit it.
 | Was parsing or analysis incomplete? | `_meta/truncations`, `_meta/errors`, `_meta/explode_timeout`, `body/truncated` |
 
 `scope` processes objects, not scalar strings. A scalar equality test on a whole
-string array is not a membership test. For wildcard traversal of string arrays,
-use a platform D&R rule on the emitted event, such as
-`event/headers/domains/?`; that wildcard path is not accepted in `dr-mail`.
+string array is not a membership test. To test membership in a string array, end
+the path in `?`, such as `headers/domains/?`. Glob segments such as `*` are not
+accepted in `dr-mail`.
 
 An email address is decomposed into `local` and `domain`; `sender/email` is an
 object, not a string containing `user@example.com`. A domain's `raw` is the full

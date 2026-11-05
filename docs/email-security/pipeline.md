@@ -237,8 +237,9 @@ nothing outstanding, it carries `pending: []` and `complete: true`.
 not yet loaded while the message was processed, for example just after a deploy or
 restart. The attachments are rescanned with your rules once they load, whatever the
 verdict or direction. The matches are recorded on the attachment and the verdict is
-judged again. A match changes the score only if a detection rule reads it, and no
-default rule does, so write one for the matches you care about. If the rules cannot
+judged again. A match changes the score only if a `dr-mail` rule reads it, and no
+default rule does, so write one for the matches you care about. See
+[the YARA how-to](custom-rules.md#scanning-attachments-with-your-own-yara-rules). If the rules cannot
 be loaded before the deadline, the result is `timed_out`, never a clean `completed`.
 
 `EMAIL_ANALYSIS_COMPLETE` closes that initial window for every message emitted
