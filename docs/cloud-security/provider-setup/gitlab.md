@@ -23,6 +23,16 @@ findings land in the same worklist.
 **Auth model:** a GitLab **access token** (group, project or personal) with two read scopes.
 The connector only ever reads: every API call is a `GET`, and a scan's clone is a fetch.
 
+## What we check
+
+- The inventory of projects, for [Code Security](../code-security/index.md).
+- When the connection is a group, whether the group enforces two-factor
+  authentication.
+
+Not checked: group members, tokens, CI/CD variables, protected branches and other
+group or project settings. The branch protection checks that run on GitHub do not
+run on GitLab projects.
+
 ## Prerequisites
 
 - A token owner that is a **member of the group** (Reporter or above) — or of each project to

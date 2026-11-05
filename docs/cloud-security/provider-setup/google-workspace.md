@@ -21,6 +21,21 @@ and Gemini-in-Workspace usage — via the Admin SDK and Cloud Identity APIs.
   must itself hold a Workspace admin role in the Admin console. See
   [Alternative: no delegation](#alternative-no-delegation).
 
+## What we check
+
+- Users without 2-step verification enrolled.
+- Privileged accounts, those holding an admin role, with no sign-in for 90 days or
+  more.
+- App-specific passwords older than 90 days.
+- Mail posture: external auto-forwarding, missing or monitor-only DMARC, and
+  suspicious mailbox delegates. Gmail settings need domain-wide delegation for
+  `gmail.settings.basic`.
+- Identity attack paths. A user without 2-step verification starts an attack path
+  when the same person holds access to sensitive resources in a connected cloud.
+
+Not checked: tenant policies such as 2-step verification enforcement, password
+policy and sharing settings.
+
 ## Prerequisites
 
 1. A GCP **service account** with a JSON key (a dedicated one, or reuse your

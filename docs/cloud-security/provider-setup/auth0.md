@@ -11,8 +11,9 @@
 Collects the Auth0 tenant as identity posture: the user directory (with MFA
 state), roles and role membership, applications and their machine (M2M)
 identities, client grants as entitlement edges, APIs (resource servers), and
-inbound connections / identity providers. Tenant-level posture includes MFA
-policy, attack protection, and session lifetimes.
+inbound connections / identity providers. The tenant's MFA policy produces a
+finding. Session lifetime and attack protection settings are collected as
+context and do not produce findings.
 
 **Auth model:** a **Machine-to-Machine application** authorized against the
 **Auth0 Management API** with read-only scopes, using client credentials.
@@ -23,6 +24,19 @@ policy, attack protection, and session lifetimes.
     a tenant that uses them, users, roles and applications are still
     inventoried tenant-wide; what is missing is the per-organization
     membership and role scoping. Granting extra scopes does not change this.
+
+## What we check
+
+- The tenant MFA policy does not require MFA.
+- Users without MFA enrolled.
+- Privileged users, those holding admin permissions through roles, with no sign-in
+  for 90 days or more.
+- Identity attack paths. A user without MFA starts an attack path when the same
+  person holds access to sensitive resources in a connected cloud.
+
+Not checked: attack protection (breached password detection, brute-force
+protection, suspicious IP throttling) and session lifetimes. They are collected and
+shown as context only. No finding is raised for them.
 
 ## Prerequisites
 

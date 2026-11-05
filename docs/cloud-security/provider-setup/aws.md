@@ -19,6 +19,35 @@ Two topologies:
   beyond `sts:AssumeRole` — member-account discovery is performed with the
   assumed role, not with the user's own credentials.
 
+## What we check
+
+- **Root and IAM.** Root user without MFA, with access keys, or used recently.
+  Weak password policy. Credentials unused for 45 days. Full-administrator
+  policies. No IAM Access Analyzer. Accounts covered by no guardrail SCP.
+- **Logging and threat detection.** CloudTrail trails that are stopped, lack log
+  validation or KMS encryption, or miss data events. AWS Config, GuardDuty and
+  Security Hub not enabled in every region. Missing CIS metric filters and alarms.
+- **Network.** VPC flow logs off, default security groups with rules, NACLs and
+  security groups open to the internet on SSH, RDP, SMB and other high-risk ports,
+  over-broad peering routes, transit gateways that auto-accept attachments, Client
+  VPN without logging.
+- **Compute.** EC2 instances that accept IMDSv1, unencrypted or public EBS volumes,
+  snapshots and AMIs, ECS tasks that run privileged or as root, credentials in
+  CodeBuild and Lambda environments, unauthenticated Lambda URLs, cross-account
+  Lambda layers.
+- **Data.** S3 public access, missing TLS enforcement, MFA delete, ACLs, logging
+  and cross-account access. Unencrypted or public EFS, KMS keys without rotation or
+  with a public policy, Secrets Manager rotation, and public resource policies on
+  DynamoDB, SQS, SNS, Glue and Backup.
+- **Databases and managed data services.** RDS and Aurora, DocumentDB, Neptune,
+  Redshift, ElastiCache, OpenSearch, MSK, DMS and similar: encryption at rest and
+  in transit, public access, public snapshots, authentication and audit logs.
+- **EKS clusters.** Public API endpoint, private nodes, local accounts, workload
+  identity, audit logging, Secrets encryption, network policy enforcement,
+  supported versions and cluster-admin access entries. See [Kubernetes](../index.md#what-we-look-for).
+
+Not checked: workloads and RBAC inside EKS clusters.
+
 ## Architecture (least-privilege)
 
 An IAM **user** whose only permission is `sts:AssumeRole` on a read-only

@@ -16,6 +16,19 @@ Optionally, a **1Password Connect** server adds vault (secret-store) inventory.
 the same provisioning endpoint your identity provider uses; the collector reads
 it read-only.
 
+## What we check
+
+- The user and group directory is joined to your other identity sources by email,
+  so a 1Password user appears on the same identity as their cloud and IdP accounts.
+- With 1Password Connect, vaults appear as secret stores in the inventory and the
+  graph.
+- Identity attack paths that include these users and groups.
+
+There are no 1Password-specific posture checks.
+
+Not checked: MFA state and sign-in activity. SCIM does not carry them, so a
+1Password user is never reported as having MFA off.
+
 ## Prerequisites
 
 - **1Password Business**, with **automated provisioning** set up (hosted

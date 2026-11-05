@@ -25,6 +25,24 @@ alone**:
 Connect one or both. Findings degrade gracefully to whatever plane is
 connected.
 
+## What we check
+
+From the Console plane:
+
+- API keys older than 90 days.
+- Keys that are not limited to a workspace (default workspace keys).
+- Keys created by someone who is no longer a member of the organization.
+- Pending invites, listed as staged seats that have never signed in.
+
+With the Compliance key (Claude Enterprise):
+
+- SSO not enforced, directory sync (SCIM) off, no IP allowlist.
+- Data retention set to keep forever, no email domain capture.
+- Audit log not available.
+
+Not checked: key usage. A key that was never used is not flagged, and dormancy is
+not assessed.
+
 ## Prerequisites
 
 - For the Console plane: the **admin** role in the Anthropic Console

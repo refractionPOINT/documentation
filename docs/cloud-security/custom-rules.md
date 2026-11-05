@@ -92,9 +92,16 @@ as a no-op.
 `Account` · `AIService` · `Application` · `ComputeInstance` · `ConfigStore` ·
 `DataStore` · `DNSZone` · `EnrollmentKey` · `HasPermission` · `Identity` ·
 `Registry` · `ImageRepository` · `KubeCluster` · `KubeNamespace` · `KubeWorkload` ·
-`KubeRole` · `KubeService` · `Mailbox` · `MailTransportRule` ·
-`MailboxForwardingRule` · `MailboxDelegation` · `MailConnector` · `DkimConfig` ·
-`SpfRecord` · `DmarcPolicy` · `Network` · `TelemetryOutput`.
+`KubeRole` · `KubeService` · `KubeClusterState` · `ManagedService` · `Mailbox` ·
+`MailTransportRule` · `MailboxForwardingRule` · `MailboxDelegation` ·
+`MailConnector` · `DkimConfig` · `SpfRecord` · `DmarcPolicy` · `Network` ·
+`TelemetryOutput`.
+
+Microsoft 365 tenant settings have their own types: `M365OrgSettings`,
+`NamedLocation`, `AccessReviewDefinition`, `DirectoryRolePolicy`,
+`IntuneTenantSettings`, `ExchangeOrgSettings`, `MailThreatPolicy`,
+`PurviewPolicy`, `SharePointTenantSettings`, `TeamsTenantPolicy` and
+`FabricTenantSetting`.
 
 For mailbox forwarding, delegates, transport rules, and domain authentication,
 see [Mail Posture Rules](mail-posture-rules.md). Those rules evaluate collected

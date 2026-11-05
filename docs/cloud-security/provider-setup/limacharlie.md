@@ -11,14 +11,28 @@
 Inventories your **own LimaCharlie tenancy** as an estate, like any other SaaS
 platform: org members as identities (with MFA state), API keys as machine
 identities, sensors as assets, installation keys, telemetry outputs, extension
-subscriptions, and configuration stores. Posture findings cover sign-in
-requirements, unrestricted privileged API keys, insecure telemetry-output
-transports, stale enrollment keys, config stores holding records that fail to
-apply, and non-expiring secrets.
+subscriptions, and configuration stores. Posture findings cover required MFA,
+unrestricted API keys, insecure telemetry-output transports, stale enrollment
+keys, config stores holding records that fail to apply, and non-expiring
+secrets.
 
 **Auth model:** a LimaCharlie **API key** — either an **org** key (one
 organization) or a **user** key (every organization that user can reach, which
 is the MSSP fleet case).
+
+## What we check
+
+- MFA not required at sign-in for the key owner's email domain.
+- API keys with no IP restriction.
+- Keys created by someone who has left the organization.
+- Telemetry outputs that send data over an unencrypted transport.
+- Installation keys older than 90 days with no enrolled sensors.
+- Configuration stores that hold records that fail to apply.
+- Stored secrets with no expiry.
+- Users without MFA enrolled.
+
+Not checked: API key age, because LimaCharlie keys have no expiry. SSO enforcement
+is read and shown on the account, but it does not raise a finding.
 
 ## Choose a key mode
 

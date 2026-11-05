@@ -18,6 +18,21 @@ client-credentials with **private-key JWT**. A user-owned **SSWS API token** is
 also supported, but the service app is strongly preferred — it has no owning
 person, no password/MFA lifecycle, and no 30-day-inactivity expiry.
 
+## What we check
+
+- Users without MFA enrolled.
+- Privileged accounts, those holding an admin role, with no sign-in for 90 days or
+  more.
+- API tokens older than 90 days, when the app has the optional token scope.
+- Identity attack paths. A user without MFA, or a dormant admin, starts an attack
+  path when the same person holds access to sensitive resources in a connected
+  cloud.
+- Federation: external identity providers that can assert identities into the org
+  are inventoried and joined to the graph.
+
+Not checked: sign-on policies, password policies and authenticator settings. Okta
+is read as a directory, not as a tenant configuration.
+
 ## Prerequisites
 
 - **Super Administrator** access to the Okta org (creating an API Services app

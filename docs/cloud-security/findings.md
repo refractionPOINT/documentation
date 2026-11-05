@@ -45,9 +45,8 @@ Each finding carries:
   `ciem_risk`, `privilege_escalation`, `vulnerability`, `misconfig`,
   `malware`, `secret`, `scan_finding`, `coverage_gap`, `device_posture`,
   plus `license_risk`, `eol_runtime` and `code_weakness` (`scan_finding` is
-  reserved for a capability not yet enabled). Cloud-workload coverage findings
-  additionally carry `workload_coverage_gap`, which is not part of the class
-  list offered by the suppression rule picker.
+  reserved for a capability not yet enabled) and the five classes in the
+  table below. The suppression rule picker offers every class.
 
     `secret`, `malware`, `license_risk`, `eol_runtime` and `code_weakness`, and
     the `misconfig` findings whose rule id is an infrastructure-as-code check,
@@ -55,6 +54,15 @@ Each finding carries:
     `code` block with the file, the line range, the package and the fixed
     version where one applies — and the **Repository** filter narrows the
     worklist to one repository.
+
+    | Class | What it means |
+    |---|---|
+    | `workload_coverage_gap` | A cloud compute instance has no live LimaCharlie sensor on it while your coverage policy requires EDR for cloud instances. |
+    | `vuln_coverage_gap` | A native vulnerability scanner is off, enabled but not reporting, or could not be read, so there is no vulnerability data for that scope. Always on, no policy needed. |
+    | `authz_coverage_gap` | An authorization surface could not be read, for example the management group hierarchy, a scope's role assignments or PIM eligibility. Effective-access answers for that scope are a lower bound. Always on, no policy needed. |
+    | `iac_drift` | A live resource no longer matches the value its infrastructure-as-code declaration sets. See [Code Security](code-security/index.md). |
+    | `operational` | A problem in LimaCharlie's own response machinery, not your estate. For example, a temporary response control that could not be removed when its window ended. |
+
 - `severity` (`CRITICAL` … `INFO`), `lc_risk`, and the `risk_breakdown`
   above.
 - The affected resource (`resource_urn`, `resource_name`, `resource_type`,
