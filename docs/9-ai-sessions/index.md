@@ -27,9 +27,9 @@ Interactive AI sessions accessed through the web interface or API. Use cases inc
 
 [Learn more about User Sessions](user-sessions.md)
 
-### SOC Bots
+#### SOC Bots
 
-Named AI specialists in the web app that keep their own conversations and work together in groups. Ready-made teams for service providers, in-house security teams and platform exploration get new users started quickly.
+SOC Bots are built on User Sessions: named AI specialists in the web app that keep their own conversations and work together in groups. Ready-made teams for service providers, in-house security teams and platform exploration get new users started quickly.
 
 [Learn more about SOC Bots](soc-bots.md)
 
