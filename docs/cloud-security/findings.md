@@ -46,8 +46,7 @@ Each finding carries:
   `malware`, `secret`, `scan_finding`, `coverage_gap`, `device_posture`,
   plus `license_risk`, `eol_runtime` and `code_weakness` (`scan_finding` is
   reserved for a capability not yet enabled) and the five classes in the
-  table below. `workload_coverage_gap` is not part of the class list offered by
-  the suppression rule picker.
+  table below. The suppression rule picker offers every class.
 
     `secret`, `malware`, `license_risk`, `eol_runtime` and `code_weakness`, and
     the `misconfig` findings whose rule id is an infrastructure-as-code check,

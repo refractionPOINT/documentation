@@ -153,7 +153,7 @@ carry the same shape) — key fields:
 | Field | Meaning |
 |---|---|
 | `finding_id`, `fingerprint` | Stable identity of the condition (`fnd_` + fingerprint prefix). |
-| `rule_id`, `finding_class`, `classification` | What detected it and its class. The canonical enum is `toxic_combination`, `public_exposure`, `ciem_risk`, `privilege_escalation`, `vulnerability`, `misconfig`, `malware`, `secret`, `scan_finding`, `coverage_gap`, `device_posture` (`malware`, `secret`, and `scan_finding` are reserved for capabilities not yet enabled). `workload_coverage_gap`, the cloud-workload flavor of a coverage gap, can additionally appear on a finding even though it is not one of the 11 picker values. |
+| `rule_id`, `finding_class`, `classification` | What detected it and its class. The canonical enum is `toxic_combination`, `public_exposure`, `ciem_risk`, `privilege_escalation`, `vulnerability`, `misconfig`, `malware`, `secret`, `scan_finding`, `coverage_gap`, `workload_coverage_gap`, `vuln_coverage_gap`, `authz_coverage_gap`, `device_posture`, `code_weakness`, `license_risk`, `eol_runtime`, `iac_drift`, `operational` (`scan_finding` is reserved for a capability not yet enabled). See [Findings & Triage](findings.md#the-worklist) for what each class means. |
 | `severity`, `lc_risk`, `risk_breakdown` | `CRITICAL`–`INFO`, the 0–1000 composite, and its explanation. |
 | `title`, `resource_urn`, `resource_name`, `resource_type`, `account`, `region` | The affected resource. |
 | `related_urns`, `path`, `path_kind` | Related resources; the hop list for path findings and the kind of path it represents. |

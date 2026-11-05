@@ -11,9 +11,10 @@
 Inventories your **own LimaCharlie tenancy** as an estate, like any other SaaS
 platform: org members as identities (with MFA state), API keys as machine
 identities, sensors as assets, installation keys, telemetry outputs, extension
-subscriptions, and configuration stores. Posture findings cover required MFA, unrestricted privileged API keys, insecure telemetry-output
-transports, stale enrollment keys, config stores holding records that fail to
-apply, and non-expiring secrets.
+subscriptions, and configuration stores. Posture findings cover required MFA,
+unrestricted API keys, insecure telemetry-output transports, stale enrollment
+keys, config stores holding records that fail to apply, and non-expiring
+secrets.
 
 **Auth model:** a LimaCharlie **API key** — either an **org** key (one
 organization) or a **user** key (every organization that user can reach, which
