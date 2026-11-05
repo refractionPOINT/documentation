@@ -127,12 +127,13 @@ When `licenses` is on, every license the scan identifies on a dependency becomes
 a `license_risk` finding, one per package and license. Permissive licenses are
 reported too, as `LOW`, so a repository with many dependencies gets many
 `license_risk` findings. The console's policy form turns `licenses` on by
-default. To see only the licenses that need a decision, filter by severity.
+default. To find the licenses that need a decision, use severity and `risk_class`.
 
 The severity follows the license's risk category: forbidden is `CRITICAL`,
 restricted is `HIGH`, reciprocal is `MEDIUM`, and notice, permissive and
-unencumbered are `LOW`. A license the scan cannot classify is also filed as
-`LOW`.
+unencumbered are `LOW`. A license the scan cannot rate is filed as `LOW`, and
+its original rating (`UNKNOWN`) is kept in the evidence as `risk`. As a `LOW`
+finding it counts as `LOW` for the severity floor and for `gating.fail_on`.
 
 Each finding also carries the license's obligation class in its evidence, as
 `risk_class`. The class is separate from the severity, and the two can differ.
