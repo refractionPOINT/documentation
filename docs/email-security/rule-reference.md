@@ -19,8 +19,9 @@ have different wrappers and validation rules.
 | Inside `scope` with `path: links` | `href_url/domain/root` |
 
 The MDM is the root of a mail rule. Do not add `mdm/` or `event/`. The Hive
-rejects `mdm/` paths and pre-verdict reads of `verdict`. Use `scope` to iterate
-arrays of objects; `dr-mail` paths containing `?` or `*` are rejected.
+rejects `mdm/` paths and pre-verdict reads of `verdict`. Use a literal `?` segment to
+walk a list, and `scope` when several conditions must describe the same element.
+`dr-mail` paths with `*` or other glob segments are rejected.
 
 ## Operators
 
@@ -86,9 +87,9 @@ Scoring classes require `weight` from 1 to 100; graymail records must omit it.
 | Was parsing or analysis incomplete? | `_meta/truncations`, `_meta/errors`, `_meta/explode_timeout`, `body/truncated` |
 
 `scope` processes objects, not scalar strings. A scalar equality test on a whole
-string array is not a membership test. For wildcard traversal of string arrays,
-use a platform D&R rule on the emitted event, such as
-`event/headers/domains/?`; that wildcard path is not accepted in `dr-mail`.
+string array is not a membership test. To test membership in a string array, end
+the path in `?`, such as `headers/domains/?`. Glob segments such as `*` are not
+accepted in `dr-mail`.
 
 An email address is decomposed into `local` and `domain`; `sender/email` is an
 object, not a string containing `user@example.com`. A domain's `raw` is the full
@@ -425,6 +426,7 @@ and a decoded destination; when both links are emitted, it is set on both.
 | `magic_type` | string | Non-empty |
 | `is_inline` | boolean | Non-empty |
 | `html` | [HTMLIndicators](#htmlindicators) | When the part is HTML-like |
+| `static` | [StaticScan](#staticscan) | When a static reader recognised the part |
 | `explode` | [Explode](#explode) | When set |
 
 `html` is computed from the attachment's own bytes when the message is parsed, so
@@ -495,6 +497,9 @@ decoded type are reported for that reason.
 | `vba` | [VBAInfo](#vbainfo) | When set |
 | `qr` | array of [QRCode](#qrcode) | Non-empty |
 | `ocr_excerpt` | string | Non-empty |
+| `logos` | array of [LogoMatch](#logomatch) | Non-empty |
+| `logo_brand_count` | integer | Non-empty |
+| `logo_incomplete` | boolean | Non-empty |
 | `pdf` | [PDFInfo](#pdfinfo) | When set |
 | `yara_matches` | array of string | Non-empty |
 | `archive` | [ArchiveInfo](#archiveinfo) | When set |
@@ -503,6 +508,59 @@ decoded type are reported for that reason.
 | `file_count` | integer | Non-empty |
 | `truncated` | boolean | Non-empty |
 | `truncation_reasons` | array of string | Non-empty |
+
+`logos` lists the well-known brands whose logo the scanner found in an image, or on
+the first page of a PDF. Like `ocr_excerpt`, it covers the attachment's whole tree.
+There is one entry per brand, highest score first. `logo_brand_count` is the length
+of that list, because a rule cannot take an array's length. Use it to ask for two or
+more brands. `logo_incomplete` means the logo scanner did not examine at least one
+file, because it timed out, failed or could not decode the image. It tells "no logo
+found" apart from "not looked". Logo matching is supporting evidence. It misses some
+logos and can match a look-alike, so an absent logo means nothing and a present one is
+never conclusive alone.
+
+### LogoMatch
+
+| Field | Type | Presence |
+|---|---|---|
+| `brand` | string | Always. The same brand names the display-name rules use |
+| `score` | number | Always. Scanner confidence above 0 and up to 1 |
+| `method` | string | Always. `hash` when the image is the logo, `sift` when a logo appears within the image |
+
+### StaticScan
+
+Facts the parser reads from an attachment's own bytes, so they exist whether or not
+attachment analysis ran. An absent block means no static reader recognised the part.
+It never means the part was inspected and found clean. Every reader is bounded, and a
+part larger than the bytes kept for reading is not read at all.
+
+| Field | Type | Presence |
+|---|---|---|
+| `shortcuts` | array of shortcut objects | Non-empty |
+| `calendar` | calendar object | For an iCalendar part |
+| `zip` | zip object | When the reading found something to report |
+| `rtf_font_entries` | integer | Non-empty |
+| `file_scheme_link` | boolean | Non-empty |
+
+- `shortcuts` covers `.lnk`, `.url`, `.library-ms` and `.searchConnector-ms` files, and
+  those inside a small archive. Each entry has `kind`, `in_archive`, `arguments` (the
+  clipped command line of a `.lnk`) and `network_target`, which means the shortcut,
+  its icon or its library location names a remote host. Opening or viewing such a file
+  makes Windows authenticate to that host.
+- `calendar` describes an `.ics` attachment or a `text/calendar` part: `method`,
+  `scale`, `prod_id`, `events`, `attendees` (the largest count in one event),
+  `summary`, `description`, `url_count`, `url_hosts`, `embedded_binary`,
+  `embedded_file_names`, `hidden_chars` (invisible and text-reordering characters),
+  and the script flags `atob`, `eval` and `document_write`. Calendar URLs are not
+  merged into the message's `links`, so a rule over them reads these fields.
+- `zip` describes a ZIP container small enough to read whole, which includes Office
+  documents. It carries `spoofed_extension_path`, `html_file_scheme_link`,
+  `ooxml_external` and `unread`, which means an entry that would have been opened was
+  encrypted, too large or past the byte budget.
+- `rtf_font_entries` counts font definitions in an RTF document. A real document has a
+  handful. Tens of thousands is the trigger for a known Office parser flaw.
+- `file_scheme_link` means a web page attachment names a `file:` URL in a link, image
+  or form.
 
 ### PDFInfo
 
@@ -624,6 +682,28 @@ most 16. They are raw evidence: read
 | `detonation` | [Detonation](#detonation) | When set |
 | `phone_numbers` | [PhoneNumbers](#phonenumbers) | When a number was found |
 | `pii` | [PIIFindings](#piifindings) | When a validated value was found or inspection was truncated |
+| `template` | [Template](#template) | When the message is a recognised platform notification |
+
+### Template
+
+Set when the message is a canonical notification relayed by a platform, such as a
+document share, a code-hosting notification, a meeting recording share, an event
+registration or a payment receipt. It records what the identity fields in the
+message mean, so that a notification sent on someone's behalf is not read as
+impersonation. It never says the content is safe. Absent means not recognised, which
+includes messages too large to be examined whole.
+
+| Field | Type | Presence |
+|---|---|---|
+| `kind` | string | Always inside `template`. The recognised flow, for example `google-drive-share` |
+| `actor_identity` | object | When the notification carries an actor identity |
+| `actor_name_only` | boolean | Non-empty. The notification names an actor that is not bound to an account. It grants no identity discount |
+| `actor_display` | boolean | Non-empty. The From display name and address are exactly what this template explains |
+| `actor_reply_to` | boolean | Non-empty. Every Reply-To entry is a canonical participant of the event |
+| `merchant_reply_to` | boolean | Non-empty. A receipt's reply address matches its support field |
+| `receipt_support_only` | boolean | Non-empty. Phone numbers appear only in the expected support footer, with no charge, refund or cancel alarm |
+
+Each flag is proven separately, so recognising a platform never sets all of them.
 
 ### PIIFindings
 
@@ -657,7 +737,7 @@ files is not inspected by this detector; OCR and attached-message text are cover
 Counts remain lower bounds for excluded file text even when `truncated` is absent.
 Missing findings are not assurance that all attachments were examined.
 
-See [outbound PII detections](detections.md#outbound-pii-detections).
+See [outbound data loss detections](detections.md#outbound-data-loss-detections).
 
 ### SenderProfile
 

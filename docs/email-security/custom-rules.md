@@ -294,17 +294,18 @@ behind a message, and remediation goes through `extension request`.
 
 ## Matching one link, not any two links
 
-`dr-mail` rules use `scope` to walk arrays of objects. The Hive rejects paths
-containing `?` or `*`, even though those paths work in ordinary platform D&R
-rules. This restriction applies to every `dr-mail` record, including defaults.
+`dr-mail` rules can walk a list with a literal `?` path segment, such as
+`attachments/?/explode/yara_matches/?`, and use `scope` when several conditions must
+describe the same element. The Hive rejects `*` and other glob segments, even though
+they work in ordinary platform D&R rules. This applies to every `dr-mail` record,
+including defaults.
 
 ### `?` walks a list and compares values
 
-In `dr-general`, `?` is a path segment that matches any element. Two conditions
-using it may match two different elements. For example, a condition on
-`event/links/?/href_url/domain/root` and another on
-`event/links/?/mismatched` need not describe the same link. Use `scope` when the
-conditions must describe one element. In `dr-mail`, use `scope` for either case.
+`?` is a path segment that matches any element. Two conditions using it may match
+two different elements. For example, a condition on `links/?/href_url/domain/root`
+and another on `links/?/mismatched` need not describe the same link. Use `scope`
+when the conditions must describe one element.
 
 ### `scope` re-roots a whole sub-rule onto one element
 
@@ -471,7 +472,7 @@ examines at most 2,000 messages. Check `coverage_note`, skip counts, and
 | Resource | Only `hive://lookup/<name>` is accepted |
 | Count | At most four `lookup` operators per rule |
 | Existence | Checked on save and by `rule validate` when the API's Hive metadata access is configured |
-| Arrays | Use `scope` and an element-relative path; wildcard paths are rejected in `dr-mail` |
+| Arrays | Use `scope` and an element-relative path, or a literal `?` list segment. `*` and other glob segments are rejected in `dr-mail` |
 
 Create and populate the lookup before validating or saving the rule. A missing
 record is reported by name when the metadata lookup succeeds. If that lookup
@@ -479,6 +480,89 @@ fails, the existence check is skipped; a successful validation therefore does
 not prove that the lookup was resolved. Existence validation also does not prove
 that the lookup is enabled, populated, or fresh; inspect the record and test a known
 indicator. See [IOC & Reputation Feeds](ioc-feeds.md#changing-the-verdict-instead-of-raising-a-detection).
+
+## Scanning attachments with your own YARA rules
+
+Email Security scans attachments with the YARA rules in your organization's
+[`yara` hive](../7-administration/config-hive/yara.md). A record is used when it
+is enabled, has not expired, and either its key starts with `email-security` or it
+carries the tag `email-security`. Other `yara` records are ignored, so rules you
+keep for endpoint scans do not run on mail. A record can hold many rules, and a
+change normally applies within a few minutes.
+
+Rules run against each attachment and against every file extracted from it, at any
+depth. The rule names that matched are listed in `explode/yara_matches` on the
+attachment, which describes the whole tree of that attachment. A match is evidence
+on the message and nothing more. It changes a verdict only when a rule you wrote
+reads it, and no default rule does.
+
+Create a record from a rule file. The record's data has one key, `rule`:
+
+```yaml
+# rule.yaml
+rule: |
+  rule Invoice_Dropper
+  {
+      strings:
+          $a = "Please enable content to view this invoice" ascii wide
+      condition:
+          $a
+  }
+```
+
+```bash
+limacharlie hive set --hive-name yara --key email-security-invoice-dropper \
+  --input-file rule.yaml --enabled --oid $OID
+```
+
+If you have no mail YARA rules, the console offers a starter pack when you open
+Email Security. It adds a source named `email-security` to the
+[YARA Manager](../5-integrations/extensions/limacharlie/yara-manager.md)
+configuration, which writes one `yara` record with that key. The pack is a pinned
+copy of the `core` package of the public
+[YARA Forge](https://github.com/YARAHQ/yara-forge) project. If you add a source
+yourself, keep `split` set to `false`. Splitting writes one record per rule under
+other keys, and none of them match the selection rule above.
+
+To make a match count toward the verdict, write a `dr-mail` rule that reads it.
+`yara_matches` is a list of strings, so the path ends in `?`:
+
+```yaml
+# hive: dr-mail, record name: attachment-yara-invoice-dropper
+name: Attachment matches the Invoice_Dropper YARA rule
+phase: pre_verdict
+class: detection
+weight: 90
+confidence: 90
+severity: high
+tags: [malware, yara]
+fp_notes: >
+  Only as good as the YARA rule. A rule that matches a common library or
+  template fires on ordinary mail.
+detect:
+  op: is
+  path: attachments/?/explode/yara_matches/?
+  value: Invoice_Dropper
+```
+
+To match any rule in your set, test that an element exists instead:
+
+```yaml
+detect:
+  op: exists
+  path: attachments/?/explode/yara_matches/?
+```
+
+If your rules were not loaded yet when a message arrived, its attachments are
+rescanned once they load. The message is then judged again with your `dr-mail`
+rules, so a rule like the one above still counts, and a changed verdict is filed as
+a [revision](detections.md#revising-a-verdict). A platform D&R rule on the
+`EMAIL_MESSAGE` event does not see rescan results, because that event is emitted
+once at ingest and never rewritten. Use a `dr-mail` rule for YARA. See
+[Knowing when initial analysis has finished](pipeline.md#knowing-when-initial-analysis-has-finished).
+
+An attachment that was not scanned has no `explode/yara_matches`, and neither does
+one that was scanned without a match. Check `explode/scanners` to tell the two apart.
 
 ## Tuning rules
 

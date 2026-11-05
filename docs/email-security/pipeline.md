@@ -19,7 +19,7 @@ when your workflow needs the initial analysis window to close.
 | 1 | **Notify** | The provider tells us a message exists |
 | 2 | **Fetch** | The raw MIME is pulled from the provider |
 | 3 | **Parse** | MIME becomes the Message Data Model |
-| 4 | **Enrich** | Sender history, lookalike, domain age, link features, attachment explosion |
+| 4 | **Enrich** | Sender history, lookalike, domain age, link features, attachment explosion. See [what is analyzed](#analysis-applied-to-each-part-of-a-message) |
 | 5 | **Score** | Enabled `dr-mail` rules are matched and scored as one set |
 | 6 | **Verdict** | One class, one score, and the signals that produced them |
 | 7 | **Cluster** | The message is attributed to a campaign, or not |
@@ -73,6 +73,95 @@ rule reads an enrichment as an ordinary path and why re-reading the event later
 shows exactly what the engine saw. An enrichment that could not be resolved is
 *absent*, never a reassuring default. See
 [Detections & Verdicts](detections.md#enrichments).
+
+#### Analysis applied to each part of a message
+
+The checks below are static. No file is executed, and a link is fetched only by
+[link detonation](detections.md#link-detonation), from an isolated environment. For
+the threat classes these checks feed, see
+[What Email Security looks for](detections.md#what-email-security-looks-for).
+
+##### Headers
+
+- SPF, DKIM, DMARC and ARC results are parsed from the headers, with DMARC alignment.
+- The `Received` chain is parsed into hops.
+- Mail that came through a gateway the product recognizes is identified from the
+  gateway's relay address and ARC seal. That lets the gateway's own authentication
+  result be read correctly instead of as a failure at your mail server.
+
+##### Sender
+
+- History for the sender address and for the sender's domain: first contact, how many
+  messages in the last 30 days, and how often mail from them was flagged. The counts
+  are read before the message itself is counted. See
+  [the feedback loop](detections.md#the-sender-history-feedback-loop-and-why-it-is-closed).
+- Domain registration age, from RDAP through a bounded cache. When the lookup is not
+  available the age is left out, not set to a default.
+- Edit distance from the sender's domain to your own domains and to commonly
+  impersonated brands, and whether the display name is a brand or an email address.
+- Matches against your [VIPs](vips.md), by display name and by address.
+- Thread verification: whether a reply continues a conversation your organization
+  was part of.
+- Recognition of notifications that a platform relays on someone's behalf, such as a
+  document share or a receipt. This keeps the platform's own identity fields from
+  being read as impersonation.
+
+##### Body
+
+- Plain text and HTML are both read, and a rule is evaluated against each, so a decoy
+  in one part cannot hide the other. See
+  [the two renderings](detections.md#what-the-rules-can-read).
+- Quoted history is separated from what the sender wrote. Rules read the newest
+  segment unless they ask for the history.
+- Text hidden from the reader, such as `display:none` blocks, is detected and
+  recorded.
+- Phone numbers, and whether a callback-style call to action goes with them.
+- Passwords written in the text, which is how an encrypted attachment's password is
+  matched to the file.
+- Counts of payment card, IBAN and US Social Security numbers, used by the optional
+  outbound [data loss rules](detections.md#outbound-data-loss-detections).
+
+##### Links
+
+- Links are collected from HTML anchors, form actions, plain text and decoded QR
+  codes.
+- A gateway's rewrite is removed before anything else looks at the link, so the
+  checks apply to the real destination. Recognized wrappers are Microsoft Safe Links,
+  Proofpoint URL Defense, Mimecast, Barracuda, Cisco, Symantec ClickTime, Sophos and
+  Check Point. Where a gateway keeps the destination on its own servers (Mimecast),
+  only a hint can be read. The hint is marked unverified because a sender can write
+  it.
+- Per link: popularity rank bucket, domain age, mixed-script (homograph) domains,
+  credentials in the URL, and a match against the
+  [threat feeds you configure](policy.md#threat_feeds).
+- Link detonation follows for suspicious messages, up to five distinct URLs.
+
+##### Attachments
+
+- Each file is identified by its bytes, whatever its name or declared type says.
+  MD5, SHA-1, SHA-256 and a TLSH fuzzy hash are recorded.
+- Archives and disk images are unpacked recursively, and every extracted file is
+  analyzed like a top-level attachment. Encrypted archives are flagged and not
+  opened.
+- Office documents have their macros extracted, with auto-run entry points and
+  suspicious calls listed.
+- PDFs are read for page count, embedded files, links, encryption and phone numbers.
+  A PDF's text is not available to rules.
+- HTML and SVG files are scanned in full for encoded payloads, decoders, download
+  calls, redirects and password forms.
+- Shortcut files, calendar invitations and RTF documents are read for remote
+  targets, embedded files, scripts and structure.
+- Attached emails are parsed like the message itself.
+- Images go through OCR, QR decoding and brand-logo detection. A logo match is
+  supporting evidence only.
+- Your own [YARA rules](custom-rules.md#scanning-attachments-with-your-own-yara-rules)
+  run on every file at every depth.
+
+Attachment analysis has limits. A message submits at most 32 attachments, and the
+whole message has a time budget. Whatever is not finished is named in the message
+(`explode/truncation_reasons`, `_meta/explode_timeout`) and scored as an inspection
+gap, never treated as clean. Skipped attachments are queued for a
+[deferred scan](#knowing-when-initial-analysis-has-finished).
 
 ### 5-6. Score and decide
 
@@ -147,8 +236,11 @@ nothing outstanding, it carries `pending: []` and `complete: true`.
 `attachment_scan` is also pending when your organization's custom YARA rules were
 not yet loaded while the message was processed, for example just after a deploy or
 restart. The attachments are rescanned with your rules once they load, whatever the
-verdict or direction, and a match revises the verdict. If the rules cannot be loaded
-before the deadline, the result is `timed_out`, never a clean `completed`.
+verdict or direction. The matches are recorded on the attachment and the verdict is
+judged again. A match changes the score only if a `dr-mail` rule reads it, and no
+default rule does, so write one for the matches you care about. See
+[the YARA how-to](custom-rules.md#scanning-attachments-with-your-own-yara-rules). If the rules cannot
+be loaded before the deadline, the result is `timed_out`, never a clean `completed`.
 
 `EMAIL_ANALYSIS_COMPLETE` closes that initial window for every message emitted
 through the live lane, including re-drives that emit and messages with no delayed

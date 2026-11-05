@@ -9,7 +9,7 @@ fleet-wide policy are a script, not a UI workflow.
 | Hive | Records | Purpose |
 |---|---|---|
 | `mailsec_provider` | one per mail connection | which tenant to protect, with which credential — see [Connecting Providers](providers.md) |
-| `mailsec_policy` | many, discriminated by `policy_type` | automations, exclusions, VIPs, thresholds, banners, retention, reporter replies, sample submission, hunt defaults, clustering |
+| `mailsec_policy` | many, discriminated by `policy_type` | automations, exclusions, VIPs, thresholds, banners, retention, reporter replies, sample submission, hunt defaults, clustering, threat feeds |
 | `dr-mail` | one per rule | all mail rules, including installed defaults — see [Custom Rules](custom-rules.md) |
 
 <span id="managed_rules"></span>
@@ -37,7 +37,7 @@ How each type composes:
 |---|---|
 | `automations` | Concatenated in name order; evaluated as an ordered list |
 | `exclusions` | Concatenated — a set of independent suppressions |
-| `vips` | Union, deduplicated and sorted |
+| `vips`, `threat_feeds` | Union, deduplicated and sorted |
 | `thresholds` | Last writer wins per field, with the ordering invariant re-checked afterwards |
 | `banners`, `reporter_reply`, `sample_sharing`, `hunt_defaults`, `clustering` | Last writer wins per field |
 | `retention` | **Minimum** wins — the shortest horizon for each field; see [Retention](#retention) |
@@ -902,6 +902,44 @@ body is normalized before it is hashed.
     immediately, rather than only for mail that arrives afterwards — and the
     digest an analyst is looking at is never a value the product quietly stopped
     maintaining.
+
+---
+
+## `threat_feeds`
+
+Names the lookups that hold the malicious URLs you want every message's links
+checked against. Nothing is configured by default.
+
+```yaml
+policy_type: threat_feeds
+malicious_url_refs:
+  - hive://lookup/abusech-urlhaus-domains
+```
+
+| Field | |
+|---|---|
+| `malicious_url_refs[]` | **Required**, at least one. Each entry must be `hive://lookup/<name>`. A lookup whose keys are malicious URLs or the domains of malicious URLs |
+
+Records of this type union, like `vips`: two records that each name a feed mean you
+want both.
+
+Every link in a message is tested against each lookup, after a mail gateway's
+rewrite has been unwrapped. A hit in any of them marks the link as known malicious
+(`enrichments/link_features/?/in_urlhaus`), and that fact drives the default rule
+`ms-link-known-malicious-url`. **Without a `threat_feeds` record that rule never
+fires**, and the field is false on every link. A false value therefore means "not
+listed in a feed you named", and never "checked and clean". Do not write a rule that
+reads it negatively.
+
+Each message is tested against at most 256 distinct URLs. The first URL of each
+domain goes first, and domains outside the top-1M ranking go before ranked ones. A
+link that missed the cut carries `feed_lookup_skipped`, and the default coverage
+rule `ms-coverage-link-feed-lookups-skipped` scores the gap.
+
+The lookups are the ones [Lookup Manager](../5-integrations/extensions/limacharlie/lookup-manager.md)
+maintains from a feed you chose, so the same record can serve your endpoint rules
+too. See [IOC & Reputation Feeds](ioc-feeds.md) for setting one up and for
+licensing.
 
 ---
 
