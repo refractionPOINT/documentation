@@ -472,7 +472,7 @@ examines at most 2,000 messages. Check `coverage_note`, skip counts, and
 | Resource | Only `hive://lookup/<name>` is accepted |
 | Count | At most four `lookup` operators per rule |
 | Existence | Checked on save and by `rule validate` when the API's Hive metadata access is configured |
-| Arrays | Use `scope` and an element-relative path; wildcard paths are rejected in `dr-mail` |
+| Arrays | Use `scope` and an element-relative path, or a literal `?` list segment. `*` and other glob segments are rejected in `dr-mail` |
 
 Create and populate the lookup before validating or saving the rule. A missing
 record is reported by name when the metadata lookup succeeds. If that lookup

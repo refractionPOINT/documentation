@@ -308,8 +308,9 @@ detect:
 Save the rule as `custom-ioc-link` in `dr-mail` after creating and populating the
 lookup. `lookup` is supported in both mail phases. Customer mail rules permit
 only `hive://lookup/<name>` resources and at most four lookup operators per rule.
-Use `scope` for an array: the `?` paths in the `dr-general` examples above are
-rejected by the `dr-mail` validator.
+For an array, drop the `event/` prefix and either keep the `?` segment, as in
+`links/?/href_url/domain/root`, or use `scope`. The `dr-general` attachment example
+above uses `*`, which the `dr-mail` validator rejects.
 
 `rule validate` checks that the named lookup exists when the API service has
 Hive metadata access configured. Backtesting also supports lookups when its

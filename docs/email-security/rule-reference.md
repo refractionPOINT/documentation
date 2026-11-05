@@ -19,8 +19,9 @@ have different wrappers and validation rules.
 | Inside `scope` with `path: links` | `href_url/domain/root` |
 
 The MDM is the root of a mail rule. Do not add `mdm/` or `event/`. The Hive
-rejects `mdm/` paths and pre-verdict reads of `verdict`. Use `scope` to iterate
-arrays of objects; `dr-mail` paths containing `?` or `*` are rejected.
+rejects `mdm/` paths and pre-verdict reads of `verdict`. Use a literal `?` segment to
+walk a list, and `scope` when several conditions must describe the same element.
+`dr-mail` paths with `*` or other glob segments are rejected.
 
 ## Operators
 
