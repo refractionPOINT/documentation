@@ -21,29 +21,138 @@ Development dependencies are included and marked as such. The SBOM is CycloneDX.
 Maven parent POMs are not resolved, because scans run without access to package
 registries.
 
-For Go and Rust, dependency findings also say whether the vulnerable code is
-imported, and for some advisories whether the vulnerable function is called.
+Dependency findings are known vulnerabilities in the packages your manifests and
+lockfiles declare, including transitive ones. Each names the package, the
+installed version and the fixed version when one exists.
+
+Two checks decide how much a finding matters in your code:
+
+- **Development-only dependencies.** A vulnerability in a package declared for
+  build or test only is capped at `LOW`, because the package does not ship in
+  what you deploy.
+- **Reachability.** For most language ecosystems (JavaScript and TypeScript,
+  Python, Go, Java and other JVM languages, Rust, Ruby, PHP, .NET and Swift),
+  the scan looks for an import of the vulnerable package anywhere in the
+  repository. A package that nothing imports is lowered one step. When the scan
+  cannot tell, for example because the repository has no source in that
+  language, the result is `unknown` and nothing is lowered. For Go and Rust, a
+  finding can also say whether the repository names any function that the
+  advisory lists as affected. If it names none, the finding is lowered one step.
+  Both checks are heuristics that read your own source, not your dependencies'
+  source. They lower severity and never drop a finding. See
+  [Default severity adjustments](results.md#default-severity-adjustments).
+
+#### Malicious packages
+
+The same dependencies are matched against malicious-package advisories (the
+`MAL-` entries in the OSV database). A match is filed as class `malware`, not
+`vulnerability`.
+
+There is no fixed version. Remove the package, and rotate any credential the
+build or the machines that installed it could reach. The severity of a
+malicious-package finding is never lowered because the package is
+development-only or unreachable: install-time code runs either way.
 
 ### Static analysis (SAST)
 
 LimaCharlie's [default code rules](code-rules.md#the-default-rules) cover
 JavaScript and TypeScript, Python, Go, Java, C#, Ruby and Rust, and are mapped to
-CWE. Rules you write can target any language the engine supports.
+CWE. [What the default rules look for](code-rules.md#what-the-default-rules-look-for)
+lists the classes of weakness and the languages for each. The defaults have no
+rules for C and C++, PHP, Kotlin, Scala or Swift; rules you write can target any
+language the engine supports.
 
 Static analysis runs exactly the organization's enabled
 [code rules](code-rules.md). The policy's `sast_ruleset` is deprecated and ignored.
 
-A low-confidence static-analysis finding is recorded as `INFO`.
+Static analysis does not read files under directories named `vendor`,
+`node_modules`, `testdata` or `__tests__`, or files that match `*.min.js`. It also
+skips what the engine ignores by default, such as `tests/` directories and Go
+`*_test.go` files.
+
+A low-confidence static-analysis finding is recorded as `INFO`. Many of the
+default rules are low-confidence, so many of their matches arrive as `INFO`.
+`INFO` findings never fail a [pull-request check](pull-requests.md#what-the-check-says).
 
 ### Infrastructure as code
 
 Terraform, CloudFormation, Kubernetes manifests, Helm charts and Dockerfiles.
+The checks fall into these categories:
+
+| Category | What the checks look for |
+|---|---|
+| Public exposure and network access | Storage buckets and objects that allow public access through ACLs or policies, security groups and firewalls that allow SSH, RDP or other traffic from any address, and databases with a public endpoint. |
+| Encryption and data protection | Encryption at rest missing, or not using a customer-managed key. Versioning, access logging, backup retention and deletion protection turned off. |
+| Identity and access | Weak access settings on cloud resources, for example database IAM authentication turned off. |
+| Container and Kubernetes hardening | Privileged containers, containers that run as root or can escalate privileges, access to the host network or process namespace, default or unneeded Linux capabilities, a writable root filesystem, no seccomp profile, missing CPU and memory limits, and workloads in the `default` namespace. |
+| Dockerfile hygiene | Images that run as root, no `HEALTHCHECK`, and package installs without the usual size and safety flags. |
+
+Which checks apply depends on the resource types in your files; this table
+describes the kinds of problem, not a fixed list.
+
+A finding on an AWS, Google Cloud or Azure Terraform resource is linked to the
+live resource when that resource exists in a connected cloud account, so you can
+see which file to change. The match is by exact name. A name computed at apply
+time needs a [Terraform map](containment-setup.md#terraform-maps).
 
 ### Secrets
 
 Credentials in the working tree, and in the full git history when
-`secrets_history` is on. On GitHub, a secret finding also carries GitHub's own
-verdict on whether the credential is still live, when GitHub has one.
+`secrets_history` is on. The detectors recognize hundreds of credential formats,
+in these groups:
+
+| Group | Examples |
+|---|---|
+| Cloud provider keys | AWS access keys, Google Cloud API keys, Azure AD client secrets, and keys for other cloud and hosting providers |
+| Source control and CI/CD tokens | GitHub, GitLab and Bitbucket tokens, npm and PyPI publish tokens, and CI service tokens |
+| SaaS and payment API keys | Slack, Stripe, Twilio, SendGrid, Sentry, Shopify and many others |
+| AI provider keys | OpenAI, Anthropic, Cohere, Hugging Face and others |
+| Private keys and certificates | PEM private keys and PKCS#12 files |
+| JSON Web Tokens | Signed JWTs committed in code or configuration |
+| Generic high-entropy API keys | Values assigned to names such as `api_key` or `secret` that look like a credential but match no specific provider |
+
+On GitHub, a secret finding also carries GitHub's own verdict on whether the
+credential is still live, when GitHub has one. A credential GitHub reports as
+inactive is lowered to `LOW`. Only GitHub supplies this; GitLab and Bitbucket
+findings carry no live verdict. Secrets under vendored or test paths are lowered
+to `INFO` unless GitHub reports them live. See
+[Default severity adjustments](results.md#default-severity-adjustments).
+
+Deleting a file does not remove its credentials from git history. Rotate any
+credential found only in history.
+
+### Licenses
+
+When `licenses` is on, every license the scan identifies on a dependency becomes
+a `license_risk` finding, one per package and license. Permissive licenses are
+reported too, as `LOW`.
+
+The severity follows the license's risk category: forbidden is `CRITICAL`,
+restricted is `HIGH`, reciprocal is `MEDIUM`, and notice, permissive and
+unencumbered are `LOW`. A license the scan cannot classify is also filed as
+`LOW`.
+
+Each finding also carries the license's obligation class in its evidence, as
+`risk_class`. The class is separate from the severity, and the two can differ.
+
+| `risk_class` | Meaning |
+|---|---|
+| `copyleft` | Strong copyleft, such as the GPL and AGPL families. Obligations reach the whole combined work. |
+| `weak-copyleft` | Weak copyleft, such as the LGPL, MPL and EPL. Obligations reach the modified files of the component. |
+| `permissive` | Permissive, such as MIT, BSD and Apache-2.0. |
+| `unknown` | Not recognized. This includes any license the scan could not identify, which a person should review. |
+
+For a dual-licensed package (`A OR B`) the class is the least restrictive
+choice. For `A AND B`, it is the most restrictive. To focus on copyleft and
+unknown licenses, look at `risk_class` rather than severity alone.
+
+### Container images
+
+Image scans report known vulnerabilities in the operating system packages and
+the application packages inside an image, and flag base images that are past
+their end-of-life date. They do not scan the image's contents for secrets,
+misconfigurations or licenses. A Dockerfile in a repository is checked by the
+infrastructure-as-code engine, not by the image scan.
 
 ### End-of-life runtimes
 

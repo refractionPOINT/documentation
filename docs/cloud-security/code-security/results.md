@@ -151,6 +151,41 @@ wiping out a repository's findings, so a big fix can take one extra scan to show
 See [Status and reason codes](reference.md#status-and-reason-codes) for every
 reason.
 
+## Default severity adjustments
+
+Some findings are lowered by default, so that the first scan does not bury the
+findings that matter. Each one applies to a finding of that kind in any
+repository.
+
+| Finding | Lowered to | Why |
+|---|---|---|
+| Vulnerability in a development-only dependency | At most `LOW` | The package does not ship in what you deploy. |
+| Vulnerability in a package that nothing in the repository imports | One step down | No import was found. The check cannot see dynamic loading. |
+| Vulnerability whose affected function the repository never names (Go and Rust) | One step down | None of the functions the advisory lists were found in your source. The check cannot see calls made by your dependencies. |
+| Static-analysis finding from a low-confidence rule | `INFO` | The rule rated its own match as low-confidence. |
+| Secret that GitHub reports as inactive | At most `LOW` | The provider says the credential no longer works. |
+| Secret, infrastructure-as-code or static-analysis finding under `vendor`, `node_modules`, `testdata` or `__tests__`, or in a `*.min.js` file | `INFO` | Third-party code or test fixtures. A secret that GitHub reports as live is not lowered. |
+
+How they work:
+
+- **They only lower severity.** Nothing raises it, and no finding is dropped. A
+  lowered finding is still reported and counted. The lowest a default goes is
+  `INFO`.
+- **Adjustments are not added together.** A finding that matches both the
+  not-imported and the function checks moves one step, not two.
+- **Malicious packages are never lowered** by the dependency checks, and
+  dependency findings are not lowered by their file path.
+- **They are labelled on the finding.** `code.noise_policies` lists the defaults
+  that applied, `code.detected_severity` holds the severity before the
+  adjustment, and the finding's evidence says which default lowered it and why.
+- **They cannot be turned off.** There is no policy setting for them. Read
+  `code.detected_severity` to see what the scanner originally rated a finding. The
+  policy's [severity floor](policy.md#severity-floor) applies after these
+  adjustments.
+
+`INFO` findings never fail a [pull-request check](pull-requests.md#what-the-check-says).
+The checks apply the same defaults.
+
 ## Software bill of materials
 
 Every scanned repository gets a CycloneDX SBOM. Download it from the
