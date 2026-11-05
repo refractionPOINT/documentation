@@ -25,6 +25,37 @@ Each rule is its own record, so each can be switched off or deleted on its own:
 - a third-party rule's `metadata` carries its licence (`license`,
   `license_notice`, the full `license_text`) and the pinned upstream `source_url`.
 
+### What the default rules look for
+
+The defaults are mapped to CWE and cover these classes of weakness. They do not
+list every language for every check: a class can have rules in only some of its
+languages.
+
+| Class | What the rules look for | Languages |
+|---|---|---|
+| Injection | SQL built by string concatenation or formatting, OS command execution with user-controlled input, dynamic evaluation of code, LDAP, XPath, XSLT and expression-language injection, XML external entities (XXE), template injection, header and response splitting, format strings | JavaScript and TypeScript, Python, Go, Java, C#, Ruby, Rust |
+| Path and file handling | Path traversal, unsafe extraction of archives and decompression bombs, insecure temporary files, overly permissive file modes, file disclosure | JavaScript and TypeScript, Python, Go, Java, C#, Ruby |
+| Request forgery and redirects | Server-side request forgery (SSRF), open redirects, permissive CORS | JavaScript and TypeScript, Python, Go, Java, C#, Ruby |
+| Cross-site scripting | Unescaped output written into HTML, disabled auto-escaping, unsafe template and rendering APIs | JavaScript and TypeScript, Python, Go, Java, C# |
+| Unsafe deserialization | Deserializing untrusted data with formats that can run code | JavaScript and TypeScript, Python, Java, C#, Ruby |
+| Cryptography and transport | TLS certificate verification turned off, old TLS versions, weak hashes, ciphers, modes and padding, short keys, weak random number generators, hardcoded keys, SSH host-key checks turned off, cleartext protocols (FTP, Telnet, SNMP v1 and v2) | All seven; the cleartext-protocol checks are Python only |
+| Credentials and configuration | Hardcoded and empty passwords, anonymous LDAP binds, debug endpoints left enabled, services bound to all network interfaces, cookies missing the `HttpOnly` or `Secure` flag | Java, Python, Go, C# |
+
+Java and Python have the most rules. Ruby and Rust have a smaller core set, mostly
+injection, TLS verification, weak hashes and hardcoded keys. There are also a few
+checks for unsafe low-level APIs, such as Node.js buffers and Go's `unsafe` package.
+
+The defaults have **no rules for C and C++, PHP, Kotlin, Scala or Swift**. Static
+analysis can read those languages, so [write your own rules](#writing-a-rule) to
+cover them.
+
+Many default rules are low-confidence. A match from a low-confidence rule is
+filed as `INFO`, so it stays visible but ranks low, and `INFO` findings never fail
+a pull-request check. See
+[Default severity adjustments](results.md#default-severity-adjustments).
+Static analysis does not read `vendor`, `node_modules`, `testdata` or `__tests__`
+directories, or `*.min.js` files. See [the reference](reference.md#static-analysis-sast).
+
 After that they are **your records**. Edit, disable or delete any of them,
 LimaCharlie's included. Installing is create-only: a record whose key already
 exists is never overwritten, and nothing puts back a rule you deleted until you

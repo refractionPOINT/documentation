@@ -33,16 +33,16 @@ the free-tier limits and starts usage billing.
 
 ## What it finds
 
-| Engine | What it looks at | Finding class |
+| Engine | What it finds | Finding class |
 |---|---|---|
-| **Dependencies (SCA)** | Lockfiles and manifests, matched against the vulnerability database | `vulnerability` |
-| **Malicious packages** | The same dependencies, matched against known malicious-package advisories | `malware` |
-| **Secrets** | Credentials in the current files and, if you turn it on, in the full git history | `secret` |
-| **Infrastructure as code** | Terraform, CloudFormation, Kubernetes manifests, Helm charts, Dockerfiles | `misconfig` |
-| **Static analysis (SAST)** | Source code, against your organization's [code rules](code-rules.md): LimaCharlie's CWE-mapped defaults plus your own | `code_weakness` |
-| **Container images** | Images your repositories build from, and optionally images your workloads run | `vulnerability` on the image |
-| **Licenses** | Dependency licenses with copyleft or unknown terms | `license_risk` |
-| **End-of-life runtimes** | Language runtimes and base images past their vendor support date | `eol_runtime` |
+| **Dependencies (SCA)** | Known vulnerabilities in packages from lockfiles and manifests, ranked by exploit data and by whether your code uses them. See [Dependencies](reference.md#dependencies-sca). | `vulnerability` |
+| **Malicious packages** | Dependencies that match known malicious-package advisories. See [Malicious packages](reference.md#malicious-packages). | `malware` |
+| **Secrets** | Hundreds of credential formats, such as cloud, source control, SaaS and AI provider keys, private keys and JWTs, in the current files and, if you turn it on, in the full git history. See [Secrets](reference.md#secrets). | `secret` |
+| **Infrastructure as code** | Misconfigurations in Terraform, CloudFormation, Kubernetes manifests, Helm charts and Dockerfiles: public exposure, missing encryption and logging, weak access settings, and container hardening. See [Infrastructure as code](reference.md#infrastructure-as-code). | `misconfig` |
+| **Static analysis (SAST)** | Weaknesses in source code, such as injection, unsafe file handling, XSS, deserialization and weak cryptography, found by your organization's [code rules](code-rules.md) (LimaCharlie's CWE-mapped defaults plus your own). See [what the defaults look for](code-rules.md#what-the-default-rules-look-for). | `code_weakness` |
+| **Container images** | Known vulnerabilities in the OS and application packages of images your repositories build from, and optionally images your workloads run, plus end-of-life base images. See [Container images](reference.md#container-images). | `vulnerability` on the image |
+| **Licenses** | Every dependency license, rated by risk. The evidence also gives the obligation class (copyleft, weak copyleft, permissive or unknown), to help you focus on copyleft and unknown licenses. See [Licenses](reference.md#licenses). | `license_risk` |
+| **End-of-life runtimes** | Language runtimes and base images past their vendor support date. See [End-of-life runtimes](reference.md#end-of-life-runtimes). | `eol_runtime` |
 
 See [Supported languages and ecosystems](reference.md#supported-languages-and-ecosystems)
 for the full coverage of each engine.
