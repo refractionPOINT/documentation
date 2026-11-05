@@ -164,24 +164,29 @@ repository.
 | Vulnerability whose affected function the repository never names (Go and Rust) | One step down | None of the functions the advisory lists were found in your source. The check cannot see calls made by your dependencies. |
 | Static-analysis finding from a low-confidence rule | `INFO` | The rule rated its own match as low-confidence. |
 | Secret that GitHub reports as inactive | At most `LOW` | The provider says the credential no longer works. |
-| Secret, infrastructure-as-code or static-analysis finding under `vendor`, `node_modules`, `testdata` or `__tests__`, or in a `*.min.js` file | `INFO` | Third-party code or test fixtures. A secret that GitHub reports as live is not lowered. |
+| Secret or infrastructure-as-code finding under `vendor`, `node_modules`, `testdata` or `__tests__`, or in a `*.min.js` file. Also static-analysis results you push from your own scanner, because hosted static analysis does not read those paths | `INFO` | Third-party code or test fixtures. A secret that GitHub reports as live is not lowered. |
 
 How they work:
 
-- **They only lower severity.** Nothing raises it, and no finding is dropped. A
-  lowered finding is still reported and counted. The lowest a default goes is
-  `INFO`.
-- **Adjustments are not added together.** A finding that matches both the
-  not-imported and the function checks moves one step, not two.
+- **They only lower severity.** Nothing raises it, and the adjustments
+  themselves drop no finding. A lowered finding is still reported and counted.
+  The lowest a default goes is `INFO`. The policy's
+  [severity floor](policy.md#severity-floor) is separate: it drops findings
+  below it, and it applies after these adjustments. With `severity_floor:
+  MEDIUM`, a `HIGH` vulnerability in a development-only dependency is lowered to
+  `LOW` and then dropped by the floor.
+- **Adjustments are not added together.** Each one is worked out from the
+  finding's original severity, and the lowest result wins. A `HIGH`
+  vulnerability in a development-only dependency that nothing imports becomes
+  `LOW` (the cap), not `INFO`. A `HIGH` one that is both not imported and never
+  called becomes `MEDIUM`, one step, not two.
 - **Malicious packages are never lowered** by the dependency checks, and
   dependency findings are not lowered by their file path.
 - **They are labelled on the finding.** `code.noise_policies` lists the defaults
   that applied, `code.detected_severity` holds the severity before the
   adjustment, and the finding's evidence says which default lowered it and why.
 - **They cannot be turned off.** There is no policy setting for them. Read
-  `code.detected_severity` to see what the scanner originally rated a finding. The
-  policy's [severity floor](policy.md#severity-floor) applies after these
-  adjustments.
+  `code.detected_severity` to see what the scanner originally rated a finding.
 
 `INFO` findings never fail a [pull-request check](pull-requests.md#what-the-check-says).
 The checks apply the same defaults.

@@ -39,7 +39,7 @@ Two checks decide how much a finding matters in your code:
   finding can also say whether the repository names any function that the
   advisory lists as affected. If it names none, the finding is lowered one step.
   Both checks are heuristics that read your own source, not your dependencies'
-  source. They lower severity and never drop a finding. See
+  source. They lower severity and do not drop a finding themselves. See
   [Default severity adjustments](results.md#default-severity-adjustments).
 
 #### Malicious packages
@@ -125,7 +125,9 @@ credential found only in history.
 
 When `licenses` is on, every license the scan identifies on a dependency becomes
 a `license_risk` finding, one per package and license. Permissive licenses are
-reported too, as `LOW`.
+reported too, as `LOW`, so a repository with many dependencies gets many
+`license_risk` findings. The console's policy form turns `licenses` on by
+default. To see only the licenses that need a decision, filter by severity.
 
 The severity follows the license's risk category: forbidden is `CRITICAL`,
 restricted is `HIGH`, reciprocal is `MEDIUM`, and notice, permissive and
