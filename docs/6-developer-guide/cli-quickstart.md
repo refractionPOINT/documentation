@@ -178,8 +178,9 @@ in with your browser. This needs CLI version 5.12.0 or later.
 
 The CLI finishes the sign-in, including the MFA prompt if your account uses
 MFA. If the CLI runs on Windows, pasting is not available: forward the port
-instead (`ssh -L 8085:localhost:8085 <host>`), and the browser reaches the CLI
-directly.
+instead, and the browser reaches the CLI directly. Use the port the CLI prints
+when it starts (`OAuth callback server started on port 8085`), for example
+`ssh -L 8085:localhost:8085 <host>`.
 
 ### Sign in with an API key
 
