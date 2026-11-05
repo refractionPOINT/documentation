@@ -480,6 +480,77 @@ not prove that the lookup was resolved. Existence validation also does not prove
 that the lookup is enabled, populated, or fresh; inspect the record and test a known
 indicator. See [IOC & Reputation Feeds](ioc-feeds.md#changing-the-verdict-instead-of-raising-a-detection).
 
+## Scanning attachments with your own YARA rules
+
+Email Security scans attachments with the YARA rules in your organization's
+[`yara` hive](../7-administration/config-hive/yara.md). A record is used when it
+is enabled, has not expired, and either its key starts with `email-security` or it
+carries the tag `email-security`. Other `yara` records are ignored, so rules you
+keep for endpoint scans do not run on mail. A record can hold many rules, and a
+change normally applies within a few minutes.
+
+Rules run against each attachment and against every file extracted from it, at any
+depth. The rule names that matched are listed in `explode/yara_matches` on the
+attachment, which describes the whole tree of that attachment. A match is evidence
+on the message and nothing more. It changes a verdict only when a rule you wrote
+reads it, and no default rule does.
+
+Create a record from a rule file. The record's data has one key, `rule`:
+
+```yaml
+# rule.yaml
+rule: |
+  rule Invoice_Dropper
+  {
+      strings:
+          $a = "Please enable content to view this invoice" ascii wide
+      condition:
+          $a
+  }
+```
+
+```bash
+limacharlie hive set --hive-name yara --key email-security-invoice-dropper \
+  --input-file rule.yaml --enabled --oid $OID
+```
+
+If you have no mail YARA rules, the console offers a starter pack when you open
+Email Security. It adds a source named `email-security` to the
+[YARA Manager](../5-integrations/extensions/limacharlie/yara-manager.md)
+configuration, which writes one `yara` record with that key. The pack is a pinned
+copy of the `core` package of the public
+[YARA Forge](https://github.com/YARAHQ/yara-forge) project. If you add a source
+yourself, keep `split` set to `false`. Splitting writes one record per rule under
+other keys, and none of them match the selection rule above.
+
+To act on a match, write a platform D&R rule on the emitted event. String arrays
+need a wildcard path, which `dr-mail` does not accept (see
+[the Rule Reference](rule-reference.md)).
+
+```yaml
+# hive: dr-general, record name: email-attachment-yara-match
+detect:
+  op: and
+  rules:
+    - op: is
+      path: routing/event_type
+      value: EMAIL_MESSAGE
+    - op: is
+      path: event/attachments/?/explode/yara_matches/?
+      value: Invoice_Dropper
+
+respond:
+  - action: report
+    name: email-attachment-matches-yara
+    priority: 3
+```
+
+An attachment that was not scanned has no `explode/yara_matches`, and neither does
+one that was scanned without a match. Check `explode/scanners` to tell the two
+apart. If your rules were not loaded yet when a message arrived, the attachments
+are rescanned once they load. See
+[Knowing when initial analysis has finished](pipeline.md#knowing-when-initial-analysis-has-finished).
+
 ## Tuning rules
 
 Edit `weight`, `confidence` or `detect` directly on the rule record. Use the

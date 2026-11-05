@@ -7,24 +7,33 @@ page is about the other lane: mirroring a threat feed **you** have chosen, and
 are licensed to use, into a LimaCharlie `lookup`, then matching every message's
 links, attachments and sender domains against it.
 
-Nothing on this page is installed for you. Which feeds you trust, on what terms,
+No feed is installed or switched on for you. Which feeds you trust, on what terms,
 and how hard you act on a hit are your decisions, and they differ enough between
 organizations that a default would be wrong more often than right.
 
+There are two ways to use a feed, and you can use both:
+
+- Name the lookup in a [`threat_feeds` policy record](policy.md#threat_feeds). Every
+  link in every message is then tested against it, and a hit drives the default rule
+  `ms-link-known-malicious-url`. That rule never fires until you do this.
+- Write your own rule with the `lookup` operator, as in [section 5](#5-match-messages-against-it).
+  This works for links, attachment hashes and sender domains.
+
 ## How the pieces fit
 
-There is no email-specific feed integration. You are composing three things that
+Email Security has no feed of its own. You assemble one from three things that
 already exist:
 
 | Piece | Role |
 |---|---|
 | [Lookup Manager](../5-integrations/extensions/limacharlie/lookup-manager.md) (`ext-lookup-manager`) | Fetches a feed on a schedule and writes it into a `lookup` Hive record |
 | The `lookup` Hive | Holds the indicator set, keyed by the name you chose |
-| `op: lookup` in a D&R rule | Tests one value out of a message against that record |
+| `op: lookup` in a rule, or a `threat_feeds` record | Tests a message's values, or every link, against that record |
 
-The feed never touches Email Security's own configuration. It is an organization
-resource that a mail rule happens to read, which is why the same record can also
-back an EDR rule, a cloud rule, or a query.
+The feed stays an organization resource. Email Security reads it only where you
+point it: from a `threat_feeds` policy record, or from a mail rule that uses
+`lookup`. That is why the same record can also back an EDR rule, a cloud rule, or a
+query.
 
 ## Read the feed's licence first
 

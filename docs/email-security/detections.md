@@ -338,10 +338,49 @@ recreate it. Copy or untag a rule before maintaining your own version. See
 it shows the exact current conditions, weight, confidence, phase, tags and
 false-positive notes. Every default is editable, disableable and deletable.
 
-Defaults cover impersonation, authentication and sender history, links,
-attachment threats, suspicious content, detonation evidence and graymail.
-They are ordinary D&R rules over the Message Data Model, not a separate engine.
-See [Detection Rules](custom-rules.md) for the format, IaC and explicit restoration.
+The defaults are ordinary D&R rules over the Message Data Model, not a separate
+engine. See [Detection Rules](custom-rules.md) for the format, IaC and explicit
+restoration.
+
+### What Email Security looks for
+
+The defaults fall into the threat classes below. Most rules are weak on their own
+and add up when several fire on one message, so a class is a set of evidence, not
+one verdict. For the exact conditions, weights and false-positive notes of each
+rule, open **Email Security → Detection rules**. To see the analysis behind these
+checks, read [How a Message Is Processed](pipeline.md#analysis-applied-to-each-part-of-a-message).
+
+| Class | What it looks for |
+|---|---|
+| Impersonation and business email compromise | A protected person's name ([VIPs](vips.md)) sent from another address, a new domain or a consumer webmail account. Domains one or two edits from yours or from a commonly impersonated brand. A display name that is a well-known brand, or another email address. A Reply-To that moves the conversation elsewhere. A request to change payment details, send gift cards or redirect funds to a new beneficiary, and pressure to keep it secret. A reply into a conversation your organization never took part in (thread verification) |
+| Sender authentication and reputation | SPF, DMARC (including a domain that asked for rejection) and the mail platform's own composite authentication. First contact from a sender, and senders or domains your organization flagged before. Domain age. A first-time sender who mails many recipients or hides the recipient list. Registries that throwaway domains cluster on |
+| Phishing links | Link text that names a different site than the destination. Credentials in the URL. Look-alike, mixed-script and punycode domains. Bare IP addresses and `data:` URIs. URL shorteners and open redirectors. Free or anonymous hosting. Domains outside the top-1M ranking, or with generated-looking names. Login-shaped paths and login forms inside the message. Links in platform notifications that lead to anonymous hosting. Known-bad URLs from the [threat feeds you configure](policy.md#threat_feeds) |
+| Link detonation | Where a suspicious link really goes: redirect chain, certificate, password forms and brand mismatch on the landing page. See [Link detonation](#link-detonation) |
+| Malicious attachments | Executables and scripts, including files whose bytes are executable under a harmless name. Double extensions and right-to-left overrides in file names. Disk images. Macros that run on open. Encrypted archives, especially with the password in the message. Executables extracted from archives. OneNote files from strangers. Password-locked PDFs with the password in the message. Delivery-failure notices that carry a credential page or an executable |
+| Smuggling and evasion | HTML and SVG files that assemble a payload in the browser. Sign-in pages delivered as files. Messages built to defeat the parser, such as extreme nesting. Files that could not be fully inspected are scored as an inspection gap and never treated as clean |
+| Client exploits and credential-leaking files | Mail shaped like known Outlook, Office, webmail and archiver exploits. Shortcut, library and `file:` links that make Windows authenticate to a remote host. Calendar invitations that carry files, scripts, hidden characters or a lure |
+| Callback phishing | A short invoice, charge or support notice whose only action is a phone number. See [Callback phishing and HTML smuggling](#callback-phishing-and-html-smuggling) |
+| Credential and brand lures | Mailbox warnings, fake document shares, administrator alerts from a sender that is not the vendor, crypto wallet and seed-phrase lures, voicemail and fax notices, and brand names or logos in images. Also extortion and advance-fee scams |
+| Bulk and unsolicited mail | The `graymail` lane. It holds newsletters and marketing, and also unsolicited commercial pitches such as cold outreach, SEO audits, journal invitations and contact-list sales |
+| Outbound data loss | An optional pack for mail your users send. See [Outbound data loss detections](#outbound-data-loss-detections) |
+
+A few points apply across the classes.
+
+- **Language.** Most content and lure rules match English wording. A lure in
+  another language mostly will not match them. Rules on links, attachments,
+  authentication and sender history do not depend on language.
+- **Graymail is not a pass.** A message gets the `graymail` verdict only when it
+  scores below `suspicious` and no detection-class rule matched. See
+  [the graymail lane](#the-graymail-lane).
+- **Hidden text.** The parser detects text a reader cannot see and records it on the
+  message. No default rule scores it, because most bulk mail hides a preview line
+  in the same way. Write your own rule if you want to use it.
+- **Authentication results.** Defaults score SPF, DMARC and the platform's composite
+  result. DKIM and ARC results are parsed and available to your rules, and ARC also
+  helps recognize mail relayed through a gateway.
+- **Inspection gaps.** A file that timed out, was cut short or could not be opened
+  adds to the score through coverage rules. `inspection_incomplete` on the verdict
+  says a gap was seen.
 
 ### Callback phishing and HTML smuggling
 
@@ -376,17 +415,9 @@ malicious, unless its data also decodes to a recognisable payload. Credential-pa
 and tiny-redirect defaults require a browser-file extension; source templates and
 files with unconventional names can fall outside those two checks.
 
-In managed pack `0.6.0`, these 22 new rules carry explicit severity. Older managed
-rules currently use the informational fallback for their authored impact. The
-message's threat severity still follows its verdict, so a malicious verdict from
-an older rule is at least `high`.
-
-Display-name brand impersonation ("PayPal Support" over an unrelated address),
-advance-fee and extortion text, voicemail and fax lures, free-hosting and
-open-redirector links, internationalised look-alike domains, OneNote files, locked
-PDFs with the password in the message, and web pages hidden inside archives from a
-stranger are covered by further defaults. **Email Security → Detection rules** shows every rule's
-conditions and false-positive notes.
+Every default rule carries an authored severity. A rule installed from an older
+pack release may carry none, and then counts as informational. The message's threat
+severity still follows its verdict, so a malicious verdict is at least `high`.
 
 A verdict's `engine_version` is a SHA-256 fingerprint of the scoring rules,
 resolved thresholds, exclusions, VIPs, threat-feed references and clustering policy,
@@ -395,30 +426,46 @@ Changing rule content or scoring policy changes the fingerprint. It identifies
 the decision configuration; it is not a promise that an external lookup feed
 or other message enrichment is unchanged.
 
-### Outbound PII detections
+### Outbound data loss detections
 
-The optional email DLP pack adds outbound detections for validated payment card
-numbers, IBANs and US Social Security numbers, plus a bulk detection when any
-one kind has at least ten distinct values. Bulk counts are per kind: four cards,
-four IBANs and four SSNs do not meet the bulk threshold. Bulk detections fire
-alongside the matching single-kind detection. These are platform D&R rules on
-`EMAIL_MESSAGE`, separate from the engine verdict; installing them does not
-change the verdict or automatically move mail.
+The optional email DLP pack looks at mail your users send. It is a set of platform
+D&R rules on `EMAIL_MESSAGE`, separate from the engine verdict. Installing it does
+not change the verdict or automatically move mail. Each rule only considers
+`outbound` messages.
 
-The rules read [PIIFindings](rule-reference.md#piifindings), which stores counts
+| Detection | What it looks for |
+|---|---|
+| Payment cards, IBANs and US Social Security numbers | Numbers that pass format and checksum validation. Card numbers must also have a real card network prefix and length |
+| Bulk personal data | Ten or more distinct cards, IBANs or Social Security numbers in one message. Counts are per kind. This fires alongside the single-kind detection |
+| Secrets in text | In the subject or the newest authored text: private key blocks, cloud access key IDs, source-hosting and chat tokens, Google API keys and live payment API keys. Only formats that do not occur by accident are matched, so there is no generic `password=` matching |
+| Credential and key files | Attachments, or files extracted from archives, that are keystores, private keys, VPN profiles, password vaults or `.env` files, judged by name and extension |
+| Sensitively named files | Spreadsheets, text, config, database and document files whose name contains the whole word password, credential or secret |
+| Sensitivity labels | Microsoft Purview labels such as Confidential or Secret, and a `Sensitivity: Company-Confidential` header |
+| Disposable recipients | Any To, CC or BCC recipient on a disposable-email domain list |
+| Personal free-mail recipients | Any recipient at a personal webmail provider. This rule is noisy and ships disabled. Turn it on if you want it as context for a hunt |
+
+The PII rules read [PIIFindings](rule-reference.md#piifindings), which stores counts
 only. A detection still carries the originating email event, whose body can
-contain the actual sensitive values; the count facts do not redact that body.
-Plan detection access and outputs accordingly. IBANs commonly occur on ordinary
-invoices, and dashed SSN-shaped internal IDs can match. Tune the optional rules
-for your organization rather than treating a match as proof of malicious intent.
-The detector covers message text, OCR and attached messages, but does not inspect
-text inside ordinary document, spreadsheet or PDF files. Counts remain lower
-bounds for these excluded sources even when `enrichments/pii/truncated` is absent.
-Known incomplete extraction or parsing, and inspection limits, set that flag;
-the counts still describe only the available text.
-Deferred attachment scans refresh the stored facts but do not replay the initial
-`EMAIL_MESSAGE` evaluation. A DLP match therefore describes evidence available
-when that event was emitted, rather than every later attachment result.
+contain the actual sensitive values, and the same is true of a secret found in text.
+The count facts do not redact that body. Plan detection access and outputs
+accordingly. IBANs commonly occur on ordinary invoices, and dashed SSN-shaped
+internal IDs can match. Tune the optional rules for your organization rather than
+treating a match as proof of malicious intent.
+
+What the rules cannot see:
+
+- The PII detector covers message text, OCR and attached messages. It does not
+  inspect text inside ordinary document, spreadsheet or PDF files, and neither does
+  the secrets rule. Counts remain lower bounds for these excluded sources even when
+  `enrichments/pii/truncated` is absent. Known incomplete extraction or parsing, and
+  inspection limits, set that flag. The counts still describe only the available text.
+- The file rules judge names and extensions, never content. A renamed key file is not
+  detected, and files inside an encrypted archive are not visible.
+- Sensitivity label names are tenant-specific, and a label name that is not in the
+  rule's list does not match. Edit the list to fit your labels.
+- Deferred attachment scans refresh the stored facts but do not replay the initial
+  `EMAIL_MESSAGE` evaluation. A DLP match therefore describes evidence available
+  when that event was emitted, rather than every later attachment result.
 
 ## Link detonation
 
