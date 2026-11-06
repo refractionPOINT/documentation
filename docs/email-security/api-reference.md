@@ -397,8 +397,23 @@ Record a re-judgement of one message, replacing the class the engine stamped.
 | Field | |
 |---|---|
 | `verdict` | **Required.** `malicious`, `suspicious`, `graymail`, `benign` or `unknown`. `unknown` is an honest abstention that escalates to a human queue. `error` is refused — it means judgement itself failed, which is an engine fact nobody decides |
-| `rationale` | **Required.** A non-empty list of short strings. A class with no reason is a naked verdict, and the same explainability contract applies to a revision as to the engine. Bounded: at most **10 bullets of 280 characters**, clipped on a character boundary with `rationale_truncated` set, rather than the verdict being refused over a long explanation |
+| `rationale` | **Required.** A list containing at least one non-blank reason. Up to **10 reasons** are retained, with **280 Unicode characters per reason**. Each longer reason is shortened independently; unused space in another reason does not increase its limit. Reasons beyond the first 10 are dropped. Either kind of shortening sets `rationale_truncated: true`; exceeding these limits does not reject the verdict |
 | `score` | Optional. Omitting it keeps the engine's score beside the new class |
+
+Example request body:
+
+```json
+{
+  "verdict": "malicious",
+  "rationale": [
+    "The linked page requests credentials.",
+    "The reply-to domain differs from the sender domain."
+  ]
+}
+```
+
+Send separate findings as separate list entries. Putting several paragraphs in
+one entry still gives that entry a 280-character limit.
 
 **Who** revised, and the `mode`, are stamped from your authenticated identity and
 are never read from the body. A signed-in user is recorded as `analyst` and any
@@ -423,7 +438,9 @@ grant an operator revokes to stop an autonomous caller doing it.
 | `newly_flagged` | Whether the message entered the flagged set |
 | `flagged_mirrored` | Whether its 400-day evidence row was updated in the same transaction |
 | `event_emitted`, `retained` | Whether the `EMAIL_VERDICT` shipped, and whether the evidence reached the retained lane |
-| `rationale`, `rationale_truncated`, `actor`, `verdict`, `mode`, `decided_at` | The revision as recorded |
+| `rationale`, `rationale_truncated` | The retained reasons and whether any reason text or list entries were cut. Returned when `applied: true`; omitted on a no-op |
+| `decided_at` | The recorded decision time. Returned when `applied: true`; omitted on a no-op |
+| `actor`, `verdict`, `mode` | The revision as recorded |
 
 !!! note "A no-op is a success, not an error"
     Re-recording the class, score and mode a message already carries changes
