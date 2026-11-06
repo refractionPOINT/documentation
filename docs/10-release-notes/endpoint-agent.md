@@ -5,6 +5,40 @@ Release notes for the EDR sensor installed on Windows, macOS, Linux and Chrome e
 !!! tip "Subscribe"
     Get each release as it ships with the [Endpoint Agent RSS feed](https://docs.limacharlie.io/10-release-notes/endpoint-agent.xml).
 
+## 2026-11-06
+
+### Endpoint Agent 5.3.16
+
+#### Breaking Changes
+
+- Windows: `usb_list_keys` now reports serial numbers in uppercase, so a rule or lookup that matches them in lowercase needs updating.
+- Windows: hosts set to enforce USB blocking will start blocking USB keys that are not on the allow list after this upgrade, because USB blocking works again in this release (see below).
+
+#### Bug Fixes
+
+- Windows: fixed file, named pipe and document events and USB blocking stopping shortly after the sensor started; the sensor was turning off its file filter on hosts outside performance mode, in every version since 5.2.2.
+- Windows: file, named pipe and document events are no longer reported twice on hosts where the file filter attached to each volume twice.
+- Windows: USB allow list entries now match in either case; a key added with the serial shown by `usb_list_keys` used to stay blocked.
+- Windows: fixed slow memory growth from per-thread buffers that were only freed when the sensor module stopped.
+- Windows: fixed two crash loops at startup on hosts low on memory, caused by oversized kernel acquisition buffers for process snapshots and registry events.
+- Fixed a crash on hosts low on memory when an internal list could not grow.
+- Fixed a crash in YARA scanning when memory runs low; the scan now fails with an error and the sensor carries on.
+- Windows: the sensor health check and the Varist file scanner now start on hosts without the Visual C++ redistributable.
+- Windows: after an upgrade, the sensor service binary was readable only by SYSTEM and Administrators, so it appeared unsigned to standard users; it now keeps its normal permissions, and already-affected hosts are repaired on their next upgrade.
+- Windows: the sensor now takes ownership of its data directory, even if another user created it before install, and removes any links planted inside it.
+- Windows: uninstall now waits for the sensor service process to exit and for its binary to actually disappear, falling back to removal at the next reboot.
+- Fixed a buffer overflow in process memory collection that could corrupt the sensor's memory when reading a region whose size is not a page multiple.
+- macOS: process memory collection no longer unmaps memory in the target process.
+- 32-bit Linux: reading process memory above 2 GB no longer fails or returns empty data.
+- macOS: hardened DNS parsing in the network extension against malformed packets that could crash it or report incorrect data.
+- Fixed a memory read overrun when the sensor stores the cloud's public key.
+
+#### Improvements
+
+- Varist definition downloads now verify certificates against the operating system's trust store and the sensor's embedded certificates, instead of a bundled list.
+
+---
+
 ## 2026-10-29
 
 ### Endpoint Agent 5.4.2
