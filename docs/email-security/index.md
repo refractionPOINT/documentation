@@ -101,6 +101,10 @@ typing a justification to look at the queue.
 Managing connections and policy uses the ordinary Hive permissions for the
 `mailsec_provider`, `mailsec_policy`, `dr-mail`, `secret` and `lookup` hives.
 
+To choose who in your organization may read mail, and to keep message content out
+of the timeline for everyone else, follow
+[Controlling Access to Mail Content](access-control.md).
+
 Read [collection and history coverage](pipeline.md#collection-and-history-coverage) to understand the Overview badge and informational outcomes.
 
 ## Where to go next
@@ -109,6 +113,7 @@ Read [collection and history coverage](pipeline.md#collection-and-history-covera
 |---|---|
 | [How a Message Is Processed](pipeline.md) | The pipeline end to end: what is synchronous, what is stored, and how long it takes |
 | [Getting Started](getting-started.md) | Subscribe, connect a tenant, see the first judged message |
+| [Controlling Access to Mail Content](access-control.md) | Who can read mail: the permissions, the predefined roles, and a Resource ACL on the mailbox sensors |
 | [Connecting Providers](providers.md) | The connection record, credentials, scope, delivery mode and the connection test |
 | [Microsoft 365](provider-setup/microsoft-365.md) · [Google Workspace](provider-setup/google-workspace.md) · [IMAP Mailboxes](provider-setup/imap.md) | Per-provider setup |
 | [Messages & Triage](messages.md) | The queue, the drawer, actions and the audit trail |
