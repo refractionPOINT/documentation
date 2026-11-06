@@ -76,7 +76,7 @@ Save this as `mailsec-triage-agent.yaml`:
 data:
   anthropic_secret: hive://secret/anthropic-key
   model: claude-haiku-4-5-20251001
-  max_tokens: 1024
+  max_tokens: 2048
   prompt: |
     You are a senior email security analyst. You triage one inbound email that
     LimaCharlie's detection engine flagged as suspicious or malicious. Decide
@@ -146,7 +146,8 @@ A few things about this record:
   here. The rule passes the model everything it needs, so the job is reading evidence,
   not researching.
 - **Give `max_tokens` room.** A reply cut off at the limit is an error, not a short
-  answer. 1024 tokens fits the answer format in Step 3 with plenty to spare.
+  answer. 2048 tokens fits the answer format in Step 3. At 1024, the answer for a long
+  message can run out before the evidence list is finished.
 - **No LimaCharlie API key.** `ask ai` makes no tool calls, so the record needs no
   `lc_api_key_secret`. The rule acts with the Email Security extension's own credential
   when it writes a verdict back.
@@ -276,7 +277,8 @@ sees it. That is why event fields go in `data` and never in `prompt`. See
 with at least these fields, using only the allowed values, or the call fails. Setting
 `confidence` to the range 0 to 1 means a threshold such as `0.8` behaves the same on
 every answer. A fixed shape is what lets the response read `verdict` without parsing
-prose.
+prose. The model writes the fields in the order `required` lists them, so keep
+`summary` ahead of `evidence` as shown.
 
 **`timeout: 45`** gives the model time on a long message. The default is 20 seconds and
 the maximum is 60.
