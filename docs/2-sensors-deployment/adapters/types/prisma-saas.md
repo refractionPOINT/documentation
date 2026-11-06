@@ -41,8 +41,8 @@ Adapter Type: `prisma_saas`
 | `client_id` | yes | The API client ID. |
 | `client_secret` | yes | The API client secret. In the cloud this can be a hive secret reference such as `hive://secret/prisma-saas-client-secret`. |
 | `region` | no | Region the tenant is hosted in, see [Regions](#regions). Default `us`. |
-| `base_url` | no | Override of the API host, e.g. `https://api.example.paloaltonetworks.com`. Must be `https`. Use it to reach a region that is not yet in the `region` list; otherwise prefer `region`. |
-| `max_concurrent_polls` | no | Advanced. Number of long-poll requests kept in flight at once. Default `4`. The default is appropriate for almost all tenants; leave it unset unless you have been advised otherwise. |
+| `base_url` | no | Override of the API host, e.g. `https://api.example.paloaltonetworks.com`. Must be `https`. Cloud-hosted adapters only accept a host under `paloaltonetworks.com`. Use it to reach a region that is not yet in the `region` list; otherwise prefer `region`. |
+| `max_concurrent_polls` | no | Advanced. Number of requests kept in flight at once, between `1` and `30`. Default `4`. The default is appropriate for almost all tenants; leave it unset unless you have been advised otherwise. |
 
 ### Regions
 
