@@ -89,7 +89,7 @@ be trusted with four separable things:
 | Permission | Covers |
 |---|---|
 | `mailsec.get` | Read the product's own view: the message queue and drawer, campaigns, sender profiles, the action audit, reports, coverage, rule validation and backtests |
-| `mailsec.set` | Change triage state — resolving a user report |
+| `mailsec.set` | Change triage state, such as resolving a user report, and create, change or delete mail rules and mail policy |
 | `mailsec.act` | Remediate live mail at the provider, and run the connection test |
 | `mailsec.get.eml` | Download a message's original bytes. Requires `mailsec.get` **as well**, plus a logged justification |
 
@@ -98,8 +98,10 @@ product's structured view of a message, while downloading the EML takes a
 person's actual mail out of your tenant. Gating them identically would mean
 typing a justification to look at the queue.
 
-Managing connections and policy uses the ordinary Hive permissions for the
-`mailsec_provider`, `mailsec_policy`, `dr-mail`, `secret` and `lookup` hives.
+The mail rules (`dr-mail`) and the mail policy (`mailsec_policy`) are read with
+`mailsec.get` and changed with `mailsec.set`. Connections, credentials and VIP lists
+use the ordinary Hive permissions for the `mailsec_provider`, `secret` and `lookup`
+hives.
 
 To choose who in your organization may read mail, and to keep message content out
 of the timeline for everyone else, follow
