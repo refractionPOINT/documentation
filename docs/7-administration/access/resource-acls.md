@@ -290,4 +290,5 @@ To un-restrict a resource, remove the `acl:` tag from it. Deleting or disabling 
 - [Sensor Tags](../../2-sensors-deployment/sensor-tags.md)
 - [Config Hive](../config-hive/index.md)
 - [Designing Access](designing-access.md)
+- [Email Security: Controlling Access to Mail Content](../../email-security/access-control.md)
 - [Reference: Permissions](../../8-reference/permissions.md)
