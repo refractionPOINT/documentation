@@ -528,7 +528,7 @@ The operator matches when at least one value has a known age that is below `youn
 | `zone_first_seen` | Estimate from the day the domain first appeared in its zone. | Yes |
 | `zone_readded` | Estimate from the day the domain re-appeared in its zone after being removed. | Yes |
 | `zone_baseline` | The domain was already in the zone when tracking began, so only a minimum age is known. | No |
-| `absent_from_fresh_zone` | The domain is not registered at the moment. | No |
+| `absent_from_fresh_zone` | The domain is missing from the latest zone file. This does not prove the domain is unregistered: a registered domain with no name servers is also missing. | No |
 
 An unknown age never matches. If the domain cannot be placed (not a domain, no evidence yet, or the lookup timed out or failed), the operator does not match, and with `not: true` it matches: the rule means "not known to be young", never "old". Do not use `not: true` to mean "known to be old".
 
