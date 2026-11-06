@@ -240,7 +240,8 @@ so only opt in outputs whose destination is allowed to hold mail. See
 
 **API keys that search mail events.** An AI agent or a script that reads mail
 events through LCQL or the timeline reads as its own API key. For an AI agent,
-that is the key named in its record's `lc_api_key_secret`. Add the key's name as an
+that is the API key whose value is stored in the secret its record's
+`lc_api_key_secret` points to. Add that API key's name, not the secret's name, as an
 `api_key` member of the scope. The Email Security extension itself,
 `ext-email-security`, reads no telemetry and needs no membership. Its
 `extension request` calls only need the rule's `acl_scopes`.
