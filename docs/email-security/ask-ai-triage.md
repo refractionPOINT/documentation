@@ -146,8 +146,8 @@ A few things about this record:
   here. The rule passes the model everything it needs, so the job is reading evidence,
   not researching.
 - **Give `max_tokens` room.** A reply cut off at the limit is an error, not a short
-  answer. 2048 tokens fits the answer format in Step 3. At 1024, a long message with
-  many links can run out before the evidence list is finished.
+  answer. 2048 tokens fits the answer format in Step 3. At 1024, the answer for a long
+  message can run out before the evidence list is finished.
 - **No LimaCharlie API key.** `ask ai` makes no tool calls, so the record needs no
   `lc_api_key_secret`. The rule acts with the Email Security extension's own credential
   when it writes a verdict back.
