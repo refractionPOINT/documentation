@@ -509,6 +509,44 @@ respond:
 
 For detailed configuration options, see [D&R-Driven AI Sessions](../9-ai-sessions/dr-sessions.md).
 
+### start investigation
+
+Starts an Investigation Engine run for the detection that the rule just reported. The engine investigates the alert on its own (it reads the endpoint, search, lookups and other org data with the identity set in the org's policy) and works toward a verdict.
+
+```yaml
+- action: report
+  name: suspicious-process
+- action: start investigation
+  template: suspicious-process
+  urgency: high
+  coalesce_key: "sid:{{ .routing.sid }}"
+  inputs:
+    hash: "{{ .event.HASH }}"
+```
+
+Place the action **after** the `report` action: the run is tied to the detection that report created (its id, category and priority, plus the rule's tags). Without a preceding `report` the run only knows the rule name and the sensor.
+
+#### Optional Parameters
+
+| Parameter | Description |
+|-----------|-------------|
+| `template` | Name of the investigation template to run. A literal. When omitted, the engine picks the template whose `applies_to` best matches the detection; if none matches, no run starts. |
+| `urgency` | One of `low`, `medium`, `high`, `critical`. A literal. When omitted, the engine derives it from the detection's priority. |
+| `coalesce_key` | [Template string](../4-data-queries/template-transforms.md). Alerts with the same key join the run already open for it instead of starting another. Defaults to `sid:<sensor id>`. Use a value that is unique per event (for example `{{ .routing.this }}`) to never coalesce. |
+| `inputs` | A map of values handed to the template, using the same [transform syntax](../4-data-queries/template-transforms.md) as the `data` block of `start ai agent`: each value is an event path or a `{{ }}` template. |
+
+Unknown parameters are rejected when the rule is saved.
+
+#### Behavior
+
+- Starting a run never delays the rule: the request is sent in the background with a short timeout. If the engine is unavailable, over its concurrent-run limit, or the org exceeds the start rate limit, the run is not started and the detection is still reported.
+- If a `coalesce_key` or an `inputs` value cannot be rendered, the action fails and no run starts; a run is never started with partial inputs.
+- The run executes with the identity that the org's Investigation Engine policy names. An org with no such identity configured gets no runs from this action.
+- A detection can only start one run: the detection id is the run's idempotency key.
+- Resource ACL checks work like `start ai agent`: an event restricted by `acl:` tags is refused unless the rule's author scope covers it.
+- A replay never starts a run: it records a `start investigation` row instead.
+- Not available in email-security (mail) rules.
+
 ---
 
 ## See Also
