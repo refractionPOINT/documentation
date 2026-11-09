@@ -550,15 +550,16 @@ typed reason — never an error a caller would log as infrastructure and discard
 | `missing_location` | A redirect status with no usable destination |
 | `budget_exceeded` | The target stalled past the time budget — itself evidence |
 | `transport_error` | The connection failed |
-| `request_policy` | Fetching the link could have **done something** rather than only shown a page — an unsubscribe or subscription-confirmation link, a calendar link, or a link whose read-only behaviour could not be established. The link is not fetched. This is a gap in inspection, not a finding about the sender: it adds no threat points, the message is marked as not fully inspected, and anything another link in the same message revealed is kept |
+| `request_policy` | Fetching the link could have **done something** rather than only shown a page, or its read-only behaviour could not be established: a Google Calendar link; any other Google or YouTube address outside a few reviewed view-only pages (published Docs, Forms and Sites, YouTube videos); an Amazon SNS subscription-confirmation or unsubscribe link; or a destination that only reviewed read-only routes may reach. Ordinary newsletter unsubscribe links are fetched as before. The refused request is never made: for a redirect, the chain stops at that step and the hops before it are kept. This is a gap in inspection, not a finding about the sender: it adds no threat points, the message is marked as not fully inspected, and threat findings from other links in the same message still count |
 
 (A fourteenth code, `disabled`, is reserved in the contract for "asked for
 where detonation is not deployed". Nothing stamps it on a message — in that
 situation nothing is stamped at all — so do not write a rule that waits for it.)
 
 The same codes describe individual addresses in a hop's `blocked_ips[].reason`.
-There, `request_policy` means the address lies outside the destinations a
-reviewed read-only route is allowed to reach. Like the refusal above, it is a
+There, `request_policy` means the address lies inside a protected set of
+destinations that only reviewed read-only routes may reach and this link is not
+one of them, or that the link's route was refused at that step. Like the refusal above, it is a
 scanner safety stop, not evidence that the link points into a private network.
 
 Each hop's real connected address is recorded, so a name that answered
