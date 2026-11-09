@@ -550,10 +550,16 @@ typed reason — never an error a caller would log as infrastructure and discard
 | `missing_location` | A redirect status with no usable destination |
 | `budget_exceeded` | The target stalled past the time budget — itself evidence |
 | `transport_error` | The connection failed |
+| `request_policy` | Fetching the link could have **done something** rather than only shown a page — an unsubscribe or subscription-confirmation link, a calendar link, or a link whose read-only behaviour could not be established. The link is not fetched. This is a gap in inspection, not a finding about the sender: it adds no threat points, the message is marked as not fully inspected, and anything another link in the same message revealed is kept |
 
-(A thirteenth code, `disabled`, is reserved in the contract for "asked for
+(A fourteenth code, `disabled`, is reserved in the contract for "asked for
 where detonation is not deployed". Nothing stamps it on a message — in that
 situation nothing is stamped at all — so do not write a rule that waits for it.)
+
+The same codes describe individual addresses in a hop's `blocked_ips[].reason`.
+There, `request_policy` means the address lies outside the destinations a
+reviewed read-only route is allowed to reach. Like the refusal above, it is a
+scanner safety stop, not evidence that the link points into a private network.
 
 Each hop's real connected address is recorded, so a name that answered
 differently the second time cannot hide behind the first answer. TLS facts are
