@@ -5,6 +5,51 @@ Release notes for the LimaCharlie web application. For the latest releases of ev
 !!! tip "Subscribe"
     Get each release as it ships with the [Web App RSS feed](https://docs.limacharlie.io/10-release-notes/web-app.xml).
 
+## 2026-11-09
+
+### Web App 6.6.8
+
+A new Host Posture page, images in case notes, a domain details overlay, ready-made SOC Bots teams, OS details on Vulnerability Management pages, and a "Get started" card for new orgs.
+
+#### New Features
+
+- **Host Posture**: a new org page for the misconfiguration findings of the Host Posture extension. It shows open findings, affected hosts, and the last scan, with charts by severity and by standard. You can scan a sensor from the page.
+- **Images in case notes**: you can paste, drop, or pick images while you write a case note. Saved notes and the timeline show the images, with a full-size viewer and a Remove action. Report exports include the images.
+- **Domain details**: a new overlay shows a domain's age, registration date, registrar, expiry, nameservers, and zone status. Domains younger than 30 days get a "Newly registered" badge. Open it from domain fields in event and detection details, from domain results in IOC search, and from sender and link domains in Email Security. The lookup runs only when you open the overlay, and only the domain name is sent.
+- **Email Security: current decisions**: email alerts, case detections, and message details now show the message's current decision.
+- **Email Security: action outcomes**: banner actions now say "Banner added", "Banner not added", or "Banner failed", with the rule, analyst, or API key that asked for them. Mailbox actions show the verdict, score, and signals the automation saw at that time, and why an action was held back. Older actions show "Not recorded". Alert-only results now read "Decided, not performed".
+- **Email Security: connect mailboxes**: when an org has no mailbox connections, the overview shows a banner with a Connect mailboxes button that opens the setup wizard.
+- **Get started card**: the org Dashboard, Email Security overview, and Cloud Security overview show a "Get started" card until the org is set up. Its steps follow the product you use: endpoint, email, cloud, code, or a demo org. Each step is checked against what the org already has. The Help Center shows the same checklist. An org with no sensors, mailboxes, or cloud connections shows setup actions on the Dashboard in place of empty charts.
+- **Invite a teammate**: the "Invite a teammate" step opens an invite dialog in place. The Email Security, Cloud Security, and Code Security setup wizards add an "I'm not the admin" option. It builds a message with the setup steps for your admin, and can invite them to the org.
+- **Users & Roles invites**: adding a user who has no account now creates the account, sends a set-password email, and gives them access in one step. If their company requires SSO, they get an invitation instead, and you add them again after their first sign-in. The message says which case happened.
+- **SOC Bots**: "LimaCharlie Bots" is now "SOC Bots". You can pick from three ready-made teams: service provider, in-house security team, and platform specialists. The team that matches your signup answers is marked "Recommended for you". A new team suggests four starter tasks. New users see an intro card on the corner bot until they open it.
+- **SOC Bots: AI provider check**: when a bot's AI provider is not connected, SOC Bots warns you before you create the team and in the conversation. The warning links to the right connect flow. Messages wait and run once the provider is connected. A blocked conversation now says why it is blocked.
+- **Vulnerability Management: OS details**: host lists show the OS name and version, with the build in a tooltip. You can filter and sort by OS, and exports include OS columns. Hosts show their support status (supported, extended security updates, or end of life) with the end date. Windows hosts show patch age. Linux hosts show the running kernel and whether a reboot is needed. OS findings have an "OS" badge and show the KB to install. The dashboard adds "Vulnerabilities by OS" and "Hosts by OS support" charts.
+- **Cloud Security image scan coverage**: the Images table and image drawer show scan coverage next to the finding count. Images too large to scan fully show an "incomplete" warning.
+- **Customize the org menu**: hover a menu page and pin it to a Pinned section at the top. You can drag pins to reorder them. Customize menu lets you pin, reorder, hide sections, or reset to the default menu. Your menu follows you across orgs.
+- **Lookup Manager in the menu**: orgs subscribed to the Lookup Manager extension see it under Automation, after Lookups.
+- **Palo Alto SaaS Security adapter**: a new cloud adapter for Palo Alto Networks SaaS Security (formerly Prisma SaaS) logs, with region selection.
+- **Add-ons**: the add-on search now lists API add-ons such as VirusTotal and GreyNoise, with an "API" tag. Cloud Security and Email Security add-ons show their Community tier limits. On a free org, they say "Free for this organization" instead of a monthly price. The setup card on the Cloud, Code, and Email Security pages links step 1 to the add-on page.
+- **Recent organization cards**: the sensor count now shows weighted quota usage, such as `3 (0/2)`. Adapters that do not count toward the quota no longer look like an overage.
+- **Faster startup**: the web app's startup bundle is about 30% smaller.
+
+#### Bug Fixes
+
+- An org page no longer switches to "Organization not accessible" after a laptop wakes from sleep. Short network errors are now retried.
+- The Reliable Tasking table shows its task rows again.
+- Typing in the Cloud Security Entities search box no longer lags.
+- The sensor Console shows the readable reason when a task is refused, with the real HTTP status. When the Console cannot refresh your sign-in, it says so instead of showing "ERROR 400 / Authentication error".
+- Email Security link checks with an unknown check time show "Last checked: Unknown" instead of a year-1 date.
+- Branded consoles now show their own favicon on login, signup, and other signed-out pages.
+- The Organizations list checks for past-due invoices with fewer requests.
+
+#### Academy
+
+- The certification start page shows the two required checkboxes in boxes, and lists what is still missing next to Start exam. Each item jumps to its field.
+- Hands-on exam tasks that take no written answer no longer show a "Written finding" field.
+
+---
+
 ## 2026-11-02
 
 ### Web App 6.6.7
