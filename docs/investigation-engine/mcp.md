@@ -23,10 +23,13 @@ with one of two profiles:
 
 For a local client, set `MCP_PROFILE=investigation_engine` in the server's environment.
 The table below lists the permissions each tool needs **at the gateway**. Give the
-API key those, plus only the permissions of the data the checks you ask for read: a run
-or a wave executes with the key's own permissions, so for example the `org_roster` pack
-also needs `sensor.list`, and live sensor reads need `sensor.task` and `output.set`.
-Without them the facts come back `unknown`. Profiles select tools; each call still
+API key those, plus only the permissions of the data the checks you ask for read. A
+wave or a test executes with the key's own permissions, so for example the `org_roster`
+pack also needs `sensor.list`, and live sensor reads need `sensor.task` and `output.set`;
+without them the facts come back `unknown`. A **run** (`investigate_start`) is different:
+it executes as the policy's identity (`identity.default`) unless the request picks
+`caller` and the policy allows it, so on an active template it can act with that secret's
+permissions even if the key has none of them (see [Run identity](policies.md#run-identity)). Profiles select tools; each call still
 checks the key's permissions at the gateway.
 
 ## Tools

@@ -43,9 +43,10 @@ Give the agent's API key only what the workflow needs:
 | Save a draft | `investigation_plan.get`, `investigation_plan.set`, and `investigation.get`, `insight.evt.get` |
 
 The two `investigation_plan.*` permissions are not part of the Owner role. Grant them
-to the key explicitly. A test and a run read the data the key can read, so a key
-that cannot read a detection or its case reports those samples as unreadable, not as
-failures.
+to the key explicitly. A test reads the data the key can read, so a key that cannot
+read a detection or its case reports those samples as unreadable, not as failures. A
+run the key starts executes as the policy identity unless it picks `caller` (see [Run
+identity](policies.md#run-identity)).
 
 !!! warning "Do not give the agent key any `investigation_policy.*` permission"
     The opt-out tag `allow-api-key-promotion` is set on a policy record with
@@ -55,7 +56,10 @@ failures.
 
 !!! tip "Keep the key away from containment"
     The agent saves and tests templates. It does not need `sensor.task` or
-    `mailsec.act`, which approving actions requires.
+    `mailsec.act`, which approving actions requires. Withholding them does not stop
+    a run: a run the key starts on an **active** template acts as the policy identity,
+    not as the key. Do not give the key `investigation.set` unless it should be able to
+    start runs.
 
 ### Or let the console start the agent
 

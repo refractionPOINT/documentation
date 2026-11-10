@@ -61,6 +61,9 @@ stays, and with none the engine falls back to suggest-only.
 
 ## A default policy
 
+This example lets network isolation run by itself (`auto`). For a first policy, copy the
+cautious one below it instead.
+
 ```yaml
 # investigation_policy/default
 case: create
