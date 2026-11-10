@@ -54,8 +54,8 @@ failures.
     agent only needs the `investigation_plan.*` permissions above.
 
 !!! tip "Keep the key away from containment"
-    The agent saves and tests templates. It does not need `sensor.task`,
-    `sensor.tag` or `mailsec.act`, which approving actions requires.
+    The agent saves and tests templates. It does not need `sensor.task` or
+    `mailsec.act`, which approving actions requires.
 
 ### Or let the console start the agent
 
@@ -127,7 +127,7 @@ proofs:
 evidence:
   - {id: busy_host, when: 'related.count >= 5', weight: 1.0}
 respond:
-  - {class: tag, target: '$trigger.sid', when: 'p >= 0.7'}
+  - {class: contain.network, target: '$trigger.sid', when: 'verdict == true_positive'}
 report:
   case: none
 ```
@@ -140,7 +140,8 @@ Things to notice:
   needs, not whole records.
 - Both proofs need `judge`. If it is unknown, neither completes, and the run can
   only end on evidence or `inconclusive`. That is the safe behavior.
-- `respond` only proposes a sensor tag, and only when `P(TP)` is at least 0.7.
+- `respond` only proposes isolating the sensor from the network, and only once the verdict
+  is a decided true positive. Because this is a draft, the proposal stays a suggestion.
 - `report.case: none` keeps test noise out of your cases while you tune.
 
 ## 4. Validate
@@ -228,7 +229,7 @@ evidence:
   - {id: busy_host, when: 'related.count >= 5', weight: 1.0}
   - {id: common_binary, when: 'prev.hosts_30d >= 50', weight: -1.0}
 respond:
-  - {class: tag, target: '$trigger.sid', when: 'p >= 0.7'}
+  - {class: contain.network, target: '$trigger.sid', when: 'verdict == true_positive'}
 report:
   case: none
 ```

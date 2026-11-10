@@ -86,12 +86,11 @@ decision:
   ask_approval_at: 0.60         # P(true positive) at which approvals are requested
 autonomy:
   contain.network:  {mode: auto,    min_confidence: 0.85, lease: 2h, max_targets_per_run: 3, max_targets_per_hour: 10}
-  contain.process:  {mode: auto,    min_confidence: 0.80, lease: 1h}
-  contain.identity: {mode: approve, approvers: ['group:soc-leads'], approval_timeout: 15m}
-  contain.email:    {mode: auto,    min_confidence: 0.90, lease: 24h}
-  eradicate.*:      {mode: approve}
-  tag:              {mode: auto}
+  contain.email:    {mode: approve, approvers: ['group:soc-leads'], approval_timeout: 15m, lease: 24h}
 ```
+
+Only `contain.network` and `contain.email` can be carried out today (see [Action
+classes](#action-classes)), so those are the only classes this example sets.
 
 A cautious first policy has every class in `suggest`:
 
@@ -100,9 +99,7 @@ A cautious first policy has every class in `suggest`:
 case: create
 autonomy:
   contain.network: {mode: suggest}
-  contain.process: {mode: suggest}
   contain.email:   {mode: suggest}
-  tag:             {mode: suggest}
 ```
 
 Override records tighten the default where they match:
@@ -113,7 +110,6 @@ match:
   target: '"server" in tags or "dc" in tags'
 autonomy:
   contain.network: {mode: approve}
-  eradicate.*:     {mode: suggest}
 ```
 
 ```yaml
@@ -154,27 +150,35 @@ Autonomy is set **per action class**.
 | Mode | Behavior |
 |---|---|
 | `off` | The action class is never proposed. |
-| `suggest` | Proposed with its reasoning, never executed. Also a dry run when rolling out a new policy. |
-| `approve` | Executed after a person with `investigation.set` and the underlying permission approves. The request goes out as soon as P(true positive) passes `ask_approval_at`, so the human's response time overlaps the investigation. |
-| `auto` | Executed once `min_confidence` is met, within the caps. |
+| `suggest` | Proposed with its reasoning, never executed, **not even if a person approves it**: approving a suggest-mode proposal is refused with "this action class is in suggest mode". Also a dry run when rolling out a new policy. |
+| `approve` | Executed after a person with `investigation.set` and the underlying permission approves. The request goes out as soon as P(true positive) passes `ask_approval_at`, so the human's response time overlaps the investigation, and it can be before the verdict is final. |
+| `auto` | Executed once `min_confidence` is met, within the caps. This does not wait for the final verdict: the bar is the confidence, and the template's `when`. |
 
-| Action class | Implemented with | Reversible |
-|---|---|---|
-| `contain.network` | Sensor network isolation, plus a lease expiry | Yes |
-| `contain.process` | Suspend and resume the process | Yes |
-| `contain.identity` | The organization's identity response extensions, where installed | Yes, by re-enabling |
-| `contain.email` | Email Security message actions | Where the provider supports release |
-| `tag` | Sensor tags | Yes |
-| `eradicate.process` | Kill the process (and deny its tree) | No |
-| `eradicate.file` | Delete the file | No |
-| `collect.*` | File, artifact or memory collection | No effect on the host; uploads are billed storage |
+### Action classes
+
+| Action class | Available | What it does | Reversible |
+|---|---|---|---|
+| `contain.network` | **Yes** | Sensor network isolation, plus a lease expiry. A sensor that was already isolated is left isolated at undo. | Yes |
+| `contain.email` | **Yes** | Email Security message quarantine, including the other recipient copies of the message's group. Each copy is checked before and after. | Where the provider supports release |
+| `contain.process` | Not yet | Suspend and resume a process | Yes |
+| `contain.identity` | Not yet | The organization's identity response extensions | Yes, by re-enabling |
+| `tag` | Not yet | Sensor tags | Yes |
+| `eradicate.process`, `eradicate.file` | Not yet | Kill a process, delete a file | No |
+| `collect.memory`, `collect.file`, `collect.artifact` | Not yet | Evidence collection | No effect on the host |
+
+The policy and templates accept every class, but **only the two available classes can act**. A proposal of
+any other class can be shown, and approved or executed automatically, but the attempt
+fails with "action class ... is not wired" and the action ends `failed` with nothing done
+on the target. Leave the others at `suggest` or `off`, and do not write templates that
+propose them.
 
 ### Rules no policy can change
 
 - **Reversible actions run as leases.** A lease undoes itself at expiry unless the
   verdict or a person confirms it.
 - **Irreversible actions never run before the evidence-preserving collection** that
-  the template lists with `before:`, when collection is allowed.
+  the template lists with `before:`, when collection is allowed. (No irreversible class
+  is available yet.)
 - **The pause switch stops all automatic actions** in the organization at once.
   Proposals and approvals continue. See [Console](console.md#pause-automatic-actions).
 - **Every action transition is recorded** in the run's event log with the run, the
@@ -194,9 +198,11 @@ Autonomy is set **per action class**.
 An action in `approve` mode appears in the [approvals inbox](console.md#approvals) and,
 if the policy asks for it, as a notification. Approving needs `investigation.set`,
 `insight.evt.get` and the permission of the action's class, and membership of the
-`approvers` list when the class has one. Deny, revert, extend (the lease) and confirm
-(keep it) are the other decisions. Each decision, with the person and the optional
-note, is recorded in the action's history.
+`approvers` list when the class has one. **Deny** is checked against the `approvers`
+list the same way. Revert, extend (the lease) and confirm (keep it) are the other
+decisions: they need the same permissions but do not check the `approvers` list.
+Each decision, with the person and the optional note, is recorded in the action's
+history.
 
 ## Run identity
 
@@ -220,7 +226,12 @@ identity:
   in its `allow` list; otherwise it is refused with the allowed identities in the
   message.
 - **A run with no person** (a D&R rule or the case trigger) **needs a policy
-  identity.** Without one it is refused with a message that names `identity.default`.
+  identity.** The simplest setup is `identity.default`. A named template can instead
+  carry its own `identity.templates.<name>.default` and need no org-wide default; a
+  template-level entry inherits any field it leaves unset. Without an identity for the
+  template, the start is refused with a message that names both settings. The case trigger, when it
+  leaves the template to `auto`, reads the case with the org-wide identity before a
+  template is chosen, so keep `identity.default` set for that.
 - An inline plan never inherits the organization-wide identity.
 - A secret that is rotated, disabled or deleted stops being used within ten minutes,
   or at once when the Hive's change broadcast announces it.
@@ -297,5 +308,5 @@ instead.
 
 The effective-policy view answers "what would the engine do for this alert or this
 host?" record by record. In the console it is the **Policy** tab; over the API it is
-`GET /v1/investigate/{oid}/policy/effective` with a template, category, priority,
-severity and target tags. See [API Reference](api-reference.md).
+`GET /v1/investigate/{oid}/policy/effective` with a category, priority, severity and
+target tags. See [API Reference](api-reference.md).

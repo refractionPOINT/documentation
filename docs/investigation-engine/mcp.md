@@ -22,18 +22,22 @@ with one of two profiles:
 | `investigation_engine_readonly` | `investigate_operators`, `investigate_authoring_kit`, `investigate_packs`, `investigate_validate_plan`, `investigate_list_templates`, `investigate_get`. No start, wave, test or save. |
 
 For a local client, set `MCP_PROFILE=investigation_engine` in the server's environment.
-Give the API key the permissions in the table below, and nothing more. Profiles select
-tools; each call still checks the key's permissions at the gateway.
+The table below lists the permissions each tool needs **at the gateway**. Give the
+API key those, plus only the permissions of the data the checks you ask for read: a run
+or a wave executes with the key's own permissions, so for example the `org_roster` pack
+also needs `sensor.list`, and live sensor reads need `sensor.task` and `output.set`.
+Without them the facts come back `unknown`. Profiles select tools; each call still
+checks the key's permissions at the gateway.
 
 ## Tools
 
-| Tool | What it does | Permissions |
+| Tool | What it does | Gateway permissions |
 |---|---|---|
 | `investigate_authoring_kit` | One call for everything needed to write a template: the template JSON Schema, the authoring guide, the organization's typed operator catalog, the default template library, the effective policy and every validation code. `sections` (`schema`, `guide`, `operators`, `examples`, `policy`, `codes`, `packs`, `library`) fetches part of it. The whole kit is large: start with `guide,schema,codes`. | `investigation.get`, `insight.evt.get` |
 | `investigate_operators` | The operator catalog, with `filter`, `names` and `brief`. | same |
 | `investigate_packs` | The fact packs as a compact index: parameters with types, exports with type, reference form and a short meaning. `name` returns one pack in full. Enough to write waves without the operator catalog. | same |
 | `investigate_validate_plan` | Type-checks a template (`yaml`): structure, operators, references, expressions, free time range and budgets. | `investigation.get`, `insight.evt.get` |
-| `investigate_test_plan` | Dry run on real past alerts: a stored `template` or `yaml`, plus `samples` (a detection id, a case id, the newest alerts of a category, or free inputs with an expected label). Waits and polls (`wait_seconds` up to 180, default 60) and returns the agreement rate, disagreements, unknowns and costs. `test_id` continues a test that is still running. `include_steps` adds every step. Nothing is written. | `investigation.set`, `insight.evt.get` |
+| `investigate_test_plan` | Dry run on real past alerts: a stored `template` or `yaml`, plus `samples` (a detection id, a case id, the newest alerts of a category, or free inputs with an expected label). Waits and polls (`wait_seconds` up to 180, default 60) and returns the agreement rate, disagreements, unknowns and costs. `test_id` continues a test that is still running. `include_steps` adds every step. No run, case, label or action is written; the test result itself is kept for 24 hours. | `investigation.set`, `investigation.get`, `insight.evt.get` (starting needs `investigation.set`; the polling and `test_id` continuation read with `investigation.get`) |
 | `investigate_save_plan` | Saves a template to the `investigation_plan` Hive, **always as a draft**. | `investigation_plan.get`, `investigation_plan.set`, `investigation.get`, `insight.evt.get` |
 | `investigate_list_templates` | The organization's templates: name, version, description, `applies_to`, status. `status` filters draft or active. | `investigation.get`, `insight.evt.get` |
 | `investigate_start` | Starts a run on a `template` for a `detection_id`, `case_id`, `entity_id` or `question`. Optional `inputs`, `urgency`, `mode` (`triage`, `full`, `scope`), `case` (`create`, `none`, `attach:<id>`), `idempotency_key`, and `wait_seconds` (up to 60) to wait for the verdict. A draft template runs with autonomy capped at `suggest`. | `investigation.set`, `insight.evt.get` |
@@ -48,9 +52,11 @@ An organization's templates are exactly its `investigation_plan` Hive records. T
 engine ships a **default library** of ready-made templates. It is content, not part of
 any organization: read it with `investigate_authoring_kit` and `sections: ["library"]`,
 and install one by writing it as an `investigation_plan/<name>` record with the Hive
-tools. Library entries say `status: active`, and the Hive refuses an `active` write from
-an API key, so set `status: draft` in the YAML first and have a person promote it, or
-install from the console. Fact packs (`use:` in a fact) are built into the engine, like operators.
+tools. Library entries say `status: active`, and by default the Hive refuses an `active`
+write from an API key (an administrator can opt out; see
+[Permissions](permissions.md#active-templates-can-only-be-written-by-a-person)), so set
+`status: draft` in the YAML first and have a person promote it, or install from the
+console. Fact packs (`use:` in a fact) are built into the engine, like operators.
 
 ## `investigate_save_plan` and what it refuses
 
@@ -59,9 +65,10 @@ A draft never runs on its own. The tool is built so an agent cannot get around t
 - It always writes `status: draft`, adds the tag `ai-draft`, and stores the optional
   `test_summary` (up to 2,000 characters) as the record's comment so the reviewer sees
   what was tested.
-- It refuses a template that sets `status: active` or any other status, a `name:` key
-  inside the YAML (the name is the tool's `name` argument, 1 to 64 lowercase letters,
-  digits, `_` or `-`, starting with a letter or digit), and YAML anchors or aliases.
+- It accepts a template with no `status` or with `status: draft`, and refuses
+  `status: active` or any other status. It also refuses a `name:` key inside the YAML
+  (the name is the tool's `name` argument, 1 to 64 lowercase letters, digits, `_` or
+  `-`, starting with a letter or digit) and YAML aliases (`*name` and merge keys).
 - It refuses a template that does not validate, returning the full report.
 - It never overwrites an **active** template, whether the engine lists it as active or
   the Hive record says so. Save your version under a new name.
@@ -97,8 +104,11 @@ For a one-off question, drive waves directly:
 2. `investigate_wave` with one step per pack (`use`) or operator (`op`), `select` for
    the fields you will read, and `limit` to cap lists.
 3. `stop_when`: the conditions that would settle the question. The engine cancels the
-   rest as soon as one is true and reports `stopped_by`. An unknown is never false, so
-   an incomplete step cannot stop the wave.
+   rest as soon as one is true and reports `stopped_by`. An unknown never makes a
+   condition true. An incomplete step can: a positive claim that only gets stronger with
+   more data (`machine_count > 3`) holds on a cut list, but a claim of absence or of an
+   exact count does not. Conditions are evaluated on the full results, before the answer
+   is compacted, so a step returned as incomplete may already have stopped the wave.
 4. Read the compact answer (`status`, `complete`, `value`, `usage`), plan the next wave
    from it, and stop when the question is answered.
 

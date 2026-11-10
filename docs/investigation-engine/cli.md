@@ -22,8 +22,14 @@ The permissions each command needs are the ones of the corresponding
 [API route](api-reference.md#routes).
 
 A command that completes but says "no" (an invalid template, a refused save, a refused
-promotion) prints the engine's coded answer and **exits with code 4**. Other failures
-exit with 1.
+promotion result) prints the engine's coded answer and **exits with code 4**. A call
+that fails keeps the CLI's standard exit codes: **2** for authentication or permission
+(this includes a promotion the Hive rejects with an error), **3** for a resource that
+does not exist, **4** for invalid input, **5** for a rate limit, and **1** for anything
+else, such as a timeout. With a structured `--output` (`json`, `yaml`, ...) the failure
+is also written to stderr as a document with the message, the engine's `error_code`
+when the engine answered, and any coded `errors`; a 404 without an `error_code` means
+the Investigation Engine is not enabled on that API host.
 
 ```bash
 export OID=<organization UUID>
@@ -32,10 +38,13 @@ export OID=<organization UUID>
 ## Templates
 
 ```bash
-# What the organization has, and what the default library offers
+# What the organization has
 limacharlie investigate templates list --oid $OID
 limacharlie investigate templates list --status active --oid $OID
 limacharlie investigate templates get suspicious-process --yaml --oid $OID
+
+# What the default library offers (it is not installed until you install it)
+limacharlie investigate kit --section library --oid $OID
 
 # Install the default library (written as drafts unless you say otherwise)
 limacharlie investigate templates install-defaults --oid $OID
@@ -62,11 +71,12 @@ want to run on its own.
 **`templates save`** writes a draft. `--comment` stores what the template was tested on
 and how it did as the record's comment, `--tag` (repeatable) adds tags, and
 `--overwrite` replaces an existing draft. An AI agent leaves `--status` at its default,
-`draft`. Writing an active template is a person's decision, and the Hive refuses it
-from an API key (see [Permissions](permissions.md#active-templates-can-only-be-written-by-a-person)).
+`draft`. Writing an active template is a person's decision, and by default the Hive
+refuses it from an API key (see [Permissions](permissions.md#active-templates-can-only-be-written-by-a-person)).
 
 **`templates promote`** requires `--confirm`. It writes `status: active`, which the Hive
-refuses when the CLI is authenticated with an **API key**. Run it with a user login
+refuses by default when the CLI is authenticated with an **API key** (unless an
+administrator opted out; see [Permissions](permissions.md#active-templates-can-only-be-written-by-a-person)). Run it with a user login
 (`limacharlie auth login`), or have a person click **Make active** in the console.
 The same applies to `templates save --status active` and
 `templates install-defaults --status active`.
@@ -82,8 +92,8 @@ limacharlie investigate templates test -f plan.yaml \
 limacharlie investigate templates test -f plan.yaml \
   --detection-id <detect id> --case-id <case id> --oid $OID
 
-# A stored template, with a free-form sample
-limacharlie investigate templates test host-activity \
+# A stored template of your own, with a free-form sample
+limacharlie investigate templates test my-template \
   --sample '{"inputs": {"msg_uuid": "..."}, "expected": "false_positive"}' --oid $OID
 ```
 
@@ -94,7 +104,7 @@ limacharlie investigate templates test host-activity \
 | `--detect-cat` with `--last N` | The newest N alerts of the category (1 to 25, default 10). |
 | `--sample JSON`, `--samples-file FILE` | Free samples. At most 25 alerts in all. |
 | `--mode triage\|full` | `triage` (the default, the cheap pass) or `full`. |
-| `--strict` | Treat any unknown as a failure of the plan. |
+| `--strict` | Refuse the test, instead of reducing the value, when an override in `--overrides-json` would loosen the policy. Without overrides it changes nothing. It does not fail the test because of unknown facts; read the unknowns in the result. |
 | `--overrides-json JSON` | Tighten-only overrides, such as `{"budgets": {"max_wall_seconds": 120}}`. |
 | `--wait SECONDS`, `--timeout SECONDS`, `--no-wait` | How long the start call and the whole command wait. `--no-wait` prints the `test_id` and returns. |
 | `--test-id ID` | Keep waiting on a test started earlier. |
@@ -141,7 +151,7 @@ limacharlie investigate runs case <run id> --oid $OID
 
 | Command | What it does |
 |---|---|
-| `runs start` | Starts a run on `--detection-id`, `--case-id`, `--entity-id` or `--question`, with `--template NAME` or a template file `-f`. `--input KEY=VALUE` and `--inputs-json` give run inputs; `--mode triage\|full\|scope`; `--case-mode create\|none\|attach:<id>`; `--idempotency-key`; `--wait SECONDS` (up to 60) to block for the verdict; `--follow` to stream events until the run ends. |
+| `runs start` | Starts a run on `--detection-id`, `--case-id`, `--entity-id` or `--question`, with `--template NAME` or a template file `-f`. `--input KEY=VALUE` and `--inputs-json` give run inputs; `--mode triage\|full\|scope` (default `full`); `--case-mode create\|none\|attach:<id>`; `--idempotency-key`; `--wait SECONDS` (up to 60) to block for the verdict; `--follow` to stream events until the run ends. |
 | `runs get RUN_ID` | State, phase, verdict, actions and usage. |
 | `runs list` | The organization's runs, newest first. Filters `--state`, `--verdict`, `--template`, `--trigger`, `--entity`, `--started-by`, `--idempotency-key`, `--since`, `--until`; `--limit` and `--cursor` page; `--all` follows every page. |
 | `runs events RUN_ID` | The run's events after `--after`. `--follow` keeps polling until the run is over, one event per line. It exits 0 when the run finished and 1 when `--timeout` is reached. |
@@ -167,8 +177,8 @@ limacharlie investigate policy resume --oid $OID
 | Command | What it does | Needs |
 |---|---|---|
 | `actions list [--state S] [--class C] [--run-id ID]` | The approvals inbox, what needs a person first. `--limit`, `--cursor`, `--all` page. | read |
-| `actions approve RUN_ID ACTION_ID` | Approves an action. | write, plus the action class's permission |
-| `actions deny RUN_ID ACTION_ID [--note TEXT]` | Denies an action. | same |
+| `actions approve RUN_ID ACTION_ID` | Approves an action. Refused for a class in `suggest` mode, and for a person who is not on the class's `approvers` list when it has one. | write, plus the action class's permission |
+| `actions deny RUN_ID ACTION_ID [--note TEXT]` | Denies an action (same `approvers` check). | same |
 | `policy get [--category] [--priority] [--severity] [--target-tag]... [--class]` | The effective policy, record by record, for those attributes. | read |
 | `policy status` | Whether automatic actions are paused. | read |
 | `policy pause`, `policy resume` | Stops or allows every automatic action in the organization. | `org.conf.set` |

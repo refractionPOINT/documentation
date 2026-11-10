@@ -547,7 +547,7 @@ A template only sees the inputs this action lists, plus the detection id. A temp
 
 - The Investigation Engine must be enabled for the datacenter. Where it is not, saving a rule that uses this action fails with `start investigation is not enabled in this environment`.
 - The template must be **active**. A draft is refused for a run with no person behind it, and a template is never picked by `applies_to` while it is a draft.
-- The organization's `investigation_policy` record `default` must set `identity.default` to an organization API key (see [Run identity](../investigation-engine/policies.md#run-identity)). A rule has no user token, so without that identity the start is refused with a message that names `identity.default`.
+- The organization's `investigation_policy` record `default` should set `identity.default` to an organization API key (see [Run identity](../investigation-engine/policies.md#run-identity)). A rule has no user token, so without an identity for the template the start is refused with a message that names `identity.default`. A named template can instead carry its own `identity.templates.<name>.default`.
 - If no active template applies to the detection, the start is refused and the message says what was tried.
 
 #### Behavior
@@ -555,7 +555,8 @@ A template only sees the inputs this action lists, plus the detection id. A temp
 - Starting a run never delays the rule: the request is sent in the background with a short timeout (5 seconds per attempt, 8 seconds in all). The detection is reported whether or not a run starts.
 - A run is not started, and the failure is logged and counted but not shown to the rule, when the engine is unavailable, the organization is at its concurrent run limit, the organization exceeds the start rate (2 starts per second sustained, with a burst of 20, per host process), or the template or identity is refused as above.
 - If a `coalesce_key` or an `inputs` template errors, or the rendered value is over its size limit, the action fails and no run starts. A field the event does not have is not an error: as with `data`, a path to it is dropped from `inputs`, and a template naming it renders `<no value>`.
-- A given detection id starts at most one run: the detection id is the run's idempotency key.
+- A given detection id starts at most one run: the detection id is the run's idempotency key (kept for the engine's record retention, and scoped to the organization and the D&R starter).
+- The detection may not be stored yet when the run starts, because the report and the start run independently. The engine retries the lookup of that one detection for up to about 30 seconds (with backoff), then treats it as `unknown`, never absent. See [Automatic Starts](../investigation-engine/automation.md#dr-rules-start-investigation).
 - The run is recorded as started by the rule: its trigger has `source: dr-rule`, and `rule` is the rule record name prefixed with `general.`. Use that form in a template's `applies_to` (`rule: ['general.my-rule']`). A D&R rule never sends a severity, so an `applies_to` with a `severity` key does not match.
 - Resource ACL checks work like `start ai agent`: an event restricted by `acl:` tags is refused unless the rule's author scope covers it.
 - A replay never starts a run: it records an `investigation` row (with the template name when the rule names one) instead.

@@ -47,7 +47,9 @@ A run started on a case does not write a second case.
   a default that does not exist, you are asked to choose one.
 - **Run as**: shown when the policy offers more than one identity. The default is the
   identity the policy names (**policy default**); the alternative is **Your own token**.
-  "Everything the run reads or does happens with these permissions."
+  "Everything the run reads or does happens with these permissions." The choices shown
+  come from the organization-wide identity settings of the policy; an identity set for
+  one template in the policy applies when the run starts, whatever the launcher shows.
 
 #### How to run it
 
@@ -72,8 +74,10 @@ The panel on the right is the **Effective policy** for the inputs you entered.
 
 ## Runs
 
-The **Runs** tab lists the organization's runs, newest first, 50 at a time, refreshed
-every few seconds. Columns: State, Verdict, Trigger, Started by, Template, Time to
+The **Runs** tab lists the organization's runs, newest first, 50 at a time. While the
+first page holds a run that is still in progress it refreshes every few seconds; a page
+of finished runs does not refresh by itself, so reload to see runs started since.
+Columns: State, Verdict, Trigger, Started by, Template, Time to
 verdict, Speedup, Started and Actions (how many await a decision). Filters are
 evaluated by the engine, so they cover all runs: search (detection, case, entity,
 message or question), State, Verdict, Template, Time range, Started by, and **Mine**.
@@ -114,16 +118,28 @@ deadline for a decision, the lease time left, who decided, and its history.
 |---|---|
 | Proposed, Awaiting approval | **Approve**, **Deny** |
 | Active | **Revert**, **Extend lease** (+1 h or +2 h), **Confirm** |
-| Outcome uncertain | **Revert**, **Confirm** |
+| Outcome uncertain | None that work today (see below) |
 
 Every button asks for confirmation and takes an optional note recorded in the action's
-history. **Confirm** keeps an action in place and stops its lease from reverting it. An
-**Outcome uncertain** action means the engine could not confirm whether the action took
-effect: check the target, then confirm it if it is in place or revert it.
+history. **Confirm** keeps an action in place and stops its lease from reverting it.
+
+- A proposal in **Suggest** mode is never executed, and **Approve** on it is refused
+  with "this action class is in suggest mode", even if you hold every permission. Raise
+  the class to `approve` in the policy first.
+- An **Outcome uncertain** action means the engine could not confirm whether the action
+  took effect. It settles itself: a late answer from the platform makes it active or
+  failed, and when none comes, a reversible action is undone to be safe, while an
+  irreversible one is escalated to a person. The console may still offer **Revert** and
+  **Confirm** on it, but the engine only accepts those on an active (or, for Revert,
+  confirmed) action, so on an uncertain one they return an error. Check the target
+  yourself instead.
+- A class that is not available yet (see [Action classes](policies.md#action-classes))
+  can be proposed but fails when approved.
 
 A button is disabled unless you hold `investigation.set` and `insight.evt.get` **and**
 the permission of the action's class (see [Permissions](permissions.md#permission-of-the-action-class)).
-Approving also requires being on the class's approver list when the policy sets one.
+**Approve** and **Deny** also require being on the class's approver list when the
+policy sets one; the other decisions do not check it.
 
 ## Templates
 
@@ -139,19 +155,29 @@ example one an AI agent just saved.
 version, its status as shipped and one of **Not installed**, **Installed** or **Update
 available**.
 
+- **Install as** is **Draft (default)** or **Active**. Draft is selected whenever you
+  open the dialog, **whatever status the library recommends**: the column shows
+  "Recommended: Active" for information only. Each row has its own **Active** switch to
+  override the choice for that template.
 - **Install selected** and **Install all** write a copy of each template into your
   organization, one at a time, with your own token. A failure on one template does not
   stop the others.
+- Anything that would be written as **Active** shows a warning (active templates start
+  from detection rules and cases on their own), and installing **all** as Active asks
+  you to confirm.
 - A template that is already installed is never replaced silently. If a newer library
   version exists, selecting the update asks you to confirm: **An update replaces your
-  version**, including any changes you made.
+  version**, including any changes you made, and writes it with the status chosen
+  for it. If that replaces a live (Active) template with a Draft, the dialog says so and
+  asks again, since it stops that template from running on its own.
 - The result lists each template as **Installed**, **Updated**, **Already exists** (a
-  record with that name, possibly disabled, was left alone) or **Failed**.
+  record with that name, possibly disabled, was left alone), **Already up to date** (the
+  record changed after the list was read and is no longer older than the library's),
+  **Changed meanwhile** (someone made it active or draft after you confirmed; open the
+  dialog again) or **Failed**.
 - You need `investigation_plan.get` and `investigation_plan.set`; without them the
   dialog explains what is missing.
 
-The templates keep the status they ship with, so the default library arrives as
-**Active**.
 
 ### Create, edit and copy
 
@@ -233,8 +259,9 @@ Hive records, which you edit with the Hive API, the CLI or infrastructure-as-cod
 [Policies and Autonomy](policies.md). The tab shows:
 
 - **Effective policy**: what the organization's policy allows, record by record. Leave
-  the lookup empty for the organization default, or choose a template or enter a
-  category, severity and priority to see what applies to that alert. It lists the
+  the lookup empty for the organization default, or enter a
+  category, severity and priority to see what applies to that alert. (The lookup does
+  not take a template into account today.) It lists the
   policy records applied, the budgets, decision thresholds, speculation by urgency, and
   the actions and autonomy table (mode, minimum confidence, lease, approvers and the
   record each value comes from).

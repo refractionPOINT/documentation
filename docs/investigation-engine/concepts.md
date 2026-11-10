@@ -7,7 +7,7 @@ uses.
 
 | Object | Stored as | What it is |
 |---|---|---|
-| **Plan template** | Hive record `investigation_plan/<name>` | A reusable plan for a class of alerts: the facts to gather, the proofs that settle a verdict, how weaker evidence moves the probability, and what to propose once the verdict is known. See [Plan Templates](templates.md). |
+| **Plan template** | Hive record `investigation_plan/<name>` | A reusable plan for a class of alerts: the facts to gather, the proofs that settle a verdict, how weaker evidence moves the probability, and the actions to propose. See [Plan Templates](templates.md). |
 | **Policy** | Hive record `investigation_policy/<name>` | What the engine may do: budgets, allowed operators, autonomy per action class, approvers, the identity runs execute as. See [Policies and Autonomy](policies.md). |
 | **Run** | Engine store | One investigation: its inputs, the effective policy, state, evidence graph, steps, actions and verdict. |
 | **Step** | Part of a run | One operator call (one way of obtaining a fact), with its timing, cost and outcome. |
@@ -61,7 +61,7 @@ which it is *malicious* (holds) and one under which it is *benign* (explained).
 | Outcome | When |
 |---|---|
 | `true_positive` | A true-positive proof completes, or the evidence alone brings `P(TP)` to the policy's `escalate_at` (0.90 by default). |
-| `false_positive` | A false-positive proof completes (once the required checks for the run's urgency are done), or the evidence alone brings `P(TP)` to `dismiss_at` (0.03) or below and nothing is left to run. |
+| `false_positive` | A false-positive proof completes, or the evidence alone brings `P(TP)` to `dismiss_at` (0.03) or below and nothing is left to run. **Both paths wait for the required checks** (`mandatory_checks` of the run's urgency): while one is unknown or unfinished, the run cannot be dismissed, and if it stays unknown after everything has run, the run ends `inconclusive`. |
 | `inconclusive` | Nothing more can be learned and neither side was reached. The case lists what stayed unknown and asks one open question. |
 
 When a proof completes, the engine **cancels every step that can no longer matter**
@@ -101,14 +101,18 @@ A run is `queued`, `running`, `decided`, `completed`, `cancelled`, `failed` or
 `budget_exhausted`. While it runs it moves through phases that overlap:
 
 1. **Triage** looks for the shortest proof of true or false positive.
-2. **Scoping** starts once `P(TP)` passes the policy's `scope_at` bar, usually
-   before the verdict is final. It expands over the entities involved.
-3. **Containment** prepares actions while scoping runs and executes them according
-   to policy once their confidence bar is met.
+2. **Scoping** gathers the facts the template lists under `scope` (see
+   [Plan Templates](templates.md#scope)). In the `balanced` and `aggressive`
+   speculation profiles it starts once `P(TP)` passes the policy's `scope_at` bar, usually
+   before the verdict is final. In the `conservative` profile it waits for a decided
+   true positive. The template names every fact to gather: the engine does not discover
+   new entities or generate searches of its own.
+3. **Containment** proposes actions as the facts they depend on arrive and executes
+   them according to policy once their confidence bar is met. That can happen before the
+   verdict is final: see [Respond](templates.md#respond-and-report).
 
 `decided` means the verdict is final while scoping or actions may still be running.
-A run is `completed` when scoping has converged or reached its budget and every
-action is settled.
+A run is `completed` when its steps are done and every action is settled.
 
 ### Modes and urgency
 
@@ -122,11 +126,18 @@ derives it from the detection priority, the case severity and asset tags.
 
 ### Coalescing and idempotency
 
-A new alert about an entity that an open run already covers is **added to that run
-as new input** instead of starting a second run. Matching uses the run's
-`coalesce_key`. An `idempotency_key` makes a repeated start return the same run.
+A start that carries a `coalesce_key` **joins the open run that has the same key**
+instead of starting a second run, and its inputs are added to that run. Nothing joins
+runs merely because they concern the same entity: without a `coalesce_key` every start
+is its own run. The key only matches within the same organization, the same starter
+and the same run identity, so a start by a person and a start by a D&R rule never join
+each other, and a request that executes as a different identity never joins a run
+executing as this one. All D&R rules share one starter per organization, so alerts from different rules
+with the same key do join.
+
+An `idempotency_key` makes a repeated start with the same starter return the same run.
 For runs started by a D&R rule, the detection id is the idempotency key, so one
-detection starts one run.
+detection starts one run, within the retention of the engine's records.
 
 ### Identity
 
@@ -138,9 +149,10 @@ identity, so a run can never read or do what its identity cannot.
   no policy identity, it uses that person's (or API key's) token. **A policy secret can
   hold more permissions than the person who starts the run.**
 - A run started by a D&R rule or a new case has no person. It needs an identity
-  named in the org's policy: an **organization API key** stored as a Hive secret.
-  Without one, the start is refused with a message that names the missing
-  `identity.default` setting.
+  named in the org's policy: an **organization API key** stored as a Hive secret,
+  set as `identity.default` or, for one template, as that template's own
+  `identity.templates.<name>.default`. Without one, the start is refused with a
+  message that names the missing setting.
 - A run that must work for hours (a lease, a delayed approval) should use a secret
   identity. A run on a person's token cannot schedule work that outlives that token,
   so its leases are shortened to fit.
@@ -150,10 +162,10 @@ See [Policies and Autonomy](policies.md#run-identity).
 ### The free time range
 
 Every search a run makes must start no earlier than **now minus 30 days**. A
-template that asks for older data is rejected when it is validated. Searches the
-engine generates itself, such as scoping expansions, are clamped to the boundary
-and the older part is recorded as unknown (`outside_free_window`), never as
-"nothing found". A policy can lower the lookback below 30 days, never raise it.
+template that asks for older data is rejected when it is validated. A window that
+still reaches past the boundary when it runs is clamped to it, and the result is
+marked incomplete or unknown (`outside_free_window`), never "nothing found".
+A policy can lower the lookback below 30 days, never raise it.
 Operators that bill per use, such as artifact collection, are off in the default
 policy.
 
@@ -217,5 +229,6 @@ A template carries `status: draft` (the default) or `status: active`.
 | Can a D&R rule or the case trigger start it? | No | Yes |
 | Picked automatically by `applies_to`? | No | Yes |
 
-**A person promotes a draft** by setting `status: active` in the Hive record. Nothing
-in the engine, and none of the AI-agent tools, can do it.
+**A person promotes a draft** by setting `status: active` in the Hive record. None of
+the AI-agent tools can do it, and by default the Hive refuses it from an API key (see
+[Permissions](permissions.md#active-templates-can-only-be-written-by-a-person)).

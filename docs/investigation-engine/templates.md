@@ -31,8 +31,10 @@ organization until a person installs it, and an installed copy is yours to edit.
 | `mailsec-suspicious-message` | 4 | `mailsec-ai-triage` | Triage of a message the Email Security AI judge rated suspicious: explains each signal that fired, checks the sender's real history and corroborating mail. Proposes `contain.email` on a confirmed true positive. |
 | `phishing-campaign` | 3 | `mailsec-ai-triage` | Investigates a malicious message several people received: where its link goes, who else received it, who clicked, whether a payload ran. Proposes `contain.email` and `contain.network` on a confirmed true positive. |
 
-All four say `status: active`, so once installed they can start from a D&R rule or
-the case trigger and act within your policy.
+The library entries are written for production use, but **installing them writes
+drafts unless you choose otherwise**: a draft never starts from a D&R rule or the case
+trigger, and its actions stay capped at `suggest`. Test an installed copy, then
+promote it (see [Draft, active and promotion](#draft-active-and-promotion)).
 
 !!! warning "Installing the generic fallback"
     `endpoint-detection-triage` matches **every** detection category. Once it is
@@ -44,21 +46,24 @@ the case trigger and act within your policy.
     Each library entry has a `version`. The console compares the library entry's
     version with the installed record's and offers an explicit update. An update
     **replaces your edits**; there is no merge. If you changed a template,
-    copy it under another name before updating.
+    copy it under another name before updating. The CLI never replaces an active
+    template with a draft (move it back to draft first), and the console asks you to
+    confirm before it does.
 
 ### Install the library
 
 - **Console:** open **Investigations**, then **Templates**, and choose **Install default
-  templates**. The templates are written with the status they ship with (all four are
-  `active`). See [Console](console.md#install-default-templates).
+  templates**. The dialog starts at **Draft** for every template, whatever the library
+  recommends; making a template active is an explicit choice, confirmed separately.
+  See [Console](console.md#install-default-templates).
 - **CLI:** `limacharlie investigate templates install-defaults`, which writes drafts
   unless you pass `--status`. See [CLI](cli.md#templates).
 - **API or AI agent:** fetch the library with the authoring kit section
   `library` (each entry has `name`, `description`, `version`, `status`, `applies_to`
   and the `yaml` to store), then write the record `investigation_plan/<name>` with
-  that YAML. The library entries say `status: active`, and the Hive refuses an `active`
-  write from an API key, so **set `status: draft` in the YAML before writing it** and
-  have a person promote it, or install from the console. See
+  that YAML. The library entries say `status: active`, and by default the Hive refuses
+  an `active` write from an API key, so **set `status: draft` in the YAML before
+  writing it** and have a person promote it, or install from the console. See
   [Permissions](permissions.md#active-templates-can-only-be-written-by-a-person),
   [API Reference](api-reference.md#authoring) and [MCP Tools](mcp.md).
 
@@ -86,7 +91,7 @@ proofs:                  # conditions that settle the verdict
 evidence: []             # weighted conditions used when no proof completes
 scope:                   # facts to start scoping from once a true positive is likely
   from: []
-respond: []              # actions to propose once the verdict is known
+respond: []              # actions to propose, each with an optional `when`
 report:                  # how the case is written
   case: create
 ```
@@ -218,25 +223,44 @@ with no `benign` can never be explained, so `signals.all_explained` is never tru
 while it fires (`signal_missing_explanation`). `signals.all_explained` is true only
 when every signal that fired is explained, and it is not true when none fired.
 
+### Scope
+
+`scope.from` names the facts the scoping phase starts from, for instance the host and
+the user. Scoping does not search for new entities: the engine runs the facts you
+listed (and what they depend on) once they become relevant, and a
+conservative-profile run waits for a decided true positive before it does. The keys
+`follow` and `after` are accepted and not used yet.
+
 ### Respond and report
 
-`respond` proposes actions after the verdict: `{class, target, when, before, attrs}`.
+`respond` proposes actions: `{class, target, when, before, attrs}`. The engine
+evaluates each step every time new facts arrive, and proposes it as soon as its
+`when` is true and its `target` can be resolved. **This can be before the final
+verdict.** A step with no `when` is proposed as soon as the target is known. Write
+`when: 'verdict == true_positive'` to hold a step until the verdict is a decided true
+positive (as the default library does); `p >= 0.7` proposes it while the evidence is
+still building. What happens to a proposal then depends on its class's mode:
+`approve` asks a person once `P(TP)` passes `ask_approval_at`, and `auto` executes as
+soon as the class's `min_confidence` is met, both without waiting for the verdict.
+
+Only two classes can be carried out today:
 
 | Class | What it does |
 |---|---|
-| `contain.network` | Isolate a sensor from the network (a reversible lease). |
-| `contain.process` | Suspend a process (reversible). |
-| `contain.identity` | Contain an identity through the organization's identity response extensions, where installed (reversible, by re-enabling). |
-| `contain.email` | Quarantine a message through Email Security. |
-| `tag` | Tag a sensor (reversible). |
-| `eradicate.process` | Kill a process. Irreversible. |
-| `eradicate.file` | Delete a file. Irreversible. |
-| `collect.memory`, `collect.file`, `collect.artifact` | Preserve evidence. Billed storage; off by default. |
+| `contain.network` | Isolate a sensor from the network (a reversible lease). Needs `sensor.task`. |
+| `contain.email` | Quarantine a message, and the other recipient copies of its group, through Email Security (reversible where the provider supports release). Needs `mailsec.act`. |
+
+The other classes the policy and the template format recognize (`contain.process`,
+`contain.identity`, `tag`, `eradicate.process`, `eradicate.file`, `collect.memory`,
+`collect.file`, `collect.artifact`) are **not available yet**: a template can propose
+them, but approving or auto-executing one fails with "action class ... is not
+wired", and the action ends `failed`. Do not use them in a template you intend to
+run.
 
 **A template only proposes.** The organization's [autonomy policy](policies.md#autonomy-modes)
 decides per class whether an action is only suggested, needs approval or runs by
-itself. A class whose mode is `off` is never proposed. `before: eradicate.process`
-makes a collection step run first.
+itself. A class whose mode is `off` is never proposed. `before: <class>` on a step
+makes another step of that class run first.
 
 `report` shapes the case: `case: create|none`, `severity` by verdict, `kind`,
 `attack` (technique tags), `summary` sentences by verdict, and `questions` for the

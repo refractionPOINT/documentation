@@ -7,11 +7,14 @@
     organization.
 
 The Investigation Engine investigates an alert for you. You hand it a detection,
-a case, an entity or a question. It works out which facts it needs, gathers every
+a case, an entity or a question. It gathers the facts its plan template lists, every
 fact whose inputs are ready **in parallel**, stops as soon as the verdict is
 settled, writes the result to a [case](../5-integrations/extensions/limacharlie/cases.md),
 and proposes or takes containment actions **only as far as your organization's
-policy allows**.
+policy allows**. Containment can start before the verdict is final, once a template's
+conditions and the policy's confidence bars are met. Today two action classes can
+execute: email quarantine and sensor network isolation (see
+[Respond](templates.md#respond-and-report)).
 
 It is deterministic at its core. A language model can judge an ambiguous fact in
 a small, bounded call, but it does not drive each step. The engine, not the model,

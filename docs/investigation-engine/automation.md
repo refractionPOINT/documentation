@@ -8,8 +8,13 @@ token of its own, so it executes with the identity named in the organization's
 ## Before you enable either
 
 1. **A policy identity.** Set `identity.default` in the `default` investigation policy
-   to a Hive secret holding an organization API key. Without it, every automatic start
-   is refused with a message that names `identity.default`.
+   to a Hive secret holding an organization API key. This is the simplest setup. A
+   template can instead carry its own `identity.templates.<name>.default`, so a
+   least-privilege key serves just that template. Without an identity for the template,
+   the automatic start is refused with a message that names `identity.default` and
+   the per-template setting. A case trigger with `template: auto` also needs the
+   org-wide `identity.default`: it reads the case's tags and first detection before
+   a template is chosen.
 2. **At least one active template** whose `applies_to` matches what you expect, or a
    rule that names its template. A draft is never used.
 3. **Autonomy you are comfortable with.** Start with every class in `suggest`. See
@@ -37,7 +42,8 @@ respond:
 
 - Put the action **after** `report`. The run is tied to the detection `report` just
   created, and the detection id is the run's idempotency key: one detection starts one
-  run.
+  run (idempotency is kept for the engine's record retention and is scoped to the
+  organization and the D&R starter).
 - The run's trigger carries the detection's category and priority and the rule's tags,
   with `source: dr-rule` and `rule: general.<rule record name>`. Those are what
   `applies_to` matches on. A rule never sends a severity.
@@ -48,6 +54,17 @@ respond:
   [Run inputs](templates.md#run-inputs).
 - Starting a run never delays the rule: the request is sent in the background and a
   failure never blocks the detection.
+- **The detection may not be stored yet when the run starts.** `report` and `start
+  investigation` run independently, so the run can begin within milliseconds of the
+  detection, before it can be read. For a run started by a D&R rule or a case, the
+  engine therefore treats "not found" on the trigger detection as "not indexed yet":
+  it retries that one lookup with backoff (from 500 ms up to 5 s between tries) for up
+  to about 30 seconds in all (the engine setting `INVESTIGATE_TRIGGER_DETECTION_WAIT`;
+  `0` turns the wait off). Other facts that do not depend on the detection keep running
+  meanwhile, and a cancel or the run's own time budget ends the wait. If the detection
+  never appears, the fact is `unknown` with the reason `not_found`, never absent, and
+  the step record shows how long it waited. A lookup of any other detection is never
+  retried, and a person's start does not wait.
 
 The full parameter list, limits and behavior are in the [response actions
 reference](../8-reference/response-actions.md#start-investigation).
@@ -85,7 +102,10 @@ Behavior:
 - **The run attaches to that case.** It never creates a second case. It writes its
   entities, telemetry references, findings and a proposed classification into the case.
   The case is the human record; the run is the machine record.
-- **One case starts at most one run**, however many times the event is delivered.
+- **One case starts at most one run**, however many times the event is delivered
+  (within the engine's idempotency retention).
+- When the case already has a detection, the same short wait for that detection to be
+  stored applies as for a D&R rule (see above).
 - **Cases the engine wrote never start a run**, so it cannot trigger itself.
 - The run's inputs are the case id and, if the case already has a detection, the
   detection id of its first one.

@@ -1,8 +1,11 @@
 # Permissions
 
 The Investigation Engine is checked at the API gateway. The engine itself trusts
-the gateway and never sees a permission list, so everything on this page is what
-the gateway (and the Config Hive) require.
+the gateway and never sees a permission list, so the tables on this page are what
+the gateway (and the Config Hive) require. Two things are checked beyond them: the
+engine applies the policy's per-class approver list to Approve and Deny, and every
+read or action a run makes is authorized as the run's identity (see
+[What a run can do](#what-a-run-can-do)).
 
 !!! warning "Plan and policy permissions are not part of any role"
     `investigation_plan.*` and `investigation_policy.*` are **not** in the Owner
@@ -42,9 +45,13 @@ does, because approving is how a person authorizes the engine to do it:
 | `collect.memory`, `collect.file`, `collect.artifact` | `sensor.task` |
 | `tag` | `sensor.tag` |
 
-A class with no mapping is refused (fail closed). For classes with an approver
-list in the [policy](policies.md#autonomy-modes), the person must also be on that
-list.
+A class with no mapping is refused (fail closed). Only `contain.email` and
+`contain.network` can be carried out today (see [Action classes](policies.md#action-classes));
+the others are listed because the gateway and the policy already recognize them.
+
+The policy's per-class `approvers` list is checked by the engine for **Approve and
+Deny only**: the person must be on that list. Revert, extend and confirm need the
+gateway permissions above but do not check the list.
 
 ### Who can see a run
 
@@ -101,7 +108,10 @@ exist. Only an organization API key can be a run identity: a user API key is ref
 A run executes with the permissions of its identity: the token of the person or key
 that started it, or the API key the policy names. Everything a run reads and every
 action it takes is checked against those permissions. A run can never read or do what
-its identity cannot.
+its identity cannot. The gateway permissions in the tables above only get a call to the
+engine; each operator then needs the permission of its own data source. For example,
+the `org.roster` operator (the `org_roster` fact pack) lists sensors and needs
+`sensor.list`; without it the fact is `unknown` (`forbidden`), not empty.
 
 A **sensor read** (`sensor.read.*`) tasks a sensor and needs `sensor.task` and
 `output.set` on the identity. Without them the fact is `unknown`, never "absent".
@@ -114,7 +124,8 @@ tooltip naming the permissions you need. See [Console](console.md).
 
 ## Keys: two limits to know
 
-- An API key must have a key id to own runs. A key without one is refused with
-  `this API key has no key id, so it cannot own investigation runs`.
+- An API key must have a key id to use the Investigation Engine. A key without one is
+  refused on every route, reads included, with `this API key has no key id, so it
+  cannot own investigation runs`.
 - An API key restricted to an IP range (`allowed_ip_range`) currently fails, because
   the engine presents the forwarded token from a different address.

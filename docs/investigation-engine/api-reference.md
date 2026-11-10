@@ -1,6 +1,13 @@
 # API Reference
 
-The Investigation Engine is served by the LimaCharlie API gateway under
+!!! warning "Not a public API yet"
+    These routes are the interface that the [console](console.md), the [CLI](cli.md)
+    and the [MCP tools](mcp.md) use. They are an experimental, versioned surface:
+    they are **not part of the public OpenAPI specification** and carry no stability
+    promise yet. Routes, fields and limits can change before general availability.
+    Prefer the CLI or the MCP tools unless you need to call the routes directly.
+
+The routes are served by the LimaCharlie API gateway under
 
 ```text
 https://api.limacharlie.io/v1/investigate/{oid}/...
@@ -11,12 +18,12 @@ JWT, like the rest of the API (see [Authentication Resource
 Locator](../8-reference/authentication-resource-locator.md) and
 [API keys](../7-administration/access/api-keys.md)). The gateway checks the
 [permissions](permissions.md), forwards the request to the engine in the
-organization's datacenter, and relays the engine's answer unchanged.
+organization's datacenter, and relays the engine's answer.
 
 !!! info "Pre-release"
-    These routes exist only where the Investigation Engine is enabled for the
-    organization's datacenter. Elsewhere they return the same "not found" as any
-    unknown path.
+    The routes exist only on gateways where the Investigation Engine is enabled, and
+    they work only for organizations in a datacenter where the engine is enabled too.
+    Anywhere else they return the same "not found" as any unknown path.
 
 ## Conventions
 
@@ -26,24 +33,39 @@ organization's datacenter, and relays the engine's answer unchanged.
   and `-`.
 - Times in a run are RFC 3339 in UTC with millisecond precision. Other timestamps can
   have more precision: parse them as dates, do not sort them as text.
-- **Reads** are retried by the gateway. **Writes are sent exactly once**: a write that
-  times out may or may not have happened, so look before you repeat it, or use an
-  `idempotency_key`.
+- Ordinary **reads** are retried by the gateway. **Writes are sent exactly once**: a
+  write that times out may or may not have happened, so look before you repeat it, or
+  use an `idempotency_key`. The two long-polls (`GET /runs/{id}/events` and
+  `GET /test-plan/{test_id}`) are also sent exactly once; just poll again.
 - Pages are `limit` (1 to 200, default 50) and an opaque `cursor`. A cursor names a
   position, not an offset, so runs started between pages never repeat or hide one.
-  Send the cursor back with the same filters.
-- An API key must have a key id to own runs.
+  Send the cursor back with the same filters. Run events use `limit` up to 500 (default
+  200), and the evidence graph pages with `offset` (`limit` up to 1000).
+- An API key must have a key id; a key without one is refused on every route, reads
+  included, with `403`.
 
 ### Errors
 
-A failed call returns an HTTP status and `{"error": "<message>", "error_code": "<code>"}`.
-A refused template or wave also carries `errors` and `warnings` arrays (each with
-`code`, `path`, `message` and often `suggestion`).
+A failed call returns an HTTP status and `{"error": "<message>"}`. When the **engine**
+refused the call, the body also has `"error_code": "<code>"` from the table below; a
+failure of the gateway itself has only `error`. A refused template or wave also
+carries `errors` and `warnings` arrays (each with `code`, `path`, `message` and often
+`suggestion`).
+
+Failures that only the gateway can produce, with no `error_code`:
+
+| Status | When |
+|---|---|
+| `401` | A required permission is missing (the message names it). Note: the gateway answers `401`, not the engine's `403`, for a missing permission. |
+| `400` | A malformed id, query string, body or long-poll parameter. |
+| `403` | The API key has no key id. |
+| `413`, `414` | The body is over 8 MiB, or the query string over 8 KiB. |
+| `415` | The body is not uncompressed `application/json`. |
 
 | `error_code` | Status | Meaning |
 |---|---|---|
 | `bad_request` | 400 | Malformed or invalid arguments. |
-| `forbidden` | 403 | Not allowed: for example adding inputs to a run you did not start, or a user who is not on an action class's approver list. |
+| `forbidden` | 403 | Not allowed by the engine: for example adding inputs to a run you did not start, or approving or denying as a user who is not on an action class's approver list. |
 | `not_found` | 404 | The run, action or test does not exist (or the retention removed it). |
 | `conflict` | 409 | The state does not allow it: the run has finished, or the action is not in the right state. |
 | `too_many_runs` | 429 | The organization's concurrent run cap is reached. Retry later. |
@@ -121,7 +143,7 @@ customer values. A client that needs only the final answer can instead set
 | `mode` | `triage` (stop at the verdict), `full` (default), or `scope` (skip triage). |
 | `overrides`, `strict` | Tighten the policy for this run. See [Policies](policies.md#per-run-overrides). |
 | `case` | `create`, `attach:<case_id>` or `none`. |
-| `coalesce_key` | Alerts with the same key join the open run. |
+| `coalesce_key` | A start with the same key joins the open run (same organization, same starter and same run identity). Without a key nothing joins. |
 | `idempotency_key` | A repeated start with the same key returns the same run. Scoped to your identity. |
 | `identity` | `caller`, or `hive://secret/<name>`; accepted only if the policy allows it for the template. |
 | `notify` | `output:<name>` destinations for this run's events. |
@@ -145,7 +167,7 @@ The response is `{"run": {...}, "joined": false}`. A run object, abbreviated:
     "unknowns": [{"fact": "f40", "reason": "outside_free_window"}]
   },
   "actions": [{"id": "a1", "class": "contain.network", "target": "...", "state": "active", "lease_until": "2026-11-10T21:00:00.000Z"}],
-  "policy": {"effective": "...", "clamped": []},
+  "policy": {"applied": ["default"], "clamped": []},
   "usage": {"steps": 61, "cancelled": 14, "search_events": 18200000, "llm_usd": 0.08, "wall_ms": 41000},
   "case_id": "...",
   "case_final": false,
@@ -181,7 +203,7 @@ Action states, in the order the inbox lists them: `awaiting_approval`, `proposed
 | `GET /authoring-kit` | read | Everything needed to write a template. Query `sections`. |
 | `POST /test-plan` | write | Dry run of a template on past alerts. |
 | `GET /test-plan/{test_id}` | read | Poll a test. Query `after`, `wait` (0 to 10). |
-| `GET /policy/effective` | read | The effective policy, record by record. Query `template`, `category`, `priority`, `severity`, `target_tags`, `class`. |
+| `GET /policy/effective` | read | The effective policy, record by record. Query `category`, `priority`, `severity`, `target_tags`, `class`. |
 
 Templates and policies themselves are written through the
 [Config Hive](../7-administration/config-hive/index.md) routes for the
@@ -271,7 +293,7 @@ organization's concurrent run cap, step cap and wall time.
 | `steps` | Each step has an `id` and exactly one of `op` (an operator) or `use` (a fact pack), plus `args`. A string argument that is a whole reference such as `"$alert__trigger.sid"` reads another step's value and makes the step wait for it. |
 | `select` | Field paths of the value to return (`matches[0].entity_id`, `matches[*].entity_id`). For a pack step, the names of exports. |
 | `limit` | Per step, 1 to 1000, default 10: the most list elements returned. |
-| `stop_when` | Up to 8 conditions with the same rules as proofs. The first one that is true cancels the steps still running. An unknown or incomplete step never makes one true. |
+| `stop_when` | Up to 8 conditions with the same rules as proofs. The first one that is true cancels the steps still running. An unknown step never makes one true. An incomplete step can make a condition true when the claim only gets stronger with more data (`machine_count > 3`), but never a claim of absence or of an exact count. Conditions are evaluated on the full results, before the answer is compacted: a step returned as `complete: false` because its list was cut may already have stopped the wave. |
 | `deadline_ms` | Default 30000, capped by the policy's wall-time budget. |
 | `inputs` | Named values steps and conditions may read as `$name`. |
 | `full` | `true` returns raw values instead of compact ones. |
