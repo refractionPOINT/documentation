@@ -208,7 +208,7 @@ On the template's page:
 - **Delete** removes the template from the organization and cannot be undone.
 
 Promotion is made by a person in the console. An API key cannot write an active
-template. See [Permissions](permissions.md#active-templates-can-only-be-written-by-a-person).
+template unless the organization opted out. See [Permissions](permissions.md#active-templates-can-only-be-written-by-a-person).
 
 ### Draft a template with AI
 
