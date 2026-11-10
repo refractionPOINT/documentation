@@ -71,8 +71,9 @@ nothing.
 ### Active templates can only be written by a person
 
 A write that results in `status: active` is **refused when it comes from an API
-key**, including an API key owned by a user. Only a person signed in to the console
-can create an active template, promote a draft or edit an active one. Demoting a
+key**, including an API key owned by a user. Only a person signed in as a user, in the
+console or with a user login in the CLI (`limacharlie auth login`), can create an active
+template, promote a draft or edit an active one. Demoting a
 template to `draft` always works.
 
 This is deliberate: an AI agent or script holding an API key can write drafts but can
