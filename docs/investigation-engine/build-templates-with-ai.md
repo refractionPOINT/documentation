@@ -47,6 +47,12 @@ to the key explicitly. A test and a run read the data the key can read, so a key
 that cannot read a detection or its case reports those samples as unreadable, not as
 failures.
 
+!!! warning "Do not give the agent key any `investigation_policy.*` permission"
+    The opt-out tag `allow-api-key-promotion` is set on a policy record with
+    `investigation_policy.set.mtd`. A key that holds any broad `investigation_policy.*`
+    grant could set it, turn off the promotion gate and then promote its own drafts. The
+    agent only needs the `investigation_plan.*` permissions above.
+
 !!! tip "Keep the key away from containment"
     The agent saves and tests templates. It does not need `sensor.task`,
     `sensor.tag` or `mailsec.act`, which approving actions requires.

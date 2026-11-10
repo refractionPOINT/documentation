@@ -230,6 +230,15 @@ identity:
   least a minute is refused. A run that must act for hours should use a secret identity.
 - The key and its token never appear in a run, a log, an event, an error or a response.
 
+!!! warning "A policy secret can be wider than the person who starts a run"
+    When the policy names a secret as `identity.default`, a run started by a person
+    with `investigation.set` and `insight.evt.get` executes with the **secret's**
+    permissions, not the person's, unless they pick `caller` and the policy allows it.
+    The person's own permissions do not limit what that run reads or does. Give the
+    identity key only what the runs need, and keep `identity.allow` and the per-template
+    `identity` entries as narrow as the policy allows. The console shows who a run
+    **Runs as**.
+
 Give the identity key the least it needs: it reads telemetry for every run started by a
 rule, and takes the actions the policy allows. Saving a policy that names a **new**
 secret requires read access to that secret. See [Permissions](permissions.md).

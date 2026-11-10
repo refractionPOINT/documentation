@@ -65,8 +65,11 @@ and how it did as the record's comment, `--tag` (repeatable) adds tags, and
 `draft`. Writing an active template is a person's decision, and the Hive refuses it
 from an API key (see [Permissions](permissions.md#active-templates-can-only-be-written-by-a-person)).
 
-**`templates promote`** requires `--confirm` and the permissions of a person who
-reviewed the draft.
+**`templates promote`** requires `--confirm`. It writes `status: active`, which the Hive
+refuses when the CLI is authenticated with an **API key**. Run it with a user login
+(`limacharlie auth login`), or have a person click **Make active** in the console.
+The same applies to `templates save --status active` and
+`templates install-defaults --status active`.
 
 ### Testing a template on past alerts
 

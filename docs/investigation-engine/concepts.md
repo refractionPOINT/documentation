@@ -133,7 +133,10 @@ detection starts one run.
 Every read a run makes and every action it takes is authorized as the run's
 identity, so a run can never read or do what its identity cannot.
 
-- A run started by a person uses that person's (or API key's) token.
+- A run started by a person or an API key uses the identity the policy names
+  (`identity.default`), unless the request picks `caller` and the policy allows it. With
+  no policy identity, it uses that person's (or API key's) token. **A policy secret can
+  hold more permissions than the person who starts the run.**
 - A run started by a D&R rule or a new case has no person. It needs an identity
   named in the org's policy: an **organization API key** stored as a Hive secret.
   Without one, the start is refused with a message that names the missing

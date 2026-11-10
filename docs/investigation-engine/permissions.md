@@ -80,7 +80,9 @@ never put a template in a position to start from a rule or act on its own. An
 organization that manages active templates with API keys, for example from a
 Git-synced pipeline, can opt out by adding the tag `allow-api-key-promotion` to
 the enabled `investigation_policy/default` record. Setting that tag needs
-`investigation_policy.set.mtd`. If the policy record cannot be read, the gate stays
+`investigation_policy.set.mtd`, so **never give an AI agent's key any
+`investigation_policy.*` permission**: it could turn the gate off and promote its own
+drafts. If the policy record cannot be read, the gate stays
 closed.
 
 ### Naming a secret as the run identity

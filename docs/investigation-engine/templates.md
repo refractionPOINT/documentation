@@ -56,7 +56,11 @@ the case trigger and act within your policy.
 - **API or AI agent:** fetch the library with the authoring kit section
   `library` (each entry has `name`, `description`, `version`, `status`, `applies_to`
   and the `yaml` to store), then write the record `investigation_plan/<name>` with
-  that YAML. See [API Reference](api-reference.md#authoring) and [MCP Tools](mcp.md).
+  that YAML. The library entries say `status: active`, and the Hive refuses an `active`
+  write from an API key, so **set `status: draft` in the YAML before writing it** and
+  have a person promote it, or install from the console. See
+  [Permissions](permissions.md#active-templates-can-only-be-written-by-a-person),
+  [API Reference](api-reference.md#authoring) and [MCP Tools](mcp.md).
 
 ## Anatomy of a template
 
