@@ -178,7 +178,6 @@ available**.
 - You need `investigation_plan.get` and `investigation_plan.set`; without them the
   dialog explains what is missing.
 
-
 ### Create, edit and copy
 
 **New template** and **Edit** open a YAML editor. Names use letters, digits, dots,
