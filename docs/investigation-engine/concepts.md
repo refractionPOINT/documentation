@@ -116,8 +116,8 @@ A run starts in one of three modes: `triage` (stop at the verdict), `full` (tria
 scoping and containment) or `scope` (skip triage, for a confirmed incident).
 `urgency` (`low`, `medium`, `high`, `critical`) selects how aggressively the engine
 spends parallel work: a *speculation profile* of `conservative`, `balanced` or
-`aggressive`. The default policy maps `low` to conservative, `medium` to balanced and
-`high` and `critical` to aggressive. If you do not set an urgency, the engine
+`aggressive`. A typical policy, like the example in [Policies and Autonomy](policies.md#a-default-policy),
+maps `low` to conservative, `medium` to balanced and `high` and `critical` to aggressive. If you do not set an urgency, the engine
 derives it from the detection priority, the case severity and asset tags.
 
 ### Coalescing and idempotency
@@ -153,6 +153,18 @@ and the older part is recorded as unknown (`outside_free_window`), never as
 "nothing found". A policy can lower the lookback below 30 days, never raise it.
 Operators that bill per use, such as artifact collection, are off in the default
 policy.
+
+### What a run costs
+
+- **Searches** stay inside the free time range, so they are free of search charges.
+- **Language-model judgements** (`llm.judge`) go through your organization's AI agent
+  configuration, which decides the model and credentials. The usage is reported as AI
+  usage and billed with your other AI usage, under the feature
+  `investigation_engine`, with the run id as the reference. The policy's
+  `max_llm_usd_per_run` budget bounds a run's spend. The spend a run reports is a lower
+  bound, because a judgement cut short by a deadline or a cancel can still be billed.
+- **Operators that bill per use**, such as artifact collection and some extensions, are
+  off in the default policy. An organization enables them by policy.
 
 ### The case
 

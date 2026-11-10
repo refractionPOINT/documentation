@@ -59,7 +59,7 @@ Templates and policies are Hive records. The permissions follow the usual
 
 | To do this | Required permission |
 |---|---|
-| Read templates | `investigation_plan.get` |
+| Read a template's record (its YAML) from the Hive | `investigation_plan.get`. Listing the templates the engine serves needs only the run read permissions. |
 | Create or edit templates, promote a draft | `investigation_plan.set` (and `.get`) |
 | Delete templates | `investigation_plan.del` |
 | Read or change template metadata only | `investigation_plan.get.mtd`, `investigation_plan.set.mtd` |

@@ -87,6 +87,9 @@ report:                  # how the case is written
   case: create
 ```
 
+This skeleton shows every section. A real template needs at least one fact, and at
+least one proof, signal or evidence rule, or it can never reach a verdict.
+
 Top-level keys are `status`, `version`, `description`, `applies_to`, `inputs`,
 `prior`, `facts`, `signals`, `signals_from`, `proofs`, `evidence`, `scope`,
 `respond` and `report`. The authoring kit returns a JSON Schema listing every key.

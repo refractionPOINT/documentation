@@ -17,8 +17,10 @@ The workflow:
 7. Save as a draft.
 8. A person reviews and promotes it.
 
-The agent can never promote a template. Saving always writes `status: draft`, and
-the save tool refuses to overwrite an active template.
+The agent cannot promote a template. The save tool always writes `status: draft` and
+refuses to overwrite an active template, and the Hive refuses an `active` write that
+comes from an API key (unless the organization opted out; see
+[Permissions](permissions.md#active-templates-can-only-be-written-by-a-person)).
 
 ## Set up the agent
 

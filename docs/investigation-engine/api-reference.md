@@ -54,8 +54,8 @@ The gateway adds `503 the investigation engine is not available for this
 organization`, `504 investigation engine timed out` and `502 investigation engine
 unavailable`.
 
-Start, wave, test and compare routes are rate limited per organization (per hour:
-300 starts, 600 waves, 300 tests, 600 comparisons).
+Start, wave, test and compare routes are rate limited (per hour: 300 starts, 600
+waves, 300 tests, 600 comparisons).
 
 ## Routes
 
