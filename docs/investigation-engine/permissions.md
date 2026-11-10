@@ -23,9 +23,11 @@ The gateway requires **all** permissions of a row.
 
 `insight.evt.get` is required on every route except pausing and resuming. It means a
 role that can use Cases (`investigation.get`) but cannot read telemetry cannot read
-the results an investigation gathered. The preset Operator and Viewer roles carry only
-`insight.evt.get.simple`, so they cannot use the engine until `insight.evt.get` is
-granted to them explicitly.
+the results an investigation gathered. Among the preset roles, only **Owner** holds
+`investigation.get` and `investigation.set`; the Administrator, Operator and Viewer
+presets hold neither, and Operator and Viewer also carry only `insight.evt.get.simple`.
+Grant the permissions in the table above explicitly to anyone else who should use the
+engine.
 
 ### Permission of the action class
 
