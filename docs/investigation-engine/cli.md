@@ -21,18 +21,21 @@ Commands take the global options (`--oid`, `--output json|yaml|toon|csv|table|js
 The permissions each command needs are the ones of the corresponding
 [API route](api-reference.md#routes).
 
-A command that completes but says "no" (an invalid template or wave, a refused save, a
-promotion that did not happen because the template is already active or does not
-validate) prints the engine's coded answer and **exits with code 4**. A call that fails
+A command that completes but says "no" (an invalid template or wave; a save the CLI
+itself refuses because the template does not validate, a record of that name exists, or
+it would replace an active template; a promotion that did not happen because the
+template is already active or does not validate) prints the engine's coded answer and **exits with code 4**. A call that fails
 keeps the CLI's standard exit codes: **2** when the API answers 401 or 403
 (authentication or permission), **3** for a resource that does not exist, **4** for
 invalid input, **5** for a rate limit, and **1** for anything else: a timeout, a test
 that failed, an `install-defaults` that could not write a template, and every other
-error status. That includes the Hive's own refusals, which come back as a `400` with an
-`error_code`: a promotion or save the Hive rejects (for instance an `active` write from
-an API key, `error_code` `INVALID`) exits **1**, and so does a missing Hive permission,
-which the Hive also answers with a `400` (`UNAUTHORIZED`, reported with `status` 403).
-Read the `error_code`, not the exit code, to tell them apart. With a structured
+error status. That includes the Hive's own refusals, which the CLI receives as an HTTP
+`400` carrying an `error_code`: a promotion or save the Hive rejects (for instance an
+`active` write from an API key, `error_code` `INVALID`) exits **1**, not 4. A missing
+Hive permission is also a `400` from the Hive (`error_code` `UNAUTHORIZED`) and exits
+**1**; the CLI then writes `"status": 403` in the error document, which is a label for
+the permission failure, not the HTTP status it received. Only a real HTTP 401 or 403
+exits 2. Read the `error_code`, not the exit code, to tell these apart. With a structured
 `--output` (`json`, `yaml`, ...) the failure is also written to stderr as a document
 with the message, the HTTP `status`, the `error_code` when there is one, and any coded
 `errors`; a 404 without an `error_code` means the Investigation Engine is not enabled

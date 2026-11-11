@@ -39,7 +39,8 @@ Give the agent's API key only what the workflow needs:
 | To do this | The key needs |
 |---|---|
 | Read the kit, operators, packs and templates, validate a template | `investigation.get`, `insight.evt.get` |
-| Test a template on past alerts, start a run or a wave | `investigation.set`, `insight.evt.get` |
+| Test a template on past alerts | `investigation.set`, `investigation.get`, `insight.evt.get` (starting the test needs the first, polling its result the second) |
+| Start a run or a wave | `investigation.set`, `insight.evt.get` |
 | Save a draft | `investigation_plan.get`, `investigation_plan.set`, and `investigation.get`, `insight.evt.get` |
 
 The two `investigation_plan.*` permissions are not part of the Owner role. Grant them
