@@ -67,7 +67,7 @@ limacharlie investigate templates install-defaults --name suspicious-process --o
 | `templates get NAME [--yaml]` | A stored template record. `--yaml` prints only the source. |
 | `templates validate -f FILE` | Checks a template (`-` for stdin) and runs nothing. Exit 4 when it has errors. |
 | `templates test [NAME] -f FILE ...` | Dry run on past alerts. See below. |
-| `templates save NAME -f FILE` | Validates, then saves a **draft** record. Exit 4 when refused. |
+| `templates save NAME -f FILE` | Validates, then saves a **draft** record. Exit 4 when the CLI refuses it; exit 1 when the Hive does (see above). |
 | `templates promote NAME --confirm` | Makes a reviewed draft **active**. A person's decision. |
 | `templates delete NAME --confirm` | Deletes the record. |
 | `templates install-defaults` | Writes the [default library](templates.md#the-default-library) into the organization. |
