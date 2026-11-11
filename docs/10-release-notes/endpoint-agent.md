@@ -5,6 +5,57 @@ Release notes for the EDR sensor installed on Windows, macOS, Linux and Chrome e
 !!! tip "Subscribe"
     Get each release as it ships with the [Endpoint Agent RSS feed](https://docs.limacharlie.io/10-release-notes/endpoint-agent.xml).
 
+## 2026-11-11
+
+### Endpoint Agent 5.4.3
+
+#### Breaking Changes
+
+- Windows: `usb_list_keys` now reports serial numbers in uppercase, so a rule or lookup that matches them in lowercase needs updating.
+- Windows: hosts set to enforce USB blocking will start blocking USB keys that are not on the allow list after this upgrade, because USB blocking works again in this release (see below).
+
+#### New Features
+
+- Windows `os_autoruns` now reports each logged-on user's autoruns, from that user's registry hive and Startup folders. These entries are reported under `HKU\<SID>\...`, so rules matching `HKCU\` will not match them.
+- Windows `os_autoruns` now resolves shortcuts, CLSIDs, service DLLs and shell handlers to the files they launch, and reports each target alongside the original entry.
+- Windows `os_autoruns` reports are larger, and a scan takes about twice as long. Every entry reported before is still reported, unchanged.
+- macOS: process command lines are now reported in full, up to the operating system's limit, instead of being cut at 512 characters.
+- Windows `os_version` now reports the patch revision (UBR) and the current release name, such as 24H2, instead of 2009, which Windows stopped updating after 20H2.
+
+#### Bug Fixes
+
+- Windows: fixed file, named pipe and document events and USB blocking stopping shortly after the sensor started. The sensor was turning off its file filter on hosts outside performance mode, in every version since 5.2.2.
+- Windows: `set_performance_mode` was applying the opposite of the requested mode, so turning performance mode off stopped file events. It now applies the mode it is given.
+- Windows: file, named pipe and document events are no longer reported twice on hosts where the file filter attached to each volume twice.
+- Windows: USB allow list entries now match in either case; a key added with the serial shown by `usb_list_keys` used to stay blocked.
+- Windows: new processes no longer make the sensor list every thread on the host, which cost significant CPU on hosts with many threads, such as terminal servers.
+- Windows: fixed sensor CPU usage that grew with uptime. Leaked handles to finished worker threads made every process listing on the host slower.
+- Windows: fixed slow memory growth from per-thread buffers that were only freed when the sensor module stopped.
+- Windows: the system tray, the sensor health check and the Varist file scanner now start on hosts without the Visual C++ redistributable.
+- Windows: uninstalling a sealed sensor with `-c` used to report nothing and delete the data directory from under the running sensor. It now fails with an access-denied explanation and leaves the sensor intact.
+- macOS: if removing the system extension failed during uninstall, the system's rule for managing system extensions was left open to every user. It is now always restored.
+- Linux and macOS: the sensor's identity and configuration files are now readable by root only; every restart used to leave them world-readable.
+- Linux and macOS: commands with an empty text argument were dropped without a reply; they are now carried out.
+- `dir_list` without a file pattern now lists every file, instead of returning nothing.
+- File path patterns now work as documented: `*` matches zero or more characters and `+` one or more, and case-insensitive matching continues past a wildcard. This affects `dir_list`, file integrity monitoring, YARA scans and other path filters. Some existing patterns may now match more files.
+- Linux: `file_get` now retrieves SELinux and Smack pseudo-files such as `/sys/fs/selinux/enforce`, instead of returning them empty.
+- Linux: `cert_store_list` no longer reports failed stores on Debian and Ubuntu hosts with a packaged Java runtime.
+- macOS: `cert_store_list` now lists certificates that a trust setting explicitly denies in their own `.Deny` store, instead of among the trusted ones.
+- Debian and Ubuntu: `os_packages` no longer lists removed packages whose configuration files remain as installed.
+- Windows `os_autoruns`: restored shortcut targets and the Terminal Server `Run` key, both missing since 5.2.0.
+- Windows `os_autoruns`: oversized `Run` values, very long value names and file names that are not valid UTF-16 are no longer silently dropped.
+- Varist file scanner: stopping the scanner while it was restarting no longer hangs or leaves the scanner running.
+- Fixed a crash on hosts low on memory when sending telemetry failed.
+- Fixed a read past the end of a very long file path during code identification.
+
+#### Improvements
+
+- New installs now check the cloud's root-key certificate and the signed identity they receive, and every start checks the stored cloud configuration. Problems are reported to the cloud but not yet enforced.
+- A backoff request received before the cloud's identity is verified is now capped at one hour, so an intercepted connection cannot delay a new install's enrollment longer than that.
+- Updated the sensor's embedded compression library to pick up upstream memory-safety fixes.
+
+---
+
 ## 2026-11-06
 
 ### Endpoint Agent 5.3.16
