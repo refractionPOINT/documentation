@@ -115,8 +115,13 @@ engine; each operator then needs the permission of its own data source. For exam
 the `org.roster` operator (the `org_roster` fact pack) lists sensors and needs
 `sensor.list`; without it the fact is `unknown` (`forbidden`), not empty.
 
-A **sensor read** (`sensor.read.*`) tasks a sensor and needs `sensor.task` and
-`output.set` on the identity. Without them the fact is `unknown`, never "absent".
+A **sensor read** (`sensor.read.*`) tasks a sensor and needs `sensor.task.read` (or the broader `sensor.task`) plus
+`output.set` on the identity. `sensor.task.read` is an explicit grant, never part of a
+default or preset role. It permits only allowlisted live metadata reads when
+`INVESTIGATION_ENGINE_ENABLED` is `true` or `1`; gate off grants no tasking. File
+contents, scripts, mutations and unknown commands are refused server-side. For an
+observe-only policy identity, grant `sensor.task.read` instead of `sensor.task` and
+keep actions at `suggest`. Action permissions in the table above are unchanged. Without them the fact is `unknown`, never "absent".
 
 ## Console access
 

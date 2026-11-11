@@ -25,7 +25,7 @@ For a local client, set `MCP_PROFILE=investigation_engine` in the server's envir
 The table below lists the permissions each tool needs **at the gateway**. Give the
 API key those, plus only the permissions of the data the checks you ask for read. A
 wave or a test executes with the key's own permissions, so for example the `org_roster`
-pack also needs `sensor.list`, and live sensor reads need `sensor.task` and `output.set`;
+pack also needs `sensor.list`, and live sensor reads need `sensor.task.read` (when enabled, or `sensor.task`) plus `output.set`;
 without them the facts come back `unknown`. A **run** (`investigate_start`) is different:
 it executes as the policy's identity (`identity.default`) unless the request picks
 `caller` and the policy allows it, so on an active template it can act with that secret's
