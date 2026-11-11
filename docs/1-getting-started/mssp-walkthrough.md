@@ -1588,7 +1588,7 @@ Telemetry's the foundation, detections fire on what you collect — but eventual
 | `segregate_network`, `rejoin_network` | Isolate the host and un-isolate it. |
 | `yara_scan` | Scan a file or a process with a YARA rule, for example `yara_scan hive://yara/malware-rule --pid 4812`. |
 | `history_dump` | Dump events from the sensor's local cache. |
-| `fim_add`, `exfil_add` | Add a file-integrity pattern or an Exfil watch rule at runtime. |
+| `fim_add`, `exfil_add` | Add a file-integrity pattern, or start sending an event type, at runtime. |
 
 The arguments differ per command and are listed in the [Endpoint Commands reference](../8-reference/endpoint-commands.md). Run any of them from the **Console** view in the web app, or from the CLI:
 
