@@ -18,8 +18,8 @@ For commands which emit a report/reply event type from the agent, the correspond
 | [dns\_resolve](#dns_resolve) | [DNS\_REQUEST](edr-events.md#dns_request) | ☑️ | ☑️ | ☑️ | ☑️ | ☑️ |
 | [doc\_cache\_get](#doc_cache_get) | [GET\_DOCUMENT\_REP](edr-events.md#get_document_rep) | ☑️ | ☑️ |  |  |  |
 | [get\_debug\_data](#get_debug_data) | [DEBUG\_DATA\_REP](edr-events.md#debug_data_rep) | ☑️ | ☑️ | ☑️ |  |  |
-| [exfil\_add](#exfil_add) | [CLOUD\_NOTIFICATION](edr-events.md#cloud_notification) | ☑️ | ☑️ | ☑️ |  |  |
-| [exfil\_del](#exfil_del) | [CLOUD\_NOTIFICATION](edr-events.md#cloud_notification) | ☑️ | ☑️ | ☑️ |  |  |
+| [exfil\_add](#exfil_add) | [RECEIPT](edr-events.md#receipt) | ☑️ | ☑️ | ☑️ |  |  |
+| [exfil\_del](#exfil_del) | [RECEIPT](edr-events.md#receipt) | ☑️ | ☑️ | ☑️ |  |  |
 | [exfil\_get](#exfil_get) | [GET\_EXFIL\_EVENT\_REP](edr-events.md#get_exfil_event_rep) | ☑️ | ☑️ | ☑️ |  |  |
 | [file\_del](#file_del) | [FILE\_DEL\_REP](edr-events.md#file_del_rep) | ☑️ | ☑️ | ☑️ |  |  |
 | [file\_get](#file_get) | [FILE\_GET\_REP](edr-events.md#file_get_rep) | ☑️ | ☑️ | ☑️ |  |  |
@@ -593,62 +593,93 @@ limacharlie sensor task <SID> doc_cache_get --hash <DOC_HASH>
 
 ### exfil_add
 
-Add an exfiltration detection watch for specific event types and patterns.
+Start sending an event type from this sensor to the cloud. Which events a sensor sends is decided by the organization's [exfil rules](../5-integrations/extensions/limacharlie/exfil.md); `exfil_add` adds an event to that for one sensor, for example to turn a verbose event on for a single host while it is being investigated, or from a D&R rule that wants more context after a match.
+
+The add is held in memory only. Nothing is persisted, so a sensor restart clears every ad-hoc add. Older sensors also dropped every ad-hoc add whenever the organization's exfil rules were updated.
 
 **Platforms:** macOS | Windows | Linux
 
 **Parameters:**
 
-- `event` (required): Event type to monitor (e.g., "DNS_REQUEST", "NEW_PROCESS")
-- `operator` (required): Comparison operator ("is", "contains", "matches", etc.)
-- `path` (required): JSON path to the field to watch (e.g., "event/DOMAIN_NAME")
-- `value` (required): Value or pattern to match
-- `expire` (optional): TTL in seconds for the watch (default: permanent)
+- `event` (required, positional): Name of the event type to start sending, for example `NEW_PROCESS` or `DNS_REQUEST`
+- `--expire` / `-e` (optional): Number of seconds after which the sensor stops sending the event. Without it the add is permanent.
 
-**Response Event:** EXFIL_ADD_REP
+**How long an add lasts:**
+
+- Without `--expire`, the event is sent until `exfil_del` removes it or the sensor restarts. Repeating the command adds nothing (the receipt is still `0`), and one `exfil_del` undoes it.
+- With `--expire N`, the event is sent for `N` seconds. Each such add is counted separately and an expiry only ends the add it belongs to, so a D&R rule that re-issues `exfil_add EVENT --expire N` on every match keeps the event on until `N` seconds after the *last* match.
+- Adding an event the sensor is already sending succeeds with `0`.
+
+**Response Event:** [RECEIPT](edr-events.md#receipt)
+
+| `ERROR` | Meaning |
+| --- | --- |
+| `0` | The event is now being sent, or already was |
+| `31` | No event was given, or the add could not be recorded |
 
 **Usage Example:**
 
 ```bash
-limacharlie sensor task <SID> exfil_add --event "DNS_REQUEST" --operator "contains" --path "event/DOMAIN_NAME" --value "malware" --expire 3600
+limacharlie task send --sid <SID> --task 'exfil_add NEW_PROCESS'
+limacharlie task send --sid <SID> --task 'exfil_add DNS_REQUEST --expire 3600'
+```
+
+From a D&R rule, re-issued on every match so the event stays on while the activity continues:
+
+```yaml
+# Response
+- action: task
+  command: exfil_add NEW_PROCESS --expire 600
 ```
 
 ---
 
 ### exfil_del
 
-Remove an exfiltration detection watch by its ID.
+Stop sending an event type from this sensor. One command takes back one reason the event is being sent, in this order:
+
+1. A permanent `exfil_add` of that event, if there is one.
+2. Otherwise one expiring `exfil_add` of it: the one that would have kept the event on longest.
+3. Otherwise the organization's own exfil rule entry for that event. That entry comes back the next time the sensor receives its exfil rules, so this silences the event until the next rules update or sensor restart; it does not change the rules.
+
+Like `exfil_add`, the change is held in memory only and does not survive a sensor restart.
 
 **Platforms:** macOS | Windows | Linux
 
 **Parameters:**
 
-- `id` (required): Watch ID to remove (from exfil_get response)
+- `event` (required, positional): Name of the event type to stop sending
 
-**Response Event:** EXFIL_DEL_REP
+**Response Event:** [RECEIPT](edr-events.md#receipt)
+
+| `ERROR` | Meaning |
+| --- | --- |
+| `0` | One reason to send the event was removed |
+| `87` | No event was given |
+| `1168` | Nothing left to remove: the sensor is not sending that event |
 
 **Usage Example:**
 
 ```bash
-limacharlie sensor task <SID> exfil_del --id <WATCH_ID>
+limacharlie task send --sid <SID> --task 'exfil_del NEW_PROCESS'
 ```
 
 ---
 
 ### exfil_get
 
-List all active exfiltration detection watches on the sensor.
+List the event types this sensor is currently sending to the cloud. The reply's `LIST_NOTIFICATIONS` holds one entry per reason an event is sent: the organization's exfil rules first, then permanent `exfil_add` entries, then expiring ones. An event added on top of a rule, or added several times with `--expire`, therefore appears more than once, and `exfil_del` removes one entry at a time.
 
 **Platforms:** macOS | Windows | Linux
 
 **Parameters:** None
 
-**Response Event:** EXFIL_GET_REP
+**Response Event:** [GET_EXFIL_EVENT_REP](edr-events.md#get_exfil_event_rep)
 
 **Usage Example:**
 
 ```bash
-limacharlie sensor task <SID> exfil_get
+limacharlie task send --sid <SID> --task 'exfil_get'
 ```
 
 ---
