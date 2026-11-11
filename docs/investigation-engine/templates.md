@@ -26,10 +26,10 @@ organization until a person installs it, and an installed copy is yours to edit.
 
 | Template | Version | Picked for | What it does |
 |---|---|---|---|
-| `endpoint-detection-triage` | 2 | any detection category (`detect_cat: ['*']`) | Generic fallback for a detection on a sensor: the triggering process and its parent, its network activity, the binary's prevalence, the host and its user, related detections and what is true on the host now. Proposes `contain.network` on a confirmed true positive. |
-| `suspicious-process` | 2 | `encoded-powershell`, `lolbin-*` | Judges the command line of a trusted system binary, then checks the process tree, connections, user and whether the process is still active or persisted. Proposes `contain.network` on a confirmed true positive. |
-| `mailsec-suspicious-message` | 4 | `mailsec-ai-triage` | Triage of a message the Email Security AI judge rated suspicious: explains each signal that fired, checks the sender's real history and corroborating mail. Proposes `contain.email` on a confirmed true positive. |
-| `phishing-campaign` | 3 | `mailsec-ai-triage` | Investigates a malicious message several people received: where its link goes, who else received it, who clicked, whether a payload ran. Proposes `contain.email` and `contain.network` on a confirmed true positive. |
+| `endpoint-detection-triage` | 3 | any detection category (`detect_cat: ['*']`) | Generic fallback for a detection on a sensor: the triggering process and its parent, its network activity, the binary's prevalence, the host and its user, related detections and what is true on the host now. Proposes `contain.network` on a confirmed true positive. |
+| `suspicious-process` | 3 | `encoded-powershell`, `lolbin-*` | Judges the command line of a trusted system binary, then checks the process tree, connections, user and whether the process is still active or persisted. Proposes `contain.network` on a confirmed true positive. |
+| `mailsec-suspicious-message` | 5 | `mailsec-ai-triage` | Triage of a message the Email Security AI judge rated suspicious: explains each signal that fired, checks the sender's real history and corroborating mail. Proposes `contain.email` on a confirmed true positive. |
+| `phishing-campaign` | 4 | `mailsec-ai-triage` | Investigates a malicious message several people received: where its link goes, who else received it, who clicked, whether a payload ran. Proposes `contain.email` and `contain.network` on a confirmed true positive. |
 
 The library entries are written for production use, but **installing them writes
 drafts unless you choose otherwise**: a draft never starts from a D&R rule or the case
@@ -61,9 +61,9 @@ promote it (see [Draft, active and promotion](#draft-active-and-promotion)).
 - **API or AI agent:** fetch the library with the authoring kit section
   `library` (each entry has `name`, `description`, `version`, `status`, `applies_to`
   and the `yaml` to store), then write the record `investigation_plan/<name>` with
-  that YAML. The library entries say `status: active`, and by default the Hive refuses
-  an `active` write from an API key, so **set `status: draft` in the YAML before
-  writing it** and have a person promote it, or install from the console. See
+  that YAML. The library entries are drafts (`status: draft`); keep that status when
+  you store one, and have a person promote it once it is tested. Writing `status: active`
+  is refused by default from an API key. Or install from the console. See
   [Permissions](permissions.md#active-templates-can-only-be-written-by-a-person),
   [API Reference](api-reference.md#authoring) and [MCP Tools](mcp.md).
 
@@ -260,7 +260,14 @@ run.
 **A template only proposes.** The organization's [autonomy policy](policies.md#autonomy-modes)
 decides per class whether an action is only suggested, needs approval or runs by
 itself. A class whose mode is `off` is never proposed. `before: <class>` on a step
-makes another step of that class run first.
+makes **this step a prerequisite** of the steps of the named class on the same
+target: those actions wait until this step's action has been carried out. For instance,
+`collect.file` with `before: eradicate.file` means the collection comes first and the
+eradication waits for it. If this step's class is only suggested or off, or no such
+step was proposed, the later action goes ahead with a caveat saying the collection
+was not performed; if the collection was allowed but was denied, failed or expired,
+the later action needs a person's approval. (The classes in the example are not
+available yet, see above.)
 
 `report` shapes the case: `case: create|none`, `severity` by verdict, `kind`,
 `attack` (technique tags), `summary` sentences by verdict, and `questions` for the

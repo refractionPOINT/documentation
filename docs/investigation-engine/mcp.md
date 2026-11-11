@@ -55,11 +55,10 @@ An organization's templates are exactly its `investigation_plan` Hive records. T
 engine ships a **default library** of ready-made templates. It is content, not part of
 any organization: read it with `investigate_authoring_kit` and `sections: ["library"]`,
 and install one by writing it as an `investigation_plan/<name>` record with the Hive
-tools. Library entries say `status: active`, and by default the Hive refuses an `active`
-write from an API key (an administrator can opt out; see
-[Permissions](permissions.md#active-templates-can-only-be-written-by-a-person)), so set
-`status: draft` in the YAML first and have a person promote it, or install from the
-console. Fact packs (`use:` in a fact) are built into the engine, like operators.
+tools. Library entries are drafts (`status: draft`): keep that status and have a person
+promote the template once it is tested, or install from the console. The Hive refuses by
+default an `active` write from an API key (an administrator can opt out; see
+[Permissions](permissions.md#active-templates-can-only-be-written-by-a-person)). Fact packs (`use:` in a fact) are built into the engine, like operators.
 
 ## `investigate_save_plan` and what it refuses
 

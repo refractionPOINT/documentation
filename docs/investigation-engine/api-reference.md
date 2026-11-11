@@ -21,9 +21,11 @@ Locator](../8-reference/authentication-resource-locator.md) and
 organization's datacenter, and relays the engine's answer.
 
 !!! info "Pre-release"
-    The routes exist only on gateways where the Investigation Engine is enabled, and
-    they work only for organizations in a datacenter where the engine is enabled too.
-    Anywhere else they return the same "not found" as any unknown path.
+    The routes exist only on gateways where the Investigation Engine is enabled. On any
+    other gateway they return the same "not found" as an unknown path. On a gateway
+    where it is enabled, an organization whose datacenter has no engine, or an engine
+    that cannot be reached, gets the gateway's `503`, `502` or `504` (see
+    [Errors](#errors)), not a `404`.
 
 ## Conventions
 
@@ -136,7 +138,7 @@ customer values. A client that needs only the final answer can instead set
 
 | Field | Meaning |
 |---|---|
-| `trigger` | At least one of `detection_id`, `case_id`, `entity_id`, `question`. `category`, `priority`, `severity` and `tags` describe what fired, and select the policy records and the template. |
+| `trigger` | At least one of `detection_id`, `case_id`, `entity_id`, `question`, or a non-empty `inputs` with an explicit `plan.template` (for example a message UUID or another operator input, with no alert). `category`, `priority`, `severity` and `tags` describe what fired, and select the policy records and the template. |
 | `plan` | `{"template": name}` to run a stored template, or `{"inline": "<yaml>"}` to run a template you supply (always a draft). Leave it out to let the engine choose by `applies_to`. |
 | `inputs` | Named values for the template's facts. |
 | `urgency` | `low`, `medium`, `high` or `critical`. Derived from the trigger if you omit it. |
@@ -203,7 +205,7 @@ Action states, in the order the inbox lists them: `awaiting_approval`, `proposed
 | `GET /authoring-kit` | read | Everything needed to write a template. Query `sections`. |
 | `POST /test-plan` | write | Dry run of a template on past alerts. |
 | `GET /test-plan/{test_id}` | read | Poll a test. Query `after`, `wait` (0 to 10). |
-| `GET /policy/effective` | read | The effective policy, record by record. Query `category`, `priority`, `severity`, `target_tags`, `class`. |
+| `GET /policy/effective` | read | The effective policy, record by record. Query `category`, `priority`, `severity`, `target_tags`, `class` and `template` (the template whose run identity to explain). |
 
 Templates and policies themselves are written through the
 [Config Hive](../7-administration/config-hive/index.md) routes for the

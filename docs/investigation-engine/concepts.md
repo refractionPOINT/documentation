@@ -122,7 +122,7 @@ scoping and containment) or `scope` (skip triage, for a confirmed incident).
 spends parallel work: a *speculation profile* of `conservative`, `balanced` or
 `aggressive`. A typical policy, like the example in [Policies and Autonomy](policies.md#a-default-policy),
 maps `low` to conservative, `medium` to balanced and `high` and `critical` to aggressive. If you do not set an urgency, the engine
-derives it from the detection priority, the case severity and asset tags.
+derives it from the detection priority and the severity (priority 8 or more, or severity `critical`, is `critical`; 6 or more, or `high`, is `high`; 3 or more, or `medium`, is `medium`; anything lower is `low`) and falls back to `medium` when the start carries neither. Tags do not change the urgency; the trigger's tags can match a run-scoped [policy record](policies.md#two-match-scopes) that tightens the run.
 
 ### Coalescing and idempotency
 
@@ -176,8 +176,14 @@ policy.
   configuration, which decides the model and credentials. The usage is reported as AI
   usage and billed with your other AI usage, under the feature
   `investigation_engine`, with the run id as the reference. The policy's
-  `max_llm_usd_per_run` budget bounds a run's spend. The spend a run reports is a lower
-  bound, because a judgement cut short by a deadline or a cancel can still be billed.
+  `max_llm_usd_per_run` budget **stops the run from launching further judgements** once
+  the cost already recorded reaches it. It is not a hard cap on spend: the engine does
+  not reserve the cost of a judgement before it runs, so a judgement already in flight
+  (or several launched together) can take the run past the budget. The dollar figures
+  come from the engine's configured prices, and a judgement billed with no known price
+  adds nothing to the dollar total, so it never counts against the budget. The spend a
+  run reports is therefore a lower bound, and a judgement cut short by a deadline or a
+  cancel can still be billed.
 - **Operators that bill per use**, such as artifact collection and some extensions, are
   off in the default policy. An organization enables them by policy.
 

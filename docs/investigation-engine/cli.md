@@ -21,15 +21,22 @@ Commands take the global options (`--oid`, `--output json|yaml|toon|csv|table|js
 The permissions each command needs are the ones of the corresponding
 [API route](api-reference.md#routes).
 
-A command that completes but says "no" (an invalid template, a refused save, a refused
-promotion result) prints the engine's coded answer and **exits with code 4**. A call
-that fails keeps the CLI's standard exit codes: **2** for authentication or permission
-(this includes a promotion the Hive rejects with an error), **3** for a resource that
-does not exist, **4** for invalid input, **5** for a rate limit, and **1** for anything
-else, such as a timeout. With a structured `--output` (`json`, `yaml`, ...) the failure
-is also written to stderr as a document with the message, the engine's `error_code`
-when the engine answered, and any coded `errors`; a 404 without an `error_code` means
-the Investigation Engine is not enabled on that API host.
+A command that completes but says "no" (an invalid template or wave, a refused save, a
+promotion that did not happen because the template is already active or does not
+validate) prints the engine's coded answer and **exits with code 4**. A call that fails
+keeps the CLI's standard exit codes: **2** when the API answers 401 or 403
+(authentication or permission), **3** for a resource that does not exist, **4** for
+invalid input, **5** for a rate limit, and **1** for anything else: a timeout, a test
+that failed, an `install-defaults` that could not write a template, and every other
+error status. That includes the Hive's own refusals, which come back as a `400` with an
+`error_code`: a promotion or save the Hive rejects (for instance an `active` write from
+an API key, `error_code` `INVALID`) exits **1**, and so does a missing Hive permission,
+which the Hive also answers with a `400` (`UNAUTHORIZED`, reported with `status` 403).
+Read the `error_code`, not the exit code, to tell them apart. With a structured
+`--output` (`json`, `yaml`, ...) the failure is also written to stderr as a document
+with the message, the HTTP `status`, the `error_code` when there is one, and any coded
+`errors`; a 404 without an `error_code` means the Investigation Engine is not enabled
+on that API host.
 
 ```bash
 export OID=<organization UUID>
@@ -151,7 +158,7 @@ limacharlie investigate runs case <run id> --oid $OID
 
 | Command | What it does |
 |---|---|
-| `runs start` | Starts a run on `--detection-id`, `--case-id`, `--entity-id` or `--question`, with `--template NAME` or a template file `-f`. `--input KEY=VALUE` and `--inputs-json` give run inputs; `--mode triage\|full\|scope` (default `full`); `--case-mode create\|none\|attach:<id>`; `--idempotency-key`; `--wait SECONDS` (up to 60) to block for the verdict; `--follow` to stream events until the run ends. |
+| `runs start` | Starts a run on `--detection-id`, `--case-id`, `--entity-id` or `--question`, with exactly one of `--template NAME`, a template file `-f`, or `--auto` (sends no template: the engine picks the active template whose `applies_to` matches the trigger, and refuses with a reason when none does). `--category`, `--severity`, `--priority` and `--tag` (repeatable) describe the alert: they feed `--auto` and the run-scoped policy records, and `--severity` and `--priority` set the default urgency. `--urgency low\|medium\|high\|critical` overrides it. `--input KEY=VALUE` and `--inputs-json` give run inputs; `--mode triage\|full\|scope` (default `full`); `--case-mode create\|none\|attach:<id>`; `--idempotency-key`; `--wait SECONDS` (up to 60) to block for the verdict; `--follow` to stream events until the run ends. |
 | `runs get RUN_ID` | State, phase, verdict, actions and usage. |
 | `runs list` | The organization's runs, newest first. Filters `--state`, `--verdict`, `--template`, `--trigger`, `--entity`, `--started-by`, `--idempotency-key`, `--since`, `--until`; `--limit` and `--cursor` page; `--all` follows every page. |
 | `runs events RUN_ID` | The run's events after `--after`. `--follow` keeps polling until the run is over, one event per line. It exits 0 when the run finished and 1 when `--timeout` is reached. |
@@ -179,7 +186,7 @@ limacharlie investigate policy resume --oid $OID
 | `actions list [--state S] [--class C] [--run-id ID]` | The approvals inbox, what needs a person first. `--limit`, `--cursor`, `--all` page. | read |
 | `actions approve RUN_ID ACTION_ID` | Approves an action. Refused for a class in `suggest` mode, and for a person who is not on the class's `approvers` list when it has one. | write, plus the action class's permission |
 | `actions deny RUN_ID ACTION_ID [--note TEXT]` | Denies an action (same `approvers` check). | same |
-| `policy get [--category] [--priority] [--severity] [--target-tag]... [--class]` | The effective policy, record by record, for those attributes. | read |
+| `policy get [--category] [--priority] [--severity] [--target-tag]... [--class] [--template]` | The effective policy, record by record, for those attributes. `--template` shows the run identity that template would use. | read |
 | `policy status` | Whether automatic actions are paused. | read |
 | `policy pause`, `policy resume` | Stops or allows every automatic action in the organization. | `org.conf.set` |
 

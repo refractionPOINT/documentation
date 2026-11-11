@@ -26,11 +26,12 @@ The gateway requires **all** permissions of a row.
 
 `insight.evt.get` is required on every route except pausing and resuming. It means a
 role that can use Cases (`investigation.get`) but cannot read telemetry cannot read
-the results an investigation gathered. Among the preset roles, only **Owner** holds
-`investigation.get` and `investigation.set`; the Administrator, Operator and Viewer
-presets hold neither, and Operator and Viewer also carry only `insight.evt.get.simple`.
-Grant the permissions in the table above explicitly to anyone else who should use the
-engine.
+the results an investigation gathered. In the roles the API assigns, only **Owner**
+holds `investigation.get` and `investigation.set`. The console's own role presets also
+list them for Administrator and Operator; Viewer holds neither. Operator and Viewer
+carry only `insight.evt.get.simple`, which is not enough, so of those presets only
+Owner and Administrator can use the engine with no further grant. Grant the
+permissions in the table above explicitly to anyone else who should use the engine.
 
 ### Permission of the action class
 
@@ -58,8 +59,9 @@ gateway permissions above but do not check the list.
 A run belongs to the organization. Anyone with `investigation.get` and
 `insight.evt.get` sees all of the organization's runs, and anyone with
 `investigation.set` and `insight.evt.get` can cancel or compare one. Only the
-identity that **started** a run can add inputs to it, because later steps run with
-that identity's token.
+identity that **started** a run can add inputs to it. The steps that the added inputs
+release run as the run's own execution identity (the policy's identity when it names
+one, the starter's token otherwise), not as a new token of the person adding them.
 
 ## Templates and policies
 
@@ -74,8 +76,8 @@ Templates and policies are Hive records. The permissions follow the usual
 | Read or change template metadata only | `investigation_plan.get.mtd`, `investigation_plan.set.mtd` |
 | Read, change or delete policies and their metadata | `investigation_policy.get`, `.set`, `.del`, `.get.mtd`, `.set.mtd` |
 
-Running a validation or a test needs only the run permissions above. It stores
-nothing.
+Running a validation or a test needs only the run permissions above. A test creates
+no run, case or action; its result is retained for 24 hours.
 
 ### Active templates can only be written by a person
 

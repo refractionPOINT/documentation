@@ -46,10 +46,10 @@ A run started on a case does not write a second case.
 - **Plan template**: the organization's templates. If your link or the trigger implies
   a default that does not exist, you are asked to choose one.
 - **Run as**: shown when the policy offers more than one identity. The default is the
-  identity the policy names (**policy default**); the alternative is **Your own token**.
-  "Everything the run reads or does happens with these permissions." The choices shown
-  come from the organization-wide identity settings of the policy; an identity set for
-  one template in the policy applies when the run starts, whatever the launcher shows.
+  identity the policy names for the chosen template (**policy default**); the alternatives
+  are the identities the policy allows, which can be **Your own token** and other
+  policy secrets. "Everything the run reads or does happens with these permissions." The
+  choices are looked up for the template you pick, so they change with it.
 
 #### How to run it
 
@@ -124,8 +124,11 @@ Every button asks for confirmation and takes an optional note recorded in the ac
 history. **Confirm** keeps an action in place and stops its lease from reverting it.
 
 - A proposal in **Suggest** mode is never executed, and **Approve** on it is refused
-  with "this action class is in suggest mode", even if you hold every permission. Raise
-  the class to `approve` in the policy first.
+  with "this action class is in suggest mode", even if you hold every permission. A
+  proposal keeps the mode it was made with, so changing the policy afterwards does not
+  unlock it. To execute an action, set the class to `approve` or `auto` in the policy and
+  start a **new** run, with an active template: a run on a draft template is capped at
+  Suggest whatever the policy says.
 - An **Outcome uncertain** action means the engine could not confirm whether the action
   took effect. It settles itself: a late answer from the platform makes it active or
   failed, and when none comes, a reversible action is undone to be safe, while an
@@ -157,7 +160,8 @@ available**.
 
 - **Install as** is **Draft (default)** or **Active**. Draft is selected whenever you
   open the dialog, **whatever status the library recommends**: the column shows
-  "Recommended: Active" for information only. Each row has its own **Active** switch to
+  the library's recommendation ("Recommended: Draft" for the current library) for
+  information only. Each row has its own **Active** switch to
   override the choice for that template.
 - **Install selected** and **Install all** write a copy of each template into your
   organization, one at a time, with your own token. A failure on one template does not
@@ -198,8 +202,8 @@ as a draft at version 1.
 ### Test on past alerts
 
 On a template's page (or in the editor, to test unsaved text), **Test on past alerts**
-runs the template's real read-only steps on alerts that already happened. "Nothing is
-written: no run, no case, no action." You build a list of samples, at most 25 alerts in
+runs the template's real read-only steps on alerts that already happened. It creates
+no run, no case and no action; only the test result is kept, for 24 hours. You build a list of samples, at most 25 alerts in
 total:
 
 - **A detection**, by detection id;
@@ -216,7 +220,8 @@ If steps were refused for lack of permission, a banner lists them: the test ran 
 the permissions of whoever started it, so grant the permission of the product each of
 those facts reads (for example `mailsec.get` for email steps) and test again. Until
 then those facts stay unknown and the verdicts mean little. Results are kept for 24
-hours. You need `investigation.set` and `insight.evt.get`.
+hours. You need `investigation.set`, `investigation.get` and `insight.evt.get`: the
+console starts the test with the first and follows it with the second.
 
 ### Make active, or back to draft
 
@@ -259,8 +264,8 @@ Hive records, which you edit with the Hive API, the CLI or infrastructure-as-cod
 
 - **Effective policy**: what the organization's policy allows, record by record. Leave
   the lookup empty for the organization default, or enter a
-  category, severity and priority to see what applies to that alert. (The lookup does
-  not take a template into account today.) It lists the
+  category, severity, priority and a template to see what applies to that alert (the
+  template selects its run identity). It lists the
   policy records applied, the budgets, decision thresholds, speculation by urgency, and
   the actions and autonomy table (mode, minimum confidence, lease, approvers and the
   record each value comes from).

@@ -302,7 +302,9 @@ A request can narrow the policy for one run:
 ```
 
 Overrides can only make the policy stricter: lower the mode, raise confidence, shorten
-leases and timeouts, lower caps and budgets, raise decision thresholds, add operator
+leases and timeouts, lower caps and budgets, raise the decision thresholds `escalate_at`,
+`scope_at` and `ask_approval_at` and **lower** `dismiss_at` (a lower bar to dismiss is
+the riskier direction, so a higher `dismiss_at` is the looser value), add operator
 denies. A looser value is **clamped** to the policy value, and the run lists the clamped
 fields in `policy.clamped`. With `"strict": true` the request fails with a `400`
 instead.
