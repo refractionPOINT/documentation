@@ -286,6 +286,7 @@ nav:
       - Adapters:
           - Overview: 2-sensors-deployment/adapters/index.md
           - Deployment: 2-sensors-deployment/adapters/deployment.md
+          - Cloud-Managed: 2-sensors-deployment/adapters/cloud-managed.md
           - As a Service: 2-sensors-deployment/adapters/as-a-service.md
           - Usage: 2-sensors-deployment/adapters/usage.md
           - Cloud Providers:

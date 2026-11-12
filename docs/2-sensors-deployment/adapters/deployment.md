@@ -53,47 +53,10 @@ If you need support for a specific platform, or require more information about s
 
 ## On-Prem + Cloud Management
 
-LimaCharlie Adapters deployed manually (on-prem) also support cloud-based management. This makes the deployment of the adapter extremely easy while also making it easy to update the configs remotely after the fact. This is particularly critical for service providers that may be deploying adapters on customer networks where gaining access to the local adapter may be difficult.
-
-To accomplish this, you need the `externaladapter.*` permissions.
-
-### Preparing
-
-The first step of deploying this way is to create a new External Adapter record. These are found in the `external_adapter` Hive or under the Sensors section of the web app.
-
-The content of an external adapter is exactly the same as a traditional [adapter configuration](usage.md) in YAML. It describes what you want your external adapter to do, like collect from file, operate as a syslog server etc. For example:
-
-```yaml
-sensor_type: syslog
-syslog:
-    client_options:
-        buffer_options: {}
-        hostname: test-syslog
-        identity:
-            installation_key: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
-            oid: bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb
-        mapping: {}
-        platform: text
-        sensor_seed_key: test-syslog
-    port: 4242
-```
-
-Once your external adapter record is created, take note of the `GUID` (Globally Unique ID) found under the `sys_mtd` section of the JSON record, or on the right-hand side of the record view in the web app
-
-.
-
-This `GUID` is a shared secret value you will use in the deployed adapter to reference it to the record it should update and operate from.
-
-### Deploying
-
-Now that the configuration of the adapter is ready, you can deploy the adapter on-prem according to the [normal process](usage.md). The only difference is that instead of running it with the full configuration locally, you can run it with the `cloud` collection method like this:
+An on-prem adapter can read its configuration from LimaCharlie instead of a local file. You keep the configuration in an External Adapter record, start the adapter with only your Organization ID and the record's GUID, and change it later from the web app, CLI or Infrastructure as Code. The adapter applies a change within about a minute, without anyone logging in to the host.
 
 ```bash
-./lc_adapter cloud conf_guid=XXXXXXXXXXXXXXXXXXXXx oid=YYYYYYYYYYYYYYYYYYY
+./lc_adapter cloud conf_guid=<RECORD GUID> oid=<ORG ID>
 ```
 
-This will start the adapter telling it to fetch the configuration it requires from the cloud based on the Organization ID (your tenant in LC) and the `GUID` of the record it should use.
-
-From this point on, updating the record in LimaCharlie will automatically reconfigure the adapter on-prem, within about 1 minute of the change.
-
-Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.
+See [Cloud-Managed Adapters](cloud-managed.md) for when to use it, how to set it up and how to keep the GUID safe.
