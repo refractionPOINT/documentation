@@ -540,12 +540,13 @@ sqs:
 
 #### Adapters as a Service vs self-hosted
 
-You have four deployment options for adapters; pick by customer size and operational appetite:
+You have five deployment options for adapters; pick by customer size and operational appetite:
 
 | Option | When to use | How |
 | --- | --- | --- |
-| **As a Service (cloud-managed)** | Default for cloud-to-cloud sources (M365, Okta, CloudTrail). LC runs the adapter for you. | Web app → Adapters → "Cloud" tab. |
-| **On-prem binary** | Customer has on-prem log sources (syslog from internal firewall, files in a shared dir). | Download `lc_adapter`, run with config file. |
+| **Cloud Adapter** | Default for cloud-to-cloud sources (M365, Okta, CloudTrail). LC runs the adapter for you. | Web app → Adapters → "Cloud" tab. |
+| **On-prem, cloud-managed** | Default for on-prem sources at customer sites. The adapter runs on the customer's host, you manage its configuration from LimaCharlie. | Create an External Adapter record, run `lc_adapter cloud conf_guid=... oid=...`. See [Cloud-Managed Adapters](../2-sensors-deployment/adapters/cloud-managed.md). |
+| **On-prem binary** | Customer has on-prem log sources and the configuration must stay on the host. | Download `lc_adapter`, run with config file. |
 | **As a Windows service** | On-prem Windows host. | `./lc_adapter.exe -install:service-name <type> param1=value1 ...` |
 | **As a Linux systemd service** | On-prem Linux host. | Drop a unit file in `/etc/systemd/system/limacharlie-<name>.service`, see template below. |
 

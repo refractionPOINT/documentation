@@ -10,7 +10,7 @@ With the service-account flow the adapter can watch **many mailboxes at once** â
 
 ## Availability
 
-The Gmail adapter runs through the LimaCharlie Adapter, either the [adapter binary or the Docker image](../deployment.md#adapter-binaries), on a host you control. It can be configured on the command line, from a local configuration file, or from an [External Adapter record](../deployment.md#on-prem-cloud-management) managed in LimaCharlie.
+The Gmail adapter runs through the LimaCharlie Adapter, either the [adapter binary or the Docker image](../deployment.md#adapter-binaries), on a host you control. It can be configured on the command line, from a local configuration file, or from an [External Adapter record](../cloud-managed.md) managed in LimaCharlie.
 
 It is **not available as a cloud-to-cloud (Cloud Sensor) adapter** at this time, so there is no `cloud_sensor` record type for it.
 
@@ -264,7 +264,7 @@ docker run -d --rm \
 
 ## Cloud-Managed Deployment
 
-The adapter binary can also fetch its configuration from LimaCharlie, so you can update it remotely. Create a record in the `external_adapter` Hive with `sensor_type: gmail` and the same `gmail:` block as the configuration file above, then start the adapter against that record's GUID. See [On-Prem + Cloud Management](../deployment.md#on-prem-cloud-management).
+The adapter binary can also fetch its configuration from LimaCharlie, so you can update it remotely. Create a record in the `external_adapter` Hive with `sensor_type: gmail` and the same `gmail:` block as the configuration file above, then start the adapter against that record's GUID. See [Cloud-Managed Adapters](../cloud-managed.md).
 
 ```yaml
 sensor_type: gmail

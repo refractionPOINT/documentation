@@ -199,6 +199,10 @@ An on-prem adapter started with `cloud conf_guid=... oid=...` checks its record 
 - Check that `conf_guid` is the record's `GUID` from `sys_mtd`, and that `oid` is the organization the record is in.
 - Check that the adapter can reach `api.limacharlie.io`.
 - The adapter does not print the configuration it received. Add `show_config=true` to its command line to see it.
+- Changes to `sensor_type`, and options removed from the record, apply only after the adapter process restarts.
+- Disabling or deleting the record does not stop a running adapter. It keeps its last configuration.
+
+See [Cloud-Managed Adapters](../../2-sensors-deployment/adapters/cloud-managed.md) for how these adapters work.
 
 ## New sensors appear, or old ones go offline
 
