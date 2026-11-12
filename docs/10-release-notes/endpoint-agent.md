@@ -54,6 +54,13 @@ Release notes for the EDR sensor installed on Windows, macOS, Linux and Chrome e
 - A backoff request received before the cloud's identity is verified is now capped at one hour, so an intercepted connection cannot delay a new install's enrollment longer than that.
 - Updated the sensor's embedded compression library to pick up upstream memory-safety fixes.
 
+### Endpoint Agent 5.3.17
+
+#### Bug Fixes
+
+- Windows: new processes no longer make the sensor list every thread on the host, which cost significant CPU on hosts with many threads, such as terminal servers.
+- Windows: fixed sensor CPU usage that grew with uptime. Leaked handles to finished worker threads made every process listing on the host slower.
+
 ---
 
 ## 2026-11-06
