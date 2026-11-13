@@ -140,7 +140,7 @@ POST /v1/sessions
 
 `provider` is optional: one of `anthropic`, `openai`, `google`, `openrouter`. It overrides the profile's provider for this session; when both are omitted the session runs on Claude. See [AI Providers](providers.md).
 
-`effort` is optional: the reasoning effort, one of `low`, `medium`, `high`, `xhigh`, `max`. It overrides the profile's level for this session; when both are omitted the model uses its own default. Any other value returns `400`. Higher levels use more tokens on your AI provider's bill. See [Reasoning effort](providers.md#reasoning-effort).
+`effort` is optional: the reasoning effort, one of `low`, `medium`, `high`, `xhigh`, `max`. It overrides the level of the session's profile. The session uses a profile when the request names one with `profile_id`, or, when the request sets no other session options, your default profile. When neither the request nor the profile sets a level, the model uses its own default. Any other value returns `400`. Higher levels use more tokens on your AI provider's bill. See [Reasoning effort](providers.md#reasoning-effort).
 
 ##### Response: 201 Created
 
@@ -363,7 +363,7 @@ GET /v1/profiles
       "denied_tools": ["Write"],
       "permission_mode": "acceptEdits",
       "provider": "anthropic",
-      "model": "claude-sonnet-4-20250514",
+      "model": "claude-sonnet-4-6",
       "effort": "high",
       "max_turns": 100,
       "max_budget_usd": 10.0,
@@ -390,7 +390,7 @@ POST /v1/profiles
   "denied_tools": ["Write", "Edit"],
   "permission_mode": "acceptEdits",
   "provider": "anthropic",
-  "model": "claude-sonnet-4-20250514",
+  "model": "claude-sonnet-4-6",
   "effort": "high",
   "max_turns": 100,
   "max_budget_usd": 10.0,

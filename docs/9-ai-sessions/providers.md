@@ -172,7 +172,7 @@ The level is fixed for the session's life: a session resumed from hibernation ke
 
 | Provider | What the session sends | A level the model lacks |
 |----------|------------------------|-------------------------|
-| Anthropic Claude | The Claude Agent SDK's effort setting | Most current Claude models take all five levels. Some, such as Claude Sonnet 4.6 and Claude Opus 4.6, have no Extra high and use High instead. Models that take no effort setting, such as Claude Haiku 4.5, and model IDs the runner does not recognize, such as Bedrock and Vertex model IDs, get nothing and keep their default. |
+| Anthropic Claude | The Claude Agent SDK's effort setting | Most current Claude models take all five levels. Some, such as Claude Sonnet 4.6 and Claude Opus 4.6, have no Extra high and use High instead. Claude 4.5 and earlier models (Claude Sonnet 4.5, Opus 4.5, Opus 4.1, Sonnet 4 and Opus 4) and Claude Haiku 4.5 take no effort setting, so they get nothing and keep their default. So do model IDs the runner does not recognize, such as Bedrock model IDs and dated Vertex model IDs. |
 | OpenAI and Azure OpenAI | `reasoning_effort` | When the model rejects the level, the session retries one level lower until the model accepts one. When the model takes no reasoning setting at all, or rejects every level, the session sends nothing and keeps the model's default. |
 | Google Gemini 3 and later | `thinking_level` | Gemini has no level above High, so Extra high and Max are sent as High. If the model rejects a level, the session steps down. |
 | Google Gemini 2.5 | `thinking_budget`, a token budget that grows with the level, with Max at the model's own ceiling | If the model rejects the budget, the session steps down. Other Gemini models get nothing and keep their default. |
@@ -182,7 +182,7 @@ The rule on every provider is to step down, never fail: when the model does not 
 
 ### What the session reports
 
-When a session has a reasoning effort, it posts one note in its activity saying what was applied. A session without one posts nothing.
+When a session has a reasoning effort, it posts a note in its activity saying what was applied when it starts, and again after a resume. A session without one posts nothing.
 
 | `system` subtype | Fields in `data` | When |
 |------------------|------------------|------|

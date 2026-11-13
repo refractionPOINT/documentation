@@ -355,7 +355,7 @@ limacharlie ai chat
 | *(positional)* `PROMPT` | Optional opening prompt sent as the first message after attach. |
 | `--name` | Session name (display only). |
 | `--model` | Anthropic model (e.g. `claude-sonnet-4-6`). |
-| `--effort` | Reasoning effort: `low`, `medium`, `high`, `xhigh` or `max`. Higher levels think longer. They do better on hard investigations, but they are slower and use more tokens on your AI provider's bill. Omit it to use the profile's level, or the model's default. See [Reasoning effort](providers.md#reasoning-effort). |
+| `--effort` | Reasoning effort: `low`, `medium`, `high`, `xhigh` or `max`. Higher levels think longer. They do better on hard investigations, but they are slower and use more tokens on your AI provider's bill. Without it, the session takes the level from your default profile when you pass no other session options (`--model`, `--max-turns`, tools and so on), and otherwise lets the model choose. See [Reasoning effort](providers.md#reasoning-effort). |
 | `--max-turns` | Maximum agent turns before auto-stop. |
 | `--max-budget-usd` | Hard USD cost cap for the session. |
 | `--task-budget-tokens` | Per-task token budget. |
