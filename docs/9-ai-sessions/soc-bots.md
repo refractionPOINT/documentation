@@ -68,7 +68,7 @@ A team is yours once it is created. You can rename its bots, change their instru
 
 ## Your own bots and groups
 
-To make a bot of your own, choose **Or create a single bot** on the welcome screen, or **New bot** later. Give it a name and a one-sentence responsibility. **Advanced configuration** sets its model, instructions, allowed tools and usage limits, or copies them from a saved [profile](tool-permissions.md).
+To make a bot of your own, choose **Or create a single bot** on the welcome screen, or **New bot** later. Give it a name and a one-sentence responsibility. **Advanced configuration** sets its model, [reasoning effort](providers.md#reasoning-effort), instructions, allowed tools and usage limits, or copies them from a saved [profile](tool-permissions.md).
 
 To make a group, choose **Create group**, pick two or more bots and choose a coordinator. In a group:
 

@@ -160,7 +160,7 @@ limacharlie ai session attach --id $SID --raw \
 The AI Sessions runner emits a number of housekeeping frames at the start of every session and between tool calls. Without filtering they overwhelm the live stream — the interesting assistant turns get buried between dozens of `system[credential_diagnostics]:` / `system[model_set]:` / `session_status: {...}` / empty `assistant:` headers. The pretty renderer therefore hides the following frames by default:
 
 - **Plumbing message types** — `session_status` (startup/status pings), `usage_delta` (per-API-call token tallies), `sdk_session_id`.
-- **Plumbing `system` subtypes** — every bootstrap event emitted by the bridge (`credential_diagnostics`, `init_received`, `claude_md_loaded`, `mcp_config_debug`, `mcp_servers_set`, `model_set`, `max_turns_set`, `max_budget_set`, `task_budget_set`, `one_shot_mode_set`, `permission_mode_set`, `tools_configured`, `system_prompt_set`, `oid_added_to_system_prompt`, `ttl_added_to_system_prompt`, `plugins_resolved`, `autoinit_loaded`, `autoinit_error`, `resuming_sdk_session`, `user_mcp_servers_loaded`, `mcp_servers_loaded`, `session_patterns_loaded`, `unknown_plugin`, `claude_md_error`, …) plus Claude SDK hook events (`hook_started`, `hook_response`, `hook_matched`).
+- **Plumbing `system` subtypes** — every bootstrap event emitted by the bridge (`credential_diagnostics`, `init_received`, `claude_md_loaded`, `mcp_config_debug`, `mcp_servers_set`, `model_set`, `effort_set`, `max_turns_set`, `max_budget_set`, `task_budget_set`, `one_shot_mode_set`, `permission_mode_set`, `tools_configured`, `system_prompt_set`, `oid_added_to_system_prompt`, `ttl_added_to_system_prompt`, `plugins_resolved`, `autoinit_loaded`, `autoinit_error`, `resuming_sdk_session`, `user_mcp_servers_loaded`, `mcp_servers_loaded`, `session_patterns_loaded`, `unknown_plugin`, `claude_md_error`, …) plus Claude SDK hook events (`hook_started`, `hook_response`, `hook_matched`). The `effort_adjusted` and `effort_skipped` notes stay visible, because they say the session is not running at the [reasoning effort](providers.md#reasoning-effort) you chose.
 - **Empty frames** — `assistant` turns that carry only a `tool_use` block (the accompanying `tool_use` message already renders the call), `user` frames that wrap a `tool_result` (same — the `tool_result` message already renders the output), and `result` pings with no human-readable summary.
 
 This filter applies to both the initial history block and the live stream. Pass `--verbose` / `-v` to disable it and see every frame; `--raw` bypasses the renderer entirely and prints untouched JSON. The same noise set is used by [`ai session history`](#limacharlie-ai-session-history) and [`ai chats history`](#limacharlie-ai-chats); `--raw` on those commands includes the filtered frames.
@@ -204,6 +204,12 @@ limacharlie ai start-session --definition my-agent \
   --max-budget-usd 2.50
 ```
 
+Give a hard investigation more thinking time for this run:
+
+```bash
+limacharlie ai start-session --definition my-agent --effort high
+```
+
 Add an env var (merged with the template's environment):
 
 ```bash
@@ -243,6 +249,7 @@ limacharlie ai session attach --id "$SID"
 | Flag | Maps to `ProfileContent` field |
 |---|---|
 | `--model` | `model` |
+| `--effort` | `effort`: reasoning effort, one of `low`, `medium`, `high`, `xhigh`, `max`. See [Reasoning effort](providers.md#reasoning-effort). |
 | `--max-turns` | `max_turns` |
 | `--max-budget-usd` | `max_budget_usd` |
 | `--task-budget-tokens` | `task_budget_tokens` |
@@ -327,6 +334,9 @@ limacharlie ai chat "What sensors pinged in the last hour?"
 # Start a chat with overrides — caps and a specific model.
 limacharlie ai chat --model claude-sonnet-4-6 --max-budget-usd 0.50
 
+# Give the model more time to think on a hard question.
+limacharlie ai chat --effort high "Investigate the last detection"
+
 # Start a chat with no opening prompt; first message comes from stdin in the
 # interactive loop that runs after attach.
 limacharlie ai chat
@@ -345,6 +355,7 @@ limacharlie ai chat
 | *(positional)* `PROMPT` | Optional opening prompt sent as the first message after attach. |
 | `--name` | Session name (display only). |
 | `--model` | Anthropic model (e.g. `claude-sonnet-4-6`). |
+| `--effort` | Reasoning effort: `low`, `medium`, `high`, `xhigh` or `max`. Higher levels think longer. They do better on hard investigations, but they are slower and use more tokens on your AI provider's bill. Omit it to use the profile's level, or the model's default. See [Reasoning effort](providers.md#reasoning-effort). |
 | `--max-turns` | Maximum agent turns before auto-stop. |
 | `--max-budget-usd` | Hard USD cost cap for the session. |
 | `--task-budget-tokens` | Per-task token budget. |
