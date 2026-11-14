@@ -127,7 +127,7 @@ By default this whole envelope is ingested as a single event. Set `events_path` 
 - A list that holds anything other than objects and strings (numbers, `null`, nested lists) is not split: the envelope is ingested unchanged, so no data is lost.
 - If the path is missing from an object or does not lead to a list (a ping or test message, for example), that object is ingested unchanged.
 - An empty list produces no event; the request is still acknowledged.
-- Keys are matched exactly, and `events_path` has no wildcards or list indexes. It is applied to each JSON object of the request, so it also works with the list and newline-separated formats below. It is not applied to form-encoded bodies.
+- Keys are matched exactly, and `events_path` has no wildcards or list indexes. It is applied to each JSON object of the request, so it also works with the list and newline-separated formats above. It is not applied to form-encoded bodies.
 
 Signature verification, if enabled, is computed over the original request body. Detection rules that you attach to the webhook (`dr_rules`) are evaluated on each split event.
 
