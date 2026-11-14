@@ -139,7 +139,7 @@ usr_mtd:
   enabled: true
 ```
 
-`usr_mtd: {enabled: true}` matters. A disabled configuration record is ignored, and every request fails with `ssh key is required`. The web app enables it for you.
+`usr_mtd: {enabled: true}` matters. A disabled configuration record is ignored, and every request fails with `Git Sync is not configured for this organization, or its configuration is disabled`. The web app enables it for you.
 
 ```bash
 for OID in $CONTROL_OID $ACME_OID $GLOBEX_OID; do
@@ -181,7 +181,6 @@ Types you should leave off:
 - **`dr-managed` hive.** Extensions own those rules. Git Sync's own schedule rules live there.
 - **Organization values** (`org_values`). They can hold literal third-party API keys, and export would write them to Git.
 - **`lookup` and `yara` hives**, until you need them. They can be very large.
-- **`resources`**, for export. The export lists them in a different order each time, so every export makes a commit.
 
 Which hives you can name is listed by `limacharlie extension schema --name ext-git-sync`.
 
@@ -447,9 +446,9 @@ In the web app, press **PULL FROM GIT**. From the CLI:
 limacharlie extension request --name ext-git-sync --action apply --oid "$ACME_OID"
 ```
 
-A successful request returns without an error. A failed one prints the reason (see [Troubleshooting](#troubleshooting)).
+A successful request returns without an error. A failed one prints the reason (see [Troubleshooting](#troubleshooting)) and also records an `apply_failed` event on the extension's sensor, so a scheduled pull that fails does not go unnoticed (see [Get alerted when a run fails](#get-alerted-when-a-run-fails) below).
 
-The extension also reports what it did as an `apply` event on its own sensor. In the web app, **Extensions**, **Git Sync**, then the **ASSOCIATED SENSOR** link at the top of the page, then the Timeline. From the CLI, find the sensor by its tag and list its events:
+The extension also reports what it did as an `apply` event on its own sensor (or `apply_failed` if it failed). In the web app, **Extensions**, **Git Sync**, then the **ASSOCIATED SENSOR** link at the top of the page, then the Timeline. From the CLI, find the sensor by its tag and list its events:
 
 ```bash
 SID=$(limacharlie sensor list --selector '"ext:ext-git-sync" in tags' \
@@ -473,6 +472,25 @@ limacharlie dr list --metadata-only --oid "$ACME_OID" --output yaml | grep -E '^
 
 Repeat the pull for Globex and the control org.
 
+### Get alerted when a run fails
+
+Nobody is watching a scheduled run, and a repository that stops applying is easy to miss for weeks. Every failed pull or push records an `apply_failed` or `export_failed` event with the `stage` it failed at and the `error` text, so a D&R rule can alert on it. Add this to the control org, or to the shared rules in `global/`:
+
+```yaml
+detect:
+  target: edr
+  events:
+    - apply_failed
+    - export_failed
+  op: is tagged
+  tag: ext:ext-git-sync
+respond:
+  - action: report
+    name: git-sync-failed
+```
+
+The detection holds the whole event, so `detect/event/stage` and `detect/event/error` say what went wrong. Add an output or a notification action to the rule to be told. The [Git Sync reference](../5-integrations/extensions/limacharlie/git-sync.md#seeing-the-results) lists every `stage`, and how to ignore the failures of an org whose Git Sync is not configured yet.
+
 ## Step 9: Turn on schedules
 
 Change `schedule` in `gitsync.yaml` and save it again. Pull every hour on every org:
@@ -492,7 +510,7 @@ Notes on schedules:
 - **Saving the configuration installs or removes the schedule.** The extension keeps a D&R rule in each org's `dr-managed` hive, `ext-git-sync-sync` for pull and `ext-git-sync-export` for push. Setting `-` removes the rule. You can see them with `limacharlie dr list --namespace managed --metadata-only --oid <OID>`.
 - **Subscribing alone starts a 12 hour pull.** The extension installs the pull rule at 12 hours when an org subscribes. Saving your first configuration with `schedule: "-"` removes it. Saving a configuration identical to the stored one writes nothing, so it does not touch the schedule rules.
 - **The shortest interval is one hour.** For a change that cannot wait, press **PULL FROM GIT**, or run the `apply` request above. A script can run it on every org after a merge.
-- **Be careful with scheduled exports.** Every org writes to the same repository, and two exports that overlap can lose the push (`may be a concurrent push to the same repo`). The loser retries on its next run. Schedule export on the control org only, or leave export off and run it by hand when you want a snapshot.
+- **Be careful with scheduled exports.** Every org writes to the same repository, and two exports that overlap can lose the push (`a concurrent push to the same repo can also cause this`). The loser retries on its next run. Schedule export on the control org only, or leave export off and run it by hand when you want a snapshot.
 
 ## Step 10: Run changes through pull requests
 
@@ -630,20 +648,22 @@ Until the pull request is merged, a pull fails with `organization not found in t
 
 ## Troubleshooting
 
-An error from a pull or push shows in the web app as a toast, and on the CLI as the request's error text. Only successful runs appear as events on the extension's sensor.
+An error from a pull or push shows in the web app as a toast, and on the CLI as the request's error text. It is also recorded as an `apply_failed` or `export_failed` event on the extension's sensor, which is how you find out about a failed scheduled run: see [Get alerted when a run fails](#get-alerted-when-a-run-fails).
 
 | Error text | Cause and fix |
 | --- | --- |
-| `organization not found in the repository` | The branch has no `orgs/<OID>/index.yaml` for this org. Check the OID in the folder name and that the file is on the configured branch. |
-| `failed to do dry-run: file not found: <path>` | An `include:` path does not exist, or it is a wildcard. Paths are relative to the including file. List every file. (The message says "dry-run" even though this is the real pull.) |
-| `failed to do dry-run: yaml: ...` | A YAML syntax error in an included file. |
+| `organization not found in the repository: no orgs/<OID>/index.yaml on branch <branch>` | The branch has no `orgs/<OID>/index.yaml` for this org. Check the OID in the folder name and that the file is on the configured branch. |
+| `failed to apply configuration: file not found: <path>` | An `include:` path does not exist, or it is a wildcard. Paths are relative to the including file. List every file. |
+| `failed to apply configuration: yaml: ...` | A YAML syntax error in an included file. |
 | `invalid version found (<file>): 0` | The file has no `version: 3`. |
-| `ssh key is required` | The configuration record is disabled or has no `ssh_key`. Save it with `usr_mtd: {enabled: true}`. |
+| `Git Sync is not configured for this organization, or its configuration is disabled` | There is no `ext-git-sync` configuration record, or it is disabled. Save it with `usr_mtd: {enabled: true}`. |
+| `ssh key is required` | The configuration is enabled but has no `ssh_key`. |
 | `failed using secret ssh_key: ... RECORD_NOT_FOUND` | The secret named in `ssh_key` does not exist in this org. |
 | `ssh: no key found` | `ssh_key` is a literal that is not a private key. Use `hive://secret/<name>`. |
 | `failed to clone repo: repository not found` | The URL is wrong, or the deploy key is not on that repository. |
 | `couldn't find remote ref "refs/heads/<branch>"` | The branch does not exist. |
-| `failed to push (may be a concurrent push to the same repo): ... protected branch hook declined` | The branch is protected. See Step 6. |
+| `failed to push (...): ... protected branch hook declined` | The branch is protected. See Step 6. |
+| `failed to push (...): ... marked as read only` | The deploy key was added without write access. |
 | `sync_hives: ... requires <permission>` | The extension was subscribed before it needed that permission. Run `limacharlie extension rekey --name ext-git-sync --oid <OID>` and retry. |
 | The pull succeeds but nothing changes | The type's switch is off, or the file is not in the `index.yaml`. Compare Step 7's three checks. |
 | A removed rule is still in the org | Pull never deletes. See Step 11. |

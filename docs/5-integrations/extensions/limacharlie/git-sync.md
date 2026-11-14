@@ -12,7 +12,7 @@ For a step-by-step walkthrough, follow the [MSSP Git Sync tutorial](../../../1-g
 - **Recurring push.** Exports the organization to the repository on the same set of intervals.
 - **On-demand pull and push.** Buttons in the web app, or an extension request from the CLI or API.
 - **Shared configuration.** One repository holds a configuration per organization, and the organizations can include common files.
-- **Operation log.** Each successful operation is recorded as an event on the extension's sensor.
+- **Operation log.** Each operation, successful or failed, is recorded as an event on the extension's sensor. A failed one is an `apply_failed` or `export_failed` event that a D&R rule can alert on.
 
 Git Sync lists the [Infrastructure](infrastructure.md) extension as a requirement, so subscribe to both.
 
@@ -66,7 +66,6 @@ A few types need care:
 - **`dr-managed` hive.** Extensions own these rules, including Git Sync's own schedule rules.
 - **Installation keys.** The name of each key in the file is its description in the organization, and how a later pull finds it again.
 - **Outputs and organization values.** An export writes them as stored. A credential typed into an output, or an API key stored as an organization value, is written to the repository in clear text. Use `hive://secret/<name>` references in outputs and leave `export_org_values` off.
-- **`resources` export.** The list comes out in a different order each time, so every export produces a commit.
 
 ## Repository structure
 
@@ -232,7 +231,7 @@ usr_mtd:
   enabled: true
 ```
 
-The record must be enabled (`usr_mtd: {enabled: true}`). A disabled record is ignored and requests fail with `ssh key is required`. The web app enables it for you.
+The record must be enabled (`usr_mtd: {enabled: true}`). A disabled or missing record is ignored and requests fail with `Git Sync is not configured for this organization, or its configuration is disabled`. The web app enables it for you.
 
 | Field | Web app label | Description |
 | --- | --- | --- |
@@ -255,9 +254,9 @@ The record must be enabled (`usr_mtd: {enabled: true}`). A disabled record is ig
 
 Saving the configuration installs or removes the schedule. Git Sync keeps two D&R rules in the organization's `dr-managed` hive: `ext-git-sync-sync` for pull and `ext-git-sync-export` for push. A schedule of `-` removes the rule. Saving a configuration identical to the stored one writes nothing and leaves the rules as they are.
 
-Subscribing to the extension installs the pull rule at 12 hours, before any configuration exists. Saving a configuration with `schedule: "-"` removes it.
+Subscribing to the extension installs the pull rule at 12 hours, before any configuration exists. Until you save a configuration, each of its runs records an `apply_failed` event with `stage: config` (see [Seeing the results](#seeing-the-results)). Saving a configuration with `schedule: "-"` removes the rule.
 
-Several organizations pushing to one repository at the same moment can lose the race for the branch (`may be a concurrent push to the same repo`). The loser tries again on its next run. Prefer scheduling push on one organization, or none.
+Several organizations pushing to one repository at the same moment can lose the race for the branch (the error says `a concurrent push to the same repo can also cause this`). The loser tries again on its next run. Prefer scheduling push on one organization, or none.
 
 ## Running a pull or push by hand
 
@@ -274,15 +273,93 @@ Neither takes parameters.
 
 ## Seeing the results
 
-A failed operation returns its reason to the caller: a toast in the web app, or the error text from the CLI. A successful one adds an event to the extension's sensor, the sensor tagged `ext:ext-git-sync`. In the web app it is the **ASSOCIATED SENSOR** link on the Git Sync page. From the CLI:
+A pull or push you run by hand returns its outcome to you: a toast in the web app, or the error text from the CLI. A scheduled run has no one waiting for the answer, so every run, successful or not, also records an event on the extension's sensor, the sensor tagged `ext:ext-git-sync`. In the web app it is the **ASSOCIATED SENSOR** link on the Git Sync page, then the Timeline.
+
+| Event | Sent when | Fields |
+| --- | --- | --- |
+| `apply` | A pull succeeded. | `options`, `changed`, `unchanged` |
+| `export` | A push succeeded. | `oid`, `options` |
+| `apply_failed` | A pull failed. | `oid`, `stage`, `error`, `branch`, `options` |
+| `export_failed` | A push failed. | `oid`, `stage`, `error`, `branch`, `options` |
+
+An `apply` event has two lists. `changed` holds the records that were added or updated, and `unchanged` the ones that already matched. Hive records are named `<hive>/<record>`. An `export` event records the options used.
+
+A failure event carries the same error text a caller would get, plus where the run failed. It never contains the SSH key. `error` is the message, and `stage` is one of:
+
+| `stage` | Where it failed |
+| --- | --- |
+| `config` | The configuration is missing, disabled or unreadable. |
+| `lock` | Gave up waiting for another run on the same repository. |
+| `clone` | Reaching the repository: the SSH key, the URL or the branch. |
+| `load` | Pull only. The repository has no `orgs/<OID>/index.yaml` for this organization. |
+| `sync` | Pull only. Reading the files (a YAML error, a missing `include:`) or applying them to the organization. |
+| `fetch` | Push only. Reading the organization's configuration. |
+| `generate` | Push only. Writing the files. |
+| `commit`, `push` | Push only. Committing, then pushing. `push` is where a read-only deploy key or a protected branch fails. |
+| `notify` | The pull or push worked, but its success event could not be recorded. |
+
+For example, a pull whose `index.yaml` includes a file that does not exist records:
+
+```json
+{
+  "event": "apply_failed",
+  "oid": "a326700d-3cd7-49d1-ad08-20b396d8549d",
+  "stage": "sync",
+  "error": "failed to apply configuration: file not found: hives/missing.yaml",
+  "branch": "main",
+  "options": {"sync_hives": {"dr-general": true}}
+}
+```
+
+(`options` also lists the switches that are off.) List them from the CLI:
 
 ```bash
 SID=$(limacharlie sensor list --selector '"ext:ext-git-sync" in tags' --oid <OID> --output json | jq -r '.[0].sid')
-limacharlie event list --sid "$SID" --event-type apply --oid <OID> \
-  --start "$(date -d '1 hour ago' +%s)" --end "$(date +%s)" --output json
+limacharlie event list --sid "$SID" --event-type apply_failed --oid <OID> \
+  --start "$(date -d '1 day ago' +%s)" --end "$(date +%s)" --output json
 ```
 
-An `apply` event has two lists. `changed` holds the records that were added or updated, and `unchanged` the ones that already matched. Hive records are named `<hive>/<record>`. An `export` event records the options used.
+### Alerting on failures
+
+Because a failure is an event, a D&R rule can turn it into a detection, and from there into a notification through an output or any [response action](../../../8-reference/response-actions.md). This rule reports any failed pull or push of Git Sync:
+
+```yaml
+detect:
+  target: edr
+  events:
+    - apply_failed
+    - export_failed
+  op: is tagged
+  tag: ext:ext-git-sync
+respond:
+  - action: report
+    name: git-sync-failed
+```
+
+The detection carries the whole event, so `detect/event/stage` and `detect/event/error` say what failed. To watch only pulls, use `event: apply_failed` in place of `events:`.
+
+Before Git Sync is configured, and while its configuration is disabled, the scheduled pull fails with `stage: config`. To alert only on a configured Git Sync, leave those out:
+
+```yaml
+detect:
+  target: edr
+  events:
+    - apply_failed
+    - export_failed
+  op: and
+  rules:
+    - op: is tagged
+      tag: ext:ext-git-sync
+    - op: is
+      not: true
+      path: event/stage
+      value: config
+respond:
+  - action: report
+    name: git-sync-failed
+```
+
+A failed request is retried by the platform a few times. Retries of one request that fail the same way record one event.
 
 ## Removing things
 
@@ -329,17 +406,22 @@ The [tutorial](../../../1-getting-started/mssp-iac-tutorial.md) does this for a 
 
 ## Troubleshooting
 
+Each error below is also the `error` of the failure event, see [Seeing the results](#seeing-the-results).
+
 | Error text | Cause |
 | --- | --- |
-| `organization not found in the repository` | No `orgs/<OID>/index.yaml` on the configured branch. |
-| `file not found: <path>` | An `include:` path does not exist, or it is a wildcard. |
+| `Git Sync is not configured for this organization, or its configuration is disabled` | There is no `ext-git-sync` configuration record, or it is disabled (`usr_mtd: {enabled: true}` is needed). |
+| `ssh key is required` | The configuration is enabled but has no `ssh_key`. |
+| `organization not found in the repository: no orgs/<OID>/index.yaml on branch <branch>` | No `orgs/<OID>/index.yaml` on the configured branch. |
+| `failed to apply configuration: file not found: <path>` | An `include:` path does not exist, or it is a wildcard. |
+| `failed to apply configuration: yaml: ...` | A YAML syntax error in an included file. |
 | `invalid version found` | An included file has no `version: 3`. |
-| `ssh key is required` | The configuration record is disabled or has no `ssh_key`. |
 | `failed using secret ssh_key ... RECORD_NOT_FOUND` | The secret named in `ssh_key` does not exist in the organization. |
 | `ssh: no key found` | `ssh_key` holds a literal value that is not a private key. |
 | `failed to clone repo: repository not found` | Wrong URL, or the deploy key is not on that repository. |
 | `couldn't find remote ref "refs/heads/<branch>"` | The branch does not exist. |
-| `protected branch hook declined` | A push to a branch that requires pull requests. |
+| `failed to push (the SSH key needs write access ...): ... marked as read only` | The deploy key has no write access. |
+| `failed to push (...): ... protected branch hook declined` | A push to a branch that requires pull requests. |
 | `requires <permission>` | The extension was subscribed before it needed that permission. Run `limacharlie extension rekey --name ext-git-sync --oid <OID>`. |
 
 The tutorial's [troubleshooting section](../../../1-getting-started/mssp-iac-tutorial.md#troubleshooting) explains each one.
