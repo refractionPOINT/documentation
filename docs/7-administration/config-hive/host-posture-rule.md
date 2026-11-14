@@ -95,7 +95,7 @@ By default the Owner, Administrator and Operator roles can do all of the above, 
 
 ## Examples
 
-The examples use the CLI generic hive commands. Pass `--oid <oid>` if your CLI is not already pointed at the organization.
+The examples use the CLI: the generic `limacharlie hive` commands and the `limacharlie host-posture` group, which are equivalent for rules. Pass `--oid <oid>` if your CLI is not already pointed at the organization.
 
 ### Installing the default pack
 
