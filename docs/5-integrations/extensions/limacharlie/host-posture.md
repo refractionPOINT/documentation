@@ -67,6 +67,8 @@ Both write the rules with **your** permissions, so you need `host_posture.set` a
 - A rule you edited is never overwritten unless you pass `--force`. `--force` also replaces a rule that is newer than the pack's.
 - `--dry-run` shows what would happen and writes nothing.
 
+Rules the command writes carry the tag `lc:default-pack`, a tag holding a digest of what was written (that is how an edit is recognized) and a comment naming the pack version. A rule without the digest tag, for example one you created yourself, counts as edited.
+
 Because the pack lives in your hive, you can disable a rule that does not suit your environment, change its [scope](../../../7-administration/config-hive/host-posture-rule.md#scope), or delete it. Disabling or deleting a rule you installed does not come back on its own: the pack is only written when you ask for it.
 
 ## Scheduled and on-demand scans
