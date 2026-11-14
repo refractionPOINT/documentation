@@ -107,7 +107,7 @@ limacharlie host-posture install-defaults
 
 See [The default rule pack](../../5-integrations/extensions/limacharlie/host-posture.md#the-default-rule-pack) for what the command does and does not overwrite.
 
-### A rule from the pack, kept to production servers
+### A rule from the pack, kept off developer workstations
 
 This is the `lc.linux.kernel.ptrace-scope` rule of the default pack. It flags Linux hosts where any process can attach to another with `ptrace`, the precondition of [CVE-2026-46333](https://nvd.nist.gov/vuln/detail/CVE-2026-46333). The `scope` here keeps it off developer workstations, where debuggers need `ptrace`. Save it as `ptrace.json`:
 
