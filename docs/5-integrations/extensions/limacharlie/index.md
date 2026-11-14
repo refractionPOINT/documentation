@@ -13,6 +13,7 @@ Extensions built and maintained by LimaCharlie that extend the platform with add
 - [EPP](epp.md) - Endpoint Protection Platform
 - [Exfil](exfil.md) - Data exfiltration monitoring
 - [Git Sync](git-sync.md) - Infrastructure-as-Code synchronization
+- [Host Posture](host-posture.md) - Misconfiguration checks on Windows, macOS and Linux hosts, with your own rules
 - [Infrastructure](infrastructure.md) - Infrastructure management
 - [Integrity](integrity.md) - File integrity monitoring
 - [Lookup Manager](lookup-manager.md) - Lookup data management

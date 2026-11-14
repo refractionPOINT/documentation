@@ -290,6 +290,15 @@ approval; they do not grant organization API permissions. See
 | app_control.get | Read Application Control policies and rules |
 | app_control.set | Create, modify and delete Application Control policies and rules, and their metadata |
 
+### Host Posture
+
+| Permission | Description |
+| --- | --- |
+| host_posture.get | Read Host Posture rules and their metadata, and read results |
+| host_posture.set | Create, modify, enable, disable and delete Host Posture rules, and their metadata |
+
+Saving a rule, and enabling, disabling or setting the expiry of one, also requires `sensor.task`, because a rule runs on your sensors. Deleting a rule requires only `host_posture.set`. These are checked when the rule is changed.
+
 ### External Adapters
 
 | Permission | Description |
