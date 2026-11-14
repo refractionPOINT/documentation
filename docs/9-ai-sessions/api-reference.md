@@ -129,6 +129,7 @@ POST /v1/sessions
     "org_api_key": "xxxxxxxx"
   },
   "provider": "openai",
+  "effort": "high",
   "allowed_tools": ["Bash", "Read", "Write"],
   "denied_tools": ["WebFetch"],
   "system_prompt_suffix": "For this session, only investigate hosts tagged prod-web."
@@ -138,6 +139,8 @@ POST /v1/sessions
 `system_prompt_suffix` is optional text appended to the system prompt for this session only. When the profile also has a suffix, the profile suffix comes first, then a blank line, then this value. Maximum 65536 bytes; a longer value returns `400 system_prompt_suffix_too_long`.
 
 `provider` is optional: one of `anthropic`, `openai`, `google`, `openrouter`. It overrides the profile's provider for this session; when both are omitted the session runs on Claude. See [AI Providers](providers.md).
+
+`effort` is optional: the reasoning effort, one of `low`, `medium`, `high`, `xhigh`, `max`. It overrides the level of the session's profile. The session uses a profile when the request names one with `profile_id`, or, when the request sets no other session options, your default profile. When neither the request nor the profile sets a level, the model uses its own default. Any other value returns `400`. Higher levels use more tokens on your AI provider's bill. See [Reasoning effort](providers.md#reasoning-effort).
 
 ##### Response: 201 Created
 
@@ -178,11 +181,15 @@ GET /v1/sessions/{sessionId}
     "end_reason": null,
     "exit_code": null,
     "error_message": null,
+    "model": "claude-sonnet-4-6",
+    "effort": "high",
     "allowed_tools": ["Bash", "Read"],
     "denied_tools": ["Write"]
   }
 }
 ```
+
+`effort` is the reasoning effort the session was created with. It is absent when the session uses the model's default.
 
 #### Rename Session
 
@@ -298,7 +305,7 @@ Forking your own session needs no special permission. Forking a session owned by
 POST /v1/sessions/{sessionId}/fork
 ```
 
-Create a new session forked from the given source. The fork inherits the source's conversation context but starts with the forker's profile. The source must be in a forkable state (dormant or ended, within its retention window).
+Create a new session forked from the given source. The fork inherits the source's conversation context but starts with the forker's profile. Its reasoning effort comes from the same place as its model: the fork profile for Claude sessions, the source session for other providers. The source must be in a forkable state (dormant or ended, within its retention window).
 
 All fields are optional:
 
@@ -356,7 +363,8 @@ GET /v1/profiles
       "denied_tools": ["Write"],
       "permission_mode": "acceptEdits",
       "provider": "anthropic",
-      "model": "claude-sonnet-4-20250514",
+      "model": "claude-sonnet-4-6",
+      "effort": "high",
       "max_turns": 100,
       "max_budget_usd": 10.0,
       "created_at": "2025-01-15T10:30:00Z",
@@ -382,7 +390,8 @@ POST /v1/profiles
   "denied_tools": ["Write", "Edit"],
   "permission_mode": "acceptEdits",
   "provider": "anthropic",
-  "model": "claude-sonnet-4-20250514",
+  "model": "claude-sonnet-4-6",
+  "effort": "high",
   "max_turns": 100,
   "max_budget_usd": 10.0,
   "system_prompt_suffix": "You are assisting the SOC team. Always cite sensor IDs in findings.",
@@ -418,6 +427,8 @@ The `system_prompt_suffix` is free-form text appended to the agent's system prom
 ```
 
 `provider` is optional: one of `anthropic`, `openai`, `google`, `openrouter` (default `anthropic`). `model` must be valid for the chosen provider; when omitted, the provider's default model is used. See [AI Providers](providers.md).
+
+`effort` is optional: the reasoning effort for sessions launched from this profile, one of `low`, `medium`, `high`, `xhigh`, `max`. Omit it to let the model choose. Any other value returns `400`. `PUT /v1/profiles/{profileId}` takes the same field. See [Reasoning effort](providers.md#reasoning-effort).
 
 **Error Responses:**
 
@@ -1062,6 +1073,25 @@ System messages from Claude.
   "timestamp": "2025-01-15T10:30:00Z",
   "payload": {
     "message": "Working directory: /workspace"
+  }
+}
+```
+
+When the session has a reasoning effort, the runner reports what it applied with one `system` message whose `subtype` is `effort_set`, `effort_adjusted` or `effort_skipped`. A session without one sends none of them. See [What the session reports](providers.md#what-the-session-reports).
+
+```json
+{
+  "type": "system",
+  "timestamp": "2025-01-15T10:30:01Z",
+  "payload": {
+    "subtype": "effort_adjusted",
+    "data": {
+      "requested": "xhigh",
+      "effort": "high",
+      "model": "claude-sonnet-4-6",
+      "reason": "model does not support this level"
+    },
+    "message": "Extra high reasoning effort isn't available on this model; using High."
   }
 }
 ```

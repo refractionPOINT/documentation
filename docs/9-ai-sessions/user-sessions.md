@@ -197,6 +197,7 @@ curl -X POST https://ai.limacharlie.io/v1/profiles \
 | `permission_mode` | string | `acceptEdits`, `plan`, or `bypassPermissions`. See [Tool Permissions & Profiles](tool-permissions.md#permission_mode). |
 | `provider` | string | AI provider for the session: `anthropic` (default), `openai`, `google`, or `openrouter`. See [AI Providers](providers.md). |
 | `model` | string | Model to use, in the chosen provider's naming. Defaults to the provider's default model. |
+| `effort` | string | Reasoning effort: `low`, `medium`, `high`, `xhigh` (Extra high) or `max`. Higher levels think longer and use more tokens on your AI provider's bill. Omit it to let the model choose. See [Reasoning effort](providers.md#reasoning-effort). |
 | `max_turns` | integer | Maximum conversation turns |
 | `max_budget_usd` | float | Maximum spend limit in USD |
 | `one_shot` | boolean | When `true`, session terminates after completing its initial work. Default: `false` for user sessions. |
