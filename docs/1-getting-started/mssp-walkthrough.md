@@ -255,7 +255,7 @@ In the [Marketplace](https://app.limacharlie.io/add-ons), subscribe (in the cont
 | Extension | Why every MSSP wants it |
 | --- | --- |
 | [Infrastructure](../5-integrations/extensions/limacharlie/infrastructure.md) | IaC machinery — fetch / push / dry-run / selective sync. |
-| [Git Sync](../5-integrations/extensions/limacharlie/git-sync.md) | Bidirectional sync between an org and a Git repo. |
+| [Git Sync](../5-integrations/extensions/limacharlie/git-sync.md) | Applies a Git repository to an org (pull) and exports an org to Git (push). The recommended way to run IaC. |
 | [Cases](../5-integrations/extensions/limacharlie/cases.md) | Case queue, SLA timers, investigation evidence, reporting. |
 | [Exfil](../5-integrations/extensions/limacharlie/exfil.md) | Tune what events sensors send (volume / cost control). |
 | [Lookup Manager](../5-integrations/extensions/limacharlie/lookup-manager.md) | Auto-refresh threat-feed lookups. |
@@ -264,13 +264,13 @@ In the [Marketplace](https://app.limacharlie.io/add-ons), subscribe (in the cont
 | [Artifact](../5-integrations/extensions/limacharlie/artifact.md) | Collect Windows Event Logs, Mac Unified Logs, PCAPs. |
 | [Reliable Tasking](../5-integrations/extensions/limacharlie/reliable-tasking.md) | Guarantee a sensor command runs when the sensor next checks in. |
 
-Five minutes of clicking. You'll IaC them in Part 15.
+Five minutes of clicking. Part 15 and the [Git Sync tutorial](mssp-iac-tutorial.md) turn them into code.
 
 ---
 
 ## Part 4 — Designing the customer-org template
 
-You will onboard customers many times. Every onboarding should produce a tenant that's already 90% configured. The way to make that happen is to define one **template org configuration**, in YAML, that you push to every new customer org on creation.
+You will onboard customers many times. Every onboarding should produce a tenant that's already 90% configured. The way to make that happen is to define one **template org configuration**, in YAML, that Git Sync applies to every new customer org on creation.
 
 The template comprises:
 
@@ -322,15 +322,14 @@ For ACME, our 200-seat customer, we'll create three keys: `acme-server`, `acme-w
 version: 3
 installation_keys:
   acme-server:
-    desc: ACME servers
     tags: [server, prod]
   acme-workstation:
-    desc: ACME workstations
     tags: [workstation]
   acme-vip:
-    desc: ACME executives and on-call
     tags: [vip, workstation]
 ```
+
+The name of each key in the file (`acme-server`) becomes its description in the org, and it is how later pulls find the key again.
 
 #### Windows install (interactive)
 
@@ -895,7 +894,7 @@ limacharlie dr get --key exec-from-downloads
 
 New rules are created disabled unless you pass `--enabled` (or set `usr_mtd.enabled` in the file), so a rule you forgot to enable looks exactly like a rule that never fires. The input file holds the whole rule, with `detect` and `respond` keys.
 
-For bulk push from your IaC repo, use the Infrastructure extension (Part 15).
+To deploy rules from your IaC repo to many orgs, use Git Sync (Part 15).
 
 ### Step 7: Replay against historical data before you trust it
 
@@ -1492,7 +1491,7 @@ org_notes.get, org_notes.set
 
 ### Automate the new-customer onboarding
 
-The full checklist is in [Designing Access](../7-administration/access/designing-access.md#new-customer-onboarding-checklist). The condensed version, scriptable today:
+The full checklist is in [Designing Access](../7-administration/access/designing-access.md#new-customer-onboarding-checklist). The condensed version, scriptable today. It assumes the IaC repository and `gitsync.yaml` from the [Git Sync tutorial](mssp-iac-tutorial.md), and that the customer's `orgs/<OID>/index.yaml` is added to the repository by pull request (Part 15).
 
 ```bash
 #!/usr/bin/env bash
@@ -1500,29 +1499,7 @@ set -euo pipefail
 
 CUSTOMER_NAME="$1"
 NEW_OID="$2"
-PRIMARY_CONTACT="$3"      # optional 4th argument: --apply
-
-# Same resource-type flags as Part 15. No --hive-secret: customer secrets are
-# provisioned out-of-band and must not be touched by --force.
-SYNC_FLAGS="--outputs --integrity --exfil --artifact --resources --extensions \
-  --org-values --installation-keys --yara --hive-dr-general --hive-fp \
-  --hive-lookup --hive-query --hive-extension-config --hive-cloud-sensor \
-  --hive-ai-agent"
-
-# 0. Safety checks. --force below makes the org an exact mirror of the template for
-#    the selected types, so refuse to run against an org that already has keys or
-#    sensors (a re-run would delete the keys step 5 creates and any per-customer
-#    outputs or FP rules). Then show the diff and stop unless --apply was passed.
-[ "$(limacharlie --oid "$NEW_OID" installation-key list --output json | jq 'length')" -eq 0 ] \
-  || { echo "$NEW_OID already has installation keys; not a new customer" >&2; exit 1; }
-[ "$(limacharlie --oid "$NEW_OID" sensor list --limit 1 --output json | jq 'length')" -eq 0 ] \
-  || { echo "$NEW_OID already has sensors; not a new customer" >&2; exit 1; }
-limacharlie --oid "$NEW_OID" sync push $SYNC_FLAGS \
-  --config-file "iac-repo/templates/customer-baseline.yaml" --force --dry-run
-if [ "${4:-}" != "--apply" ]; then
-  echo "Dry run only. Review the diff above, then re-run with --apply as the 4th argument."
-  exit 0
-fi
+PRIMARY_CONTACT="$3"
 
 # 1. Add the new org to every staff group
 for GROUP_NAME in administrators analysts viewers auditors active-responders; do
@@ -1531,30 +1508,28 @@ for GROUP_NAME in administrators analysts viewers auditors active-responders; do
   limacharlie group org-add --gid "$GID" --oid "$NEW_OID"
 done
 
-# 2. Apply the IaC template (see Part 15 for template structure)
-limacharlie --oid "$NEW_OID" sync push $SYNC_FLAGS \
-  --config-file "iac-repo/templates/customer-baseline.yaml" --force
-
-# 3. Subscribe to the standard extension kit
-for EXT in ext-cases ext-exfil ext-lookup-manager ext-usage-alerts ext-sensor-cull ext-artifact ext-reliable-tasking ext-infrastructure ext-git-sync; do
+# 2. Subscribe to the standard extension kit
+for EXT in ext-infrastructure ext-git-sync ext-cases ext-exfil ext-lookup-manager ext-usage-alerts ext-sensor-cull ext-artifact ext-reliable-tasking; do
   limacharlie --oid "$NEW_OID" extension subscribe --name "$EXT"
 done
+
+# 3. Connect the org to the IaC repository: deploy key as a secret, then the Git Sync configuration
+jq -Rs '{secret: .}' ~/.ssh/gitsync/id_ed25519 \
+  | limacharlie --oid "$NEW_OID" secret set --key gitsync-deploy-key --enabled
+limacharlie --oid "$NEW_OID" extension config-set --name ext-git-sync \
+  --input-file iac-repo/gitsync.yaml
 
 # 4. Invite the customer's primary contact directly on their own org
 limacharlie --oid "$NEW_OID" user invite --email "$PRIMARY_CONTACT"
 limacharlie --oid "$NEW_OID" user permissions set-role \
   --email "$PRIMARY_CONTACT" --role Viewer
 
-# 5. Create per-tier installation keys
-for ROLE in server workstation vip sleeper; do
-  TAGS="$ROLE"
-  [[ "$ROLE" == "sleeper" ]] && TAGS="lc:sleeper"
-  limacharlie --oid "$NEW_OID" installation-key create \
-    --description "${CUSTOMER_NAME}-${ROLE}" --tags "$TAGS"
-done
-
-echo "Customer $CUSTOMER_NAME provisioned. OID: $NEW_OID"
+echo "Customer $CUSTOMER_NAME connected. OID: $NEW_OID"
+echo "Next: merge the pull request that adds orgs/$NEW_OID/index.yaml, then run"
+echo "  limacharlie extension request --name ext-git-sync --action apply --oid $NEW_OID"
 ```
+
+The pull applies your global rules, false-positive rules, outputs, extension settings and per-tier installation keys. Keep the installation keys in `global/installation_keys.yaml` so every customer gets the same tiers. Git Sync never deletes records. It does replace each record it pulls as a whole, so a change made in the org to a record that Git also defines is overwritten on the next pull.
 
 Once that script lives in your team's repo, onboarding a new customer is a 10-minute job, not a 10-hour one.
 
@@ -2177,263 +2152,18 @@ Even at low alert volumes, this saves your L1 hours per day and scales linearly 
 
 Up to this point you may have been clicking buttons. That works for experimentation. It does not work for an MSSP. The moment you have your second customer, every config you care about needs to be in a Git repo, and that repo needs to be the source of truth.
 
-### The two extensions you need
+The [Git Sync extension](../5-integrations/extensions/limacharlie/git-sync.md) is the way to do it. It connects each org to one private repository over SSH with a deploy key. A merge to `main` is applied to every org on a schedule, or on demand. The `limacharlie sync` CLI does the same job from your own machine or from CI, and is covered at the end of the tutorial.
 
-- **[Infrastructure extension](../5-integrations/extensions/limacharlie/infrastructure.md)** — `fetch`, `push`, `dry-run`, selective sync flags (`sync_dr`, `sync_outputs`, `sync_resources`, `sync_artifacts`, etc.). The thing the CLI talks to.
-- **[Git Sync extension](../5-integrations/extensions/limacharlie/git-sync.md)** — connects an organization to a Git repo (over SSH with a deploy key), and can both push exports of the live config to Git and pull configs from Git on a schedule.
+The step-by-step guide is its own page: **[Tutorial: Run Your MSSP from Git with Git Sync](mssp-iac-tutorial.md)**. It creates the orgs, the repository and the deploy key, bootstraps the repository from what you built by hand, splits it into shared and per-customer files, schedules the pulls, and onboards a new customer.
 
-You will use both. Infrastructure for ad-hoc CLI work and PR-time validation. Git Sync for the ongoing "the world is whatever's in the repo" loop.
+### What you need to know before you start
 
-### Recommended repo layout
-
-The pattern that holds up across many customers, drawn from the [`refractionPOINT/mssp-demo`](https://github.com/refractionPOINT/mssp-demo) reference repo:
-
-```text
-mssp-iac/
-├── README.md
-├── configs/
-│   ├── global/
-│   │   ├── all.yaml                # includes all of the below
-│   │   ├── rules.yaml              # global D&R rules
-│   │   ├── outputs.yaml            # default outputs (audit → S3, etc.)
-│   │   ├── installation_keys.yaml
-│   │   ├── extensions.yaml
-│   │   ├── resources.yaml
-│   │   ├── integrity.yaml          # FIM patterns
-│   │   ├── artifact.yaml           # log artifact collection
-│   │   ├── exfil.yaml              # event collection / watch rules
-│   │   ├── fp.yaml                 # global false-positive rules
-│   │   ├── lookup.yaml             # threat feeds
-│   │   ├── query.yaml              # saved query library
-│   │   ├── yara.yaml
-│   │   └── ai_agent.yaml           # lean-soc agent definitions
-│   ├── control/
-│   │   └── main.yaml           # the control org (not a customer)
-│   └── customers/
-│       ├── acme/
-│       │   ├── main.yaml           # customer index — references global + locals
-│       │   ├── custom_rules.yaml
-│       │   ├── custom_fp.yaml
-│       │   └── custom_outputs.yaml
-│       ├── globex/
-│       │   ├── main.yaml
-│       │   └── custom_rules.yaml
-│       └── initech/
-│           └── main.yaml           # pure inheritance, no overrides
-└── templates/
-    └── customer-baseline.yaml      # used by onboarding script
-```
-
-`global/all.yaml` is just an `include:` of every global file:
-
-```yaml
-version: 3
-include:
-  - extensions.yaml
-  - resources.yaml
-  - installation_keys.yaml
-  - rules.yaml
-  - outputs.yaml
-  - integrity.yaml
-  - artifact.yaml
-  - exfil.yaml
-  - fp.yaml
-  - lookup.yaml
-  - query.yaml
-  - yara.yaml
-  - ai_agent.yaml
-```
-
-Each customer's `main.yaml` includes the globals plus its own overrides:
-
-```yaml
-# oid: <ACME_OID>              # CI reads the customer's OID from this comment
-version: 3
-include:
-  - ../../global/all.yaml      # everything global
-  - custom_rules.yaml          # ACME-specific detections
-  - custom_fp.yaml             # ACME-specific false positives
-  - custom_outputs.yaml        # ACME's SIEM
-```
-
-Initech's pure-inheritance customer is only the OID comment and one include:
-
-```yaml
-# oid: <INITECH_OID>
-version: 3
-include:
-  - ../../global/all.yaml
-```
-
-That's the pattern that scales from 3 customers to 300 — globals are written once and edited once; customers are included into globals and add only what's truly local.
-
-### Real examples from the global config
-
-From the mssp-demo `installation_keys.yaml`:
-
-```yaml
-version: 3
-installation_keys:
-  linux:
-    desc: linux
-    tags: [linux]
-  mac:
-    desc: mac
-    tags: [mac]
-  windows:
-    desc: windows
-    tags: [windows]
-  chrome:
-    desc: chrome
-    tags: [chrome]
-```
-
-An `outputs.yaml` in the same style (the destination is a documentation address, not a real host):
-
-```yaml
-version: 3
-outputs:
-  archive-scp:
-    dest_host: 203.0.113.10
-    dir: /srv/lc-output/
-    for: event
-    is_built_in: false
-    module: scp
-    password: hive://secret/scp-password
-    username: lc-export
-```
-
-Use a dedicated, least-privileged account on the destination host, and always reference the password through `hive://secret/`.
-
-### Secrets do not live in the repo
-
-Every secret in your YAML is a `hive://secret/<name>` reference, not a value. The actual secrets live in the `secret` hive in each org and are managed out-of-band (manually on customer onboarding, or via a separate, more locked-down provisioning script). That way the IaC repo is safe to commit, share with engineers, and back up to S3.
-
-### How to bootstrap the repo from where you are now
-
-You've been clicking buttons in the control org. To turn that into the repo:
-
-```bash
-mkdir mssp-iac && cd mssp-iac
-git init
-mkdir -p configs/global configs/control configs/customers templates
-
-# The resource types we manage as code. --hive-secret is left out on purpose,
-# see the note below.
-SYNC_FLAGS="--outputs --integrity --exfil --artifact --resources --extensions \
-  --org-values --installation-keys --yara --hive-dr-general --hive-fp \
-  --hive-lookup --hive-query --hive-extension-config --hive-cloud-sensor \
-  --hive-ai-agent"
-
-# Export the control org's configuration
-limacharlie sync pull \
-  --oid <control-oid> \
-  --config-file configs/control/main.yaml \
-  $SYNC_FLAGS
-
-# Or use the Git Sync extension's "Push to Git" button
-# in the control org's web UI — produces an `exports/` subtree.
-
-git add . && git commit -m "Initial export from control org"
-```
-
-`--all` would also cover the `secret` hive. Name the types you want instead, so secret records never end up in the repo, and so that `--force` on a push can never delete a customer's secrets just because they are not in the YAML. Use the same `$SYNC_FLAGS` for every `sync pull` and `sync push` in this part.
-
-From there, refactor the export: pull rules that are reusable into `configs/global/rules.yaml`, write a slim `main.yaml` for the control org that includes them, and you have your first reusable global rule set.
-
-### Validate before you push
-
-```bash
-# Always dry-run first; --force makes the org an exact mirror of the YAML
-# for the selected resource types
-limacharlie sync push \
-  --oid <customer-oid> \
-  --config-file configs/customers/acme/main.yaml \
-  $SYNC_FLAGS --force --dry-run
-```
-
-Read the diff. Then drop `--dry-run`. In CI, run dry-run on every PR; gate merges on a clean diff.
-
-Each resource type has its own flag, so you can push a subset. This pushes only D&R rules, outputs, and false-positive rules:
-
-```bash
-limacharlie sync push --oid <oid> --config-file main.yaml \
-  --hive-dr-general --outputs --hive-fp --force
-```
-
-### Schedule recurring sync via Git Sync
-
-Once the repo is the source of truth, configure Git Sync in each customer org to:
-
-- **Pull from Git on a schedule** (every 15 minutes is a fine default), so a merge to `main` deploys without anyone running a CLI.
-- Optionally, **push exports back to Git on a schedule**, into `exports/` subdirectory, so any drift caused by an emergency UI change is committed and reviewable.
-
-#### Setting up Git Sync with deploy keys
-
-```bash
-# 1. Generate an SSH key dedicated to Git Sync
-mkdir -p ~/.ssh/gitsync && chmod 700 ~/.ssh/gitsync
-ssh-keygen -t ed25519 -C "limacharlie-gitsync" -f ~/.ssh/gitsync/id_ed25519
-
-# 2. Add the public key to your Git provider as a deploy key with WRITE access
-cat ~/.ssh/gitsync/id_ed25519.pub
-# (paste into GitHub Settings → Deploy keys, check "Allow write access")
-
-# 3. Store the private key as a Hive Secret in each customer org
-jq -Rs '{secret: .}' ~/.ssh/gitsync/id_ed25519 \
-  | limacharlie secret set --key github-deploy-key --enabled \
-      --oid <customer_oid>
-
-# 4. Wire Git Sync via the web UI:
-#    Settings → Git Sync → SSH Key: select github-deploy-key
-#    Repository (SSH URL): git@github.com:northwindsec/mssp-iac.git
-#    Branch: main
-#    Push schedule: every 60 min (export drift back to Git)
-#    Pull schedule: every 15 min (deploy merges automatically)
-```
-
-### CI pattern
-
-A minimal CI for the IaC repo:
-
-```yaml
-# .github/workflows/lc-sync.yml
-on:
-  pull_request:
-    branches: [main]
-  push:
-    branches: [main]
-
-jobs:
-  validate:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - run: pip install limacharlie
-      - name: Sync every customer (dry run on pull requests, real push on main)
-        env:
-          # JSON map of customer OID -> that customer's Organization API key.
-          # An org key only works on its own org, so CI needs one per customer.
-          LC_CUSTOMER_KEYS: ${{ secrets.LC_CUSTOMER_KEYS }}
-          SYNC_MODE: ${{ github.event_name == 'push' && ' ' || '--dry-run' }}
-          SYNC_FLAGS: >-
-            --outputs --integrity --exfil --artifact --resources --extensions
-            --org-values --installation-keys --yara --hive-dr-general --hive-fp
-            --hive-lookup --hive-query --hive-extension-config
-            --hive-cloud-sensor --hive-ai-agent
-        run: |
-          set -euo pipefail
-          for DIR in configs/customers/*/; do
-            OID=$(grep -E "^# oid: " "${DIR}main.yaml" | awk '{print $3}' || true)
-            [ -n "$OID" ] || { echo "no '# oid:' line in ${DIR}main.yaml" >&2; exit 1; }
-            KEY=$(jq -r --arg oid "$OID" '.[$oid] // empty' <<<"$LC_CUSTOMER_KEYS")
-            [ -n "$KEY" ] || { echo "no API key for $OID" >&2; exit 1; }
-            LC_OID="$OID" LC_API_KEY="$KEY" limacharlie sync push \
-              --config-file "${DIR}main.yaml" $SYNC_FLAGS --force $SYNC_MODE
-          done
-```
-
-On `pull_request` the job adds `--dry-run`, so it only reports what would change; read the output before merging. On `push` to `main` it applies the change. If you rely on Git Sync's pull schedule instead, drop the push and keep CI as validation only. The job exits with an error when a customer folder has no `# oid:` line or no API key, so a missing OID can never turn into a push against the wrong org.
+- **One repository, one folder per org.** An org reads only `orgs/<OID>/index.yaml`. That file includes shared files, usually from a `global/` folder, so a rule is written once and reaches every customer. Customer-specific files go next to that customer's `index.yaml`. A layout such as `customers/acme/main.yaml` cannot be read by Git Sync.
+- **Use the `hives:` form.** Detection rules, false-positive rules, lookups, saved queries, YARA and AI agents live under `hives:`. The settings of Exfil, Integrity and Artifact are records of the `extension_config` hive (`ext-exfil`, `ext-integrity`, `ext-artifact`). The old top-level `rules`, `fps`, `integrity`, `exfil`, `artifact` and `yara` sections are ignored by Git Sync.
+- **A pull never deletes.** Git Sync adds and updates. A rule you remove from Git keeps running in the org until you delete it there. The tutorial shows the two-step removal.
+- **Secrets stay out of Git.** Every credential in your YAML is a `hive://secret/<name>` reference. The secrets live in each org's `secret` hive and are created out-of-band, including the deploy key itself. Never enable the `secret` hive in Git Sync.
+- **Schedules are hourly at the fastest.** Pull and push each take `-`, `1h`, `3h`, `6h`, `12h`, `24h` or `168h`. For a change that cannot wait, press **PULL FROM GIT** or run `limacharlie extension request --name ext-git-sync --action apply`.
+- **Bootstrap with a push.** Configure Git Sync, press **PUSH TO GIT** in the control org, and the extension writes `exports/orgs/<OID>/` for you. Then move what you want to keep into `global/` and `orgs/<OID>/`.
 
 That's the whole IaC loop. The Git repo is the source of truth, your IdP gates who can merge to `main`, every change is reviewed, every deploy is replayable.
 
@@ -2572,15 +2302,16 @@ Check the destination — the S3 bucket has new files, the SIEM has new events, 
 
 Trigger another detection. Watch the **AI Sessions** view (or `limacharlie ai session list`) for a new session. Open it, watch the live transcript. After a minute or two, check the case — you should see notes from the agent, status changed to `in_progress` or `closed`, classification set, IOCs attached as entities.
 
-### 8. IaC export round-trip
+### 8. IaC round-trip
+
+Run a pull from the customer's repository folder, twice:
 
 ```bash
-limacharlie sync pull --oid <customer_oid> --config-file /tmp/customer.yaml $SYNC_FLAGS
-limacharlie sync push --oid <customer_oid> --config-file /tmp/customer.yaml \
-  $SYNC_FLAGS --force --dry-run
+limacharlie extension request --name ext-git-sync --action apply --oid <customer_oid>
+limacharlie extension request --name ext-git-sync --action apply --oid <customer_oid>
 ```
 
-Expected: the dry run reports no additions, modifications, or removals (the customer's live config matches the YAML you just exported). If it lists changes, you have drift. Find out why before declaring this done.
+Then read the latest `apply` event on the Git Sync sensor (the commands are in [Step 8 of the tutorial](mssp-iac-tutorial.md#step-8-pull-for-the-first-time-and-check-it-worked)). Expected: the second run lists no records under `changed` and every record under `unchanged`. The org matches Git. If records keep appearing under `changed`, something else is editing them, or two files define the same record. Find out why before declaring this done.
 
 ### 9. Audit log forwarding works
 
@@ -2613,10 +2344,10 @@ The org:
   [ ] Run onboarding script (Part 10)
     - Adds to staff Organization Groups
     - Subscribes standard extension kit
-    - Pushes IaC baseline (--force --dry-run, then real)
-    - Creates per-tier installation keys
+    - Stores the Git Sync deploy key and configuration
     - Invites customer's primary contact
-  [ ] Configure Git Sync against repo path configs/customers/<name>/
+  [ ] Merge the PR adding orgs/<OID>/index.yaml to the IaC repo, then run a pull
+      (baseline rules, outputs, extension settings and per-tier installation keys)
   [ ] Verify Strict SSO enabled on customer's domain (if applicable)
 
 Telemetry:
@@ -2663,7 +2394,7 @@ A pragmatic path, not a marketing taxonomy.
 
 **Month 1 — Visibility.** EDR + identity + M365/Workspace ingested for one or two friendly customers. Sigma + Soteria EDR running. Cases on. Slack alerts. IaC repo exists, single org committed.
 
-**Month 2 — Repeatability.** Onboarding script. Customer-org template. Git Sync configured both directions on every org. Staff groups in place. Strict SSO enforced. Audit forwarded.
+**Month 2 — Repeatability.** Onboarding script. Customer-org template. Git Sync pulling on every org, and exporting from the control org. Staff groups in place. Strict SSO enforced. Audit forwarded.
 
 **Month 3 — Automation.** Triage agent live on every customer. Lean-SOC investigator on the highest-tier customers. False-positive rules per customer. Output allowlists deployed. Usage alerts deployed. Lookup Manager refreshing public threat feeds. End-to-end smoke test scripted for new onboardings.
 
@@ -2683,16 +2414,16 @@ What to read next, in priority order, when you finish this article:
 2. **[Cases](../5-integrations/extensions/limacharlie/cases.md)** — the case lifecycle, SLA mechanics, classification, reporting.
 3. **[D&R Rule Building Guidebook](../3-detection-response/tutorials/dr-rule-building-guidebook.md)** — patterns and traps when writing rules that will live in production for years.
 4. **[LCQL Examples](../4-data-queries/lcql-examples.md)** — a dense reference of working hunts. Skim to learn the language by analogy.
-5. **[Git Sync](../5-integrations/extensions/limacharlie/git-sync.md)** + **[Infrastructure](../5-integrations/extensions/limacharlie/infrastructure.md)** — the IaC details glossed over here.
+5. **[Git Sync tutorial](mssp-iac-tutorial.md)**, the **[Git Sync reference](../5-integrations/extensions/limacharlie/git-sync.md)** and **[Infrastructure](../5-integrations/extensions/limacharlie/infrastructure.md)** — the IaC details glossed over here.
 6. **[AI Sessions: D&R-Driven](../9-ai-sessions/dr-sessions.md)** — once you have alert volume worth triaging.
 7. **[Response Actions reference](../8-reference/response-actions.md)** + **[Endpoint Commands](../8-reference/endpoint-commands.md)** — the full `respond:` action grammar and the full sensor command catalog.
 8. **[Permissions reference](../8-reference/permissions.md)** — when you outgrow the predefined roles.
 9. **[lc-ai repo](https://github.com/refractionPOINT/lc-ai)** — pre-built AI agents and the lc-essentials Claude Code plugin.
-10. **[mssp-demo repo](https://github.com/refractionPOINT/mssp-demo)** — a reference IaC repo configured exactly the way this walkthrough describes.
+10. **[mssp-demo repo](https://github.com/refractionPOINT/mssp-demo)** — a reference repo for the `limacharlie sync` CLI flow. It uses the CLI's older top-level sections, so for Git Sync follow the layout in the [tutorial](mssp-iac-tutorial.md) instead.
 
 What to do next, in priority order, in your control org:
 
-1. Bootstrap a Git repo from your control org with `limacharlie sync pull`.
+1. Follow the [Git Sync tutorial](mssp-iac-tutorial.md): bootstrap a Git repo from your control org and connect it with Git Sync.
 2. Onboard a real friendly customer end-to-end with the playbook above. Time it. Improve the slow steps.
 3. Wire `audit` stream forwarding on every org. Stop waiting until you need it.
 4. Deploy the lean-soc triage agent. Get one full week of automated triage data before deciding whether to deploy the rest of the team.
