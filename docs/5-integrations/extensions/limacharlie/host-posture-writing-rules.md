@@ -148,7 +148,7 @@ What a selector is depends on the format:
 | `nginx` | A dotted directive path, or a bare directive name that matches at any depth. The enclosing blocks are reported. Included files are read in their include context. |
 | `raw` | `content`: the whole file, at most 4 KB. |
 
-The probe returns `files`, one entry per file, with its own `status` and its `matches` (`selector`, `found`, `key`, `value`, `line`, `context`). Files are read up to 10 MB, a value is cut at 4 KB, and a file or probe that hits a cap is `truncated`.
+The probe returns `files`, one entry per file, with its `path`, its own `status` and its `matches` (`selector`, `found`, `key`, `value`, `line`, `context`). Files are read up to 10 MB, a value is cut at 4 KB, and a file or probe that hits a cap is `truncated`.
 
 ## Conditions
 
@@ -184,7 +184,7 @@ The evaluator applies the same steps to every rule:
 1. If the evaluator is older than `requires.evaluator`, or the platform does not match, or a required probe is `unsupported`: `unsupported`.
 2. Evaluate `applies_when` (default true). If it is false, and everything it read was readable and complete: `not_applicable`. If it read something unreadable: `error`.
 3. Evaluate `violation`. If it is true (or a non-empty list): `fail`. A hit is a hit, even when something unrelated was unreadable.
-4. Otherwise the result is `pass`, but only if every probe the conditions read was readable and complete. If not: `error`.
+4. Otherwise the result is `pass`, but only if every probe the conditions read was readable and complete. If not: `error`. If the pass depended on an absent item you did not declare in [`absent_is_pass`](#absence), the result is `not_applicable` by absence instead, and open findings are not closed.
 
 The rule is simple: **a pass has to be proven.** An unreadable or truncated input never produces a `pass` or a `not_applicable`. This is enforced by the evaluator, not by how you write your guards.
 

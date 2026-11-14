@@ -223,11 +223,11 @@ limacharlie hive set \
   --key acme.linux.incident.check \
   --input-file check.json \
   --enabled \
-  --expiry 1793491200 \
-  --comment "Incident 2026-11: remove after the window"
+  --expiry 1797292800 \
+  --comment "Incident check: remove after the window"
 ```
 
-`1793491200` is 2026-11-01 00:00:00 UTC. The hive stores expiry in milliseconds, so `hive get` shows `1793491200000`. If you write the record with a `usr_mtd` block instead of the flag, give the expiry in milliseconds there.
+`1797292800` is 2026-12-15 00:00:00 UTC. Replace it with the end of your own window (`date -d '2026-12-15 00:00:00 UTC' +%s` prints it), since a rule with an expiry in the past never runs. The hive stores expiry in milliseconds, so `hive get` shows `1797292800000`. If you write the record with a `usr_mtd` block instead of the flag, give the expiry in milliseconds there.
 
 ### Listing, reading, disabling and deleting rules
 
