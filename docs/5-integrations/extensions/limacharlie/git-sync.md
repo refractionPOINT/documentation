@@ -316,9 +316,16 @@ The [tutorial](../../../1-getting-started/mssp-iac-tutorial.md) does this for a 
       | limacharlie secret set --key gitsync-deploy-key --enabled --oid <OID>
     ```
 
-5. **Subscribe** to Git Sync from the [Marketplace](https://app.limacharlie.io/add-ons/extension-detail/ext-git-sync), or with `limacharlie extension subscribe --name ext-git-sync --oid <OID>`.
+5. **Subscribe** to Git Sync from the [Marketplace](https://app.limacharlie.io/add-ons/extension-detail/ext-git-sync), or with the CLI. Git Sync requires Infrastructure, so subscribe to both:
+
+    ```bash
+    limacharlie extension subscribe --name ext-infrastructure --oid <OID>
+    limacharlie extension subscribe --name ext-git-sync --oid <OID>
+    ```
+
 6. **Configure it.** Open **Extensions**, then **Git Sync**. Set the Repository URL, Branch, User Name (`git`) and SSH Key (pick the secret), tick the types to push and pull, choose schedules if you want them, and press **SAVE SETTINGS**. Or use `config-set` as shown above.
-7. **Try it.** Press **PUSH TO GIT** and check that `exports/orgs/<OID>/` appears in the repository.
+7. **Check for literal credentials before the first push.** A push writes outputs and extension settings as stored. Follow the audit in [Step 6 of the tutorial](../../../1-getting-started/mssp-iac-tutorial.md#step-6-export-once-to-bootstrap-the-repository), or leave outputs and `extension_config` off until you have checked them.
+8. **Try it.** Press **PUSH TO GIT** and check that `exports/orgs/<OID>/` appears in the repository.
 
 ## Troubleshooting
 

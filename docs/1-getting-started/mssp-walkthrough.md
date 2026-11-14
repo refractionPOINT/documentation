@@ -1529,7 +1529,7 @@ echo "Next: merge the pull request that adds orgs/$NEW_OID/index.yaml, then run"
 echo "  limacharlie extension request --name ext-git-sync --action apply --oid $NEW_OID"
 ```
 
-The pull applies your global rules, false-positive rules, outputs, extension settings and per-tier installation keys. Keep the installation keys in `global/installation_keys.yaml` so every customer gets the same tiers. Git Sync only adds and updates, so a re-run can never delete a customer's own records.
+The pull applies your global rules, false-positive rules, outputs, extension settings and per-tier installation keys. Keep the installation keys in `global/installation_keys.yaml` so every customer gets the same tiers. Git Sync never deletes records. It does replace each record it pulls as a whole, so a change made in the org to a record that Git also defines is overwritten on the next pull.
 
 Once that script lives in your team's repo, onboarding a new customer is a 10-minute job, not a 10-hour one.
 
