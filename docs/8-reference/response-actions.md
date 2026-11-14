@@ -509,6 +509,59 @@ respond:
 
 For detailed configuration options, see [D&R-Driven AI Sessions](../9-ai-sessions/dr-sessions.md).
 
+### start investigation
+
+Starts an [Investigation Engine](../investigation-engine/index.md) run for the detection that the rule just reported. The engine investigates the alert on its own, with the identity set in the organization's investigation policy, and works toward a verdict. The result is a verdict, its proof and a case, and any containment the organization's [autonomy policy](../investigation-engine/policies.md) allows.
+
+```yaml
+- action: report
+  name: suspicious-process
+- action: start investigation
+  template: suspicious-process
+  urgency: high
+  coalesce_key: "sid:{{ .routing.sid }}"
+  inputs:
+    hash: "{{ .event.HASH }}"
+```
+
+Place the action **after** the `report` action: the run is tied to the detection that report created (its id, category and priority, plus the rule's tags). Without a preceding `report` the run only knows the rule name and the sensor, and has no detection id.
+
+#### Optional Parameters
+
+| Parameter | Description |
+|-----------|-------------|
+| `template` | Name of the investigation template to run. A literal (not templated), up to 128 letters, digits, `_`, `.` and `-`, starting with a letter or digit. The template must exist in the organization and have `status: active`. When omitted, the engine picks the **active** template whose `applies_to` best matches the detection. |
+| `urgency` | One of `low`, `medium`, `high`, `critical`. A literal. When omitted, the engine derives it from the detection priority: 8 or more is `critical`, 6 or more `high`, 3 or more `medium`, anything lower `low`. |
+| `coalesce_key` | [Template string](../4-data-queries/template-transforms.md), at most 256 bytes once rendered. Alerts with the same key join the run already open for it instead of starting another. Defaults to `sid:<sensor id>` when the event has a sensor id. |
+| `inputs` | A map of values handed to the run as its inputs, using the same [transform syntax](../4-data-queries/template-transforms.md) as the `data` block of `start ai agent`: each value is an event path or a `{{ }}` template. At most 64 KiB once rendered. |
+| `suppression` | The usual [suppression](#suppression) descriptor, supported by every action. |
+
+Unknown parameters are rejected when the rule is saved, as are a `template` or `urgency` that is not a valid literal.
+
+!!! warning "Use fields that every matching event has"
+    A path to a field the event lacks is dropped from `inputs`, and a template that names a missing field renders `<no value>`. Neither is an error. In `coalesce_key` that has a side effect: if the key uses a field that some events lack, every such alert renders the same key and **joins one shared run**. Build the key from fields every matching event carries, such as `{{ .routing.sid }}`.
+
+A template only sees the inputs this action lists, plus the detection id. A template written to take the `detection_id` and derive everything else with facts works unchanged from a rule. See [Run inputs](../investigation-engine/templates.md#run-inputs).
+
+#### Requirements
+
+- The Investigation Engine must be enabled for the datacenter. Where it is not, saving a rule that uses this action fails with `start investigation is not enabled in this environment`.
+- The template must be **active**. A draft is refused for a run with no person behind it, and a template is never picked by `applies_to` while it is a draft.
+- The organization's `investigation_policy` record `default` should set `identity.default` to an organization API key (see [Run identity](../investigation-engine/policies.md#run-identity)). A rule has no user token, so without an identity for the template the start is refused with a message that names `identity.default`. A named template can instead carry its own `identity.templates.<name>.default`.
+- If no active template applies to the detection, the start is refused and the message says what was tried.
+
+#### Behavior
+
+- Starting a run never delays the rule: the request is sent in the background with a short timeout (5 seconds per attempt, 8 seconds in all). The detection is reported whether or not a run starts.
+- A run is not started, and the failure is logged and counted but not shown to the rule, when the engine is unavailable, the organization is at its concurrent run limit, the organization exceeds the start rate (2 starts per second sustained, with a burst of 20, per host process), or the template or identity is refused as above.
+- If a `coalesce_key` or an `inputs` template errors, or the rendered value is over its size limit, the action fails and no run starts. A field the event does not have is not an error: as with `data`, a path to it is dropped from `inputs`, and a template naming it renders `<no value>`.
+- A given detection id starts at most one run: the detection id is the run's idempotency key (kept for the engine's record retention, and scoped to the organization and the D&R starter).
+- The detection may not be stored yet when the run starts, because the report and the start run independently. The engine retries the lookup of that one detection for up to about 30 seconds (with backoff), then treats it as `unknown`, never absent. See [Automatic Starts](../investigation-engine/automation.md#dr-rules-start-investigation).
+- The run is recorded as started by the rule: its trigger has `source: dr-rule`, and `rule` is the rule record name prefixed with `general.`. Use that form in a template's `applies_to` (`rule: ['general.my-rule']`). A D&R rule never sends a severity, so an `applies_to` with a `severity` key does not match.
+- Resource ACL checks work like `start ai agent`: an event restricted by `acl:` tags is refused unless the rule's author scope covers it.
+- A replay never starts a run: it records an `investigation` row (with the template name when the rule names one) instead.
+- Not available in Email Security (mail) rules: saving one is refused with `not available to a mail rule`.
+
 ---
 
 ## See Also
