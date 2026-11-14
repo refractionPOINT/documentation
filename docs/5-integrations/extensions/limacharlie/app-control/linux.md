@@ -2,7 +2,7 @@
 
 ## Overview
 
-On Linux, [Application Control](../app-control.md) uses the same policies, rules, modes and events as on Windows and macOS, managed from the same console pages and the same two Config Hive types. This page covers what is different on Linux: how the sensor enforces, what a host needs, what stands in for code signatures, the limits, and how to check a host before you roll out.
+On Linux, [Application Control](../app-control.md) uses the same policies, rules, modes and events as on Windows and macOS, managed from the same console pages and the same two Config Hive types. It needs endpoint agent **5.4.4** or later: an older Linux sensor ignores the policy. This page covers what is different on Linux: how the sensor enforces, what a host needs, what stands in for code signatures, the limits, and how to check a host before you roll out.
 
 - The sensor is the enforcement point. It asks the kernel to be consulted before a program file is opened for execution and answers allow or deny. There is no kernel module and no driver.
 - Linux programs carry no code signature. OS vendor trust comes from the package manager instead: a file counts as the vendor's own when a package signed by the distribution owns it and its content still matches what the package installed.

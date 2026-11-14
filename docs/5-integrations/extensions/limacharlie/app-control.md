@@ -4,7 +4,7 @@
 
 Application Control lets you decide which programs may run on your endpoints. You write an allowlist (only approved software runs) or a blocklist (everything runs except what you deny), and the LimaCharlie sensor enforces it at the moment a process starts.
 
-- Windows, macOS and Linux are supported. Linux enforces differently and has no code signatures to match; see [Application Control on Linux](app-control/linux.md).
+- Windows, macOS and Linux (endpoint agent 5.4.4 or later) are supported. Linux enforces differently and has no code signatures to match; see [Application Control on Linux](app-control/linux.md).
 - The policy is declarative. You describe the desired state in two [Config Hive](../../../7-administration/config-hive/index.md) types, and the extension reconciles it onto every matching sensor each time that sensor syncs.
 - The LimaCharlie cloud signs each policy before it reaches a sensor, and the sensor verifies the signature.
 - Each policy has a mode, so you can watch what would be blocked before you block anything.

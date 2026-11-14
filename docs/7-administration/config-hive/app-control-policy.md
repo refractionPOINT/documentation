@@ -21,7 +21,7 @@ Both hives are partitioned by organization, like the other Config Hive types. Ea
 | Field | Required | Description |
 | --- | --- | --- |
 | `priority` | No | Integer, default `0`. A lower number is evaluated first. Policies with the same priority are ordered by record name, ascending. |
-| `platforms` | No | List of `windows`, `macos` and `linux`. A sensor matches if it runs any one of them. Empty or omitted means Windows and macOS; a Linux sensor is matched only by a policy that names `linux`. |
+| `platforms` | No | List of `windows`, `macos` and `linux`. A sensor matches if it runs any one of them. `linux` needs endpoint agent 5.4.4 or later; an older Linux sensor ignores the policy. Empty or omitted means Windows and macOS; a Linux sensor is matched only by a policy that names `linux`. |
 | `tags` | No | List of sensor tags. A sensor matches only if it carries all of them. Empty or omitted matches any sensor. At most 64 tags, each at most 256 bytes, with no duplicates and no leading or trailing whitespace. |
 | `mode` | Yes | `off`, `permissive`, `permissive_sync` or `enforcing`. See [Modes](#modes). |
 | `stance` | Yes | `allowlist` or `blocklist`. There is no default, so you always choose one on purpose. See [Stance](#stance). |
