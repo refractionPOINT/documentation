@@ -63,11 +63,21 @@ Both write the rules with **your** permissions, so you need `host_posture.set` a
 
 - A rule that is not in your hive is created and enabled. Pass `--disabled` to create them disabled and review them first.
 - A rule that already exists is left alone. The command lists what it skipped.
-- `--update` replaces a rule with a newer version from the pack, but only a rule you have not edited, and only if the record has not changed since it was read. Your enabled or disabled state, expiry and comment are kept.
-- A rule you edited is never overwritten unless you pass `--force`. `--force` also replaces a rule that is newer than the pack's.
+- `--update` replaces a rule with a newer version from the pack, but only a rule you have not edited. The replacement is conditional on the record not having changed since it was read. Your enabled or disabled state, expiry and comment are kept.
+- A rule you edited, or one whose version is higher than the pack's, is never overwritten unless you pass `--force`.
 - `--dry-run` shows what would happen and writes nothing.
 
-Rules the command writes carry the tag `lc:default-pack`, a tag holding a digest of what was written (that is how an edit is recognized) and a comment naming the pack version. A rule without the digest tag, for example one you created yourself, counts as edited.
+To decide what to do, the command asks the extension how each rule of your hive compares with the pack. Each pack rule is in one of these states:
+
+| State | Meaning |
+| --- | --- |
+| `new` | You have no record for it. It is created. |
+| `current` | Your record is the pack's rule, unedited, at the same version. Nothing to do. |
+| `update_available` | Your record is unedited and the pack has a newer version. `--update` replaces it. |
+| `edited` | Your record differs from what the pack installed. Needs `--force`. |
+| `org_newer` | Your record has a higher version than the pack's. Needs `--force`. |
+
+Rules the command writes carry the tag `lc:default-pack`, a tag `lc:pack-sha256:<digest>` and a comment naming the pack version. The extension computes the digest of what it handed out, and recognizes an edit by comparing it with the record as it is now. A rule without the digest tag, for example one you created yourself, counts as edited.
 
 Because the pack lives in your hive, you can disable a rule that does not suit your environment, change its [scope](../../../7-administration/config-hive/host-posture-rule.md#scope), or delete it. Disabling or deleting a rule you installed does not come back on its own: the pack is only written when you ask for it.
 
@@ -167,6 +177,7 @@ How the finding follows the rule:
 - It exists while at least one assessed host fails the rule.
 - It **resolves** only when hosts were assessed against the rule and they all pass. A host that errored does not count as passing.
 - It closes as **"rule removed"**, not as resolved, when you disable, delete or expire the rule. Removing a rule never shows a problem as fixed.
+- It closes as **"no hosts in scope"**, not as resolved, when no host is in scope for the rule any more, for example because you changed its scope tags or the sensors were removed.
 - It closes as **"source turned off"** when you unsubscribe from Host Posture.
 
 `limacharlie host-posture results summary` reports `cloud_security` as `published`, `not_subscribed` or `error`. An organization that subscribes to Cloud Security later is picked up within about an hour, and the full set of findings is sent as soon as the connection works.
@@ -201,7 +212,7 @@ By default the Owner, Administrator and Operator roles have all of them, and the
 ## Limits
 
 - A rule document: 128 KiB as JSON.
-- A sweep carries at most 512 KB and 256 rules to a sensor. Rules beyond that are reported as `error` with the reason `over_capacity`.
+- A sweep carries at most 512 KB and 256 rules to a sensor, and the extension runs at most 2,000 enabled rules per organization (in record-name order). Rules beyond either limit are reported as `error` with the reason `over_capacity`.
 - A host runs the rules of one sweep within a fixed budget of time, CPU and memory. A rule the host did not get to is reported as unreadable (an `error`), never as passing.
 - At most 64 instances per rule per host, with evidence capped in size.
 

@@ -62,15 +62,15 @@ where the file holds `rule:` with the document above, and an optional `scope:`. 
 | --- | --- | --- |
 | `apiVersion` | Yes | `lc-posture/v1`. |
 | `kind` | Yes | `Signature`. |
-| `id` | Yes | Lowercase, dot-separated, for example `acme.windows.rdp.no-nla`. Any prefix is allowed. Must equal the record name. Ids are never reused: a different question gets a new id. |
+| `id` | Yes | At most 256 bytes. Lowercase, dot-separated, for example `acme.windows.rdp.no-nla`. Any prefix is allowed. Must equal the record name. Ids are never reused: a different question gets a new id. |
 | `version` | Yes | An integer. Raise it whenever you change the probes or the conditions. |
-| `title` | Recommended | One line, shown in findings and results. |
-| `description` | Recommended | What is wrong and why it matters, in plain language. |
+| `title` | Yes | One line, shown in findings and results. At most 256 bytes. |
+| `description` | No | What is wrong and why it matters, in plain language. |
 | `severity` | Yes | `critical`, `high`, `medium`, `low` or `info`. |
 | `platforms` | Yes | One or more of `linux`, `windows`, `macos`. |
 | `tags` | No | Labels for the rule itself, such as `baseline:windows`. Not sensor tags: for those use the record's [scope](../../../7-administration/config-hive/host-posture-rule.md#scope). |
 | `threat_refs` | No | `cves`, `kev` (true if a listed CVE is in the CISA KEV catalog) and `links`. |
-| `standards` | No | Maps a framework (`cce`, `cis`, `stig`, `nist`, `pcidss`) to control ids. Used to report how hosts do against each standard. |
+| `standards` | No | Maps a framework (`cce`, `cis`, `stig`, `nist`, `pcidss`) to control ids, at most 32 per framework and 128 bytes each. Used to report how hosts do against each standard. |
 | `requires.evaluator` | No | The minimum sensor evaluator version, as `<major>.<minor>`, for example `"1.0"`. A sensor below it reports the rule as `unsupported`. |
 | `probes` | Yes | Name to probe. At most 16. |
 | `applies_when` | No | A condition. If false the rule is `not_applicable` on the host. |
@@ -78,11 +78,11 @@ where the file holds `rule:` with the document above, and an optional `scope:`. 
 | `evidence` | No | Label to expression, evaluated only when the rule fails. |
 | `absent_is_pass` | No | Probes whose absence genuinely means the host is not exposed. See [Absence](#absence). |
 | `tolerate_unreadable` | No | Probes that count as readable even when they could not be read. See [Reading errors](#reading-errors). |
-| `remediation` | Yes | `text` with the manual steps. Optionally `action` and `args`, naming a reversible remediation. |
+| `remediation` | No | `text` with the manual steps, shown to whoever gets the finding. Optionally `action` and `args`, naming a reversible remediation. |
 | `limitations` | No | What the rule cannot see. Worth writing. |
 | `tests` | No | Test cases. See [Testing a rule](#testing-a-rule). |
 
-Fields not listed here are refused, so a misspelled field cannot be silently ignored. A probe's own settings are checked the same way.
+The required fields are `apiVersion`, `kind`, `id`, `version`, `title`, `severity`, `platforms`, `probes` and `violation`. Everything else is optional, including `tests`. Fields not listed here are refused, so a misspelled field cannot be silently ignored. A probe's own settings are checked the same way.
 
 Probe names are lowercase identifiers (`[a-z_][a-z0-9_]*`) and cannot be a CEL reserved word, nor `now` or `instance`. They are the variables your conditions use.
 
@@ -275,6 +275,8 @@ A read of such a path is refused, and the refusal is reported, not hidden. A `fi
 | Instances | 64 per rule per host, 512 bytes each |
 | Evidence | 1 KB per value, 8 KB per finding |
 | Rule document | 128 KiB as JSON |
+| `id` and `title` | 256 bytes each |
+| `standards` | 32 references per framework, 128 bytes each |
 | One sweep on a host | 300 s of wall clock, 60 s of CPU and 256 MB of memory |
 
 Probes the host did not reach before the budget ran out are reported as unreadable, so a rule that could not finish is an `error`, never a `pass`.

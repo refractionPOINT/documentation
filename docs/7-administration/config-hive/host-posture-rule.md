@@ -68,13 +68,13 @@ Scope is combined with the extension's own [`scope_tags`](../../5-integrations/e
 
 The hive checks a rule completely when you save it, and refuses a rule with a list of every problem, each naming the field path. It checks:
 
-- The whole document: fields, types, the language version and the minimum evaluator version it asks for.
+- The whole document: fields, types, the language version and the minimum evaluator version it asks for. The required fields are `apiVersion`, `kind`, `id`, `version`, `title`, `severity`, `platforms`, `probes` and `violation`.
 - Every limit of the language: probes per rule, expression size and nesting, the cost of each expression, instance and evidence sizes.
 - Every probe type against the evaluator version the rule declares in `requires.evaluator`.
 - Every condition expression: it must compile, type-check and use only the functions the language provides.
 - The rule's embedded `tests`, when it has any. Tests are optional, but if a rule carries them they must all pass.
 
-A rule document is at most 128 KiB as JSON.
+A rule document is at most 128 KiB as JSON. The `id` and the `title` are at most 256 bytes each, and `standards` holds at most 32 references per framework of at most 128 bytes each.
 
 Because tests run at save time, you can develop a rule by adding the cases you care about to `tests` and saving until the hive accepts it. See [Writing your own rules](../../5-integrations/extensions/limacharlie/host-posture-writing-rules.md#testing-a-rule).
 
@@ -248,9 +248,9 @@ limacharlie host-posture rules delete --key acme.windows.smb.signing-required --
 ## Limits
 
 - Record name (the rule id): the id syntax of the language, lowercase and dot-separated.
-- Rule document: 128 KiB as JSON.
+- Rule document: 128 KiB as JSON. `id` and `title`: 256 bytes each. `standards`: 32 references per framework, 128 bytes each.
 - `scope.sensor_tags` and `scope.exclude_sensor_tags`: 32 tags each, 128 bytes per tag.
-- Rules per sweep: bounded by what one sweep can carry to a sensor (512 KB and 256 rules per request). A rule that does not fit is reported as an `error` result with the reason `over_capacity`. It is never dropped silently.
+- Enabled rules per organization: the extension runs at most 2,000, in record-name order. Rules per request to a sensor: bounded by what one request can carry (512 KB and 256 rules). A rule over either limit is reported as an `error` result with the reason `over_capacity`. It is never dropped silently.
 
 ## See Also
 
