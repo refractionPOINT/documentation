@@ -51,6 +51,12 @@ The LimaCharlie Python SDK provides a comprehensive interface for interacting wi
 pip install limacharlie
 ```
 
+On Python 3.10 to 3.13, install the optional `zstd` extra as well for smaller API responses (see [Compressed Responses](#compressed-responses)). Python 3.14 and newer need nothing extra.
+
+```bash
+pip install 'limacharlie[zstd]'
+```
+
 ### Install from source
 
 ```bash
@@ -194,6 +200,31 @@ client = Client(oid='ORG_ID', api_key='API_KEY')
 with Client(oid='ORG_ID', api_key='API_KEY') as client:
     data = client.request("GET", "sensors")
 ```
+
+### Compressed Responses
+
+!!! note
+    Compressed responses and the `zstd` extra are available in `limacharlie` releases after 5.12.2.
+
+The SDK and the CLI ask the API for compressed responses and decode them before returning, so return values, parsed JSON and error messages are the same as for an uncompressed response. Large responses such as search result pages typically arrive several times to more than ten times smaller, so they download faster.
+
+| Python version | Compression requested |
+|---|---|
+| 3.14 and newer | zstd (standard library), or gzip |
+| 3.10 to 3.13 with `pip install 'limacharlie[zstd]'` | zstd (`zstandard` package), or gzip |
+| 3.10 to 3.13 without the extra | gzip |
+
+zstd usually gives the smallest responses, so on Python 3.10 to 3.13 install the `zstd` extra. Without it the SDK works the same, using gzip.
+
+A truncated or corrupt compressed response raises `limacharlie.errors.ResponseDecodeError`, a subclass of `ApiError`. A partial body is never returned.
+
+To turn compression off, pass `compressed_responses=False` to `Client`, or set the `LC_NO_RESPONSE_COMPRESSION=1` environment variable, which also applies to the CLI:
+
+```python
+client = Client(oid='ORG_ID', api_key='API_KEY', compressed_responses=False)
+```
+
+A compressed response may decode to at most 1 GiB, far above the size of the largest API responses. A response that would decode to more raises `ResponseDecodeError` instead of filling memory. Uncompressed responses are not limited. To change the limit, set `LC_MAX_DECODED_RESPONSE_BYTES=<bytes>` (SDK and CLI) or pass `max_decoded_response_bytes=<bytes>` to `Client`, which overrides the environment variable. `0` or a negative value removes the limit.
 
 ## Organization
 

@@ -126,7 +126,7 @@ D&R rules operate on Events and produce Detections. Understanding the Event stru
 
 #### For LCQL Queries
 
-LCQL can query all three primary streams (event, detect, audit). Knowing the structure helps you:
+LCQL can query all three primary streams. In search they are named `event`, `detection` and `audit`. Knowing the structure helps you:
 
 - Select the right fields for investigation
 - Join data across streams

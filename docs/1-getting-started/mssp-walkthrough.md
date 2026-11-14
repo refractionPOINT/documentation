@@ -1001,7 +1001,7 @@ If you're an MSSP coming from Splunk / Sigma / Kusto / Sentinel and have an exis
 
 Detections are the streaming layer; queries are the batch / interactive layer. As an MSSP you need both — a detection fires when a known pattern matches in real time, but a *query* answers the question "did this thing — that we just learned about — happen anywhere in our customer base in the last 30 days?" That's where LimaCharlie's query language, [LCQL](../4-data-queries/lcql-examples.md), earns its keep.
 
-LCQL runs against the `event`, `detect`, and `audit` streams (the `--stream` flag in the CLI), which Insight retains for a year by default. No SIEM required.
+LCQL runs against the `event`, `detection`, and `audit` streams (the `--stream` flag in the CLI), which Insight retains for a year by default. No SIEM required.
 
 ### The shape of an LCQL query
 

@@ -6,6 +6,8 @@ The LimaCharlie CLI is installed as part of the [Python SDK](sdks/python-sdk.md)
 pip install limacharlie
 ```
 
+On Python 3.10 to 3.13, install `'limacharlie[zstd]'` instead for smaller API responses (see [Compressed Responses](#compressed-responses)).
+
 The CLI uses a `limacharlie <noun> <verb>` command pattern. Every command supports `--help` for detailed usage and `--ai-help` for AI-optimized explanations. Run `limacharlie --help` to see all available commands.
 
 ## Authentication
@@ -37,6 +39,16 @@ You can also specify a `UID` (User ID) during login to use a *user* API key repr
 ### Option 2 - Environment Variables
 
 You can use the `LC_OID` and `LC_API_KEY` and `LC_UID` environment variables to replace the values used logging in. The environment variables will be used if no other credentials are specified.
+
+## Compressed Responses
+
+In `limacharlie` releases after 5.12.2, the CLI asks the API for compressed responses and decodes them transparently, so command output is unchanged. Large responses such as `limacharlie search run` result pages typically arrive several times to more than ten times smaller.
+
+- zstd gives the smallest responses. It is used on Python 3.14 and newer, and on Python 3.10 to 3.13 when installed with `pip install 'limacharlie[zstd]'` (or `pipx install 'limacharlie[zstd]'`). Otherwise gzip is used.
+- Set `LC_NO_RESPONSE_COMPRESSION=1` to turn compression off.
+- A compressed response may decode to at most 1 GiB. Set `LC_MAX_DECODED_RESPONSE_BYTES=<bytes>` to change the limit, or `0` to remove it.
+
+See [Compressed Responses](sdks/python-sdk.md#compressed-responses) in the Python SDK documentation for details.
 
 ## Docker Image
 

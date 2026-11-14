@@ -115,6 +115,14 @@ pipx:
 uv tool install limacharlie
 ```
 
+!!! tip "Smaller downloads on Python 3.10 to 3.13"
+    Releases after 5.12.2 request compressed API responses, and zstd
+    gives the smallest ones. On Python 3.10 to 3.13, install the optional
+    `zstd` extra to use it: `pipx install 'limacharlie[zstd]'` or
+    `uv tool install 'limacharlie[zstd]'`. Python 3.14 and newer need
+    nothing extra. See
+    [Compressed Responses](sdk-overview.md#compressed-responses).
+
 ### Confirm the installation
 
 Run:
