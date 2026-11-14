@@ -187,7 +187,22 @@ Which hives you can name is listed by `limacharlie extension schema --name ext-g
 
 ## Step 6: Export once to bootstrap the repository
 
-Let the extension write what you already built by hand. In the web app, press **PUSH TO GIT**. From the CLI:
+Let the extension write what you already built by hand. First, check what it would write. Outputs and extension settings can contain literal passwords and tokens that someone typed into the UI, and an export commits them to Git as they are.
+
+Dump the two risky types to a local file and search it:
+
+```bash
+for OID in $CONTROL_OID $ACME_OID $GLOBEX_OID; do
+  limacharlie sync pull --config-file "/tmp/audit-$OID.yaml" --oid "$OID" \
+    --outputs --hive-extension-config
+  grep -n -i -E 'password|token|secret|api_?key|BEGIN .*PRIVATE KEY' "/tmp/audit-$OID.yaml" \
+    | grep -v 'hive://secret/'
+done
+```
+
+What is left should be harmless names such as `max_tokens`. A credential must read `hive://secret/<name>`. For every literal value, create a secret in that org, change the output or extension setting to the `hive://secret/<name>` reference, and run the check again. Delete the `/tmp/audit-*.yaml` files when you are done. If you skip this and a credential reaches the repository, treat it as leaked and rotate it. Removing the commit is not enough.
+
+Now export. In the web app, press **PUSH TO GIT**. From the CLI:
 
 ```bash
 for OID in $CONTROL_OID $ACME_OID $GLOBEX_OID; do
@@ -214,15 +229,7 @@ exports/orgs/<ACME_OID>/outputs.yaml
 ...
 ```
 
-Each export replaces that org's whole `exports/orgs/<OID>/` folder, so deletions in the org show up as deletions in Git. If nothing changed, it makes no commit.
-
-**Before you keep anything, search the export for credentials.** Outputs and extension settings can contain literal passwords and tokens that were typed into the UI.
-
-```bash
-git grep -n -i -E 'password|token|secret|api_?key|BEGIN .*PRIVATE KEY' -- exports | grep -v 'hive://secret/'
-```
-
-What is left should be harmless names such as `max_tokens`. A credential must read `hive://secret/<name>`. For any literal value, create a secret in the org, change the output or extension setting to the `hive://secret/<name>` reference, and export again. If a credential was already committed, treat it as leaked and rotate it. Removing the commit is not enough.
+Each export replaces that org's whole `exports/orgs/<OID>/` folder, so deletions in the org show up as deletions in Git. If nothing changed, it makes no commit. Run the same search over `exports/` as a second check: `git grep -n -i -E 'password|token|secret|api_?key' -- exports | grep -v 'hive://secret/'`.
 
 Exports go straight to the configured branch. If `main` requires pull requests, the push fails with `protected branch hook declined`. Either let the deploy key bypass the rule (on GitHub, add **Deploy keys** to the bypass list of a branch ruleset), or turn exports off once you have bootstrapped. Pull is read-only and works either way.
 
@@ -316,7 +323,7 @@ hives:
         enabled: true
 ```
 
-A pull replaces a record as a whole. After the pull, each org's `ext-integrity` holds exactly the rules in this file, and any rule that existed only in the org is gone. Start from the record in your export so nothing is lost. A customer that needs different Integrity rules gets its own complete `ext-integrity` record, included after the global one.
+A pull replaces a record as a whole. After the pull, each org's `ext-integrity` holds exactly the rules in this file, and any rule that existed only in the org is gone. Start from the record in your export so nothing is lost. A customer that needs different Integrity rules gets its own copy of `extension_config.yaml` with the complete `ext-integrity` record, listed in that customer's `index.yaml` instead of the global file. That way no record is defined twice.
 
 Check a record before you commit it. This asks the platform to validate it and changes nothing:
 
@@ -358,6 +365,13 @@ installation_keys:
   northwind-workstation:
     tags:
       - workstation
+  northwind-vip:
+    tags:
+      - vip
+      - workstation
+  northwind-sleeper:
+    tags:
+      - lc:sleeper
 ```
 
 The name of an installation key in the file is its description in the org. Git Sync matches existing keys by that description, and a `desc:` field next to the tags is ignored.
@@ -591,6 +605,7 @@ KEY=~/.ssh/gitsync/id_ed25519
 
 limacharlie org create --name "$NAME" --location usa >/dev/null
 OID=$(limacharlie org list --output json | jq -r --arg n "$NAME" '.[] | select(.name == $n) | .oid')
+[ "$(printf %s "$OID" | grep -c .)" -eq 1 ] || { echo "expected exactly one org named $NAME" >&2; exit 1; }
 echo "created $NAME: $OID"
 
 # Key, extension, configuration (Steps 4 and 5)
