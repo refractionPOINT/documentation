@@ -95,7 +95,7 @@ The command only reads. It changes nothing on the host.
 
 > **Note:** Requires sensor version 5.4.0 or later. Older sensors silently drop the request.
 
-**Platforms:** macOS | Windows
+**Platforms:** macOS | Windows | Linux
 
 **Parameters:** None
 
