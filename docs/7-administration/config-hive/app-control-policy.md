@@ -21,11 +21,11 @@ Both hives are partitioned by organization, like the other Config Hive types. Ea
 | Field | Required | Description |
 | --- | --- | --- |
 | `priority` | No | Integer, default `0`. A lower number is evaluated first. Policies with the same priority are ordered by record name, ascending. |
-| `platforms` | No | List of `windows` and `macos`. A sensor matches if it runs any one of them. Empty or omitted means every supported platform. |
+| `platforms` | No | List of `windows`, `macos` and `linux`. A sensor matches if it runs any one of them. `linux` needs endpoint agent 5.4.4 or later; an older Linux sensor ignores the policy. Empty or omitted means Windows and macOS; a Linux sensor is matched only by a policy that names `linux`. |
 | `tags` | No | List of sensor tags. A sensor matches only if it carries all of them. Empty or omitted matches any sensor. At most 64 tags, each at most 256 bytes, with no duplicates and no leading or trailing whitespace. |
 | `mode` | Yes | `off`, `permissive`, `permissive_sync` or `enforcing`. See [Modes](#modes). |
 | `stance` | Yes | `allowlist` or `blocklist`. There is no default, so you always choose one on purpose. See [Stance](#stance). |
-| `trust_os_vendor` | No | Boolean, default `true`. When `true`, binaries signed by the operating system vendor are implicitly allowed: Apple platform binaries on macOS and Microsoft-signed binaries on Windows. Deny rules still win. |
+| `trust_os_vendor` | No | Boolean, default `true`. When `true`, binaries signed by the operating system vendor are implicitly allowed: Apple platform binaries on macOS, Microsoft-signed binaries on Windows and, on Linux, files installed by a package the distribution signed (see [package provenance](../../5-integrations/extensions/limacharlie/app-control/linux.md#os-vendor-trust-package-provenance)). Deny rules still win. |
 | `on_enable` | No | `leave`, `report` or `terminate`. What the sensor does about programs that are already running when the policy arrives. When omitted, the sensor reports them. A blank value is refused. See [Programs that are already running](#programs-that-are-already-running). |
 
 Keywords are case-sensitive and must be lowercase exactly as shown. Unknown fields are refused when you save the record.
@@ -38,7 +38,7 @@ Keywords are case-sensitive and must be lowercase exactly as shown. Unknown fiel
 A sensor receives one policy. LimaCharlie takes the enabled policies, orders them by `priority` and then by record name, and gives the sensor the first one whose `platforms` and `tags` both match. Policies later in the order are ignored for that sensor.
 
 - A sensor that matches no policy is left alone.
-- A policy with no `platforms` and no `tags` matches every Windows and macOS sensor. Give it the highest `priority` number so that narrower policies are checked first.
+- A policy with no `platforms` and no `tags` matches every Windows and macOS sensor. A Linux sensor is matched only by a policy that names `linux`, so a fleet with Linux hosts has at least one such policy. Give a broad policy the highest `priority` number so that narrower policies are checked first.
 - Disabled records are skipped.
 
 Because the first match wins, you stage a rollout by putting narrow policies (a pilot tag) ahead of a broad one. See [Staged rollout by tag](#staged-rollout-by-tag).

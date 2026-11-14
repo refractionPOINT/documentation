@@ -35,16 +35,17 @@ Only enabled records apply. Records created without metadata are enabled by defa
 
 | Kind | Matches | Platforms |
 | --- | --- | --- |
-| `path` | An exact file path. If the value ends with `\` or `/`, it matches every file under that directory instead. | Windows, macOS |
+| `path` | An exact file path. If the value ends with `\` or `/`, it matches every file under that directory instead. | Windows, macOS, Linux |
 | `signer` | The Authenticode subject of the signing certificate on Windows, or the Apple Team ID on macOS. | Windows, macOS |
 | `signing_id` | The macOS code-signing identifier. | macOS |
 | `signer_root` | The SHA-256 thumbprint of any certificate in the validated certificate chain. | Windows |
-| `sha256` | The SHA-256 hash of the file, as 64 hex characters. | Windows, macOS |
+| `sha256` | The SHA-256 hash of the file, as 64 hex characters. | Windows, macOS, Linux |
 
 Notes on each kind:
 
 - **`path`.** There are no wildcards. `*` and `?` are literal characters. Matching is case-insensitive for ASCII characters.
 - **`signer_root`.** Use the 64-character SHA-256 thumbprint. Windows shows the 40-character SHA-1 thumbprint by default, and that value does not match. The rule matches if any certificate in the chain, root or intermediate, has the thumbprint.
+- **Linux.** Only `path` and `sha256` can match on a Linux host, because its files carry no signature. See [Rules on Linux](../../5-integrations/extensions/limacharlie/app-control/linux.md#rules-on-linux).
 - **`sha256`.** A hash rule pins one exact build of one file. It stops matching when the vendor ships an update, so it suits denying a known bad file better than allowing software that updates.
 
 An `installer` rule takes every kind except `sha256`. The hive refuses it with `an installer cannot be named by sha256`.

@@ -93,9 +93,9 @@ rules. That is the expected state before the first policy reaches it.
 
 The command only reads. It changes nothing on the host.
 
-> **Note:** Requires sensor version 5.4.0 or later. Older sensors silently drop the request.
+> **Note:** Requires sensor version 5.4.0 or later, 5.4.4 on Linux. Older sensors silently drop the request.
 
-**Platforms:** macOS | Windows
+**Platforms:** macOS | Windows | Linux
 
 **Parameters:** None
 
