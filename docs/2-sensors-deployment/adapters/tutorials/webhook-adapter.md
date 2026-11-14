@@ -87,7 +87,7 @@ The `Authorization` header can take any of these forms:
 - `Authorization: Bearer SECRET` (the scheme is not case sensitive)
 - `Authorization: Basic BASE64` where `BASE64` is the encoding of `username:SECRET`. The username is ignored, the password must be the secret.
 
-Any other value is refused with a `401`, like a wrong secret. Webhooks with a signature scheme configured (`signature_scheme`) still require a valid signature on top of the secret.
+A raw value that starts with `Bearer ` or `Basic ` is read as that scheme, so a secret that itself starts that way must be sent in the URL or the `lc-secret` header. Any other value is refused with a `401`, like a wrong secret. Webhooks with a signature scheme configured (`signature_scheme`) still require a valid signature on top of the secret.
 
 ## Supported Webhook Format
 
