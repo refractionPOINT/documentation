@@ -13,7 +13,7 @@ Host Posture checks your Windows, macOS and Linux sensors for misconfigurations:
 
 - The `ext-host-posture` extension subscribed in the organization. See [Enabling the extension](#enabling-the-extension).
 - Windows, macOS or Linux sensors on a version that supports the posture scan. A sensor that does not support it is reported as `unsupported` for every rule and is never reported as passing.
-- The `host_posture.get` and `host_posture.set` [permissions](../../../8-reference/permissions.md#host-posture). Saving, enabling or disabling a rule also needs `sensor.task`.
+- The `host_posture.get` and `host_posture.set` [permissions](../../../8-reference/permissions.md#host-posture). Saving a rule, and enabling, disabling or setting the expiry of one, also needs `sensor.task`.
 
 ## Enabling the extension
 
@@ -194,7 +194,7 @@ A rule is a YAML or JSON document in the `lc-posture/v1` language. See [Writing 
 | `host_posture.get` | Read rules, and read results through the extension. |
 | `host_posture.set` | Create, edit, enable, disable and delete rules, and their metadata. |
 
-Saving, enabling or disabling a rule also needs `sensor.task`, because a rule runs on your sensors. Deleting a rule needs only `host_posture.set`. The permissions are checked when you change a rule, not at each sweep.
+Saving a rule, and enabling, disabling or setting the expiry of one, also needs `sensor.task`, because a rule runs on your sensors. Deleting a rule needs only `host_posture.set`. The permissions are checked when you change a rule, not at each sweep.
 
 By default the Owner, Administrator and Operator roles have all of them, and the Viewer role has `host_posture.get`. See [Permissions](../../../8-reference/permissions.md#host-posture).
 
