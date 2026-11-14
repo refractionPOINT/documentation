@@ -181,7 +181,6 @@ Types you should leave off:
 - **`dr-managed` hive.** Extensions own those rules. Git Sync's own schedule rules live there.
 - **Organization values** (`org_values`). They can hold literal third-party API keys, and export would write them to Git.
 - **`lookup` and `yara` hives**, until you need them. They can be very large.
-- **`resources`**, for export. The export lists them in a different order each time, so every export makes a commit.
 
 Which hives you can name is listed by `limacharlie extension schema --name ext-git-sync`.
 
