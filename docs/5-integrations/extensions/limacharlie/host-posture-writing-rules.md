@@ -186,13 +186,13 @@ The evaluator applies the same steps to every rule:
 3. Evaluate `violation`. If it is true (or a non-empty list): `fail`. A hit is a hit, even when something unrelated was unreadable.
 4. Otherwise the result is `pass`, but only if every probe the conditions read was readable and complete. If not: `error`. If the pass depended on an absent item you did not declare in [`absent_is_pass`](#absence), the result is `not_applicable` by absence instead, and open findings are not closed.
 
-The rule is simple: **a pass has to be proven.** An unreadable or truncated input never produces a `pass` or a `not_applicable`. This is enforced by the evaluator, not by how you write your guards.
+The rule is simple: **a pass has to be proven.** An unreadable or truncated input never produces a `pass` or a `not_applicable`, except for a probe you listed in [`tolerate_unreadable`](#reading-errors). This is enforced by the evaluator, not by how you write your guards.
 
 ### Reading errors
 
 An `error` finding is raised for a rule that could not be decided on a host. It carries a reason such as `unreadable:<probe>`, `invalid:<probe>`, `truncated:<probe>:<cap>` or `expression:violation:<message>`. It opens a finding, so a persistent problem is visible, but it does not count against severity totals.
 
-If a probe may be unreadable without the rule being undecided, list it in `tolerate_unreadable`. The result then stands, but an open failure is not closed on that reading.
+If a probe may be unreadable without the rule being undecided, list it in `tolerate_unreadable`. The rule is then decided as if that probe had been read: a `pass` can result, and a truncated read still cannot prove one. An open failure is not closed on a reading where a tolerated probe was unreadable.
 
 ### Absence
 
