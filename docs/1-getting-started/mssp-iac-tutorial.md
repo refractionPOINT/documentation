@@ -139,7 +139,7 @@ usr_mtd:
   enabled: true
 ```
 
-`usr_mtd: {enabled: true}` matters. A disabled configuration record is ignored, and every request fails with `ssh key is required`. The web app enables it for you.
+`usr_mtd: {enabled: true}` matters. A disabled configuration record is ignored, and every request fails with `Git Sync is not configured for this organization, or its configuration is disabled`. The web app enables it for you.
 
 ```bash
 for OID in $CONTROL_OID $ACME_OID $GLOBEX_OID; do
