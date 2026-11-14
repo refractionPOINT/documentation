@@ -242,6 +242,7 @@ nav:
           - LimaCharlie with Codex: codex.md
       - Core Concepts: 1-getting-started/core-concepts.md
       - Starting an MSSP — Walkthrough: 1-getting-started/mssp-walkthrough.md
+      - MSSP Infrastructure as Code with Git Sync: 1-getting-started/mssp-iac-tutorial.md
       - Tutorials:
           - Overview: 1-getting-started/tutorials/index.md
 

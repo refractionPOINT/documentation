@@ -1,48 +1,123 @@
 # Git Sync
 
-The Git Sync Extension is a tool that automates the management of Infrastructure-as-Code (IaC) configurations. It simplifies the process of deploying and managing infrastructure by synchronizing changes between a Git repository and target organizations.
+The Git Sync extension keeps an organization's configuration in a Git repository. It can **pull** a repository into an organization (apply the configuration in Git) and **push** an organization into a repository (export what the organization has now). Either can run on a schedule or on demand.
 
-**Key features:**
+One repository can serve many organizations, and organizations can share files. That makes it the natural way to run an MSSP: write a detection rule once in the repository, and every customer gets it.
 
-- **Centralized Configuration:** Stores all IaC configurations in a single Git repository.
-- **Recurring Apply:** Can automatically sync IaC changes between Git and LC organizations at regular intervals.
-- **Recurring Export:** Can automatically export IaC from LC organizations to GitHub at regular intervals.
-- **Export Request:** Allows you to export the configuration of an Organization into the Git repository.
-- **Automated Deployment:** Helps automate the deployment process, reducing manual effort.
-- MSSP**-Friendly:** Designed to accommodate multiple organizations within a single repository, allowing for global configurations to be shared between orgs.
-- **Flexible Configuration:** Allows for customization and additional configuration directories.
-- **Transparent Operations:** Tracks operations through an extension Sensor.
+For a step-by-step walkthrough, follow the [MSSP Git Sync tutorial](../../../1-getting-started/mssp-iac-tutorial.md). This page is the reference.
 
-By using `ext-git-sync`, you can streamline your IaC workflows, improve consistency, and reduce the risk of errors.
+**What Git Sync does:**
 
-## Use Cases
+- **Recurring pull.** Applies the repository to the organization every hour, 3, 6, 12 or 24 hours, or every week.
+- **Recurring push.** Exports the organization to the repository on the same set of intervals.
+- **On-demand pull and push.** Buttons in the web app, or an extension request from the CLI or API.
+- **Shared configuration.** One repository holds a configuration per organization, and the organizations can include common files.
+- **Operation log.** Each successful operation is recorded as an event on the extension's sensor.
 
-### Sync FROM Git
+Git Sync lists the [Infrastructure](infrastructure.md) extension as a requirement, so subscribe to both.
 
-If you have a properly structured git repository containing org configurations, the extension can sync the running org configurations with the contents of the configs in git.
+## Pull and push
+
+### Pull: Git to the organization
+
+The repository holds a file for each organization. A pull reads it and creates or updates the matching records in the organization.
 
 ![d2 (1).png "pull config(1).png"](../../../assets/images/d2-(1).png "pull_config(1).png")
 
-### Export TO Git
+!!! warning "A pull never deletes"
+    Pull adds new records and updates existing ones. It does not remove a record that is no longer in Git. If you delete a rule from the repository, the rule keeps running in the organization until you delete it there. See [Removing things](#removing-things).
 
-Assuming you have an empty git repository, you can configure the extension to export the current org configuration to the repository. It will be placed in an `exports` subdirectory.
+### Push: the organization to Git
+
+A push writes the organization's current configuration to the repository, under `exports/`. Use it to bootstrap a repository from an organization you configured by hand, and to record changes someone made in the web app.
 
 ![d2 (2).png "push config(1).png"](../../../assets/images/d2-(2).png "push_config(1).png")
 
-## Git Repo Structure
+A push:
 
-For applying org configs from a git repository, the repo must adhere to the following structure. The root of the repository must contain an `orgs` directory with `[org-id]` child directories, each containing an `index.yaml` .
+- writes to `exports/orgs/<OID>/` and never touches `orgs/`, so it cannot overwrite what you pull from;
+- replaces the whole `exports/orgs/<OID>/` folder each time, so records you deleted in the organization disappear from Git;
+- makes no commit when nothing changed, and otherwise commits as `LC Git Sync` directly to the configured branch;
+- works on an empty repository.
+
+If the branch requires pull requests, a push is rejected (`protected branch hook declined`). Either allow the deploy key to bypass the rule, or leave push off.
+
+## What is synced
+
+Git Sync handles these types:
+
+| Type | In the configuration file | Switch |
+| --- | --- | --- |
+| Outputs | `outputs:` | `sync_outputs`, `export_outputs` |
+| Resources | `resources:` | `sync_resources`, `export_resources` |
+| Extension subscriptions | `extensions:` | `sync_extensions`, `export_extensions` |
+| Organization values | `org-value:` | `sync_org_values`, `export_org_values` |
+| Installation keys | `installation_keys:` | `sync_installation_keys`, `export_installation_keys` |
+| Hive records | `hives: <hive>:` | `sync_hives.<hive>`, `export_hives.<hive>` |
+
+Detection rules, false-positive rules, lookups, saved queries, YARA rules, AI agents and the settings of extensions such as Exfil, Integrity and Artifact are all hive records: `dr-general`, `fp`, `lookup`, `query`, `yara`, `ai_agent` and `extension_config` (one record per extension, named after it, for example `ext-exfil`). The hives you can enable are listed by `limacharlie extension schema --name ext-git-sync`.
+
+The older top-level sections `rules`, `fps`, `integrity`, `exfil`, `artifact` and `yara` that the `limacharlie sync` command can write are **ignored** by Git Sync, without an error. Write them as `hives:` records.
+
+A few types need care:
+
+- **`secret` hive.** Offered under *Sensitive Data Options*. Enabling it exports secret values to Git and lets Git overwrite them. Leave it off, and refer to secrets as `hive://secret/<name>`.
+- **`acl` hive.** Refused. Resource ACL membership stays out of Git.
+- **`dr-managed` hive.** Extensions own these rules, including Git Sync's own schedule rules.
+- **Installation keys.** The name of each key in the file is its description in the organization, and how a later pull finds it again.
+- **Outputs and organization values.** An export writes them as stored. A credential typed into an output, or an API key stored as an organization value, is written to the repository in clear text. Use `hive://secret/<name>` references in outputs and leave `export_org_values` off.
+- **`resources` export.** The list comes out in a different order each time, so every export produces a commit.
+
+## Repository structure
+
+A pull needs this file for each organization:
 
 ```text
-.
-└── orgs [required]
-    └── a326700d-3cd7-49d1-ad08-20b396d8549d [required]
-        └── index.yaml [required]
+orgs/<OID>/index.yaml
 ```
 
-The `index.yaml` determines which other files in the repo are included in the configuration for this org.
+`<OID>` is the organization's ID. If the file is missing at the head of the configured branch, the pull fails with `organization not found in the repository`.
 
-For instance, assume all of the configurations for this org were unique to this org and could be nested inside of the org's directory.
+`index.yaml` lists the other files that make up the configuration:
+
+```yaml
+version: 3
+include:
+  - extensions.yaml
+  - outputs.yaml
+  - hives/dr-general.yaml
+  - hives/fp.yaml
+```
+
+- `include:` paths are relative to the file that contains them, and included files can include others.
+- List every file. Wildcards (`hives/*.yaml`) are not expanded by Git Sync. The `limacharlie sync` command does expand them, so a repository that works with the CLI can fail here.
+- Every file starts with `version: 3`.
+- When two files define the same record, the file included later wins, and an included file wins over the file that includes it.
+- A type is applied only when its switch in the Git Sync configuration is on **and** an included file holds it. A file for a type whose switch is off is skipped silently.
+
+A hive file looks like this. Put `enabled: true` in each record's `usr_mtd`, or the record is created disabled:
+
+```yaml
+version: 3
+hives:
+  dr-general:
+    suspicious-encoded-powershell:
+      data:
+        detect:
+          event: NEW_PROCESS
+          op: contains
+          path: event/COMMAND_LINE
+          value: -EncodedCommand
+        respond:
+          - action: report
+            name: suspicious-encoded-powershell
+      usr_mtd:
+        enabled: true
+```
+
+### One organization, all files local
+
+When everything belongs to one organization, keep it in the organization's folder:
 
 ```text
 .
@@ -52,13 +127,10 @@ For instance, assume all of the configurations for this org were unique to this 
         ├── hives
         │   ├── cloud_sensor.yaml
         │   ├── dr-general.yaml
-        │   ├── dr-managed.yaml
-        │   ├── dr-service.yaml
         │   ├── extension_config.yaml
         │   ├── fp.yaml
         │   ├── lookup.yaml
         │   ├── query.yaml
-        │   ├── secret.yaml
         │   └── yara.yaml
         ├── index.yaml
         ├── installation_keys.yaml
@@ -67,37 +139,33 @@ For instance, assume all of the configurations for this org were unique to this 
         └── resources.yaml
 ```
 
-Notice that all configurations for this org are contained within the org's own directory. In this case, the `index.yaml` would simply contain references to the relative path of this org's configuration files. See below for an example of the contents of `index.yaml` for this use case.
-
 ```yaml
 version: 3
 include:
-    - extensions.yaml
-    - hives/fp.yaml
-    - outputs.yaml
-    - resources.yaml
-    - hives/query.yaml
-    - hives/yara.yaml
-    - hives/dr-managed.yaml
-    - hives/lookup.yaml
-    - hives/dr-service.yaml
-    - org_values.yaml
-    - installation_keys.yaml
-    - hives/secret.yaml
-    - hives/cloud_sensor.yaml
-    - hives/dr-general.yaml
-    - hives/extension_config.yaml
+  - extensions.yaml
+  - outputs.yaml
+  - resources.yaml
+  - org_values.yaml
+  - installation_keys.yaml
+  - hives/cloud_sensor.yaml
+  - hives/dr-general.yaml
+  - hives/extension_config.yaml
+  - hives/fp.yaml
+  - hives/lookup.yaml
+  - hives/query.yaml
+  - hives/yara.yaml
 ```
 
-### Sharing configurations across multiple orgs
+### Sharing configuration across organizations
 
-Now, assume you have a global rule set you want to apply across many orgs. You could structure the repo similar to the example below.
+Put what is common in a shared folder, and have each organization include it:
 
 ```text
 .
-├── hives
-│   ├── dr-general.yaml
-│   └── yara.yaml
+├── global
+│   └── hives
+│       ├── dr-general.yaml
+│       └── yara.yaml
 └── orgs
     ├── 7e41e07b-c44c-43a3-b78d-41f34204789d
     │   └── index.yaml
@@ -107,18 +175,16 @@ Now, assume you have a global rule set you want to apply across many orgs. You c
         └── index.yaml
 ```
 
-The corresponding `index.yaml` at each org level would look similar to the following
-
 ```yaml
 version: 3
 include:
-    - ../../hives/yara.yaml
-    - ../../hives/dr-general.yaml
+  - ../../global/hives/yara.yaml
+  - ../../global/hives/dr-general.yaml
 ```
 
-### Exporting configurations
+Add an organization's own files after the shared ones, and list them in that organization's `index.yaml` only.
 
-Configuration exports will be placed in a separate `exports` subdirectory to avoid overwriting configurations that are pushed across multiple organizations.
+### Export layout
 
 ```text
 .
@@ -127,16 +193,10 @@ Configuration exports will be placed in a separate `exports` subdirectory to avo
         └── a326700d-3cd7-49d1-ad08-20b396d8549d
             ├── extensions.yaml
             ├── hives
-            │   ├── cloud_sensor.yaml
             │   ├── dr-general.yaml
-            │   ├── dr-managed.yaml
-            │   ├── dr-service.yaml
             │   ├── extension_config.yaml
             │   ├── fp.yaml
-            │   ├── lookup.yaml
-            │   ├── query.yaml
-            │   ├── secret.yaml
-            │   └── yara.yaml
+            │   └── query.yaml
             ├── index.yaml
             ├── installation_keys.yaml
             ├── org_values.yaml
@@ -144,69 +204,137 @@ Configuration exports will be placed in a separate `exports` subdirectory to avo
             └── resources.yaml
 ```
 
-## Setting up Git Sync with Github
+Only the types whose export switch is on get a file, plus an `index.yaml` that includes them. To manage an organization from Git, copy what you want from `exports/` into `orgs/<OID>/` or a shared folder. A pull never reads `exports/`.
 
-This guide walks you through the process of configuring Git synchronization between GitHub and LimaCharlie, allowing for automated deployment and version control of your security configurations.
+## Configuration
 
-### Step 0: Making a Git Sync specific SSH Key
+The configuration is stored in each organization, in the `extension_config` hive under the key `ext-git-sync`. Edit it in the web app (**Extensions** in the sidebar, then **Git Sync**), or with the CLI:
 
-- First create the directory
+```bash
+limacharlie extension config-set --name ext-git-sync --input-file gitsync.yaml --oid <OID>
+limacharlie extension config-get --name ext-git-sync --oid <OID>
+```
 
-`mkdir -p ~/.ssh/gitsync`
+```yaml title="gitsync.yaml"
+data:
+  repo_url: git@github.com:example/iac.git
+  branch: main
+  user_name: git
+  ssh_key: hive://secret/gitsync-deploy-key
+  schedule: 6h
+  schedule_export: "-"
+  sync_outputs: true
+  sync_extensions: true
+  sync_hives:
+    dr-general: true
+    fp: true
+usr_mtd:
+  enabled: true
+```
 
-- Set appropriate permissions for the directory
+The record must be enabled (`usr_mtd: {enabled: true}`). A disabled record is ignored and requests fail with `ssh key is required`. The web app enables it for you.
 
-`chmod 700 ~/.ssh/gitsync`
+| Field | Web app label | Description |
+| --- | --- | --- |
+| `repo_url` | Repository URL | SSH URL of the repository, such as `git@github.com:example/iac.git`. |
+| `branch` | Branch | Branch to pull from and push to. Defaults to `main` if empty. The web app requires a value. |
+| `user_name` | User Name | SSH user. `git` on GitHub, GitLab and Bitbucket. |
+| `ssh_key` | SSH Key | Private key. Use `hive://secret/<name>`. |
+| `schedule` | Pull Schedule | How often to pull. |
+| `schedule_export` | Push Schedule | How often to push. |
+| `sync_outputs`, `sync_resources`, `sync_extensions`, `sync_org_values`, `sync_installation_keys` | Pull checkboxes | Types a pull applies. |
+| `sync_hives.<hive>` | Pull checkboxes | Hives a pull applies. |
+| `export_outputs`, `export_resources`, `export_extensions`, `export_org_values`, `export_installation_keys` | Push checkboxes | Types a push writes. |
+| `export_hives.<hive>` | Push checkboxes | Hives a push writes. |
 
-- Now generate the SSH key
+`repo_url`, `ssh_key` and `user_name` accept a `hive://secret/<name>` reference. Every switch defaults to off, so nothing syncs until you turn it on.
 
-`ssh-keygen -t ed25519 -C "limacharlie-gitsync" -f ~/.ssh/gitsync/id_ed25519`
+### Schedules
 
-### Step 1: Generate GitHub Deploy Keys
+`schedule` and `schedule_export` take one of `-` (off), `1h`, `3h`, `6h`, `12h`, `24h` or `168h`. Nothing shorter is available. For a change that cannot wait, run a pull by hand.
 
-1. Navigate to your GitHub repository
-2. Click on the **Settings** tab
-3. In the left sidebar, select **Deploy keys**
-4. Click the **Add deploy key** button
-5. Enter a descriptive title for your key (e.g., "LimaCharlie Git Sync Integration")
-6. Paste your public SSH key into the "Key" field
-7. **Important:** Check the box for **Allow write access**
-8. Click **Add key** to save
+Saving the configuration installs or removes the schedule. Git Sync keeps two D&R rules in the organization's `dr-managed` hive: `ext-git-sync-sync` for pull and `ext-git-sync-export` for push. A schedule of `-` removes the rule. Saving a configuration identical to the stored one writes nothing and leaves the rules as they are.
 
-### Step 2: Store SSH Private Key in LimaCharlie
+Subscribing to the extension installs the pull rule at 12 hours, before any configuration exists. Saving a configuration with `schedule: "-"` removes it.
 
-1. Log in to your LimaCharlie account
-2. Navigate to the **Secret Manager** section of your Organization
-3. Click **Create New Secret**
-4. Choose a descriptive name for your secret (e.g., "github-deploy-key")
-5. Paste the **private** part of your SSH key into the value field
-6. Save the secret
+Several organizations pushing to one repository at the same moment can lose the race for the branch (`may be a concurrent push to the same repo`). The loser tries again on its next run. Prefer scheduling push on one organization, or none.
 
-### Step 3: Configure Git Sync in LimaCharlie
+## Running a pull or push by hand
 
-1. Navigate to the **Git Sync** section in LimaCharlie
-2. Under the **SSH Key** section, select **Secret Manager**
-3. From the dropdown menu, select the secret you created in Step 2
-4. Set the **user name** to `git`
-5. Copy the SSH URL from your GitHub repository (found on the repository's main page, under Code)
-6. Paste the SSH URL into the **repository** URL field in LimaCharlie
-7. Configure the **branch** name (required)
-8. Select the push and pull options which allow you to specify which items to push to or pull from Git configurations.
-9. Optionally, select push and pull schedules if you wish to regularly sync or export your Infrastructure as Code configurations to and from LimaCharlie. This will create D&R rules on the backend that kick off the push and pull actions on the selected schedule/interval.
-10. Click **save settings**.
+In the web app, open **Extensions**, then **Git Sync**. **PULL FROM GIT** runs a pull and **PUSH TO GIT** runs a push. They use the saved configuration.
 
-### Step 4: Verify Integration
+From the CLI or the API, send the extension request `apply` (pull) or `export` (push):
 
-1. Perform a test commit to your GitHub repository by clicking "Push to Git" in the upper right corner.
+```bash
+limacharlie extension request --name ext-git-sync --action apply --oid <OID>
+limacharlie extension request --name ext-git-sync --action export --oid <OID>
+```
 
-2. Verify that your configuration has been pushed to Github.
+Neither takes parameters.
 
-### Troubleshooting
+## Seeing the results
 
-If you encounter synchronization issues:
+A failed operation returns its reason to the caller: a toast in the web app, or the error text from the CLI. A successful one adds an event to the extension's sensor, the sensor tagged `ext:ext-git-sync`. In the web app it is the **ASSOCIATED SENSOR** link on the Git Sync page. From the CLI:
 
-- Verify that the deploy key has proper write permissions
-- Ensure the correct SSH URL format is used (should begin with `git@github.com:`)
-- Check that the private key in Secret Manager matches the public key added to GitHub
+```bash
+SID=$(limacharlie sensor list --selector '"ext:ext-git-sync" in tags' --oid <OID> --output json | jq -r '.[0].sid')
+limacharlie event list --sid "$SID" --event-type apply --oid <OID> \
+  --start "$(date -d '1 hour ago' +%s)" --end "$(date +%s)" --output json
+```
+
+An `apply` event has two lists. `changed` holds the records that were added or updated, and `unchanged` the ones that already matched. Hive records are named `<hive>/<record>`. An `export` event records the options used.
+
+## Removing things
+
+Because a pull only adds and updates, remove something in two steps. First remove it from the repository and merge, so the next pull does not put it back. Then delete it in the organization, in the web app or with the CLI:
+
+```bash
+limacharlie dr delete --key <rule> --confirm --oid <OID>
+limacharlie hive delete --hive-name <hive> --key <record> --confirm --oid <OID>
+limacharlie output delete --name <output> --confirm --oid <OID>
+```
+
+To make an organization match its files exactly, run `limacharlie sync push --force` with the same `index.yaml` and the same types. Force deletes every record of those types that is not in the files, including records created in the web app, so run it with `--dry-run` first. See [the tutorial](../../../1-getting-started/mssp-iac-tutorial.md#step-11-delete-things).
+
+## Setting up Git Sync
+
+The [tutorial](../../../1-getting-started/mssp-iac-tutorial.md) does this for a whole MSSP. For a single organization:
+
+1. **Create a private repository** on any Git host that serves SSH and supports deploy keys.
+2. **Create an SSH key** used only for Git Sync:
+
+    ```bash
+    mkdir -p ~/.ssh/gitsync && chmod 700 ~/.ssh/gitsync
+    ssh-keygen -t ed25519 -N "" -C "limacharlie-gitsync" -f ~/.ssh/gitsync/id_ed25519
+    ```
+
+3. **Add the public key to the repository as a deploy key.** On GitHub: **Settings**, **Deploy keys**, **Add deploy key**. Check **Allow write access** if you will push. A read-only key is enough for pull only. Use one key per repository.
+4. **Store the private key as a secret.** In the web app, **Organization Settings**, **Secrets Manager**. Or:
+
+    ```bash
+    jq -Rs '{secret: .}' ~/.ssh/gitsync/id_ed25519 \
+      | limacharlie secret set --key gitsync-deploy-key --enabled --oid <OID>
+    ```
+
+5. **Subscribe** to Git Sync from the [Marketplace](https://app.limacharlie.io/add-ons/extension-detail/ext-git-sync), or with `limacharlie extension subscribe --name ext-git-sync --oid <OID>`.
+6. **Configure it.** Open **Extensions**, then **Git Sync**. Set the Repository URL, Branch, User Name (`git`) and SSH Key (pick the secret), tick the types to push and pull, choose schedules if you want them, and press **SAVE SETTINGS**. Or use `config-set` as shown above.
+7. **Try it.** Press **PUSH TO GIT** and check that `exports/orgs/<OID>/` appears in the repository.
+
+## Troubleshooting
+
+| Error text | Cause |
+| --- | --- |
+| `organization not found in the repository` | No `orgs/<OID>/index.yaml` on the configured branch. |
+| `file not found: <path>` | An `include:` path does not exist, or it is a wildcard. |
+| `invalid version found` | An included file has no `version: 3`. |
+| `ssh key is required` | The configuration record is disabled or has no `ssh_key`. |
+| `failed using secret ssh_key ... RECORD_NOT_FOUND` | The secret named in `ssh_key` does not exist in the organization. |
+| `ssh: no key found` | `ssh_key` holds a literal value that is not a private key. |
+| `failed to clone repo: repository not found` | Wrong URL, or the deploy key is not on that repository. |
+| `couldn't find remote ref "refs/heads/<branch>"` | The branch does not exist. |
+| `protected branch hook declined` | A push to a branch that requires pull requests. |
+| `requires <permission>` | The extension was subscribed before it needed that permission. Run `limacharlie extension rekey --name ext-git-sync --oid <OID>`. |
+
+The tutorial's [troubleshooting section](../../../1-getting-started/mssp-iac-tutorial.md#troubleshooting) explains each one.
 
 [Infrastructure](infrastructure.md)
