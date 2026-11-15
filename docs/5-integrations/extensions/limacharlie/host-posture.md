@@ -65,6 +65,7 @@ Both write the rules with **your** permissions, so you need `host_posture.set` a
 - A rule that already exists is left alone. The command lists what it skipped.
 - `--update` replaces a rule with a newer version from the pack, but only a rule you have not edited. The replacement is conditional on the record not having changed since it was read. Your enabled or disabled state, expiry and comment are kept.
 - A rule you edited, or one whose version is higher than the pack's, is never overwritten unless you pass `--force`.
+- If a rule changes while the command runs (a new rule that appeared, or an update that lost the race), nothing is retried: the rule is skipped, and the output shows the state it is in now (`state_now`).
 - `--dry-run` shows what would happen and writes nothing.
 
 To decide what to do, the command asks the extension how each rule of your hive compares with the pack. Each pack rule is in one of these states:
@@ -74,8 +75,8 @@ To decide what to do, the command asks the extension how each rule of your hive 
 | `new` | You have no record for it. It is created. |
 | `current` | Your record is the pack's rule, unedited, at the same version. Nothing to do. |
 | `update_available` | Your record is unedited and the pack has a newer version. `--update` replaces it. |
-| `edited` | Your record differs from what the pack installed. Needs `--force`. |
-| `org_newer` | Your record has a higher version than the pack's. Needs `--force`. |
+| `edited` | Your record differs from what the pack installed, or has no digest tag. This is checked first. Needs `--force`. |
+| `org_newer` | Your record is unedited but its version is higher than the pack's. Needs `--force`. |
 
 Rules the command writes carry the tag `lc:default-pack`, a tag `lc:pack-sha256:<digest>` and a comment naming the pack version. The extension computes the digest of what it handed out, and recognizes an edit by comparing it with the record as it is now. A rule without the digest tag, for example one you created yourself, counts as edited.
 
