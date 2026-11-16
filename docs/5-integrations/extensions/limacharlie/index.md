@@ -4,7 +4,7 @@ Extensions built and maintained by LimaCharlie that extend the platform with add
 
 ## Available Extensions
 
-- [Application Control](app-control.md) - Application allowlisting and blocklisting on Windows and macOS
+- [Application Control](app-control.md) - Application allowlisting and blocklisting on Windows, macOS and Linux
 - [Artifact](artifact.md) - Collect and store forensic artifacts
 - [BinLib](binlib.md) - Binary library management
 - [Cases](cases.md) - Case management for investigations
