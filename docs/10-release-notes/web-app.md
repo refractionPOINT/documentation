@@ -5,6 +5,55 @@ Release notes for the LimaCharlie web application. For the latest releases of ev
 !!! tip "Subscribe"
     Get each release as it ships with the [Web App RSS feed](https://docs.limacharlie.io/10-release-notes/web-app.xml).
 
+## 2026-11-16
+
+### Web App 6.6.9
+
+Host Posture rules and a default rule pack, a shorter path from sign-up to the first detection, a three-step cloud connection wizard, editable case notes, favorite orgs, and dates in your time-zone setting on every page.
+
+#### New Features
+
+- **Host Posture rules**: a new Rules tab lets you create, edit as YAML, enable, disable, and delete posture rules. Rules can include or exclude sensors by tag. An "Install default rule pack" dialog adds the default rules and shows which ones have updates.
+- **Host Posture results**: the page has Hosts, Results by rule, and Standards tabs, with detail panels for hosts and rules. A sweep action scans every host in scope. Windows, Linux, and macOS sensors have a new Host Posture tab with a "Scan now" action. Cloud Security Risks can filter host configuration findings and shows the failing hosts and the remediation.
+- **First sensor onboarding**: the sensor wizard opens on the install step for your own OS and creates the installation key for you. It shows a "Copy command" button and waits for the sensor to connect. Once it connects, the wizard shows its hostname and the next steps. One setup checklist then guides you, on the sensor list, the Dashboard, and the Help Center.
+- **Sign-up and first org**: email verification shows the address the link went to, with a "Resend email" button. The product picker asks for the org name and region in place, prefilled where possible. "Create a blank organization" is there for users who already know LimaCharlie, and a blank org shows no setup guidance. The "Welcome to LimaCharlie!" pop-up is gone.
+- **Menu presets**: each onboarding purpose (Endpoint, Cloud Security, Email Security, Code Security, and Explore) has a menu preset. It pins the main pages and hides the other sections. A new user's first org uses its preset. Customize menu has a "Load preset" option.
+- **Cloud connection wizard**: adding an AWS, Google Cloud, or Azure account takes 3 steps instead of 5. The connection name is filled in for you. Google Cloud uses one "Project, folder or organization to scan" field. After you connect, a first results screen shows what the scan found. The setup checklist opens the matching first results screen for Email Security and Code Security.
+- **Case notes**: you can edit and redact case notes. Edits keep the earlier text in the case history and show who edited the note and when. Redaction asks for confirmation, because it cannot be undone.
+- **Cases tab badge**: the badge counts only New and In Progress cases.
+- **Favorite orgs**: star up to 5 orgs on the org list. They show as quick links above the table and follow you to other browsers.
+- **Time zone**: every date and time now follows your time-zone setting. Before, about half the pages used the browser's local time. Date pickers and typed search times use your zone too. The setting is UTC by default, so charts can show a different hour than in earlier versions.
+- **Syntax colors in code editors**: YAML and JSON editors color keys, values, and comments in light and dark mode. This covers D&R rules, false positive rules, lookups, adapter configs, and other editors.
+- **REST API keys**: a "Create key from this one" action opens the create form with the permissions of an existing key already checked.
+- **SOC Bots**:
+    - Archived bots no longer count toward the bot limit. The team picker explains how to free bot slots.
+    - While a bot works, a status row at the end of the chat shows what it is doing and for how long.
+    - Tool approval cards say Approved, Auto-approved, or Denied. Empty "You" replies are gone.
+    - New chat is always available. When the bot is busy, it asks to confirm and stops the current work first.
+    - You can edit a team member's bot from the team details and the member chips. The Model field shows the default model when left empty.
+- **Sensor menu**: sensor pages show "Org Menu" at the top of the sensor menu. It switches to the org menu without leaving the page.
+- **Webhook adapter**: a new optional Events Path field splits a batched request body into one event per item.
+- **Compliance reports**: while a report for a large account is being prepared, the page says so and refreshes on its own. A Retry button shows if it takes too long.
+- **Cloud Security images**: images with only Google Artifact Analysis results show "Imported Google results" in place of "Scan coverage unknown".
+- **New Dashboard page**: the org Dashboard is redesigned. It shows the same data as before, in a grid of charts and tables. You can pick a time range from the last hour to the last 90 days. Online Sensors shows up to 30 days. Each chart has its own refresh button and an Expand button that opens it full screen. "Refresh all" reloads every chart. Hovering a line chart shows the same point in time on the other line charts. Tables load more rows as you scroll.
+- **Accessibility**: code editors, sidebar groups, and sortable table headers work from the keyboard. Icon-only buttons have names for screen readers. Query Console errors are shown in text, not only by a red border. Banners, dialogs, and progress bars have better contrast and labels.
+
+#### Bug Fixes
+
+- "Update Now" in the update banner now always reloads the page.
+- The Vulnerabilities Endpoints table shows plain sensor tags in the Tags column.
+- The Vulnerabilities charts fit the window at every width. Chart text no longer shrinks, and long names end in an ellipsis.
+- Links in about 20 translated sentences are no longer empty.
+- Billing & Usage shows the new sensor quota right after you change it.
+- The detection panel scrolls when its summary is taller than the screen. On small screens, a selected detection takes the full screen.
+- Reliable Tasking no longer shows "<sensor not found>" when tasks load before sensors.
+- Org pickers in add-ons, extensions, groups, partners, and routines load orgs page by page, so every org can be found.
+- App Control search and signer filter no longer lose typed text.
+- Saving in the AI Agents editor no longer erases fields set through the API or CLI.
+- The AI chat in the corner no longer repeats a failed setup request every 30 seconds.
+
+---
+
 ## 2026-11-09
 
 ### Web App 6.6.8
