@@ -171,13 +171,13 @@ client_options:
 
 On the command line of an on-premises adapter, this is `client_options.mapping.events_path=params/events`. In the web application, it is the *Events Path* field, available for every adapter.
 
-`events_path` works with every adapter that delivers JSON events, cloud-hosted or on-premises (for example webhook, S3, GCS, Pub/Sub, SQS, Event Hubs, file and syslog). It is applied to each JSON event before the rest of the mapping, so `sensor_key_path`, `sensor_hostname_path`, `event_type_path`, `event_time_path`, transforms, `drop_fields` and indexing all apply to the individual events, not to the envelope.
+`events_path` works with every adapter, cloud-hosted or on-premises (for example webhook, S3, GCS, Pub/Sub, SQS, Event Hubs and file), whenever the data it receives is JSON. It is applied to each JSON event before the rest of the mapping, so `sensor_key_path`, `sensor_hostname_path`, `event_type_path`, `event_time_path`, transforms, `drop_fields` and indexing all apply to the individual events, not to the envelope.
 
 - Each object in the list becomes an event.
 - Each non-empty string in the list is handled like a line of text from the same adapter: it goes through `parsing_re` or `parsing_grok` of the same mapping if there is one, and is otherwise ingested like any other text line. Empty strings are skipped. This lets a list of CEF or syslog lines be parsed normally.
 - If a list mixes objects and strings, all the objects are ingested, then all the strings. The order within each kind is kept; the relative order between the two kinds is not.
 - A list that holds anything other than objects and strings (numbers, `true`/`false`, `null`, nested lists) is not split: the envelope is ingested unchanged, so no data is lost.
-- If the path is missing from an event, does not lead to a list, or leads to a list that would produce no event (empty, or only empty strings), that event is ingested unchanged. This keeps pings and test messages, and means an event is never dropped because of this setting.
+- If the path is missing from an event, does not lead to a list, or leads to a list that would produce no event (empty, or only empty strings), that event is ingested unchanged. This keeps pings and test messages.
 - A list too large to expand safely is also ingested unchanged rather than truncated.
 - Keys are matched exactly. There are no wildcards and no list indexes: the path must lead through objects to the list.
 
