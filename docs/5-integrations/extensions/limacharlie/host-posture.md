@@ -214,7 +214,7 @@ By default the Owner, Administrator and Operator roles have all of them, and the
 
 - A rule document: 128 KiB as JSON.
 - A sweep carries at most 512 KB and 256 rules to a sensor, and the extension runs at most 2,000 enabled rules per organization (in record-name order). Rules beyond either limit are reported as `error` with the reason `over_capacity`.
-- A host runs the rules of one sweep within a fixed budget of time, CPU and memory. A rule the host did not get to is reported as unreadable (an `error`), never as passing.
+- A host runs the rules of one sweep within a fixed budget of time, CPU and memory. A rule the host did not get to is reported as unreadable (an `error`), never as passing, unless the rule lists that probe in `tolerate_unreadable`.
 - At most 64 instances per rule per host, with evidence capped in size.
 
 ## See Also

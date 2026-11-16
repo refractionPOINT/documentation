@@ -279,7 +279,7 @@ A read of such a path is refused, and the refusal is reported, not hidden. A `fi
 | `standards` | 32 references per framework, 128 bytes each |
 | One sweep on a host | 300 s of wall clock, 60 s of CPU and 256 MB of memory |
 
-Probes the host did not reach before the budget ran out are reported as unreadable, so a rule that could not finish is an `error`, never a `pass`.
+Probes the host did not reach before the budget ran out are reported as unreadable, so a rule that could not finish is an `error`, never a `pass`, unless the probe is listed in `tolerate_unreadable` (see [Reading errors](#reading-errors)).
 
 ## Tips
 
