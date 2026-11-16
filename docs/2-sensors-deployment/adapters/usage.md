@@ -183,7 +183,7 @@ On the command line of an on-premises adapter, this is `client_options.mapping.e
 
 The path follows these rules: at most 512 bytes and 10 segments, no empty segment (so no leading or trailing `/` and no `//`), no spaces at the start or end of a segment, and no control or invisible formatting characters. An invalid `events_path` is rejected when you save an adapter configuration in the cloud. If one still reaches LimaCharlie from an on-premises adapter, the split is turned off for that mapping and its events are ingested unchanged.
 
-If your configuration uses several `client_options.mappings` entries, each entry can have its own `events_path`.
+If your configuration uses a `client_options.mappings` list, `client_options.mapping` is not used, so set `events_path` on each entry of the list instead.
 
 !!! note "Adapter version"
     On-premises adapters need a recent adapter version to send `events_path`. Cloud-hosted adapters need no update.
