@@ -40,7 +40,7 @@ Two things live in the record's metadata rather than in its data:
 A comment explaining why the rule exists goes in the metadata `comment`.
 
 !!! note
-    Pass `--enabled` when you create a record with the CLI, as in the examples below, so that the rule starts running. Saving or enabling a rule also needs the `sensor.task` permission. See [Permissions](#permissions).
+    Pass `--enabled` when you create a record with the CLI, as in the examples below, so that the rule starts running. Saving, enabling, disabling or setting the expiry of a rule also needs the `sensor.task` permission. See [Permissions](#permissions).
 
 ## The record name is the rule id
 
@@ -89,7 +89,7 @@ Managing records in the `host_posture_rule` hive requires:
 | Enable, disable or set the expiry of a rule | `host_posture.set` and `sensor.task` |
 | Delete a rule | `host_posture.set` |
 
-Saving, enabling and disabling need `sensor.task` because a rule is code that LimaCharlie runs on your sensors, and enabling it decides whether it runs. The permission is checked when you save or change the record, not on every sweep. Deleting a rule needs only `host_posture.set`, since it removes something from your sensors.
+Saving, enabling, disabling and setting the expiry need `sensor.task` because a rule is code that LimaCharlie runs on your sensors, and enabling it decides whether it runs. The permission is checked when you save or change the record, not on every sweep. Deleting a rule needs only `host_posture.set`, since it removes something from your sensors.
 
 By default the Owner, Administrator and Operator roles can do all of the above, and the Viewer role has `host_posture.get`. See [Permissions](../../8-reference/permissions.md#host-posture).
 
