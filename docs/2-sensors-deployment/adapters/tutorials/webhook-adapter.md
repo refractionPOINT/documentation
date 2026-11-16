@@ -145,10 +145,7 @@ This is the `events_path` option every adapter shares, so the rules for the list
 
 For webhooks, `events_path` is applied to each JSON object of the request, so it also works with the list and newline-separated formats above. It is not applied to form-encoded bodies.
 
-Signature verification, if enabled, is computed over the original request body. Detection rules that you attach to the webhook (`dr_rules`) are evaluated on each split event.
-
-!!! note "The webhook-level `events_path`"
-    Webhook adapters created before this option became shared have a top-level `events_path` next to `secret`. It is still accepted and means the same thing as `client_options.mapping.events_path`. If you set both, they must be equal: two different values are rejected. When you edit a webhook in the web application, the value is shown in the shared *Events Path* field and saved under `client_options.mapping`.
+Signature verification, if enabled, is computed over the original request body. Detection rules that you attach to the webhook (`dr_rules`) are evaluated on the request as the sender posted it, before it is split.
 
 ## Example: Bitdefender GravityZone Event Push Service
 
