@@ -26,11 +26,11 @@ Host Posture rules and a default rule pack, a shorter path from sign-up to the f
 - **Syntax colors in code editors**: YAML and JSON editors color keys, values, and comments in light and dark mode. This covers D&R rules, false positive rules, lookups, adapter configs, and other editors.
 - **REST API keys**: a "Create key from this one" action opens the create form with the permissions of an existing key already checked.
 - **SOC Bots**:
-    - Archived bots no longer count toward the bot limit. The team picker explains how to free bot slots.
-    - While a bot works, a status row at the end of the chat shows what it is doing and for how long.
-    - Tool approval cards say Approved, Auto-approved, or Denied. Empty "You" replies are gone.
-    - New chat is always available. When the bot is busy, it asks to confirm and stops the current work first.
-    - You can edit a team member's bot from the team details and the member chips. The Model field shows the default model when left empty.
+  - Archived bots no longer count toward the bot limit. The team picker explains how to free bot slots.
+  - While a bot works, a status row at the end of the chat shows what it is doing and for how long.
+  - Tool approval cards say Approved, Auto-approved, or Denied. Empty "You" replies are gone.
+  - New chat is always available. When the bot is busy, it asks to confirm and stops the current work first.
+  - You can edit a team member's bot from the team details and the member chips. The Model field shows the default model when left empty.
 - **Sensor menu**: sensor pages show "Org Menu" at the top of the sensor menu. It switches to the org menu without leaving the page.
 - **Webhook adapter**: a new optional Events Path field splits a batched request body into one event per item.
 - **Compliance reports**: while a report for a large account is being prepared, the page says so and refreshes on its own. A Retry button shows if it takes too long.
