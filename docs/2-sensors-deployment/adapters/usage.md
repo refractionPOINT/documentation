@@ -129,6 +129,7 @@ Using a configuration file:
 
 Data sent via USP can be formatted in many different ways. Data is processed in a specific order as a pipeline:
 
+0. Batched events found at `events_path` are split out of their envelope, so every step below sees the individual events (see [Splitting Batched Events](#splitting-batched-events)).
 1. Regular Expression with named capture groups parsing a string into a JSON object.
 2. Built-in (in the cloud) LimaCharlie parsers that apply to specific `platform` values (like `carbon_black`).
 3. The various "extractors" defined, like `EventTypePath`, `EventTimePath`, `SensorHostnamePath` and `SensorKeyPath`.
@@ -138,6 +139,7 @@ Data sent via USP can be formatted in many different ways. Data is processed in 
 
 The following configurations allow you to customize the way data is ingested by the platform, including mapping and redefining fields such as the event type path and time.
 
+- `client_options.mapping.events_path`: for senders that batch several events inside one JSON message, the path to the list of events, as object keys separated by `/` (like `params/events`). Each element of the list is then ingested as its own event. See [Splitting Batched Events](#splitting-batched-events).
 - `client_options.mapping.parsing_re`: regular expression with [named capture groups](https://github.com/StefanSchroeder/Golang-Regex-Tutorial/blob/master/01-chapter2.markdown#named-matches). The name of each group will be used as the key in the converted JSON parsing.
 - `client_options.mapping.parsing_grok:`  grok pattern parsing for structured data extraction from unstructured log messages. Grok patterns combine regular expressions with predefined patterns to simplify log parsing and field extraction.
 - `client_options.mapping.sensor_key_path`: indicates which component of the events represent unique sensor identifiers. Each distinct value creates its own Sensor, for example one per firewall when logs from several devices arrive through the same adapter. The online status of these Sensors follows the adapter and the flow of logs, not the devices; to be alerted when a device stops reporting, see [Alerting on sensors that stop sending data](../troubleshooting/non-responding-sensors.md). It also supports template strings based on each event. Some platforms set the sensor key in their parser; see [Using One Sensor for All Devices](#using-one-sensor-for-all-devices) to report all their events as a single Sensor.
@@ -150,6 +152,41 @@ The following configurations allow you to customize the way data is ingested by 
 - `client_options.mapping.mappings`: *deprecated*
 - `client_options.mapping.transform`: a Transform to apply to events.
 - `client_options.mapping.drop_fields`: a list of field paths to be dropped from the data before being processed and retained.
+
+### Splitting Batched Events
+
+Some senders push several events in one JSON message, wrapped in an envelope. A JSON-RPC push is a common example:
+
+```json
+{"jsonrpc": "2.0", "method": "addEvents", "params": {"events": [{"id": 1}, {"id": 2}, {"id": 3}]}, "id": 123}
+```
+
+By default, the whole envelope is ingested as a single event. Set `client_options.mapping.events_path` to the location of the list inside the envelope, as object keys separated by `/`, to ingest each element of the list as its own event instead. For the message above, that is `params/events`:
+
+```yaml
+client_options:
+  mapping:
+    events_path: params/events
+```
+
+On the command line of an on-premises adapter, this is `client_options.mapping.events_path=params/events`. In the web application, it is the *Events Path* field, available for every adapter.
+
+`events_path` works with every adapter that delivers JSON events, cloud-hosted or on-premises (for example webhook, S3, GCS, Pub/Sub, SQS, Event Hubs, file and syslog). It is applied to each JSON event before the rest of the mapping, so `sensor_key_path`, `sensor_hostname_path`, `event_type_path`, `event_time_path`, transforms, `drop_fields` and indexing all apply to the individual events, not to the envelope.
+
+- Each object in the list becomes an event.
+- Each non-empty string in the list is handled like a line of text from the same adapter: it goes through `parsing_re` or `parsing_grok` of the same mapping if there is one, and is otherwise ingested like any other text line. Empty strings are skipped. This lets a list of CEF or syslog lines be parsed normally.
+- If a list mixes objects and strings, all the objects are ingested, then all the strings. The order within each kind is kept; the relative order between the two kinds is not.
+- A list that holds anything other than objects and strings (numbers, `true`/`false`, `null`, nested lists) is not split: the envelope is ingested unchanged, so no data is lost.
+- If the path is missing from an event, does not lead to a list, or leads to a list that would produce no event (empty, or only empty strings), that event is ingested unchanged. This keeps pings and test messages, and means an event is never dropped because of this setting.
+- A list too large to expand safely is also ingested unchanged rather than truncated.
+- Keys are matched exactly. There are no wildcards and no list indexes: the path must lead through objects to the list.
+
+The path follows these rules: at most 512 bytes and 10 segments, no empty segment (so no leading or trailing `/` and no `//`), no spaces at the start or end of a segment, and no control or invisible formatting characters. An invalid `events_path` is rejected when you save an adapter configuration in the cloud. If one still reaches LimaCharlie from an on-premises adapter, the split is turned off for that mapping and its events are ingested unchanged.
+
+If your configuration uses several `client_options.mappings` entries, each entry can have its own `events_path`.
+
+!!! note "Adapter version"
+    On-premises adapters need a recent adapter version to send `events_path`. Cloud-hosted adapters need no update.
 
 ### Sensor Identity Declarations
 
