@@ -35,7 +35,7 @@ Every confirmed hit is one normalized event of type `deception_hit`, sent throug
 | `sid` | The endpoint the decoy was **planted on**, even when the evidence came from elsewhere. |
 | `hostname` | The hostname of that endpoint. Empty for a hit that came through the collector, because that path holds no organization credential to look the sensor up. |
 | `reporting_sid` | The sensor that reported it, when different from `sid`. |
-| `on_host` | True when the evidence comes from the decoy's own host: a sensor event from that sensor, or a collector hit whose source IP is the sensor's own address. |
+| `on_host` | True when the evidence comes from the decoy's own host: a sensor event from that sensor, or a collector hit whose source IP is the sensor's own address. **In this release it is always `false` for a collector (use) hit**, because the collector path cannot look up the sensor's addresses. |
 | `classification` | A label, see below. |
 | `synthetic` | True only for the extension's own test hits. It is set on the server side. Nothing in an incoming request can set it. |
 | `case_group_key` | `<sid>:<incident id>`. Hits on the same sensor within an incident window (30 minutes by default) share an incident. |
@@ -116,11 +116,11 @@ respond:
 
 Do not use a plain `isolate network` response in a rule that matches `deception_hit`. The event arrives through the extension's adapter, so a plain isolation would act on the adapter instead of the endpoint. Call the extension's `respond` request instead, as the shipped rule does.
 
-If you disable or edit a rule so it no longer produces a detection, the next `test_fire` marks the path `broken`.
+If you disable or edit the `deception-test` rule so it no longer produces a detection, the next `test_fire` marks the path `broken`. Disabling or breaking `deception-alert` is not detected by `test_fire`.
 
 ## Cases
 
-If the `ext-cases` extension is subscribed and ingesting your detections, a `deception.*` detection at priority 10 opens a critical case (priorities 8 to 10 map to critical). The case grouping key keeps hits from different machines in different cases, even though they all arrive through the same adapter. Hits on one machine within an incident window group together.
+If the `ext-cases` extension is subscribed and ingesting your detections, a `deception.*` detection at priority 10 opens a critical case (priorities 8 to 10 map to critical). With the default rules this is the case for real hits that are not deletions. Deletion hits are priority 5, and synthetic (test) hits never open a case. If you edit the rules, the priorities and cases follow your edits. The case grouping key keeps hits from different machines in different cases, even though they all arrive through the same adapter. Hits on one machine within an incident window group together.
 
 Test hits are reported under `__deception-test`. `ext-cases` ignores categories that start with `__`, so tests never open a case. The `deception.coverage` detection (priority 3) is a normal detection. Whether it opens a case depends on how Cases ingests your detections, which is **not verified** here.
 
@@ -141,7 +141,10 @@ The answer lists each action and whether it was done, or why it was refused.
 
 ### Isolation
 
-A secret can be replayed long after it leaked, from anywhere, so a use hit with no matching activity on the host means "this host leaked a credential", not "this host is under attack right now". Automatic isolation is therefore opt-in (`responses.isolate: true` in the policy) and guarded, and the default rules isolate only on on-host evidence: a read, a command line, or a use from the host's own address.
+A secret can be replayed long after it leaked, from anywhere, so a use hit with no matching activity on the host means "this host leaked a credential", not "this host is under attack right now". Automatic isolation is therefore opt-in (`responses.isolate: true` in the policy) and guarded, and the default rules isolate only on on-host evidence: a read or a command line seen by the sensor, or a use from the host's own address.
+
+!!! note "Collector (use) hits do not isolate in this release"
+    A hit that arrives through the collector has `on_host: false`, even when the secret is used from the decoy's own host, so it is refused as `off_host_hit` and cannot trigger isolation. Only sensor-reported hits (read, modify, command line) can isolate. Use hits still raise the priority 10 detection and open a case.
 
 The extension refuses to isolate, whatever your rules say, when the hit is:
 
@@ -161,26 +164,29 @@ A failed isolation frees the incident for a retry. `respond` also refuses to iso
 
 ## Test-fire
 
-Test-fire proves that each alert path works, on demand with `test_fire` and automatically each day, without ever hiding a real attack.
+Test-fire checks that each alert path works, on demand with `test_fire` and automatically each day, without ever hiding a real attack.
+
+!!! warning "What test-fire does not prove"
+    A test hit is synthetic, so it matches only the `deception-test` rule, which reports under `__deception-test`. Test-fire therefore checks the extension's detection path, from the decoy to a detection. It does **not** prove that the real-alert rules (`deception-alert` and the others), cases or isolation work. A test never opens a case and never isolates. To check those, review your rules and the case integration yourself.
 
 - **Test decoys only.** Each policy gets its own test-only decoys, recorded as test instances. A real decoy is never fired, so a hit on a real decoy is always real.
 - **Bound to a run the extension started.** A hit on a test decoy counts as a test only when it matches a run the extension started, within the run's 5-minute window. File reads, command lines and modifications must come from the process the extension tasked on that sensor. Collector tests go over an internal, authenticated path, never the public one. Sign-in tests are injected by the extension straight into its hit pipeline, because real failed sign-ins to your tenant every day would look like a password spray.
 - **Anything unmatched is real.** A hit on a test decoy that matches no run is a real `deception_hit`. This is deliberate: it covers an attacker who found the test file.
 - **A path it cannot check.** If a run covers the event's time but its binding cannot be verified, the extension emits a `deception_coverage_warning` instead of an alert, so a rule of yours cannot isolate a host on the extension's own traffic.
 - **Tests never open cases or act.** Test hits are marked `synthetic` on the server side, reported under `__deception-test`, skipped by `ext-cases`, and refused by `respond`.
-- **Broken paths show up.** If a run produces no detection (a rule was edited, disabled or deleted), `coverage` marks the path `broken`.
+- **Broken paths show up.** If a run produces no detection (the `deception-test` rule was edited, disabled or deleted, for example), `coverage` marks the path `broken`. Editing `deception-alert` does not affect this status. Only the first 200 alert paths (sorted by policy, template and layer) have their test status read, so a large configuration may not show every broken path.
 
 Which alert paths a test can reach depends on the deployment: a collector test needs the extension's internal collector path, and a path the deployment cannot test is reported in the `issues` of the answer rather than silently passed. Test history is bounded: a test operation's full record expires 7 days after it closes, and its idempotency record and run rows 30 days after, so a `test_fire` request replayed after 30 days is a new request.
 
 ## The `deception_coverage_warning` event
 
-`deception_coverage_warning` is a non-alerting event. In this release the extension emits it in one case: a hit on its own test decoy that falls inside a test run's window, but whose run binding cannot be checked. The event is recorded (visible in `list` and `coverage`), carries no case grouping key, and never isolates. The shipped `deception-coverage-warning` rule reports it as a priority 3 detection named `deception.coverage`.
+`deception_coverage_warning` is a non-alerting event. In this release the extension emits it in one case: a hit on its own test decoy that falls inside a test run's window, but whose run binding cannot be checked. The extension sends it as an event through its adapter. It is not returned by `list` or `coverage`: you see it as the emitted event and as the detection of the shipped rule. It carries no case grouping key and never isolates. The shipped `deception-coverage-warning` rule reports it as a priority 3 detection named `deception.coverage`.
 
-It is not sent when a log source goes quiet or an alert path breaks. Those show in `coverage` only.
+It is not sent when a log source goes quiet or an alert path breaks. A broken path shows in `coverage` only, and the quiet-source status is not active in this release (see [Coverage statuses](decoys.md#coverage-statuses)).
 
 ## Alert latency
 
 Decoy reads reach the extension through the sensor and a forwarding rule, and use hits through the collector or your log sources. **No latency measurements exist yet** for read alerts on busy hosts, and cloud log sources add their own delay (Entra ID and Okta sign-in logs are not real time). Two documented bounds:
 
-- A file event that arrives before the extension has confirmed whether its own placement helper caused it is held, for at most 10 minutes. A 30-minute sweep releases held events, so such a real hit waits at most about 40 minutes. This only affects events on a decoy that has an operation running a helper at that moment. It does not delay hits on idle decoys.
+- A file event that arrives before the extension has confirmed whether its own placement helper caused it is held for up to 10 minutes, and a 30-minute sweep releases held events. About 40 minutes is therefore the **nominal** delay for such a real hit when there is no backlog and nothing fails. It is not a maximum: when many held events are waiting, or a step fails and is retried, the release can take longer, each retry being a platform retry or the next 30-minute sweep. This only affects events on a decoy that has an operation running a helper at that moment. It does not delay hits on idle decoys.
 - Sensor drops under load: the Linux file collector can drop records silently on a busy host, so a decoy read can be missed. This is a sensor limitation.

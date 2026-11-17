@@ -3,7 +3,7 @@
 !!! warning "Early release"
     Deception has not been validated on a broad set of real hosts and identity tenants yet. Statements below that depend on real endpoint or log-source behavior are marked **not verified**. Read [Known limitations](deception/limitations.md) before relying on it as a primary control.
 
-Deception plants unique decoys on your endpoints through the LimaCharlie sensor: credential files, service and MCP configuration files, notes naming decoy hostnames, and notes holding phantom accounts. Nothing legitimate has a reason to touch a decoy, so a decoy that is read or used is a high-fidelity signal. A hit becomes a priority 10 detection, opens a critical case, and can isolate the host.
+Deception plants unique decoys on your endpoints through the LimaCharlie sensor: credential files, service and MCP configuration files, notes naming decoy hostnames, and notes holding phantom accounts (cloud-account form in this release). Nothing legitimate has a reason to touch a decoy, so a decoy that is read or used is a high-fidelity signal. With the default rules enabled, a real hit that is not a deletion becomes a priority 10 detection, and, if `ext-cases` is subscribed, opens a critical case. A hit can also isolate the host if you opt in. Deletion hits are priority 5, and test hits never open a case. The rules are yours to edit.
 
 It is built mainly to catch AI-driven attackers early. An AI agent that lands on a host reads every credential file it finds, tries every key and follows every breadcrumb, usually within minutes. A human attacker who goes through the same files trips the same decoys.
 
@@ -53,8 +53,8 @@ Deception works with what your organization already sends. The extension checks 
 | Read, modify and delete alerts | `ext-exfil` (read) and `ext-integrity` (modify and delete) subscribed, and sensors with the file collectors on |
 | Use alerts for credential files, MCP configs, and registry-form hostnames | Nothing else. The destination is LimaCharlie's collector. |
 | Phantom accounts, UPN form | The Entra ID adapter with the `sign_ins` source (Entra ID P1 or P2), or the Okta adapter |
-| Phantom accounts, AD form | `ext-artifact` and `ext-exfil` subscribed, a sensor on every domain controller, failure auditing on, and `dc_logon_collection` set in the policy |
-| Hostnames under your internal domain | At least one Windows sensor |
+| Phantom accounts, AD form | **Not available in this release.** See [Known limitations](deception/limitations.md#not-built). |
+| Hostnames under your internal domain | **Not available in this release.** See [Known limitations](deception/limitations.md#not-built). |
 | Cases for hits | The `ext-cases` extension, if you want hits to open cases |
 
 The extension never subscribes these for you. `deploy` and `coverage` name any that are missing.
@@ -118,7 +118,7 @@ Then subscribe the extensions your decoys depend on (`ext-artifact`, `ext-exfil`
     limacharlie extension request --name ext-deception --action deploy --oid "$OID"
     ```
 
-4. Check what is covered, and prove the alert paths work:
+4. Check what is covered, and check the synthetic detection path (`test_fire` does not prove your real-alert rules, cases or isolation; see [Test-fire](deception/detections.md#test-fire)):
 
     ```bash
     limacharlie extension request --name ext-deception --action coverage --oid "$OID"

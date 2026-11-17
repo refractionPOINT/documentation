@@ -7,7 +7,7 @@ Once a day per organization, and on every configuration update, the extension co
 - verifies the decoys of the sensors it reconciles, drops sensors that no longer exist, and times out stale operations,
 - retires the decoys of a policy or template you removed from the configuration (when any record was skipped as invalid on read, nothing is retired for configuration reasons, so a typo cannot remove decoys),
 - places decoys on matching sensors that lack them, for example sensors that started matching a policy after the last `deploy`,
-- tags domain controllers `deception-dc` for policies with `dc_logon_collection`,
+- tags domain controllers `deception-dc` for policies with `dc_logon_collection` (the AD-form phantom accounts that use this are not planted in this release),
 - starts the next test-fire runs, and recomputes coverage,
 - reports the covered-sensor numbers for [billing](#billing).
 
@@ -92,7 +92,7 @@ If you unsubscribe without uninstalling, the same cleanup runs inside the unsubs
 
 Pricing is per covered machine per period of time. **The price is not set yet and nothing on this page states one.**
 
-A **covered sensor** is a sensor with at least one verified decoy that has a working alert path. A host whose decoys are all broken, retired or blind is not covered.
+A **covered sensor** is a sensor with at least one verified decoy that has a working alert path. A host whose decoys are all broken or retired is not covered.
 
 Once a day the extension reports two numbers for the last completed UTC day, with an idempotency key per organization and day so a retried run counts once:
 

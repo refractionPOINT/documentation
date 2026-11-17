@@ -18,8 +18,8 @@ Secret values never appear in any response or log. Decoys are described by insta
 | [`verify`](#verify) | Re-check that decoys are still in place. |
 | [`rotate`](#rotate) | Retire decoys and plant replacements. |
 | [`remove`](#remove) | Remove decoys from their hosts. |
-| [`test_fire`](#test_fire) | Prove each alert path works. |
-| [`coverage`](#coverage) | What is active, unavailable, blind, partial or broken. |
+| [`test_fire`](#test_fire) | Check the synthetic detection path of each alert. |
+| [`coverage`](#coverage) | What is active, unavailable, partial or broken, per template and layer. |
 | [`list_kinds`](#list_kinds) | Decoy kinds, their schemas, and the default template library. |
 | [`uninstall`](operations.md#uninstalling-before-you-unsubscribe) | Remove everything the extension owns, before you unsubscribe. |
 | [`respond`](detections.md#the-respond-request) | Called by detection rules on a hit. |
@@ -84,7 +84,7 @@ The response has `ops` (`started`, `skipped`, `operations` ids, `issues`), `plum
 
 ## list
 
-Paginated list of decoys. Test decoys are hidden unless you ask.
+Paginated list of decoys. Test decoys are hidden unless you ask. It lists decoy instances only: coverage-warning events are not returned here.
 
 | Parameter | Meaning |
 | --- | --- |
@@ -136,7 +136,7 @@ For a full cleanup before unsubscribing, use [`uninstall`](operations.md#uninsta
 
 ## test_fire
 
-Fires the test-only decoys of a policy, one run per alert path (for example read and use of a credential file are separate runs), to prove each alert path works end to end. See [Test-fire](detections.md#test-fire) for what a test does and does not do.
+Fires the test-only decoys of a policy, one run per alert path (for example read and use of a credential file are separate runs), to check that each path reaches a detection. The detection is the synthetic `deception-test` rule: a passing test does not prove that the real-alert rules, cases or isolation work. See [Test-fire](detections.md#test-fire) for what a test does and does not do.
 
 ```bash
 limacharlie extension request --name ext-deception --action test_fire \
@@ -147,7 +147,7 @@ The response lists the started `runs` (run id, policy, template, layer, deadline
 
 ## coverage
 
-Per template and layer: `active`, `unavailable` with the missing piece, `blind`, `partial` or `broken`. See [Coverage statuses](decoys.md#coverage-statuses). Also returns:
+Per template and layer: `active`, `unavailable` with the missing piece, `partial` or `broken` (`blind` is not set in this release). The view is organization-level: it does not list hosts, and `active` is not proof that every selected host is covered. Host-level exclusions (sensor mode, Kubernetes DaemonSet sensors) show in `plan`. See [Coverage statuses](decoys.md#coverage-statuses). Coverage-warning events are not part of this answer: they are emitted as events and detections (see [Detections](detections.md#the-deception_coverage_warning-event)). Also returns:
 
 - `sources`: what the organization sends.
 - `metering`: the covered-sensor numbers reported for billing, for the last completed UTC day (`covered_sensors` and `covered_sensors_distinct`).

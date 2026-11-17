@@ -13,7 +13,7 @@ limacharlie extension config-set --name ext-deception --input-file deception.yam
 
 The extension validates the whole record when it is saved, including each template's `spec`, and rejects it with errors that name the field (for example `templates[3].spec.file_name: required`). Unknown fields are rejected too.
 
-A record can still reach the extension without that check (written while the extension was down, or written for a newer format than the running extension supports). On read, the extension skips what it cannot use and reports it, with the field and the reason, in the `warnings` of `plan` and in `coverage`. A skipped record's already-placed decoys stay as they are. The extension never removes what it does not understand, and never rewrites your records.
+A record can still reach the extension without that check (written while the extension was down, or written for a newer format than the running extension supports). On read, the extension skips individual policy and template records it cannot use (for example one written for a newer record or kind version) and reports each, with the field and the reason, in the `warnings` of `plan` and in `coverage`. The top-level record is different: if its own `schema_version` is newer than the running extension supports, the whole record is refused and requests that read the configuration fail with an error (`respond` also refuses to isolate) until you rewrite the record or the extension is upgraded. A skipped record's already-placed decoys stay as they are. The extension never removes what it does not understand, and never rewrites your records.
 
 Limits: 100 policies, 300 templates, 20 custom domains, 200 reader allowlist entries per list. The record is capped at 1 MB by the hive. Names are lowercase letters, digits, `.`, `_` and `-`, 1 to 64 characters, starting with a letter or digit. Template tags follow the same pattern, up to 32 characters, at most 16 per template.
 
@@ -21,7 +21,7 @@ Limits: 100 policies, 300 templates, 20 custom domains, 200 reader allowlist ent
 
 | Field | Meaning |
 | --- | --- |
-| `schema_version` | Version of the record format. Currently `1`. Required. A newer value than the extension supports is refused. |
+| `schema_version` | Version of the record format. Currently `1`. Required. A newer value than the extension supports makes requests fail (see [Validation](#validation)). |
 | `policies` | Which templates go on which sensors, and what to do on a hit. |
 | `templates` | The decoys you use. |
 | `custom_domains` | Bring-your-own decoy domains. See [Custom domains](#custom-domains). |
@@ -62,7 +62,7 @@ policies:
 | `responses.isolate` | Lets the default `deception-respond` rule isolate the host on on-host evidence. Default `false`. See [Isolation](detections.md#isolation). |
 | `responses.start_ai`, `responses.ai_sop` | Recorded, but starting an AI triage session from the extension is **not built**: `respond` with `ai_triage` answers that it is not available. To launch an AI agent, add a `start ai agent` response to your own detection rule. `ai_sop` is accepted only together with `start_ai`. |
 | `setup_on_new_sensors` | Place decoys when a matching sensor first connects. |
-| `dc_logon_collection` | Opt in to collecting events 4776 and 4768 from domain controllers, needed for AD-form phantom accounts. |
+| `dc_logon_collection` | Opt in to collecting events 4776 and 4768 from domain controllers, for AD-form phantom accounts. **AD-form phantom accounts are not planted in this release**, so setting it has no effect on decoys yet. |
 | `reader_allowlist` | Benign readers for this policy, in addition to the organization-wide list. |
 
 A policy that names a template that does not exist, or a tag no template carries, is rejected when you save the record. If such a record is already stored, the policy stays usable for the rest of its selection and `plan` reports a warning.
@@ -79,12 +79,12 @@ templates:
     kind: file
     kind_version: 1
     name: kubeconfig-backup
-    tags: [credentials, kubernetes]
-    description: Old kubeconfig for a "prod" cluster, left in the kube directory.
+    tags: [credentials, kubernetes, linux, macos]
+    description: Old kubeconfig for a "prod" cluster, left next to the real one. The server is a fake Kubernetes API on the hit collector.
     enabled: true
     spec:
       platforms: [linux, macos]
-      requires_packages: [kubectl]
+      requires_packages: [kubectl, kubernetes-client, kubernetes-cli]
       requires_files: [kubectl]
       file_name: '{{vocab "kubeconfig_backup"}}'
       directories:
@@ -100,13 +100,21 @@ templates:
         - cluster:
             server: https://{{collector "k8s_api"}}
           name: prod
+        contexts:
+        - context:
+            cluster: prod
+            user: deploy
+          name: prod-deploy
+        current-context: prod-deploy
         users:
         - name: deploy
           user:
             token: {{secret "token"}}
 ```
 
-`schema_version` is the version of the record format. `kind_version` is the version of that kind's `spec` schema. They change independently. A newer version than the extension knows causes the template to be skipped, not guessed at. Run `list_kinds` for each kind's schema.
+This is the complete `kubeconfig-backup` library template.
+
+`schema_version` on a template or policy is the version of the record format. `kind_version` is the version of that kind's `spec` schema. They change independently. A newer version on a template or policy than the extension knows causes that record to be skipped with a warning, not guessed at. Run `list_kinds` for each kind's schema.
 
 ### `file` spec
 
@@ -174,7 +182,12 @@ A custom domain is a subdomain you control (at least three labels, no wildcard, 
 
 `key_sources` is reserved for decoys made of real AWS access keys with a deny-all policy, which would also catch a key used from anywhere, not only from the host. It is **not built**: the field must be empty, and a non-empty value is rejected.
 
-What exists today for AWS are decoy profiles (`aws-config-backup`, `aws-credentials-backup`) whose keys are not real AWS keys. Their `endpoint_url` points at the collector's fake AWS API. A current AWS CLI v2 or SDK honors `endpoint_url`, so on-host use is caught. Keys copied to another machine without the config go to real AWS, where they are invalid and nothing is reported.
+What exists today for AWS are two decoy templates whose keys are not real AWS keys, and whose `endpoint_url` points at the collector's fake AWS API:
+
+- `aws-config-backup` is a config file with a named profile. It catches use when the file is passed explicitly (`--config-file` or `AWS_CONFIG_FILE`).
+- `aws-credentials-backup` is a credentials file whose profile itself carries `endpoint_url`, so use is caught when the file is passed (for example with `AWS_SHARED_CREDENTIALS_FILE`) without a separate config file.
+
+The clients verified to honor `endpoint_url` in the credentials file are botocore-based ones (the AWS CLI and boto3). Other SDKs, and endpoint overrides set through other mechanisms, are **not verified**. Keys copied to another machine without the file go to real AWS, where they are invalid and nothing is reported.
 
 ## Isolation cap
 
