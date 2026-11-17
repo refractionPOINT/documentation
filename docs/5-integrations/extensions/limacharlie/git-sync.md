@@ -380,14 +380,16 @@ On versions with investigation hive synchronization, select `investigation_polic
 !!! note "Check version support"
     These hive selections require a Git Sync version that includes them in its catalog. If absent, upgrade support is needed. SDK and CLI capabilities depend on their installed release; this YAML example does not imply that new CLI flags or SDK helpers are already released.
 
-For a fictional organization, add `hives/investigation_policy.yaml` to the existing `index.yaml` include list. This file contains a native Hive record wrapper:
+For a fictional organization, add `hives/investigation_policy.yaml` to the existing `index.yaml` include list. This example creates a separate `review-sensitive-mail` policy scoped to the `mail-triage` template, leaving the existing `default` record intact. Use an unused record name when adding it. The file contains a native Hive record wrapper:
 
 ```yaml
 version: 3
 hives:
   investigation_policy:
-    default:
+    review-sensitive-mail:
       data:
+        match:
+          run: template == "mail-triage"
         autonomy:
           close.false_positive:
             mode: suggest
@@ -411,7 +413,7 @@ hives:
         tags: [fictional-iac]
 ```
 
-The example shows only action settings. Export existing records first and preserve their complete `data`, including identity, budgets, triggers, intake and other fields. Preserve `usr_mtd` such as tags, enabled state, expiry and comments. Do not commit `sys_mtd`, authentication tokens or resolved secret values. New records need `usr_mtd.enabled: true` to participate.
+The named policy adds restrictions for matching investigations; it cannot loosen matching default restrictions. When editing an existing record, export it first and preserve its complete `data`, including identity, budgets, triggers, intake and other fields. Preserve `usr_mtd` such as tags, enabled state, expiry and comments. Do not commit `sys_mtd`, authentication tokens or resolved secret values. New records need `usr_mtd.enabled: true` to participate.
 
 Plans use `hives.investigation_plan.<record-name>` with the same `data` / `usr_mtd` wrapper. Export an existing valid plan into `hives/investigation_plan.yaml` and include it too. Empty `data: {}` is not a runnable plan. Selecting one hive does not select the other.
 
