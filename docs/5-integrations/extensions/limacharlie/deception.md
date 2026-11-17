@@ -53,7 +53,7 @@ Deception works with what your organization already sends. The extension checks 
 | Read, modify and delete alerts | `ext-exfil` (read) and `ext-integrity` (modify and delete) subscribed, and sensors with the file collectors on |
 | Use alerts for credential files, MCP configs, and registry-form hostnames | Nothing else. The destination is LimaCharlie's collector. |
 | Phantom accounts, UPN form | The Entra ID adapter with the `sign_ins` source (Entra ID P1 or P2), or the Okta adapter |
-| Phantom accounts, AD form | `ext-exfil` subscribed, a sensor on every domain controller, failure auditing on, and `dc_logon_collection` set in the policy |
+| Phantom accounts, AD form | `ext-artifact` and `ext-exfil` subscribed, a sensor on every domain controller, failure auditing on, and `dc_logon_collection` set in the policy |
 | Hostnames under your internal domain | At least one Windows sensor |
 | Cases for hits | The `ext-cases` extension, if you want hits to open cases |
 

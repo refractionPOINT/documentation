@@ -89,8 +89,8 @@ On Linux, read alerts need the eBPF-capable sensor. The extension checks the sen
 | Decoy | Needs | Without it |
 | --- | --- | --- |
 | File decoys, placement | `ext-artifact` subscribed, a supported sensor | Placement is Unavailable for the whole organization, with "Subscribe ext-artifact". |
-| File decoys, read alert | `ext-exfil` subscribed, file collectors on | The decoy is still planted. Reads are not caught, only use. |
-| File decoys, modify and delete alerts | `ext-integrity` subscribed, file collectors on | Same as above. |
+| File decoys, read alert | `ext-exfil` subscribed, file collectors on | A template that also alerts on use is still planted: the read layer shows `partial` and only use is caught. A template whose only alert is read has no working alert path, shows `unavailable`, and is not planted. |
+| File decoys, modify and delete alerts | `ext-integrity` subscribed, file collectors on | The modify and delete layers show `partial` or `unavailable` in the same way. |
 | File, MCP and registry-hostname decoys, use alert | Nothing else | Always available. |
 | Hostnames under your internal domain | At least one Windows sensor (only Windows reports failed lookups) | Not offered. |
 | Phantom accounts, UPN form | Entra ID adapter with the `sign_ins` source (Entra ID P1 or P2), or the Okta adapter | Not planted. |
