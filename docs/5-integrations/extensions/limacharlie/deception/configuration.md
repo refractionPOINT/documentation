@@ -62,7 +62,7 @@ policies:
 | `responses.isolate` | Lets the default `deception-respond` rule isolate the host on on-host evidence. Default `false`. See [Isolation](detections.md#isolation). |
 | `responses.start_ai`, `responses.ai_sop` | Recorded, but starting an AI triage session from the extension is **not built**: `respond` with `ai_triage` answers that it is not available. To launch an AI agent, add a `start ai agent` response to your own detection rule. `ai_sop` is accepted only together with `start_ai`. |
 | `setup_on_new_sensors` | Place decoys when a matching sensor first connects. |
-| `dc_logon_collection` | Opt in to collecting events 4776 and 4768 from domain controllers, for AD-form phantom accounts. **AD-form phantom accounts are not planted in this release**, so setting it has no effect on decoys yet. |
+| `dc_logon_collection` | Opt in to collecting events 4776 and 4768 from domain controllers, for AD-form phantom accounts. **AD-form phantom accounts are not planted in this release**, so no decoy uses this collection yet. Leave it `false` for now: the extension would still tag your domain controllers and collect these events, and that adds ingestion volume (successful logons included) with no decoy behind it. |
 | `reader_allowlist` | Benign readers for this policy, in addition to the organization-wide list. |
 
 A policy that names a template that does not exist, or a tag no template carries, is rejected when you save the record. If such a record is already stored, the policy stays usable for the rest of its selection and `plan` reports a warning.

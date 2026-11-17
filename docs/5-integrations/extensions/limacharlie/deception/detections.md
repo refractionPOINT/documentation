@@ -144,7 +144,7 @@ The answer lists each action and whether it was done, or why it was refused.
 A secret can be replayed long after it leaked, from anywhere, so a use hit with no matching activity on the host means "this host leaked a credential", not "this host is under attack right now". Automatic isolation is therefore opt-in (`responses.isolate: true` in the policy) and guarded, and the default rules isolate only on on-host evidence: a read or a command line seen by the sensor, or a use from the host's own address.
 
 !!! note "Collector (use) hits do not isolate in this release"
-    A hit that arrives through the collector has `on_host: false`, even when the secret is used from the decoy's own host, so it is refused as `off_host_hit` and cannot trigger isolation. Only sensor-reported hits (read, modify, command line) can isolate. Use hits still raise the priority 10 detection and open a case.
+    A hit that arrives through the collector has `on_host: false`, even when the secret is used from the decoy's own host, so it is refused as `off_host_hit` and cannot trigger isolation. Only sensor-reported hits (read, modify, command line) can isolate. Use hits still raise the priority 10 detection and, if `ext-cases` is subscribed, open a case.
 
 The extension refuses to isolate, whatever your rules say, when the hit is:
 
