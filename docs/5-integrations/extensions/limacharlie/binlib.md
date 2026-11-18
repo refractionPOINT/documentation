@@ -111,6 +111,7 @@ Searchable fields include:
 - res_company_name
 - res_file_description
 - res_product_name
+- res_product_version
 - sha256
 - sig_authentihash
 - sig_hash
@@ -150,7 +151,7 @@ Sample Output:
   "data": {
     "results": [
       {
-        "sha256": "2f5d0c6159b194d6f0f2eae0b7734708368a23aebf9af4db9293865b57ffcaeb",
+        "sha256": "5b8e1f3a7c9d20446e1a8b3c5d7f9e0a2b4c6d8e0f1a3b5c7d9e1f3a5b7c9d1e",
         "res_product_name": "Java(TM) Platform SE 8",
         "res_product_version": "8.0.2210.11",
         "res_company_name": "Oracle Corporation",
