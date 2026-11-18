@@ -5,6 +5,32 @@ Release notes for the EDR sensor installed on Windows, macOS, Linux and Chrome e
 !!! tip "Subscribe"
     Get each release as it ships with the [Endpoint Agent RSS feed](https://docs.limacharlie.io/10-release-notes/endpoint-agent.xml).
 
+## 2026-11-18
+
+### Endpoint Agent 5.3.19
+
+#### Bug Fixes
+
+- macOS 12 and 13: fixed a compatibility issue that kept the sensor's system extension from installing, leaving those hosts without kernel telemetry; the sensor's helper app crashed at launch every 20 minutes.
+- Linux: fixed a startup race that could leave the sensor reporting no kernel events (processes, files, network) for as long as it ran, while appearing healthy and using a full CPU core.
+- Linux: on hosts without eBPF support, process events are now reported when the kernel lacks the process-event connector (such as stock Raspberry Pi OS) or the sensor runs in its own PID namespace; previously no new process was reported.
+- Linux: on hosts without eBPF support, a burst of process creation no longer switches process tracking to slower polling, which can miss short-lived processes.
+- Linux: fixed wrong file and process paths when the root filesystem is a btrfs subvolume (for example Fedora and openSUSE), when a file is on a separate mount such as `/home` or `/opt`, and under bind mounts.
+- Linux: file events are now reported from every CPU on Ubuntu's 7.0 x86_64 kernels, including GCP's stock Ubuntu 24.04 and 26.04 images, where only one CPU's activity was reported.
+- Linux: in a process with more than 64 open files, files opened, deleted or renamed relative to a directory are no longer reported under `/`.
+- Editing an organization's exfil rules no longer drops the events added with `exfil_add`.
+- After such an edit, an `exfil_add --expire` reaching its expiry no longer stops an event that the exfil rules also ask for.
+- Fixed memory growth in the sensor when a D&R rule issues `exfil_add` without `--expire` on every match; repeated adds of the same event are now kept once.
+- An `exfil_add --expire` whose expiry cannot be scheduled is now refused instead of staying in force indefinitely.
+- Fixed a sensor crash when a stop or module upgrade arrived while the Host Based Sensor was still starting.
+- Fixed a rare memory-safety issue in the sensor's process tracking that could lead to a crash.
+
+#### Improvements
+
+- Windows: when the kernel driver fails to start, the sensor now reports the failing driver component and its error code to LimaCharlie, so support can diagnose the cause.
+
+---
+
 ## 2026-11-11
 
 ### Endpoint Agent 5.4.3
