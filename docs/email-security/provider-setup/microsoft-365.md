@@ -160,6 +160,8 @@ it can connect without using your personal password.
     enable unified audit logging for release activity. Admin consent is required.
 
     ```bash
+    GRAPH=00000003-0000-0000-c000-000000000000
+
     # Message-trace prerequisite: Microsoft's own service principal (see above).
     TRACE_SP=8bd644d1-64a1-4d4b-ae52-2e0cbf64e373
     az ad sp show --id "$TRACE_SP" >/dev/null 2>&1 || az ad sp create --id "$TRACE_SP"
