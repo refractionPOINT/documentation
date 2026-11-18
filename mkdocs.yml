@@ -562,6 +562,7 @@ nav:
           - Secrets: 7-administration/config-hive/secrets.md
           - Lookups: 7-administration/config-hive/lookups.md
           - D&R Rules: 7-administration/config-hive/dr-rules.md
+          - Investigation Action Policies: 7-administration/config-hive/investigation-policy.md
           - YARA: 7-administration/config-hive/yara.md
           - Cloud Sensors: 7-administration/config-hive/cloud-sensors.md
           - Application Control Policies: 7-administration/config-hive/app-control-policy.md
