@@ -48,7 +48,7 @@ In other extensions' configurations it changes only entries whose name starts wi
 | --- | --- |
 | `dr-service` | Plumbing rules, named `ext-deception-connected`, `-daily`, `-task-reply`, `-sweep`, `-helper-start`, `-test-detected`, `-seen-entra`, `-seen-okta` (the sign-in observations behind the [quiet-feed note](decoys.md#log-sources-and-their-limits), at most one request an hour per source), and one `-cand-*` rule per candidate event type your templates need (file reads, FIM hits, process starts, DNS requests, Entra ID, Okta). Customers do not edit these. The extension reinstalls one that goes missing. A candidate signal that is unsafe (empty, a wildcard, too short, a bare common file name) is skipped with a warning and never widened into a firehose. |
 | `dr-general` | The `deception-*` [default detection rules](detections.md#default-detection-rules). Yours once installed. |
-| `ext-exfil` | Watch rules, one per template and tag set. |
+| `ext-exfil` | Watch rules, one per template and tag set: one per template for the whole organization, plus one more for each distinct tag set the policies use it with. See the [watch-rule budget](decoys.md#watch-rule-budget). |
 | `ext-integrity` | FIM wildcards per template, on the generated file name, never per-host paths. |
 | `ext-artifact` | Nothing is installed here in this release. Windows event collection for domain controllers is not used. |
 | Sensors | The decoy files, and the `deception-hit` tag, only if you call `respond` with `tag`. No sensor is tagged for domain controller collection. |

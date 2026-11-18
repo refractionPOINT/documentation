@@ -21,7 +21,7 @@ Every hit carries a `layer`:
 | `delete` | The decoy file was deleted unexpectedly. The decoy is planted again afterward. | Priority 5, never isolates |
 | `use` | A secret inside the decoy was used. | Priority 10 |
 
-Priority 10 applies to the default rules, which you can edit. A `use` hit never isolates the host, by design: it arrives from the collector or a sign-in log, and a network address is not proof of which machine used the secret. Only an event reported by the decoy's own sensor (a read, a modification or a command-line match) can isolate, even when the secret is used from the original host (see [Isolation](detections.md#isolation)).
+Priority 10 applies to the default rules, which you can edit. A `use` hit never isolates the host, by design, even when the secret is used from the original host: it arrives from the collector or a sign-in log, and a network address is not proof of which machine used the secret. Only an event reported by the decoy's own sensor (a read, a modification or a command-line match) can isolate (see [Isolation](detections.md#isolation)).
 
 A modification counts as a hit because on Linux an open for read-write is reported by the sensor as a modification, not a read. An unexpected delete is more often cleanup than an attack, so it gets a lower priority.
 
@@ -150,4 +150,4 @@ A clone of a sensor carries the source host's decoy files at the template paths,
 
 ## Watch-rule budget
 
-A sensor keeps at most 100 Exfil watch rules, shared with everything else you collect. A read alert costs one watch rule per template for the whole organization, not one per host. `plan` returns `watch_budget` with the limit, the number of rules the extension owns, the number that are yours, and, when the total exceeds the limit, the names of your newest rules that a sensor would drop. The figure is an organization-level upper bound: per-sensor tag and platform filters are not applied. Whether the extension's own rules sort ahead of yours on a sensor depends on `ext-exfil` behavior that is **not verified** here, so keep the total under 100.
+A sensor keeps at most 100 Exfil watch rules, shared with everything else you collect. A read alert costs one watch rule per template for the whole organization, not one per host. A template that several policies deploy with different sensor tags costs one rule for each distinct tag set. `plan` returns `watch_budget` with the limit, the number of rules the extension owns, the number that are yours, and, when the total exceeds the limit, the names of your newest rules that a sensor would drop. The figure is an organization-level upper bound: per-sensor tag and platform filters are not applied. Whether the extension's own rules sort ahead of yours on a sensor depends on `ext-exfil` behavior that is **not verified** here, so keep the total under 100.
