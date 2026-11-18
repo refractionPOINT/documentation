@@ -139,8 +139,10 @@ category (see
 [Filtering and Transforming Streams](../../5-integrations/outputs/stream-structures.md#filtering-and-transforming-streams)).
 There is no output filter on a field such as `routing.replayed`. If the
 system that receives the data should ignore replays, filter on
-`routing.replayed` in that system: events with `"replayed": true` are the
-repeats, and events without the field are not.
+`routing.replayed` in that system. An event with `"replayed": true` may be a
+repeat of one you already received, or the only copy if the original was lost,
+so dropping replays trades duplicates for possible loss. Events without the
+field were not sent again.
 
 ## What It Does Not Cover
 

@@ -96,7 +96,7 @@ These answer **"what happened and when?"**
 |-------|------|-------------|
 | `event_type` | string | The type of event, e.g. `NEW_PROCESS`, `DNS_REQUEST`, `NETWORK_CONNECTIONS`. This is what determines the shape of the `event` payload. |
 | `event_time` | integer | Timestamp the event occurred, as reported by the endpoint. **Unix time in milliseconds** (13 digits). |
-| `event_id` | string (UUID) | A globally unique identifier for this specific event occurrence. |
+| `event_id` | string (UUID) | A globally unique identifier for this specific event occurrence. An event a sensor sends again under [durable telemetry delivery](../2-sensors-deployment/endpoint-agent/durable-delivery.md) gets a new `event_id`: it cannot be used to recognize that kind of duplicate (see [`replayed`](#other-fields)). |
 
 ### Network / Location Fields
 
