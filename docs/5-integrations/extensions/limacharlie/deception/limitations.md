@@ -59,7 +59,7 @@ Read this page before you rely on Deception. Items marked **not verified** have 
 - **The placement helper is not code-signed.** The extension ships a small static program per operating system and architecture and runs it on the host by absolute path. Endpoint protection products or application control policies on the host may flag or block an unsigned binary. **Not verified** against any specific product. Allow it by its hash if needed. No signed build exists.
 - **A user with read access to your organization can learn some decoys** from detections, the files on disk, placement payloads and events. Generated secrets are never returned by a request or written to a readable record.
 - Decoy file names, the names inside files and the fake services' answers are generated per organization so defaults are not a public list, but a determined attacker who has seen decoys in your environment can learn your names. `rotate` replaces secrets.
-- Decoys planted by an earlier build keep the service names they were planted with. The fake MCP server of an organization planted before per-organization answers shipped keeps a name an attacker could compute from its host label. Replace those decoys with `rotate` to move them to per-organization names.
+- Decoys planted by an earlier build keep the service names they were planted with, which are not per-organization. Replace those decoys with `rotate` to move them to per-organization names.
 - The extension checks a decoy's contents by hash and never rewrites a changed decoy, so an attacker who edits a decoy causes a `modify` hit and a retired instance, not a silent overwrite.
 
 ## Lifecycle limits

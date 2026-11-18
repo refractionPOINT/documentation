@@ -68,7 +68,7 @@ Idempotent. Converges, in order:
 1. the webhook adapter,
 2. the plumbing rules in `dr-service`,
 3. the missing shipped detection rules in `dr-general` (never overwriting one you edited),
-4. the `ext-deception-` entries in the `ext-exfil`, `ext-integrity` and `ext-artifact` configurations,
+4. the `ext-deception-` entries in the `ext-exfil` and `ext-integrity` configurations (and removes any `ext-deception-` entry an earlier build left in `ext-artifact`; this release adds none there),
 
 then starts decoy placement. It never subscribes the organization to another extension: extensions it needs that are not subscribed are listed in `not_subscribed`.
 

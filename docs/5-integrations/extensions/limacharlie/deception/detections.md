@@ -36,7 +36,7 @@ Every confirmed hit is one normalized event of type `deception_hit`, sent throug
 | `sid` | The endpoint the decoy was **planted on**, even when the evidence came from elsewhere. |
 | `hostname` | The hostname of that endpoint. Empty for a hit that came through the collector, because the part of the extension that records collector hits holds no organization credential to look the sensor up. |
 | `reporting_sid` | The sensor that reported it, when different from `sid`. |
-| `on_host` | True only when the evidence is an event the decoy's own sensor reported (a file read or modification on the host the decoy was planted on); `details.on_host_basis` is then `sensor_event`. **It is always `false` for a collector hit and for a sign-in**, whatever the source address, by design: see [Isolation](#isolation). |
+| `on_host` | True only when the evidence is an event the decoy's own sensor reported (a file read, a modification or a command-line match on the host the decoy was planted on); `details.on_host_basis` is then `sensor_event`. **It is always `false` for a collector hit and for a sign-in**, whatever the source address, by design: see [Isolation](#isolation). |
 | `classification` | A label, see below. |
 | `synthetic` | True only for the extension's own test hits. It is set on the server side. Nothing in an incoming request can set it. |
 | `case_group_key` | `<sid>:<incident id>`. Hits on the same sensor within an incident window (30 minutes by default) share an incident. |
@@ -159,7 +159,7 @@ The answer lists each action and whether it was done, or why it was refused.
 
 ### Isolation
 
-A secret can be replayed long after it leaked, from anywhere, so a use hit with no matching activity on the host means "this host leaked a credential", not "this host is under attack right now". Automatic isolation is therefore opt-in (`responses.isolate: true` in the policy) and guarded, and it rests only on on-host evidence: a read or a command line that the decoy's own sensor reported.
+A secret can be replayed long after it leaked, from anywhere, so a use hit with no matching activity on the host means "this host leaked a credential", not "this host is under attack right now". Automatic isolation is therefore opt-in (`responses.isolate: true` in the policy) and guarded, and it rests only on on-host evidence: a read, a modification or a command-line match that the decoy's own sensor reported.
 
 !!! note "A network address never isolates a host (by design)"
     A source address is a poor proof of which machine sent a request: NAT, DHCP churn, shared cloud egress, VPNs and an offline sensor's stale address all put one address on many machines or move one machine across addresses, and a wrong answer would isolate the wrong host. So a hit that arrives through the collector, and a sign-in hit, never has `on_host` true, even when the secret is used from the decoy's own host and the address matches the sensor's. `respond` also refuses any stored hit that rests on an address, including hits stored before this rule. These hits still raise the priority 10 detection and, if `ext-cases` is subscribed, open a case. The [address evidence](#address-evidence-is-enrichment-only) on the hit helps an analyst decide.

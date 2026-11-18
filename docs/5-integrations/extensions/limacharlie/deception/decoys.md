@@ -21,7 +21,7 @@ Every hit carries a `layer`:
 | `delete` | The decoy file was deleted unexpectedly. The decoy is planted again afterward. | Priority 5, never isolates |
 | `use` | A secret inside the decoy was used. | Priority 10 |
 
-Priority 10 applies to the default rules, which you can edit. A `use` hit never isolates the host, by design: it arrives from the collector or a sign-in log, and a network address is not proof of which machine used the secret. Only an event reported by the decoy's own sensor (a read or modification) can isolate, even when the secret is used from the original host (see [Isolation](detections.md#isolation)).
+Priority 10 applies to the default rules, which you can edit. A `use` hit never isolates the host, by design: it arrives from the collector or a sign-in log, and a network address is not proof of which machine used the secret. Only an event reported by the decoy's own sensor (a read, a modification or a command-line match) can isolate, even when the secret is used from the original host (see [Isolation](detections.md#isolation)).
 
 A modification counts as a hit because on Linux an open for read-write is reported by the sensor as a modification, not a read. An unexpected delete is more often cleanup than an attack, so it gets a lower priority.
 
