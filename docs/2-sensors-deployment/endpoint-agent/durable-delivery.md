@@ -81,13 +81,12 @@ A replayed event is processed like any other event:
   the receiving system can see the same activity twice.
 - **Usage**: a replayed event counts toward your usage like any other event.
 - **Event IDs**: because a replayed event has a new `routing.event_id`, you
-  cannot detect duplicates by comparing event IDs. The content of the event and
-  the sensor-reported timestamps are those of the original.
+  cannot detect duplicates by comparing event IDs.
 
 ### Excluding Replayed Events in a D&R Rule
 
-Both rules below are tested against the `routing/replayed` path. Events that
-are not replays do not have the field, so `is` does not match them.
+A replayed event has `routing/replayed` set to `true`. Events that are not
+replays do not have the field, so an `is` check on it does not match them.
 
 To keep an existing rule from firing a second time on a replayed event, add a
 negated `is` check on `routing/replayed`:
@@ -135,9 +134,10 @@ actions such as `suppression`.
 
 ### Outputs
 
-Outputs filter by event type, sensor tag and detection category (see
+The documented output filters are by event type, sensor tag and detection
+category (see
 [Filtering and Transforming Streams](../../5-integrations/outputs/stream-structures.md#filtering-and-transforming-streams)).
-They cannot filter on an arbitrary field such as `routing.replayed`. If the
+There is no output filter on a field such as `routing.replayed`. If the
 system that receives the data should ignore replays, filter on
 `routing.replayed` in that system: events with `"replayed": true` are the
 repeats, and events without the field are not.
@@ -158,8 +158,8 @@ repeats, and events without the field are not.
 
 ## Sensor Resource Use
 
-The sensor keeps at most 5,000 events or 25 MiB of recently sent telemetry,
-whichever comes first. This copy shares the sensor's existing 50 MiB queue
+By default, the sensor keeps at most 5,000 events or 25 MiB of recently sent
+telemetry, whichever comes first. This copy shares the sensor's existing 50 MiB queue
 budget, so the maximum memory of the sensor does not grow. A sensor that sends
 little telemetry typically holds little.
 
