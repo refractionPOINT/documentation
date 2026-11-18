@@ -51,10 +51,28 @@ consent.
     consent looks granted.
 
 Message trace additionally requires the tenant service principal for Microsoft's
-application `8bd644d1-64a1-4d4b-ae52-2e0cbf64e373`. An administrator can provision
-it with `New-MgServicePrincipal` as described in Microsoft's
-[message trace onboarding guide](https://learn.microsoft.com/en-us/exchange/monitoring/trace-an-email-message/graph-api-message-trace).
-Granting the app permission alone does not provision that prerequisite.
+application `8bd644d1-64a1-4d4b-ae52-2e0cbf64e373`. Granting the app permission
+alone does not provision that prerequisite, and it is the most common reason message
+trace stays `not_granted` after consent. An administrator creates it once per tenant
+with either of these:
+
+```powershell
+# Microsoft Graph PowerShell
+Connect-MgGraph -Scopes "Application.ReadWrite.All"
+New-MgServicePrincipal -AppId 8bd644d1-64a1-4d4b-ae52-2e0cbf64e373
+```
+
+```bash
+# Azure CLI (also available in Azure Cloud Shell)
+az ad sp show --id 8bd644d1-64a1-4d4b-ae52-2e0cbf64e373 >/dev/null 2>&1 \
+  || az ad sp create --id 8bd644d1-64a1-4d4b-ae52-2e0cbf64e373
+```
+
+Microsoft notes that provisioning can take several hours to take effect. Coverage
+recovers on its own at the next poll after that; nothing needs to change on the
+connection. Microsoft's
+[message trace onboarding guide](https://learn.microsoft.com/en-us/exchange/monitoring/trace-an-email-message/graph-api-message-trace)
+also shows a Graph Explorer alternative.
 
 !!! note "Microsoft 365 GCC tenants"
     Microsoft does not currently offer the message trace Graph API to Microsoft 365
@@ -142,7 +160,10 @@ it can connect without using your personal password.
     enable unified audit logging for release activity. Admin consent is required.
 
     ```bash
-    # Run only after the message-trace service principal prerequisite above is provisioned.
+    # Message-trace prerequisite: Microsoft's own service principal (see above).
+    TRACE_SP=8bd644d1-64a1-4d4b-ae52-2e0cbf64e373
+    az ad sp show --id "$TRACE_SP" >/dev/null 2>&1 || az ad sp create --id "$TRACE_SP"
+
     TRACE_ROLE=$(az ad sp show --id "$GRAPH" \
       --query "appRoles[?value=='ExchangeMessageTrace.Read.All'].id | [0]" -o tsv)
     az ad app permission add --id "$APP_ID" --api "$GRAPH" \
@@ -262,6 +283,12 @@ limacharlie mailsec connection test m365-prod --oid $OID --output yaml
 | `release_requests` | — | Management Activity permission missing or not evaluated; optional capability unavailable |
 | `mail_send` | — | `Mail.Send` not consented; reporter replies unavailable. Reported as `skipped`, and `ok` stays true |
 
+!!! warning "A passing `provider_quarantine` check does not prove message trace works"
+    The connection test reads the permissions consented to the app. It cannot see
+    whether Microsoft's message-trace service principal exists or whether the tenant
+    is GCC. Those show up only after the first message-trace poll, as `not_granted`
+    or `unsupported` coverage on the connection.
+
 ## How ingestion works
 
 - **Discovery** enumerates users with mailboxes and reconciles the mailbox
@@ -297,6 +324,8 @@ limacharlie mailsec connection test m365-prod --oid $OID --output yaml
 | Some mailboxes never become `protected` | An Exchange application access policy denies the app for those mailboxes | Widen the policy, or exclude those mailboxes in the record's `scope` so coverage reflects a decision rather than a refusal |
 | Attachment analysis looks incomplete | Defender **Safe Attachments in Dynamic Delivery mode** detaches the attachment from the delivered message | Use Block mode if you want attachments analyzed post-delivery |
 | Everything fails at `credential` after months of working | Client secrets expire | Re-mint before expiry and update the secret record; nothing else changes |
+| Message trace stays `not_granted` although `ExchangeMessageTrace.Read.All` is consented and `provider_quarantine` passes | Microsoft's message-trace service principal (`8bd644d1-64a1-4d4b-ae52-2e0cbf64e373`) was never created in the tenant | Create it as shown in [Optional permissions](#optional-permissions), then allow a few hours for Microsoft to provision it. While provisioning, coverage can briefly show `error` |
+| Message trace shows `unsupported` | The tenant is Microsoft 365 GCC, where Microsoft does not offer the message trace API | Nothing to fix. Mail ingestion and remediation are unaffected |
 
 ### Optional hosted quarantine permission
 
