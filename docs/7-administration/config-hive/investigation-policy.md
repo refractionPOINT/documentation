@@ -2,7 +2,7 @@
 
 An `investigation_policy` Hive record controls whether the Investigation Engine proposes, requests approval for, or automatically performs an action. The `autonomy` section is the action control.
 
-The policy record is the only thing that decides what the engine may do. Each action class has a mode (`off`, `suggest`, `approve` or `auto`) and limits, and the engine follows them. Nothing pauses, samples or promotes an action behind your back, and no history or score changes a decision. To pause everything, save the [`autonomy-manual-pause` record](#emergency-pause-and-resume). Every action keeps its undo and its audit trail.
+The policy record is the only thing that decides what the engine may do. Each action class has a mode (`off`, `suggest`, `approve` or `auto`) and limits, and the engine follows them. Nothing pauses, samples or promotes an action behind your back, and no history or score changes a decision. To pause everything, save the [`autonomy-manual-pause` record](#emergency-pause-and-resume). Actions that support undo (`undo_supported`) keep it, and every action keeps its audit trail.
 
 !!! note "Version support"
     This guide describes the policy-controlled actions interface. If the interface reports `upgrade_required`, upgrade support is needed before using these controls. SDK and CLI availability depends on the installed release; the YAML and public API names here do not imply that corresponding SDK methods or CLI commands are available in every released version.
@@ -14,7 +14,7 @@ The policy record is the only thing that decides what the engine may do. Each ac
 | `off` | Creates no proposal for the action. |
 | `suggest` | Records what the engine would do, without changing the product. Use this for a dry run. |
 | `approve` | Requires an authorized explicit approval before the approval deadline. |
-| `auto` | Runs automatically when the effective policy, confidence, limits, permissions, evidence and target checks allow it. The engine holds an action as a suggestion when a limit, permission, evidence or target check does not pass. |
+| `auto` | Runs automatically when the effective policy, confidence, limits, permissions, evidence and target checks allow it. The engine holds an action as a suggestion when a limit, permission, evidence or target check does not pass, or when the approver lists leave nobody (`policy_no_approvers`). |
 
 There is no label-count requirement or separate route graduation, enablement or demotion step. Investigation intake settings decide what to investigate; they do not grant automatic action authority. Draft, shadow and test execution contexts remain read-only.
 
@@ -39,7 +39,7 @@ autonomy:
 
 Starter content does not overwrite an installed policy. The explicit `approve` entries govern eradication and tag removal; check `undo_supported` before approving any action, since some operations have no undo.
 
-To allow automatic false-positive closes, deliberately change the governing `close.false_positive` mode to `auto` after reviewing the proposed actions, permissions and effective policy.
+To allow automatic false-positive closes, deliberately change the governing `close.false_positive` mode to `auto` after reviewing the proposed actions, permissions and the matching policy records.
 
 ### Fields and defaults
 
@@ -55,7 +55,7 @@ Defaults below apply only after all matching policy entries have been combined.
 | `approval_timeout` | Positive duration | `15m` |
 | `approvers` | Distinct principal/group identifiers, such as `group:soc-leads` | Any ordinarily authorized approver |
 
-Author caps as positive integers; `0` appears only in resolved reports to mean unlimited. `approvers: []` explicitly permits nobody. It does not restore unrestricted approval. Identifiers must be nonempty, contain no whitespace/control characters and fit within 256 UTF-8 bytes.
+Author caps as positive integers. `approvers: []` explicitly permits nobody. It does not restore unrestricted approval. Identifiers must be nonempty, contain no whitespace/control characters and fit within 256 UTF-8 bytes.
 
 Supported concrete classes are `close.false_positive`, `contain.network`, `contain.process`, `contain.identity`, `contain.email`, `contain.seal`, `tag`, `tag.add`, `tag.remove`, `eradicate.process`, `eradicate.file`, `collect.memory`, `collect.file` and `collect.artifact`. Patterns such as `*`, `contain.*` and `eradicate.*` match supported classes; matching a pattern does not create a new operation.
 
@@ -120,7 +120,7 @@ An abridged example, with only the action section filled in beyond the headline 
   "time_to_verdict_ms": {"p50": 410, "p95": 2300, "samples": 39},
   "llm": {"usd": 0.31, "tokens": 91000},
   "actions": {
-    "by_class_state": {"close.false_positive": {"executed": 7, "proposed": 2}},
+    "by_class_state": {"close.false_positive": {"executed": 8, "proposed": 2, "denied": 1, "expired": 1}},
     "by_template_class": [
       {
         "template": "phishing-triage",
@@ -166,7 +166,7 @@ API keys can manage policy with the same grants; editing policy does not itself 
 
 Save through native Hive operations with the version you read (compare-and-swap). Merge only intended changes and preserve unrelated fields. If someone else edited the record, reload and reconcile; do not force-overwrite. Policy changes can tighten an existing action, but loosening policy cannot promote an old held action to automatic execution. Existing receipt-based undo remains available with normal permissions even if policy is now `off`.
 
-Validation rejects duplicate keys, multiple YAML documents, aliases/merge keys, null action fields, unknown action fields, wrong scalar types and out-of-range values. Durations use unsigned integer components with units `d`, `h`, `m`, `s`, `ms`, `us`, `ns`; `d` means 24 hours, so `2h` and `120m` are equivalent. Validation errors include `error_code`, `error` and a JSON Pointer `path` into record `data`.
+Validation rejects duplicate keys, multiple YAML documents, aliases/merge keys, null action fields, unknown action fields, wrong scalar types and out-of-range values. Durations use unsigned integer components with units `d`, `h`, `m`, `s`, `ms`, `us`, `ns`; `d` means 24 hours, so `7d` and `168h` are equivalent. Validation errors include `error_code`, `error` and a JSON Pointer `path` into record `data`.
 
 Legacy route-decision and autonomy mutation endpoints return `410 route_control_retired`; edit `investigation_policy` instead. Legacy `automation_routes` data grants no action authority. Review existing policy explicitly when changing versions rather than assuming previous route state will preserve the intended mode. If support is missing, controls are read-only with `upgrade_required`; a network outage is a separate error.
 
