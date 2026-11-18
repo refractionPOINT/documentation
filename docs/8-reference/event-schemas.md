@@ -183,6 +183,7 @@ The `routing` object contains **metadata** about the event - information about w
 | Field | Type | Description | Use Cases |
 |-------|------|-------------|-----------|
 | `tags` | array[string] | Sensor tags applied at event time | Tag-based filtering, dynamic grouping |
+| `replayed` | boolean (optional) | `true` on an event a sensor sent again under [durable telemetry delivery](../2-sensors-deployment/endpoint-agent/durable-delivery.md); absent otherwise | Excluding or counting repeated events |
 
 ### The `event` Object
 
