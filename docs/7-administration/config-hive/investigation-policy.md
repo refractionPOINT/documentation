@@ -97,7 +97,7 @@ If Git Sync manages this hive, coordinate the pause with your repository and syn
 
 The engine reports how it performed from its own records of runs and actions:
 
-```
+```text
 GET /v1/investigate/{oid}/stats
 ```
 
