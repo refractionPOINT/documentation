@@ -10,7 +10,7 @@ Every request is idempotent and listed in the extension's request schema, so the
 
 Secret values never appear in any response or log. Decoys are described by instance id, template, path and type.
 
-### Errors
+## Errors
 
 A request that fails with a mistake in your request or your own configuration says what is wrong, naming the field. A failure on the extension's side, a store or platform error for example, never shows its internal text. It reads `internal error (ref <id>)`, with an id that is new for each failure and that LimaCharlie support can use to find the details. Quote the id when you contact support. The same applies to the `issues` of `deploy`, `test_fire`, `uninstall` and the daily run, and to the `reason` of a failed decoy (for example `placement could not start: internal error [placement_start_failed]`, where the bracketed code is stable).
 
