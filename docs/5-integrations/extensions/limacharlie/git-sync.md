@@ -375,7 +375,7 @@ To make an organization match its files exactly, run `limacharlie sync push --fo
 
 ## Investigation policies and plans
 
-On versions with investigation hive synchronization, select `investigation_policy` and `investigation_plan` under `sync_hives` for apply and `export_hives` for export. A policy's `autonomy` section controls actions; a plan defines the investigation. See [Investigation Action Policies](../../../7-administration/config-hive/investigation-policy.md) for modes, reopening guards, sampling, track records and permissions.
+On versions with investigation hive synchronization, select `investigation_policy` and `investigation_plan` under `sync_hives` for apply and `export_hives` for export. A policy's `autonomy` section controls actions; a plan defines the investigation. See [Investigation Action Policies](../../../7-administration/config-hive/investigation-policy.md) for modes, limits, emergency pause, engine performance stats and permissions.
 
 !!! note "Check version support"
     These hive selections require a Git Sync version that includes them in its catalog. If absent, upgrade support is needed. SDK and CLI capabilities depend on their installed release; this YAML example does not imply that new CLI flags or SDK helpers are already released.
@@ -398,12 +398,6 @@ hives:
             max_targets_per_hour: 50
             lease: 2h
             approval_timeout: 15m
-            spot_check: "5%"
-            pause_when:
-              reopened: 3
-              within: 7d
-              by: people
-              max_source_lag: 5m
           eradicate.*:
             mode: approve
           tag.remove:
@@ -420,10 +414,10 @@ Plans use `hives.investigation_plan.<record-name>` with the same `data` / `usr_m
 ### Review, apply and verify
 
 1. Export selected records and review the full diff, keeping unrelated fields and existing includes.
-2. Start new policies in `suggest`. Inspect would-do proposals and effective policy contributors before changing a governing entry to `auto`. A named auto record cannot loosen a matching default restriction.
+2. Start new policies in `suggest`. Inspect the would-do proposals before changing a governing entry to `auto`. A named auto record cannot loosen a matching default restriction.
 3. Use credentials with native Hive grants, including `investigation_policy.get` and `investigation_policy.set` for policy management, and `investigation_policy.del` for deletion. Git Sync does not bypass permissions or grant product execution access.
 4. Apply, re-export and compare data and user metadata. Native versions are read at apply time for compare-and-swap; a version in git does not authorize an unconditional overwrite. On a conflict, reload, reconcile and retry.
-5. Check effective policy and history in the track record. Whether reporting is available is separate from whether Hive saved a record.
+5. Read the record back through the Hive to confirm it saved, then watch the [engine performance report](../../../7-administration/config-hive/investigation-policy.md#engine-performance) to see what the engine does under it.
 
 Force deletion through configuration sync remains limited to selected hives and existing tag selection; unselected hives are untouched and existing ACL exclusions remain. The extension's ordinary pull still adds and updates without deleting. See [Removing things](#removing-things) before using a deletion-enabled sync workflow.
 
