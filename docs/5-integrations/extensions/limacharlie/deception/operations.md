@@ -7,7 +7,8 @@ Once a day per organization, and on every configuration update, the extension co
 - verifies the decoys of the sensors it reconciles, drops sensors that no longer exist, and times out stale operations,
 - retires the decoys of a policy or template you removed from the configuration (when any record was skipped as invalid on read, nothing is retired for configuration reasons, so a typo cannot remove decoys),
 - places decoys on matching sensors that lack them, for example sensors that started matching a policy after the last `deploy`,
-- tags domain controllers `deception-dc` for policies with `dc_logon_collection` (the AD-form phantom accounts that use this are not planted in this release),
+- recovers decoys stranded in the `planned` state: a decoy that was chosen more than 10 minutes ago but never moved on is settled: if its placement operation already ended it is treated as placed and waits for verification, and if no placement ever started it is marked failed (with a stable reason) so its target is free for the next pass. A bounded number is looked at per run,
+- removes a `deception-dc` tag that an earlier build may have left on a domain controller (this release tags none),
 - starts the next test-fire runs, and recomputes coverage,
 - reports the covered-sensor numbers for [billing](#billing).
 
@@ -30,7 +31,7 @@ The extension acts in your organization through an API key that needs these perm
 | --- | --- |
 | `sensor.list`, `sensor.get` | List sensors and their liveness, read one sensor and its tags. |
 | `sensor.task` | Task sensors (placement, verification, removal, inventory) and isolate a sensor for `respond`. |
-| `sensor.tag` | Tag domain controllers `deception-dc` and hit sensors `deception-hit`. |
+| `sensor.tag` | Tag hit sensors `deception-hit`, and remove a leftover `deception-dc` tag. |
 | `dr.list.service`, `dr.set.service`, `dr.del.service` | Its plumbing rules in `dr-service`. |
 | `dr.list`, `dr.set`, `dr.del` | The default detection rules in `dr-general`. |
 | `ikey.list`, `ikey.set`, `ikey.del` | The installation key of its webhook adapter. |
@@ -45,12 +46,12 @@ In other extensions' configurations it changes only entries whose name starts wi
 
 | Where | What |
 | --- | --- |
-| `dr-service` | Plumbing rules, named `ext-deception-connected`, `-daily`, `-task-reply`, `-sweep`, `-helper-start`, `-test-detected`, and one `-cand-*` rule per candidate event type your templates need (file reads, FIM hits, process starts, DNS requests, failed lookups, `WEL` on `deception-dc` sensors, Entra ID, Okta). Customers do not edit these. The extension reinstalls one that goes missing. A candidate signal that is unsafe (empty, a wildcard, too short, a bare common file name) is skipped with a warning and never widened into a firehose. |
+| `dr-service` | Plumbing rules, named `ext-deception-connected`, `-daily`, `-task-reply`, `-sweep`, `-helper-start`, `-test-detected`, `-seen-entra`, `-seen-okta` (the sign-in observations behind the [quiet-feed note](decoys.md#log-sources-and-their-limits), at most one request an hour per source), and one `-cand-*` rule per candidate event type your templates need (file reads, FIM hits, process starts, DNS requests, Entra ID, Okta). Customers do not edit these. The extension reinstalls one that goes missing. A candidate signal that is unsafe (empty, a wildcard, too short, a bare common file name) is skipped with a warning and never widened into a firehose. |
 | `dr-general` | The `deception-*` [default detection rules](detections.md#default-detection-rules). Yours once installed. |
-| `ext-exfil` | Watch rules, one per template and tag set, plus the `WEL` event for domain controllers (opt-in). |
+| `ext-exfil` | Watch rules, one per template and tag set. |
 | `ext-integrity` | FIM wildcards per template, on the generated file name, never per-host paths. |
-| `ext-artifact` | `wel://Security:4768` and `wel://Security:4776` collection for domain controllers (opt-in), scoped to the `deception-dc` tag. |
-| Sensors | The decoy files; the `deception-dc` tag on domain controllers; the `deception-hit` tag, only if you call `respond` with `tag`. |
+| `ext-artifact` | Nothing is installed here in this release. Windows event collection for domain controllers is not used. |
+| Sensors | The decoy files, and the `deception-hit` tag, only if you call `respond` with `tag`. No sensor is tagged for domain controller collection. |
 | Adapters | One webhook adapter, `ext-deception`, with its installation key. |
 
 Plumbing rules contain no generated value. Nothing generated per host or per decoy is written to a rule or to any record you can read.

@@ -10,6 +10,10 @@ Every request is idempotent and listed in the extension's request schema, so the
 
 Secret values never appear in any response or log. Decoys are described by instance id, template, path and type.
 
+### Errors
+
+A request that fails with a mistake in your request or your own configuration says what is wrong, naming the field. A failure on the extension's side, a store or platform error for example, never shows its internal text. It reads `internal error (ref <id>)`, with an id that is new for each failure and that LimaCharlie support can use to find the details. Quote the id when you contact support. The same applies to the `issues` of `deploy`, `test_fire`, `uninstall` and the daily run, and to the `reason` of a failed decoy (for example `placement could not start: internal error [placement_start_failed]`, where the bracketed code is stable).
+
 | Action | Purpose |
 | --- | --- |
 | [`plan`](#plan) | Read-only preview of what `deploy` would do. |
@@ -35,7 +39,7 @@ Read-only. Shows, per policy, how many sensors match, how many decoys are placed
 - `pack`: the state of each shipped detection rule (`missing`, `current` or `modified`). For a modified rule it includes the current shipped version, so you can compare it with yours. A newer shipped version is offered here and never applied implicitly.
 - `watch_budget`: Exfil watch rules against the sensor limit of 100.
 - `sources`: which of `ext-artifact`, `ext-exfil`, `ext-integrity` are subscribed and which adapters the organization has.
-- `warnings`: configuration records skipped on read, and rule signals that would be skipped as unsafe.
+- `warnings`: configuration records skipped on read, rule signals that would be skipped as unsafe, and a warning for each policy that sets `dc_logon_collection` (the field is ignored in this release).
 
 ```bash
 limacharlie extension request --name ext-deception --action plan \
@@ -71,7 +75,7 @@ then starts decoy placement. It never subscribes the organization to another ext
 | Parameter | Meaning |
 | --- | --- |
 | `policy`, `sid` | Limit placement to a policy or a sensor. |
-| `apply_pack` | List of shipped rule names to overwrite with the current shipped version, for example `["deception-alert"]`. |
+| `apply_pack` | List of shipped rule names to overwrite with the current shipped version, for example `["deception-alert"]`. The rule is restored as a whole, including its tags and expiry, so it also repairs a rule that reads `unverified`. |
 | `apply_all_pack` | Overwrite every shipped rule. Replaces your edits. |
 
 ```bash
@@ -80,7 +84,7 @@ limacharlie extension request --name ext-deception --action deploy \
   --data '{"apply_pack":["deception-alert"]}' --oid "$OID"
 ```
 
-The response has `ops` (`started`, `skipped`, `operations` ids, `issues`), `plumbing_written`, `pack_installed`, `pack_applied`, `others_updated`, `not_subscribed` and `warnings`. Placement is asynchronous: sensors reply later, and a decoy counts only after its hash is verified. Use `list` and `coverage` to follow it. Only sensors that are online are tasked. The daily run places decoys on matching sensors that lack them.
+The response has `ops` (`started`, `skipped`, `operations` ids, `issues`), `plumbing_written`, `pack_installed`, `pack_applied`, `others_updated`, `not_subscribed` and `warnings` (which include the `dc_logon_collection` warning). Placement is asynchronous: sensors reply later, and a decoy counts only after its hash is verified. Use `list` and `coverage` to follow it. Only sensors that are online are tasked. The daily run places decoys on matching sensors that lack them.
 
 ## list
 
@@ -102,7 +106,7 @@ Paginated list of decoys. Test decoys are hidden unless you ask. It lists decoy 
  "next_page_token": ""}
 ```
 
-`reason` explains a `failed`, `retired` or `gone` state. Instance states:
+`reason` explains a `failed`, `retired` or `gone` state. A failure caused by the extension's own side shows a stable code, not the underlying error (see [Errors](#errors)). Instance states:
 
 | State | Meaning |
 | --- | --- |
@@ -143,14 +147,16 @@ limacharlie extension request --name ext-deception --action test_fire \
   --data '{"policy":"linux-servers"}' --oid "$OID"
 ```
 
-The response lists the started `runs` (run id, policy, template, layer, deadline; never a token or planted name). A call starts at most 20 runs. A large configuration is covered by repeated calls, and the daily run walks it over time. Only alert paths whose requirements you meet are tested, since testing a path that cannot work would only report it broken. Refused while an uninstall is in progress.
+The response lists the started `runs` (run id, policy, template, layer, deadline; never a token or planted name), `issues`, and a `pack_check` object with the result of the [rule integrity](decoys.md#rule-integrity) check. A call starts at most 20 runs. A large configuration is covered by repeated calls, and the daily run walks it over time. Only alert paths whose requirements you meet are tested, since testing a path that cannot work would only report it broken. Paths that are not available in this release (fake AD accounts, internal-domain hostnames) are not tested: `issues` names at most 10 of those policy and template pairs and says how many more there are, and `coverage` lists every one. Refused while an uninstall is in progress.
 
 ## coverage
 
-Per template and layer: `active`, `unavailable` with the missing piece, `partial` or `broken` (`blind` is not set in this release). The view is organization-level: it does not list hosts, and `active` is not proof that every selected host is covered. Host-level exclusions (sensor mode, Kubernetes DaemonSet sensors) show in `plan`. See [Coverage statuses](decoys.md#coverage-statuses). Coverage-warning events are not part of this answer: they are emitted as events and detections (see [Detections](detections.md#the-deception_coverage_warning-event)). Also returns:
+Per template and layer: `active`, `unavailable` with the missing piece, `partial` or `broken` (`blind` is not set in this release). A template that uses the AD phantom-account form or the internal hostname form shows every layer `unavailable` with "not available in this release". A quiet Entra ID or Okta sign-in feed adds an informational note ("no sign-in observed in N hours") and never changes a status. The view is organization-level: it does not list hosts, and `active` is not proof that every selected host is covered. Host-level exclusions (sensor mode, Kubernetes DaemonSet sensors) show in `plan`. See [Coverage statuses](decoys.md#coverage-statuses). Coverage-warning events are not part of this answer: they are emitted as events and detections (see [Detections](detections.md#the-deception_coverage_warning-event)). Also returns:
 
 - `sources`: what the organization sends.
 - `metering`: the covered-sensor numbers reported for billing, for the last completed UTC day (`covered_sensors` and `covered_sensors_distinct`).
+- `pack_check` and `pack_issues`: the [rule integrity](decoys.md#rule-integrity) result for the shipped detection rules (`checked_at`, `attempted_at`, and each rule that is missing, disabled or edited).
+- `test_results_unread`: how many alert paths' latest test result this request could not read. Those paths are not marked `broken` by it.
 - `coverage.time_to_protected_seconds`, per policy: the average time from a sensor's enrollment to its first verified decoy, estimated from a bounded sample, when known.
 
 Counts are read from the registry in bounded pages. When a registry is very large, the counts are lower bounds and the item's note says so.

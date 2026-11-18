@@ -59,10 +59,10 @@ policies:
 | `enabled` | A disabled policy plants nothing and watches nothing. |
 | `targeting` | `tags`, `platforms` and `sids` combine. At least one must be set: an empty targeting would match every sensor and is rejected. |
 | `templates` | `select_tags` and `names`; at least one required. Only templates in this same record are selectable. The default library is outside it. |
-| `responses.isolate` | Lets the default `deception-respond` rule isolate the host on on-host evidence. Default `false`. See [Isolation](detections.md#isolation). |
+| `responses.isolate` | Lets the default `deception-respond` rule isolate the host when the evidence is an event the decoy's own sensor reported. Default `false`. See [Isolation](detections.md#isolation). |
 | `responses.start_ai`, `responses.ai_sop` | Recorded, but starting an AI triage session from the extension is **not built**: `respond` with `ai_triage` answers that it is not available. To launch an AI agent, add a `start ai agent` response to your own detection rule. `ai_sop` is accepted only together with `start_ai`. |
 | `setup_on_new_sensors` | Place decoys when a matching sensor first connects. |
-| `dc_logon_collection` | Opt in to collecting events 4776 and 4768 from domain controllers, for AD-form phantom accounts. **AD-form phantom accounts are not planted in this release**, so no decoy uses this collection yet. Leave it `false` for now: the extension would still tag your domain controllers and collect these events, and that adds ingestion volume (successful logons included) with no decoy behind it. |
+| `dc_logon_collection` | Reserved for the AD-form phantom accounts, which are **not available in this release**. The field is accepted and **ignored**: nothing is tagged on your domain controllers and no Windows event collection is installed because of it, and `plan` and `deploy` warn about it for each policy that sets it. Leave it `false`. |
 | `reader_allowlist` | Benign readers for this policy, in addition to the organization-wide list. |
 
 A policy that names a template that does not exist, or a tag no template carries, is rejected when you save the record. If such a record is already stored, the policy stays usable for the rest of its selection and `plan` reports a warning.
@@ -99,20 +99,20 @@ templates:
         clusters:
         - cluster:
             server: https://{{collector "k8s_api"}}
-          name: prod
+          name: {{vocab "k8s_cluster"}}
         contexts:
         - context:
-            cluster: prod
-            user: deploy
-          name: prod-deploy
-        current-context: prod-deploy
+            cluster: {{vocab "k8s_cluster"}}
+            user: {{vocab "k8s_user"}}
+          name: {{vocab "k8s_cluster"}}-{{vocab "k8s_user"}}
+        current-context: {{vocab "k8s_cluster"}}-{{vocab "k8s_user"}}
         users:
-        - name: deploy
+        - name: {{vocab "k8s_user"}}
           user:
             token: {{secret "token"}}
 ```
 
-This is the complete `kubeconfig-backup` library template.
+This is the complete `kubeconfig-backup` library template. Every name written in the file (cluster, user) is a `{{vocab "..."}}` entry, generated once per organization, so the file reads differently in every organization.
 
 `schema_version` on a template or policy is the version of the record format. `kind_version` is the version of that kind's `spec` schema. They change independently. A newer version on a template or policy than the extension knows causes that record to be skipped with a warning, not guessed at. Run `list_kinds` for each kind's schema.
 
@@ -132,9 +132,11 @@ This is the complete `kubeconfig-backup` library template.
 | `max_users` | User homes per host, 1 to 3, default 1. |
 | `line_endings` | `lf` (default) or `crlf`. |
 
-Content must not mention `limacharlie`. A template is checked by rendering it once at write time.
+Content must not mention `limacharlie`. A template is checked by rendering it once at write time. Write your own templates the same way as the library ones: take every name you put in or on a file from `{{vocab "..."}}` rather than typing a fixed word, because a fixed word is the same in every organization that copies it.
 
 The `hostname` kind adds `form` (`registry` or `internal`) and `hosts`, and holds a `file` spec for the file that names the hosts. The `phantom_account` kind adds `form` (`upn` or `ad`), `source` (`any`, `entra`, `okta`, UPN form only), `upn_domain`, `ad_domain` and a `file` spec; its content uses `{{account}}` and `{{password}}`. Copy these from the default library, or read the schema from `list_kinds`.
+
+The `internal` hostname form and the `ad` phantom-account form are **not available in this release**. They still validate, so an existing configuration keeps loading, but every alert layer of a template that uses one reports as unavailable ("not available in this release"), nothing is planted, and a decoy of these forms planted by an earlier build is retired by the daily run. Use the `registry` hostname form and the `upn` phantom-account form.
 
 ## Reader allowlist
 

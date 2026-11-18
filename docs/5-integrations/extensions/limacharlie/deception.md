@@ -3,7 +3,7 @@
 !!! warning "Early release"
     Deception has not been validated on a broad set of real hosts and identity tenants yet. Statements below that depend on real endpoint or log-source behavior are marked **not verified**. Read [Known limitations](deception/limitations.md) before relying on it as a primary control.
 
-Deception plants unique decoys on your endpoints through the LimaCharlie sensor: credential files, service and MCP configuration files, notes naming decoy hostnames, and notes holding phantom accounts (cloud-account form in this release). Nothing legitimate has a reason to touch a decoy, so a decoy that is read or used is a high-fidelity signal. With the default rules enabled, a real hit that is not a deletion becomes a priority 10 detection, and, if `ext-cases` is subscribed, opens a critical case. A hit can also isolate the host if you opt in. Deletion hits are priority 5, and test hits never open a case. The rules are yours to edit.
+Deception plants unique decoys on your endpoints through the LimaCharlie sensor: credential files, service and MCP configuration files, notes naming decoy hostnames, and notes holding phantom accounts (cloud-account form in this release). Nothing legitimate has a reason to touch a decoy, so a decoy that is read or used is a high-fidelity signal. With the default rules enabled, a real hit that is not a deletion becomes a priority 10 detection, and, if `ext-cases` is subscribed, opens a critical case. A hit can also isolate the host if you opt in, and only when the evidence is an event the decoy's own sensor reported (never a network address). Deletion hits are priority 5, and test hits never open a case. The rules are yours to edit.
 
 It is built mainly to catch AI-driven attackers early. An AI agent that lands on a host reads every credential file it finds, tries every key and follows every breadcrumb, usually within minutes. A human attacker who goes through the same files trips the same decoys.
 
@@ -15,6 +15,8 @@ Every decoy raises alerts on one or both of two things:
 - **Use.** A secret inside the decoy was used. Every secret carries its own destination, and the destination is LimaCharlie's: a decoy Kubernetes config points at a fake API server, a decoy AWS profile points its endpoint at a fake AWS API, a decoy `.env` names fake internal services. Phantom accounts are usernames that exist nowhere, so a sign-in attempt with one shows up in logs you already send to LimaCharlie.
 
 Each secret in each decoy is generated per decoy and per host. A hit therefore names the machine the secret was planted on, even when the secret is used from somewhere else.
+
+Nothing about a decoy is the same in every organization. Decoy file names, the names written inside the files, and what the fake services answer (server and tool names, bucket names, identities, pages) are derived per organization from a secret that only LimaCharlie holds, so seeing one decoy in one environment does not let an attacker recognize the decoys of another. The fake services also behave like the real ones over time: a decoy login session expires on the lifetime the fake service advertises, and an expired session is still attributed to the decoy.
 
 Deception is self-serve. It never creates accounts, mailboxes, cloud keys, or DNS records in your systems, and it never subscribes your organization to another extension or changes a sensor's mode on your behalf.
 
@@ -34,7 +36,7 @@ Deception is designed to detect an attacker who has a foothold on an endpoint an
 
 - The attacker reads files on the host: credential files, config backups, notes, runbooks. AI agents do this systematically, and so do people.
 - The attacker then tries what they find: a token against a URL, a kubeconfig against `kubectl`, a username and password against a login page or the identity provider.
-- The attacker does not know which files are decoys. File names come from a vocabulary generated per organization, so the defaults are not a public list of names to skip. Decoys are never placed at a tool's default path (such as `~/.kube/config` or `~/.aws/credentials`), because a normal tool would read them and raise false alerts. They sit at non-default paths that look like leftover copies, which no tool loads unless told to.
+- The attacker does not know which files are decoys. File names, the names inside files and the fake services' answers are generated per organization, so the defaults are not a public list of names to skip. Decoys are never placed at a tool's default path (such as `~/.kube/config` or `~/.aws/credentials`), because a normal tool would read them and raise false alerts. They sit at non-default paths that look like leftover copies, which no tool loads unless told to.
 
 What it does not do:
 
@@ -42,6 +44,16 @@ What it does not do:
 - **It is not a defense against an attacker who ignores credential files.** A hit needs the attacker to touch a decoy.
 - **It does not hide from someone with read access to your LimaCharlie organization.** Detections, the files on disk, and placement events let an insider with that access learn some decoys. Generated decoy instances and their secrets are kept out of customer-readable configuration, and no request ever returns a secret value, but the residual risk exists.
 - **It does not catch a decoy secret used somewhere LimaCharlie cannot see.** For example, an AWS decoy whose keys are copied to another machine without its config file will talk to real AWS, where the keys are invalid and nothing is reported. The read of the file on the original host is still caught.
+
+## What this release covers
+
+Deception ships a deliberately narrow, complete scope:
+
+- **Available:** credential and configuration file decoys, fake MCP and service endpoints, decoy hostnames under LimaCharlie-operated decoy domains, and phantom cloud accounts (UPN form) watched through Entra ID or Okta sign-in logs.
+- **Not available in this release, on every layer:** fake Active Directory accounts, and decoy hostnames under your own internal domain. Their templates stay in the library and your configuration still accepts them, but they report as unavailable in `plan`, `coverage` and `test_fire`, and nothing is planted, collected or forwarded for them.
+- **Deferred:** an alert when a phantom account signs in **successfully**. Failed sign-ins against a phantom account still alert.
+
+See [Known limitations](deception/limitations.md).
 
 ## Requirements
 

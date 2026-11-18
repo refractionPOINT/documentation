@@ -23,7 +23,8 @@ Every confirmed hit is one normalized event of type `deception_hit`, sent throug
   "source_ip": "198.51.100.7",
   "user_agent": "kubectl/…",
   "process": {},
-  "details": {"source": "collector", "service": "k8s", "matched_by": "…"},
+  "details": {"source": "collector", "service": "k8s", "matched_by": "…",
+              "source_ip_evidence": {"status": "not_available"}},
   "time": "…"
 }
 ```
@@ -33,17 +34,34 @@ Every confirmed hit is one normalized event of type `deception_hit`, sent throug
 | `decoy_id`, `kind`, `template`, `policy` | Which decoy was hit. |
 | `layer` | `read`, `modify`, `delete` or `use`. |
 | `sid` | The endpoint the decoy was **planted on**, even when the evidence came from elsewhere. |
-| `hostname` | The hostname of that endpoint. Empty for a hit that came through the collector, because that path holds no organization credential to look the sensor up. |
+| `hostname` | The hostname of that endpoint. Empty for a hit that came through the collector, because the part of the extension that records collector hits holds no organization credential to look the sensor up. |
 | `reporting_sid` | The sensor that reported it, when different from `sid`. |
-| `on_host` | True when the evidence comes from the decoy's own host: a sensor event from that sensor, or a collector hit whose source IP is the sensor's own address. **In this release it is always `false` for a collector (use) hit**, because the collector path cannot look up the sensor's addresses. |
+| `on_host` | True only when the evidence is an event the decoy's own sensor reported (a file read or modification on the host the decoy was planted on); `details.on_host_basis` is then `sensor_event`. **It is always `false` for a collector hit and for a sign-in**, whatever the source address, by design: see [Isolation](#isolation). |
 | `classification` | A label, see below. |
 | `synthetic` | True only for the extension's own test hits. It is set on the server side. Nothing in an incoming request can set it. |
 | `case_group_key` | `<sid>:<incident id>`. Hits on the same sensor within an incident window (30 minutes by default) share an incident. |
 | `source_ip`, `user_agent` | For collector hits. |
 | `process` | The acting process, when the event carried it. |
-| `details` | Kind-specific, from an allowlist of fields. Secret values are scrubbed from every string, and headers that carry credentials are never copied. For collector hits it includes the service, method, path and request details such as an MCP tool name. For sensor events: the event type, the observed path and the decoy path. |
+| `details` | Kind-specific, from an allowlist of fields. Secret values are scrubbed from every string, and headers that carry credentials are never copied. For collector hits it includes the service, method, path and request details such as an MCP tool name. For sensor events: the event type, the observed path and the decoy path. For hits that carry a source address, it also holds [address evidence](#address-evidence-is-enrichment-only). |
 
 The envelope is common to every kind, so the default rules match on it and a new kind raises detections with no rule change.
+
+### Address evidence is enrichment only
+
+A collector hit or a sign-in hit carries a source address. Where the extension can look up the decoy's sensor, the hit also records whether that address is one of the addresses the sensor last reported, as `details.source_ip_matches_sensor`, with `details.source_ip_evidence`:
+
+| Field | Meaning |
+| --- | --- |
+| `status` | `match`, `no_match`, or `not_available` (the sensor's addresses were not looked up where the hit was recorded, which is the case for hits recorded from the collector). |
+| `address_kind` | `external` or `internal`, on a match. |
+| `sensor_last_seen` | When the sensor last reported, when known. |
+| `uniqueness` | Always `not_established`: the address is not compared with the rest of your sensors, so a shared egress or a reused range would match many hosts. `complete` is `false`. |
+
+This is information for the analyst. It never changes `on_host`, never changes the classification, and never lets a hit isolate a host.
+
+### Delivery
+
+Each confirmed hit is delivered to the `ext-deception` adapter once across all the instances of the extension, with two narrow exceptions that each send a second identical event (same `hit_id`, same `case_group_key`): the adapter accepted the event but the acknowledgement was lost, and the extension then retried; or the extension process stopped after the adapter accepted the event and before it recorded that. The platform does not drop such a duplicate, so the shipped rules would report it twice. A duplicate does not isolate a host twice, because isolation runs at most once per incident. If you need exactly-once handling, deduplicate on `hit_id` in your own rules or downstream. How `ext-cases` handles a second detection with the same grouping key is **not verified**.
 
 ### Classification
 
@@ -63,14 +81,14 @@ The labels based on how many decoys one process or address touched within a minu
 
 ## Default detection rules
 
-On subscribe the extension installs six rules in your `dr-general` hive, named `deception-*`. They are ordinary D&R rules. You own them: edit, disable or replace them. The extension never overwrites one you changed. When a newer shipped version exists, `plan` shows it as `modified` with the shipped copy, and `deploy` applies it only when you pass `apply_pack` or `apply_all_pack`. On unsubscribe or uninstall, only rules still equal to the shipped version are removed. A rule you edited stays.
+On subscribe the extension installs six rules in your `dr-general` hive, named `deception-*`. They are ordinary D&R rules. You own them: edit, disable or replace them. The extension never overwrites one you changed. When a newer shipped version exists, `plan` shows it as `modified` with the shipped copy, and `deploy` applies it only when you pass `apply_pack` or `apply_all_pack`; applying a rule restores the shipped rule as a whole, including its tags and expiry. `coverage` checks the stored rules against the shipped ones (see [Rule integrity](decoys.md#rule-integrity)). On unsubscribe or uninstall, only rules still equal to the shipped version are removed. A rule you edited stays.
 
 | Rule | Matches | Does |
 | --- | --- | --- |
 | `deception-alert` | A real (not synthetic) hit, layer not `delete`, and not a sanctioned-agent read | Report, category `deception.<kind>.<layer>`, **priority 10**, with the case grouping key |
 | `deception-alert-sanctioned-agent` | A real hit classified as a sanctioned agent, layer not `use` | Report, priority 6 (never matches in this release, see above) |
 | `deception-alert-decoy-deleted` | A real hit with layer `delete` | Report, priority 5. Never isolates. |
-| `deception-respond` | A real hit, not `delete`, `on_host` true, classification neither `scanner-likely` nor sanctioned | Calls the extension's `respond` request with the hit id and action `policy` |
+| `deception-respond` | A real hit, not `delete`, `on_host` true, classification neither `scanner-likely` nor sanctioned | Calls the extension's `respond` request with the hit id and action `policy` (which isolates only if the hit's policy sets `responses.isolate`) |
 | `deception-test` | A synthetic hit | Report under the reserved category `__deception-test`, no response |
 | `deception-coverage-warning` | A `deception_coverage_warning` event | Report `deception.coverage`, priority 3 |
 
@@ -116,7 +134,7 @@ respond:
 
 Do not use a plain `isolate network` response in a rule that matches `deception_hit`. The event arrives through the extension's adapter, so a plain isolation would act on the adapter instead of the endpoint. Call the extension's `respond` request instead, as the shipped rule does.
 
-If you disable or edit the `deception-test` rule so it no longer produces a detection, the next `test_fire` marks the path `broken`. Disabling or breaking `deception-alert` is not detected by `test_fire`.
+If you disable or edit the `deception-test` rule so it no longer produces a detection, the next `test_fire` marks the path `broken`. Deleting or disabling `deception-alert` or `deception-alert-decoy-deleted` marks the paths they serve `broken` in `coverage` through the [rule integrity](decoys.md#rule-integrity) check, not through `test_fire`. An edit to a shipped rule reads `unverified (rule edited: <rule>)`: the extension does not evaluate your rule, so it can neither call an edit working nor broken.
 
 ## Cases
 
@@ -141,10 +159,10 @@ The answer lists each action and whether it was done, or why it was refused.
 
 ### Isolation
 
-A secret can be replayed long after it leaked, from anywhere, so a use hit with no matching activity on the host means "this host leaked a credential", not "this host is under attack right now". Automatic isolation is therefore opt-in (`responses.isolate: true` in the policy) and guarded, and the default rules isolate only on on-host evidence: a read or a command line seen by the sensor, or a use from the host's own address.
+A secret can be replayed long after it leaked, from anywhere, so a use hit with no matching activity on the host means "this host leaked a credential", not "this host is under attack right now". Automatic isolation is therefore opt-in (`responses.isolate: true` in the policy) and guarded, and it rests only on on-host evidence: a read or a command line that the decoy's own sensor reported.
 
-!!! note "Collector (use) hits do not isolate in this release"
-    A hit that arrives through the collector has `on_host: false`, even when the secret is used from the decoy's own host, so it is refused as `off_host_hit` and cannot trigger isolation. Only sensor-reported hits (read, modify, command line) can isolate. Use hits still raise the priority 10 detection and, if `ext-cases` is subscribed, open a case.
+!!! note "A network address never isolates a host (by design)"
+    A source address is a poor proof of which machine sent a request: NAT, DHCP churn, shared cloud egress, VPNs and an offline sensor's stale address all put one address on many machines or move one machine across addresses, and a wrong answer would isolate the wrong host. So a hit that arrives through the collector, and a sign-in hit, never has `on_host` true, even when the secret is used from the decoy's own host and the address matches the sensor's. `respond` also refuses any stored hit that rests on an address, including hits stored before this rule. These hits still raise the priority 10 detection and, if `ext-cases` is subscribed, open a case. The [address evidence](#address-evidence-is-enrichment-only) on the hit helps an analyst decide.
 
 The extension refuses to isolate, whatever your rules say, when the hit is:
 
@@ -152,7 +170,7 @@ The extension refuses to isolate, whatever your rules say, when the hit is:
 | --- | --- |
 | `synthetic_hit`, `unmatched_test_instance_hit` | A test hit, or a hit on a test decoy that no test run claims. |
 | `delete_only_hit` | A deletion. |
-| `off_host_hit` | Not from the decoy's own host. |
+| `off_host_hit` | Not from the decoy's own host: not `on_host`, or resting on a source address. |
 | `scanner_likely_hit` | Classified as a scanner. |
 | `sensor_gone`, `host_rebuilt` | The sensor was deleted, or enrolled again after the hit. |
 | `hit_too_old` | Older than 7 days. |
@@ -174,7 +192,8 @@ Test-fire checks that each alert path works, on demand with `test_fire` and auto
 - **Anything unmatched is real.** A hit on a test decoy that matches no run is a real `deception_hit`. This is deliberate: it covers an attacker who found the test file.
 - **A path it cannot check.** If a run covers the event's time but its binding cannot be verified, the extension emits a `deception_coverage_warning` instead of an alert, so a rule of yours cannot isolate a host on the extension's own traffic.
 - **Tests never open cases or act.** Test hits are marked `synthetic` on the server side, reported under `__deception-test`, skipped by `ext-cases`, and refused by `respond`.
-- **Broken paths show up.** If a run produces no detection (the `deception-test` rule was edited, disabled or deleted, for example), `coverage` marks the path `broken`. Editing `deception-alert` does not affect this status. Only the first 200 alert paths (sorted by policy, template and layer) have their test status read, so a large configuration may not show every broken path.
+- **Broken paths show up.** If a run produces no detection (the `deception-test` rule was edited, disabled or deleted, for example), `coverage` marks the path `broken`. `coverage` reads the latest test result of every alert path in your configuration, in bounded batches, and says how many it could not read (`test_results_unread`). The response of `test_fire` also carries a `pack_check` object with the rule integrity result (see [Rule integrity](decoys.md#rule-integrity)).
+- **Paths that are unavailable in this release are not tested.** `test_fire` runs nothing for the fake AD account and internal-domain hostname templates. It lists at most 10 such policy and template pairs in its `issues` ("not tested: the alert paths are unavailable"), then says how many more there are. The `coverage` request lists every one.
 
 Which alert paths a test can reach depends on the deployment: a collector test needs the extension's internal collector path, and a path the deployment cannot test is reported in the `issues` of the answer rather than silently passed. Test history is bounded: a test operation's full record expires 7 days after it closes, and its idempotency record and run rows 30 days after, so a `test_fire` request replayed after 30 days is a new request.
 

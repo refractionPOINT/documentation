@@ -8,7 +8,7 @@ A **kind** is a mechanism built into the extension: how a decoy is placed, how a
 | --- | --- | --- |
 | `file` | A credential file, service configuration or note on the endpoint. Secrets inside point at LimaCharlie's collector. | read, modify, delete (sensor); use (collector) |
 | `hostname` | A file (inventory note, FTP/SFTP client config) naming decoy hostnames. Registry form: names under LimaCharlie-operated decoy domains. Internal form (names under your own internal domain): **not available in this release**, see below. | read, modify, delete (sensor); use (DNS lookup seen by the sensor, request on the collector) |
-| `phantom_account` | A file naming a username that exists nowhere, with a fake password. UPN form (`user@domain`) for Entra ID or Okta. The AD form (`DOMAIN\user`) is **not planted in this release**. | read, modify, delete (sensor); use (failed sign-in in your logs) |
+| `phantom_account` | A file naming a username that exists nowhere, with a fake password. UPN form (`user@domain`) for Entra ID or Okta. The AD form (`DOMAIN\user`) is **not available in this release**. | read, modify, delete (sensor); use (failed sign-in in your logs) |
 
 ### Alert layers
 
@@ -21,7 +21,7 @@ Every hit carries a `layer`:
 | `delete` | The decoy file was deleted unexpectedly. The decoy is planted again afterward. | Priority 5, never isolates |
 | `use` | A secret inside the decoy was used. | Priority 10 |
 
-Priority 10 applies to the default rules, which you can edit. In this release a `use` hit from the collector has `on_host: false`, so the default rules never isolate on it, even when the secret is used from the original host (see [Isolation](detections.md#isolation)).
+Priority 10 applies to the default rules, which you can edit. A `use` hit never isolates the host, by design: it arrives from the collector or a sign-in log, and a network address is not proof of which machine used the secret. Only an event reported by the decoy's own sensor (a read or modification) can isolate, even when the secret is used from the original host (see [Isolation](detections.md#isolation)).
 
 A modification counts as a hit because on Linux an open for read-write is reported by the sensor as a modification, not a read. An unexpected delete is more often cleanup than an attack, so it gets a lower priority.
 
@@ -46,16 +46,16 @@ A modification counts as a hit because on Linux an open for read-write is report
 | `root-api-config`, `root-backup-credentials` | file | Linux | Root-only files in `/root`, `/etc`, `/opt` or `/var/backups` |
 | `win-web-config` | file | Windows | IIS `web.config` with connection strings, under a generated folder |
 | `hostname-registry-inventory` | hostname | Linux, macOS, Windows | An inventory note naming decoy hosts under a decoy domain |
-| `hostname-internal-inventory` | hostname | Windows | An inventory note naming decoy hosts under your internal domain. **Cannot be planned in this release**: the extension does not learn your internal domain, so the template is never selected. |
+| `hostname-internal-inventory` | hostname | Windows | An inventory note naming decoy hosts under your internal domain. **Not available in this release**: every alert layer reports unavailable and nothing is planted. |
 | `win-filezilla-sitemanager`, `win-winscp-ini` | hostname | Windows | FileZilla and WinSCP site lists naming decoy hosts |
 | `phantom-upn-credentials` | phantom_account | Linux, macOS, Windows | A note with a phantom cloud account |
-| `phantom-ad-credentials`, `win-groups-xml`, `win-unattend-xml` | phantom_account | Windows | A note, a Group Policy Preferences `Groups.xml` and an `unattend.xml` with a phantom AD account. **Not planted in this release**, see [Log sources](#log-sources-and-their-limits). |
+| `phantom-ad-credentials`, `win-groups-xml`, `win-unattend-xml` | phantom_account | Windows | A note, a Group Policy Preferences `Groups.xml` and an `unattend.xml` with a phantom AD account. **Not available in this release**: every alert layer reports unavailable and nothing is planted. |
 
-The service names a decoy uses (for example the fake Kubernetes API or fake AWS API) are per-organization labels under the decoy domains. Nothing on the collector's public side names LimaCharlie, and a template whose content mentions `limacharlie` is rejected.
+The service names a decoy uses (for example the fake Kubernetes API or fake AWS API) are per-organization labels under the decoy domains. Names written inside decoy files (clusters, users, folders, hosts) come from the same per-organization vocabulary. Nothing on the collector's public side names LimaCharlie, and a template whose content mentions `limacharlie` is rejected.
 
 ## What the collector answers
 
-Decoy secrets that carry their own destination point at a public collector that answers like the real service, so the attacker keeps going and the extension learns more. It serves a fake Kubernetes API, a fake AWS API (including STS identity, S3 listings and Secrets Manager), web logins and JSON APIs (SSO login, Grafana, Jenkins, Vault), a fake MCP server (a tool call is the hit, connecting and listing tools is not), a git server, and npm and PyPI registries. It records the source IP, User-Agent, an allowlist of headers and the token. The collector holds no organization credential. It only forwards what it receives, and the extension decides whether it is a real hit by looking the token up in its registry.
+Decoy secrets that carry their own destination point at a public collector that answers like the real service, so the attacker keeps going and the extension learns more. It serves a fake Kubernetes API, a fake AWS API (including STS identity, S3 listings and Secrets Manager), web logins and JSON APIs (SSO login, Grafana, Jenkins, Vault), a fake MCP server (a tool call is the hit, connecting and listing tools is not), a git server, and npm and PyPI registries. Its answers are derived per organization, from a private key that only LimaCharlie holds: the fake MCP server's name and tools, bucket and secret names, identities and pages differ in every organization, and a fake host label belongs to one fake application, so every path, link and redirect on it answers like that application. A decoy login session carries the lifetime the fake service advertises and expires on it (for example a Vault login 32 days, a Grafana cookie 30 days, a Jenkins session 30 minutes, a portal session 12 hours; package registry tokens do not expire). An expired session authenticates nobody, but is still attributed to the decoy it came from. It records the source IP, User-Agent, an allowlist of headers and the token. The collector holds no organization credential. It only forwards what it receives, and the extension decides whether it is a real hit by looking the token up in its registry.
 
 ## File names and paths
 
@@ -95,24 +95,24 @@ On Linux, read alerts need the eBPF-capable sensor. The extension checks the sen
 | File decoys, read alert | `ext-exfil` subscribed, file collectors on | A template that also alerts on use is still planted: the read layer shows `partial` and only use is caught. A template whose only alert is read has no working alert path, shows `unavailable`, and is not planted. |
 | File decoys, modify and delete alerts | `ext-integrity` subscribed, file collectors on | The modify and delete layers show `partial` or `unavailable` in the same way. |
 | File, MCP and registry-hostname decoys, use alert | Nothing else | Always available. |
-| Hostnames under your internal domain | **Not available in this release.** The extension does not learn your internal domain, so these decoys cannot be planned. When this ships, it will also need at least one Windows sensor (only Windows reports failed lookups). | Not offered. |
+| Hostnames under your internal domain | **Not available in this release.** Internal-domain hostname decoys are deferred to a later release. | Not planted. Every alert layer reports unavailable. |
 | Phantom accounts, UPN form | Entra ID adapter with the `sign_ins` source (Entra ID P1 or P2), or the Okta adapter | Not planted. |
-| Phantom accounts, AD form | **Not planted in this release.** The extension cannot yet confirm that every domain controller runs a sensor or that failure auditing is on, so it treats both as unmet whatever your tenant does. This is an implementation limitation, separate from your logging setup. | Not planted. |
+| Phantom accounts, AD form | **Not available in this release.** Fake Active Directory accounts are deferred to a later release, whatever your tenant does. | Not planted. Every alert layer reports unavailable. |
 
 ## Log sources and their limits
 
 | Source | What the extension reads | Limits |
 | --- | --- | --- |
-| Entra ID, `sign_ins` source | Failed sign-ins with status `50034` (user not found), checked against the planted usernames | Needs Entra ID P1 or P2. |
-| Okta, system log | Failed sign-ins (`FAILURE`), checked against the planted usernames | |
-| Windows domain controllers | **Not used in this release**: AD-form phantom accounts are not planted. The design reads `WEL` events 4776 (NTLM) and 4768 (Kerberos) with the unknown-user result codes, collected through `ext-artifact` `wel://` rules and `ext-exfil` `WEL`. | See below. |
-| Sensor DNS | `DNS_REQUEST` for names under decoy domains. Failed lookups under your internal domain are part of the design, but internal-domain decoys are not planted in this release. | Failed lookups are reported by Windows sensors only. On Linux and macOS a lookup is reported only if the name resolves. |
+| Entra ID, `sign_ins` source | Failed sign-ins with status `50034` (user not found), checked against the planted usernames | Needs Entra ID P1 or P2. Successful sign-ins are not alerted in this release. |
+| Okta, system log | Failed sign-ins (`FAILURE`), checked against the planted usernames | Successful sign-ins are not alerted in this release. The quiet-feed note (below) is based only on authentication events (`user.session.start`, `user.authentication.*`) of an adapter whose platform is `okta`. |
+| Windows domain controllers | **Not used in this release.** No domain controller is tagged and no Windows event collection is installed. | |
+| Sensor DNS | `DNS_REQUEST` for names under decoy domains. | Failed lookups are reported by Windows sensors only. On Linux and macOS a lookup is reported only if the name resolves. |
 
-Google Workspace is not a supported source. **Not verified:** that Entra ID and Okta (and, once AD-form accounts ship, domain controllers) each log sign-in attempts for non-existent usernames in a form the extension can match, in every tenant configuration. Treat phantom accounts as unproven until `test_fire` and a real attempt against your tenant confirm them.
+Google Workspace is not a supported source. **Not verified:** that Entra ID and Okta each log sign-in attempts for non-existent usernames in a form the extension can match, in every tenant configuration. Treat phantom accounts as unproven until `test_fire` and a real attempt against your tenant confirm them.
 
-The rest of this section describes the domain controller design, which is not active in this release because AD-form phantom accounts are not planted. Domain controller collection is opt-in per policy. The extension tags your domain controllers `deception-dc` and scopes both the `wel://` collection and the `WEL` event to that tag, so no other sensor's collection changes. The collection filters by event ID only, so with success auditing on, successful Kerberos ticket requests and NTLM validations stream too. That volume grows with your logon rate. A failed logon for a missing user also comes from typos and password sprays, so a hit counts only when the username is exactly one of the planted ones.
+**Quiet sign-in feeds.** The platform does not report when an adapter last delivered data, so the extension cannot tell a quiet source from a broken one. It observes the sign-in events it is sent (at most one observation request an hour) and, when none has been seen for a day, adds an informational note to the affected coverage items: "no sign-in observed in N hours". The note is not a failure and never changes a status: a tenant whose users rarely sign in has a healthy feed with no sign-ins. An Okta adapter registered under another platform name (for example the generic `json` platform) is not observed at all, so no note is made about it.
 
-A successful sign-in does not retire a phantom account. If a planted name later becomes a real account (for example because someone creates an account with that name), remove the decoy with `remove`, or replace it with `rotate`, and check the template so the new name is not reused. Until then, the real account's failed sign-ins (typos, for example) can raise `use` hits.
+**Successful sign-ins are not alerted.** Only failed sign-ins against a planted username raise a `use` hit. A successful sign-in under a phantom name raises nothing and does not retire the decoy. If a planted name later becomes a real account (for example because someone creates an account with that name), remove the decoy with `remove`, or replace it with `rotate`, and check the template so the new name is not reused. Until then, that account's failed sign-ins (typos, for example) can raise `use` hits.
 
 ## Coverage statuses
 
@@ -122,11 +122,25 @@ A successful sign-in does not retire a phantom account. If a planted name later 
 | --- | --- |
 | `active` | Requirements are met and at least one verified decoy exists. |
 | `partial` | Some layers of the template work and this one does not (for example "read alerts not covered"), or the layer's requirements are met but no decoy of the template is verified yet. |
-| `unavailable` | A requirement is missing, named exactly (for example "Connect Entra ID with sign-in logs (needs Entra ID P1 or P2)"). |
-| `blind` | The layer's requirements are met but its source delivered no data for over 24 hours. Applies to Entra ID and Okta sources. The decoys stay in place. **Inactive in this release**: the platform does not report when an adapter last delivered data, so this status is never set. Monitor the health of your sign-in log sources independently. |
-| `broken` | The latest `test_fire` for that layer produced no detection, for example because a default rule was edited or disabled. Test status is read for the first 200 alert paths only (sorted by policy, template and layer), so a configuration with more paths may not show every broken path. |
+| `unavailable` | A requirement is missing, named exactly (for example "Connect Entra ID with sign-in logs (needs Entra ID P1 or P2)"). For fake AD accounts and internal-domain hostnames the reason is "not available in this release", on every layer of the template. |
+| `blind` | **Never set in this release.** The platform does not report when an adapter last delivered data, so the extension cannot tell. A quiet sign-in feed shows as an informational note instead (see above). Monitor the health of your sign-in log sources independently. |
+| `broken` | The latest `test_fire` for that layer produced no detection, or a shipped alert rule is missing or disabled (see below). |
 
-`broken` appears in `coverage` only. The extension does not send an alert or event when a path breaks, so check `coverage` after changes to a rule. `blind` is not set in this release (see above). The `deception_coverage_warning` event is a separate, narrower signal, described under [Detections](detections.md#the-deception_coverage_warning-event).
+`broken` appears in `coverage` only. The extension does not send an alert or event when a path breaks, so check `coverage` after changes to a rule.
+
+### Rule integrity
+
+Besides the test result, `coverage` checks each shipped detection rule in `dr-general` against what the extension wrote. The check compares the whole stored record, not just the detection logic: the detect and respond sections, scoping, options and the rule's tags and expiry. It gives each rule one of three outcomes:
+
+| Outcome | Meaning |
+| --- | --- |
+| verified | The stored rule is identical to the shipped one. |
+| `unverified (rule edited: <rule>)` | The rule differs from the shipped one in any way. The extension does not evaluate rules, so it neither calls an edit healthy nor broken. Check that the rule still fires on `deception_hit` events as the shipped one does, or restore it with `deploy` and `apply_pack`. |
+| `broken` | The rule is missing, or disabled. |
+
+A missing or disabled `deception-alert` marks the read, modify and use layers `broken`; a missing or disabled `deception-alert-decoy-deleted` marks the delete layer `broken`. For the other shipped rules the finding is reported but marks no path. The answer carries `pack_issues` and a `pack_check` object: `status` (`ok`: every rule verified; `issues`: one is missing or disabled; `unverified`: a rule was edited, or the check itself could not run, with a `reason`), `checked_at` (the last check that ran to an answer) and `attempted_at` (the latest attempt). If an attempt fails, the platform error is logged and not returned, `checked_at` keeps the last good result, and the two times differ. Never read `unverified` as healthy.
+
+Test results are read for every alert path of the configuration, in bounded batches. If a request could not read some of them, `test_results_unread` says how many; those paths are not marked broken by that request. The `deception_coverage_warning` event is a separate, narrower signal, described under [Detections](detections.md#the-deception_coverage_warning-event).
 
 ## New and short-lived sensors
 
