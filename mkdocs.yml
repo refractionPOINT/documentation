@@ -459,6 +459,8 @@ nav:
               - Exfil: 5-integrations/extensions/limacharlie/exfil.md
               - Feedback: 5-integrations/extensions/limacharlie/feedback.md
               - Git Sync: 5-integrations/extensions/limacharlie/git-sync.md
+              - Host Posture: 5-integrations/extensions/limacharlie/host-posture.md
+              - 'Host Posture: Writing Rules': 5-integrations/extensions/limacharlie/host-posture-writing-rules.md
               - Infrastructure: 5-integrations/extensions/limacharlie/infrastructure.md
               - Integrity: 5-integrations/extensions/limacharlie/integrity.md
               - Lookup Manager: 5-integrations/extensions/limacharlie/lookup-manager.md
@@ -567,6 +569,7 @@ nav:
           - Cloud Sensors: 7-administration/config-hive/cloud-sensors.md
           - Application Control Policies: 7-administration/config-hive/app-control-policy.md
           - Application Control Rules: 7-administration/config-hive/app-control-rule.md
+          - Host Posture Rules: 7-administration/config-hive/host-posture-rule.md
           - Apps: 7-administration/config-hive/apps.md
 
   - Reference:
