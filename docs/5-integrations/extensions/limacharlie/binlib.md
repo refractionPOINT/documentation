@@ -189,7 +189,7 @@ Things to know when reading the result:
 - **`binaries_limit_reached`** is `true` when the number of binaries reached `limit`, meaning more binaries may match your criteria.
 - **`unresolved_hashes`** lists any MD5 or SHA1 you provided that BinLib could not map to a SHA256. Hosts are looked up by SHA256 only.
 - A hash BinLib has never seen can still be located when you provide it directly: the metadata columns are then empty.
-- A request that would return more than 50,000 rows is refused: narrow the criteria or lower `limit` and `hosts_limit`.
+- A request is refused when the number of binaries multiplied by `hosts_limit` could exceed 50,000 rows: narrow the criteria, or lower `limit` or `hosts_limit`.
 
 Limits to keep in mind:
 
