@@ -101,7 +101,7 @@ The engine reports how it performed from its own records of runs and actions:
 GET /v1/investigate/{oid}/stats
 ```
 
-Query parameters, all optional: `template` (a template name), `since` and `until` (RFC 3339 timestamps, applied to when each run was created). It needs `investigation.get`. The report covers at most the 2,000 most recent matching runs; `window.truncated` is `true` when more matched, so narrow the window or the template for a complete picture.
+Query parameters, all optional: `template` (a template name), `since` and `until` (RFC 3339 timestamps, applied to when each run was created). It needs `investigation.get`. The report covers a capped number of the most recent matching runs; `window.truncated` is `true` when more matched, so narrow the window or the template for a complete picture.
 
 It reports:
 
