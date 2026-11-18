@@ -120,14 +120,14 @@ An abridged example, with only the action section filled in beyond the headline 
   "time_to_verdict_ms": {"p50": 410, "p95": 2300, "samples": 39},
   "llm": {"usd": 0.31, "tokens": 91000},
   "actions": {
-    "by_class_state": {"close.false_positive": {"executed": 8, "proposed": 2, "denied": 1, "expired": 1}},
+    "by_class_state": {"close.false_positive": {"proposed": 5, "confirmed": 7, "reverted": 1, "denied": 1, "expired": 1}},
     "by_template_class": [
       {
         "template": "phishing-triage",
         "action_class": "close.false_positive",
-        "total": 12,
+        "total": 15,
         "suggested": 3,
-        "approved": 4,
+        "approved": 3,
         "denied": 1,
         "expired": 1,
         "auto_executed": 5,
@@ -135,14 +135,14 @@ An abridged example, with only the action section filled in beyond the headline 
         "undone": 1,
         "held": 2,
         "held_by_reason": {"policy_no_approvers": 2},
-        "by_state": {"executed": 8, "proposed": 2, "denied": 1, "expired": 1}
+        "by_state": {"proposed": 5, "confirmed": 7, "reverted": 1, "denied": 1, "expired": 1}
       }
     ]
   }
 }
 ```
 
-The counters in each `by_template_class` row are not a partition of `total`: an approved action can later be undone, so it counts under both. `held` counts an action once however many reasons held it, and `held_by_reason` counts it once under each reason, using the hold reason as recorded (for example `policy_no_approvers`). `by_state` always adds up to `total`.
+The counters in each `by_template_class` row are not a partition of `total`: an approved action can later be undone, so it counts under both. In the example, 3 suggested and 2 held actions are the 5 still `proposed`, and the 3 approved and 5 automatic executions are the 7 `confirmed` plus the 1 that a person undid (`reverted`). `undone` counts only undos a person asked for; a lease that simply expires shows as `reverted` in `by_state` and is not an undo. `held` counts an action once however many reasons held it, and `held_by_reason` counts it once under each reason, using the hold reason as recorded (for example `policy_no_approvers`). `by_state` always adds up to `total`.
 
 From the command line:
 
