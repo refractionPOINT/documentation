@@ -56,6 +56,15 @@ it with `New-MgServicePrincipal` as described in Microsoft's
 [message trace onboarding guide](https://learn.microsoft.com/en-us/exchange/monitoring/trace-an-email-message/graph-api-message-trace).
 Granting the app permission alone does not provision that prerequisite.
 
+!!! note "Microsoft 365 GCC tenants"
+    Microsoft does not currently offer the message trace Graph API to Microsoft 365
+    GCC (US government) tenants and refuses the call even with the permission and
+    service principal in place. Message-trace coverage then reports `unsupported`
+    rather than `not_granted`, and there is nothing to grant. Mail ingestion and
+    remediation are unaffected. Until the permission is granted the feed still
+    shows `not_granted`; it moves to `unsupported` after the first poll with the
+    grant in place.
+
 For release activity, select **Office 365 Management APIs → Application
 permissions → ActivityFeed.Read** separately from Microsoft Graph, grant admin
 consent, and enable unified audit logging. The connection uses a separate

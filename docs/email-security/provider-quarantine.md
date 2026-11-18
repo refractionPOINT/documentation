@@ -24,6 +24,7 @@ are configured in [Microsoft 365 setup](provider-setup/microsoft-365.md).
 | `ok` | The last bounded provider window was fully stored and the polling result is current |
 | `pending` | A walk is still in progress; there may be more provider pages |
 | `not_granted` | The optional permission is absent or the provider refused access |
+| `unsupported` | The provider does not offer this feed for the tenant's environment, for example message trace in Microsoft 365 GCC. No permission fixes it |
 | `not_evaluated` | This connection/feed has not produced a polling result yet |
 | `error` | The provider read or durable write failed; this is not evidence of zero blocked mail |
 | `stale` | The last complete poll is older than ten minutes |
