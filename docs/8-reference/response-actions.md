@@ -533,7 +533,7 @@ Place it after the `report` so the run is tied to that detection. Without a `rep
 | `urgency` | `low`, `medium`, `high` or `critical`, as a literal. Optional. |
 | `inputs` | Values handed to the template, using the same [transform rules](#writing-the-request-values) as `extension request`. |
 | `coalesce_key` | Template string. Requests with the same key are folded into one run. |
-| `case` | Template string that renders to an existing case number. The run is attached to that case and writes into it instead of opening a new one. Meant for rules on the Cases `case_created` event. If it renders empty or is not a number, the action fails for that event and no run starts. `template`, `urgency` and `inputs` apply as usual. Without `coalesce_key`, runs are folded per case. |
+| `case` | Template string that renders to an existing case number. The run is attached to that case and writes into it instead of opening a new one. Meant for rules on the Cases `case_created` event: take it only from Cases events, because its value decides which case in your organization the run writes into. If it renders empty or is not a number, the action fails for that event and no run starts. `template`, `urgency` and `inputs` apply as usual. Without `coalesce_key`, runs are folded per case. |
 
 #### Example: Start an investigation when a case is opened
 
@@ -549,7 +549,7 @@ respond:
     case: '{{ .event.case_number }}'
 ```
 
-With `case` set, the rule needs no `report`, and a rule starts at most one run for a given case. The engine never starts a run for a case it wrote itself. Cases delivers its events to rules on a best-effort basis. See [Start an investigation when a case is opened](../7-administration/config-hive/investigation-policy.md#start-an-investigation-when-a-case-is-opened).
+With `case` set, the rule needs no `report`, and a rule starts at most one run for a given case. The engine never starts a run for a case it wrote itself. Cases delivers its events to rules on a best-effort basis. To skip the cases opened automatically from a detection, see [Start an investigation when a case is opened](../7-administration/config-hive/investigation-policy.md#start-an-investigation-when-a-case-is-opened).
 
 ## See Also
 

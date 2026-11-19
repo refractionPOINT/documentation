@@ -93,7 +93,22 @@ respond:
     case: '{{ .event.case_number }}'
 ```
 
-- **What it matches:** a case opened with severity `high` or `critical`, whether a person, an API key or a product opened it (cases opened automatically from a detection included). To investigate only the cases a person opens, add `{op: is, path: event/principal_type, value: user}` and wrap the two severities in an `or`. The rule looks at the severity when the case is opened: a case opened as `medium` and raised later does not start a run. To investigate such cases, start the run from the case page.
+- **What it matches:** a case opened with severity `high` or `critical`, whoever opened it. `event/by` is the identity that opened the case: an email for a person, a key name for an API key, and `system` for a case opened automatically from a detection. To skip the cases opened automatically from a detection, require that `by` is not `system`:
+
+    ```yaml
+    detect:
+      event: case_created
+      op: and
+      rules:
+        - {op: is, path: event/by, value: system, not: true}
+        - op: or
+          rules:
+            - {op: is, path: event/metadata/severity, value: high}
+            - {op: is, path: event/metadata/severity, value: critical}
+    ```
+
+    `event/principal_type` is `unknown` on `case_created` events, so do not match on it. The detection a case was opened for, when there is one, is at `event/metadata/detect_id`.
+- **Severity and tags:** the rule reads the severity when the case is opened: a case opened as `medium` and raised later does not start a run, so start those from the case page. A case has no tags when it is opened (`event/metadata/tags` is always empty on `case_created`). Tags are added afterwards and arrive on the `case_tags_updated` event, so a rule that needs a tag must match that event instead.
 - **What it does:** the run is attached to that case and writes its findings into it. No second case is opened. The engine picks the plan template from the case, using the `applies_to` rules of your plan templates, unless the rule names a `template`. The identity and action limits are the ones in your policy, as for any other run.
 - **One run per case:** a rule starts at most one run for a case, however many times the event is delivered or however many events of that case it matches.
 - **No loops:** the engine never starts a run for a case it wrote itself, whatever the rule matches. A run's own writes into its case cannot start another run.
