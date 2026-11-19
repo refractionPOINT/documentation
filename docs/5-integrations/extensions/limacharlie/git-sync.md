@@ -407,7 +407,7 @@ hives:
         tags: [fictional-iac]
 ```
 
-The named policy adds restrictions for matching investigations; it cannot loosen matching default restrictions. When editing an existing record, export it first and preserve its complete `data`, including identity, budgets, triggers, intake and other fields. Preserve `usr_mtd` such as tags, enabled state, expiry and comments. Do not commit `sys_mtd`, authentication tokens or resolved secret values. New records need `usr_mtd.enabled: true` to participate.
+The named policy adds restrictions for matching investigations; it cannot loosen matching default restrictions. When editing an existing record, export it first and preserve its complete `data`, including identity, budgets, intake and other fields. Preserve `usr_mtd` such as tags, enabled state, expiry and comments. Do not commit `sys_mtd`, authentication tokens or resolved secret values. New records need `usr_mtd.enabled: true` to participate.
 
 Plans use `hives.investigation_plan.<record-name>` with the same `data` / `usr_mtd` wrapper. Export an existing valid plan into `hives/investigation_plan.yaml` and include it too. Empty `data: {}` is not a runnable plan. Selecting one hive does not select the other.
 
