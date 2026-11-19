@@ -782,6 +782,8 @@ Controls sensor tamper resistance. Sealing is persistent (survives reboots).
 ### `undelete sensor` - Sensor Recovery
 
 Restores a previously deleted sensor. Often used with the `deleted_sensor` deployment event.
+A sensor can be restored for 30 days after it was deleted; after that the action
+leaves it deleted. See [Restore window](../../8-reference/response-actions.md#restore-window).
 
 Note that `deleted_sensor` (lowercase -- the selector is case-sensitive) is
 normally emitted only once per sensor per 24-48 hours, so the rule must exist
