@@ -31,23 +31,39 @@ The sensor uses a pinned SSL certificate to talk to the cloud. This means that i
 
 If your network uses SSL inspection, we recommend you setup an exception for the LimaCharlie cloud domain relevant to you. Get in touch with us and we can provide you with the necessary information.
 
-Sensors since version 4.21.2 also generate a local log file able to be used to help pinpoint the level at which the connectivity fails. This log file is located:
+The installer reporting `Agent installed successfully!` means the service was installed and started. It does not mean the sensor has enrolled with the cloud yet. If the sensor does not appear in your Organization within a few minutes, use the steps below.
 
-- Windows: `c:\windows\system32\hcp.log`
-- MacOS: `/usr/local/hcp.log`
-- Linux: `./hcp.log`
+### Connection Log (`hcp.log`)
 
-This log provides a simple line for each basic step of connectivity to the cloud. It only logs the first connection attempted to the cloud and rolls over every time the sensor starts. A successful connection should look like:
+The sensor writes a local log file that shows how far its connection to the cloud got. Since sensor version 5.2.0 it is in the sensor data directory; older sensors wrote it to a legacy location:
+
+| Platform | Sensor 5.2.0 and newer | Older sensors |
+| --- | --- | --- |
+| Windows | `C:\ProgramData\limacharlie\hcp.log` | `C:\Windows\System32\hcp.log` |
+| macOS | `/Library/Application Support/limacharlie/hcp.log` | `/usr/local/hcp.log` |
+| Linux | `/opt/limacharlie/hcp.log` | `/etc/hcp.log` |
+
+`hcp.log` is a file, not a directory, so open it with a text viewer rather than `cd`. The data directory is restricted to administrators, so read it from an elevated prompt:
+
+- Windows (elevated PowerShell): `Get-Content C:\ProgramData\limacharlie\hcp.log`
+- macOS: `sudo cat "/Library/Application Support/limacharlie/hcp.log"`
+- Linux: `sudo cat /opt/limacharlie/hcp.log`
+
+The log has one line, prefixed with a timestamp, for each step of the connection to the cloud. It only covers the first few connection attempts and is reset every time the sensor starts. The first successful connection of a new sensor looks like:
 
 ```text
-hcp launched
-configs applied
-conn started
-connecting
-ssl connected
-headers sent
-channel up
+TS 1745889737: hcp launched
+TS 1745889737: bootstrap used
+TS 1745889737: conn started
+TS 1745889737: connecting
+TS 1745889738: ssl connected
+TS 1745889738: headers sent
+TS 1745889738: channel up
 ```
+
+A sensor that has already enrolled shows `local configs applied` instead of `bootstrap used`.
+
+### Troubleshooting Steps
 
 If you are having trouble getting your sensor connected to the cloud, we recommend that you attempt the following on the host:
 
@@ -57,14 +73,17 @@ If you are having trouble getting your sensor connected to the cloud, we recomme
    - The service process should be called `rphcp`.
 3. If the sensor still shows as not online, check the `hcp.log` file mentioned above:
 
-   - Check that the "configs applied" step is reached. If not, it may indicate the Installation Key provided is wrong or has a typo.
-   - Check that the proxy is mentioned in the log if you are using a proxy configuration.
-   - Check that the "ssl connected" step is reached. If not, this indicates a network configuration issue connecting to the cloud.
-   - Check that the "channel up" step is reached. If not, this could indicate one of a few things:
+   - Check that `bootstrap used` (new sensor) or `local configs applied` (enrolled sensor) is reached. `failed to apply bootstrap configs` or `no configs available` usually means the Installation Key provided is wrong, truncated or has a typo.
+   - Check that `using proxy` is in the log if you are using a proxy configuration.
+   - Check that the `ssl connected` step is reached. If you see `failed to tcp connect`, `failed to verify cert` or a `tls error` instead, this indicates a network configuration issue connecting to the cloud, such as a firewall blocking port 443 or SSL inspection (see above).
+   - Check that the `channel up` step is reached. If the log stops at `headers sent`, or shows `error receiving frame` or `contacted the cloud but did not receive a valid enrollment`, the cloud refused the sensor. This could indicate one of a few things:
 
      - Your sensor was deleted (through API or Web interface) from the org. If so, reinstall to get a new identity.
-     - Your Organization may be out-of-quota if more sensors than the maximum number you've set in the Billing section are trying to connect at once. Increase your quota and wait a few minutes to fix it.
+     - Your Organization may be out-of-quota if more sensors than the maximum number you've set in the Billing section are trying to connect at once. Increase your quota, or remove sensors you no longer use, and wait a few minutes to fix it. A quota refusal is also listed in the Platform Logs section under Errors, with the key `c2/enrollment/quota` and the message `sensor quota exhausted`.
      - If this is a brand new sensor install, make sure the Installation Key you're using still exists in your Org. Once deleted, an Installation Key cannot be used for NEW sensors, but old sensors that were installed using it will still work fine.
+     - If you manage several Organizations, make sure the Installation Key comes from the Organization you are looking at.
+4. If the log file does not exist at all, or the service keeps stopping, check whether antivirus, EDR or application-control software on the host is blocking or removing `rphcp.exe` (on Windows, check Defender's Protection History or run `Get-MpThreatDetection`). Add an exclusion for the sensor's install directory and reinstall.
+5. If none of the above explains it, run the [Sensor Troubleshooting Utility](#sensor-troubleshooting-utility) and send us the file it produces.
 
 ## Sensor Not Responding
 
@@ -76,7 +95,10 @@ When uninstalling, the `-r` mode leaves these identification files behind, so th
 
 If you uninstall with `-r` and re-enroll the sensor to a different Org, as can often happen during testing, the files on disk that include some cryptographic material will not match with what the cloud expects. This may result in taskings being refused by the sensor.
 
-To make sure this is not what's happening, uninstall the sensor with `-c`. Double-check that the local files `hcp`, `hcp_hbs` and `hcp_conf` are deleted before reinstalling. On Windows these should be in `c:\windows\system32` while on macOS they should be in `/usr/local`.
+To make sure this is not what's happening, uninstall the sensor with `-c`. Double-check that the identity files are deleted before reinstalling:
+
+- Sensor 5.2.0 and newer: `hcp.dat`, `hcp_conf.dat` and `hcp_hbs_config.dat` in the sensor data directory (`C:\ProgramData\limacharlie` on Windows, `/Library/Application Support/limacharlie` on macOS, `/opt/limacharlie` on Linux).
+- Older sensors: `hcp`, `hcp_hbs` and `hcp_conf` (with a `.dat` extension on Windows) in `C:\Windows\System32` on Windows, `/usr/local` on macOS and `/etc` on Linux.
 
 ## Sensor Duplication
 
@@ -130,9 +152,13 @@ The log data is formatted similarly to the example below:
 
 In some cases we may ask you for sensor health information from an endpoint that is having issues. To get this information, run the LC sensor interactively in the terminal with the -H flag.
 
-On macOS run the command: `sudo /usr/local/bin/rphcp -H`
+Run it from an elevated prompt:
 
-The diagnostic information will be displayed on screen, and saved to a file. The location of the output file will be shown at the bottom of the message shown on screen (on macOS, typically at `/Library/Application Support/limacharlie/``).
+- Windows (elevated PowerShell): `& "C:\Program Files\limacharlie\rphcp.exe" -H` (on sensors older than 5.2.1, the binary is `C:\Windows\System32\rphcp.exe`)
+- macOS: `sudo /usr/local/bin/rphcp -H`
+- Linux: `sudo /bin/rphcp -H`
+
+The diagnostic information will be displayed on screen, and saved to a file. The location of the output file will be shown at the bottom of the message shown on screen. The report includes the `hcp.log` contents and a network test against the cloud, so it is usually the fastest way to see why a sensor is not connecting.
 
 Note that the Sensor Troubleshooting Utility requires sensor [version 4.33.6](https://community.limacharlie.com/t/release-agent-with-sensor-troubleshooting-tool-webapp-4-2-3/276) or newer to be installed on disk on the impacted endpoint.
 
