@@ -530,25 +530,20 @@ Place it after the `report` so the run is tied to that detection. Without a `rep
 | Parameter | Description |
 |-----------|-------------|
 | `template` | Name of the plan template to use, as a literal. Without it, the engine picks one. |
-| `urgency` | `low`, `medium`, `high` or `critical`, as a literal. |
+| `urgency` | `low`, `medium`, `high` or `critical`, as a literal. Optional. |
 | `inputs` | Values handed to the template, using the same [transform rules](#writing-the-request-values) as `extension request`. |
 | `coalesce_key` | Template string. Requests with the same key are folded into one run. |
-| `case` | Template string that renders to an existing case number. The run is attached to that case and writes into it instead of opening a new one. Meant for rules on the Cases `case_created` event. If it renders empty or is not a number, the action fails for that event and no run starts. Without `coalesce_key`, runs are folded per case. |
+| `case` | Template string that renders to an existing case number. The run is attached to that case and writes into it instead of opening a new one. Meant for rules on the Cases `case_created` event. If it renders empty or is not a number, the action fails for that event and no run starts. `template`, `urgency` and `inputs` apply as usual. Without `coalesce_key`, runs are folded per case. |
 
 #### Example: Start an investigation when a case is opened
 
 ```yaml
 detect:
   event: case_created
-  op: and
+  op: or
   rules:
-    - op: is
-      path: event/principal_type
-      value: user
-    - op: or
-      rules:
-        - {op: is, path: event/metadata/severity, value: high}
-        - {op: is, path: event/metadata/severity, value: critical}
+    - {op: is, path: event/metadata/severity, value: high}
+    - {op: is, path: event/metadata/severity, value: critical}
 respond:
   - action: start investigation
     case: '{{ .event.case_number }}'

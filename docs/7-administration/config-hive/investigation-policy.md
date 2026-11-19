@@ -84,21 +84,16 @@ A D&R rule on the Cases `case_created` event starts the investigation. The polic
 ```yaml
 detect:
   event: case_created
-  op: and
+  op: or
   rules:
-    - op: is
-      path: event/principal_type
-      value: user
-    - op: or
-      rules:
-        - {op: is, path: event/metadata/severity, value: high}
-        - {op: is, path: event/metadata/severity, value: critical}
+    - {op: is, path: event/metadata/severity, value: high}
+    - {op: is, path: event/metadata/severity, value: critical}
 respond:
   - action: start investigation
     case: '{{ .event.case_number }}'
 ```
 
-- **What it matches:** a case opened by a person (not by an API key, an AI session or the system) with severity `high` or `critical`. Remove the `principal_type` test to cover every opened case, or change the severities to suit you. Cases audit events carry the case's tags and, when there is one, the detection it was opened for, so a rule can also match on `event/metadata/tags`.
+- **What it matches:** a case opened with severity `high` or `critical`, whether a person, an API key or a product opened it (cases opened automatically from a detection included). To investigate only the cases a person opens, add `{op: is, path: event/principal_type, value: user}` and wrap the two severities in an `or`. You can also match on the case's tags (`event/metadata/tags`). The rule looks at the severity when the case is opened: a case opened as `medium` and raised later does not start a run. To cover that, add a second rule on `case_severity_upgraded` or `case_severity_changed`; one run per case still holds.
 - **What it does:** the run is attached to that case and writes its findings into it. No second case is opened. The engine picks the plan template from the case, using the `applies_to` rules of your plan templates, unless the rule names a `template`. The identity and action limits are the ones in your policy, as for any other run.
 - **One run per case:** a rule starts at most one run for a case, however many times the event is delivered or however many events of that case it matches.
 - **No loops:** the engine never starts a run for a case it wrote itself, whatever the rule matches. A run's own writes into its case cannot start another run.
