@@ -7,6 +7,12 @@ Release notes for the EDR sensor installed on Windows, macOS, Linux and Chrome e
 
 ## 2026-11-18
 
+### Endpoint Agent 5.3.20
+
+#### Bug Fixes
+
+- Windows: fixed the kernel driver failing to load on some hosts where another product's driver also monitors process handles, which left those sensors without kernel telemetry.
+
 ### Endpoint Agent 5.3.19
 
 #### Bug Fixes
