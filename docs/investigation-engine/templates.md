@@ -24,16 +24,32 @@ LimaCharlie provides a **default library** of templates for common detection
 classes. It is content you choose to install. Nothing in the library reaches your
 organization until a person installs it, and an installed copy is yours to edit.
 
-| Template | Version | Picked for | What it does |
-|---|---|---|---|
-| `endpoint-detection-triage` | 3 | any detection category (`detect_cat: ['*']`) | Generic fallback for a detection on a sensor: the triggering process and its parent, its network activity, the binary's prevalence, the host and its user, related detections and what is true on the host now. Proposes `contain.network` on a confirmed true positive. |
-| `suspicious-process` | 3 | `encoded-powershell`, `lolbin-*` | Judges the command line of a trusted system binary, then checks the process tree, connections, user and whether the process is still active or persisted. Proposes `contain.network` on a confirmed true positive. |
-| `mailsec-suspicious-message` | 5 | `mailsec-ai-triage` | Triage of a message the Email Security AI judge rated suspicious: explains each signal that fired, checks the sender's real history and corroborating mail. Proposes `contain.email` on a confirmed true positive. |
-| `phishing-campaign` | 4 | `mailsec-ai-triage` | Investigates a malicious message several people received: where its link goes, who else received it, who clicked, whether a payload ran. Proposes `contain.email` and `contain.network` on a confirmed true positive. |
+| Template | Version | Picked for (`applies_to`) | What it does | Proposes |
+|---|---|---|---|---|
+| `endpoint-detection-triage` | 6 | any detection category (`detect_cat: ['*']`) | Generic fallback for a detection on a sensor: the triggering process, how common the binary is, the host, related detections and what is true on the host now. | `contain.network`, `tag.add` |
+| `endpoint-detection-generic-triage` | 4 | any category, on a rule tagged `endpoint-generic-review` | One cited review of the stored event, process lineage, workload, host and exposure. | |
+| `suspicious-process` | 6 | `encoded-powershell`, `lolbin-*` | Judges the command line of a trusted system binary, then checks what it connects to, who ran it and whether it is still active or persisted. | `contain.network`, `tag.add` |
+| `suspicious-process-generic-triage` | 4 | `suspicious-process`, `rare-process` | One cited review of the stored event, lineage, workload, host and exposure. | |
+| `mailsec-suspicious-message` | 11 | `mailsec-ai-triage` | A message the Email Security AI judge rated suspicious: explains each signal, checks the sender's real history and corroborating mail. | `contain.email` |
+| `mailsec-generic-triage` | 11 | `mailsec-ai-triage` | One cited review of the message, its authentication, links, attachments and prior history. | |
+| `phishing-campaign` | 12 | `mailsec-ai-triage` | A malicious message several people received: where its link really goes, who else got it, who clicked, whether a payload ran. | `contain.email` (with a registered authorization), `contain.network` |
+| `identity-suspicious-sign-in` | 1 | `identity-suspicious-sign-in` | Scoped audit events of one account; the caller supplies the sensors and the principal. | |
+| `identity-sign-in-generic-triage` | 3 | `identity-suspicious-sign-in` | One cited review of the account's activity and directory context. | |
+| `saas-risky-admin-action` | 1 | `saas-risky-admin-action` | Scoped audit events of one account; the caller supplies the sensors and the principal. | |
+| `saas-admin-action-generic-triage` | 3 | `saas-risky-admin-action` | One cited review of one SaaS administrative action and its actor. | |
+| `cloud-exposure-finding-triage` | 1 | `cloud-exposure-finding` | A cloud finding and its resource observations; the caller supplies `finding_id`. | |
+| `cloud-exposure-finding-generic-triage` | 3 | `cloud-exposure-finding` | The cloud finding, resource, exposure path and audit evidence. | |
+| `code-finding-generic-triage` | 3 | `code-security-finding` | Secret, dependency and infrastructure-as-code findings with their repository and revision. | |
+| `appcontrol-generic-triage` | 4 | `app-control-policy-refused`, `app-control-break-glass`, `app-control-enforced-block`, `app-control-resident-terminated` | An application control event: the stored event, lineage, workload, host and exposure. | |
+
+Every library entry is a draft (`status: draft`). Read the current list, with each
+entry's exact `applies_to` and YAML, from the authoring kit (`sections=library`). The
+library also ships one D&R rule, `investigate-high-critical-case` (see
+[D&R rules on a new case](automation.md#dr-rules-on-a-new-case)).
 
 The library entries are written for production use, but **installing them writes
-drafts unless you choose otherwise**: a draft never starts from a D&R rule or the case
-trigger, and its actions stay capped at `suggest`. Test an installed copy, then
+drafts unless you choose otherwise**: a draft never starts from a D&R rule, and its
+actions stay capped at `suggest`. Test an installed copy, then
 promote it (see [Draft, active and promotion](#draft-active-and-promotion)).
 
 !!! warning "Installing the generic fallback"
@@ -65,7 +81,7 @@ promote it (see [Draft, active and promotion](#draft-active-and-promotion)).
   you store one, and have a person promote it once it is tested. Writing `status: active`
   is refused by default from an API key. Or install from the console. See
   [Permissions](permissions.md#active-templates-can-only-be-written-by-a-person),
-  [API Reference](api-reference.md#authoring) and [MCP Tools](mcp.md).
+  [API Reference](api-reference.md#authoring-kit) and [MCP Tools](mcp.md).
 
 ## Anatomy of a template
 
@@ -84,11 +100,15 @@ facts:                   # what to gather: one operator call each
   trigger:
     op: detection.get
     args: {detect_id: $detection_id, window: [-29d, now]}
+  related:
+    op: detection.list
+    args: {sids: [$trigger.sid], window: [-7d, now]}
 signals: {}              # optional: per-signal questions for multi-reason detections
 proofs:                  # conditions that settle the verdict
   false_positive: []
   true_positive: []
-evidence: []             # weighted conditions used when no proof completes
+evidence:                # weighted conditions used when no proof completes
+  - {id: busy_host, when: 'related.count >= 5', weight: 1.0}
 scope:                   # facts to start scoping from once a true positive is likely
   from: []
 respond: []              # actions to propose, each with an optional `when`
@@ -96,12 +116,14 @@ report:                  # how the case is written
   case: create
 ```
 
-This skeleton shows every section. A real template needs at least one fact, and at
-least one proof, signal or evidence rule, or it can never reach a verdict.
+This skeleton shows every section. A template needs at least one fact, and at least
+one proof, signal or evidence rule, or it can never reach a verdict.
 
 Top-level keys are `status`, `version`, `description`, `applies_to`, `inputs`,
 `prior`, `facts`, `signals`, `signals_from`, `proofs`, `evidence`, `scope`,
-`respond` and `report`. The authoring kit returns a JSON Schema listing every key.
+`respond` and `report`, plus a few advanced ones (`trust`, `decision`, `purpose`,
+`entity_contract`). The authoring kit's `schema` section is the JSON Schema of every
+key.
 
 ### Facts and references
 
@@ -159,7 +181,7 @@ its trigger provides:
 | Console on an **entity** | `entity_id` |
 | Console launcher, a question | `question` |
 | D&R rule, `start investigation` | `detection_id` of the detection that fired, plus exactly the inputs the action lists |
-| New case (case trigger) | `case_id`, and `detection_id` of the case's first detection when it has one |
+| D&R rule `start investigation` with `case` (a new case) | `case_id`, and `detection_id` of the detection the case was opened for, when it has one |
 | Test sample `{detection_id}` | `detection_id` |
 | Test sample `{case_id}` | `case_id` and `detection_id` (the case's first detection) |
 | Test sample `{detect_cat, last}` | `detection_id`, one run per detection |
@@ -168,7 +190,7 @@ its trigger provides:
 
 **The recommended pattern: take `detection_id` and derive everything else with
 facts.** A template written this way runs unchanged from the console, from a D&R
-rule, from the case trigger and from every kind of test sample:
+rule on a detection or a case, and from every kind of test sample:
 
 ```yaml
 inputs:
@@ -233,7 +255,7 @@ conservative-profile run waits for a decided true positive before it does. The k
 
 ### Respond and report
 
-`respond` proposes actions: `{class, target, when, before, attrs}`. The engine
+`respond` proposes actions: `{class, target, when, before, attrs, authorize}`. The engine
 evaluates each step every time new facts arrive, and proposes it as soon as its
 `when` is true and its `target` can be resolved. **This can be before the final
 verdict.** A step with no `when` is proposed as soon as the target is known. Write
@@ -243,19 +265,17 @@ still building. What happens to a proposal then depends on its class's mode:
 `approve` asks a person once `P(TP)` passes `ask_approval_at`, and `auto` executes as
 soon as the class's `min_confidence` is met, both without waiting for the verdict.
 
-Only two classes can be carried out today:
+Which classes can actually be carried out, and what each does, is in
+[Action classes](policies.md#action-classes). A class that cannot execute
+(`contain.process`, `contain.identity`, `collect.*`) can be proposed, but approving or
+auto-executing it fails with `action class ... is not wired`: do not use it in a
+template you intend to run.
 
-| Class | What it does |
-|---|---|
-| `contain.network` | Isolate a sensor from the network (a reversible lease). Needs `sensor.task`. |
-| `contain.email` | Quarantine a message, and the other recipient copies of its group, through Email Security (reversible where the provider supports release). Needs `mailsec.act`. |
-
-The other classes the policy and the template format recognize (`contain.process`,
-`contain.identity`, `tag`, `eradicate.process`, `eradicate.file`, `collect.memory`,
-`collect.file`, `collect.artifact`) are **not available yet**: a template can propose
-them, but approving or auto-executing one fails with "action class ... is not
-wired", and the action ends `failed`. Do not use them in a template you intend to
-run.
+`authorize: <guard>` on a respond step binds the action to a guard the engine
+re-checks from the run's evidence before it executes. Only an action with such an
+authorization can run by itself under `auto`; every other action waits for a person
+(see [Autonomy modes](policies.md#autonomy-modes)). Today's guard is
+`mail.verified_credential_harvest.v1`, for `contain.email`.
 
 **A template only proposes.** The organization's [autonomy policy](policies.md#autonomy-modes)
 decides per class whether an action is only suggested, needs approval or runs by
@@ -266,8 +286,7 @@ target: those actions wait until this step's action has been carried out. For in
 eradication waits for it. If this step's class is only suggested or off, or no such
 step was proposed, the later action goes ahead with a caveat saying the collection
 was not performed; if the collection was allowed but was denied, failed or expired,
-the later action needs a person's approval. (The classes in the example are not
-available yet, see above.)
+the later action needs a person's approval.
 
 `report` shapes the case: `case: create|none`, `severity` by verdict, `kind`,
 `attack` (technique tags), `summary` sentences by verdict, and `questions` for the
@@ -278,7 +297,7 @@ is replaced by values.
 ## How templates are chosen
 
 A run names its template, or the engine picks one. A run **with no person** (a D&R
-rule or the case trigger) that names no template gets the **active** template whose
+rule) that names no template gets the **active** template whose
 `applies_to` matches the trigger. A person who starts a run from the console on a
 detection or a case gets the same automatic choice.
 
@@ -286,9 +305,9 @@ detection or a case gets the same automatic choice.
 |---|---|
 | `detect_cat` | The detection's category. |
 | `rule` | The D&R rule, written `general.<rule record name>`. A bare record name never matches. |
-| `severity` | The case severity. D&R never sends a severity, so this key only helps the case trigger. |
+| `severity` | The case severity, or the severity a person's start carries. A rule on a detection never sends one. |
 | `tag` | Any of the trigger's tags. For a D&R rule these are the rule record's tags. |
-| `source` | `api`, `dr-rule` or `case`. |
+| `source` | `api` (a person or a script), `dr-rule` (a rule on a detection) or `case` (a rule on a case). |
 
 Values are exact (case-insensitive) or `*` globs (`lolbin-*`). A template matches
 when **every** key it lists matches. With several matches, the one that lists more
@@ -392,7 +411,7 @@ New templates, and everything written by an AI agent, are **drafts**. A draft:
 - runs only through a test or a run a person starts;
 - is capped at `suggest` for every action class, and says so in the run's
   `policy.clamped`;
-- cannot be started by a D&R rule or the case trigger, and is never picked by
+- cannot be started by a D&R rule, and is never picked by
   `applies_to`.
 
 A person **promotes** a template by setting `status: active` in the Hive record

@@ -1,13 +1,13 @@
 # Command Line Interface
 
 The `limacharlie investigate` command group is the CLI for the Investigation Engine:
-build and test templates, start and follow runs, work the approvals inbox, and manage
-the pause switch.
+build and test templates, start and follow runs, work the approvals inbox, and read
+the effective policy and the performance stats.
 
-!!! info "Pre-release"
-    The `investigate` group ships with a CLI release that follows the Investigation
-    Engine pre-release. Check that your CLI has it, and see the exact flags of your
-    version, with:
+!!! info "Not released yet"
+    The `investigate` group is not in a released CLI version yet. Every command on this
+    page has an [API](api-reference.md) equivalent. Once your CLI has it, check the
+    exact flags of your version with:
 
     ```bash
     limacharlie investigate --help
@@ -87,7 +87,7 @@ refuses it from an API key (see [Permissions](permissions.md#active-templates-ca
 **`templates promote`** requires `--confirm`. It writes `status: active`, which the Hive
 refuses by default when the CLI is authenticated with an **API key** (unless an
 administrator opted out; see [Permissions](permissions.md#active-templates-can-only-be-written-by-a-person)). Run it with a user login
-(`limacharlie auth login`), or have a person click **Make active** in the console.
+(`limacharlie auth login --oauth`), or have a person click **Make active** in the console.
 The same applies to `templates save --status active` and
 `templates install-defaults --status active`.
 
@@ -171,7 +171,7 @@ limacharlie investigate runs case <run id> --oid $OID
 
 A run started with a draft template runs with autonomy capped at `suggest`.
 
-## Approvals and the pause switch
+## Approvals, policy and stats
 
 ```bash
 limacharlie investigate actions list --state awaiting_approval --oid $OID
@@ -179,19 +179,22 @@ limacharlie investigate actions approve <run id> <action id> --oid $OID
 limacharlie investigate actions deny <run id> <action id> --note "Expected maintenance" --oid $OID
 
 limacharlie investigate policy get --category rare-process --priority 5 --oid $OID
-limacharlie investigate policy status --oid $OID
-limacharlie investigate policy pause --oid $OID
-limacharlie investigate policy resume --oid $OID
+limacharlie investigate stats --template suspicious-process --since 2026-11-01T00:00:00Z --oid $OID
 ```
 
 | Command | What it does | Needs |
 |---|---|---|
 | `actions list [--state S] [--class C] [--run-id ID]` | The approvals inbox, what needs a person first. `--limit`, `--cursor`, `--all` page. | read |
-| `actions approve RUN_ID ACTION_ID` | Approves an action. Refused for a class in `suggest` mode, and for a person who is not on the class's `approvers` list when it has one. | write, plus the action class's permission |
+| `actions approve RUN_ID ACTION_ID` | Approves an action. Refused for an action in `suggest` mode, and for a person who is not on the class's `approvers` list when it has one. | write, plus the action class's permission |
 | `actions deny RUN_ID ACTION_ID [--note TEXT]` | Denies an action (same `approvers` check). | same |
 | `policy get [--category] [--priority] [--severity] [--target-tag]... [--class] [--template]` | The effective policy, record by record, for those attributes. `--template` shows the run identity that template would use. | read |
-| `policy status` | Whether automatic actions are paused. | read |
-| `policy pause`, `policy resume` | Stops or allows every automatic action in the organization. | `org.conf.set` |
+| `stats [--template] [--since] [--until]` | The [performance report](api-reference.md#stats). | read and `investigation_policy.set` |
+| `runs delete RUN_ID --confirm` | Deletes a finished run for good. | write |
+
+Revert, extend and confirm an action with the [API](api-reference.md#actions) or the
+console. `policy status`, `policy pause` and `policy resume` call retired routes:
+`pause` and `resume` answer `410 route_control_retired`. To pause automatic actions,
+save the [`autonomy-manual-pause` record](../7-administration/config-hive/investigation-policy.md#emergency-pause-and-resume).
 
 Policies and templates themselves are Hive records. Create and edit them with the
 standard `limacharlie hive` commands for the `investigation_plan` and

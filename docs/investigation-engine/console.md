@@ -33,7 +33,16 @@ If no template matches, you see **No template fits this alert. Choose one with t
 arrow next to the button.** Install or write a template with an `applies_to` that covers
 the alert, or choose one by hand.
 
-A run started on a case does not write a second case.
+A one-click run on a case writes no case: it neither opens a second one nor writes
+into the existing one. To have a run write its findings into the case, start it from
+the API with `"case": "attach:<case number>"`, or with a D&R rule on the case (see
+[Automatic Starts](automation.md#dr-rules-on-a-new-case)).
+
+When the engine refuses a start, the console shows why and a link to the page that
+fixes it (**Open templates**, **Open policy** or **Open runs**): for example "No
+published template applies to this trigger" or "The policy names no identity for runs
+started without a person". The causes are the `reason_code` values in
+[Troubleshooting](troubleshooting.md#why-a-start-was-refused-reason_code).
 
 ### The launcher
 
@@ -116,7 +125,7 @@ deadline for a decision, the lease time left, who decided, and its history.
 
 | State | Buttons |
 |---|---|
-| Proposed, Awaiting approval | **Approve**, **Deny** |
+| Awaiting approval | **Approve**, **Deny** |
 | Active | **Revert**, **Extend lease** (+1 h or +2 h), **Confirm** |
 | Outcome uncertain | None that work today (see below) |
 
@@ -136,13 +145,13 @@ history. **Confirm** keeps an action in place and stops its lease from reverting
   **Confirm** on it, but the engine only accepts those on an active (or, for Revert,
   confirmed) action, so on an uncertain one they return an error. Check the target
   yourself instead.
-- A class that is not available yet (see [Action classes](policies.md#action-classes))
+- A class that cannot execute (see [Action classes](policies.md#action-classes))
   can be proposed but fails when approved.
 
 A button is disabled unless you hold `investigation.set` and `insight.evt.get` **and**
 the permission of the action's class (see [Permissions](permissions.md#permission-of-the-action-class)).
-**Approve** and **Deny** also require being on the class's approver list when the
-policy sets one; the other decisions do not check it.
+**Approve**, **Deny**, **Extend lease** and **Confirm** also require being on the
+class's approver list when the policy sets one; **Revert** does not.
 
 ## Templates
 
@@ -258,28 +267,29 @@ what that key allows; missing permissions show up as forbidden steps in its test
 
 ## Policy
 
-The **Policy** tab does not edit policies. Policy records are `investigation_policy`
-Hive records, which you edit with the Hive API, the CLI or infrastructure-as-code. See
-[Policies and Autonomy](policies.md). The tab shows:
+The **Policy** tab shows the policy the engine applies to new investigations. Policy
+records are `investigation_policy` Hive records, edited with the Hive API, the CLI,
+infrastructure-as-code or Git Sync. See [Policies and Autonomy](policies.md). The tab
+shows:
 
 - **Effective policy**: what the organization's policy allows, record by record. Leave
-  the lookup empty for the organization default, or enter a
-  category, severity, priority and a template to see what applies to that alert (the
-  template selects its run identity). It lists the
-  policy records applied, the budgets, decision thresholds, speculation by urgency, and
-  the actions and autonomy table (mode, minimum confidence, lease, approvers and the
-  record each value comes from).
+  the lookup empty for the organization default, or enter a category, severity,
+  priority and a template to see what applies to that alert (the template selects its
+  run identity). It lists the records applied, the budgets, decision thresholds,
+  speculation by urgency, and each action class with its mode, minimum confidence,
+  lease, approvers and the record each value comes from. When no secret identity is
+  configured it says that runs started by detections or cases are refused.
 - **Automatic actions**: the pause switch.
 
 ### Pause automatic actions
 
-The switch shows **Running: actions in auto mode can execute** or **Paused: nothing
-executes without a person**, and who paused it and when. **Pause automatic actions**
-stops every action that would execute on its own, in every run of the organization.
-"Actions that wait for approval are not affected." **Resume automatic actions** lets
-actions in `auto` mode execute again. Everyone with console access can see the state;
-changing it needs `org.conf.set`. The same switch is at the top of every run's
-**Actions** tab.
+**Pause automatic actions** saves the
+[`autonomy-manual-pause` policy record](../7-administration/config-hive/investigation-policy.md#emergency-pause-and-resume),
+which caps every action class at `suggest`: nothing executes without a person.
+Resuming deletes that record. The switch shows **Paused: nothing executes without a
+person** and who paused it and when. Changing it needs the Hive permissions of that
+record (`investigation_policy.set` to pause, `investigation_policy.del` to resume).
+The same switch is at the top of every run's **Actions** tab.
 
 ## Performance
 
@@ -292,4 +302,6 @@ operator latency table and the actions by class and state.
 
 The speedup is only shown for runs that have a serial baseline of the same
 investigation: start it with **Also run a serial baseline**. The page reads at most the
-2,000 most recent runs of the range and says when it truncated.
+2,000 most recent runs of the range and says when it truncated. It needs
+`investigation_policy.set` on top of the read permissions, like the
+[stats](api-reference.md#stats) it is built from.

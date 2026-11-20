@@ -27,8 +27,8 @@ comes from an API key (unless the organization opted out; see
 The agent needs the engine's tools and a credential that can use them.
 
 **With the MCP server.** Use the `investigation_engine` profile, which holds the
-ten investigation tools, or `investigation_engine_readonly` if the agent should only
-read, validate and look up (no start, wave, test or save). See [MCP Tools](mcp.md)
+fourteen investigation tools, or `investigation_engine_readonly` if the agent should only
+read, validate and look up (no start, delete, wave, test or save). See [MCP Tools](mcp.md)
 for the tool list and how to connect.
 
 **With the CLI.** The `limacharlie investigate` command group offers the same
@@ -281,7 +281,7 @@ A person opens the draft in the [console](console.md#templates), reads the templ
 and the test summary, tests it once more if needed, and sets `status: active`. At that
 point:
 
-- a D&R rule or the case trigger can start it;
+- a D&R rule can start it;
 - `applies_to` can pick it automatically;
 - it acts within the [autonomy policy](policies.md), which is a separate decision.
 

@@ -715,6 +715,7 @@ nav:
 
   - Investigation Engine:
       - Overview: investigation-engine/index.md
+      - "Walkthrough: Empty Org to Finished Investigation": investigation-engine/walkthrough.md
       - Concepts: investigation-engine/concepts.md
       - Console: investigation-engine/console.md
       - Plan Templates: investigation-engine/templates.md
@@ -725,6 +726,7 @@ nav:
       - API Reference: investigation-engine/api-reference.md
       - MCP Tools: investigation-engine/mcp.md
       - Command Line Interface: investigation-engine/cli.md
+      - Troubleshooting: investigation-engine/troubleshooting.md
 
   - Apps:
       - Overview: apps/index.md

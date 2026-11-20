@@ -1,29 +1,30 @@
 # Automatic Starts
 
-Runs usually start from a person, an API call or an AI agent. Two entry points start
-them **without a person**: a D&R rule, and a new case. A run without a person has no
-token of its own, so it executes with the identity named in the organization's
-[policy](policies.md#run-identity), and it can only use **active** templates.
+Runs usually start from a person, an API call or an AI agent. A **D&R rule** starts
+them without a person, with the
+[`start investigation`](../8-reference/response-actions.md#start-investigation)
+response action: on a detection the rule reports, or on a new case. This is the only
+way a run starts without a person; the engine itself listens to nothing.
 
-## Before you enable either
+A run without a person has no token of its own, so it executes with the identity
+named in the organization's [policy](policies.md#run-identity), and it can only use
+**active** templates.
+
+## Before you add a rule
 
 1. **A policy identity.** Set `identity.default` in the `default` investigation policy
-   to a Hive secret holding an organization API key. This is the simplest setup. A
-   template can instead carry its own `identity.templates.<name>.default`, so a
-   least-privilege key serves just that template. Without an identity for the template,
-   the automatic start is refused with a message that names `identity.default` and
-   the per-template setting. A case trigger with `template: auto` also needs the
-   org-wide `identity.default`: it reads the case's tags and first detection before
-   a template is chosen.
-2. **At least one active template** whose `applies_to` matches what you expect, or a
-   rule that names its template. A draft is never used.
-3. **Autonomy you are comfortable with.** Start with every class in `suggest`. See
-   [Policies and Autonomy](policies.md).
+   to a Hive secret holding an organization API key, or give the template its own
+   `identity.templates.<name>.default`. Without one every start is refused
+   (`no_policy_identity`). See [step 3 of the walkthrough](walkthrough.md#3-the-run-identity-an-api-key-the-policy-names).
+2. **An active template** whose `applies_to` matches what the rule sends, or a rule
+   that names its template. A draft is never used (`template_draft`).
+3. **Autonomy you are comfortable with.** Start with every class in `suggest`.
 
-## D&R rules: `start investigation`
+When a start is refused for a reason you can fix, a record appears on the
+organization's **Errors** page under the rule's name. See
+[A D&R rule matched but no investigation started](troubleshooting.md#a-dr-rule-matched-but-no-investigation-started).
 
-The [`start investigation`](../8-reference/response-actions.md#start-investigation)
-response action starts a run for the detection the rule just reported.
+## D&R rules on a detection
 
 ```yaml
 detect:
@@ -41,87 +42,115 @@ respond:
 ```
 
 - Put the action **after** `report`. The run is tied to the detection `report` just
-  created, and the detection id is the run's idempotency key: one detection starts one
-  run (idempotency is kept for the engine's record retention and is scoped to the
-  organization and the D&R starter).
-- The run's trigger carries the detection's category and priority and the rule's tags,
-  with `source: dr-rule` and `rule: general.<rule record name>`. Those are what
-  `applies_to` matches on. A rule never sends a severity.
-- With no `template`, the engine picks the **active** template whose `applies_to` best
-  matches. With no match, no run starts and the detection is still reported.
-- The action sends only what you list under `inputs`, plus the detection id. A template
+  created: its id, category and priority, plus the rule's tags. Without a `report`, the
+  run only knows the rule name and the sensor.
+- **One detection starts at most one run**: the detection id is the run's idempotency
+  key.
+- **Alerts with the same `coalesce_key` join the open run** instead of starting
+  another. The default, `sid:<sensor id>`, makes a burst of alerts on one host one
+  investigation. A key built from a field some events lack renders the same text for
+  all of them and joins everything into one run.
+- The trigger carries `source: dr-rule`, `rule: general.<rule record name>`, the
+  detection's category and priority and the rule's tags; `applies_to` matches on them.
+  A rule never sends a severity. With no `template`, the engine picks the active
+  template whose `applies_to` best matches (see
+  [How templates are chosen](templates.md#how-templates-are-chosen)).
+- The run gets the detection id plus exactly the `inputs` the action lists. A template
   that takes `detection_id` and derives everything else works unchanged. See
   [Run inputs](templates.md#run-inputs).
-- Starting a run never delays the rule: the request is sent in the background and a
-  failure never blocks the detection.
-- **The detection may not be stored yet when the run starts.** `report` and `start
-  investigation` run independently, so the run can begin within milliseconds of the
-  detection, before it can be read. For a run started by a D&R rule or a case, the
-  engine therefore treats "not found" on the trigger detection as "not indexed yet":
-  it retries that one lookup with backoff (from 500 ms up to 5 s between tries) for up
-  to about 30 seconds in all (the engine setting `INVESTIGATE_TRIGGER_DETECTION_WAIT`;
-  `0` turns the wait off). Other facts that do not depend on the detection keep running
-  meanwhile, and a cancel or the run's own time budget ends the wait. If the detection
-  never appears, the fact is `unknown` with the reason `not_found`, never absent, and
-  the step record shows how long it waited. A lookup of any other detection is never
-  retried, and a person's start does not wait.
+- The detection the rule reported travels with the start, so the run reads it at
+  once. When it cannot (an event restricted by resource ACL tags), the engine reads the
+  detection itself and, since it may not be stored yet, retries that lookup for up to
+  about two minutes before the fact is `unknown(not_found)`.
+- Starting a run never delays the rule and never fails the detection.
 
-The full parameter list, limits and behavior are in the [response actions
-reference](../8-reference/response-actions.md#start-investigation).
+## D&R rules on a new case
 
-!!! tip "Pick `coalesce_key` on purpose"
-    Alerts with the same `coalesce_key` join the run that is already open instead of
-    starting another. The default, `sid:<sensor id>`, makes a burst of alerts on one
-    host one investigation. A key built from a field some events lack renders the same
-    text for all of them and joins everything into one run.
-
-## The case trigger
-
-A new case that somebody else opens can start a run **in that case**. The engine reads
-case events from the case audit feed, so there is no polling and nothing to set up per
-organization. It is configured in the `default` investigation policy:
+Cases posts every change of a case into your organization's event stream; the event
+type is the change, such as `case_created`. A rule on `case_created` with a `case`
+parameter starts a run **in that case**:
 
 ```yaml
-# investigation_policy/default
-triggers:
-  case_created:
-    severities: [high, critical]   # required: which severities start a run
-    tags: [phishing]               # optional: the case must carry at least one of these
-    template: auto                 # a template name, or auto (chosen by applies_to)
+detect:
+  event: case_created
+  op: or
+  rules:
+    - {op: is, path: event/metadata/severity, value: high}
+    - {op: is, path: event/metadata/severity, value: critical}
+respond:
+  - action: start investigation
+    case: '{{ .event.case_number }}'
 ```
 
-| Field | Meaning |
+The default library ships this rule as `investigate-high-critical-case`: read it with
+the authoring kit (`sections=library`, under `rules`) and install it as a D&R rule.
+It is never installed for you.
+
+Besides the identity and an active template, the organization must be
+[subscribed to Cases](../5-integrations/extensions/limacharlie/cases.md), and the
+identity must be able to read the case (`investigation.get`) and write it
+(`investigation.set`).
+
+**What the rule can match.** The `case_created` event has:
+
+| Path | Meaning |
 |---|---|
-| `severities` | One or more of `critical`, `high`, `medium`, `low`, `info`. Required, unless `enabled: false`. |
-| `tags` | Optional. A case starts a run only if it carries any one of these tags. |
-| `template` | A template name, or `auto` (the default) to choose the active template whose `applies_to` matches the case (`severity`, `tag`, `detect_cat`, `source`). Only the `default` record may set it. |
-| `enabled` | Set `false` to switch the trigger off. |
+| `event/case_number` | The case number, for the `case` parameter. |
+| `event/by` | Who opened the case: an email for a person, a key name for an API key, `system` for a case opened automatically from a detection. |
+| `event/metadata/severity` | The severity the case was opened with. |
+| `event/metadata/detect_id` | The detection the case was opened for, when there is one. |
+| `event/metadata/tags` | Always empty on `case_created`: tags are added afterwards and arrive on the `case_tags_updated` event. |
 
-Behavior:
+`event/principal_type` is `unknown` on `case_created`, so do not match on it. To skip
+the cases opened automatically from a detection, require that `by` is not `system`:
 
-- **The run attaches to that case.** It never creates a second case. It writes its
-  entities, telemetry references, findings and a proposed classification into the case.
-  The case is the human record; the run is the machine record.
-- **One case starts at most one run**, however many times the event is delivered
-  (within the engine's idempotency retention).
-- When the case already has a detection, the same short wait for that detection to be
-  stored applies as for a D&R rule (see above).
-- **Cases the engine wrote never start a run**, so it cannot trigger itself.
-- The run's inputs are the case id and, if the case already has a detection, the
-  detection id of its first one.
-- **Other policy records can only narrow it.** A matching record can intersect the
-  severities and tags or set `enabled: false`. It cannot enable the trigger, widen it,
-  or name the template.
-- Only an **active** template can start from a case. If nothing applies, or there is no
-  policy identity, the event is acknowledged and logged with the reason, and no run
-  starts.
-- A case is created before the rules and people that tag it act. The tags are read a few
-  seconds after creation, so a tag filter sees the tags the case had then. If you need
-  later tags, filter on severity instead.
+```yaml
+detect:
+  event: case_created
+  op: and
+  rules:
+    - {op: is, path: event/by, value: system, not: true}
+    - op: or
+      rules:
+        - {op: is, path: event/metadata/severity, value: high}
+        - {op: is, path: event/metadata/severity, value: critical}
+respond:
+  - action: start investigation
+    case: '{{ .event.case_number }}'
+```
+
+**What happens.**
+
+- **The run writes into that case.** No second case is opened. It adds its entities,
+  telemetry references, findings and a proposed classification.
+- **One run per rule and case**, however many times the event is delivered or however
+  many events of that case the rule matches (the idempotency key is
+  `case:<number>:<rule>`, the coalesce key `case:<number>`).
+- **No loops.** The engine never starts a run for a case it wrote itself (`own_case`),
+  whatever the rule matches, so a run's own writes into a case cannot start another run.
+- The engine reads the case's severity, tags and detection with the policy's identity,
+  then picks the template the rule names, or the active one whose `applies_to` matches
+  (`source: case`, `severity`, `tag`, `detect_cat`, `rule`). The run's inputs are the
+  case number and, when the case has one, the detection it was opened for.
+- **No `report` is needed**, and a `report` before the action is not sent: reporting on
+  a case event would open another case.
+- The rule reads the severity the case was **opened** with: a case opened as `medium`
+  and raised later does not start a run. Start those from the case page.
+- If `case` renders empty or not to a case number, the action fails for that event and
+  nothing is sent. Take `case` only from Cases events: its value decides which case the
+  run writes into.
+- Cases delivers its events on a best-effort basis. In rare cases an event is not
+  delivered and no run starts; start it from the case page when you need it.
+
+## Test a rule
+
+A rule that uses `start investigation` can be tested with the rule tester or replay
+like any other rule. A match is reported as an `investigation` action and nothing is
+started.
 
 ## What you see
 
-A run started this way appears in the Runs list like any other, with **Started by**
-shown as **Automation**. Its case has the run linked, and its actions follow the policy.
-If the policy asks for notifications, [events](policies.md#notifications) are written to
-the organization's audit log.
+A run started by a rule appears in the Runs list like any other, started by
+`dr-rule:<rule>` (on a detection) or `case:<case number>` (on a case). Its case has the
+run linked, and its actions follow the policy. If the policy asks for notifications,
+[events](policies.md#notifications) are written to the organization's audit log.

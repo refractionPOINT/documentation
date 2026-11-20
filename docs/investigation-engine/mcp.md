@@ -18,8 +18,8 @@ with one of two profiles:
 
 | Profile | Tools |
 |---|---|
-| `investigation_engine` | All ten tools below. |
-| `investigation_engine_readonly` | `investigate_operators`, `investigate_authoring_kit`, `investigate_packs`, `investigate_validate_plan`, `investigate_list_templates`, `investigate_get`. No start, wave, test or save. |
+| `investigation_engine` | All fourteen tools below. |
+| `investigation_engine_readonly` | `investigate_operators`, `investigate_authoring_kit`, `investigate_packs`, `investigate_get_pack`, `investigate_validate_plan`, `investigate_list_templates`, `investigate_get`. No start, delete, wave, test or save. |
 
 For a local client, set `MCP_PROFILE=investigation_engine` in the server's environment.
 The table below lists the permissions each tool needs **at the gateway**. Give the
@@ -43,7 +43,11 @@ checks the key's permissions at the gateway.
 | `investigate_test_plan` | Dry run on real past alerts: a stored `template` or `yaml`, plus `samples` (a detection id, a case id, the newest alerts of a category, or free inputs with an expected label). Waits and polls (`wait_seconds` up to 180, default 60) and returns the agreement rate, disagreements, unknowns and costs. `test_id` continues a test that is still running. `include_steps` adds every step. No run, case, label or action is written; the test result itself is kept for 24 hours. | `investigation.set`, `investigation.get`, `insight.evt.get` (starting needs `investigation.set`; the polling and `test_id` continuation read with `investigation.get`) |
 | `investigate_save_plan` | Saves a template to the `investigation_plan` Hive, **always as a draft**. | `investigation_plan.get`, `investigation_plan.set`, `investigation.get`, `insight.evt.get` |
 | `investigate_list_templates` | The organization's templates: name, version, description, `applies_to`, status. `status` filters draft or active. | `investigation.get`, `insight.evt.get` |
-| `investigate_start` | Starts a run on a `template` for a `detection_id`, `case_id`, `entity_id` or `question`. Optional `inputs`, `urgency`, `mode` (`triage`, `full`, `scope`), `case` (`create`, `none`, `attach:<id>`), `idempotency_key`, and `wait_seconds` (up to 60) to wait for the verdict. A draft template runs with autonomy capped at `suggest`. | `investigation.set`, `insight.evt.get` |
+| `investigate_start` | Starts a run on a `template` for a `detection_id`, `case_id`, `entity_id` or `question`. Optional `inputs`, `urgency` (`low`, `medium`, `high`, `critical`), `mode` (`full`, `triage`, `scope`), `case` (`create`, `none`, `attach:<case number>`: send `attach:` to write into an existing case), `idempotency_key`, and `wait_seconds` (up to 60) to wait for the verdict. A draft template runs with autonomy capped at `suggest`. | `investigation.set`, `insight.evt.get` |
+| `investigate_delete` | Deletes a run for good by its `run_id`. Refused while the run is active or has actions in effect. | `investigation.set`, `insight.evt.get` |
+| `investigate_get_pack` | Reads an organization-authored fact pack: its YAML, etag and enabled state. | `investigation_plan.get` |
+| `investigate_save_pack` | Creates an organization-authored fact pack, or replaces one when given the `etag` from `investigate_get_pack`. | `investigation_plan.set` |
+| `investigate_delete_pack` | Deletes an organization-authored fact pack (`confirm: true`). | `investigation_plan.del` |
 | `investigate_get` | Reads a run. `view` is `run` (default), `steps`, `events` (long-poll: `after`, `wait` up to 10) or `case`. | `investigation.get`, `insight.evt.get` |
 | `investigate_wave` | Runs a batch of questions (operators or fact packs) in parallel and returns compact typed answers, stopping as soon as a `stop_when` condition is true. Steps carry `select` and `limit`; `full` returns raw values; `validate_only` checks a wave without running it; `deadline_ms` defaults to 30000. | `investigation.set`, `insight.evt.get` |
 

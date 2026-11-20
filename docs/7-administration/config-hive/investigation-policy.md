@@ -14,7 +14,7 @@ The policy record is the only thing that decides what the engine may do. Each ac
 | `off` | Creates no proposal for the action. |
 | `suggest` | Records what the engine would do, without changing the product. Use this for a dry run. |
 | `approve` | Requires an authorized explicit approval before the approval deadline. |
-| `auto` | Runs automatically when the effective policy, confidence, limits, permissions, evidence and target checks allow it. The engine holds an action as a suggestion when a limit, permission, evidence or target check does not pass, or when the approver lists leave nobody (`policy_no_approvers`). |
+| `auto` | Runs automatically when the effective policy, confidence, limits, permissions, evidence and target checks allow it, and the action has a registered authorization; an action without one waits for a person (`no_registered_authorization`, see [Autonomy modes](../../investigation-engine/policies.md#autonomy-modes)). The engine holds an action as a suggestion when a limit, permission, evidence or target check does not pass, or when the approver lists leave nobody (`policy_no_approvers`). |
 
 There is no label-count requirement or separate route graduation, enablement or demotion step. Investigation intake settings decide what to investigate; they do not grant automatic action authority. Draft, shadow and test execution contexts remain read-only.
 
@@ -53,9 +53,9 @@ Defaults below apply only after all matching policy entries have been combined.
 | `max_targets_per_hour` | Positive integer, at most 2147483647 | 10 for containment/eradication; otherwise unlimited |
 | `lease` | Positive duration | `2h` |
 | `approval_timeout` | Positive duration | `15m` |
-| `approvers` | Distinct principal/group identifiers, such as `group:soc-leads` | Any ordinarily authorized approver |
+| `approvers` | Distinct identities, each compared exactly with the person deciding: a user's email or an API key's name, such as `alice@example.com` | Any ordinarily authorized approver |
 
-Author caps as positive integers. `approvers: []` explicitly permits nobody. It does not restore unrestricted approval. Identifiers must be nonempty, contain no whitespace/control characters and fit within 256 UTF-8 bytes.
+Author caps as positive integers. An approver list restricts approve, deny, extend and confirm; revert stays open to anyone with the action class permission. Groups are not expanded: list each person. `approvers: []` explicitly permits nobody. It does not restore unrestricted approval. Identifiers must be nonempty, contain no whitespace/control characters and fit within 256 UTF-8 bytes.
 
 Supported concrete classes are `close.false_positive`, `contain.network`, `contain.process`, `contain.identity`, `contain.email`, `contain.seal`, `tag`, `tag.add`, `tag.remove`, `eradicate.process`, `eradicate.file`, `collect.memory`, `collect.file` and `collect.artifact`. Patterns such as `*`, `contain.*` and `eradicate.*` match supported classes; matching a pattern does not create a new operation.
 
@@ -77,77 +77,9 @@ autonomy:
 
 `template` is the plan's Hive record name. `match.run` and `match.target` belong to the record, never inside an action entry. Missing match attributes do not exempt an action from a potentially applicable restriction.
 
-## Start an investigation when a case is opened
+## Starting investigations
 
-A D&R rule on the Cases `case_created` event starts the investigation. The policy record has no setting for this, and a `triggers` block left in an older record is ignored.
-
-Before the rule can start an investigation, three things must be in place:
-
-- Your organization is [subscribed to Cases](../../5-integrations/extensions/limacharlie/cases.md).
-- An **active** investigation template applies to cases, or the rule names one with `template`. A template that is still a draft is never started by a rule.
-- The investigation policy names an identity for runs started by rules: `identity.default`, a `hive://secret/<name>` reference. The run uses it to read the case and to act.
-
-Then add this rule to your organization:
-
-```yaml
-detect:
-  event: case_created
-  op: or
-  rules:
-    - {op: is, path: event/metadata/severity, value: high}
-    - {op: is, path: event/metadata/severity, value: critical}
-respond:
-  - action: start investigation
-    case: '{{ .event.case_number }}'
-```
-
-- **What it matches:** a case opened with severity `high` or `critical`, whoever opened it. `event/by` is the identity that opened the case: an email for a person, a key name for an API key, and `system` for a case opened automatically from a detection. To skip the cases opened automatically from a detection, require that `by` is not `system`:
-
-    ```yaml
-    detect:
-      event: case_created
-      op: and
-      rules:
-        - {op: is, path: event/by, value: system, not: true}
-        - op: or
-          rules:
-            - {op: is, path: event/metadata/severity, value: high}
-            - {op: is, path: event/metadata/severity, value: critical}
-    ```
-
-    `event/principal_type` is `unknown` on `case_created` events, so do not match on it. The detection a case was opened for, when there is one, is at `event/metadata/detect_id`.
-- **Severity and tags:** the rule reads the severity when the case is opened: a case opened as `medium` and raised later does not start a run, so start those from the case page. A case has no tags when it is opened (`event/metadata/tags` is always empty on `case_created`). Tags are added afterwards and arrive on the `case_tags_updated` event, so a rule that needs a tag must match that event instead.
-- **What it does:** the run is attached to that case and writes its findings into it. No second case is opened. The engine picks the plan template from the case, using the `applies_to` rules of your plan templates, unless the rule names a `template`. The identity and action limits are the ones in your policy, as for any other run.
-- **One run per case:** a rule starts at most one run for a case, however many times the event is delivered or however many events of that case it matches.
-- **No loops:** the engine never starts a run for a case it wrote itself, whatever the rule matches. A run's own writes into its case cannot start another run.
-- **Best effort:** Cases delivers its events to your rules on a best-effort basis. In rare cases an event is not delivered, and no run starts for that case. Start the run from the case page, or by hand, when you need it.
-
-The rule's `case` value must render to a case number. If it is empty or is not a number, the action fails for that event and no run starts. See [`start investigation`](../../8-reference/response-actions.md#start-investigation) for all the parameters.
-
-### If no investigation starts
-
-When the rule matches but the investigation cannot start for a reason you can fix, a record appears on your organization's **Errors** page, under the rule's name. These are the messages you may see:
-
-| Message | What to do |
-|---------|------------|
-| `no active investigation template applies to this trigger. Activate a template whose applies_to matches it, or name a template in the rule.` | Activate a template that applies to cases, or add `template: <name>` to the rule. |
-| `the template is a draft, and a rule can only start an active template. Activate it (set its status to active).` | Set the template's status to `active`. |
-| `the template named in the rule does not exist. Create it, or fix the name in the rule.` | Fix the template name in the rule, or create the template. |
-| `the investigation policy names no identity for runs started by rules. Set identity.default (a hive://secret/<name>) in the investigation policy.` | Add `identity.default` to your policy. |
-| `the secret the investigation policy names as the identity for runs started by rules is missing, disabled, empty or refused. Check that secret.` | Check the secret the policy points to. |
-| `the identity the investigation policy names for runs started by rules may not read the case. Give that identity access to cases.` | Give that identity permission to read cases. |
-| `the case was not found, or the identity the investigation policy names for runs started by rules cannot see it.` | Check that the case still exists and that the identity can see it. |
-| `the organization is at its limit of concurrent investigations, so this start was dropped (it is not retried).` | Wait for running investigations to finish. The dropped start is not retried. |
-| `the case number is not valid for this start. Check the case parameter of the rule.` | Check the `case` value of the rule. |
-| `the identity requested is not allowed by the investigation policy for this template. Check identity in the policy.` | Check `identity` in the policy. |
-
-Each message starts with `start investigation:`. A record is written at most once every 30 minutes for each rule and cause, so a rule that matches often does not flood the page. A refusal never disables the rule. Nothing is reported when the case was written by the engine itself: that is the loop guard working, not a problem.
-
-If the `case` value renders to something that is not a case number, the rule's action fails for that event with `start investigation: case did not render to a case number`, and nothing is sent.
-
-### Test the rule
-
-You can test a rule that uses `start investigation` with the rule tester or replay, like any other rule. A match is reported as an `investigation` action and nothing is started.
+The policy has no setting that starts an investigation. A person, an API client or a D&R rule starts each run; a new case starts one through a D&R rule on the `case_created` event. A `triggers` block left in an older record is ignored, and saving it is refused (`policy_unknown_field`). See [Automatic Starts](../../investigation-engine/automation.md).
 
 ## Emergency pause and resume
 
@@ -167,68 +99,13 @@ If Git Sync manages this hive, coordinate the pause with your repository and syn
 
 ## Engine performance
 
-The engine reports how it performed from its own records of runs and actions:
-
-```text
-GET /v1/investigate/{oid}/stats
-```
-
-Query parameters, all optional: `template` (a template name), `since` and `until` (RFC 3339 timestamps, applied to when each run was created). It needs `investigation.get`. The report covers a capped number of the most recent matching runs; `window.truncated` is `true` when more matched, so narrow the window or the template for a complete picture.
-
-It reports:
-
-- Runs by state and by verdict, and time to verdict.
-- AI cost and tokens, and search volume.
-- Per-operator call counts, timings and errors.
-- For each template and action type, how many actions were suggested, approved, denied, expired, executed automatically, failed, undone or held, and why they were held (`actions.by_template_class`).
-
-An abridged example, with only the action section filled in beyond the headline counts:
-
-```json
-{
-  "window": {"template": "phishing-triage", "runs_considered": 41, "truncated": false},
-  "runs": {"total": 41, "by_state": {"completed": 30, "decided": 8, "cancelled": 3},
-           "by_verdict": {"true_positive": 9, "false_positive": 28, "inconclusive": 2, "undecided": 2}},
-  "time_to_verdict_ms": {"p50": 410, "p95": 2300, "samples": 39},
-  "llm": {"usd": 0.31, "tokens": 91000},
-  "actions": {
-    "by_class_state": {"close.false_positive": {"proposed": 5, "confirmed": 7, "reverted": 1, "denied": 1, "expired": 1}},
-    "by_template_class": [
-      {
-        "template": "phishing-triage",
-        "action_class": "close.false_positive",
-        "total": 15,
-        "suggested": 3,
-        "approved": 3,
-        "denied": 1,
-        "expired": 1,
-        "auto_executed": 5,
-        "failed": 0,
-        "undone": 1,
-        "held": 2,
-        "held_by_reason": {"policy_no_approvers": 2},
-        "by_state": {"proposed": 5, "confirmed": 7, "reverted": 1, "denied": 1, "expired": 1}
-      }
-    ]
-  }
-}
-```
-
-The counters in each `by_template_class` row are not a partition of `total`: an approved action can later be undone, so it counts under both. In the example, 3 suggested and 2 held actions are the 5 still `proposed`, and the 3 approved and 5 automatic executions are the 7 `confirmed` plus the 1 that a person undid (`reverted`). `undone` counts only undos a person asked for; a lease that simply expires shows as `reverted` in `by_state` and is not an undo. `held` counts an action once however many reasons held it, and `held_by_reason` counts it once under each reason, using the hold reason as recorded (for example `policy_no_approvers`). `by_state` always adds up to `total`.
-
-From the command line:
-
-```bash
-limacharlie investigate stats --template phishing-triage --since 2026-11-01T00:00:00Z --until 2026-11-08T00:00:00Z --oid <OID> --output yaml
-```
-
-This is a report on how the engine performed: how much it ran, how fast, at what cost, and what became of the actions it proposed. It does not score whether its verdicts were right, and it does not change policy. Policy changes only when you edit the record.
+`GET /v1/investigate/{oid}/stats` reports, from the engine's own records, what it did with the actions this policy allowed: per template and action class, how many were suggested, approved, denied, expired, executed automatically, failed, undone or held, and why they were held. It needs `investigation.get`, `insight.evt.get` and `investigation_policy.set`. It does not score whether verdicts were right, and it does not change policy. See [Stats](../../investigation-engine/api-reference.md#stats).
 
 ## Permissions and safe edits
 
 | Operation | Required existing permission |
 |-----------|------------------------------|
-| Read the engine performance report | `investigation.get` |
+| Read the engine performance report | `investigation.get`, `insight.evt.get` and `investigation_policy.set` |
 | Read or edit policy records | `investigation_policy.get` / `investigation_policy.set` |
 | Delete a policy record, including resume after manual pause | `investigation_policy.del` |
 | Close or undo a case | `investigation.set` under the execution credential |

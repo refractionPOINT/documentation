@@ -120,7 +120,7 @@ A run starts in one of three modes: `triage` (stop at the verdict), `full` (tria
 scoping and containment) or `scope` (skip triage, for a confirmed incident).
 `urgency` (`low`, `medium`, `high`, `critical`) selects how aggressively the engine
 spends parallel work: a *speculation profile* of `conservative`, `balanced` or
-`aggressive`. A typical policy, like the example in [Policies and Autonomy](policies.md#a-default-policy),
+`aggressive`. The platform default, which a policy's `speculation` section can change,
 maps `low` to conservative, `medium` to balanced and `high` and `critical` to aggressive. If you do not set an urgency, the engine
 derives it from the detection priority and the severity (priority 8 or more, or severity `critical`, is `critical`; 6 or more, or `high`, is `high`; 3 or more, or `medium`, is `medium`; anything lower is `low`) and falls back to `medium` when the start carries neither. Tags do not change the urgency; the trigger's tags can match a run-scoped [policy record](policies.md#two-match-scopes) that tightens the run.
 
@@ -132,12 +132,14 @@ runs merely because they concern the same entity: without a `coalesce_key` every
 is its own run. The key only matches within the same organization, the same starter
 and the same run identity, so a start by a person and a start by a D&R rule never join
 each other, and a request that executes as a different identity never joins a run
-executing as this one. All D&R rules share one starter per organization, so alerts from different rules
-with the same key do join.
+executing as this one. All D&R rules on detections share one starter per organization,
+so alerts from different rules with the same key do join; rules on cases have a starter
+of their own.
 
 An `idempotency_key` makes a repeated start with the same starter return the same run.
-For runs started by a D&R rule, the detection id is the idempotency key, so one
-detection starts one run, within the retention of the engine's records.
+A D&R rule sets both keys for you: on a detection the idempotency key is the detection
+id and the coalesce key defaults to `sid:<sensor id>`; on a case they are
+`case:<number>:<rule>` and `case:<number>`. See [Automatic Starts](automation.md).
 
 ### Identity
 
@@ -148,7 +150,7 @@ identity, so a run can never read or do what its identity cannot.
   (`identity.default`), unless the request picks `caller` and the policy allows it. With
   no policy identity, it uses that person's (or API key's) token. **A policy secret can
   hold more permissions than the person who starts the run.**
-- A run started by a D&R rule or a new case has no person. It needs an identity
+- A run started by a D&R rule (on a detection or on a new case) has no person. It needs an identity
   named in the org's policy: an **organization API key** stored as a Hive secret,
   set as `identity.default` or, for one template, as that template's own
   `identity.templates.<name>.default`. Without one, the start is refused with a
@@ -172,18 +174,14 @@ policy.
 ### What a run costs
 
 - **Searches** stay inside the free time range, so they are free of search charges.
-- **Language-model judgements** (`llm.judge`) go through your organization's AI agent
-  configuration, which decides the model and credentials. The usage is reported as AI
-  usage and billed with your other AI usage, under the feature
-  `investigation_engine`, with the run id as the reference. The policy's
-  `max_llm_usd_per_run` budget **stops the run from launching further judgements** once
-  the cost already recorded reaches it. It is not a hard cap on spend: the engine does
-  not reserve the cost of a judgement before it runs, so a judgement already in flight
-  (or several launched together) can take the run past the budget. The dollar figures
-  come from the engine's configured prices, and a judgement billed with no known price
-  adds nothing to the dollar total, so it never counts against the budget. The spend a
-  run reports is therefore a lower bound, and a judgement cut short by a deadline or a
-  cancel can still be billed.
+- **Language-model judgements** (`llm.judge`) run on the organization's `ai_agent`
+  record named `investigation-judge`, which decides the model and the provider
+  credentials: your provider bills those tokens. The usage is also reported with the
+  organization's other AI usage, under the feature `investigation_engine`, with the run
+  id as the reference. The policy's `max_llm_usd_per_run` budget **stops the run from
+  launching further judgements** once the cost already recorded reaches it. It is not a
+  hard cap: a judgement already in flight (or several launched together) can take the
+  run past it, and a judgement with no known price adds nothing to the recorded cost.
 - **Operators that bill per use**, such as artifact collection and some extensions, are
   off in the default policy. An organization enables them by policy.
 
@@ -196,11 +194,10 @@ telemetry with a verdict and a reason each, the unknowns that mattered, the acti
 proposed, approved, executed and reverted with who decided, severity, status, tags
 and a classification, and a link back to the run.
 
-Because every engine case has the same structure, what people do to it is
-**feedback**: closing it unchanged weakly confirms the verdict, changing its
-classification or an entity verdict corrects it, and approving or denying an action
-labels that action. The engine records these against the run, the template version
-and the facts involved.
+People's edits of an engine case (closing it, changing its classification, a note)
+are not read by the engine and change nothing it does. A person can submit an explicit
+label on a run (`POST /runs/{id}/labels`); labels are stored with the run and read back,
+and no decision reads them.
 
 ## Waves and fact packs
 
@@ -215,9 +212,13 @@ you need, and can stop early with `stop_when` conditions that follow the same
 unknown-is-never-false rule as proofs.
 
 A **fact pack** is a named, tested bundle of facts with parameters and described
-exports. The engine has these built in: `detection_context`, `domain_reputation`,
-`hash_spread`, `host_context`, `message_outcome`, `org_roster`, `process_tree`,
-`sender_reputation` and `user_activity`. A pack can be used in a wave or as a fact
+exports. The engine has these built in: `app_control_context`, `cloud_audit_context`,
+`cloud_exposure_path`, `cloud_finding_context`, `cloud_resource_exposure`,
+`container_context`, `detection_context`, `domain_reputation`, `hash_spread`,
+`host_context`, `host_vulnerability_exposure`, `identity_signins`, `message_outcome`,
+`org_roster`, `process_lineage`, `process_tree`, `saas_admin_actions`,
+`sender_reputation` and `user_activity`. `GET /packs` (or `investigate_packs`) lists
+them with their parameters and exports. A pack can be used in a wave or as a fact
 (`use:` instead of `op:`) in a template, where it expands into ordinary facts named
 `<id>__<fact>`.
 
@@ -232,7 +233,7 @@ A template carries `status: draft` (the default) or `status: active`.
 |---|---|---|
 | Can a person start a run on it? | Yes | Yes |
 | Autonomy | Capped at `suggest` for every action class | As the policy says |
-| Can a D&R rule or the case trigger start it? | No | Yes |
+| Can a D&R rule start it? | No | Yes |
 | Picked automatically by `applies_to`? | No | Yes |
 
 **A person promotes a draft** by setting `status: active` in the Hive record. None of
