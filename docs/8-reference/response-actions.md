@@ -578,6 +578,48 @@ A template only sees the inputs this action lists, plus the detection id. A temp
 
 ---
 
+### start investigation
+
+Starts one Investigation Engine run, the way `start ai agent` starts an AI session. Use it after a `report` to investigate the detection, or with `case` to investigate an existing case. See [Investigation Action Policies](../7-administration/config-hive/investigation-policy.md) for what the engine may do once it runs.
+
+```yaml
+- action: report
+  name: suspicious-process
+- action: start investigation
+  template: suspicious-process
+  urgency: high
+```
+
+Place it after the `report` so the run is tied to that detection. Without a `report`, the run carries only the rule name and the sensor.
+
+#### Optional Parameters
+
+| Parameter | Description |
+|-----------|-------------|
+| `template` | Name of the plan template to use, as a literal. Without it, the engine picks one. |
+| `urgency` | `low`, `medium`, `high` or `critical`, as a literal. Optional. |
+| `inputs` | Values handed to the template, using the same [transform rules](#writing-the-request-values) as `extension request`. |
+| `coalesce_key` | Template string. Requests with the same key are folded into one run. |
+| `case` | Template string that renders to an existing case number. The run is attached to that case and writes into it instead of opening a new one. Meant for rules on the Cases `case_created` event: take it only from Cases events, because its value decides which case in your organization the run writes into. If it renders empty or is not a number, the action fails for that event and no run starts. `template`, `urgency` and `inputs` apply as usual. Without `coalesce_key`, runs are folded per case. |
+
+#### Example: Start an investigation when a case is opened
+
+```yaml
+detect:
+  event: case_created
+  op: or
+  rules:
+    - {op: is, path: event/metadata/severity, value: high}
+    - {op: is, path: event/metadata/severity, value: critical}
+respond:
+  - action: start investigation
+    case: '{{ .event.case_number }}'
+```
+
+The action starts a run only if your organization is subscribed to Cases, an active investigation template applies (or the rule names one with `template`), and the investigation policy names an identity for runs started by rules. When a start is refused for a reason you can fix, a record appears on your organization's **Errors** page under the rule's name, at most once every 30 minutes per rule and cause, and the rule is never disabled. A rule that uses this action can be tested with the rule tester or replay: a match is reported as an `investigation` action and nothing is started. See [If no investigation starts](../7-administration/config-hive/investigation-policy.md#if-no-investigation-starts) for the messages.
+
+With `case` set, the rule needs no `report`, and a rule starts at most one run for a given case. The engine never starts a run for a case it wrote itself. Cases delivers its events to rules on a best-effort basis. To skip the cases opened automatically from a detection, see [Start an investigation when a case is opened](../7-administration/config-hive/investigation-policy.md#start-an-investigation-when-a-case-is-opened).
+
 ## See Also
 
 - [D&R Rules Overview](../3-detection-response/index.md)

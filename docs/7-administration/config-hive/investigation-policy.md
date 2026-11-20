@@ -20,7 +20,7 @@ There is no label-count requirement or separate route graduation, enablement or 
 
 ## Start with a visible policy
 
-The following is the action section of the starter policy. It is the `data` of the `default` record in the `investigation_policy` hive. The record name is supplied separately, not as a YAML field. Merge this section into your existing policy while preserving identity, budgets, triggers, intake and other settings.
+The following is the action section of the starter policy. It is the `data` of the `default` record in the `investigation_policy` hive. The record name is supplied separately, not as a YAML field. Merge this section into your existing policy while preserving identity, budgets, intake and other settings.
 
 ```yaml
 autonomy:
@@ -76,6 +76,78 @@ autonomy:
 ```
 
 `template` is the plan's Hive record name. `match.run` and `match.target` belong to the record, never inside an action entry. Missing match attributes do not exempt an action from a potentially applicable restriction.
+
+## Start an investigation when a case is opened
+
+A D&R rule on the Cases `case_created` event starts the investigation. The policy record has no setting for this, and a `triggers` block left in an older record is ignored.
+
+Before the rule can start an investigation, three things must be in place:
+
+- Your organization is [subscribed to Cases](../../5-integrations/extensions/limacharlie/cases.md).
+- An **active** investigation template applies to cases, or the rule names one with `template`. A template that is still a draft is never started by a rule.
+- The investigation policy names an identity for runs started by rules: `identity.default`, a `hive://secret/<name>` reference. The run uses it to read the case and to act.
+
+Then add this rule to your organization:
+
+```yaml
+detect:
+  event: case_created
+  op: or
+  rules:
+    - {op: is, path: event/metadata/severity, value: high}
+    - {op: is, path: event/metadata/severity, value: critical}
+respond:
+  - action: start investigation
+    case: '{{ .event.case_number }}'
+```
+
+- **What it matches:** a case opened with severity `high` or `critical`, whoever opened it. `event/by` is the identity that opened the case: an email for a person, a key name for an API key, and `system` for a case opened automatically from a detection. To skip the cases opened automatically from a detection, require that `by` is not `system`:
+
+    ```yaml
+    detect:
+      event: case_created
+      op: and
+      rules:
+        - {op: is, path: event/by, value: system, not: true}
+        - op: or
+          rules:
+            - {op: is, path: event/metadata/severity, value: high}
+            - {op: is, path: event/metadata/severity, value: critical}
+    ```
+
+    `event/principal_type` is `unknown` on `case_created` events, so do not match on it. The detection a case was opened for, when there is one, is at `event/metadata/detect_id`.
+- **Severity and tags:** the rule reads the severity when the case is opened: a case opened as `medium` and raised later does not start a run, so start those from the case page. A case has no tags when it is opened (`event/metadata/tags` is always empty on `case_created`). Tags are added afterwards and arrive on the `case_tags_updated` event, so a rule that needs a tag must match that event instead.
+- **What it does:** the run is attached to that case and writes its findings into it. No second case is opened. The engine picks the plan template from the case, using the `applies_to` rules of your plan templates, unless the rule names a `template`. The identity and action limits are the ones in your policy, as for any other run.
+- **One run per case:** a rule starts at most one run for a case, however many times the event is delivered or however many events of that case it matches.
+- **No loops:** the engine never starts a run for a case it wrote itself, whatever the rule matches. A run's own writes into its case cannot start another run.
+- **Best effort:** Cases delivers its events to your rules on a best-effort basis. In rare cases an event is not delivered, and no run starts for that case. Start the run from the case page, or by hand, when you need it.
+
+The rule's `case` value must render to a case number. If it is empty or is not a number, the action fails for that event and no run starts. See [`start investigation`](../../8-reference/response-actions.md#start-investigation) for all the parameters.
+
+### If no investigation starts
+
+When the rule matches but the investigation cannot start for a reason you can fix, a record appears on your organization's **Errors** page, under the rule's name. These are the messages you may see:
+
+| Message | What to do |
+|---------|------------|
+| `no active investigation template applies to this trigger. Activate a template whose applies_to matches it, or name a template in the rule.` | Activate a template that applies to cases, or add `template: <name>` to the rule. |
+| `the template is a draft, and a rule can only start an active template. Activate it (set its status to active).` | Set the template's status to `active`. |
+| `the template named in the rule does not exist. Create it, or fix the name in the rule.` | Fix the template name in the rule, or create the template. |
+| `the investigation policy names no identity for runs started by rules. Set identity.default (a hive://secret/<name>) in the investigation policy.` | Add `identity.default` to your policy. |
+| `the secret the investigation policy names as the identity for runs started by rules is missing, disabled, empty or refused. Check that secret.` | Check the secret the policy points to. |
+| `the identity the investigation policy names for runs started by rules may not read the case. Give that identity access to cases.` | Give that identity permission to read cases. |
+| `the case was not found, or the identity the investigation policy names for runs started by rules cannot see it.` | Check that the case still exists and that the identity can see it. |
+| `the organization is at its limit of concurrent investigations, so this start was dropped (it is not retried).` | Wait for running investigations to finish. The dropped start is not retried. |
+| `the case number is not valid for this start. Check the case parameter of the rule.` | Check the `case` value of the rule. |
+| `the identity requested is not allowed by the investigation policy for this template. Check identity in the policy.` | Check `identity` in the policy. |
+
+Each message starts with `start investigation:`. A record is written at most once every 30 minutes for each rule and cause, so a rule that matches often does not flood the page. A refusal never disables the rule. Nothing is reported when the case was written by the engine itself: that is the loop guard working, not a problem.
+
+If the `case` value renders to something that is not a case number, the rule's action fails for that event with `start investigation: case did not render to a case number`, and nothing is sent.
+
+### Test the rule
+
+You can test a rule that uses `start investigation` with the rule tester or replay, like any other rule. A match is reported as an `investigation` action and nothing is started.
 
 ## Emergency pause and resume
 
@@ -172,4 +244,4 @@ Legacy route-decision and autonomy mutation endpoints return `410 route_control_
 
 ## Manage policies from Git
 
-Store policy records under `hives.investigation_policy` and plans under `hives.investigation_plan`, each using the native `data` / `usr_mtd` wrapper. Enable and select the hives you intend to synchronize. Keep the complete existing record, including identity, intake and trigger settings, and user metadata. See [Git Sync investigation policies and plans](../../5-integrations/extensions/limacharlie/git-sync.md#investigation-policies-and-plans) for a fictional configuration example and conflict/pause handling.
+Store policy records under `hives.investigation_policy` and plans under `hives.investigation_plan`, each using the native `data` / `usr_mtd` wrapper. Enable and select the hives you intend to synchronize. Keep the complete existing record, including identity, intake and other settings, and user metadata. See [Git Sync investigation policies and plans](../../5-integrations/extensions/limacharlie/git-sync.md#investigation-policies-and-plans) for a fictional configuration example and conflict/pause handling.
