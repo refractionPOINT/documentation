@@ -32,6 +32,20 @@ The above example means that the `evil-process-detected` detection will be gener
 
 The `is_global: true` means that the suppression should operate globally within the Org (tenant), if the value was `false`, the suppression would be scoped per-Sensor.
 
+A suppression descriptor has these fields:
+
+| Field | Required | Type | Description |
+|---|---|---|---|
+| `keys` | Yes | list of strings | The uniqueness key. Each string supports templating (see below). Must not be empty. |
+| `max_count` | One of `max_count` or `min_count` | integer | Maximum number of times the Action runs per key per period. |
+| `min_count` | One of `max_count` or `min_count` | integer | Number of activations per key per period before the Action runs (see [Threshold Activation](#threshold-activation)). |
+| `period` | Yes | duration string | Length of the suppression window, from `1s` to `720h` (30 days), such as `30m`, `1h` or `168h`. See the formats below. |
+| `is_global` | No | boolean | `true` for one counter per Org, `false` (default) for one counter per Sensor. |
+| `count_path` | No | string | Path to an integer in the event to increment the counter by, instead of `1` (see [Variable Count](#variable-count)). |
+
+!!! warning "`period` is a duration string, not a number"
+    Write `period: 1h`, not `period: 3600`. A number is rejected, even though the `ttl` of the `add tag` Action is an integer number of seconds. There is no `d` (day) unit: write 7 days as `168h` and 30 days as `720h`.
+
 The `keys` parameter is a list of strings that support [templating](../4-data-queries/template-transforms.md). Together, the unique combination of values of all those strings (ANDed) will be the uniqueness key this suppression rule uses. By adding to the keys the `{{ .event.FILE_PATH }}` template, we indicate that the `FILE_PATH` of the event generating this `report` is part of the key, while the constant string `evil process-detected` is just a convenient way for us to specify a value related to this specific detection. If the `evil process-detected` component of the key was not specified, then *all* actions that also just specify the `{{ .event.FILE_PATH }}` would be contained in this suppression. This means that using `is_global: true` and a complex key set, it is possible to suppress some actions across multiple Actions across multiple D&R rules.
 
 Key templates support three namespaces:
@@ -66,7 +80,7 @@ The metadata key name is derived from the resource name with special characters 
 
 > Supported Time Period Formats
 >
-> LimaCharlie supports the following formats for time periods: **ns**, **us** (or **µs**, both are accepted), **ms**, **s**, **m**, **h** (nanoseconds, microseconds, milliseconds, seconds, minutes, and hours, respectively)
+> LimaCharlie supports the following formats for time periods: **ns**, **us** (or **µs**, both are accepted), **ms**, **s**, **m**, **h** (nanoseconds, microseconds, milliseconds, seconds, minutes, and hours, respectively). Units can be combined, as in `1h30m`. There is no day unit; the longest period is `720h`.
 
 ### Threshold Activation
 
@@ -83,7 +97,7 @@ Here's an example of this:
     period: 24h
 ```
 
-The above example means the `high-alerts` detection will be generated once per hour but only after the rule the action belongs to has matched 3 times within that period.
+The above example means the `high-alerts` detection will be generated at most once per 24 hours, and only after the rule the action belongs to has matched 3 times within that period.
 
 This could be useful if you wanted to create higher order alerts that trigger a different type of detection, or send a page alert to a SOC, when more than X alerts occurred on a single host per period.
 

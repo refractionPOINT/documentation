@@ -876,11 +876,11 @@ All response actions support `suppression` to manage repetitive or noisy alerts.
 
 **Parameters:**
 
-- `max_count`: Maximum action executions per period
+- `max_count`: Maximum action executions per period. One of `max_count` or `min_count` is required.
 - `min_count`: Minimum threshold before executing (requires both `min_count` and `max_count`)
-- `period`: Time window using duration format (`ns`, `us`, `ms`, `s`, `m`, `h`)
-- `is_global`: `true` for organization-wide suppression, `false` for per-sensor
-- `keys`: List of strings that form the uniqueness key (supports templates)
+- `period` (required): Time window as a duration string from `1s` to `720h`, such as `30m`, `1h` or `168h` (units `ns`, `us`, `ms`, `s`, `m`, `h`; no `d`). Never a number: `period: 3600` is rejected, unlike `ttl` on `add tag`, which is seconds.
+- `is_global`: `true` for organization-wide suppression, `false` (default) for per-sensor
+- `keys` (required): Non-empty list of strings that form the uniqueness key (supports templates)
 - `count_path`: Path to an integer in the event for variable-count increments
 
 Key templates support three namespaces:

@@ -205,6 +205,11 @@ Takes a `name` parameter for the platform name. The current platforms are:
 - `android`
 - `chrome`
 
+!!! note "Chrome sensors and Chromebooks"
+    The Chrome browser sensor reports the platform of the operating system it runs on, with the `chromium` architecture: `chrome` on ChromeOS, and `linux`, `macos` or `windows` on those systems. So `is platform` with `name: chrome` (and the `plat == chrome` selector) matches the browser sensor on ChromeOS only, while the `is chrome` operator checks the architecture and matches the browser sensor on every operating system.
+
+    A Linux sensor installed in a Chromebook's Linux development environment is a regular Linux sensor (platform `linux`), so `is linux` matches it. To keep a rule to a specific population, scope it with `is tagged` rather than a platform check.
+
 **Cloud & Service Platforms:**
 
 - `gcp` (Google Cloud Platform)

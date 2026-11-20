@@ -20,7 +20,7 @@ actions require **root** (Linux/macOS) or **Administrator** (Windows).
 | `-d <KEY>` | `--deployment` | Run with the installation key without performing a permanent installation (temporary/foreground enrollment). Pass `-d -` to read the key from the environment or a local file (see [Installation key sources](#installation-key-sources)). |
 | `-u` | `--upgrade` | Upgrade the installed service in place using this binary. Requires sensor **4.33.28+**. See [Service Upgrades](service-upgrades.md). |
 | `-r` | `--uninstall` | Uninstall the service, leaving the identity files on disk. |
-| `-c` | `--uninstall-clean` | Uninstall the service and delete the identity/config files (`hcp`, `hcp_hbs`, `hcp_conf`). |
+| `-c` | `--uninstall-clean` | Uninstall the service and delete the identity/config files (see [Local Files](#local-files)). |
 | `-t` | `--vdi` | Write the VDI delay file to postpone enrollment by 24 hours, for use when baking golden images. See [VDI Templates](vdi/templates.md). |
 | `-H` | `--health` | Run the sensor health check and write a diagnostic report. See [Sensor Troubleshooting Utility](../../8-reference/faq/troubleshooting.md#sensor-troubleshooting-utility). Requires sensor **4.33.6+**. |
 | `-v` | `--verbose` | Enable verbose logging output (equivalent to setting `LC_VERBOSE=1`). |
@@ -189,9 +189,9 @@ Restart-Service rphcpsvc
 | File | Default location | Purpose |
 |------|------------------|---------|
 | `lc_installation_key.txt` | Current working directory | Optional source of the installation key when using `-d -`. |
-| `hcp`, `hcp_hbs`, `hcp_conf` | `/etc` (Linux), `/usr/local` (macOS), `C:\Windows\System32` (Windows) | Identity and configuration files written at install time. Removed by `-c`; left in place by `-r`. |
+| `hcp.dat`, `hcp_conf.dat`, `hcp_hbs_config.dat` | Sensor data directory (see `LC_DATA_DIRECTORY`) on sensor 5.2.0 and newer. Older sensors used `hcp`, `hcp_hbs`, `hcp_conf` in `/etc` (Linux), `/usr/local` (macOS), or `C:\Windows\System32` with a `.dat` extension (Windows); they are moved to the data directory on upgrade. | Identity and configuration files written at install time. Removed by `-c`; left in place by `-r`. |
 | `hcp_vdi` / `hcp_vdi.dat` | `/etc` or CWD (Linux), `/usr/local` (macOS), `C:\Windows\System32` (Windows) | VDI delay file holding the epoch timestamp until which enrollment is postponed. See [VDI Templates](vdi/templates.md). |
-| `hcp.log` | `./hcp.log` (Linux), `/usr/local/hcp.log` (macOS), `C:\Windows\System32\hcp.log` (Windows) | First-connection connectivity log. See [Sensor Not Connecting](../../8-reference/faq/troubleshooting.md#sensor-not-connecting). |
+| `hcp.log` | Sensor data directory (see `LC_DATA_DIRECTORY`) on sensor 5.2.0 and newer, e.g. `C:\ProgramData\limacharlie\hcp.log` on Windows. Older sensors used `/etc/hcp.log` (Linux), `/usr/local/hcp.log` (macOS), `C:\Windows\System32\hcp.log` (Windows). | First-connection connectivity log. See [Sensor Not Connecting](../../8-reference/faq/troubleshooting.md#sensor-not-connecting). |
 | `hcp_hbs_status.json` | Sensor data directory (see `LC_DATA_DIRECTORY`) | Local status file with sensor ID, org ID, version, and uptime. |
 | `sensor_health_YYYY_MM_DD_HH_MM.json` | Sensor data directory (see `LC_DATA_DIRECTORY`) | Output of the `-H` health check. |
 

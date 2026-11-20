@@ -373,6 +373,60 @@ limacharlie output delete --name <output> --confirm --oid <OID>
 
 To make an organization match its files exactly, run `limacharlie sync push --force` with the same `index.yaml` and the same types. Force deletes every record of those types that is not in the files, including records created in the web app, so run it with `--dry-run` first. See [the tutorial](../../../1-getting-started/mssp-iac-tutorial.md#step-11-delete-things).
 
+## Investigation policies and plans
+
+On versions with investigation hive synchronization, select `investigation_policy` and `investigation_plan` under `sync_hives` for apply and `export_hives` for export. A policy's `autonomy` section controls actions; a plan defines the investigation. See [Investigation Action Policies](../../../7-administration/config-hive/investigation-policy.md) for modes, limits, emergency pause, engine performance stats and permissions.
+
+!!! note "Check version support"
+    These hive selections require a Git Sync version that includes them in its catalog. If absent, upgrade support is needed. SDK and CLI capabilities depend on their installed release; this YAML example does not imply that new CLI flags or SDK helpers are already released.
+
+For a fictional organization, add `hives/investigation_policy.yaml` to the existing `index.yaml` include list. This example creates a separate `review-sensitive-mail` policy scoped to the `mail-triage` template, leaving the existing `default` record intact. Use an unused record name when adding it. The file contains a native Hive record wrapper:
+
+```yaml
+version: 3
+hives:
+  investigation_policy:
+    review-sensitive-mail:
+      data:
+        match:
+          run: template == "mail-triage"
+        autonomy:
+          close.false_positive:
+            mode: suggest
+            min_confidence: 0.90
+            max_targets_per_run: 3
+            max_targets_per_hour: 50
+            lease: 2h
+            approval_timeout: 15m
+          eradicate.*:
+            mode: approve
+          tag.remove:
+            mode: approve
+      usr_mtd:
+        enabled: true
+        tags: [fictional-iac]
+```
+
+The named policy adds restrictions for matching investigations; it cannot loosen matching default restrictions. When editing an existing record, export it first and preserve its complete `data`, including identity, budgets, triggers, intake and other fields. Preserve `usr_mtd` such as tags, enabled state, expiry and comments. Do not commit `sys_mtd`, authentication tokens or resolved secret values. New records need `usr_mtd.enabled: true` to participate.
+
+Plans use `hives.investigation_plan.<record-name>` with the same `data` / `usr_mtd` wrapper. Export an existing valid plan into `hives/investigation_plan.yaml` and include it too. Empty `data: {}` is not a runnable plan. Selecting one hive does not select the other.
+
+### Review, apply and verify
+
+1. Export selected records and review the full diff, keeping unrelated fields and existing includes.
+2. Start new policies in `suggest`. Inspect the would-do proposals before changing a governing entry to `auto`. A named auto record cannot loosen a matching default restriction.
+3. Use credentials with native Hive grants, including `investigation_policy.get` and `investigation_policy.set` for policy management, and `investigation_policy.del` for deletion. Git Sync does not bypass permissions or grant product execution access.
+4. Apply, re-export and compare data and user metadata. Native versions are read at apply time for compare-and-swap; a version in git does not authorize an unconditional overwrite. On a conflict, reload, reconcile and retry.
+5. Read the record back through the Hive to confirm it saved, then watch the [engine performance report](../../../7-administration/config-hive/investigation-policy.md#engine-performance) to see what the engine does under it.
+
+Force deletion through configuration sync remains limited to selected hives and existing tag selection; unselected hives are untouched and existing ACL exclusions remain. The extension's ordinary pull still adds and updates without deleting. See [Removing things](#removing-things) before using a deletion-enabled sync workflow.
+
+### Preserve emergency pauses
+
+The emergency pause is an enabled `investigation_policy` record named `autonomy-manual-pause` with `data` equal to `autonomy: {"*": {mode: suggest}}`. Keep it in the authoritative git configuration for as long as the pause is intended, or adjust sync selection so it is preserved. A force-deleting sync could remove a console-created pause absent from git.
+
+To resume, remove the pause from git and delete the record with normal Hive deletion permission. An ordinary extension pull will not delete it for you. If left in git, a later pull can recreate it. Other policy restrictions still apply, and previously held suggestions never automatically execute on resume.
+
 ## Setting up Git Sync
 
 The [tutorial](../../../1-getting-started/mssp-iac-tutorial.md) does this for a whole MSSP. For a single organization:
