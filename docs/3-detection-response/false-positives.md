@@ -63,6 +63,9 @@ path: cat
 value: my-detect-name
 ```
 
+!!! warning "Keep detection names static"
+    `cat` is the `name` of the `report` action that created the detection. If that name contains a template, such as `name: "Reverse shell on {{ .routing.hostname }}"`, every host produces a different `cat`, and an FP rule matching one value misses the others. The same applies to D&R rules that match detections (`target: detection`) and to outputs filtered by category. Keep `report` names static and put per-event details in the action's `metadata`.
+
 ### Ignore Detections for Specific File Name
 
 Ignore any detection that relates to a file name in any path.
