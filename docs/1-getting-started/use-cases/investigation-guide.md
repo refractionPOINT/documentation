@@ -2,6 +2,10 @@
 
 This guide provides opinionated best practices for SOC analysts using LimaCharlie Investigations to document and encode security investigations. By following these conventions, you enable attack chain visualization, cross-investigation analysis, and consistent reporting.
 
+## Policy-controlled investigation actions
+
+For Investigation Engine actions, use an `investigation_policy` Hive record to choose `off`, `suggest`, `approve` or `auto`. Start in `suggest` to inspect what the engine would do without changing the product. The [Investigation Action Policies guide](../../7-administration/config-hive/investigation-policy.md) explains confidence and limits, emergency pause and resume, permissions, Git Sync management and the engine performance report (`limacharlie investigate stats`). Check the guide's version-support note before using the new controls.
+
 ## Tag Format Specification
 
 Use colon-separated tags to categorize events, detections, and entities within your timeline. This section defines the format patterns - actual values are either format-based (you define them) or fetched dynamically from authoritative sources.

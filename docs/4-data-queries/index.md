@@ -128,6 +128,13 @@ curl -s -X POST \
 
 Batch mode suits any client that pages a query all the way to the end: scripts, scheduled jobs, exports, and automation generally. Keep the `interactive` default when a person is waiting at a screen for the first rows. The field is a hint either way: the server decides the mode each page runs in, and may put a search into batch mode on its own, with the aim of returning the complete result set faster. See [Search Modes](query-limits-and-performance.md#search-modes) for when each mode applies, what can override it, and the stats each page reports about the mode it ran as.
 
+### Compressed Responses
+
+Search result pages compress well: with compression they are typically several times to more than ten times smaller on the wire. The Search API compresses a response with `zstd` or `gzip` when the request's `Accept-Encoding` header asks for it. Very small responses are sent uncompressed.
+
+- **Python SDK and CLI**: releases after 5.12.2 request compression and decode it automatically. On Python 3.10 to 3.13, install `'limacharlie[zstd]'` for zstd, which gives the smallest pages. See [Compressed Responses](../6-developer-guide/sdks/python-sdk.md#compressed-responses).
+- **curl**: add `--compressed` to have curl request compression and decode the response.
+
 ### Validate Query Syntax
 
 === "REST API"

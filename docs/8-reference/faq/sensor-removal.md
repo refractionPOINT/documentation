@@ -25,13 +25,17 @@ The following LimaCharlie sensor-related files should no longer exist on disk:
 
 /usr/local/bin/rphcp
 
+/Library/Application Support/limacharlie (the sensor data directory, used by sensor 5.2.0 and newer)
+
+Sensors older than 5.2.0 kept their files in `/usr/local` instead, so also check that these are gone:
+
 /usr/local/hcp
 
 /usr/local/hcp_conf
 
 /usr/local/hcp_hbs
 
-You may optionally remove the log file located at: /usr/local/hcp.log
+You may optionally remove the log file left by older sensors at: /usr/local/hcp.log
 
 ## Verify LimaCharlie Network Extension was removed
 

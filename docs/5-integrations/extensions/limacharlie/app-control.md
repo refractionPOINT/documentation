@@ -4,7 +4,7 @@
 
 Application Control lets you decide which programs may run on your endpoints. You write an allowlist (only approved software runs) or a blocklist (everything runs except what you deny), and the LimaCharlie sensor enforces it at the moment a process starts.
 
-- Windows and macOS are supported. Linux is not.
+- Windows, macOS and Linux (endpoint agent 5.4.4 or later) are supported. Linux enforces differently and has no code signatures to match; see [Application Control on Linux](app-control/linux.md).
 - The policy is declarative. You describe the desired state in two [Config Hive](../../../7-administration/config-hive/index.md) types, and the extension reconciles it onto every matching sensor each time that sensor syncs.
 - The LimaCharlie cloud signs each policy before it reaches a sensor, and the sensor verifies the signature.
 - Each policy has a mode, so you can watch what would be blocked before you block anything.
@@ -12,9 +12,9 @@ Application Control lets you decide which programs may run on your endpoints. Yo
 ## Requirements
 
 - The `ext-app-control` extension subscribed in the organization. See [Enabling the extension](#enabling-the-extension).
-- Endpoint agent **5.4.0** or later. [Upgrade](../../../2-sensors-deployment/endpoint-agent/versioning-upgrades.md) older sensors first.
+- Endpoint agent **5.4.0** or later, **5.4.4** on Linux. [Upgrade](../../../2-sensors-deployment/endpoint-agent/versioning-upgrades.md) older sensors first.
 - For [trusted installers](#self-updating-software-and-trusted-installers) and for [`on_enable`](#programs-that-are-already-running), a sensor version that supports them. An older sensor applies the rest of the policy and ignores the installers. It does not act on `on_enable`.
-- Windows or macOS.
+- Windows, macOS, or Linux on a kernel that delivers exec permission events. See [Requirements](app-control/linux.md#requirements) on the Linux page.
 - The `app_control.get` and `app_control.set` [permissions](../../../8-reference/permissions.md#application-control) to read and write policies.
 
 ## Enabling the extension
@@ -39,7 +39,7 @@ A sensor gets the first enabled policy, ordered by `priority` and then by name, 
 
 1. Deny rules.
 2. Allow rules.
-3. OS vendor trust (Apple platform binaries, Microsoft-signed binaries), unless the policy turns it off.
+3. OS vendor trust (Apple platform binaries, Microsoft-signed binaries, and on Linux files installed by a package the distribution signed), unless the policy turns it off.
 4. Trusted installers: a process started by a trusted installer, or a file one wrote. See [below](#self-updating-software-and-trusted-installers).
 5. The stance. An allowlist denies anything not allowed. A blocklist allows anything not denied.
 
@@ -133,7 +133,7 @@ Install mode lets you put one host, or a selection of hosts, in a temporary wind
 
 Choose 1 hour, 4 hours, 24 hours, or a custom number of whole hours up to 168. Starting again on a host that is already in install mode restarts its window. While a window is on, the sensor page shows the time left, with **Restart window...** and **End install mode**.
 
-The action appears only when the organization is subscribed to the `ext-app-control` extension and you hold `app_control.get`, `app_control.set` and `sensor.tag`. Install mode matters on Windows and macOS hosts only, because Application Control does not run on other platforms. The console warns you when a selected host is on another platform, and tags it anyway. A change reaches the host the next time it syncs.
+The action appears only when the organization is subscribed to the `ext-app-control` extension and you hold `app_control.get`, `app_control.set` and `sensor.tag`. Install mode reaches Windows and macOS hosts only: the `install-mode` policy has no platform list, which does not include Linux (see [Application Control on Linux](app-control/linux.md#requirements)). The console warns you when a selected host is on another platform, and tags it anyway. A change reaches the host the next time it syncs.
 
 ### How it works
 
@@ -165,7 +165,7 @@ Install mode is not a separate feature, so you can do the same through the API. 
 
 ## Lockdown
 
-**Lock down host…** on a sensor page, or in the sensor list's bulk actions, requests incident-response containment through Application Control. The host can still use the network. Application Control enforces on **Windows and macOS only**; the bulk dialog skips other platforms, including Linux.
+**Lock down host…** on a sensor page, or in the sensor list's bulk actions, requests incident-response containment through Application Control. The host can still use the network. The `lockdown` policy has no platform list, so it reaches **Windows and macOS only** (see [Application Control on Linux](app-control/linux.md#requirements)); the bulk dialog skips other platforms, including Linux.
 
 The console creates a reserved, explicitly enabled `lockdown` policy in `app_control_policy` before adding the sensor tag `appctl-lockdown`:
 
@@ -221,7 +221,7 @@ The console action needs `app_control.get`, `app_control.set`, and `sensor.tag`,
 
 ## Reading would-be blocks
 
-Application Control reports through these events, available on Windows and macOS. See the [EDR events reference](../../../8-reference/edr-events.md#app_control_denied) for the full fields.
+Application Control reports through these events, available on Windows, macOS and Linux. See the [EDR events reference](../../../8-reference/edr-events.md#app_control_denied) for the full fields.
 
 `APP_CONTROL_DENIED` means the policy denied an execution. If `APP_CONTROL_IS_ENFORCED` is `1`, the sensor blocked it. If it is `0`, the sensor is in `permissive` or `permissive_sync` and only reports what it would have blocked.
 

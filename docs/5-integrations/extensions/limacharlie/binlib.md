@@ -23,7 +23,7 @@ First, subscribe your tenant to the [BinLib](https://app.limacharlie.io/add-ons/
 
 To perform one of the following operations against your own library, choose the command and select **Run Request.**
 
-The BinLib page in the web app offers an easy way to get started with some of the core requests exposed by the extension: Check Hash, Search, and Yara Scan.
+The BinLib page in the web app offers an easy way to get started with some of the core requests exposed by the extension: Check Hash, Search, Find Hosts, and Yara Scan.
 
 ![binlib 2](../../../assets/images/binlib-2.png)
 
@@ -111,6 +111,7 @@ Searchable fields include:
 - res_company_name
 - res_file_description
 - res_product_name
+- res_product_version
 - sha256
 - sig_authentihash
 - sig_hash
@@ -124,6 +125,78 @@ Note that search criteria are ANDed. Binaries must meet ALL criteria to be retur
 Search results can be downloaded as a CSV.
 
 ![binlib 3](../../../assets/images/binlib-3.png)
+
+### find_hosts
+
+The `find_hosts` operation lists the hosts (sensors) where matching binaries were seen. Use it to go from "which binaries are vulnerable" to "which machines have them".
+
+The binaries to look up are given either by:
+
+- `criteria`: the same search criteria as [`search`](#search) (ANDed), for example `res_product_name` `LIKE` `Java%` and `res_product_version` `LIKE` `8.0.%`, or
+- `hash` / `hashes`: one or more MD5, SHA1 or SHA256 hashes.
+
+Provide one or the other, not both. Optional parameters:
+
+| Parameter | Default | Maximum | Description |
+|-----------|---------|---------|-------------|
+| `limit` | 100 | 1000 | Maximum number of binaries to look up. |
+| `hosts_limit` | 100 | 999 | Maximum number of hosts returned for each binary, most recently seen first. |
+
+The result is flat, with one row for each binary and host where it was seen, so the table in the web app and its CSV download can be used directly. Each row has the binary's `sha256`, `res_product_name`, `res_product_version` and `res_company_name`, and the host's `sid`, `hostname`, `first_seen` and `last_seen` (UTC, RFC 3339). The `hostname` can be empty if it is not known.
+
+Sample Output:
+
+```json
+{
+  "data": {
+    "results": [
+      {
+        "sha256": "5b8e1f3a7c9d20446e1a8b3c5d7f9e0a2b4c6d8e0f1a3b5c7d9e1f3a5b7c9d1e",
+        "res_product_name": "Java(TM) Platform SE 8",
+        "res_product_version": "8.0.2210.11",
+        "res_company_name": "Oracle Corporation",
+        "sid": "6f1c0a52-3b7e-4f0d-9c1e-2a8d5b7e9a10",
+        "hostname": "web-01",
+        "first_seen": "2026-10-02T14:03:11Z",
+        "last_seen": "2026-11-17T08:41:52Z",
+        "hosts_truncated": false
+      },
+      {
+        "sha256": "9d1e4c7a0b3f58e2a6c4d9b1f07e3a52c8d6b4e1f9a07c35d2e8b6a4c1f09e73",
+        "res_product_name": "Java(TM) Platform SE 7",
+        "res_product_version": "7.0.800.15",
+        "res_company_name": "Oracle Corporation",
+        "sid": "",
+        "hostname": "",
+        "first_seen": "",
+        "last_seen": "",
+        "hosts_truncated": false
+      }
+    ],
+    "num_binaries": 2,
+    "num_binaries_with_hosts": 1,
+    "binaries_limit_reached": false,
+    "unresolved_hashes": [],
+    "limit": 100,
+    "hosts_limit": 100
+  }
+}
+```
+
+Things to know when reading the result:
+
+- **A binary seen on no host** still gets a row, with empty `sid`, `hostname`, `first_seen` and `last_seen`, so it does not silently disappear from the table or the CSV.
+- **`hosts_truncated`** is `true` on every row of a binary that has more hosts than `hosts_limit`. Raise `hosts_limit` (up to 999) or narrow the criteria to see the rest.
+- **`binaries_limit_reached`** is `true` when the number of binaries reached `limit`, meaning more binaries may match your criteria.
+- **`unresolved_hashes`** lists any MD5 or SHA1 you provided that BinLib could not map to a SHA256. Hosts are looked up by SHA256 only.
+- A hash BinLib has never seen can still be located when you provide it directly: the metadata columns are then empty.
+- A request is refused when the number of binaries multiplied by `hosts_limit` could exceed 50,000 rows: narrow the criteria, or lower `limit` or `hosts_limit`.
+
+Limits to keep in mind:
+
+- The data comes from the Insight retention of your organization (up to one year), so a host that last ran the binary before that does not appear.
+- `first_seen` and `last_seen` show when the binary was **seen** on the host, not that it is still present. A binary that was removed since still appears.
+- It runs with your own permissions and requires `insight.evt.get` (or `insight.evt.get.simple`), because it reads from Insight. It uses your identity, so it cannot be run by a D&R rule.
 
 ### tag
 

@@ -4,7 +4,7 @@ The Infrastructure Extension allows you to perform infrastructure-as-code (IaC) 
 
 > Scaling Organization Management
 >
-> If you're a managed service company or need to manage a large number of Organizations, consider LimaCharlie's [MSSP demo setup](https://github.com/refractionPOINT/mssp-demo).
+> If you're a managed service company or need to manage a large number of Organizations, keep the configuration in a Git repository and apply it with the [Git Sync](git-sync.md) extension. The [MSSP Git Sync tutorial](../../../1-getting-started/mssp-iac-tutorial.md) sets it up step by step. LimaCharlie's [MSSP demo setup](https://github.com/refractionPOINT/mssp-demo) shows the same idea driven from the CLI.
 
 ## Enabling the Infrastructure Extension
 

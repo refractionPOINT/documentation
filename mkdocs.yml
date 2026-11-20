@@ -242,6 +242,7 @@ nav:
           - LimaCharlie with Codex: codex.md
       - Core Concepts: 1-getting-started/core-concepts.md
       - Starting an MSSP — Walkthrough: 1-getting-started/mssp-walkthrough.md
+      - MSSP Infrastructure as Code with Git Sync: 1-getting-started/mssp-iac-tutorial.md
       - Tutorials:
           - Overview: 1-getting-started/tutorials/index.md
 
@@ -286,6 +287,7 @@ nav:
       - Adapters:
           - Overview: 2-sensors-deployment/adapters/index.md
           - Deployment: 2-sensors-deployment/adapters/deployment.md
+          - Cloud-Managed: 2-sensors-deployment/adapters/cloud-managed.md
           - As a Service: 2-sensors-deployment/adapters/as-a-service.md
           - Usage: 2-sensors-deployment/adapters/usage.md
           - Cloud Providers:
@@ -445,7 +447,9 @@ nav:
           - Using Extensions: 5-integrations/extensions/using-extensions.md
           - LimaCharlie:
               - Overview: 5-integrations/extensions/limacharlie/index.md
-              - Application Control: 5-integrations/extensions/limacharlie/app-control.md
+              - Application Control:
+                  - Overview: 5-integrations/extensions/limacharlie/app-control.md
+                  - Linux: 5-integrations/extensions/limacharlie/app-control/linux.md
               - Artifact: 5-integrations/extensions/limacharlie/artifact.md
               - BinLib: 5-integrations/extensions/limacharlie/binlib.md
               - Cases: 5-integrations/extensions/limacharlie/cases.md
@@ -558,6 +562,7 @@ nav:
           - Secrets: 7-administration/config-hive/secrets.md
           - Lookups: 7-administration/config-hive/lookups.md
           - D&R Rules: 7-administration/config-hive/dr-rules.md
+          - Investigation Action Policies: 7-administration/config-hive/investigation-policy.md
           - YARA: 7-administration/config-hive/yara.md
           - Cloud Sensors: 7-administration/config-hive/cloud-sensors.md
           - Application Control Policies: 7-administration/config-hive/app-control-policy.md
