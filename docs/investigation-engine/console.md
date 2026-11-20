@@ -246,7 +246,7 @@ On the template's page:
   in progress are not affected.
 - **Delete** removes the template from the organization and cannot be undone.
 
-Promotion is made by a person in the console. An API key cannot write an active
+Promotion is made by a person signed in as a user, in the console or with a user login in the CLI. An API key cannot write an active
 template unless the organization opted out. See [Permissions](permissions.md#active-templates-can-only-be-written-by-a-person).
 
 ### Draft a template with AI

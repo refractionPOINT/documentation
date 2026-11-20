@@ -218,7 +218,11 @@ exports. The engine has these built in: `app_control_context`, `cloud_audit_cont
 `host_context`, `host_vulnerability_exposure`, `identity_signins`, `message_outcome`,
 `org_roster`, `process_lineage`, `process_tree`, `saas_admin_actions`,
 `sender_reputation` and `user_activity`. `GET /packs` (or `investigate_packs`) lists
-them with their parameters and exports. A pack can be used in a wave or as a fact
+them with their parameters and exports. An organization can add its own packs as
+`investigation_pack` Hive records; templates and waves `use:` them like the built-in
+ones. Like an active template, an organization pack can only be written by a person
+(or by an API key when the organization opted out), so an AI agent's key cannot change
+what an active template runs by replacing a pack. A pack can be used in a wave or as a fact
 (`use:` instead of `op:`) in a template, where it expands into ordinary facts named
 `<id>__<fact>`.
 

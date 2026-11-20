@@ -25,7 +25,7 @@ For a local client, set `MCP_PROFILE=investigation_engine` in the server's envir
 The table below lists the permissions each tool needs **at the gateway**. Give the
 API key those, plus only the permissions of the data the checks you ask for read. A
 wave or a test executes with the key's own permissions, so for example the `org_roster`
-pack also needs `sensor.list`, and live sensor reads need `sensor.task.read` (when enabled, or `sensor.task`) plus `output.set`;
+pack also needs `sensor.list`, and live sensor reads need `sensor.task.read` (or `sensor.task`) plus `output.set`;
 without them the facts come back `unknown`. A **run** (`investigate_start`) is different:
 it executes as the policy's identity (`identity.default`) unless the request picks
 `caller` and the policy allows it, so on an active template it can act with that secret's
@@ -46,7 +46,7 @@ checks the key's permissions at the gateway.
 | `investigate_start` | Starts a run on a `template` for a `detection_id`, `case_id`, `entity_id` or `question`. Optional `inputs`, `urgency` (`low`, `medium`, `high`, `critical`), `mode` (`full`, `triage`, `scope`), `case` (`create`, `none`, `attach:<case number>`: send `attach:` to write into an existing case), `idempotency_key`, and `wait_seconds` (up to 60) to wait for the verdict. A draft template runs with autonomy capped at `suggest`. | `investigation.set`, `insight.evt.get` |
 | `investigate_delete` | Deletes a run for good by its `run_id`. Refused while the run is active or has actions in effect. | `investigation.set`, `insight.evt.get` |
 | `investigate_get_pack` | Reads an organization-authored fact pack: its YAML, etag and enabled state. | `investigation_plan.get` |
-| `investigate_save_pack` | Creates an organization-authored fact pack, or replaces one when given the `etag` from `investigate_get_pack`. | `investigation_plan.set` |
+| `investigate_save_pack` | Creates an organization-authored fact pack, or replaces one when given the `etag` from `investigate_get_pack`. Like an active template, a pack can only be written by a person: the Hive refuses it from an API key unless the organization opted out (see [Permissions](permissions.md#active-templates-can-only-be-written-by-a-person)). | `investigation_plan.set` |
 | `investigate_delete_pack` | Deletes an organization-authored fact pack (`confirm: true`). | `investigation_plan.del` |
 | `investigate_get` | Reads a run. `view` is `run` (default), `steps`, `events` (long-poll: `after`, `wait` up to 10) or `case`. | `investigation.get`, `insight.evt.get` |
 | `investigate_wave` | Runs a batch of questions (operators or fact packs) in parallel and returns compact typed answers, stopping as soon as a `stop_when` condition is true. Steps carry `select` and `limit`; `full` returns raw values; `validate_only` checks a wave without running it; `deadline_ms` defaults to 30000. | `investigation.set`, `insight.evt.get` |

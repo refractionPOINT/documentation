@@ -101,8 +101,10 @@ An unset field never means "unlimited" or "allowed".
 | `notify` | Events to destinations. **`default` record only.** See [Notifications](#notifications). |
 | `llm` | `agent`: `hive://ai_agent/<name>`, the AI agent record of the evidence reviewer. The `llm.judge` operator runs with the record named `investigation-judge` (see the [walkthrough](walkthrough.md#2-the-ai-agent-record-the-judgements-run-with)). |
 
-A record is **enabled by default** when saved, unlike most Hive types. A record with
-`usr_mtd.enabled: false` is ignored by the engine. Unknown keys are refused when the
+A record saved with no `usr_mtd` at all is enabled, unlike most Hive types; a
+`usr_mtd` that leaves out `enabled` (as Git Sync and some clients send) creates it
+disabled. A disabled record is ignored by the engine, so **always set
+`usr_mtd.enabled: true`**, above all on the `autonomy-manual-pause` record. Unknown keys are refused when the
 record is saved (`policy_unknown_field`); the removed `triggers` section is one of
 them. New cases start runs through a [D&R rule](automation.md#dr-rules-on-a-new-case).
 

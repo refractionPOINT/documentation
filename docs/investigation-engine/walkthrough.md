@@ -179,8 +179,8 @@ Or save the YAML above as `policy.yaml` and run
 
 Saving a policy that names a secret for the first time needs read access to that
 secret, and the secret must already exist. Sections you leave out (budgets,
-operators, decision thresholds, speculation) keep the platform defaults. A policy
-record is enabled when saved.
+operators, decision thresholds, speculation) keep the platform defaults. Always send
+`usr_mtd.enabled: true` (or `--enabled`): a disabled record is ignored.
 
 Check what the engine will apply:
 
@@ -377,7 +377,7 @@ respond:
 ```
 
 The default library ships this rule as `investigate-high-critical-case`
-(`get_authoring_kit`, `sections=library`, under `rules`); install it as a D&R rule.
+(`GET /authoring-kit?sections=library` or the MCP tool `investigate_authoring_kit`, under `rules`); install it as a D&R rule.
 The engine never starts a run in a case it wrote itself. See
 [Automatic Starts](automation.md#dr-rules-on-a-new-case).
 
