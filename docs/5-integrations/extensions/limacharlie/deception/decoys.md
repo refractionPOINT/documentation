@@ -21,7 +21,7 @@ Every hit carries a `layer`:
 | `delete` | The decoy file was deleted unexpectedly. The decoy is planted again afterward. | Priority 5, never isolates |
 | `use` | A secret inside the decoy was used. | Priority 10 |
 
-Priority 10 applies to the default rules, which you can edit. A `use` hit never isolates the host, by design, even when the secret is used from the original host: it arrives from the collector or a sign-in log, and a network address is not proof of which machine used the secret. Only an event reported by the decoy's own sensor (a read, a modification or a command-line match) can isolate (see [Isolation](detections.md#isolation)).
+Priority 10 applies to the default rules, which you can edit. A `use` hit that arrives from the collector or a sign-in log never isolates the host, by design, even when the secret is used from the original host: a network address is not proof of which machine used the secret. Only an event reported by the decoy's own sensor can isolate (see [Isolation](detections.md#isolation)). That is a read, a modification, a command-line match, or, for a `hostname` decoy, the DNS lookup of a decoy name reported by the sensor of the host the decoy was planted on, which is a `use` hit with on-host evidence. All of them are subject to the usual guards.
 
 A modification counts as a hit because on Linux an open for read-write is reported by the sensor as a modification, not a read. An unexpected delete is more often cleanup than an attack, so it gets a lower priority.
 
@@ -45,7 +45,7 @@ The library is built into the extension and ships with each release, so a newer 
 | Template | Kind | Platforms | What it imitates |
 | --- | --- | --- | --- |
 | `aws-config-backup` | file | Linux, macOS, Windows | A saved AWS CLI config with a decoy profile whose `endpoint_url` points at the collector. Use is caught when the file is passed with `AWS_CONFIG_FILE` and its profile is selected with `--profile` or `AWS_PROFILE`. |
-| `aws-credentials-backup` | file | Linux, macOS, Windows | A saved AWS credentials file whose profile carries `endpoint_url`, so the key goes to the collector when the file is used (for example with `AWS_SHARED_CREDENTIALS_FILE`). Verified clients: botocore-based ones (AWS CLI, boto3), which read `endpoint_url` from the credentials file. Other SDKs, and endpoint overrides in general, are **not verified**. |
+| `aws-credentials-backup` | file | Linux, macOS, Windows | A saved AWS credentials file whose profile carries `endpoint_url`, so the key goes to the collector when the file is used: pass it with `AWS_SHARED_CREDENTIALS_FILE` and select its generated profile with `--profile` or `AWS_PROFILE` (the profile is named, not `default`). No separate config file is needed. Verified clients: botocore-based ones (AWS CLI, boto3), which read `endpoint_url` from the credentials file. Other SDKs, and endpoint overrides in general, are **not verified**. |
 | `kubeconfig-backup` | file | Linux, macOS | Old kubeconfig whose server is a fake Kubernetes API |
 | `docker-config-backup` | file | Linux, macOS, Windows | Docker `config.json` backup naming a fake registry |
 | `env-ops-file` | file | Linux, macOS, Windows | `.env` with internal API base URLs and bearer tokens |
@@ -117,8 +117,8 @@ When the version could not be read, the extension keeps the host's behavior: it 
 | Decoy | Needs | Without it |
 | --- | --- | --- |
 | File decoys, placement | `ext-artifact` subscribed, a supported sensor | Placement is Unavailable for the whole organization, with "Subscribe ext-artifact". |
-| File decoys, read alert | `ext-exfil` subscribed, file collectors on, and on Windows a sensor that [reports file events](#sensor-versions-windows) | A template that also alerts on use is still planted: the read layer shows `partial` and only use is caught. A template whose only alert is read has no working alert path, shows `unavailable`, and is not planted. |
-| File decoys, modify and delete alerts | `ext-integrity` subscribed, file collectors on | The modify and delete layers show `partial` or `unavailable` in the same way. |
+| File decoys, read alert | `ext-exfil` subscribed, file collectors on, and on Windows a sensor that [reports file events](#sensor-versions-windows) | Each layer is judged on its own. A template that also alerts on use is still planted: the read layer shows `partial` and only use is caught. A template whose only alert is read has three layers (read, modify, delete): it is planted as long as at least one of them works, for example with `ext-integrity` subscribed and `ext-exfil` missing, when only modify and delete are caught. It is not planted, and shows `unavailable`, only when none of its layers can work. |
+| File decoys, modify and delete alerts | `ext-integrity` subscribed, file collectors on | The modify and delete layers show `partial` or `unavailable` in the same way. Losing `ext-integrity` does not remove the read layer, which depends on `ext-exfil`. |
 | File, MCP and registry-hostname decoys, use alert | Nothing else | Always available. |
 | Hostnames under your internal domain | **Not available in this release.** Internal-domain hostname decoys are deferred to a later release. | Not planted. Every alert layer reports unavailable. |
 | Phantom accounts, UPN form | Entra ID adapter with the `sign_ins` source (Entra ID P1 or P2), or the Okta adapter | Not planted. |

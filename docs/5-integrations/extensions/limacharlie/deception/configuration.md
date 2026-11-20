@@ -99,7 +99,7 @@ policies:
 
 A policy that names a template that does not exist, or a tag no template carries, is rejected when you save the record. If such a record is already stored, the policy stays usable for the rest of its selection and `plan` reports a warning.
 
-Policies that match the same sensor and select the same template share its placements. A decoy is keyed by sensor and template, so the first matching policy (in the order the policies are stored in the record) places it, owns it and supplies its response settings, and a later policy that selects the same template adds nothing on that sensor. A decoy is retired when no enabled policy selects its template any more, not when one of several policies that select it is removed. A sensor that stops matching a policy's targeting does not retire its decoys either.
+Policies that match the same sensor and select the same template share its placements. A decoy is keyed by sensor and template, so the policy that places it owns it and supplies its response settings, and another policy that selects the same template adds nothing on that sensor while the decoy exists. When one planning pass covers several policies (a `deploy` or the daily run without a `policy`), the first matching policy in the order the policies are stored in the record is the one that places it. A decoy that already exists keeps its owner: a `deploy` scoped to a later policy that runs first makes that policy the owner, and a decoy is not handed to another policy if its owner is removed while another policy keeps the decoy alive, so a hit on it finds no policy and the `policy` response does nothing. A decoy is retired when no enabled policy selects its template any more, not when one of several policies that select it is removed. A sensor that stops matching a policy's targeting does not retire its decoys either, but it is no longer fully watched: the read and modify alerts rely on watch rules scoped to the policy's sensor tags and platforms, so a sensor that loses a required tag stops reporting reads and modifications of its decoys, while use alerts keep working. `list_hosts` still shows such a sensor as `protected`. Restore the tag, or remove its decoys with `remove` and `sid`.
 
 ## Templates
 
@@ -219,7 +219,7 @@ A custom domain is a subdomain you control (at least three labels, no wildcard, 
 What exists today for AWS are two decoy templates whose keys are not real AWS keys, and whose `endpoint_url` points at the collector's fake AWS API:
 
 - `aws-config-backup` is a config file with a named profile. It catches use when the file is passed explicitly with `AWS_CONFIG_FILE` and its profile is selected with `--profile` or `AWS_PROFILE`.
-- `aws-credentials-backup` is a credentials file whose profile itself carries `endpoint_url`, so use is caught when the file is passed (for example with `AWS_SHARED_CREDENTIALS_FILE`) without a separate config file.
+- `aws-credentials-backup` is a credentials file whose profile itself carries `endpoint_url`, so use is caught when the file is passed with `AWS_SHARED_CREDENTIALS_FILE` and its generated profile is selected with `--profile` or `AWS_PROFILE`, without a separate config file.
 
 The clients verified to honor `endpoint_url` in the credentials file are botocore-based ones (the AWS CLI and boto3). Other SDKs, and endpoint overrides set through other mechanisms, are **not verified**. Keys copied to another machine without the file go to real AWS, where they are invalid and nothing is reported.
 

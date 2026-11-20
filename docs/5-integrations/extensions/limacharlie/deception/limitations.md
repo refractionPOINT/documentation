@@ -20,7 +20,7 @@ Read this page before you rely on Deception. Items marked **not verified** have 
 
 ## Design choices that limit automation
 
-- **Isolation rests only on an event from the decoy's own sensor.** A hit that arrives through the collector, and a sign-in hit, never isolate a host, even when the secret is used from the decoy's own host. A source address is not proof of a machine (NAT, DHCP churn, VPNs, shared cloud egress, an offline sensor's last address), and a wrong guess isolates the wrong host. These hits still raise the priority 10 detection and can open a case. See [Isolation](detections.md#isolation).
+- **Isolation rests only on an event from the decoy's own sensor** (a read, a modification, a command-line match, or the DNS lookup of a `hostname` decoy's name). A hit that arrives through the collector, and a sign-in hit, never isolate a host, even when the secret is used from the decoy's own host. A source address is not proof of a machine (NAT, DHCP churn, VPNs, shared cloud egress, an offline sensor's last address), and a wrong guess isolates the wrong host. These hits still raise the priority 10 detection and can open a case. See [Isolation](detections.md#isolation).
 - **A change to a shipped rule is never judged.** If you edit a shipped detection rule, the extension reports it as `unverified (rule edited: <rule>)` instead of working or broken. It does not evaluate your rule. See [Rule integrity](decoys.md#rule-integrity).
 
 ## Sensor and platform limits
