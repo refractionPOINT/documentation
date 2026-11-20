@@ -44,7 +44,7 @@ The library is built into the extension and ships with each release, so a newer 
 
 | Template | Kind | Platforms | What it imitates |
 | --- | --- | --- | --- |
-| `aws-config-backup` | file | Linux, macOS, Windows | A saved AWS CLI config with a decoy profile whose `endpoint_url` points at the collector. Use is caught when the file is passed with `--config-file` or `AWS_CONFIG_FILE`. |
+| `aws-config-backup` | file | Linux, macOS, Windows | A saved AWS CLI config with a decoy profile whose `endpoint_url` points at the collector. Use is caught when the file is passed with `AWS_CONFIG_FILE` and its profile is selected with `--profile` or `AWS_PROFILE`. |
 | `aws-credentials-backup` | file | Linux, macOS, Windows | A saved AWS credentials file whose profile carries `endpoint_url`, so the key goes to the collector when the file is used (for example with `AWS_SHARED_CREDENTIALS_FILE`). Verified clients: botocore-based ones (AWS CLI, boto3), which read `endpoint_url` from the credentials file. Other SDKs, and endpoint overrides in general, are **not verified**. |
 | `kubeconfig-backup` | file | Linux, macOS | Old kubeconfig whose server is a fake Kubernetes API |
 | `docker-config-backup` | file | Linux, macOS, Windows | Docker `config.json` backup naming a fake registry |
@@ -97,7 +97,7 @@ The extension never changes a sensor's mode. It plans around it:
 | `lc:sleeper` | **No.** The sensor runs nothing. | Not covered | Not covered |
 | Kubernetes DaemonSet sensor | **No.** It sees the node through a read-only mount and writes only inside its own container. | Not covered | Not covered |
 
-The mode and DaemonSet exclusions are reported per host in `plan`. `coverage` is an organization-level view of each template and layer: it does not list hosts, and an `active` status is not proof that every selected host is covered. Kubernetes nodes that run the sensor installed on the node itself are covered. Decoys inside containers are not supported.
+A sensor in one of the excluded modes, and a Kubernetes DaemonSet sensor, gets no decoys (a sensor in `lc:epp` or performance mode gets use-only decoys). The extension works this out per sensor while it plans, but no request returns it per sensor today. `plan` gives counts per policy (sensors targeted, placed, to place, to retire), the missing requirements per policy and a list of issues. `coverage` is an organization-level view of each template and layer: it does not list hosts, and an `active` status is not proof that every selected host is covered. To see which sensors have decoys, use `list_hosts` or the **Decoys** tab: a sensor with no decoy has no row. Kubernetes nodes that run the sensor installed on the node itself are covered. Decoys inside containers are not supported.
 
 On Linux, read alerts need the eBPF-capable sensor. The extension checks the sensor mode only, not the Linux tier: whether a legacy (non-eBPF) Linux sensor raises read alerts is **not verified**.
 
@@ -107,10 +107,10 @@ Read, modify and delete alerts come from the sensor's file events. Windows senso
 
 The extension reads the version from the sensor itself (`get_debug_data`) during the daily inventory, so nothing depends on what you tell it. On an affected sensor:
 
-- The read, modify and delete alerts cannot work on that sensor and are reported as `unavailable`, or `partial` when another layer of the same template (the use alert) does work, with the version and the fix ("sensor 5.3.12 does not report file events (upgrade the sensor to 5.3.16+ or 5.4.3+)"). They are never reported as `broken`, and a decoy placed there carries only the layers that can work. This is per-sensor detail: the organization-level `coverage` request does not list hosts and does not carry sensor versions.
-- `test_fire` places its test decoy for the read, modify and delete paths only on a sensor that reports file events (the use path does not need them), and says that a path was not tested when it finds none. A test decoy already on an affected sensor is left alone.
+- The read, modify and delete alerts cannot work there, so a decoy placed on that sensor carries only the layers that can (check a decoy's `layers` in `list`), and a template whose only alert is read is not placed there. The extension treats this as "unavailable on that sensor" and never as `broken`. It works this out per sensor, and no request returns it per sensor today: the organization-level `coverage` request does not list hosts or carry sensor versions.
+- `test_fire` places its test decoy for the read and modify paths only on a sensor that reports file events (the use path does not need them), and says that a path was not tested when it finds none. A test decoy already on an affected sensor is left alone.
 
-When the version could not be read, the host keeps its behavior and the coverage of that sensor carries the note "sensor version unknown: file events from this sensor are not confirmed". Linux and macOS sensors are not checked this way.
+When the version could not be read, the extension keeps the host's behavior: it places and watches as usual, and does not confirm that file events arrive. Linux and macOS sensors are not checked this way.
 
 ## What each decoy needs from the organization
 

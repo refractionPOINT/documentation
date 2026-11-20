@@ -65,7 +65,7 @@ This is information for the analyst. It never changes `on_host`, never changes t
 
 ### Delivery
 
-Each confirmed hit is delivered to the `ext-deception` adapter once across all the instances of the extension, with two narrow exceptions that each send a second identical event (same `hit_id`, same `case_group_key`): the adapter accepted the event but the acknowledgement was lost, and the extension then retried; or the extension process stopped after the adapter accepted the event and before it recorded that. The platform does not drop such a duplicate, so the shipped rules would report it twice. A duplicate does not isolate a host twice, because isolation runs at most once per incident. If you need exactly-once handling, deduplicate on `hit_id` in your own rules or downstream. How `ext-cases` handles a second detection with the same grouping key is **not verified**.
+Each confirmed hit is delivered to the `ext-deception` adapter once across all the instances of the extension, with narrow exceptions that each send another identical event (same `hit_id`, same `case_group_key`): the adapter accepted the event but the acknowledgement was lost, and the extension then retried; or the extension process stopped, or every write of its sent marker failed, after the adapter accepted the event. There is no ceiling of two copies if the failure repeats. The platform does not drop such a duplicate, so the shipped rules would report it twice. A duplicate does not isolate a host again, because a recorded isolation prevents repeats (see [Isolation](#isolation) for the one narrow exception). If you need exactly-once handling, deduplicate on `hit_id` in your own rules or downstream. How `ext-cases` handles a second detection with the same grouping key is **not verified**.
 
 ### Classification
 
@@ -179,14 +179,14 @@ The extension refuses to isolate, whatever your rules say, when the hit is:
 | `sensor_gone`, `host_rebuilt` | The sensor was deleted, or enrolled again after the hit. |
 | `hit_too_old` | Older than 7 days. |
 | `org_inactive` | The organization is unsubscribing or unsubscribed (checked at the start and again right before acting). |
-| `already_isolated_for_incident`, `isolation_in_progress` | Isolation runs at most once per incident, ever, even if an analyst later releases the host. A concurrent delivery sees it in progress. |
+| `already_isolated_for_incident`, `isolation_in_progress` | A recorded isolation prevents repeats: an incident is isolated once, even if an analyst later releases the host. A concurrent delivery sees it in progress. If the host was isolated but the extension could not record it (a storage failure that outlasts its retries), nothing marks the incident as done, and a later delivery can isolate it again once the claim lapses. This is a narrow window. |
 | `org_hourly_cap` | The organization already isolated its [hourly cap](configuration.md#isolation-cap) of hosts in the last hour (default 5). |
 
 A failed isolation frees the incident for a retry. `respond` also refuses to isolate when the organization's configuration cannot be read.
 
 ## Test-fire
 
-Test-fire checks that each alert path works, on demand with `test_fire` and automatically each day, without ever hiding a real attack.
+Test-fire checks that each read, modify and use alert path works, on demand with `test_fire` and automatically each day, without ever hiding a real attack. It does not exercise deletion: a test touches a test decoy to read, modify and use it, never to delete it. The `deception-alert-decoy-deleted` rule gets only the [rule integrity](decoys.md#rule-integrity) check, which marks the delete layer `broken` if the rule is missing or disabled.
 
 !!! warning "What test-fire does not prove"
     A test hit is synthetic, so it matches only the `deception-test` rule, which reports under `__deception-test`. Test-fire therefore checks the extension's detection path, from the decoy to a detection. It does **not** prove that the real-alert rules (`deception-alert` and the others), cases or isolation work. A test never opens a case and never isolates. To check those, review your rules and the case integration yourself.
@@ -201,7 +201,7 @@ Test-fire checks that each alert path works, on demand with `test_fire` and auto
 
 Which alert paths a test can reach depends on the deployment: a collector test needs the extension's internal collector path, and a path the deployment cannot test is reported in the `issues` of the answer rather than silently passed.
 
-**When the result is final.** A run's detection can be held for a while (see [Alert latency](#alert-latency)), so a run is not finalized as "no detection" until its window, the hold time and a margin have passed: about an hour after the run starts (5 minutes of run window, 10 minutes of hold, then up to 42 minutes for the extension to settle held events and a slow detection). Until then `list_test_runs` shows the run as `pending` with the time its outcome is due (`expected_final_at`), and `coverage` does not mark its path `broken` for it. A run past its due time is recorded at the extension's next sweep. A test detection is reported under the reserved `__deception-test` category, which the platform never lists or sends to outputs: it does not appear in the detection list whatever filter you use, so read the outcome with `list_test_runs` and `coverage`.
+**When the result is final.** A run's detection can be held for a while (see [Alert latency](#alert-latency)), so a run is not finalized as "no detection" until its window, the hold time and a margin have passed: about an hour after the run starts (5 minutes of run window, 10 minutes of hold, then up to 42 minutes for the extension to settle held events and a slow detection). Until then `list_test_runs` shows the run as `pending` with the time its outcome is due (`expected_final_at`), and `coverage` does not mark its path `broken` for it. A run past its due time is recorded by the extension's next maintenance pass, not by the 30-minute sweep that releases held events. A test detection is reported under the reserved `__deception-test` category, which the platform never lists or sends to outputs: it does not appear in the detection list whatever filter you use, so read the outcome with `list_test_runs` and `coverage`.
 
 Test history is bounded: a test operation's full record expires 7 days after it closes, and its idempotency record and run rows 30 days after, so a `test_fire` request replayed after 30 days is a new request.
 

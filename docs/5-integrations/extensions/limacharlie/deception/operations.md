@@ -5,7 +5,7 @@
 Once a day per organization, and on every configuration update, the extension converges its rules and entries so a deleted plumbing rule or a missing adapter heals without anyone asking. The daily run also:
 
 - verifies the decoys of the sensors it reconciles, drops sensors that no longer exist, and times out stale operations,
-- retires the decoys of a policy or template you removed from the configuration (when any record was skipped as invalid on read, nothing is retired for configuration reasons, so a typo cannot remove decoys),
+- retires the decoys of a template that no enabled policy selects any more, for example because you removed the policy or the template (a decoy that another enabled policy still selects stays, and so does a decoy on a sensor that merely stopped matching a policy's targeting). When any record was skipped as invalid on read, nothing is retired for configuration reasons, so a typo cannot remove decoys,
 - places decoys on matching sensors that lack them, for example sensors that started matching a policy after the last `deploy`,
 - recovers decoys stranded in the `planned` state: a decoy that was chosen more than 10 minutes ago but never moved on is settled: if its placement operation already ended it is treated as placed and waits for verification, and if no placement ever started it is marked failed (with a stable reason) so its target is free for the next pass. A bounded number is looked at per run,
 - removes a `deception-dc` tag that an earlier build may have left on a domain controller (this release tags none),
@@ -60,7 +60,7 @@ In other extensions' configurations it changes only entries whose name starts wi
 | Sensors | The decoy files, the folders it made for templates with a generated folder name (removed again with the last decoy in them), and the `deception-hit` tag, only if you call `respond` with `tag`. No sensor is tagged for domain controller collection. |
 | Adapters | One webhook adapter, `ext-deception`, with its installation key. |
 
-Plumbing rules contain no generated value. Nothing generated per host or per decoy is written to a rule or to any record you can read.
+Plumbing rules contain no secret, token or per-host or per-decoy value. They do carry organization-level match values: the generated file and folder names (from your organization's own vocabulary) that your templates use, because the rules watch for them. Those names are the same on every host of the organization. Nothing generated per host or per decoy is written to a rule or to any record you can read.
 
 ## Uninstalling before you unsubscribe
 

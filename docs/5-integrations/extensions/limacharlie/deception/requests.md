@@ -32,7 +32,7 @@ A request that fails with a mistake in your request or your own configuration sa
 | [`list_kinds`](#list_kinds) | Decoy kinds, their schemas, and the default template library. |
 | [`uninstall`](operations.md#uninstalling-before-you-unsubscribe) | Remove everything the extension owns, before you unsubscribe. |
 | [`uninstall_status`](#uninstall_status) | Read where an uninstall stands, without changing anything. |
-| [`respond`](detections.md#the-respond-request) | Called by detection rules on a hit. |
+| [`respond`](detections.md#the-respond-request) | Called by detection rules on a hit, and by the web app's Isolate host and Tag host actions. |
 
 `list`, `list_hosts`, `list_test_runs`, `list_hits` and `uninstall_status` are the read-only requests the web app is built on. Every `list*` request applies its filters before it cuts a page, so a page holds `page_size` rows unless it is the last one, and `next_page_token` is empty exactly when nothing more exists. A token is opaque and tied to the filters it was issued for.
 
@@ -42,7 +42,14 @@ Most requests accept `policy` (limit to one policy) and `sid` (limit to one sens
 
 ## plan
 
-Read-only. Shows, per policy, how many sensors match, how many decoys are placed already, how many would be placed or retired, and what is unavailable and why. It also reports:
+Read-only. Shows, per policy, how many sensors match, how many decoys are placed already, how many would be placed or retired, and what is unavailable and why. The numbers are bounded previews, so read `plan.issues` before you rely on one:
+
+- `sensors` is a lower bound when a policy targets more sensors than the request counts (it reads a bounded number of pages).
+- `already_placed`, `to_place` and `to_retire` are computed over the first 100 targeted sensors only. Send `sid` to plan one sensor.
+- A sensor with no inventory from today is not counted in `to_place` (`deploy` collects the inventory first), and `to_retire` is not computed while some configuration records were skipped on read.
+- A decoy is counted to retire only when no enabled policy selects its template any more.
+
+It also reports:
 
 - `pack`: the state of each shipped detection rule (`missing`, `current` or `modified`). For a modified rule it includes the current shipped version, so you can compare it with yours. A newer shipped version is offered here and never applied implicitly.
 - `watch_budget`: Exfil watch rules against the sensor limit of 100.
@@ -139,7 +146,7 @@ Paginated by sensor id: each sensor that has a decoy record, with its hostname, 
 | `include_test` | Include test-fire decoys. |
 | `page_token`, `page_size` | Paging. |
 
-The `status` is `protected` (a verified decoy), `pending` (planned or placed only), `failed` or `none`. Each row has the counts per state and up to 50 decoys in the same shape as `list` (`more` marks a cut list; the status and counts cover all of them). A sensor in scope that has no decoy record yet (nothing planned, or everything unavailable) has no row: `plan` and `coverage` say why.
+The `status` is `protected` (a verified decoy), `pending` (planned or placed only), `failed` or `none`. Each row has the counts per state and up to 50 decoys in the same shape as `list` (`more` marks a cut list; the status and counts cover all of them). A sensor in scope that has no decoy record yet (nothing planned, or everything unavailable) has no row. `plan` and `coverage` say what is missing for a policy or a template, not why a particular sensor was skipped: sensor mode, a Kubernetes DaemonSet sensor and a Windows sensor without file events are decided per sensor, internally.
 
 ## verify
 
@@ -164,7 +171,7 @@ For a full cleanup before unsubscribing, use [`uninstall`](operations.md#uninsta
 
 ## test_fire
 
-Fires the test-only decoys of a policy, one run per alert path (for example read and use of a credential file are separate runs), to check that each path reaches a detection. The detection is the synthetic `deception-test` rule: a passing test does not prove that the real-alert rules, cases or isolation work. See [Test-fire](detections.md#test-fire) for what a test does and does not do.
+Fires the test-only decoys of a policy, one run per alert path (for example read, modify and use of a credential file are separate runs), to check that each path reaches a detection. Deletion is not exercised: there is no delete run. The detection is the synthetic `deception-test` rule: a passing test does not prove that the real-alert rules, cases or isolation work. See [Test-fire](detections.md#test-fire) for what a test does and does not do.
 
 ```bash
 limacharlie extension request --name ext-deception --action test_fire \
@@ -208,7 +215,7 @@ limacharlie extension request --name ext-deception --action list_hits \
 
 ## coverage
 
-Per template and layer: `active`, `unavailable` with the missing piece, `partial` or `broken` (`blind` is not set in this release). A template that uses the AD phantom-account form or the internal hostname form shows every layer `unavailable` with "not available in this release". A quiet Entra ID or Okta sign-in feed adds an informational note ("no sign-in observed in N hours") and never changes a status. The view is organization-level: it does not list hosts, and `active` is not proof that every selected host is covered. Host-level exclusions (sensor mode, Kubernetes DaemonSet sensors) show in `plan`. See [Coverage statuses](decoys.md#coverage-statuses). Coverage-warning events are not part of this answer: they are emitted as events and detections (see [Detections](detections.md#the-deception_coverage_warning-event)). Also returns:
+Per template and layer: `active`, `unavailable` with the missing piece, `partial` or `broken` (`blind` is not set in this release). A template that uses the AD phantom-account form or the internal hostname form shows every layer `unavailable` with "not available in this release". A quiet Entra ID or Okta sign-in feed adds an informational note ("no sign-in observed in N hours") and never changes a status. The view is organization-level: it does not list hosts, and `active` is not proof that every selected host is covered. Host-level exclusions (sensor mode, Kubernetes DaemonSet sensors, a Windows sensor without file events) are decided per sensor and are not part of this answer or of `plan`; `list_hosts` shows which sensors have decoys. See [Coverage statuses](decoys.md#coverage-statuses). Coverage-warning events are not part of this answer: they are emitted as events and detections (see [Detections](detections.md#the-deception_coverage_warning-event)). Also returns:
 
 - `sources`: what the organization sends.
 - `metering`: the covered-sensor numbers reported for billing, for the last completed UTC day (`covered_sensors` and `covered_sensors_distinct`).

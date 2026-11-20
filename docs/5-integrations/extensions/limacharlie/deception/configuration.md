@@ -13,15 +13,28 @@ You can also edit the record in the web app: the **Policies** tab edits policies
 
 ## Enabling the configuration record
 
-The extension reads your configuration from the record named `ext-deception`. The platform gives an extension an empty configuration when that record is disabled, and a record saved with `limacharlie extension config-set` is disabled unless its `usr_mtd.enabled` says otherwise (the CLI's normal behavior for a new record). Enable it once after the first `config-set`, or set `usr_mtd: {enabled: true}` in the file you give to `config-set`:
+The extension reads your configuration from the record named `ext-deception`. The platform gives an extension an empty configuration when that record is disabled, and a record saved with `limacharlie extension config-set` is disabled unless its `usr_mtd.enabled` says otherwise (the CLI's normal behavior for a new record). Enable it once after the first `config-set`:
 
 ```bash
 limacharlie hive enable --hive-name extension_config --key ext-deception --oid "$OID"
 ```
 
+Or enable it in the same `config-set`, by putting the record under a top-level `data` key and `usr_mtd` beside it:
+
+```yaml
+data:
+  schema_version: 1
+  templates: []
+  policies: []
+usr_mtd:
+  enabled: true
+```
+
+The CLI treats a file with a top-level `data` key as a whole hive record, `usr_mtd` included. A file without it is stored as the record's data, and a `usr_mtd` key in it fails validation like any other unknown field.
+
 While the record is disabled:
 
-- `plan`, `deploy`, `verify`, `rotate`, `remove`, `test_fire` and `coverage` (and `list` with a policy) refuse with "the ext-deception configuration is disabled".
+- `plan`, `deploy`, `verify`, `rotate`, `remove`, `test_fire` and `coverage` (and `list` or `list_hosts` with a `policy` filter) refuse with "the ext-deception configuration is disabled".
 - Hits on decoys already planted are still judged and alerted.
 - The daily run and a configuration update leave the candidate rules derived from your templates and the entries in other extensions' configurations as they are and retire no decoy (the base plumbing rules and any missing shipped detection rules are still repaired), and the daily response says why until the record is enabled. A disabled or unreadable record is never read as "you removed everything".
 - `respond` refuses to isolate, because your isolation cap is unknown. Tagging still works.
@@ -86,7 +99,7 @@ policies:
 
 A policy that names a template that does not exist, or a tag no template carries, is rejected when you save the record. If such a record is already stored, the policy stays usable for the rest of its selection and `plan` reports a warning.
 
-Two policies selecting the same template are tracked separately.
+Policies that match the same sensor and select the same template share its placements. A decoy is keyed by sensor and template, so the first matching policy (in the order the policies are stored in the record) places it, owns it and supplies its response settings, and a later policy that selects the same template adds nothing on that sensor. A decoy is retired when no enabled policy selects its template any more, not when one of several policies that select it is removed. A sensor that stops matching a policy's targeting does not retire its decoys either.
 
 ## Templates
 
@@ -205,7 +218,7 @@ A custom domain is a subdomain you control (at least three labels, no wildcard, 
 
 What exists today for AWS are two decoy templates whose keys are not real AWS keys, and whose `endpoint_url` points at the collector's fake AWS API:
 
-- `aws-config-backup` is a config file with a named profile. It catches use when the file is passed explicitly (`--config-file` or `AWS_CONFIG_FILE`).
+- `aws-config-backup` is a config file with a named profile. It catches use when the file is passed explicitly with `AWS_CONFIG_FILE` and its profile is selected with `--profile` or `AWS_PROFILE`.
 - `aws-credentials-backup` is a credentials file whose profile itself carries `endpoint_url`, so use is caught when the file is passed (for example with `AWS_SHARED_CREDENTIALS_FILE`) without a separate config file.
 
 The clients verified to honor `endpoint_url` in the credentials file are botocore-based ones (the AWS CLI and boto3). Other SDKs, and endpoint overrides set through other mechanisms, are **not verified**. Keys copied to another machine without the file go to real AWS, where they are invalid and nothing is reported.
