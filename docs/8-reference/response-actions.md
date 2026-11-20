@@ -549,6 +549,8 @@ respond:
     case: '{{ .event.case_number }}'
 ```
 
+The action starts a run only if your organization is subscribed to Cases, an active investigation template applies (or the rule names one with `template`), and the investigation policy names an identity for runs started by rules. When a start is refused for a reason you can fix, a record appears on your organization's **Errors** page under the rule's name, at most once every 30 minutes per rule and cause, and the rule is never disabled. A rule that uses this action can be tested with the rule tester or replay: a match is reported as an `investigation` action and nothing is started. See [If no investigation starts](../7-administration/config-hive/investigation-policy.md#if-no-investigation-starts) for the messages.
+
 With `case` set, the rule needs no `report`, and a rule starts at most one run for a given case. The engine never starts a run for a case it wrote itself. Cases delivers its events to rules on a best-effort basis. To skip the cases opened automatically from a detection, see [Start an investigation when a case is opened](../7-administration/config-hive/investigation-policy.md#start-an-investigation-when-a-case-is-opened).
 
 ## See Also

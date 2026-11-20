@@ -79,7 +79,15 @@ autonomy:
 
 ## Start an investigation when a case is opened
 
-A D&R rule on the Cases `case_created` event starts the investigation. The policy record has no setting for this, and a `triggers` block left in an older record is ignored. Add this rule to your organization once you are [subscribed to Cases](../../5-integrations/extensions/limacharlie/cases.md):
+A D&R rule on the Cases `case_created` event starts the investigation. The policy record has no setting for this, and a `triggers` block left in an older record is ignored.
+
+Before the rule can start an investigation, three things must be in place:
+
+- Your organization is [subscribed to Cases](../../5-integrations/extensions/limacharlie/cases.md).
+- An **active** investigation template applies to cases, or the rule names one with `template`. A template that is still a draft is never started by a rule.
+- The investigation policy names an identity for runs started by rules: `identity.default`, a `hive://secret/<name>` reference. The run uses it to read the case and to act.
+
+Then add this rule to your organization:
 
 ```yaml
 detect:
@@ -115,6 +123,31 @@ respond:
 - **Best effort:** Cases delivers its events to your rules on a best-effort basis. In rare cases an event is not delivered, and no run starts for that case. Start the run from the case page, or by hand, when you need it.
 
 The rule's `case` value must render to a case number. If it is empty or is not a number, the action fails for that event and no run starts. See [`start investigation`](../../8-reference/response-actions.md#start-investigation) for all the parameters.
+
+### If no investigation starts
+
+When the rule matches but the investigation cannot start for a reason you can fix, a record appears on your organization's **Errors** page, under the rule's name. These are the messages you may see:
+
+| Message | What to do |
+|---------|------------|
+| `no active investigation template applies to this trigger. Activate a template whose applies_to matches it, or name a template in the rule.` | Activate a template that applies to cases, or add `template: <name>` to the rule. |
+| `the template is a draft, and a rule can only start an active template. Activate it (set its status to active).` | Set the template's status to `active`. |
+| `the template named in the rule does not exist. Create it, or fix the name in the rule.` | Fix the template name in the rule, or create the template. |
+| `the investigation policy names no identity for runs started by rules. Set identity.default (a hive://secret/<name>) in the investigation policy.` | Add `identity.default` to your policy. |
+| `the secret the investigation policy names as the identity for runs started by rules is missing, disabled, empty or refused. Check that secret.` | Check the secret the policy points to. |
+| `the identity the investigation policy names for runs started by rules may not read the case. Give that identity access to cases.` | Give that identity permission to read cases. |
+| `the case was not found, or the identity the investigation policy names for runs started by rules cannot see it.` | Check that the case still exists and that the identity can see it. |
+| `the organization is at its limit of concurrent investigations, so this start was dropped (it is not retried).` | Wait for running investigations to finish. The dropped start is not retried. |
+| `the case number is not valid for this start. Check the case parameter of the rule.` | Check the `case` value of the rule. |
+| `the identity requested is not allowed by the investigation policy for this template. Check identity in the policy.` | Check `identity` in the policy. |
+
+Each message starts with `start investigation:`. A record is written at most once every 30 minutes for each rule and cause, so a rule that matches often does not flood the page. A refusal never disables the rule. Nothing is reported when the case was written by the engine itself: that is the loop guard working, not a problem.
+
+If the `case` value renders to something that is not a case number, the rule's action fails for that event with `start investigation: case did not render to a case number`, and nothing is sent.
+
+### Test the rule
+
+You can test a rule that uses `start investigation` with the rule tester or replay, like any other rule. A match is reported as an `investigation` action and nothing is started.
 
 ## Emergency pause and resume
 
