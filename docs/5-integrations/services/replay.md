@@ -133,9 +133,27 @@ To query Replay, do a `POST` with a `Content-Type` header of `application-json` 
 Like the other endpoints you can also submit a `rule_name` in the URL query if you want
  to use an existing organization rule.
 
-You may also specify a `limit_event` and `limit_eval` parameter as integers. They will limit the number of events evaluated and the number of rule evaluations performed (approximately). If the limits are reached, the response will contain an item named `limit_eval_reached: true` and `limit_event_reached: true`.
+You may also specify a `limit_event` and `limit_eval` parameter as integers. They will limit the number of events evaluated and the number of rule evaluations performed (approximately). A replay that reaches a limit stops there, so its results cover only part of the requested window (see [Partial results](#partial-results)).
 
 Finally, you may also set `trace` to `true` in the request to receive a detailed trace of the rule evaluation. This is useful in the development of new rules to find where rules are failing.
+
+### Partial results
+
+A replay can stop before it has covered the whole request. It still answers with HTTP 200 and the matches it found so far, so check for these signals before reading the results:
+
+| Field | Meaning |
+|---|---|
+| `stats.results_partial: true` | Some data was not evaluated: a batch could not be read, a batch was abandoned for taking too long, or an event was too large to evaluate. |
+| `stats.stop_reason` | Set when the replay stopped early, for example `request_deadline` (the server-side time limit for one request). Empty or `none` means it ran to completion. |
+| `stats.skipped_events` | The events that were skipped, with their size and the reason (for example `event_too_large`). |
+| `error` | Present when the replay stopped on its deadline or on a failure, alongside the results merged so far. |
+
+When any of these is present, the results are not exhaustive: **0 matches from a partial replay does not show that a rule is clean.** To get a complete result, reduce the work of a single request and run it again:
+
+- scope it to the sensors the rule targets with a `sid` or a `selector`,
+- shorten the time window, or split it into several shorter windows.
+
+Recent versions of the `limacharlie dr replay` and `limacharlie replay run` commands print a warning to stderr when a replay is partial.
 
 ### Lookups in Replay
 
