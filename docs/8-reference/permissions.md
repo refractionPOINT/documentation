@@ -43,6 +43,7 @@ Unlike most hive permissions, these have no per-record form: `acl.set.<scope>` g
 | sensor.list | List all sensors in organization |
 | sensor.get | View detailed sensor information |
 | sensor.task | Send commands and tasks to sensors |
+| sensor.task.read | Send only allowlisted read-only metadata commands to sensors (processes, connections, autoruns, services, file hashes); used by Investigation Engine live reads. Never part of a preset role. |
 | sensor.del | Delete sensors |
 | sensor.tag | Manage sensor tags and labels |
 
