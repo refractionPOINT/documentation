@@ -96,7 +96,7 @@ These answer **"what happened and when?"**
 |-------|------|-------------|
 | `event_type` | string | The type of event, e.g. `NEW_PROCESS`, `DNS_REQUEST`, `NETWORK_CONNECTIONS`. This is what determines the shape of the `event` payload. |
 | `event_time` | integer | Timestamp the event occurred, as reported by the endpoint. **Unix time in milliseconds** (13 digits). |
-| `event_id` | string (UUID) | A globally unique identifier for this specific event occurrence. |
+| `event_id` | string (UUID) | A globally unique identifier for this specific event occurrence. An event a sensor sends again under [durable telemetry delivery](../2-sensors-deployment/endpoint-agent/durable-delivery.md) gets a new `event_id`: it cannot be used to recognize that kind of duplicate (see [`replayed`](#other-fields)). |
 
 ### Network / Location Fields
 
@@ -129,6 +129,7 @@ These let you connect events to each other — see [Event Correlation](#event-co
 | Field | Type | Description |
 |-------|------|-------------|
 | `tags` | array[string] | The sensor's tags at the moment the event was generated. Note: this reflects tags *at event time*, which may differ from the sensor's current tags. |
+| `replayed` | boolean (optional) | Present, and `true`, only on an event the sensor sent again because LimaCharlie had not yet confirmed it as stored. Only appears for sensors and organizations that use [durable telemetry delivery](../2-sensors-deployment/endpoint-agent/durable-delivery.md). A replayed event has a new `event_id`. Events that are not replays do not carry the field. |
 
 > **Note:** Cloud-adapter and SaaS-log events (Office 365, GCP, Okta, etc.) carry the identity, event-description, and platform fields, but typically do **not** carry endpoint-specific fields like `this`/`parent`/`target`, `int_ip`, or process hashes — those only make sense for EDR telemetry.
 

@@ -281,6 +281,7 @@ nav:
           - Uninstallation: 2-sensors-deployment/endpoint-agent/uninstallation.md
           - Hostname Resolution: 2-sensors-deployment/endpoint-agent/hostname-resolution.md
           - Sleeper Mode: 2-sensors-deployment/endpoint-agent/sleeper.md
+          - Durable Telemetry Delivery: 2-sensors-deployment/endpoint-agent/durable-delivery.md
       - Enterprise Deployment:
           - Chrome Enterprise: 2-sensors-deployment/enterprise-deployment/chrome-enterprise.md
           - Intune: 2-sensors-deployment/enterprise-deployment/intune.md

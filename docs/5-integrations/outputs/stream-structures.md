@@ -82,6 +82,7 @@ All events follow a canonical two-level structure:
 | `parent` | string (hash) | Hash of parent process |
 | `target` | string (hash) | Hash of target object (optional) |
 | `tags` | array[string] | Sensor tags at event time |
+| `replayed` | boolean (optional) | `true` only on an event a sensor sent again under [durable telemetry delivery](../../2-sensors-deployment/endpoint-agent/durable-delivery.md); absent otherwise |
 
 ### Event Object Fields
 
