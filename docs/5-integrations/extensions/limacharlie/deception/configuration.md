@@ -23,10 +23,10 @@ While the record is disabled:
 
 - `plan`, `deploy`, `verify`, `rotate`, `remove`, `test_fire` and `coverage` (and `list` with a policy) refuse with "the ext-deception configuration is disabled".
 - Hits on decoys already planted are still judged and alerted.
-- The daily run and a configuration update leave the rules and the entries in other extensions' configurations as they are and retire no decoy, and the daily response says why until the record is enabled. A disabled or unreadable record is never read as "you removed everything".
+- The daily run and a configuration update leave the candidate rules derived from your templates and the entries in other extensions' configurations as they are and retire no decoy (the base plumbing rules and any missing shipped detection rules are still repaired), and the daily response says why until the record is enabled. A disabled or unreadable record is never read as "you removed everything".
 - `respond` refuses to isolate, because your isolation cap is unknown. Tagging still works.
 
-The extension never writes this record, so it never enables it for you. The web app shows a banner with **Enable configuration** to anyone with `ext.conf.set`.
+The extension never writes this record, so it never enables it for you. The web app shows a banner with **Enable configuration** to anyone who can read and write the record (`ext.conf.get` and `ext.conf.set`).
 
 ## Validation
 

@@ -32,7 +32,7 @@ One access to a decoy raises one alert, even when the sensor reports it in sever
 - A shell that names the decoy on its command line and then reads it (for example `type <decoy>`) is one hit, not a command-line hit plus a file-read hit.
 - A launcher shell and the shell it starts, which both carry the decoy path, are one hit.
 
-The events must come from the same process lineage (a process and its parent or child), on the same decoy and layer, within 30 seconds of each other by the sensor's clock. Two separate accesses never collapse into one, and neither do different processes that merely share a parent, different decoys or different layers. A chain of three processes whose events arrive with the middle one last can still leave two hits.
+The events must come from the same process lineage (a process and its parent or child), on the same decoy and layer, within 30 seconds of each other by the sensor's clock. Two file-read events never collapse directly into each other, and neither do different processes that merely share a parent, different decoys or different layers. The extension cannot tell separate reads from one access by the same process, though: within the 30-second window, several reads by a process that started the access can join that process's hit. A chain of three processes whose events arrive with the middle one last can still leave two hits.
 
 ### The extension's own reads never alert
 
@@ -83,7 +83,7 @@ Decoy secrets that carry their own destination point at a public collector that 
 
 The extension places decoys on Windows, Linux and macOS sensors. The placement helper is built for x86-64 and ARM64 on each. Other architectures are not supported.
 
-A template declares its platforms. The planner skips a host whose platform a template does not list, a host where the tool the template imitates is absent (`requires_packages`, `requires_files`), and a host where the target directory does not exist.
+A template declares its platforms. The planner skips a host whose platform a template does not list, a host where the tool the template imitates is absent (`requires_packages`, `requires_files`), and a host where a fixed-name target folder does not exist. A folder with a generated name is created by the extension (see [File names and paths](#file-names-and-paths)).
 
 ## Sensor modes and what they cost
 
@@ -107,7 +107,7 @@ Read, modify and delete alerts come from the sensor's file events. Windows senso
 
 The extension reads the version from the sensor itself (`get_debug_data`) during the daily inventory, so nothing depends on what you tell it. On an affected sensor:
 
-- The read, modify and delete alerts are reported as unavailable on that sensor, with the version and the fix ("sensor 5.3.12 does not report file events (upgrade the sensor to 5.3.16+ or 5.4.3+)"). They are never reported as broken, and a decoy placed there carries only the layers that can work.
+- The read, modify and delete alerts cannot work on that sensor and are reported as `unavailable`, or `partial` when another layer of the same template (the use alert) does work, with the version and the fix ("sensor 5.3.12 does not report file events (upgrade the sensor to 5.3.16+ or 5.4.3+)"). They are never reported as `broken`, and a decoy placed there carries only the layers that can work. This is per-sensor detail: the organization-level `coverage` request does not list hosts and does not carry sensor versions.
 - `test_fire` places its test decoy for the read, modify and delete paths only on a sensor that reports file events (the use path does not need them), and says that a path was not tested when it finds none. A test decoy already on an affected sensor is left alone.
 
 When the version could not be read, the host keeps its behavior and the coverage of that sensor carries the note "sensor version unknown: file events from this sensor are not confirmed". Linux and macOS sensors are not checked this way.

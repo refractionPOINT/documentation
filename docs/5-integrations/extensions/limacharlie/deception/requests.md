@@ -8,7 +8,7 @@ limacharlie extension request --name ext-deception --action <action> --data '<js
 
 Every request is idempotent and listed in the extension's request schema, so the CLI, the web app and MCP discover them. Sending a request needs the `ext.request` permission. Requests that plan, place, remove, verify or test decoys are refused for an organization that is not subscribed or is being unsubscribed.
 
-Requests that read your policies and templates (`plan`, `deploy`, `verify`, `rotate`, `remove`, `test_fire`, `coverage`, and `list` with a policy) also refuse while the `ext-deception` configuration record is disabled, with "the ext-deception configuration is disabled". The extension never writes that record, so it never enables it for you: see [Enabling the configuration record](configuration.md#enabling-the-configuration-record). `list` (without a policy), `list_hosts`, `list_hits` and `list_test_runs` read the extension's own store and keep working while the record is disabled. `uninstall` and `uninstall_status` need only a subscribed organization, so they work even when your configuration is broken.
+Requests that read your policies and templates (`plan`, `deploy`, `verify`, `rotate`, `remove`, `test_fire`, `coverage`, and `list` with a policy) also refuse while the `ext-deception` configuration record is disabled, with "the ext-deception configuration is disabled". The extension never writes that record, so it never enables it for you: see [Enabling the configuration record](configuration.md#enabling-the-configuration-record). `list` and `list_hosts` without a policy, `list_hits` and `list_test_runs` read the extension's own store and keep working while the record is disabled. (`list` and `list_hosts` with a policy filter check the name against your configuration and refuse while it is disabled; `list_hits` and `list_test_runs` take `policy` as a plain filter.) `uninstall` and `uninstall_status` need only a subscribed organization, so they work even when your configuration is broken.
 
 Secret values never appear in any response or log. Decoys are described by instance id, template, path and type.
 
@@ -38,7 +38,7 @@ A request that fails with a mistake in your request or your own configuration sa
 
 `candidate`, `task_reply`, `helper_start`, `sweep`, `connected`, `daily` and `test_detected` are internal. The extension's own rules call them, they are not user-facing, and you do not need to send them. The `daily` request is how the extension advances each organization once a day. The `sweep` request runs every 30 minutes.
 
-Most requests accept `policy` (limit to one policy) and `sid` (limit to one sensor). An unknown policy name is rejected.
+Most requests accept `policy` (limit to one policy) and `sid` (limit to one sensor). Requests that read your configuration reject an unknown policy name. `list_hits` and `list_test_runs` read the extension's own history and take `policy` as a plain filter, so they accept the name of a policy you have since removed.
 
 ## plan
 
@@ -214,7 +214,7 @@ Per template and layer: `active`, `unavailable` with the missing piece, `partial
 - `metering`: the covered-sensor numbers reported for billing, for the last completed UTC day (`covered_sensors` and `covered_sensors_distinct`).
 - `pack_check` and `pack_issues`: the [rule integrity](decoys.md#rule-integrity) result for the shipped detection rules (`checked_at`, `attempted_at`, and each rule that is missing, disabled or edited).
 - `test_results_unread`: how many alert paths' latest test result this request could not read. Those paths are not marked `broken` by it.
-- `coverage.time_to_protected_seconds`, per policy: the average time from a sensor's enrollment to its first verified decoy, estimated from a bounded sample, when known.
+- `coverage.time_to_protected_seconds`, per policy: the average time from the later of a sensor's enrollment and the policy's first recorded decoy to the sensor's first verified decoy, estimated from a bounded sample, when known. A sensor that existed before the policy is measured from the rollout, not from its original enrollment.
 
 Counts are read from the registry in bounded pages. When a registry is very large, the counts are lower bounds and the item's note says so.
 

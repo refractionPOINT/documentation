@@ -93,7 +93,7 @@ On subscribe, the extension:
 
 - creates a webhook adapter named `ext-deception` in the organization. Confirmed hits arrive through it as `deception_hit` events.
 - writes its own plumbing rules in `dr-service` (names start with `ext-deception-`) and installs the default detection rules in your `dr-general` hive (names start with `deception-`). A default rule is installed only when missing. An edited rule is never overwritten.
-- places nothing. No decoy goes on any host until you write a policy and run `deploy`, or a new sensor connects to a policy that sets `setup_on_new_sensors`.
+- places nothing. No decoy goes on any host until you write and enable a policy that selects templates. After that, decoys are placed by `deploy`, by the daily run on matching sensors that lack them, and when a new sensor connects to a policy that sets `setup_on_new_sensors`.
 - does not enable your configuration record. The extension never writes it. See [Enabling the configuration record](deception/configuration.md#enabling-the-configuration-record).
 
 Then subscribe the extensions your decoys depend on (`ext-artifact`, `ext-exfil`, `ext-integrity`, and optionally `ext-cases`).

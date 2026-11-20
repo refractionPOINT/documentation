@@ -46,7 +46,7 @@ Every confirmed hit is one normalized event of type `deception_hit`, sent throug
 
 The envelope is common to every kind, so the default rules match on it and a new kind raises detections with no rule change.
 
-One access raises one hit: a command-line match and the file read of the same access, and a launcher shell and the shell it starts, are collapsed (see [One access, one hit](decoys.md#one-access-one-hit)). The extension's own placement and verification reads never raise a hit (see [The extension's own reads never alert](decoys.md#the-extensions-own-reads-never-alert)).
+A command-line match and the file read of the same access, and a launcher shell and the shell it starts, are collapsed into one hit (see [One access, one hit](decoys.md#one-access-one-hit)). The extension's own placement and verification reads never raise a hit (see [The extension's own reads never alert](decoys.md#the-extensions-own-reads-never-alert)).
 
 You can read the hits the extension recorded with the `list_hits` request, or in the **Hits** tab of the web app. They are kept for 90 days. See [Requests](requests.md#list_hits).
 
@@ -150,7 +150,7 @@ Test hits are reported under `__deception-test`. `ext-cases` ignores categories 
 
 ### The `respond` request
 
-`respond` is called by detection rules, not by people. It takes `hit_id` and an `action`: `isolate`, `tag`, `ai_triage` or `policy`. It resolves the endpoint from the stored hit, under the organization of the caller, and applies the guards to that stored record, never to anything the caller supplies. An edited rule or a caller that lies cannot turn a test or a cleanup into an isolation.
+`respond` is called by detection rules and by the web app's manual **Isolate host** and **Tag host** actions on a hit. It takes `hit_id` and an `action`: `isolate`, `tag`, `ai_triage` or `policy`. It resolves the endpoint from the stored hit, under the organization of the caller, and applies the guards to that stored record, never to anything the caller supplies. An edited rule or a caller that lies cannot turn a test or a cleanup into an isolation.
 
 | Action | Does |
 | --- | --- |
@@ -207,14 +207,14 @@ Test history is bounded: a test operation's full record expires 7 days after it 
 
 ## The `deception_coverage_warning` event
 
-`deception_coverage_warning` is a non-alerting event. In this release the extension emits it in one case: a hit on its own test decoy that falls inside a test run's window, but whose run binding cannot be checked. The extension sends it as an event through its adapter. It is not returned by `list` or `coverage`: you see it as the emitted event and as the detection of the shipped rule. It carries no case grouping key and never isolates. The shipped `deception-coverage-warning` rule reports it as a priority 3 detection named `deception.coverage`.
+`deception_coverage_warning` is a non-alerting event. In this release the extension emits it in one case: a hit on its own test decoy that falls inside a test run's window, but whose run binding cannot be checked. The extension sends it as an event through its adapter. It is not returned by `list` or `coverage`: you see it as the emitted event, as the detection of the shipped rule, and in `list_hits` (filter with `event_type`). It carries no case grouping key and never isolates. The shipped `deception-coverage-warning` rule reports it as a priority 3 detection named `deception.coverage`.
 
 It is not sent when a log source goes quiet or an alert path breaks. A broken path shows in `coverage` only, and the quiet-source status is not active in this release (see [Coverage statuses](decoys.md#coverage-statuses)).
 
 ## Alert latency
 
-Decoy reads reach the extension through the sensor and a forwarding rule, and use hits through the collector or your log sources. **No latency measurements exist yet** for read alerts on busy hosts, and cloud log sources add their own delay (Entra ID and Okta sign-in logs are not real time). Two documented bounds:
+Decoy reads reach the extension through the sensor and a forwarding rule, and use hits through the collector or your log sources. **No latency measurements exist yet** for read alerts on busy hosts, and cloud log sources add their own delay (Entra ID and Okta sign-in logs are not real time). Known delays and limits:
 
 - A file event that arrives before the extension has confirmed whether its own placement helper caused it is held for up to 10 minutes, and a 30-minute sweep releases held events. About 40 minutes is therefore the **nominal** delay for such a real hit when there is no backlog and nothing fails. It is not a maximum: when many held events are waiting, or a step fails and is retried, the release can take longer, each retry being a platform retry or the next 30-minute sweep. This only affects events on a decoy that has an operation running a helper at that moment. It does not delay hits on idle decoys.
-- A read by an unknown process that falls inside one of the extension's own operations on that decoy is held while it asks the sensor whether the reader is the sensor itself. That normally takes a second or two. When the answers never come, the read is held two minutes and then judged like any other read: a real hit. The extension asks a given sensor one question at a time and at most 12 per ten minutes; beyond that every read is judged as it arrives.
+- A read by an unknown process that falls inside one of the extension's own operations on that decoy is held while it asks the sensor whether the reader is the sensor itself. That normally takes a second or two. When the answers never come, the read becomes due for judgment after two minutes and is then judged like any other read: a real hit. It is released by the next event of that sensor or, at the latest, by the 30-minute sweep, so it can wait up to about 32 minutes in the nominal case, and longer under backlog or failures. The extension asks a given sensor one question at a time and at most 12 per ten minutes; beyond that every read is judged as it arrives.
 - Sensor drops under load: the Linux file collector can drop records silently on a busy host, so a decoy read can be missed. This is a sensor limitation.
