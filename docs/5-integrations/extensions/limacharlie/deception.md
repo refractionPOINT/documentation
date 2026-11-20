@@ -22,13 +22,27 @@ Deception is self-serve. It never creates accounts, mailboxes, cloud keys, or DN
 
 ## How it works
 
-1. You subscribe to the extension and describe what you want in its configuration record: **templates** (what each decoy looks like) and **policies** (which templates go on which sensors, and what to do on a hit). LimaCharlie ships a default [template library](deception/decoys.md#default-template-library); nothing in it is placed until you copy a template into your own configuration.
-2. `deploy` places decoys through sensor tasking. A decoy counts as covered only after the extension checks the file's hash on the host. A task acknowledgement alone is not proof.
+1. You subscribe to the extension and describe what you want in its configuration record: **templates** (what each decoy looks like) and **policies** (which templates go on which sensors, and what to do on a hit). The default [template library](deception/decoys.md#default-template-library) is built into the extension and ships with each release. Nothing in it is placed until you copy a template into your own configuration, and the copy is yours to edit.
+2. `deploy` places decoys through sensor tasking. A decoy counts as covered only after the extension checks the file's hash on the host. A task acknowledgement alone is not proof. A folder with a generated name that the host does not have is created by the extension and removed again with its last decoy (see [File names and paths](deception/decoys.md#file-names-and-paths)).
 3. Decoy reads reach the cloud through rules the extension writes in other extensions' configurations (Exfil watch rules, Integrity FIM rules) and its own rules. Decoy use reaches the cloud through a public LimaCharlie-operated collector, or through the sign-in logs you already send.
 4. Every candidate event is checked against a registry of the decoys the extension planted. Only a confirmed match becomes a `deception_hit` event. Everything else is dropped.
 5. The default detection rules turn `deception_hit` events into detections, and, if you opted in, a guarded isolation of the host.
 
 See [Decoys and coverage](deception/decoys.md), [Configuration](deception/configuration.md), [Requests](deception/requests.md), [Detections, cases and response](deception/detections.md), [Operations](deception/operations.md) and [Known limitations](deception/limitations.md).
+
+## The web app
+
+The **Deception** page of your organization in the web app is the way to manage Deception without the command line. It reads and writes the same configuration record and sends the same requests described on these pages, with the same permissions (see [Permissions](deception/operations.md#permissions)).
+
+| Tab | What it does |
+| --- | --- |
+| Overview | A four-step setup checklist (subscribe what the decoys rely on, choose templates and a policy, place decoys, prove it works), the number of active alert paths and covered sensors, what needs attention, and the latest hits. |
+| Hits | Every hit the extension recorded, newest first, over the last 24 hours, 7 days, 30 days or 90 days. Filter by layer, template, host and classification. A hit shows what happened, the evidence, the case it opened and, where the [guards](deception/detections.md#isolation) allow it, **Isolate host** and **Tag host**. |
+| Decoys | Every decoy, with filters for state, policy, template, kind and host, and **Verify**, **Rotate** and **Remove**. Test decoys are hidden unless you ask. |
+| Coverage | Each alert path (a template on a layer) with its status and what is missing or broken, and **Test fire** with the latest result of every path. |
+| Policies | Your policies and templates: add, edit, enable, disable and delete them. A template viewer and editor edit a template as a form or as its JSON, the **Template Library** copies the built-in templates into your configuration, and the whole record can be edited as JSON. |
+
+**Deploy** in the page header shows a preview of what a deploy would do (hosts targeted, decoys to place and retire, shipped rules that are missing or differ) and starts it when you confirm. **Uninstall Deception** in the menu next to it runs the [uninstall](deception/operations.md#uninstalling-before-you-unsubscribe) and shows its status. If your configuration record is disabled, the page says so and offers **Enable configuration**.
 
 ## Threat model
 
@@ -62,7 +76,7 @@ Deception works with what your organization already sends. The extension checks 
 | For | You need |
 | --- | --- |
 | Placing any file decoy | The `ext-artifact` extension subscribed, and a LimaCharlie sensor on the host in a supported mode (see [Sensor modes](deception/decoys.md#sensor-modes-and-what-they-cost)) |
-| Read, modify and delete alerts | `ext-exfil` (read) and `ext-integrity` (modify and delete) subscribed, and sensors with the file collectors on |
+| Read, modify and delete alerts | `ext-exfil` (read) and `ext-integrity` (modify and delete) subscribed, sensors with the file collectors on, and, on Windows, a sensor that reports file events: 5.3.16 or later on the 5.3 line, or 5.4.3 or later (see [Sensor versions](deception/decoys.md#sensor-versions-windows)) |
 | Use alerts for credential files, MCP configs, and registry-form hostnames | Nothing else. The destination is LimaCharlie's collector. |
 | Phantom accounts, UPN form | The Entra ID adapter with the `sign_ins` source (Entra ID P1 or P2), or the Okta adapter |
 | Phantom accounts, AD form | **Not available in this release.** See [Known limitations](deception/limitations.md#not-built). |
@@ -80,6 +94,7 @@ On subscribe, the extension:
 - creates a webhook adapter named `ext-deception` in the organization. Confirmed hits arrive through it as `deception_hit` events.
 - writes its own plumbing rules in `dr-service` (names start with `ext-deception-`) and installs the default detection rules in your `dr-general` hive (names start with `deception-`). A default rule is installed only when missing. An edited rule is never overwritten.
 - places nothing. No decoy goes on any host until you write a policy and run `deploy`, or a new sensor connects to a policy that sets `setup_on_new_sensors`.
+- does not enable your configuration record. The extension never writes it. See [Enabling the configuration record](deception/configuration.md#enabling-the-configuration-record).
 
 Then subscribe the extensions your decoys depend on (`ext-artifact`, `ext-exfil`, `ext-integrity`, and optionally `ext-cases`).
 
@@ -117,10 +132,16 @@ Then subscribe the extensions your decoys depend on (`ext-artifact`, `ext-exfil`
           isolate: false
     ```
 
-    `spec: {}` above is a placeholder: copy the full `spec` of the library entry. See [Configuration](deception/configuration.md).
+    `spec: {}` above is a placeholder: copy the full `spec` of the library entry. See [Configuration](deception/configuration.md). In the web app, **Policies** > **Template Library** does the copy for you.
 
     ```bash
     limacharlie extension config-set --name ext-deception --input-file deception.yaml --oid "$OID"
+    ```
+
+    A record saved this way is disabled until you enable it, and requests that read your policies refuse with "the ext-deception configuration is disabled" meanwhile. Enable it once:
+
+    ```bash
+    limacharlie hive enable --hive-name extension_config --key ext-deception --oid "$OID"
     ```
 
 3. See what `deploy` would do, then do it:
@@ -130,11 +151,11 @@ Then subscribe the extensions your decoys depend on (`ext-artifact`, `ext-exfil`
     limacharlie extension request --name ext-deception --action deploy --oid "$OID"
     ```
 
-4. Check what is covered, and check the synthetic detection path (`test_fire` does not prove your real-alert rules, cases or isolation; see [Test-fire](deception/detections.md#test-fire)):
+4. Check what is covered, and check the synthetic detection path (`test_fire` does not prove your real-alert rules, cases or isolation, and its results are final about an hour after the run starts; see [Test-fire](deception/detections.md#test-fire)):
 
     ```bash
     limacharlie extension request --name ext-deception --action coverage --oid "$OID"
     limacharlie extension request --name ext-deception --action test_fire --oid "$OID"
     ```
 
-Before you unsubscribe, run [`uninstall`](deception/operations.md#uninstalling-before-you-unsubscribe).
+Before you unsubscribe, run [`uninstall`](deception/operations.md#uninstalling-before-you-unsubscribe), then check it with `uninstall_status` until it reports `safe_to_unsubscribe`.

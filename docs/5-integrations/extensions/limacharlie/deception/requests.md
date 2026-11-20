@@ -8,6 +8,8 @@ limacharlie extension request --name ext-deception --action <action> --data '<js
 
 Every request is idempotent and listed in the extension's request schema, so the CLI, the web app and MCP discover them. Sending a request needs the `ext.request` permission. Requests that plan, place, remove, verify or test decoys are refused for an organization that is not subscribed or is being unsubscribed.
 
+Requests that read your policies and templates (`plan`, `deploy`, `verify`, `rotate`, `remove`, `test_fire`, `coverage`, and `list` with a policy) also refuse while the `ext-deception` configuration record is disabled, with "the ext-deception configuration is disabled". The extension never writes that record, so it never enables it for you: see [Enabling the configuration record](configuration.md#enabling-the-configuration-record). `list` (without a policy), `list_hosts`, `list_hits` and `list_test_runs` read the extension's own store and keep working while the record is disabled. `uninstall` and `uninstall_status` need only a subscribed organization, so they work even when your configuration is broken.
+
 Secret values never appear in any response or log. Decoys are described by instance id, template, path and type.
 
 ## Errors
@@ -18,15 +20,21 @@ A request that fails with a mistake in your request or your own configuration sa
 | --- | --- |
 | [`plan`](#plan) | Read-only preview of what `deploy` would do. |
 | [`deploy`](#deploy) | Converge rules and configuration entries, then start placement. |
-| [`list`](#list) | Page through decoys. |
+| [`list`](#list) | Page through decoys, with filters. |
+| [`list_hosts`](#list_hosts) | Page through the sensors that have decoys. |
 | [`verify`](#verify) | Re-check that decoys are still in place. |
 | [`rotate`](#rotate) | Retire decoys and plant replacements. |
 | [`remove`](#remove) | Remove decoys from their hosts. |
 | [`test_fire`](#test_fire) | Check the synthetic detection path of each alert. |
+| [`list_test_runs`](#list_test_runs) | Page through recent `test_fire` runs and their outcomes. |
+| [`list_hits`](#list_hits) | Page through the hits the extension recorded. |
 | [`coverage`](#coverage) | What is active, unavailable, partial or broken, per template and layer. |
 | [`list_kinds`](#list_kinds) | Decoy kinds, their schemas, and the default template library. |
 | [`uninstall`](operations.md#uninstalling-before-you-unsubscribe) | Remove everything the extension owns, before you unsubscribe. |
+| [`uninstall_status`](#uninstall_status) | Read where an uninstall stands, without changing anything. |
 | [`respond`](detections.md#the-respond-request) | Called by detection rules on a hit. |
+
+`list`, `list_hosts`, `list_test_runs`, `list_hits` and `uninstall_status` are the read-only requests the web app is built on. Every `list*` request applies its filters before it cuts a page, so a page holds `page_size` rows unless it is the last one, and `next_page_token` is empty exactly when nothing more exists. A token is opaque and tied to the filters it was issued for.
 
 `candidate`, `task_reply`, `helper_start`, `sweep`, `connected`, `daily` and `test_detected` are internal. The extension's own rules call them, they are not user-facing, and you do not need to send them. The `daily` request is how the extension advances each organization once a day. The `sweep` request runs every 30 minutes.
 
@@ -93,20 +101,22 @@ Paginated list of decoys. Test decoys are hidden unless you ask. It lists decoy 
 | Parameter | Meaning |
 | --- | --- |
 | `policy`, `sid` | Filters. |
-| `states` | Any of `planned`, `placed`, `verified`, `retired`, `gone`, `failed`. |
+| `template`, `kind` | Only decoys of this template name, or of this kind. |
+| `states` | Any of `planned`, `placed`, `verified`, `retired`, `gone`, `failed`. Default: `planned`, `placed`, `verified`. |
+| `text` | Only decoys whose path, template, policy, hostname or sensor id contains this text (case-insensitive, at most 128 characters). |
 | `include_test` | Include test-fire decoys. |
-| `page_token`, `page_size` | Paging. `page_size` up to 500, default 100. A page can hold fewer rows than `page_size` when a filter is applied to it. Follow `next_page_token` until it is empty. |
+| `page_token`, `page_size` | Paging. `page_size` up to 500, default 100. Follow `next_page_token` until it is empty. |
 
 ```json
 {"instances": [{
-  "id": "…", "sid": "…", "policy": "linux-servers", "template": "kubeconfig-backup",
+  "id": "…", "sid": "…", "hostname": "web-01", "policy": "linux-servers", "template": "kubeconfig-backup",
   "kind": "file", "state": "verified", "path": "/root/.kube/config.prod-old",
   "sha256": "…", "layers": ["read", "modify", "delete", "use"], "is_test": false,
   "created_at": "…", "verified_at": "…"}],
  "next_page_token": ""}
 ```
 
-`reason` explains a `failed`, `retired` or `gone` state. A failure caused by the extension's own side shows a stable code, not the underlying error (see [Errors](#errors)). Instance states:
+`hostname` is the sensor's hostname when the decoy was placed (absent on a decoy placed before it was recorded); the sensor id is the identity. `reason` explains a `failed`, `retired` or `gone` state. A failure caused by the extension's own side shows a stable code, not the underlying error (see [Errors](#errors)). Instance states:
 
 | State | Meaning |
 | --- | --- |
@@ -116,6 +126,20 @@ Paginated list of decoys. Test decoys are hidden unless you ask. It lists decoy 
 | `retired` | Changed or removed. Never overwritten. |
 | `gone` | The sensor is gone. Tokens are kept for a retention period. |
 | `failed` | Placement or removal failed. |
+
+## list_hosts
+
+Paginated by sensor id: each sensor that has a decoy record, with its hostname, a `status` and its decoys. It answers which hosts a template covers without one sensor lookup per row.
+
+| Parameter | Meaning |
+| --- | --- |
+| `policy`, `template` | Filters. `template` keeps the sensors that have a decoy of that template. |
+| `text` | Only sensors with a decoy whose hostname, sensor id, path, template or policy contains this text (case-insensitive). |
+| `states` | Default: `planned`, `placed`, `verified`, `failed`. |
+| `include_test` | Include test-fire decoys. |
+| `page_token`, `page_size` | Paging. |
+
+The `status` is `protected` (a verified decoy), `pending` (planned or placed only), `failed` or `none`. Each row has the counts per state and up to 50 decoys in the same shape as `list` (`more` marks a cut list; the status and counts cover all of them). A sensor in scope that has no decoy record yet (nothing planned, or everything unavailable) has no row: `plan` and `coverage` say why.
 
 ## verify
 
@@ -147,7 +171,40 @@ limacharlie extension request --name ext-deception --action test_fire \
   --data '{"policy":"linux-servers"}' --oid "$OID"
 ```
 
-The response lists the started `runs` (run id, policy, template, layer, deadline; never a token or planted name), `issues`, and a `pack_check` object with the result of the [rule integrity](decoys.md#rule-integrity) check. A call starts at most 20 runs. A large configuration is covered by repeated calls, and the daily run walks it over time. Only alert paths whose requirements you meet are tested, since testing a path that cannot work would only report it broken. Paths that are not available in this release (fake AD accounts, internal-domain hostnames) are not tested: `issues` names at most 10 of those policy and template pairs and says how many more there are, and `coverage` lists every one. Refused while an uninstall is in progress.
+`test_fire` takes only an optional `policy`: the extension picks the test decoys and their sensors. The response lists the started `runs` (run id, policy, template, layer, deadline; never a token or planted name), `issues`, and a `pack_check` object with the result of the [rule integrity](decoys.md#rule-integrity) check. A call starts at most 20 runs. A large configuration is covered by repeated calls, and the daily run walks it over time. Only alert paths whose requirements you meet are tested, since testing a path that cannot work would only report it broken. Paths that are not available in this release (fake AD accounts, internal-domain hostnames) are not tested: `issues` names at most 10 of those policy and template pairs and says how many more there are, and `coverage` lists every one. Refused while an uninstall is in progress.
+
+The outcome of a run is final about an hour after it starts, not when it ends (see [When the result is final](detections.md#test-fire)). A test detection is reported under the reserved `__deception-test` category, which the platform never lists, so read the outcome with `list_test_runs` and `coverage`. A Windows sensor that does not report file events is not used for the paths that need them (see [Sensor versions](decoys.md#sensor-versions-windows)).
+
+## list_test_runs
+
+Read-only, paginated, newest first: the retained runs of `test_fire` (kept for 30 days after their deadline), one per alert path. Needs no configuration.
+
+| Parameter | Meaning |
+| --- | --- |
+| `policy`, `template`, `layer` | Filters. `layer` is `read`, `modify`, `delete` or `use`. |
+| `state` | `pending` (outcome not recorded yet) or `finished`. Default: both. |
+| `page_token`, `page_size` | Paging. |
+
+Each run has `run_id`, `policy`, `template`, `layer`, `instance_id`, `state`, `opened_at`, `deadline` and, for a pending run, `expected_final_at`, or for a finished one `finalized_at`. The `state` is `pending`, `detected` (the detection came back) or `not_detected`. A run's binding, planted names and tokens are never returned.
+
+## list_hits
+
+Read-only, paginated, newest first: the hits the extension recorded, as they were sent to the `ext-deception` adapter. They come from the extension's own store (kept for 90 days), so the request runs no detection query and needs no configuration.
+
+| Parameter | Meaning |
+| --- | --- |
+| `since`, `until` | Unix seconds. `until` is exclusive. |
+| `layer`, `template`, `policy`, `sid`, `classification` | Filters. |
+| `event_type` | `deception_hit` or `deception_coverage_warning`. Default: both. |
+| `include_test` | Include the synthetic hits of `test_fire` runs, which are left out by default. |
+| `page_token`, `page_size` | Paging. |
+
+A row is the [`deception_hit` event](detections.md#the-deception_hit-event): `hit_id`, `event_type`, `time`, `decoy_id`, `kind`, `template`, `policy`, `layer`, `sid`, `hostname`, `on_host`, `classification`, `synthetic`, `case_group_key`, `source_ip`, `user_agent`, `process` and `details`.
+
+```bash
+limacharlie extension request --name ext-deception --action list_hits \
+  --data '{"layer":"read","page_size":50}' --oid "$OID"
+```
 
 ## coverage
 
@@ -163,4 +220,8 @@ Counts are read from the registry in bounded pages. When a registry is very larg
 
 ## list_kinds
 
-Every decoy kind with its settings version and JSON schema, plus `library` (the default templates) and the record `schema_version`. Use it to write a valid template for a kind you have not used, including from an AI agent.
+Every decoy kind with its settings version and JSON schema, plus `library` (the default templates, built into the extension and shipped with each release) and the record `schema_version`. Use it to write a valid template for a kind you have not used, including from an AI agent.
+
+## uninstall_status
+
+Read-only view of the [uninstall](operations.md#uninstalling-before-you-unsubscribe). Unlike `uninstall`, it never starts an uninstall, removes a decoy, deletes a rule, renews a lease or cancels anything, and it takes no parameters. It answers with `state` (`not_started`, `removing_decoys`, `removing_rules`, `done`, `cancelled` or `engine_unavailable`), `safe_to_unsubscribe`, a `message`, the `decoys` counts, `rules_kept`, `leftovers`, `started_at` and, once done, `finished_at`. It needs no configuration.

@@ -25,9 +25,22 @@ Priority 10 applies to the default rules, which you can edit. A `use` hit never 
 
 A modification counts as a hit because on Linux an open for read-write is reported by the sensor as a modification, not a read. An unexpected delete is more often cleanup than an attack, so it gets a lower priority.
 
+### One access, one hit
+
+One access to a decoy raises one alert, even when the sensor reports it in several ways:
+
+- A shell that names the decoy on its command line and then reads it (for example `type <decoy>`) is one hit, not a command-line hit plus a file-read hit.
+- A launcher shell and the shell it starts, which both carry the decoy path, are one hit.
+
+The events must come from the same process lineage (a process and its parent or child), on the same decoy and layer, within 30 seconds of each other by the sensor's clock. Two separate accesses never collapse into one, and neither do different processes that merely share a parent, different decoys or different layers. A chain of three processes whose events arrive with the middle one last can still leave two hits.
+
+### The extension's own reads never alert
+
+Placing and verifying a decoy makes the sensor read the file itself, and the placement helper touches it too. Neither raises a hit. The extension does not trust a path, a parent process or a start event to tell the sensor from an attacker's process, because a local administrator can fake all three. When a read by a process it does not know falls inside one of its own operations on that decoy, it holds the read and asks the sensor, with tasks it already sends (`get_debug_data`, `os_processes`), which process is the sensor itself: the sensor reports its own process id, and the read is the sensor's only when that id and the process holding it match the reader. Any other answer, or no answer, makes the read a real hit. A console or API `file_hash` of a decoy outside the extension's own operations alerts like any other read. The delay this adds is described under [Alert latency](detections.md#alert-latency).
+
 ## Default template library
 
-`list_kinds` returns the library in its `library` field. These are starting points for your own templates. Nothing in the library is placed until you copy a template into your configuration.
+The library is built into the extension and ships with each release, so a newer release can add or improve templates. `list_kinds` returns it in its `library` field, and the **Policies** tab of the web app shows it as the **Template Library**. Adding a template copies it into your organization's configuration: the copy is yours to edit, and the library itself never changes. The library entries are starting points for your own templates. Nothing in the library is placed until you copy a template into your configuration and a policy selects it.
 
 | Template | Kind | Platforms | What it imitates |
 | --- | --- | --- | --- |
@@ -61,7 +74,8 @@ Decoy secrets that carry their own destination point at a public collector that 
 
 - File names come from a vocabulary generated once per organization and never regenerated. A template refers to a vocabulary entry such as `{{vocab "kubeconfig_backup"}}`.
 - Templates that use a generated file name work on Linux, macOS and Windows. A template with a fixed file name (`web.config`, `Groups.xml`, `unattend.xml`, `WinSCP.ini`, `sitemanager.xml`) is Windows-only and must sit under a generated folder. A bare common file name is never used as a match rule.
-- The extension places a decoy only into a directory that already exists. If the directory is missing on a host, the template is skipped on that host and shown as `directory missing`. It retries after the next daily inventory. It never creates directories.
+- A template whose folder has a fixed name (for example `~/.aws` or `~/.kube`) is placed only where that folder already exists. If it is missing on a host, the template is skipped there and shown as `directory missing`. An explicit `deploy` retries it (at most once every 10 minutes per target), and so does the daily run. The extension never creates a tool's default folder.
+- A template whose folder has a generated name (an ops or backup folder, a generated Windows web folder) is placed in a folder the host does not have, so the extension creates the generated levels itself. It never creates a folder that already exists, never follows a symbolic link or reparse point, and gives the folder a normal folder's permissions (POSIX `0755`, owned by the decoy's owner; on Windows it inherits the parent's ACL). It records each folder it made, and removes it again when the last decoy in it is removed (retire, rotate or uninstall), only if it is still the folder it made and holds nothing but the extension's decoy. A folder with anything else in it stays, and the removed decoy's reason says so.
 - It never overwrites a file it did not create. If something already exists at the path, placement fails as `path in use` and is reported. A decoy whose contents changed is retired, never rewritten.
 - Placement goes only at paths that look like leftovers (for example `~/.kube/config.prod-old`, `~/backup/aws-credentials`), never at a tool's default path. A template can name separate directories for Linux hosts with no human users (`linux-server`), such as `/root` or `/opt`.
 
@@ -87,12 +101,23 @@ The mode and DaemonSet exclusions are reported per host in `plan`. `coverage` is
 
 On Linux, read alerts need the eBPF-capable sensor. The extension checks the sensor mode only, not the Linux tier: whether a legacy (non-eBPF) Linux sensor raises read alerts is **not verified**.
 
+## Sensor versions (Windows)
+
+Read, modify and delete alerts come from the sensor's file events. Windows sensors from 5.2.2 up to 5.3.15, and from 5.4.0 to 5.4.2, stop reporting file events after their first `ext-exfil` update while still looking healthy, so those three alerts can never fire on them. Use sensor **5.3.16 or later** on the 5.3 line, or **5.4.3 or later**. The use alert is not affected. A Windows sensor whose kernel acquisition is not running reports no file events either, and is handled the same way.
+
+The extension reads the version from the sensor itself (`get_debug_data`) during the daily inventory, so nothing depends on what you tell it. On an affected sensor:
+
+- The read, modify and delete alerts are reported as unavailable on that sensor, with the version and the fix ("sensor 5.3.12 does not report file events (upgrade the sensor to 5.3.16+ or 5.4.3+)"). They are never reported as broken, and a decoy placed there carries only the layers that can work.
+- `test_fire` places its test decoy for the read, modify and delete paths only on a sensor that reports file events (the use path does not need them), and says that a path was not tested when it finds none. A test decoy already on an affected sensor is left alone.
+
+When the version could not be read, the host keeps its behavior and the coverage of that sensor carries the note "sensor version unknown: file events from this sensor are not confirmed". Linux and macOS sensors are not checked this way.
+
 ## What each decoy needs from the organization
 
 | Decoy | Needs | Without it |
 | --- | --- | --- |
 | File decoys, placement | `ext-artifact` subscribed, a supported sensor | Placement is Unavailable for the whole organization, with "Subscribe ext-artifact". |
-| File decoys, read alert | `ext-exfil` subscribed, file collectors on | A template that also alerts on use is still planted: the read layer shows `partial` and only use is caught. A template whose only alert is read has no working alert path, shows `unavailable`, and is not planted. |
+| File decoys, read alert | `ext-exfil` subscribed, file collectors on, and on Windows a sensor that [reports file events](#sensor-versions-windows) | A template that also alerts on use is still planted: the read layer shows `partial` and only use is caught. A template whose only alert is read has no working alert path, shows `unavailable`, and is not planted. |
 | File decoys, modify and delete alerts | `ext-integrity` subscribed, file collectors on | The modify and delete layers show `partial` or `unavailable` in the same way. |
 | File, MCP and registry-hostname decoys, use alert | Nothing else | Always available. |
 | Hostnames under your internal domain | **Not available in this release.** Internal-domain hostname decoys are deferred to a later release. | Not planted. Every alert layer reports unavailable. |

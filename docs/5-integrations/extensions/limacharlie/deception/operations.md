@@ -22,10 +22,13 @@ Each step is bounded and continues from a stored cursor, so a large organization
 | --- | --- |
 | Send requests (`plan`, `deploy`, `uninstall` and the rest) | `ext.request` |
 | Read or write the extension's configuration record | `ext.conf.get`, `ext.conf.set` |
+| Place, verify, rotate, remove or test decoys, or isolate a host, from the web app | `ext.request` and `sensor.task` |
+| Tag a host from the web app | `ext.request` and `sensor.tag` |
+| Read hits, test runs and the uninstall status | `ext.request` |
 
 ### For the extension
 
-The extension acts in your organization through an API key that needs these permissions. It uses them only for what this page describes.
+The extension acts in your organization through an API key that needs these 21 permissions. It uses them only for what this page describes.
 
 | Permission | Why |
 | --- | --- |
@@ -38,6 +41,7 @@ The extension acts in your organization through an API key that needs these perm
 | `cloudsensor.get`, `cloudsensor.set`, `cloudsensor.del` | The adapter's record, and listing your connected cloud sources. |
 | `externaladapter.get` | Listing your external adapters, the other half of the connected-sources view. Without it `coverage` fails. |
 | `payload.ctrl` | Put, list and delete the placement payloads. |
+| `payload.use` | Run the placement helper on the sensor. Without it the platform refuses the placement task, the decoy shows as failed with a reason naming the missing `payload.use` permission, and nothing is placed. |
 | `ext.conf.get`, `ext.conf.set` | Add and remove its own `ext-deception-` entries in the `ext-exfil`, `ext-integrity` and `ext-artifact` configurations. This also lets it read your extension subscriptions. |
 
 In other extensions' configurations it changes only entries whose name starts with `ext-deception-`, and refuses any other change. It never writes its own `ext-deception` configuration record (that is yours), and never subscribes your organization to another extension.
@@ -51,7 +55,7 @@ In other extensions' configurations it changes only entries whose name starts wi
 | `ext-exfil` | Watch rules, one per template and tag set: one per template for the whole organization, plus one more for each distinct tag set the policies use it with. See the [watch-rule budget](decoys.md#watch-rule-budget). |
 | `ext-integrity` | FIM wildcards per template, on the generated file name, never per-host paths. |
 | `ext-artifact` | Nothing is installed here in this release. Windows event collection for domain controllers is not used. |
-| Sensors | The decoy files, and the `deception-hit` tag, only if you call `respond` with `tag`. No sensor is tagged for domain controller collection. |
+| Sensors | The decoy files, the folders it made for templates with a generated folder name (removed again with the last decoy in them), and the `deception-hit` tag, only if you call `respond` with `tag`. No sensor is tagged for domain controller collection. |
 | Adapters | One webhook adapter, `ext-deception`, with its installation key. |
 
 Plumbing rules contain no generated value. Nothing generated per host or per decoy is written to a rule or to any record you can read.
@@ -65,9 +69,9 @@ limacharlie extension request --name ext-deception --action uninstall --oid "$OI
 ```
 
 1. **The first call starts it.** From that moment nothing new is placed or reinstalled: `deploy`, `rotate` and `test_fire` are refused with a clear message, a new sensor's first connection places nothing, and configuration updates and the daily run do not reconcile. Detection keeps working for decoys still in place.
-2. **Every decoy is removed**, with the same hash check as `remove`. Online sensors get the removal immediately. Offline sensors get a queued removal that runs when they connect. The plumbing rules stay until then, because they finish a removal.
+2. **Every decoy is removed**, with the same hash check as `remove`, and so is every folder the extension made for a decoy, once nothing else is in it. Online sensors get the removal immediately. Offline sensors get a queued removal that runs when they connect. The plumbing rules stay until then, because they finish a removal.
 3. **Only when no decoy is still waiting** does it delete, in this order: outstanding payloads, the plumbing rules and unmodified shipped detection rules (all but the daily trigger), its entries in other extensions' configurations, the `deception-dc` tags, then the adapter and, last, the daily trigger. A step that fails holds back every step after it, and the daily trigger retries it. Entries the platform refuses to remove, because your organization left that extension, are named in `leftovers`. They hold the uninstall unless you use `force`.
-4. **Call it again at any time.** It moves the work along and returns the status.
+4. **Call it again at any time.** It moves the work along and returns the status. To only look, without starting or advancing anything, send `uninstall_status`: it never starts an uninstall, removes a decoy, deletes a rule, renews a lease or cancels anything, and answers `not_started` when there is none. The web app shows the same status under **Uninstall Deception** and a banner while one is running.
 
 The status:
 

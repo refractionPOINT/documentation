@@ -9,6 +9,25 @@ limacharlie extension config-get --name ext-deception --oid "$OID"
 limacharlie extension config-set --name ext-deception --input-file deception.yaml --oid "$OID"
 ```
 
+You can also edit the record in the web app: the **Policies** tab edits policies and templates, copies templates from the Template Library, and has a raw editor for the whole record (custom domains, the reader allowlist, the isolation cap and template settings). The extension validates a save the same way, and a save that conflicts with a newer version is refused without overwriting it.
+
+## Enabling the configuration record
+
+The extension reads your configuration from the record named `ext-deception`. The platform gives an extension an empty configuration when that record is disabled, and a record saved with `limacharlie extension config-set` is disabled unless its `usr_mtd.enabled` says otherwise (the CLI's normal behavior for a new record). Enable it once after the first `config-set`, or set `usr_mtd: {enabled: true}` in the file you give to `config-set`:
+
+```bash
+limacharlie hive enable --hive-name extension_config --key ext-deception --oid "$OID"
+```
+
+While the record is disabled:
+
+- `plan`, `deploy`, `verify`, `rotate`, `remove`, `test_fire` and `coverage` (and `list` with a policy) refuse with "the ext-deception configuration is disabled".
+- Hits on decoys already planted are still judged and alerted.
+- The daily run and a configuration update leave the rules and the entries in other extensions' configurations as they are and retire no decoy, and the daily response says why until the record is enabled. A disabled or unreadable record is never read as "you removed everything".
+- `respond` refuses to isolate, because your isolation cap is unknown. Tagging still works.
+
+The extension never writes this record, so it never enables it for you. The web app shows a banner with **Enable configuration** to anyone with `ext.conf.set`.
+
 ## Validation
 
 The extension validates the whole record when it is saved, including each template's `spec`, and rejects it with errors that name the field (for example `templates[3].spec.file_name: required`). Unknown fields are rejected too.
@@ -123,7 +142,7 @@ This is the complete `kubeconfig-backup` library template. Every name written in
 | `platforms` | `windows`, `linux`, `macos`. At least one. |
 | `requires_packages`, `requires_files` | Plant only where one of the named packages is installed or one of the named binaries is found. Empty means every host. |
 | `file_name` | A generated name (`{{vocab "key"}}`) or, for Windows only, a fixed name under a generated folder. |
-| `directories` | Keyed by `default`, `windows`, `linux`, `macos`, `linux-server`. `~` is the user's home. Never a tool's default path. |
+| `directories` | Keyed by `default`, `windows`, `linux`, `macos`, `linux-server`. `~` is the user's home. Never a tool's default path. A folder with a fixed name must already exist on the host. A folder with a generated name (taken from a vocabulary entry) is created by the extension and removed again with its last decoy; the extension never creates a tool's default folder such as `~/.aws`. See [File names and paths](decoys.md#file-names-and-paths). |
 | `alerts` | `read`, `use`, or both. `use` needs at least one secret in the file. |
 | `secrets` | Up to 12. Each has a `name`, a `type` (`bearer_token`, `url_token`, `aws_access_key`, `password`, `username`) and for tokens an optional `style` (`jwt`, `hex40`, `hex32`, `b62_40`, `vault`, `npm`, `git_pat`). Every secret must be used in `content`. |
 | `content` | A restricted Go template, up to the extension's size limit. Functions: `secret`, `aws_secret`, `collector`, `vocab`, `home`, `user`, `hostname`, `domain`, `guid`, `timestamp`, plus escapers `xml`, `json`, `csv`, `ini`. |
@@ -134,7 +153,7 @@ This is the complete `kubeconfig-backup` library template. Every name written in
 
 Content must not mention `limacharlie`. A template is checked by rendering it once at write time. Write your own templates the same way as the library ones: take every name you put in or on a file from `{{vocab "..."}}` rather than typing a fixed word, because a fixed word is the same in every organization that copies it.
 
-The `hostname` kind adds `form` (`registry` or `internal`) and `hosts`, and holds a `file` spec for the file that names the hosts. The `phantom_account` kind adds `form` (`upn` or `ad`), `source` (`any`, `entra`, `okta`, UPN form only), `upn_domain`, `ad_domain` and a `file` spec; its content uses `{{account}}` and `{{password}}`. Copy these from the default library, or read the schema from `list_kinds`.
+The `hostname` kind adds `form` (`registry` or `internal`) and `hosts`, and holds a `file` spec for the file that names the hosts. The `phantom_account` kind adds `form` (`upn` or `ad`), `source` (`any`, `entra`, `okta`, UPN form only), `upn_domain`, `ad_domain` and a `file` spec; its content uses `{{account}}` and `{{password}}`. Copy these from the default library, or read the schema from `list_kinds`. The library is built into the extension and ships with each release. A template you copy from it is stored in your configuration and is yours to edit: a later release does not change your copy, and the library itself is never changed. In the web app, the **Template Library** copies templates for you, and the template viewer and editor edit your own templates as a form or as JSON. Library templates are read-only in the editor: customize a copy.
 
 The `internal` hostname form and the `ad` phantom-account form are **not available in this release**. They still validate, so an existing configuration keeps loading, but every alert layer of a template that uses one reports as unavailable ("not available in this release"), nothing is planted, and a decoy of these forms planted by an earlier build is retired by the daily run. Use the `registry` hostname form and the `upn` phantom-account form.
 
