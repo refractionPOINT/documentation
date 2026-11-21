@@ -43,8 +43,8 @@ entry's exact `applies_to` and YAML, from the authoring kit (`sections=library`)
 library also ships one D&R rule, `investigate-high-critical-case` (see
 [D&R rules on a new case](automation.md#dr-rules-on-a-new-case)).
 
-The library's Lookups (`banned-software`, `approved-software` and others the
-templates name) are yours to create. A Lookup that does not exist answers unknown
+The Lookups the library reads (`banned-software` and `approved-software`, keyed by
+file hash, in `endpoint-detection` and `suspicious-process`) are yours to create. A Lookup that does not exist answers unknown
 (`not_found`), so the rules that read it never hold: nothing closes or escalates on a
 list you have not written.
 

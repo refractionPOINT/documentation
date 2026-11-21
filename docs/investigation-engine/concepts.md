@@ -126,7 +126,7 @@ A step ends in one of four states:
 | `ok` | The operator answered. The answer is **complete**, or **incomplete** when it may be missing data: a truncated list, a search over the last few minutes (`index_lag`), a lower bound. |
 | `unknown` | There is no answer. The step has a `reason` such as `timeout`, `forbidden`, `not_found`, `policy_denied`, `llm_agent_not_found` or `outside_free_window`. |
 | `skipped` | Its `only_if` was false (`only_if_false`), a step its condition reads failed (`condition_unknown`), or it reads a skipped step (`dependency_skipped`). A skipped step reads as unknown. |
-| `cancelled` | A rule decided and the step could no longer change the outcome. |
+| `cancelled` | A rule decided and the step could no longer change the outcome, or the run was cancelled. |
 
 The engine uses three-valued (Kleene) logic, and this is the rule behind every
 decision:
