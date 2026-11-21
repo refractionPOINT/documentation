@@ -1,49 +1,236 @@
 # Tutorial: Ingesting OpenTelemetry Data via Webhook
 
-LimaCharlie webhook adapters support the [OpenTelemetry Protocol (OTLP)](https://opentelemetry.io/docs/specs/otlp/) over HTTP, allowing you to send OTel **logs**, **traces**, and **metrics** directly into LimaCharlie without running a separate collector.
+LimaCharlie webhook adapters accept the [OpenTelemetry Protocol (OTLP)](https://opentelemetry.io/docs/specs/otlp/) over HTTP. An OpenTelemetry Collector or an OpenTelemetry SDK can send **logs**, **traces** and **metrics** straight to a webhook, and every log record, span and metric data point becomes one LimaCharlie event.
 
-This builds on the standard [Webhook Adapter](webhook-adapter.md). If you haven't already, review that page first to understand webhook creation and configuration.
+This page builds on the [Webhook Adapter](webhook-adapter.md) tutorial, which explains how to create a webhook. To have LimaCharlie manage the configuration of your collectors as well, see [OpenTelemetry Collector Fleets](otel-collector-fleets.md).
 
-## How It Works
+## Endpoints
 
-OpenTelemetry SDKs and collectors export telemetry by sending HTTP POST requests to an OTLP endpoint. LimaCharlie's webhook gateway recognizes OTLP paths appended to the standard webhook URL and automatically parses the protobuf or JSON payloads into individual events.
+An OTLP export is a `POST` to the webhook URL followed by `/v1/<signal>`:
 
-The URL pattern is:
+| Signal | Path |
+|---|---|
+| Logs | `/v1/logs` |
+| Traces | `/v1/traces` |
+| Metrics | `/v1/metrics` |
 
-```text
-https://<hook-domain>/<OID>/<HOOKNAME>/<SECRET>/v1/<signal>
+These are the paths the OTLP/HTTP exporters append to their base endpoint, so you give the exporter the webhook URL and it adds the rest. The secret goes either in the path or in a header:
+
+| Form | URL | Secret |
+|---|---|---|
+| Secret in the path | `https://<hooks-domain>/<OID>/<HOOKNAME>/<SECRET>/v1/<signal>` | In the URL |
+| Secret in a header | `https://<hooks-domain>/<OID>/<HOOKNAME>/v1/<signal>` | `lc-secret: <SECRET>`, or `Authorization` (see below) |
+
+The header form keeps the secret out of URLs, proxy logs and collector debug output, so prefer it.
+
+The `Authorization` header is read only when neither the path nor `lc-secret` carries a secret. It accepts:
+
+- `Authorization: Bearer <SECRET>`
+- `Authorization: Basic <base64 of user:SECRET>`: the password is the secret, the user name is ignored.
+- `Authorization: <SECRET>`: any other value is compared as a whole.
+
+`<hooks-domain>` is your organization's hooks domain, shown as `hooks` by `limacharlie org urls` (for example `9157798c50af372c.hook.limacharlie.io`).
+
+Plain webhook deliveries to `/<OID>/<HOOKNAME>/<SECRET>` and `/<OID>/<HOOKNAME>` work exactly as before. Only a path ending in `/v1/logs`, `/v1/traces` or `/v1/metrics` is treated as OTLP. If the hook's own secret happens to end in `/v1/logs`, a request whose path is that full secret stays a plain delivery.
+
+## Request format
+
+| Header | Accepted values |
+|---|---|
+| `Content-Type` | `application/x-protobuf` (OTLP protobuf, the exporter default) or `application/json` (OTLP/JSON). Parameters such as `; charset=utf-8` are ignored. Anything else gets `415`. |
+| `Content-Encoding` | `gzip`, `identity` or none. A gzip body is also recognized without the header. `zstd`, `snappy`, `deflate` and any other encoding get `415`, as do several `Content-Encoding` values. |
+
+The OpenTelemetry Collector's OTLP/HTTP exporter compresses with gzip by default, which works as is. Do not set its `compression` to `zstd` or `snappy`.
+
+The type and encoding are checked after the secret, so a request with a wrong secret gets `401` whatever its type.
+
+## Event format
+
+Each record becomes one event on the webhook adapter's timeline:
+
+- one event per `LogRecord`,
+- one event per `Span`,
+- one event per metric data point (a metric with 10 data points gives 10 events).
+
+The resource and scope of the record are copied into each event.
+
+How values are converted:
+
+- Field names are the OTLP/JSON names (lowerCamelCase), such as `timeUnixNano` or `severityText`.
+- Attribute lists become plain maps: `{"db.system": "postgresql"}`.
+- Attribute values become native JSON: strings, booleans, numbers, lists and maps. Bytes values become base64 strings.
+- Trace and span IDs are lowercase hex strings.
+- 64-bit nanosecond times (every field ending in `UnixNano`) are JSON **strings**, as in OTLP/JSON, so that no precision is lost.
+- Every other integer is a JSON **number**: `severityNumber`, `asInt`, `count`, `bucketCounts`, `zeroCount`, `flags` and the dropped counts. D&R numeric comparisons work on them.
+- Enums are their name strings: `SPAN_KIND_SERVER`, `STATUS_CODE_ERROR`, `AGGREGATION_TEMPORALITY_CUMULATIVE`.
+- NaN and infinite doubles become the strings `"NaN"`, `"Infinity"` and `"-Infinity"`.
+- Zero and empty values are left out: an empty string, a zero number, `false`, an empty list or map, and the `UNSPECIFIED`/`UNSET` value of an enum. A value the sender set explicitly is kept even when it is zero: `asInt: 0`, `asDouble: 0`, or a histogram `sum` of `0`.
+
+### Fields on every event
+
+| Field | Value |
+|---|---|
+| `otel_type` | `log`, `span` or `metric` |
+| `resource` | The resource attributes, as a map (an empty map when the resource has none) |
+| `scope` | The instrumentation scope: `name`, `version` and `attributes`, each when set. Left out when all are empty. |
+| `schemaUrl` | The resource's schema URL, when set |
+
+### Log events
+
+| Field | Value |
+|---|---|
+| `timeUnixNano` | Record time (string) |
+| `observedTimeUnixNano` | Time the collector observed the record (string) |
+| `severityNumber` | Severity number (number) |
+| `severityText` | Severity text, such as `ERROR` |
+| `body` | The log body: a string, or a structured value |
+| `attributes` | Log record attributes |
+| `traceId`, `spanId` | Hex IDs |
+| `flags` | Trace flags (number) |
+| `eventName` | Event name |
+| `droppedAttributesCount` | Number |
+
+### Span events
+
+| Field | Value |
+|---|---|
+| `traceId`, `spanId`, `parentSpanId` | Hex IDs |
+| `traceState` | W3C trace state |
+| `name` | Span name |
+| `kind` | `SPAN_KIND_INTERNAL`, `SPAN_KIND_SERVER`, `SPAN_KIND_CLIENT`, `SPAN_KIND_PRODUCER` or `SPAN_KIND_CONSUMER` |
+| `startTimeUnixNano`, `endTimeUnixNano` | Strings |
+| `attributes` | Span attributes |
+| `events` | List of span events: `timeUnixNano`, `name`, `attributes`, `droppedAttributesCount` |
+| `links` | List of links: `traceId`, `spanId`, `traceState`, `attributes`, `droppedAttributesCount`, `flags` |
+| `status` | `code` (`STATUS_CODE_OK` or `STATUS_CODE_ERROR`) and `message`. Left out when the span has no status. |
+| `flags` | Number |
+| `droppedAttributesCount`, `droppedEventsCount`, `droppedLinksCount` | Numbers |
+
+### Metric events
+
+| Field | Value |
+|---|---|
+| `metricName`, `metricDescription`, `metricUnit` | From the metric |
+| `metricMetadata` | The metric's metadata attributes, as a map |
+| `metricType` | `gauge`, `sum`, `histogram`, `exponentialHistogram` or `summary` |
+| `attributes` | Data point attributes |
+| `startTimeUnixNano`, `timeUnixNano` | Strings |
+| `flags` | Number |
+| `exemplars` | List: `filteredAttributes`, `timeUnixNano`, `asDouble` or `asInt`, `spanId`, `traceId` |
+
+Fields that depend on the metric type:
+
+| `metricType` | Fields |
+|---|---|
+| `gauge` | `asDouble` or `asInt` |
+| `sum` | `asDouble` or `asInt`, `aggregationTemporality`, `isMonotonic` (only when `true`) |
+| `histogram` | `aggregationTemporality`, `count`, `sum`, `bucketCounts`, `explicitBounds`, `min`, `max` |
+| `exponentialHistogram` | `aggregationTemporality`, `count`, `sum`, `scale`, `zeroCount`, `zeroThreshold`, `positive` and `negative` (each `offset` and `bucketCounts`), `min`, `max` |
+| `summary` | `count`, `sum`, `quantileValues` (a list of `quantile` and `value`) |
+
+### Event time
+
+LimaCharlie takes each event's time from the record, with no mapping needed:
+
+- log: `timeUnixNano`, or `observedTimeUnixNano` when the record has no time (many file receivers set only the observed time);
+- span: `startTimeUnixNano`;
+- metric data point: `timeUnixNano`.
+
+When the record has no time, the event gets the time it was ingested.
+
+### Example events
+
+A log line read by the collector's file log receiver. It has no record time, so the event time comes from `observedTimeUnixNano`:
+
+```json
+{
+  "otel_type": "log",
+  "resource": {"deployment.environment": "prod"},
+  "scope": {
+    "name": "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/filelogreceiver",
+    "version": "0.165.0"
+  },
+  "observedTimeUnixNano": "1795218279063392036",
+  "body": "2026-11-20T23:45:00Z ERROR disk /var is full",
+  "attributes": {"log.file.name": "app.log"}
+}
 ```
 
-Where `<signal>` is one of:
+A span:
 
-| Signal    | Path        | Description                                    |
-|-----------|-------------|------------------------------------------------|
-| `logs`    | `/v1/logs`    | Log records from OTel logging SDKs           |
-| `traces`  | `/v1/traces`  | Spans from OTel tracing SDKs                 |
-| `metrics` | `/v1/metrics` | Metric data points from OTel metrics SDKs    |
+```json
+{
+  "otel_type": "span",
+  "resource": {"deployment.environment": "prod", "service.name": "checkout"},
+  "scope": {"name": "checkout"},
+  "traceId": "5b8efff798038103d269b633813fc60c",
+  "spanId": "eee19b7ec3c1b174",
+  "name": "GET /cart",
+  "kind": "SPAN_KIND_SERVER",
+  "startTimeUnixNano": "1795218296651474959",
+  "endTimeUnixNano": "1795218296901474959",
+  "attributes": {"http.request.method": "GET", "http.response.status_code": 500},
+  "status": {"code": "STATUS_CODE_ERROR", "message": "boom"}
+}
+```
 
-This matches the standard OTLP HTTP path convention, so OTel SDKs work out of the box by setting the base endpoint URL to your webhook URL.
+A metric data point from the host metrics receiver:
 
-## Supported Content Types
+```json
+{
+  "otel_type": "metric",
+  "resource": {"deployment.environment": "prod"},
+  "scope": {
+    "name": "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/memoryscraper",
+    "version": "0.165.0"
+  },
+  "schemaUrl": "https://opentelemetry.io/schemas/1.9.0",
+  "metricName": "system.memory.usage",
+  "metricDescription": "Bytes of memory in use.",
+  "metricUnit": "By",
+  "metricType": "sum",
+  "attributes": {"state": "used"},
+  "startTimeUnixNano": "1794062392000000000",
+  "timeUnixNano": "1795218309862679221",
+  "asInt": 58600202240,
+  "aggregationTemporality": "AGGREGATION_TEMPORALITY_CUMULATIVE"
+}
+```
 
-| Content-Type              | Encoding   |
-|---------------------------|------------|
-| `application/x-protobuf`  | Protobuf (default for most OTel SDKs) |
-| `application/json`        | JSON (OTLP/JSON encoding)             |
+`isMonotonic` is missing from the last one because the sum is not monotonic (`false` is left out).
+
+## Responses and retries
+
+LimaCharlie answers like an OTLP/HTTP server, so exporters handle every outcome correctly. A success is `200` with the signal's `Export*ServiceResponse`. An error is a `google.rpc.Status` message. Both use the encoding of the request (protobuf or JSON).
+
+| Status | When | Exporter behavior |
+|---|---|---|
+| `200` | Accepted. If [webhook D&R rules](#filtering-at-the-webhook) rejected some records, `partial_success` gives their number and the rule. | Done (it logs the partial success) |
+| `400` | Invalid OID, a body that is not valid OTLP, `Content-Encoding: gzip` on a body that is not gzip, or attribute values nested more than about 40 levels deep | Drops the data |
+| `401` | Wrong or missing secret, unknown organization or hook, or a failed [signature check](webhook-adapter.md#creating-a-webhook-adapter) | Drops the data |
+| `413` | The body or its decoded events are over the [limits](#limits) | Drops the data |
+| `415` | Unsupported `Content-Type` or `Content-Encoding` | Drops the data |
+| `503` with `Retry-After` | Temporary: the webhook's configuration is loading, its queue is full, the gateway is busy, or a signed delivery is still being processed | Retries after `Retry-After` |
+
+The OTLP/HTTP exporter retries `429`, `502`, `503` and `504`, and waits for `Retry-After` on `429` and `503`. Every other error is permanent for it and the batch is dropped, so a misconfigured exporter shows up as errors in the collector's own log.
+
+## Limits
+
+- Request body: 8 MiB as sent, and 16 MiB once gzip is inflated. Larger requests get `413`. Lower the exporter's batch size (the `batch` processor's `send_batch_max_size`, or the exporter's `sending_queue` batch settings) if you hit it.
+- A request whose events do not fit the webhook's queue at once gets `413` too. Send smaller batches.
+- Attribute values can nest about 40 levels deep.
 
 ## Setup
 
-### 1. Create a Webhook Adapter
+### 1. Create a webhook adapter
 
-Follow the [Webhook Adapter tutorial](webhook-adapter.md) to create a webhook. The configuration is identical - no special settings are needed for OTel support.
-
-For example, using the CLI:
+Create a webhook as described in the [Webhook Adapter tutorial](webhook-adapter.md). No setting turns OTLP on. Setting `event_type_path` to `otel_type` makes the event type of each event `log`, `span` or `metric`, which D&R rules and searches can use:
 
 ```bash
 echo '{
   "sensor_type": "webhook",
   "webhook": {
-    "secret": "my-otel-secret",
+    "secret": "<YOUR_SECRET>",
     "client_options": {
       "hostname": "otel-ingest",
       "identity": {
@@ -51,188 +238,130 @@ echo '{
         "installation_key": "<YOUR_INSTALLATION_KEY>"
       },
       "platform": "json",
-      "sensor_seed_key": "otel-webhook"
+      "sensor_seed_key": "otel-ingest",
+      "mapping": {
+        "event_type_path": "otel_type"
+      }
     }
   }
-}' | limacharlie hive set cloud_sensor --key otel-hook --data -
+}' | limacharlie hive set --hive-name cloud_sensor --key otel-hook
 ```
 
-### 2. Get Your Webhook URL
-
-Retrieve your hook domain:
+### 2. Get the base URL
 
 ```bash
 limacharlie org urls
 ```
 
-This returns a domain like `9157798c50af372c.hook.limacharlie.io`. Your full OTLP base endpoint is:
+With a hooks domain of `9157798c50af372c.hook.limacharlie.io`, the base endpoint for the header form is:
 
 ```text
-https://9157798c50af372c.hook.limacharlie.io/<OID>/otel-hook/my-otel-secret
+https://9157798c50af372c.hook.limacharlie.io/<YOUR_OID>/otel-hook
 ```
 
-### 3. Configure Your OTel SDK or Collector
+### 3. Configure the collector or SDK
 
-Set the OTLP HTTP exporter endpoint to your webhook URL. The OTel SDK will automatically append `/v1/logs`, `/v1/traces`, or `/v1/metrics` as needed.
+#### OpenTelemetry Collector
 
-#### Environment Variables (any OTel SDK)
-
-```bash
-# Single endpoint for all signals
-export OTEL_EXPORTER_OTLP_ENDPOINT="https://9157798c50af372c.hook.limacharlie.io/<OID>/otel-hook/my-otel-secret"
-export OTEL_EXPORTER_OTLP_PROTOCOL="http/protobuf"
-```
-
-You can also configure per-signal endpoints:
-
-```bash
-export OTEL_EXPORTER_OTLP_LOGS_ENDPOINT="https://9157798c50af372c.hook.limacharlie.io/<OID>/otel-hook/my-otel-secret/v1/logs"
-export OTEL_EXPORTER_OTLP_TRACES_ENDPOINT="https://9157798c50af372c.hook.limacharlie.io/<OID>/otel-hook/my-otel-secret/v1/traces"
-export OTEL_EXPORTER_OTLP_METRICS_ENDPOINT="https://9157798c50af372c.hook.limacharlie.io/<OID>/otel-hook/my-otel-secret/v1/metrics"
-```
-
-#### OTel Collector Configuration
-
-If you're running an [OpenTelemetry Collector](https://opentelemetry.io/docs/collector/), configure an `otlphttp` exporter:
+Use the OTLP/HTTP exporter, `otlp_http`. Collectors before v0.144.0 call it `otlphttp`, a name later releases still accept as a deprecated alias. The same goes for receivers: `file_log` was `filelog` before v0.149.0.
 
 ```yaml
+receivers:
+  otlp:
+    protocols:
+      http:
+        endpoint: 127.0.0.1:4318
+  file_log:
+    include: [/var/log/myapp/*.log]
+
+processors:
+  batch: {}
+
 exporters:
-  otlphttp:
-    endpoint: "https://9157798c50af372c.hook.limacharlie.io/<OID>/otel-hook/my-otel-secret"
+  otlp_http/limacharlie:
+    endpoint: https://9157798c50af372c.hook.limacharlie.io/<YOUR_OID>/otel-hook
+    headers:
+      lc-secret: <YOUR_SECRET>
+    # gzip is the default; zstd and snappy are refused.
+    compression: gzip
 
 service:
   pipelines:
     logs:
-      exporters: [otlphttp]
+      receivers: [otlp, file_log]
+      processors: [batch]
+      exporters: [otlp_http/limacharlie]
     traces:
-      exporters: [otlphttp]
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlp_http/limacharlie]
     metrics:
-      exporters: [otlphttp]
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlp_http/limacharlie]
 ```
 
-## Event Format
+The exporter appends `/v1/logs`, `/v1/traces` and `/v1/metrics` to `endpoint` itself. The example was checked with `otelcol-contrib validate` on v0.165.0.
 
-Each OTel record is converted into a JSON event and ingested as a LimaCharlie event on the webhook sensor's timeline. All events include an `otel_type` field to identify their type.
+To keep the secret out of the file, the collector can read it from the environment: `lc-secret: ${env:LC_HOOK_SECRET}`.
 
-### Log Events
+#### OpenTelemetry SDKs (environment variables)
 
-Each OTel `LogRecord` becomes an event with the following fields:
-
-| Field                       | Description                                                    |
-|-----------------------------|----------------------------------------------------------------|
-| `otel_type`                 | Always `"log"`                                                 |
-| `timestamp_ns`              | Event time in nanoseconds (falls back to observed time)        |
-| `severity_text`             | Severity level string (e.g., `"ERROR"`, `"INFO"`)              |
-| `severity_number`           | Numeric severity (OTel severity number)                        |
-| `body`                      | Log message body (string or structured object)                 |
-| `attributes`                | Key-value attributes on the log record                         |
-| `resource`                  | Resource attributes (e.g., `service.name`, `host.name`)        |
-| `scope`                     | Instrumentation scope (name, version, attributes)              |
-| `trace_id`                  | Trace ID (hex string, if present)                              |
-| `span_id`                   | Span ID (hex string, if present)                               |
-| `event_name`                | OTel event name (if present)                                   |
-
-Example event:
-
-```json
-{
-  "otel_type": "log",
-  "timestamp_ns": 1709726400000000000,
-  "severity_text": "ERROR",
-  "severity_number": 17,
-  "body": "connection refused to database",
-  "attributes": {
-    "db.system": "postgresql",
-    "db.name": "users"
-  },
-  "resource": {
-    "service.name": "api-gateway",
-    "host.name": "prod-01"
-  },
-  "scope": {
-    "name": "my-logger",
-    "version": "1.0.0"
-  },
-  "trace_id": "0102030405060708090a0b0c0d0e0f10",
-  "span_id": "0102030405060708"
-}
+```bash
+export OTEL_EXPORTER_OTLP_ENDPOINT="https://9157798c50af372c.hook.limacharlie.io/<YOUR_OID>/otel-hook"
+export OTEL_EXPORTER_OTLP_HEADERS="lc-secret=<YOUR_SECRET>"
+export OTEL_EXPORTER_OTLP_PROTOCOL="http/protobuf"
 ```
 
-### Trace Events (Spans)
+The SDK appends the signal path. Per-signal variables such as `OTEL_EXPORTER_OTLP_LOGS_ENDPOINT` take the full URL, `/v1/logs` included. `http/json` works as well. gRPC (`grpc`, port 4317) is not supported: use one of the HTTP protocols.
 
-Each OTel `Span` becomes an event:
+If a sender cannot set headers, put the secret in the path instead: `https://9157798c50af372c.hook.limacharlie.io/<YOUR_OID>/otel-hook/<YOUR_SECRET>`.
 
-| Field                        | Description                                              |
-|------------------------------|----------------------------------------------------------|
-| `otel_type`                  | Always `"span"`                                          |
-| `name`                       | Span operation name                                      |
-| `kind`                       | Span kind (e.g., `SPAN_KIND_SERVER`, `SPAN_KIND_CLIENT`) |
-| `start_timestamp_ns`         | Span start time in nanoseconds                           |
-| `end_timestamp_ns`           | Span end time in nanoseconds                             |
-| `trace_id`                   | Trace ID (hex string)                                    |
-| `span_id`                    | Span ID (hex string)                                     |
-| `parent_span_id`             | Parent span ID (hex string, if present)                  |
-| `attributes`                 | Span attributes                                          |
-| `resource`                   | Resource attributes                                      |
-| `scope`                      | Instrumentation scope                                    |
-| `status_code`                | Span status (e.g., `STATUS_CODE_OK`, `STATUS_CODE_ERROR`)|
-| `status_message`             | Status message (if present)                              |
-| `events`                     | List of span events (if present)                         |
-| `links`                      | List of span links (if present)                          |
+## Writing D&R rules for OTel events
 
-### Metric Events
+OTel events go through your organization's D&R rules like any other adapter event. With `event_type_path: otel_type` set as above, this rule reports error logs from the `checkout` service:
 
-Each metric data point becomes a separate event. The `metric_type` field indicates the aggregation type:
+```yaml
+detect:
+  event: log
+  op: and
+  rules:
+    - op: is
+      path: event/severityText
+      value: ERROR
+    - op: is
+      path: event/resource/service.name
+      value: checkout
+respond:
+  - action: report
+    name: checkout-error-log
+```
 
-| `metric_type`             | Description                          |
-|---------------------------|--------------------------------------|
-| `gauge`                   | Point-in-time measurement            |
-| `sum`                     | Cumulative or delta counter          |
-| `histogram`               | Distribution with explicit buckets   |
-| `summary`                 | Pre-computed quantiles               |
-| `exponential_histogram`   | Distribution with exponential buckets|
+Without `event_type_path`, match on `event/otel_type` instead of `event:`. Numbers can be compared directly, for example `op: is greater than` on `event/severityNumber` with `value: 16` for every log at `ERROR` or above.
 
-Common fields across all metric types:
+### Filtering at the webhook
 
-| Field                  | Description                                             |
-|------------------------|---------------------------------------------------------|
-| `otel_type`            | Always `"metric"`                                       |
-| `metric_name`          | Metric name                                             |
-| `metric_type`          | Aggregation type (see above)                            |
-| `timestamp_ns`         | Data point timestamp in nanoseconds                     |
-| `attributes`           | Data point attributes                                   |
-| `resource`             | Resource attributes                                     |
-| `scope`                | Instrumentation scope                                   |
-| `description`          | Metric description (if provided)                        |
-| `unit`                 | Metric unit (if provided)                               |
-
-For `gauge` and `sum` types, the `value` field contains the numeric value. For `sum`, additional fields `is_monotonic` and `aggregation_temporality` are included.
-
-## Writing D&R Rules for OTel Events
-
-OTel events flow through the same D&R rule evaluation as regular webhook events. You can write rules that target the `otel_type` field or any other field in the event.
-
-Example D&R rule to detect error-level OTel logs:
+A webhook can also drop records before they are ingested, with D&R rules evaluated at the webhook (`dr_rules` on the webhook record and rules with `target: webhook`). Each OTLP record is evaluated on its own, under `event/`:
 
 ```yaml
 detect:
   target: webhook
-  event: json/otel_type
-  op: is
-  value: log
+  op: and
   rules:
-    - event: json/severity_text
-      op: is
-      value: ERROR
+    - op: is
+      path: event/otel_type
+      value: log
+    - op: is
+      path: event/severityText
+      value: DEBUG
 respond:
   - action: webhook reject
 ```
 
-## Backward Compatibility
+Rejected records are marked `__lc_accepted: false` and counted in the response's `partial_success`, so the exporter does not retry them.
 
-Standard (non-OTel) webhook requests to `/<OID>/<HOOKNAME>/<SECRET>` continue to work exactly as before. OTel support is activated only when the URL contains the `/v1/logs`, `/v1/traces`, or `/v1/metrics` suffix.
-
-## Related Articles
+## Related articles
 
 - [Webhook Adapter Tutorial](webhook-adapter.md)
+- [OpenTelemetry Collector Fleets](otel-collector-fleets.md)
 - [Cloud Sensors Config Hive](../../../7-administration/config-hive/cloud-sensors.md)

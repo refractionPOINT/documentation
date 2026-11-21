@@ -26,6 +26,8 @@ Use a **cloud-managed adapter** when the adapter has to run inside a network: a 
 
 Use a **local configuration** when the host must not depend on LimaCharlie for its configuration, or when you want the configuration to live only on the host.
 
+To manage OpenTelemetry Collectors instead of LimaCharlie adapters, see [OpenTelemetry Collector Fleets](tutorials/otel-collector-fleets.md). They follow the same idea: the configuration lives in LimaCharlie and the collectors on your hosts fetch it over OpAMP.
+
 ## How it works
 
 1. You create an External Adapter record. LimaCharlie validates it against the schema of the adapter type and gives it a GUID.

@@ -164,3 +164,7 @@ Then, in the GravityZone [`setPushEventSettings`](https://www.bitdefender.com/bu
 ```
 
 Every event of each push shows up individually in the Timeline of the adapter.
+
+## OpenTelemetry
+
+Webhook adapters also accept OTLP over HTTP: logs, traces and metrics from OpenTelemetry Collectors and SDKs, one event per record. See [Ingesting OpenTelemetry Data via Webhook](otel-webhook.md). A webhook can also manage a fleet of OpenTelemetry Collectors over OpAMP. See [OpenTelemetry Collector Fleets](otel-collector-fleets.md).

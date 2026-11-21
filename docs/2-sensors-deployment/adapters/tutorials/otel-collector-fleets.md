@@ -1,0 +1,448 @@
+# OpenTelemetry Collector Fleets
+
+!!! warning "Beta"
+    Collector fleets are in beta. The console pages are behind a feature flag, and the OpAMP hostname of each site may still change. Always take the URLs from the fleet's **Setup** tab or from `limacharlie org urls`, never from this page.
+
+A collector fleet lets LimaCharlie manage the configuration of [OpenTelemetry Collectors](https://opentelemetry.io/docs/collector/) running on your hosts. Each collector connects to LimaCharlie over [OpAMP](https://opentelemetry.io/docs/specs/opamp/), the OpenTelemetry agent management protocol. LimaCharlie sends it the collector configuration that matches the host, and the collector sends everything it collects back to LimaCharlie. Each collector shows up as its own sensor.
+
+You write the configuration once in LimaCharlie, and every matching collector applies it within one check-in. Changing it later needs no login on the hosts.
+
+A fleet is a [webhook adapter](webhook-adapter.md) with an `opamp` block. The data path is the webhook's [OTLP ingestion](otel-webhook.md), so events have the same format, and the fleet's configuration lives in the webhook's `cloud_sensor` record. Permissions (`cloudsensor.get`, `cloudsensor.set`), Infrastructure as Code, Git Sync and Hive secrets work on it like on any other webhook.
+
+The full list of fields, limits and allowed components is in the [fleet configuration reference](otel-collector-fleet-reference.md).
+
+## Collectors may only send data to LimaCharlie
+
+A managed collector sends its data to LimaCharlie and nowhere else. LimaCharlie enforces this in three places:
+
+1. **Fleet configs contain no exporters.** You write receivers, processors, connectors and pipelines. LimaCharlie adds its own exporter to every pipeline when it renders the config for a collector. Saving a config that has an `exporters` section, an unknown component, or a `${...}` reference fails with an error naming the config and the setting.
+2. **The effective config is checked.** Every collector reports the configuration it actually runs, which includes any local configuration files on the host. If that configuration sends data anywhere other than this webhook, or sends the collector's own telemetry somewhere, LimaCharlie marks the collector **Blocked** and stops sending it configurations. It keeps running whatever it runs, and the console shows why it is blocked.
+3. **A collector must report its effective config and accept remote config.** One that does not is blocked until its supervisor turns both on.
+
+Exporters that keep data on the host are allowed in local files: `debug` (stdout, stderr or local files) and `nop`.
+
+!!! note "Bindplane BDOT v1"
+    BDOT v1 reports only its main configuration file, `collector.yaml`. Other files passed with extra `--config` flags are not reported, so LimaCharlie cannot check them. The console marks these collectors with `lc.collector.local_config_visible: false`.
+
+## Supported collectors
+
+| Collector | How it connects | Notes |
+|---|---|---|
+| Upstream `otelcol-contrib` under the upstream `opampsupervisor`, v0.165.0 | OpAMP over HTTPS (polling) | The reference setup. The console's setup steps install it. |
+| Bindplane BDOT v2, under its supervisor | OpAMP over HTTPS | Use the same `supervisor.yaml` with `agent.executable` pointing at the BDOT binary. |
+| Bindplane BDOT v1 (1.x) | OpAMP over WebSocket (`wss://`) | Needs the site's OpAMP host. Local `--config` files are not visible (see above). |
+
+Other collectors built on the OpenTelemetry Collector work under `opampsupervisor` if they include the components your configs use. LimaCharlie picks the exporter name from the version the collector reports: `otlp_http/limacharlie` for official OpenTelemetry Collector releases from v0.144.0 on, `otlphttp/limacharlie` for anything older or unknown.
+
+## How it works
+
+1. You create the fleet: a webhook with `opamp.enabled: true` and an ordered list of named configs, each with a selector.
+2. The supervisor on each host connects to the fleet's OpAMP endpoint with the webhook secret and describes the collector: `service.name`, `service.version`, `os.type`, `host.name` and any attribute you add.
+3. LimaCharlie checks the effective config the collector reports. If it is clean, LimaCharlie picks the first config whose selector matches the collector's attributes.
+4. It adds the LimaCharlie exporter and a resource processor that tags every record with the collector's instance ID and config name, and sends the result.
+5. The supervisor applies it and reports `APPLIED`, or `FAILED` with the collector's error. A config that failed is not sent again until you change it.
+6. On every check-in (30 seconds by default) the collector reports changes, and receives the new config if you edited it.
+
+Fleet state (status, health, effective config) is kept for 7 days after a collector was last seen. A collector silent for longer drops out of the list and registers again if it comes back.
+
+## Create a fleet
+
+### In the console
+
+Open **Sensors > OpenTelemetry Fleets** and click **New fleet**. Give it a name (lowercase letters, digits, dots, dashes and underscores) and pick an installation key. The console creates the webhook with:
+
+- a random 256-bit secret,
+- `opamp.enabled: true` and no configs yet,
+- a mapping that makes each collector its own sensor (see [Collectors as sensors](#collectors-as-sensors)).
+
+You need `cloudsensor.set` and `ikey.list`.
+
+### With the CLI or Infrastructure as Code
+
+The same record, as YAML:
+
+```yaml
+sensor_type: webhook
+webhook:
+  secret: <A LONG RANDOM SECRET>        # or hive://secret/<name>
+  client_options:
+    identity:
+      oid: <YOUR OID>
+      installation_key: <INSTALLATION KEY>
+    platform: json
+    hostname: otel-fleet
+    sensor_seed_key: otel-fleet
+    mapping:
+      sensor_key_path: resource/lc.collector.instance_uid
+      sensor_hostname_path: resource/host.name
+      event_type_path: otel_type
+  opamp:
+    enabled: true
+    configs:
+      - name: linux-hosts
+        selector:
+          os.type: linux
+        config: |
+          receivers:
+            file_log:
+              include: [/var/log/syslog]
+          processors:
+            batch: {}
+          service:
+            pipelines:
+              logs:
+                receivers: [file_log]
+                processors: [batch]
+```
+
+```bash
+limacharlie hive set --hive-name cloud_sensor --key otel-fleet --input-file otel-fleet.yaml
+```
+
+The hive checks the whole `opamp` block when you save. A secret is required while `enabled` is `true`.
+
+## Connect collectors
+
+The fleet's **Setup** tab shows the supervisor configuration with the right URL and secret filled in, and the install commands for each platform. The steps below are the same.
+
+The OpAMP endpoint is:
+
+```text
+https://<hooks-domain>/<OID>/<FLEET NAME>/v1/opamp
+```
+
+`<hooks-domain>` is `hooks` in `limacharlie org urls`. The supervisor authenticates with `Authorization: Bearer <secret>`. The secret in the URL path is refused for OpAMP.
+
+Hosts need outbound HTTPS to the hooks domain, both for OpAMP and for the data the collector sends.
+
+### Supervisor configuration
+
+On Linux, save this as `/etc/opampsupervisor/config.yaml`:
+
+```yaml
+server:
+  endpoint: "https://<hooks-domain>/<OID>/<FLEET NAME>/v1/opamp"
+  headers:
+    Authorization: "Bearer <SECRET>"
+capabilities:
+  accepts_remote_config: true
+  reports_effective_config: true
+  reports_health: true
+  # Lets the fleet's check-in interval apply to this collector.
+  accepts_opamp_connection_settings: true
+  reports_own_metrics: false
+  reports_own_logs: false
+  reports_own_traces: false
+agent:
+  executable: "/usr/bin/otelcol-contrib"
+storage:
+  directory: "/var/lib/opampsupervisor"
+```
+
+`accepts_remote_config` and `reports_effective_config` are required: without them the collector is blocked. The collector's own telemetry stays off because LimaCharlie offers no destination for it.
+
+On Windows, the file is `C:\Program Files\OpenTelemetry OpAMP Supervisor\config.yaml`, with:
+
+```yaml
+agent:
+  executable: "C:\\Program Files\\OpenTelemetry OpAMP Supervisor\\otelcol-contrib.exe"
+storage:
+  directory: "C:\\ProgramData\\opampsupervisor"
+```
+
+In Docker (see below), use:
+
+```yaml
+agent:
+  executable: "/usr/local/bin/otelcol-contrib"
+storage:
+  directory: "/home/opampsupervisor/storage"
+```
+
+To give the collector attributes that selectors can match, add them under `agent.description`:
+
+```yaml
+agent:
+  executable: "/usr/bin/otelcol-contrib"
+  description:
+    non_identifying_attributes:
+      deployment.environment: prod
+      team: payments
+```
+
+### Install on Linux (Debian or Ubuntu)
+
+```bash
+VERSION=0.165.0
+ARCH=amd64  # arm64 on ARM hosts
+BASE=https://github.com/open-telemetry/opentelemetry-collector-releases/releases/download
+COLLECTOR=otelcol-contrib_${VERSION}_linux_${ARCH}.deb
+SUPERVISOR=opampsupervisor_${VERSION}_linux_${ARCH}.deb
+curl -fsSLO "$BASE/v$VERSION/$COLLECTOR"
+curl -fsSLO "$BASE/cmd%2Fopampsupervisor%2Fv$VERSION/$SUPERVISOR"
+echo "$(curl -fsSL "$BASE/v$VERSION/$COLLECTOR.sha256")  $COLLECTOR" | sha256sum -c -
+echo "$(curl -fsSL "$BASE/cmd%2Fopampsupervisor%2Fv$VERSION/$SUPERVISOR.sha256")  $SUPERVISOR" | sha256sum -c -
+sudo dpkg -i "$COLLECTOR" "$SUPERVISOR"
+# The supervisor starts the collector itself: turn off the collector package's own service.
+sudo systemctl disable --now otelcol-contrib
+# Save the supervisor configuration as /etc/opampsupervisor/config.yaml, then:
+sudo systemctl enable --now opampsupervisor
+```
+
+The supervisor runs as the `opampsupervisor` user. To read files it cannot open, such as `/var/log/syslog`, add that user to their group, for example `sudo usermod -aG adm opampsupervisor`.
+
+### Install on Windows
+
+In PowerShell, as Administrator:
+
+```powershell
+$Version = "0.165.0"
+$Base = "https://github.com/open-telemetry/opentelemetry-collector-releases/releases/download"
+$Dir = "C:\Program Files\OpenTelemetry OpAMP Supervisor"
+Set-Location $env:TEMP
+$Files = @{
+  "opampsupervisor.msi" = "$Base/cmd%2Fopampsupervisor%2Fv$Version/opampsupervisor_${Version}_windows_x64.msi"
+  "otelcol-contrib.tar.gz" = "$Base/v$Version/otelcol-contrib_${Version}_windows_amd64.tar.gz"
+}
+foreach ($f in $Files.Keys) {
+  Invoke-WebRequest $Files[$f] -OutFile $f
+  Invoke-WebRequest "$($Files[$f]).sha256" -OutFile "$f.sha256"
+  $Expected = (Get-Content "$f.sha256" -Raw).Trim()
+  if ((Get-FileHash $f -Algorithm SHA256).Hash -ne $Expected) { throw "Checksum mismatch: $f" }
+}
+Start-Process msiexec.exe -Wait -ArgumentList '/i', 'opampsupervisor.msi', '/qn'
+tar -xzf otelcol-contrib.tar.gz -C $Dir otelcol-contrib.exe
+# Save the supervisor configuration as C:\Program Files\OpenTelemetry OpAMP Supervisor\config.yaml, then:
+Restart-Service opampsupervisor
+```
+
+### Run in Docker
+
+The upstream supervisor image has no collector in it, so build one that adds it:
+
+```dockerfile
+FROM ghcr.io/open-telemetry/opentelemetry-collector-releases/opentelemetry-collector-contrib:0.165.0 AS collector
+FROM ghcr.io/open-telemetry/opentelemetry-collector-releases/opentelemetry-collector-opampsupervisor:0.165.0
+COPY --from=collector /otelcol-contrib /usr/local/bin/otelcol-contrib
+RUN mkdir -p /home/opampsupervisor/storage
+```
+
+Save the supervisor configuration as `supervisor.yaml` next to the Dockerfile, then:
+
+```bash
+docker build -t lc-otel-supervisor:0.165.0 .
+docker run -d --name lc-otel-supervisor --restart unless-stopped \
+  -v "$PWD/supervisor.yaml:/etc/opampsupervisor/config.yaml:ro" \
+  -v lc-otel-supervisor-data:/home/opampsupervisor/storage \
+  lc-otel-supervisor:0.165.0 --config=/etc/opampsupervisor/config.yaml
+```
+
+To read host files, mount them read-only, for example `-v /var/log:/var/log:ro`.
+
+### Bindplane BDOT v2
+
+BDOT v2 runs under the same OpAMP supervisor. Use the supervisor configuration above with `agent.executable` pointing at the BDOT collector binary, and the `https://` endpoint: the hooks domain does not accept WebSocket. The `Authorization: Secret-Key <secret>` header that the Bindplane installer writes is accepted as well as `Bearer`.
+
+### Bindplane BDOT v1
+
+BDOT v1 has its own OpAMP client, which only speaks WebSocket. It connects to the site's OpAMP host, listed as `opamp` in `limacharlie org urls` on sites that have one. Its `manager.yaml`:
+
+```yaml
+endpoint: "wss://<opamp-host>/<OID>/<FLEET NAME>/v1/opamp"
+secret_key: "<SECRET>"
+agent_id: "<A UNIQUE ID FOR THIS COLLECTOR>"
+labels: "env=prod"
+```
+
+BDOT v1 receives the full collector configuration, which replaces its `collector.yaml`. It reports no health, so the console shows its health as unknown. Its labels reach LimaCharlie as the `service.labels` attribute, which selectors can match (`service.labels: "*env=prod*"`).
+
+A collector appears on the **Collectors** tab as soon as it connects. It runs nothing new until a config matches it.
+
+## Write fleet configs
+
+Open the fleet's **Configs** tab. Each config has a name, a selector and the collector YAML. The order matters: each collector gets the first config, from the top, whose selector matches.
+
+- A selector lists attributes that must all match. A value matches exactly, or as a pattern where `*` matches any text and `?` one character: `host.name: web-*`. An empty selector matches every collector, which makes it a good last entry.
+- Collectors report `service.name`, `service.version`, `service.instance.id`, `os.type` (`linux`, `windows`, `darwin`), `os.description`, `host.arch`, `host.name`, and whatever you set under `agent.description` in the supervisor configuration.
+- Leave pipeline `exporters` empty. LimaCharlie sends every pipeline to itself. A pipeline may list connectors as exporters, to route data into another pipeline.
+
+An example for Windows hosts, placed before a catch-all:
+
+```yaml
+receivers:
+  windows_event_log/security:
+    channel: security
+  windows_event_log/system:
+    channel: system
+  host_metrics:
+    collection_interval: 60s
+    scrapers:
+      cpu: {}
+      memory: {}
+      filesystem: {}
+processors:
+  batch: {}
+  resource_detection:
+    detectors: [system]
+service:
+  pipelines:
+    logs:
+      receivers: [windows_event_log/security, windows_event_log/system]
+      processors: [resource_detection, batch]
+    metrics:
+      receivers: [host_metrics]
+      processors: [batch]
+```
+
+Click **Save configs**. If LimaCharlie refuses the configs, its message names the config and the setting at fault, for example `opamp: config "windows-hosts": exporters: not allowed, LimaCharlie adds its own exporter (pipelines without exporters are sent to LimaCharlie)`. Collectors pick up the change at their next check-in.
+
+**Manage collectors** turns the fleet off and on (`opamp.enabled`). While it is off, collectors are refused and keep running the configuration they last received.
+
+The [reference](otel-collector-fleet-reference.md) lists every allowed receiver, processor, connector and extension, and what LimaCharlie adds to each config.
+
+### Check-in interval
+
+Collectors check in every 30 seconds by default. A config change reaches a collector at its next check-in, and its status one check-in later. To change the interval, set **Check-in interval** on the Configs tab (`opamp.heartbeat_seconds`, 5 to 3600 seconds). Shorter means faster changes and more requests.
+
+It reaches only collectors whose supervisor has `accepts_opamp_connection_settings: true`. LimaCharlie offers the interval as OpAMP connection settings, which carry the same endpoint and `Authorization` header, since the supervisor replaces its own headers with offered ones. Removing the setting offers the 30-second default back to collectors still running an interval it offered.
+
+BDOT v1 collectors keep their WebSocket open, and configuration changes are pushed to them right away. The check-in interval does not apply to them.
+
+## Collectors as sensors
+
+LimaCharlie tags every record a managed collector sends with resource attributes:
+
+| Attribute | Value |
+|---|---|
+| `lc.collector.instance_uid` | The collector's OpAMP instance ID |
+| `lc.collector.config` | The name of the config it runs |
+| `host.name` | The host name the collector reported, if the record has none |
+
+The fleet's mapping (`sensor_key_path: resource/lc.collector.instance_uid`, `sensor_hostname_path: resource/host.name`) turns each collector into its own sensor, named after its host, and `event_type_path: otel_type` sets the event type to `log`, `span`, `metric` or `opamp_status`. The console sets this mapping when it creates a fleet. Records without the collector tag, such as [fleet status events](#fleet-status-events) or OTLP sent directly to the webhook, appear on the fleet's own sensor.
+
+See [Ingesting OpenTelemetry Data via Webhook](otel-webhook.md#event-format) for the fields of each event.
+
+## Fleet status events
+
+When a collector's state changes, LimaCharlie adds an event to the fleet's webhook with `otel_type: opamp_status`:
+
+| Field | Value |
+|---|---|
+| `otel_type` | `opamp_status` |
+| `change` | `connected`, `config_applied`, `config_failed`, `blocked`, `unblocked`, `unhealthy` or `healthy` |
+| `instanceUid` | The collector's instance ID |
+| `hostName` | Its host name, when reported |
+| `configName` | The config assigned to it |
+| `configHash` | For `config_applied` and `config_failed`, the hash the collector reported. Otherwise the hash of the config assigned to it. |
+| `error` | For `config_failed`, the collector's error. For `unhealthy`, its health error. |
+| `blockedReason` | For `blocked`, why |
+
+Empty fields are left out. A new collector gets `connected`, plus `blocked` if it starts blocked. Each change is normally sent once, and can rarely arrive twice after a network error. If the webhook's queue is full, status events are dropped rather than delaying configurations.
+
+Every config apply restarts the collector, which reports a short `unhealthy` followed by `healthy`. Do not alert on `unhealthy` alone.
+
+This rule reports collectors that refuse their config or get blocked:
+
+```yaml
+detect:
+  event: opamp_status
+  op: or
+  rules:
+    - op: is
+      path: event/change
+      value: config_failed
+    - op: is
+      path: event/change
+      value: blocked
+respond:
+  - action: report
+    name: otel-collector-needs-attention
+```
+
+It relies on `event_type_path: otel_type`. Without it, match `event/otel_type` with `value: opamp_status` instead of `event:`.
+
+## The console
+
+### A fleet
+
+**Sensors > OpenTelemetry Fleets** lists the organization's fleets, with their status, number of configs, collectors online out of total, and how many are blocked or failed. Open a fleet to get three tabs:
+
+- **Collectors**: every collector, with its host, status (Online, Offline or Blocked with its reason), health, assigned config, config status (Applied, Applying, Failed with its error, or No match), version and last seen. Filters and search run over every collector of the fleet, read to the last page first. Click a collector to see its attributes, capabilities and effective configuration (what it really runs, with the webhook secret redacted). **Forget collector** removes an offline collector from the fleet. If it connects again, it comes back as a new collector. Its sensor and events stay.
+- **Configs**: the ordered configs, **Manage collectors** and **Check-in interval**. Saving writes the whole record. If someone else saved the fleet after you opened it, the console refuses the save and keeps your edits until you reload.
+- **Setup**: the supervisor configuration for Linux, Windows and Docker, the install commands, and the base URL for sending OTLP directly. The secret is masked until you reveal it. If it is a `hive://secret/` reference, showing it needs `secret.get`.
+
+A collector is online when it checked in within three check-in intervals.
+
+### All organizations
+
+The **OpenTelemetry Fleets** link in the top navigation lists the fleets of every organization you can access, or of the organizations you pick. It shows each fleet's counts and one table with every collector, its organization and fleet. Organizations where you lack `cloudsensor.get` are left out and listed as such. The table, its filters and its counts open once every organization and fleet has been read, so they always cover everything. Organizations or fleets that could not be read are named with the error.
+
+## Fleet API
+
+The fleet's collectors are available from the REST API. The fleet's configuration is the webhook's `cloud_sensor` record, read and written through Hive.
+
+| Method and path | Permission | Returns |
+|---|---|---|
+| `GET /v1/otel/{oid}/{hook}/collectors?limit=&cursor=` | `cloudsensor.get` | `collectors` (most recently seen first, no effective config), `next_cursor` (empty on the last page) and `total`. `limit` is 1 to 500, 100 by default. |
+| `GET /v1/otel/{oid}/{hook}/collectors/{uid}` | `cloudsensor.get` | `collector`, with `effective_config` |
+| `DELETE /v1/otel/{oid}/{hook}/collectors/{uid}` | `cloudsensor.set` | Forgets the collector, and writes an `otel_collector_delete` entry in the audit log |
+
+The host is `api.limacharlie.io`. `{hook}` is the fleet name and `{uid}` the 32-character hex instance ID. An unknown collector is a `404`. With the CLI:
+
+```bash
+limacharlie api 'otel/{oid}/otel-fleet/collectors?limit=500'
+limacharlie api -X DELETE 'otel/{oid}/otel-fleet/collectors/<uid>'
+```
+
+A collector:
+
+```json
+{
+  "instance_uid": "019a1b2c3d4e5f60718293a4b5c6d7e8",
+  "host_name": "web-01",
+  "attributes": {"service.name": "otelcol-contrib", "service.version": "0.165.0", "os.type": "linux", "host.name": "web-01"},
+  "agent_version": "0.165.0",
+  "online": true,
+  "first_seen": 1795215199000,
+  "last_seen": 1795215230000,
+  "healthy": true,
+  "health_status": "StatusOK",
+  "health_error": "",
+  "assigned_config": "linux-hosts",
+  "assigned_hash": "ab12...",
+  "remote_config_status": "APPLIED",
+  "remote_config_hash": "ab12...",
+  "remote_config_error": "",
+  "blocked_reason": "",
+  "capabilities": ["ReportsStatus", "AcceptsRemoteConfig", "ReportsEffectiveConfig", "ReportsHealth", "AcceptsOpAMPConnectionSettings"]
+}
+```
+
+Times are Unix milliseconds. `remote_config_status` is `UNSET`, `APPLYING`, `APPLIED` or `FAILED`.
+
+## Troubleshooting
+
+| Symptom | Cause and fix |
+|---|---|
+| The supervisor logs `401` | Wrong or missing secret. Check the `Authorization: Bearer` header, and that the secret is not in the URL path. |
+| The supervisor logs `403` | The fleet does not exist, or **Manage collectors** is off (`opamp.enabled: false`). |
+| The supervisor logs `400` about WebSocket or `Content-Type` | The endpoint starts with `ws://` or `wss://`. The upstream supervisor needs the `https://` URL. |
+| `429` | The fleet already tracks 50,000 collectors. Forget offline ones or use another fleet. |
+| `503` | Temporary. The supervisor retries on its own. |
+| Blocked: `collector does not accept remote config` or `does not report its effective config` | Set `accepts_remote_config: true` and `reports_effective_config: true` in `supervisor.yaml` and restart the supervisor. |
+| Blocked: `exports to non-LimaCharlie destination: exporters::<id>` | A local configuration file on the host adds an exporter. Remove it. Only `debug` and `nop` may stay. |
+| Blocked: `LimaCharlie exporter changed: ...` | A local file changes LimaCharlie's exporter (endpoint, TLS, proxy, extra keys). Remove the override. |
+| Blocked: `own telemetry exported: service::telemetry::...` | The collector's own logs, metrics or traces are sent somewhere. Keep `reports_own_*: false` and remove `service::telemetry` readers or processors from local files. |
+| Blocked: `opamp extension ...` or `extension not allowed: ...` | A local file adds an extension LimaCharlie does not allow, or changes the supervisor's own `opamp` extension. |
+| Config status **Failed** | The collector refused the config. The error is on the collector's row, often a component the binary does not include or a file it cannot read. The same config is not sent again until you change it. |
+| **No match** | No selector matches the collector. Compare its attributes in the collector drawer with your selectors, or add a last config with an empty selector. |
+| Collector online but no data | Check that the config's receivers produce data on that host (file permissions for `file_log`, for example), and that the host reaches the hooks domain over HTTPS. |
+
+After you fix a blocked collector's local files, it is checked again at its next check-in and gets `unblocked`.
+
+## Related articles
+
+- [Fleet configuration reference](otel-collector-fleet-reference.md)
+- [Ingesting OpenTelemetry Data via Webhook](otel-webhook.md)
+- [Webhook Adapter](webhook-adapter.md)
+- [Cloud-Managed Adapters](../cloud-managed.md)
