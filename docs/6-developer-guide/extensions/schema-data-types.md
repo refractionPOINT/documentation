@@ -28,6 +28,8 @@ The configuration attached to requests and events goes through a similar but *no
 | Types checked | Yes | Yes |
 | Secrets resolved | Yes | Yes |
 
+The table describes the configuration attached to **requests**. Event callbacks (`subscribe`, `unsubscribe`, `update`) and configuration validation receive the configuration as stored: secret references are not resolved and unknown keys are not dropped. Do work that needs a resolved secret from a request action.
+
 The silent drop is the one to watch: removing a field from your config schema does not just hide it, it strips any stored value for that field out of the configuration your extension receives, with no error anywhere. Keep a field in the schema until you are sure nothing depends on it.
 
 !!! warning "Validation is top-level only"
