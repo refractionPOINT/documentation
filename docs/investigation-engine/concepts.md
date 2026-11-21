@@ -8,11 +8,12 @@ uses.
 | Object | Stored as | What it is |
 |---|---|---|
 | **Plan template** | Hive record `investigation_plan/<name>` | How to investigate one kind of alert: the steps to gather, the rules that decide, an optional AI review, and the actions to propose. See [Plan Templates](templates.md) and [How to Think About Templates](how-to-think-about-templates.md). |
+| **Check** | Hive record `investigation_plan/<name>`, `kind: check` | A template other templates call, like a function: params in, one verdict out. It never acts and never writes the case. See [Checks](templates.md#checks-templates-other-templates-call). |
 | **Policy** | Hive record `investigation_policy/<name>` | What the engine may do: budgets, allowed operators, autonomy per action class, what the AI may decide per template, approvers, the identity runs execute as. See [Policies and Autonomy](policies.md). |
 | **Run** | Engine store | One investigation: its inputs, the effective policy, state, steps, actions and outcome. |
 | **Step** | Part of a run | One operator call (or one fact pack), with its timing, cost, status and three sentences: why it ran, what it found and what used it. |
 | **Rule** | Part of a template | A condition over steps that decides: an `escalate` rule or a `close` rule, with an id and a sentence for the case. |
-| **Action** | Part of a run | A containment, eradication, tagging or close step with a target, a class, a state and, for reversible ones, a lease. |
+| **Action** | Part of a run | A containment, eradication, tagging or close step with a target, a class, a state and, for reversible ones (a tag excepted), a lease. |
 | **Operator** | Built into the engine | One way to obtain an answer or perform an action: an entity lookup, a search, a Lookup read, a sensor read, a threat-intel lookup, an AI question. The org's operator list shows which ones your policy allows. |
 
 ## Gather, rules and the AI

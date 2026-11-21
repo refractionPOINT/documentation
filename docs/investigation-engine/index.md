@@ -48,6 +48,7 @@ Reference: [Permissions](permissions.md), [API Reference](api-reference.md),
 |---|---|
 | **Runs** | One investigation per alert, case, entity or question, ending with one [outcome](concepts.md#outcomes): closed or escalated by a rule, closed or escalated by the AI, the AI recommends, couldn't tell, or conflict. With it: the rule or the AI answer behind it, what was missing, each step's reason and finding, and the actions taken. |
 | **Plan templates** | Reusable, versioned plans for a class of alerts, stored as Hive records in your organization: steps to gather, rules that decide, an optional AI review. Install the [default library](templates.md#the-default-library), edit it, write your own. |
+| **Checks** | Logic several templates repeat, written once as a [check](templates.md#checks-templates-other-templates-call) (for example where a link lands) and called by each template, once or per element of a list. |
 | **Test on past alerts** | Run a template, read-only, on real past detections and cases: which rule decided each alert, and whether it agreed with your analysts. |
 | **Policies and autonomy** | Per action class: `off`, `suggest`, `approve` or `auto`, with leases, caps and approvers; per template, whether the AI may decide. The policy record is the only thing that decides what the engine may do. |
 | **Approvals inbox** | Every action that waits for a person, across all runs, in one list. |

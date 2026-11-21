@@ -277,6 +277,29 @@ Watch what people do with the runs:
 Over time, more alerts close and escalate by rules your team wrote and can read, and
 fewer need the AI or a person.
 
+## 9. Pull repeated logic into a check
+
+When two templates carry the same block (the steps and rules that say where a link
+lands, or what a hash is), write it once as a
+[check](templates.md#checks-templates-other-templates-call) and call it from both.
+Fixing it later is one edit, and every template that calls it gets the fix on its
+next run.
+
+- **Give a check one question and one verdict.** "Does this link land on a password
+  page?" is a check. "Is this email phishing?" is a template. A check's rules say
+  escalate or close for its own question only; the template decides what that means
+  for the alert, and what to do about it.
+- **The template reads the verdict, nothing else.** If it also needs a value the check
+  reads, it gathers that value itself. The check can then change inside without
+  breaking its callers.
+- **Per element, cap the list.** Call it with `each` and a `max_items` you can live
+  with. A close needs every element checked, so a longer list never closes by rule.
+- **The AI switch is the template's.** A check never has its own review, and its
+  AI-assisted rules decide only where the calling template lets the AI decide.
+- **Test the check on its own** with `params` samples, then test the templates that
+  call it on past alerts. Before you save a check, read `used_by`: the templates your
+  edit would break.
+
 ## Checklist
 
 - [ ] Each close rule rests on positive, complete evidence, never on "nothing found".
@@ -287,5 +310,6 @@ fewer need the AI or a person.
 - [ ] Expensive steps have an `only_if`.
 - [ ] Steps a person could answer have an `ask`.
 - [ ] `validate_plan` has no errors and no warnings you cannot explain.
+- [ ] Logic that two templates repeat is a check, not a copy.
 - [ ] The test on past alerts shows the rules agreeing with analysts.
 - [ ] The template is saved as a draft; a person promotes it.

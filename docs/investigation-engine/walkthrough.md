@@ -155,7 +155,7 @@ request picks `caller` and the policy allows it.
 The `investigation_policy` record named `default` sets the identity, the AI agent and
 what the engine may do on its own. This minimal policy never executes anything without
 a person: containment and tagging are only suggested, and closing a case as a false
-positive waits for a person's approval, so that **Close as benign**, **Escalate** and
+positive waits for a person's approval, so that **Close as benign** and
 **Add to list and close** (step 9) have something to act on:
 
 <!-- validate: policy -->
@@ -539,8 +539,9 @@ You need `investigation.set` and `insight.evt.get`; closing an email message als
 `mailsec.set`. The proposal expires after the class's `approval_timeout`.
 
 **To escalate (you think it is malicious, or you disagree with a benign
-recommendation).** Deny the proposed close with a note, then work the case. This is
-the console's **Escalate**:
+recommendation).** The console has no Escalate button: escalation is something a
+template does, with an `escalate` rule. By hand, deny the proposed close with a note
+(**Deny** in the console's Approvals tab), then work the case:
 
 ```bash
 curl -s -X POST "$API/investigate/$OID/runs/<run id>/actions/<action id>/deny" -H "Authorization: Bearer $LC_JWT" \
@@ -583,6 +584,9 @@ curl -s -X POST "$API/investigate/$OID/runs/<run id>/actions/<action id>/deny" -
   start a new run on an active template.
 - When the policy names `approvers`, only they may approve, deny, extend or confirm
   (`403`, `error_code` `forbidden`). Anyone with the class permission may revert.
+- A `tag` or `tag.add` holds no lease: it is `confirmed` as soon as it is added and
+  lasts its `ttl`, so `extend` and `confirm` are refused for it (`409`, and
+  `eligibility` says `false`). `revert` removes the tag.
 - Each action carries `eligibility`, what the caller may decide on it.
 - The CLI has `actions approve` and `actions deny`; use the API or the console for the
   other verbs.

@@ -52,7 +52,7 @@ Defaults below apply only after all matching policy entries have been combined.
 | `mode` | `off`, `suggest`, `approve`, `auto` | `suggest` |
 | `max_targets_per_run` | Positive integer, at most 2147483647 | 3 for containment/eradication; otherwise unlimited |
 | `max_targets_per_hour` | Positive integer, at most 2147483647 | 10 for containment/eradication; otherwise unlimited |
-| `lease` | Positive duration | `2h` |
+| `lease` | Positive duration. It does not apply to `tag` and `tag.add`: a tag holds no lease and lasts the `ttl` its template sets, or until removed | `2h` |
 | `approval_timeout` | Positive duration | `15m` |
 | `approvers` | Distinct identities, each compared exactly with the person deciding: a user's email or an API key's name, such as `alice@example.com` | Any ordinarily authorized approver |
 

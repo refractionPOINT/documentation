@@ -184,7 +184,10 @@ Action states, in the order the inbox lists them: `awaiting_approval`, `proposed
 item is the action plus `run` (`run_id`, `template`, `urgency`, `outcome`, `verdict` (its
 label, `""` while there is none), `decided`, `state`, `case_id`, `created`). `approve`/`deny` apply to `awaiting_approval`,
 `extend`/`confirm` to `active`, `revert` to `active` or `confirmed`. The approvers rule
-is in [Approvals](policies.md#approvals).
+is in [Approvals](policies.md#approvals). A `tag` or `tag.add` holds no lease: it goes
+from `executing` straight to `confirmed`, its `lease_until` is the zero time, and
+`extend` and `confirm` are `false` in its `eligibility` whoever asks and answer `409`.
+`revert` removes the tag.
 
 ### Templates, policy and authoring
 
@@ -212,6 +215,15 @@ case of one run:
 ```json
 "estimate": {"steps": 14, "search_steps": 3, "llm_steps": 1, "billed_steps": 0, "wall_seconds": 95, "exceeds": ["max_steps_per_run"]}
 ```
+
+For a template that calls [checks](templates.md#checks-templates-other-templates-call)
+the estimate counts the checks' steps (an `each` call at its `max_items`), and
+`ai_rules_via` maps each AI-assisted rule that reads a call to the check rules behind
+it (`<call>/<check>/<rule>`). Add the check's record `name` to the body when you
+validate a **check**, and the answer has `used_by`: `[{template, status, valid,
+issues}]`, one per template that calls it, directly or through another check,
+validated again against your draft. It is what saving would break; nothing blocks the
+save.
 
 #### Authoring kit
 
@@ -277,6 +289,39 @@ has `decided_by_rules`, `rules` (per rule id: `decided`, `agree`, `disagree`), `
 
 These numbers are informational: nothing at run time reads them. See
 [Test on past alerts](templates.md#test-on-past-alerts).
+
+A **check** is tested with `params` samples only:
+`{"params": {...}, "expected": {"outcome": "escalated"}}` (`escalated`, `closed`,
+`couldnt_tell` or `conflict`). `agreement.rule` compares the check's outcome with
+`expected.outcome`, and the check's AI-assisted rules decide its verdict. Any other
+sample for a check is `check_not_startable`; a `params` sample for an alert template,
+or `expected: {outcome}` on another kind of sample, is `400` `bad_request` with
+`reason_code` `bad_sample`. A sample of a template that calls checks has `checks:
+[{call, template, version, outcome, rule, item_key}]` (`outcome` is also `not_run`),
+its `verdict.decided_by.via` names the calls the deciding rule read, and the summary's
+`rules` also counts each check rule as `<call>/<rule>`.
+
+#### Check calls in a run
+
+A step that calls a check is one step in `GET /runs/{id}/steps`: its `op` is
+`template:<name>`, `check` is `{template, version, etag}`, and its value is the
+check's verdict (`malicious`, `benign`, `outcome`, `label`, `rule`, `say`,
+`ai_assisted`, `template`, `version`; for a call with `each`, `items`, `any_malicious`,
+`all_benign`, the counts, `first_malicious`, `item_count` and `not_run`). It is
+`ok` and complete once the check decided, and `unknown` with `check_couldnt_tell`,
+`check_conflict` or `check_input_unknown` otherwise. The check's own steps are
+ordinary steps named `<call>__<step>` (`<call>[<i>]__<step>` per element) with
+`parent` set to the call, and `item_key` for an element.
+
+The run lists the checks it ran in `checks: [{call, template, version, etag, sha256,
+depth}]`, frozen when the run starts: replay, resume and the close check use these
+sources and never read the check again. `verdict.decided_by.via` is
+`[{call, template, rule, say, item_key}]` when the deciding rule read a call, and
+`verdict.missing[]` of a call that could not tell nests the check's own
+`check: [{step, reason, needed_by, ask}]`. A run whose check is missing or invalid is
+refused at start with `check_missing` or `check_invalid`. Runs count under the template
+they started with in [`/stats`](#stats), and `GET /runs?template=` matches that
+template only.
 
 ### Stats
 
@@ -351,7 +396,7 @@ against the organization's concurrent run cap, and is kept as a run of `kind: wa
 
 | Field | Meaning |
 |---|---|
-| `steps` | Each step has an `id` and exactly one of `op` (an operator) or `use` (a fact pack), plus `args`. A string argument that is a whole reference such as `"$alert__trigger.sid"` reads another step's value and makes the step wait for it. |
+| `steps` | Each step has an `id` and exactly one of `op` (an operator) or `use` (a fact pack, or `template:<name>` for a [check](templates.md#checks-templates-other-templates-call), which may take `each`, `as`, `key` and `max_items`; its answer is the check's verdict), plus `args`. A string argument that is a whole reference such as `"$alert__trigger.sid"` reads another step's value and makes the step wait for it. |
 | `select` | Field paths of the value to return (`matches[0].entity_id`, `matches[*].entity_id`). For a pack step, the names of exports. |
 | `limit` | Per step, 1 to 1000, default 10: the most list elements returned. |
 | `stop_when` | Up to 8 conditions with the same rules as a template's rules. The first one that is true cancels the steps still running. An unknown step never makes one true. |

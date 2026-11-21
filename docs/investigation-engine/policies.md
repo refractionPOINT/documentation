@@ -131,9 +131,15 @@ Two rules hold whatever the policy says:
   `authorize:` key of an `act` entry), and for the false-positive close the engine
   proposes after a close outcome. Any other action waits in `awaiting_approval` with
   the reason `no_registered_authorization`, and a person decides. An action that fires
-  on a decision the AI made never has a registered authorization. In the default
-  library, only the `contain.email` entries of `mailsec-message` and
-  `phishing-campaign` carry an authorization (`mail.verified_credential_harvest.v1`).
+  on a decision the AI made never has a registered authorization, and neither has one
+  that rests on a [check's](templates.md#checks-templates-other-templates-call) verdict
+  (the informational reason `via_check`). There are three: the `contain.email` entries
+  that carry `mail.verified_credential_harvest.v1` (in the default library, those of
+  `mailsec-message` and `phishing-campaign`), the engine's close of a false positive,
+  and the **tag check**, which needs no key in the template. Under `auto`, a `tag`,
+  `tag.add` or `tag.remove` entry runs by itself when a rule that does not use the AI
+  decided and holds again on the run's own evidence; see
+  [Tags](templates.md#tags-run-by-themselves-and-last-their-ttl).
 - **An action that cannot be undone runs by itself only when its exact class says
   `auto`.** A pattern such as `eradicate.*` or `*` with `mode: auto` resolves to
   `approve` for `eradicate.file` and `tag.remove`, with the reason
@@ -149,7 +155,7 @@ ever suggest.
 | `contain.network` | Yes | Sensor network isolation, as a lease. A sensor that was already isolated is left isolated at undo. | Yes |
 | `contain.email` | Yes | Email Security message quarantine, including the other recipient copies of the message's group. Each copy is checked before and after. | Where the provider supports release |
 | `contain.seal` | Yes | Seal a Windows sensor (tamper protection), as a lease. | Yes, engine seals only |
-| `tag.add` (also `tag`) | Yes | Add a sensor tag, with an optional TTL. | Yes, engine additions only |
+| `tag.add` (also `tag`) | Yes | Add a sensor tag, with an optional TTL. It holds **no lease**: it lasts its `ttl` (set by the template) or until removed. | A person's undo removes it, engine additions only; nothing undoes it automatically |
 | `tag.remove` | Yes | Remove a sensor tag. | No |
 | `eradicate.file` | Yes | Delete one file by absolute path. | No |
 | `close.false_positive` | Yes | Close the case the run wrote, or the email message, as a false positive. Proposed by the engine itself, not by templates: under the class's mode after `closed_by_rule` or `closed_by_ai`, and capped at `approve` after `ai_recommends_benign`. | Yes |
@@ -164,8 +170,11 @@ decides an action needs the class's permission too (see
 
 ### Rules no policy can change
 
-- **Reversible actions run as leases.** A lease undoes itself at expiry unless a person
-  confirms or extends it.
+- **Reversible actions run as leases**, except tags. A lease undoes itself at expiry
+  unless a person confirms or extends it. A `tag` or `tag.add` holds no lease: it is
+  `confirmed` once added and lasts what its template declares (`ttl`, or until
+  removed). The policy's `lease` has no effect on a tag class, no lease end or run
+  cancel removes the tag, and `extend` and `confirm` are refused for it.
 - **Irreversible actions never run before the evidence-preserving collection** that
   the template lists with `before:`, when collection is allowed.
 - **Every action transition is recorded** in the run's event log with the run, the
@@ -241,6 +250,10 @@ limacharlie investigate policy ai-set suspicious-process escalate --confirm --oi
   controls: after `closed_by_ai` it runs under the class's mode, so with
   `close_and_escalate` and `close.false_positive: {mode: auto}` the AI closes cases
   with no person.
+- The switch is the template a run **starts with**. A template that calls
+  [checks](templates.md#checks-templates-other-templates-call) has its switch cover
+  the AI-assisted rules of the checks it calls. A key that names a check has no effect
+  (the warning `ai_switch_on_check`): set the switch on the templates that call it.
 - `"*"` grants every template that has no entry of its own. `"*": "close_and_escalate"`
   lets the AI close alerts for every template the organization has, including ones
   added later.

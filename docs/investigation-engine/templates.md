@@ -151,9 +151,12 @@ case:                              # how the case reads
   kind: [phishing]
 ```
 
-Top-level keys, exactly: `description`, `version`, `status`, `applies_to`,
-`starts_from`, `deadline`, `scope`, `trust`, `gather`, `rules`, `explain_signals`,
-`ai_review`, `act` and `case`. A template needs at least one step, and at least one
+Top-level keys, exactly: `kind`, `description`, `version`, `status`, `applies_to`,
+`starts_from`, `deadline`, `scope`, `trust`, `params`, `gather`, `rules`,
+`explain_signals`, `ai_review`, `act` and `case`. `kind` is `alert` (the default) or
+`check`, a template that other templates call, and `params` belongs to checks (see
+[Checks](#checks-templates-other-templates-call), which also lists the keys a check
+may not have). A template needs at least one step, and at least one
 rule or an `ai_review` (`no_verdict_path`). The authoring kit's `schema` section is
 the JSON Schema of every key.
 
@@ -286,6 +289,12 @@ read those names; the bare pack id is not a value. `GET /packs` (or the kit's
 `packs` section) lists each pack's parameters and exports. A pack step takes `use`,
 `args`, `only_if`, `why`, `ask`, `always` and an optional pin (`pack_version`,
 `pack_digest`).
+
+### Checks
+
+`use: template:<name>` calls another template of your organization, a
+[check](#checks-templates-other-templates-call), once or once per element of a list.
+The caller reads one fact from the call: the check's verdict.
 
 ### Steps that need care
 
@@ -490,17 +499,63 @@ only suggested, needs approval or runs by itself. A class whose mode is `off` is
 proposed (`act_class_off`). A draft template and an inline plan only suggest.
 
 **Nothing runs without a person unless a registered authorization holds**, an engine
-check rebuilt from the run's own evidence. There are exactly two:
+check rebuilt from the run's own evidence. There are exactly three:
 
 - `contain.email` with `authorize: mail.verified_credential_harvest.v1`: one message,
   a credential-harvest landing of that message's links that a stored link detonation
   verified, the recipients of that message's group, decided by a deterministic rule
   with no support from the AI or from case history.
 - The engine's own close check of `close.false_positive`.
+- The **tag check** of every `tag`, `tag.add` and `tag.remove` entry (see
+  [Tags](#tags-run-by-themselves-and-last-their-ttl)). It has no `authorize:` key:
+  writing one is `bad_action_guard`.
 
 Every other `act` entry, host isolation included, and every entry that fires on a
 decision the AI made, waits for a person even under `auto` (the reason
-`no_registered_authorization`).
+`no_registered_authorization`). An entry whose decision read a [check's](#checks-templates-other-templates-call)
+verdict never has an authorization either (the reason `via_check`, for information).
+
+### Tags run by themselves, and last their `ttl`
+
+Tagging a sensor is low impact and can be undone, so a tag entry (`tag`, `tag.add`,
+`tag.remove`) runs by itself when the policy's mode for its class is `auto` **and** the
+tag check holds:
+
+- a **deterministic** rule that the entry's `on_rules` names decided the run (the
+  deciding rule, or an escalate rule that also held after an escalation), not a rule
+  that reads the AI's judgement;
+- that rule holds again on the facts the run logged (a close rule needs complete
+  facts);
+- every step the rule, the entry's `target` and its `attrs` read, and every step those
+  were derived from, is the template's own call with the run's inputs, and neither an
+  AI output nor case history (`case.related`);
+- the target and attributes resolve to the action's own.
+
+A tag that fails any of these waits for a person like every other action. A draft
+template only suggests. `tag.remove` cannot be undone, so it runs by itself only
+when the policy names the exact class `tag.remove` with `mode: auto`
+(`irreversible_requires_exact_class`).
+
+**A tag has no lease and no automatic undo.** It lasts what its `act` entry declares:
+the `ttl` in `attrs` (whole seconds; the platform removes the tag then) or, without a
+`ttl`, until someone removes it.
+
+```yaml
+act:
+  - {class: tag.add, target: '$ctx__trigger.sid', attrs: {tag: 'ie:banned-binary', ttl: 86400}, on_rules: [banned_binary]}
+```
+
+- The engine marks the tag `confirmed` as soon as it is added. No lease end undoes
+  it, cancelling the run leaves it, and nobody can confirm or extend it (those are
+  refused). A person can still undo it from the action, which removes the tag.
+- This holds whoever decided it, a rule under `auto` or a person who approved it: the
+  template declares a tag's lifetime. The policy's `lease` does not apply to a tag
+  class.
+- An entry with no `ttl` gets the warning `auto_tag_permanent`: under `auto` that tag
+  stays on the sensor until someone removes it. Set `ttl` to what the tag should last, or
+  leave it off on purpose when the tag is meant to stay.
+- Every other automatic action keeps the policy's lease and is undone when it ends,
+  unless a person confirms or extends it.
 
 **The case close.** `closed_by_rule` and `closed_by_ai` propose `close.false_positive`
 under the policy's mode for that class. `closed_by_ai` closes by itself only while the
@@ -587,6 +642,331 @@ with a verdict, and one account entity per recipient with its own outcome.
   `mailsec.message_get` step. A step's own telemetry or entity record replaces the
   default of that kind; the message artifact is added unless the step records the same
   reference.
+
+## Checks: templates other templates call
+
+A **check** is a template that other templates call, like a function. It takes
+**params**, gathers, runs its own rules and hands back **one fact**: its verdict.
+Write one for logic that several templates repeat (where a link lands, what a file
+hash is, whether a sender is known), so that you fix it once and every template that
+calls it gets the fix on its next run. A check is `kind: check` and is stored like any
+other template, as an `investigation_plan` record.
+
+### A check
+
+<!-- validate: template -->
+```yaml
+# investigation_plan/url-harm
+kind: check                      # alert (the default) or check
+description: "Does one link of a stored message land on a page that asks for a password?"
+version: 1
+status: active
+params:                          # the call's arguments
+  link: {type: object, required: true, description: "One element of the message's links."}
+gather:
+  landing:
+    op: mailsec.link_resolve
+    args: {links: ['$link'], links_complete: true}   # the list is the one link this check judges
+    record:
+      kind: entity
+      entity_type: url
+      indicator: $link.href
+      title: Where the link lands
+      note: "The link lands on {landing.final_domain}."
+      malicious_when: 'landing.credential_harvest'
+      benign_when: 'landing.final_domain_matches_shown'
+rules:
+  escalate:
+    - {id: credential_page, when: 'landing.credential_harvest', say: "{link.href} lands on a page that asks for a password."}
+  close:
+    - {id: lands_where_shown, when: ['landing.verified', 'landing.final_domain_matches_shown'], say: "{link.href} lands on the site it shows."}
+  never_close_when: ['landing.open_redirect']
+```
+
+- **`params`** declare the call's arguments, one entry per name: `type` (`string`,
+  `integer`, `number`, `boolean`, `array`, `object` or `any`), `required` and
+  `description`. Inside the check, `$<param>` reads one in step `args`, `only_if`,
+  rules, `say` and `record` (`$link.href` reads a field of an object param). `params`
+  belong to checks only (`params_on_alert`). A param nothing reads is the warning
+  `check_param_unused`.
+- **What a check may contain:** `kind`, `description`, `version`, `status`, `params`,
+  `gather` (with `only_if`, `why`, `ask`, `always` and `record` on its steps, and calls
+  of fact packs and of other checks) and `rules` (`escalate`, `close`,
+  `never_close_when`). It needs at least one rule (`no_verdict_path`).
+- **What a check may not contain:** `applies_to`, `starts_from`, `act`, `case`,
+  `ai_review`, `explain_signals`, `scope`, `deadline` or `trust`. Each is refused with
+  `check_forbidden_key`, and the message names the key. A check is never started by a
+  detection or a case. It never acts and never writes or shapes the case: the template
+  that calls it does all of that, once per run, under its own policy. One AI review
+  per run keeps the cost of an alert predictable (a check may still use `ask_ai`
+  steps). `trust` stays the caller's, so a check cannot quietly widen or narrow the
+  analysis of the run that calls it.
+- A check's `status` is informational: a check never acts on its own. An active
+  template that calls a `draft` check gets the warning `check_is_draft`.
+- A check can be tested on its own with `params` samples
+  ([below](#test-a-check)), and is never started as a run: naming one where a run is
+  started (start a run, an automatic start, a D&R `start investigation`, a test with
+  no `params` sample) is `check_not_startable`.
+
+### Calling a check
+
+A template calls a check as one gather step with `use: template:<name>`. The prefix
+keeps a check's name apart from a fact pack's.
+
+<!-- validate: template -->
+```yaml
+# investigation_plan/mailsec-links  (an alert template)
+description: "Escalate a message when any of its links lands on a password page; close one whose every link is benign and whose sender has history."
+version: 1
+status: draft
+applies_to:
+  detect_cat: ['mailsec-ai-triage']
+starts_from: message
+gather:
+  message:
+    op: mailsec.message_get
+    args: {msg_uuid: $msg_uuid}
+  sender_history:
+    op: mailsec.sender_profile
+    args: {sender: '$message.sender', domain: '$message.sender_domain', before: '$message.received', exclude_group: '$message.group_id'}
+  links:                                # one call per link of the message
+    use: template:url-harm
+    each: '$message.links'
+    as: link
+    key: '$link.href'
+    max_items: 25
+    args: {link: '$link'}
+rules:
+  escalate:
+    - {id: phishing_link, when: 'links.any_malicious', say: "A link of this message is malicious: {links.first_malicious.say}"}
+  close:
+    - {id: clean_known_sender, when: ['links.all_benign', 'sender_history.prior_messages_30d > 0'], say: "Every link is benign and the sender wrote {sender_history.prior_messages_30d} message(s) before."}
+case:
+  mode: create
+  severity: {escalated_by_rule: high, closed_by_rule: low, default: medium}
+  kind: [phishing]
+```
+
+This template validates with no error. It has one warning, `each_close_on_cap`,
+which any close rule that reads `all_benign` of an `each` call gets: a reminder that
+a message with more than `max_items` links never closes by rule (see the limit
+below).
+
+- **`use: template:<name>`** names a check of the same organization (`check_missing`
+  when there is none, `check_not_callable` when the record is an alert template).
+- **`args`** are checked against the check's `params`: `missing_arg`, `unknown_arg`
+  and `arg_type_mismatch`. An argument reads the caller's steps, the run's inputs,
+  `alert_time` or a literal. A caller's optional input `$?name` never reaches a check
+  (`bad_reference`): a check's rules only ever see what the template's own steps and
+  the run's own ids give it.
+- **The call waits** for every step its `args` read. When one of them is unknown or
+  was skipped, the check does not run, and the call is unknown with the reason
+  `check_input_unknown` (or `dependency_skipped`, as for any step).
+- `only_if`, `why`, `ask` and `always` work on the call as on any step. `only_if`
+  gates the whole check. `always: true` gathers the check's verdict even after the
+  caller decided, for the case.
+- **Once, or once per element.** Without `each` the call runs the check once. With
+  `each` it runs the check once per element of a list (below).
+- **A call takes no `op`**: `use` and `op` together, a call with `as`, `key` or
+  `max_items` and no `each`, or a malformed name is `bad_check_call`.
+
+### What the caller reads: the verdict, only
+
+A check is a black box: params go in, a verdict comes out. The calling template can
+**not** read the check's steps (`links__landing.final_domain` is `unknown_reference`).
+When the caller also needs a value the check reads, it writes that step itself.
+Identical reads in one run are made once, so the repeat costs nothing, and the author
+of a check is free to restructure it without breaking the templates that call it.
+
+**A call without `each`** has this fact once the check decided:
+
+| Field | The check escalated | The check closed |
+|---|---|---|
+| `malicious` | `true` | `false` |
+| `benign` | `false` | `true` |
+| `outcome` | `escalated` | `closed` |
+| `label` | `true_positive` | `false_positive` |
+| `rule` | the id of the check's deciding rule | the same |
+| `say` | its sentence, with the values filled in | the same |
+| `ai_assisted` | `true` when the deciding rule is [AI-assisted](#the-ai-switch-and-registered-authorizations) | the same |
+| `template`, `version` | the check that ran | the same |
+
+The decision is the check's own, made with the rules of
+[Rules](#rules): an escalate rule decides as soon as it holds; a close rule decides
+once it holds on complete answers and no `never_close_when` blocks it; the first rule
+to hold wins and the decision never moves. A decided call is known and complete.
+
+**A check that did not decide is unknown, never false.** This is
+[Unknown is never false](concepts.md#unknown-is-never-false) applied to a call:
+
+| What happened | The call | `reason` |
+|---|---|---|
+| No rule decided and nothing is left to gather | unknown | `check_couldnt_tell` |
+| An escalate and a close rule held together | unknown | `check_conflict` |
+| An input of the check did not answer, or the call was skipped, over budget or cancelled | unknown | `check_input_unknown`, `dependency_skipped`, `only_if_false`, `budget_exceeded` or `cancelled` |
+
+So `not first_link.malicious` is unknown while the check has not decided, and it is
+never a reason to close. When a call stops the caller from deciding, the run's
+`missing` lists the call with its reason and, nested under it, what the check itself
+was missing: its steps, their reasons and the questions for a person (`ask`).
+
+**One call per element: `each`.**
+
+| Key | Meaning |
+|---|---|
+| `each` | A reference to a list, such as `'$message.links'`. A reference that is not a list is `not_an_array`. |
+| `as` | The name the element takes. Read it as `$<name>` in `args` and `key` only. |
+| `max_items` | Required, 1 to 25 (`bad_max_items`). The most elements checked. |
+| `key` | Optional. What identifies an element: the same key runs once, and the key names the element in the run view, the narrative and the case. Without it, the element's position. |
+
+The check runs once per element, each with its own copy of the check's steps. The
+fan-out happens at run time, once the list is known. The call's fact is the sum of
+the elements, with the same rule as everywhere: what is not known is not false.
+
+| Field | Meaning |
+|---|---|
+| `items` | One entry per element, in list order: `key`, `outcome` (`escalated`, `closed`, `couldnt_tell`, `conflict` or `not_run`), `rule`, `say`, `ai_assisted`, `reason`. |
+| `any_malicious` | True as soon as one element escalated: more elements cannot take it back, so it holds on a partial list. False only when `all_benign` is true. Otherwise unknown. |
+| `all_benign` | True only when the list is known, has at most `max_items` distinct keys and every element closed. False when one element escalated. Otherwise unknown. |
+| `malicious_count`, `benign_count` | The counts so far: a lower bound until every element settled, never a total. |
+| `first_malicious` | The first escalated element, `{key, rule, say}`, in list order among those that settled. |
+| `item_count`, `not_run` | The distinct keys in the list, and how many were not run because of `max_items`. |
+
+- **A list longer than `max_items` is incomplete.** A close never holds on it: the
+  elements that did not run are not benign. An escalation on the elements that did
+  run still holds. The run's narrative says so ("10 of 14 links checked (limit 10)").
+  The warning `each_close_on_cap` is a reminder of this on every close rule that reads
+  `all_benign`.
+- **The first decisive element stops the others.** When `any_malicious` decides the
+  caller, or the caller decides another way, the elements still running are
+  cancelled as no longer relevant, unless the call is `always: true`. An escalation on
+  the first malicious link spares the cost of the other nine.
+- **Nesting multiplies.** An `each` call inside a check that is itself called with
+  `each` multiplies. The run may hold at most 50 check instances, counted at the
+  worst case when the template is validated (`check_size_limit`).
+
+### A worked example
+
+The check `url-harm` and the template `mailsec-links` above. An email arrives with
+three links.
+
+1. `message` and `sender_history` gather as usual. Once `message` has answered,
+   `links` runs `url-harm` three times in parallel, one per link, each keyed by the
+   link's URL. Each copy resolves where its link lands.
+2. One link lands on a page that asks for a password. Its copy escalates by
+   `credential_page`, so `links.any_malicious` is true. The caller's `phishing_link`
+   rule decides at once, and the copies still running are cancelled. The run is
+   `escalated_by_rule`, and its sentence reads "A link of this message is malicious:
+   https://… lands on a page that asks for a password."
+3. If all three copies close instead, `links.all_benign` is true and
+   `clean_known_sender` closes the run once the sender has history.
+4. If one copy could not tell (the link was never inspected), its item is
+   `couldnt_tell`. `all_benign` is unknown, so nothing closes, and the run is
+   `couldnt_tell` with that link in `missing`.
+5. A message with 30 links runs 25 of them. If all 25 close, `all_benign` is still
+   unknown, because five links were not checked. The run does not close, and the
+   narrative says "25 of 30 links checked (limit 25)".
+
+To record the check's verdict of each link on the case, put a `record` on the call
+step. It reads the call's `items`:
+
+```yaml
+  links:
+    use: template:url-harm
+    each: '$message.links'
+    as: link
+    key: '$link.href'
+    max_items: 25
+    args: {link: '$link'}
+    record:
+      kind: entity
+      entity_type: url
+      each: links.items
+      item_key: key
+      outcome_key: outcome
+      outcome_map: {escalated: malicious, closed: benign, couldnt_tell: unknown, conflict: unknown, not_run: unknown}
+```
+
+### The AI switch and registered authorizations
+
+- **The AI switch is the caller's.** [`ai_may_decide`](policies.md#what-the-ai-may-decide)
+  is set for the template a run **starts with**. A key that names a check has no
+  effect (the warning `ai_switch_on_check` on the policy). A rule of the caller that
+  reads a call is **AI-assisted** when the side of the check behind that read has an
+  AI-assisted rule: reading `malicious`, `any_malicious`, `first_malicious`,
+  `malicious_count` or `outcome` rests on the check's escalate rules; reading
+  `benign`, `all_benign` or `benign_count` rests on its close rules and
+  `never_close_when`; reading `items` or `rule` rests on both. The validation report
+  lists the caller's AI-assisted rules in `ai_rules`, and, for each one that rests on
+  a check, the check's rules behind it in `ai_rules_via`. With the switch off, a
+  caller rule whose check rule was AI-assisted only recommends, as any AI-assisted
+  rule does.
+- **A decision that rests on a call never gets a registered authorization.** The
+  [mail guard](#act) reads the caller's own `mailsec.*` steps, never a check's, and a
+  decision that read a call fact is capped at `approve` like any decision without
+  one. The action carries the informational reason `via_check`. The engine's close
+  check re-decides each call from the check's recorded steps, and refuses a close
+  whose logged call it cannot reproduce.
+- **A draft caller stays at `suggest`**, whatever its checks are.
+
+### Versions, and what saving a check does
+
+- **A call names a check, never a version.** There is no pin. A check saved before a
+  run starts is the one that run uses, so saving a check changes every template that
+  calls it, from its next run. That is the point of a check: fix the link logic once.
+- **Each run records the checks it ran** (`checks`: the call, the check's name,
+  version and etag, and its depth). Replay, resume and the close check use what the
+  run recorded and never read the check again, so editing a check does not change
+  what an earlier run decided.
+- **See what a save would break, before you save.** Validating a check with its record
+  name returns `used_by`: every template that calls it, directly or through another
+  check, validated again against your draft, with its status, whether it is still
+  valid and its issues. The console and the authoring tools show "Saving this breaks
+  2 templates". Nothing blocks the save, since a pipeline from a Git repository writes
+  checks and callers together.
+- **A run whose check is missing or invalid is refused**, with `check_missing` or
+  `check_invalid` (the code and path of the check's own problem are nested). An
+  automatic start that is refused is recorded on the organization's **Errors** page
+  like any failed start. Validate the callers after you edit a check.
+- **Limits.** A check calling a check calling a check is the deepest allowed: more
+  than 3 nested calls is `check_depth_limit`. A check that reaches its own name,
+  through any chain, is `check_cycle`. The calls expand to at most 256 steps and 50
+  check instances in all, counted at the worst case (`check_size_limit`). A check's
+  steps count in the run's `max_steps_per_run` and in the AI budget like any step, and
+  the caller's `deadline` covers them.
+
+### How a check shows in runs and cases
+
+- **In a run**, a check is one collapsible node with its outcome badge. Expanded, it
+  shows the check's own steps (a row per element for `each`). The outcome banner
+  shows the chain, from the caller's rule to the call and the check's rule, when the
+  decision rested on a call. See [Console](console.md#a-run).
+- **In the narrative**, the call's **Why** reads `Run the check <name>: <description>`
+  unless you wrote a `why`. **Found** reads `Escalated by <rule>: <sentence>`,
+  `Closed by <rule>: <sentence>` or `Could not tell: <n> step(s) missing` and, for
+  `each`, "10 of 14 links checked (limit 10): 1 malicious (credential_page), 9
+  benign".
+- **In the case**, the caller's decision sentence comes first, then a sentence naming
+  the check. The check's `record` entries are written into the **caller's** case, titled
+  `<check>: <title>`, for the element that wrote them; its telemetry is added only
+  when the decision rested on the call and the check's deciding rule read it.
+- **In the statistics**, a run counts under the template it started with. Filtering
+  runs by template matches the caller only.
+
+### Test a check
+
+`test_plan` takes `params` samples for a check: `{params: {...}, expected: {outcome:
+escalated}}`, where `outcome` is `escalated`, `closed`, `couldnt_tell` or `conflict`.
+The result's `agreement.rule` compares the check's outcome with `expected`. The check's
+own AI-assisted rules decide its verdict in a test, since the switch belongs to its
+callers. Any other kind of sample for a check is `check_not_startable`; a `params`
+sample for an alert template is `bad_request` (`bad_sample`).
+
+For a template that calls checks, each sample lists what every call answered in
+`checks: [{call, template, version, outcome, rule, item_key}]`, `verdict.decided_by.via`
+names the calls the deciding rule read, and the summary counts each check rule as
+`<call>/<rule>`: how many samples it decided the call, and how many of the decisions
+that agreed with an analyst rested on it. That count is for information only.
 
 ## A complete example
 
@@ -711,13 +1091,22 @@ useful ones are below; the authoring kit returns the complete list as `codes`.
 | `contradictory_rules` | A rule that can never be true, or one condition on both sides. |
 | `signal_missing_explanation` | A signal lacks its `benign_when` or `malicious_when`. |
 | `act_class_off` | The policy has this action class `off`; it is never proposed. |
+| `auto_tag_permanent` | A `tag` or `tag.add` entry has no `ttl`: a tag holds no lease, so it stays on the sensor until someone removes it. Set `attrs.ttl`. |
+| `bad_check_call`, `check_missing`, `check_not_callable`, `check_invalid` | A [check](#checks-templates-other-templates-call) call is malformed, names no check or an alert template, or the check fails its own validation (the message starts with the check's own code). |
+| `check_forbidden_key`, `params_on_alert` | A check has a key only an alert template may have, or an alert template has `params`. |
+| `check_cycle`, `check_depth_limit`, `check_size_limit`, `bad_max_items` | Checks that call themselves, nest more than 3 deep, expand past 256 steps or 50 instances, or an `each` call whose `max_items` is not 1 to 25. |
+| `check_is_draft`, `check_never_benign`, `check_param_unused`, `each_close_on_cap` | Warnings: an active template calls a draft check; a rule reads `benign` of a check with no close rule; a param nothing reads; a close rule reads `all_benign` of an `each` call (a longer list never closes). |
 | `applies_to_never_matches` | An `applies_to` key a D&R rule cannot match. |
 | `budget_exceeded` | The worst case does not fit your policy's budgets. |
 
 The validation report also has `ai_rules`, the ids of the AI-assisted rules, and an
 `estimate` of the worst case of one run: the number of steps, search steps, AI steps,
 billed steps, the longest chain of step deadlines in seconds, and which policy budgets
-it would exceed.
+it would exceed. A check's steps are counted, and an `each` call counts at its
+`max_items`. For a template that calls checks, `ai_rules_via` names the check rules
+behind each AI-assisted rule; for a check validated with its record name,
+`used_by` lists the templates that call it, validated against your draft (see
+[Versions](#versions-and-what-saving-a-check-does)).
 
 ## Test on past alerts
 
@@ -734,6 +1123,7 @@ A test takes a stored template (draft or active) or a template you paste, and up
 | `{case_id}` | A case; the run gets its first detection, and the case's classification is the expected label. |
 | `{detect_cat, last: N}` | The newest N stored detections of that category in the free time range (N up to 25). |
 | `{inputs: {...}, expected: ...}` | Free run inputs, with an optional expected label. |
+| `{params: {...}, expected: {outcome: ...}}` | Only for a [check](#test-a-check): the call's arguments and the outcome you expect. |
 
 Pick a mix: some detections whose cases were classified true positive, some false
 positive, some with no case.

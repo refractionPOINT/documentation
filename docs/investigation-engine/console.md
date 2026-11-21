@@ -113,7 +113,6 @@ to open that step) and "Self-rated confidence N%, not a probability". The button
 
 - **Close as benign** approves the case close the engine proposed (capped at
   approval), after a confirmation. The case is closed as a false positive.
-- **Escalate** denies that proposed close, with a note, and opens the run's case.
 - **Add `<keys>` to "`<lookup>`" and close** appears when a cited step read one of your
   [Lookups](../7-administration/config-hive/lookups.md). It adds the keys the Lookup
   did not list, then closes as benign. The next alert a rule checks against that list
@@ -125,8 +124,23 @@ These buttons act on the close the engine proposed, so they need
 only a suggestion: there is nothing to approve or deny, and you close or work the case
 in Cases. See [What "AI recommends" means](walkthrough.md#9-what-ai-recommends-means).
 
+**There is no manual Escalate button.** Escalating is something a template does: an
+`escalate` rule, and the `act` entries that fire on it. To decline the proposed close,
+use **Deny** on the action in [Approvals](#approvals), and work the case in Cases. To
+have a pattern you keep escalating by hand escalate by itself, write the rule (see
+[How to Think About Templates](how-to-think-about-templates.md#8-turn-repeated-decisions-into-rules)).
+
 **What was missing** lists, when nothing decided, each step that stayed unknown, why,
-what needed it (**Needed by**), and the question for a person (**Ask:**).
+what needed it (**Needed by**), and the question for a person (**Ask:**). When a
+step is a [check](templates.md#checks-templates-other-templates-call) that could not
+tell, what the check itself was missing is listed under it.
+
+**Checks in a run.** A template's call of a check is one collapsible node with its
+**outcome badge** (escalated, closed, couldn't tell, conflict). Expanded, it shows the
+check's own steps, and a row per element when the call ran once per element (named by
+its key, such as the link's URL). When the decision rested on a call, the outcome banner
+shows the chain: the template's rule, the call, and the check's rule. The check's
+sentence also appears in the case, after the template's own.
 
 The six tabs:
 
@@ -161,6 +175,11 @@ deadline for a decision, the lease time left, who decided, and its history.
 Every button asks for confirmation and takes an optional note recorded in the action's
 history. **Confirm** keeps an action in place and stops its lease from reverting it.
 
+A **tag** (`tag`, `tag.add`) holds no lease, so it goes straight from **Executing** to
+**Confirmed**, whether a rule ran it under `auto` or a person approved it. It lasts the
+`ttl` its template sets (or until removed), so it has no **Extend lease** and no
+**Confirm**; **Revert** is still there and removes the tag.
+
 - A proposal in **Suggest** mode is never executed, and **Approve** on it is refused
   with "this action class is in suggest mode", even if you hold every permission. A
   proposal keeps the mode it was made with, so changing the policy afterwards does not
@@ -185,9 +204,20 @@ class's approver list when the policy sets one; **Revert** does not.
 ## Templates
 
 The **Templates** tab lists the organization's `investigation_plan` records with
-their status (Draft or Active), version, the categories each applies to, and
+their status (Draft or Active), **kind**, version, the categories each applies to, and
 description. A badge marks templates that appeared while you had the page open, for
-example one an AI agent just saved.
+example one an AI agent just saved. Filter by kind: an **alert** template starts runs,
+a **check** is called by other templates (see
+[Checks](templates.md#checks-templates-other-templates-call)).
+
+A **check's page** shows its params, **Used by** (the live list of the templates that
+call it) and a test with params. It has no **AI may decide** switch: the switch
+belongs to the templates that call the check.
+In the editor, a call of a check has a picker for the check, a form generated from its
+params, and the `each` and `max_items` fields. **Delete** lists **Used by**, and
+**Validate** and **Save** on a check show "Saving this breaks N templates" before the
+write: the templates that call it, checked again against your edit. Nothing blocks the
+save.
 
 ### Install default templates
 
@@ -247,6 +277,9 @@ total:
 - **A detection**, by detection id;
 - **A case**, by case id: its classification is the expected answer;
 - **Last N of a category**: the newest N detections of that category, N from 1 to 25.
+
+On a **check's** page the samples are **params** instead: the call's arguments and the
+outcome you expect (escalated, closed, couldn't tell or conflict).
 
 The result shows a progress bar, then the summary: **Decided by rules** (how many of
 the alerts a rule decided), one line per rule (how many it decided, how many agree

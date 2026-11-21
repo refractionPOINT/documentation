@@ -121,6 +121,84 @@ contents, scripts, process termination, file deletion, isolation and unknown com
 are refused. For an observe-only identity, grant `sensor.task.read` instead of
 `sensor.task` and keep actions at `suggest`.
 
+## The key that turning a source on creates
+
+Turning on automatic investigation for a source (the **Autopilot** settings in the
+console) sets up everything the engine needs in one step: it installs the template
+recipe for that product, creates an **organization API key** with the permissions
+below, stores it in a Hive secret named `investigation-engine-autopilot-<source>`,
+names that secret as the run identity, and subscribes the source's detections. A key
+created this way is **setup-owned**: the engine made it, and it may replace it later.
+Everything it does uses your token and your permissions (turning a source on needs
+permission to change investigation policies), never the engine's own credential.
+
+!!! note "Today's grants"
+    This table is the full list of what a setup-owned key gets today. It is the same
+    for every source: the key is not yet narrowed to the templates a source uses, and a
+    later release is expected to narrow it. Check this page after an upgrade.
+
+A setup-owned key is created with exactly what the library's templates and actions
+do under it, so that nothing you enable later fails with `forbidden`:
+
+| Permission | Why the key has it |
+|---|---|
+| `investigation.get`, `investigation.set` | Reading related cases, and writing the case a run opens and closing it as a false positive. |
+| `ext.request` | Writing the case (the Cases extension is reached through an extension request), and the reads of vulnerabilities and application control. |
+| `mailsec.get`, `mailsec.detonate`, `mailsec.set` | Reading stored messages, requesting a link detonation, and closing a message as a false positive. |
+| `mailsec.act` | `contain.email`: quarantining a message and releasing it. |
+| `sensor.tag` | `tag`, `tag.add`, `tag.remove`. |
+| `sensor.task` | `contain.network` (isolating a sensor and releasing it) and the live sensor reads. |
+| `output.set` | The answer stream of live sensor reads (`sensor.read.*`). |
+| `sensor.get`, `sensor.list` | Sensor records, host state before isolation or tagging, and the roster. |
+| `insight.det.get`, `insight.evt.get` | Detections and telemetry, including searches. |
+| `cloudsec.get` | Entity, identity, cloud-security and code findings, and the endpoint click and coverage checks. |
+| `lookup.get` | Your Lookups, including the trust lists. |
+| `dr.set.managed`, `dr.list.managed`, `dr.del.managed` | The managed D&R rules that start the source's investigations. |
+
+These are ordinary LimaCharlie permissions. **What runs by itself is still decided by
+the policy**, not by the key: the autonomy modes, the caps and the
+[registered authorizations](policies.md#autonomy-modes) apply whatever the key can do,
+and an action a person approves runs with the key too, so the key needs the class's
+permission even for actions a person decides. A source starts in `shadow` mode, which
+investigates and records without changing anything.
+
+### The readiness check
+
+The Autopilot settings and the `GET /autopilot` route report, for each source that is
+turned on, `identity_readiness`: `{source, identity, ready, missing_permissions,
+extra_permissions, error_code, fix_hint}`. `identity` names the Hive secret, never the
+key. A source is `ready` when its key holds every permission above. Extra permissions
+are only informational. When it is not ready, `fix_hint` says what to do: restore or
+enable the secret, or re-run setup. Reading the check needs `investigation_policy.get`,
+`secret.get` and `apikey.ctrl`; without them the answer is `identity_unavailable`.
+
+A key created before 2026-11-21 lacks `ext.request`, `mailsec.act`, `output.set`,
+`sensor.tag` and `sensor.task`. It could not write cases, quarantine, tag, isolate or
+read live state, and the check lists those as missing.
+
+**The fix is to turn the source off and on again.** Setup runs again, finds the
+setup-owned key short of permissions and replaces it with a key that has the full list
+plus any extra permission an administrator had added, then revokes the old key. It
+changes nothing when the key already has everything.
+
+### Bring your own key
+
+Setup rotates only a key it created. A key you stored in the secret yourself is never
+rotated or revoked: setup requires it to hold **every** permission in the table
+(extras are accepted), and refuses to turn the source on with `credential_permissions`
+and the names of the missing ones when it does not. Use this to hold the key in your
+own key-management process or to name it your way.
+
+A read-only identity (no `sensor.task`, no `mailsec.act`) is **not** accepted by
+setup today, because the library's actions need those permissions. To keep the engine
+from changing anything, leave the action classes at `suggest` or `off` in the
+[policy](policies.md#autonomy-modes): the engine then never executes those actions,
+even though the key could.
+For runs started by a D&R rule or a person, the policy's own `identity` can instead
+name a key that you restrict yourself: for an observe-only key grant `sensor.task.read`
+and `output.set` rather than `sensor.task`, as in
+[What a run can do](#what-a-run-can-do).
+
 ## Console access
 
 The console needs `investigation.get` **and** `insight.evt.get` to show the
