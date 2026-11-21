@@ -57,9 +57,11 @@ rules:
   and cancels what can no longer matter (the outcome, or an action that can still
   fire).
 - **Which rule decides.** The escalate rule that holds first decides, and the
-  decision never moves. Other escalate rules that have `act` entries keep counting:
+  decision never moves: a close rule that holds later is only listed in
+  `verdict.contradicted_by` and noted in the case. Other escalate rules that have `act` entries keep counting:
   one that also holds is listed in `verdict.also_held` and fires its own `act`
-  entries. On the close side, the first close rule in order that holds decides.
+  entries. On the close side, the first deterministic close rule in order that holds
+  decides, then the first AI-assisted one.
   Give each rule the actions it alone justifies.
 - The `say` sentence is what the case leads with. `{step.path}` puts a value in.
 

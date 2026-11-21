@@ -256,7 +256,7 @@ Give **exactly one** of `template` (stored, draft or active) and `inline` (YAML)
 with a `test_id` while the test runs, and `200` when it is over or the template is
 invalid (`state: "invalid"` with the validation report, nothing started). Poll
 `GET /test-plan/{test_id}?after=<samples seen>&wait=10` until `done`. Each result has
-`verdict` (the outcome, `decided_by`, `recommendation`, `missing`, `unknowns`),
+`verdict` (the outcome, `decided_by`, `also_held`, `contradicted_by`, `recommendation`, `missing`, `unknowns`),
 `steps`, `cost`, `wall_ms`, `would_propose` and, for an alert in a closed classified
 case, `expected` and `agreement` (`{"rule": "agree", "ai": "none"}`). The `summary`
 has `decided_by_rules`, `rules` (per rule id: `decided`, `agree`, `disagree`), `ai`

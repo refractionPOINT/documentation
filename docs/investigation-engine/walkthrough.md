@@ -174,7 +174,7 @@ autonomy:
   close.false_positive: {mode: approve, approval_timeout: 24h}   # a person confirms every close
 ```
 
-Quote `"off"`: some YAML readers, including the one `limacharlie hive set` uses, turn
+Quote `"off"`: some YAML readers, including the one in current `limacharlie hive set` releases, turn
 a bare `off` into the boolean false, and the policy is then refused (`policy_type` at
 `/ai_may_decide/*`).
 
@@ -183,7 +183,13 @@ capped at `approve`. Under `suggest` it stays a suggestion, so there is nothing 
 approve or deny and the step 9 buttons do nothing: you would close the case in Cases
 instead. With `approve`, a close a rule decided (`closed_by_rule`) also waits for a
 person until you raise the class to `auto`. `approval_timeout: 24h` keeps a proposal
-open for a day; the default, 15 minutes, would expire it before most people look.
+open for a day; the default, 15 minutes, would expire it before most people look. A
+decided run that only waits for a person holds no concurrent-run slot
+(`budgets.max_concurrent_runs` counts the runs that still gather or execute), so a
+day of pending closes does not stop new investigations. The backlog is bounded:
+once an organization has 50 times `max_concurrent_runs` decided runs waiting for a
+person (500 at the default), new starts are refused with `too_many_runs` until some
+are decided or expire. Work the approvals inbox daily.
 
 Write it (the Hive takes the record's data as JSON):
 
@@ -515,8 +521,9 @@ policy. If the class is in `suggest`, the close is only suggested: there is noth
 approve or deny, so close the case, or work it, in Cases.
 
 **To close (you agree it is benign).** After `ai_recommends_benign` the engine
-proposes the close (`close.false_positive`) of the case and of the message capped at
-`approve`, so it waits in `awaiting_approval` even when the class is `auto`. Approving it is the console's
+proposes the close (`close.false_positive`) of the case the run wrote (and, for an
+email, of the message) at most at `approve`, so it waits in `awaiting_approval` even
+when the class is `auto`. Approving it is the console's
 **Close as benign**:
 
 ```bash
@@ -611,7 +618,8 @@ scores whether an outcome was right. See [Stats](api-reference.md#stats).
 
 | What | Limit |
 |---|---|
-| Concurrent runs per organization | `budgets.max_concurrent_runs`, default 10. Over it a start is refused (`too_many_runs`, `429`). Tests and waves count too. |
+| Concurrent runs per organization | `budgets.max_concurrent_runs`, default 10: the runs that still gather or execute. Over it a start is refused (`too_many_runs`, `429`). Tests and waves count too; a decided run that only waits for a person does not. |
+| Decided runs waiting for a person | 50 times `max_concurrent_runs` (500 by default). Over it a start is refused (`too_many_runs`) until some are decided or expire. |
 | A run's time, steps and AI spend | `max_wall_seconds` 600, `max_steps_per_run` 200, `max_llm_usd_per_run` 0.50 by default. |
 | Search history | Every search stays within the last 30 days (`lookback_days`, at most 30). |
 | API rate limits, per caller and organization | 300 starts, 600 waves, 300 tests and 600 comparisons per hour. |

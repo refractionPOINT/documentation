@@ -51,7 +51,7 @@ rules:
 ```
 
 As soon as a rule decides, the engine **cancels every step that can no longer
-change the outcome or an action that can still fire** and records why. This is where most of the time saved comes
+change the outcome or an action that may still be proposed** and records why. This is where most of the time saved comes
 from.
 
 **The AI** takes part in two ways, and by default both only recommend:
@@ -89,7 +89,7 @@ is derived from it.
 | `ai_recommends_benign` | The AI recommends closing. Nothing is acted on; a person decides. | `inconclusive` |
 | `ai_recommends_malicious` | The AI recommends escalating. Nothing is acted on; a person decides. | `inconclusive` |
 | `couldnt_tell` | No rule decided and the AI did not answer either way. The run lists what was missing and why. | `inconclusive` |
-| `conflict` | An escalate rule and a close rule hold at once, or an AI-assisted rule recommends against a deterministic rule of the other side. A person decides; fix the rules. | `inconclusive` |
+| `conflict` | An escalate rule and a close rule hold at once, at the moment of the first decision, or an AI-assisted rule recommends against a deterministic rule of the other side. A person decides; fix the rules. | `inconclusive` |
 
 The outcome travels with what is behind it:
 
@@ -113,6 +113,9 @@ The outcome travels with what is behind it:
 - `also_held` (omitted when empty) lists the other escalate rules that held after an
   escalation. The first escalate rule that held decides and never moves; each rule in
   `also_held` fires its own `act` entries.
+- `contradicted_by` (omitted when empty) lists the close rules that held after an
+  escalation. An escalated run is pinned: they are noted in the case for the analyst,
+  and never make the run a `conflict` or propose a close.
 - `missing` lists, when nothing decided, each step that stayed unknown: `step`,
   `reason`, `needed_by` (the rules or the review that needed it) and `ask` (the
   question for a person, from the step's `ask:`).
@@ -129,7 +132,7 @@ A step ends in one of four states:
 | `ok` | The operator answered. The answer is **complete**, or **incomplete** when it may be missing data: a truncated list, a search over the last few minutes (`index_lag`), a lower bound. |
 | `unknown` | There is no answer. The step has a `reason` such as `timeout`, `forbidden`, `not_found`, `policy_denied`, `llm_agent_not_found` or `outside_free_window`. |
 | `skipped` | Its `only_if` was false (`only_if_false`), a step its condition reads failed (`condition_unknown`), or it reads a skipped step (`dependency_skipped`). A skipped step reads as unknown. |
-| `cancelled` | A rule decided and the step could no longer change the outcome, or the run was cancelled. |
+| `cancelled` | A rule decided and the step could no longer change the outcome or an action, or the run was cancelled. |
 
 The engine uses three-valued (Kleene) logic, and this is the rule behind every
 decision:
@@ -155,12 +158,14 @@ that respect this.
 A run is `queued`, `running`, `decided`, `completed`, `cancelled`, `failed` or
 `budget_exhausted`. While it runs it moves through phases that overlap:
 
-1. **Triage** gathers what the rules read, and stops as soon as one decides.
+1. **Triage** gathers what the rules read, and stops as soon as one decides, except
+   for what an `act` entry can still need.
 2. **Scoping** gathers the steps the template lists under `scope.from` (who else,
    what else). It starts only once a rule, or the AI where the policy allows it,
    escalated. The template names every step: the engine does not discover new
    entities or generate searches of its own.
-3. **Containment** proposes the `act` entries of the rule that decided and executes
+3. **Containment** proposes the `act` entries of the rule that decided and of each
+   rule in `also_held`, and executes
    them according to policy. A recommendation proposes nothing but the case close
    a person can confirm. See [Act](templates.md#act).
 

@@ -39,7 +39,7 @@ fixes each one.
 | `case_unreadable` | `forbidden` (403) | The policy's identity may not read the case. | Give that identity `investigation.get` (and `investigation.set` to write the case). |
 | `case_not_found` | `not_found` (404) | The case does not exist for the policy's identity. | Check the case number and the identity's access. |
 | `own_case` | `own_case` (409) | The engine wrote that case itself: a run started without a person never starts in it. | Nothing: this is the loop guard. A person can still investigate the case. |
-| `too_many_runs` | `too_many_runs` (429) | The organization is at `budgets.max_concurrent_runs`. | Wait for runs to finish, cancel one, or raise the budget. |
+| `too_many_runs` | `too_many_runs` (429) | The organization is at `budgets.max_concurrent_runs` (runs that still gather or execute), or it has 50 times that many decided runs waiting for a person. | Wait for runs to finish, cancel one, decide or deny pending approvals, or raise the budget. |
 
 ## Error codes
 
@@ -91,7 +91,7 @@ the rule.
 | `start investigation: the identity requested is not allowed by the investigation policy for this template. Check identity in the policy.` | Check `identity` in the policy. |
 | `start investigation: the identity the investigation policy names for runs started by rules may not read the case. Give that identity access to cases.` | Grant the identity `investigation.get` and `investigation.set`. |
 | `start investigation: the case was not found, or the identity the investigation policy names for runs started by rules cannot see it.` | Check the case and the identity. |
-| `start investigation: the organization is at its limit of concurrent investigations, so this start was dropped (it is not retried).` | Wait, or raise `budgets.max_concurrent_runs`. The dropped start is not retried. |
+| `start investigation: the organization is at its limit of concurrent investigations, so this start was dropped (it is not retried).` | Wait, work the approvals inbox, or raise `budgets.max_concurrent_runs`. The dropped start is not retried. |
 
 A refusal with no specific cause shows a generic message that lists what to check:
 an active template, the template name and `identity.default`.

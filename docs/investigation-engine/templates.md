@@ -338,13 +338,15 @@ rules:
 - **A close rule decides once it holds on complete answers** and nothing blocks a
   close (a fired signal not explained, a `never_close_when` condition). It does not
   wait for steps only escalate rules read: those are cancelled.
-- **An escalate rule and a close rule that hold at once** end the run `conflict`.
+- **An escalate rule and a close rule that hold at once**, at the moment of the first
+  decision, end the run `conflict`.
   `contradictory_rules` warns about a rule that can never be true, or the same
   condition on both sides.
 - **Which rule decides:** the escalate rule that held **first** (the last of the steps
   it reads arrived first; at the same moment, a deterministic rule before an
-  AI-assisted one, then the template's order), or the first close rule in order. The
-  decision is written at once and never moves.
+  AI-assisted one, then the template's order), or, on the close side, the first
+  deterministic close rule in order, then the first AI-assisted one. The
+  decision is written at once and never moves. An escalation is pinned: later answers only add rules to `also_held`. A close rule that holds afterwards is listed in `verdict.contradicted_by` and noted in the case for the analyst; it never turns the outcome into `conflict` and never proposes a close.
 - **Other escalate rules keep counting** after an escalation when they have `act`
   entries: the steps they read are not cancelled until each rule is true, false or
   finally unknown, within the run's budgets. One that holds is listed in
@@ -473,9 +475,10 @@ decision the AI made, waits for a person even under `auto` (the reason
 **The case close.** `closed_by_rule` and `closed_by_ai` propose `close.false_positive`
 under the policy's mode for that class. `closed_by_ai` closes by itself only while the
 policy still lets the AI close for the template. `ai_recommends_benign` proposes the
-close of the case and of the message capped at `approve`, whatever the class's mode:
-it is the person's **Close as benign** button. `ai_recommends_malicious` proposes no
-close.
+close of the case the run wrote (and, for an email, of the message) at most at
+`approve`: under `auto` it waits for a person, under `suggest` it is only a
+suggestion, under `off` nothing is proposed. Approving it is the person's **Close as
+benign** button. `ai_recommends_malicious` proposes no close.
 
 `before: <class>` makes this entry a prerequisite of the actions of the named class
 on the same target: `collect.file` with `before: eradicate.file` means the collection

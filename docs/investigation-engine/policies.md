@@ -120,8 +120,8 @@ Autonomy is set **per action class**.
 |---|---|
 | `off` | The action class is never proposed. |
 | `suggest` | Proposed with its reasoning, never executed, **not even if a person approves it**: approving is refused with `this action class is in suggest mode`. A proposal keeps the mode it was made with. |
-| `approve` | Executed after a person approves. The request goes out as soon as the rule its `act` entry names decided. |
-| `auto` | Executed by itself once the rule its `act` entry names decided, within the caps, **when the action has a registered authorization** (below). |
+| `approve` | Executed after a person approves. The request goes out as soon as a rule its `act` entry names decided or also held. |
+| `auto` | Executed by itself once a rule its `act` entry names decided or also held, within the caps, **when the action has a registered authorization** (below). |
 
 Two rules hold whatever the policy says:
 
@@ -212,7 +212,7 @@ ai_may_decide:
   "*": "off"                             # every other template: the AI only recommends
 ```
 
-Quote the values. Some YAML readers, including the one `limacharlie hive set` uses,
+Quote the values. Some YAML readers, including the one in current `limacharlie hive set` releases,
 turn a bare `off` into the boolean false, and the record is then refused
 (`policy_type`). The CLI changes one entry without editing YAML:
 
