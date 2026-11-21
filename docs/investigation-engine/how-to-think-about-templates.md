@@ -297,7 +297,7 @@ next run.
 - **The AI switch is the template's.** A check never has its own review, and its
   AI-assisted rules decide only where the calling template lets the AI decide.
 - **Test the check on its own** with `params` samples, then test the templates that
-  call it on past alerts. Before you save a check, read `used_by`: the templates your
+  call it on past alerts. Before you save a check, validate it with its record `name` and read `used_by`: the templates your
   edit would break.
 
 ## Checklist

@@ -359,7 +359,7 @@ rules:
 |---|---|
 | `id` | Required, unique across both sides, lowercase letters, digits and `_`. The case, the run, `act` entries and test results name rules by id. |
 | `when` | A string, a list (all of), `{all: [...]}` or `{any: [...]}`, nested as you need. |
-| `say` | The sentence the case leads with when the rule decides. `{step.path}` puts a value in. |
+| `say` | The sentence the case leads with when the rule decides. `{step.path}` puts a value in (see [What a sentence reads](#what-a-sentence-reads)). |
 | `never_close_when` | Conditions that block every close while one of them is true or unknown. Only a known false lets a close through. |
 
 - **An escalate rule decides as soon as it holds**, and gathering stops, except for
@@ -374,8 +374,8 @@ rules:
   steps: meanwhile the run gathers only what a decided close would.
 - **An escalate rule and a close rule that hold at once**, at the moment of the first
   decision, end the run `conflict`.
-  `contradictory_rules` warns about a rule that can never be true, or the same
-  condition on both sides.
+  `contradictory_rules` warns about a rule that can never be true, or an escalate
+  rule and a close rule that always hold together ([below](#rules-that-overlap)).
 - **Which rule decides:** the escalate rule that held **first** (the last of the steps
   it reads arrived first; at the same moment, a deterministic rule before an
   AI-assisted one, then the template's order), or, on the close side, the first
@@ -396,6 +396,59 @@ rules:
 - When no rule decides and nothing relevant is left to gather, the run ends
   `couldnt_tell` (or the AI review runs). Never write a rule that turns missing data
   into a decision.
+
+### What a sentence reads
+
+A `say` may name a step that no condition reads (`say: "Lands on
+{landing.final_domain}."`). Such a step is not gathered before a decision, since it
+cannot change one. Once a rule has decided, the engine **gathers the steps its
+sentence names**, so the case leads with your sentence and not with the generic "Escalate
+rule X held.":
+
+- The sentences gathered are those of the rule that decided, of every rule in
+  `also_held` or `contradicted_by` (the case shows them too) and, for a decided call to
+  a [check](#checks-templates-other-templates-call) that those rules read, of the
+  check rule that decided it.
+- **The decision never waits.** It is made and logged at once. When a value arrives the
+  sentence is rendered again and the verdict is reported again with it. The case is
+  not written while a sentence still waits for a step the run will gather, and the
+  final case write always happens.
+- **A value that stays missing reads `[unknown: step.path]`**: the step failed, was
+  skipped, or the run's budget ran out. The sentence is never dropped and the decision
+  is the same. While a step is still being gathered, the run view shows
+  `[pending: step.path]`. The generic "Escalate rule X held." appears only for a rule
+  with no `say`.
+- A step named only by the `say` of a rule that did not hold is cancelled, and a step
+  with a side effect is never run just to fill in a sentence (its value reads unknown).
+- The cost is a few steps after the decision, within the run's budgets and deadline: a
+  run whose budget runs out while such a step is in flight ends `budget_exhausted`
+  after deciding.
+- The warning `say_step_never_gathered` flags a step that only sentences read and
+  that cannot be gathered whenever those rules hold, because its `only_if` (or that of
+  a step it reads) excludes what the rule's `when` requires: the sentence would always
+  show `[unknown: ...]`.
+
+### Rules that overlap
+
+`contradictory_rules` warns when an escalate rule and a close rule **always hold
+together**, which ends a run `conflict`: the same conditions on both sides, or every
+condition of one rule also required by the other (`a` escalates and `a and b`
+closes). `any` branches are checked one by one, and a branch that contradicts itself
+is ignored. The order of the conditions and the form (`and`, or an `all:` list) do not
+matter. Two rules that only **share a condition** are fine when their other
+conditions exclude each other:
+
+```yaml
+rules:
+  escalate:
+    - {id: bad_landing,  when: ['landing != ""', 'label == "bad"']}
+  close:
+    - {id: good_landing, when: ['landing != ""', 'label == "good"']}   # no warning
+```
+
+The warning is reported at the close rule and names both rules. The same code also
+flags a rule that can never be true (a value equal to two things, a condition and its
+negation).
 
 ## Signals: `explain_signals`
 
@@ -528,10 +581,12 @@ tag check holds:
   facts);
 - every step the rule, the entry's `target` and its `attrs` read, and every step those
   were derived from, is the template's own call with the run's inputs, and neither an
-  AI output nor case history (`case.related`);
+  AI output nor case history (`case.related`), and **never a [check's](#checks-templates-other-templates-call)
+  verdict**: a call to a check is not the template's own evidence;
 - the target and attributes resolve to the action's own.
 
-A tag that fails any of these waits for a person like every other action. A draft
+A tag that fails any of these waits for a person like every other action; one whose
+deciding rule read a check's verdict carries the informational reason `via_check`. A draft
 template only suggests. `tag.remove` cannot be undone, so it runs by itself only
 when the policy names the exact class `tag.remove` with `mode: auto`
 (`irreversible_requires_exact_class`).
@@ -688,7 +743,10 @@ rules:
   `description`. Inside the check, `$<param>` reads one in step `args`, `only_if`,
   rules, `say` and `record` (`$link.href` reads a field of an object param). `params`
   belong to checks only (`params_on_alert`). A param nothing reads is the warning
-  `check_param_unused`.
+  `check_param_unused`. A param shares its namespace with the steps, so it cannot
+  share a step's name, and these names are **reserved** for params and steps alike:
+  `ai_review`, `alert_time`, `is_ok`, `now`, `org`, `p`, `signals` and `verdict`
+  (`reserved_name`; the error lists them).
 - **What a check may contain:** `kind`, `description`, `version`, `status`, `params`,
   `gather` (with `only_if`, `why`, `ask`, `always` and `record` on its steps, and calls
   of fact packs and of other checks) and `rules` (`escalate`, `close`,
@@ -796,7 +854,18 @@ of a check is free to restructure it without breaking the templates that call it
 The decision is the check's own, made with the rules of
 [Rules](#rules): an escalate rule decides as soon as it holds; a close rule decides
 once it holds on complete answers and no `never_close_when` blocks it; the first rule
-to hold wins and the decision never moves. A decided call is known and complete.
+to hold wins and the decision never moves. A decided call is known and complete, and
+its step is `ok`.
+
+**The check's sentence.** The check rule's `say` may name a step no condition of the
+check reads (`{landing.final_domain}`). The call decides at once, so the caller is
+never delayed by a sentence, and when the caller's deciding rule reads the call (in
+`when` or in its `say`), the engine gathers that step afterwards, as for any
+[sentence](#what-a-sentence-reads). For a call with `each`, that is the elements
+`decided_by.via` lists. `{call.say}` in the caller's sentence, `decided_by.via` and
+the call's narrative then show the sentence with the value; the call's own `say`
+field keeps it as it was when the check decided (a value still to come reads
+`[pending: ...]`). The close check compares a call's decision, never its sentence.
 
 **A check that did not decide is unknown, never false.** This is
 [Unknown is never false](concepts.md#unknown-is-never-false) applied to a call:
@@ -836,13 +905,23 @@ the elements, with the same rule as everywhere: what is not known is not false.
 
 - **A list longer than `max_items` is incomplete.** A close never holds on it: the
   elements that did not run are not benign. An escalation on the elements that did
-  run still holds. The run's narrative says so ("10 of 14 links checked (limit 10)").
+  run still holds. The run's narrative says so ("10 of 14 links checked: ..., 4 not
+  checked (limit 10)").
   The warning `each_close_on_cap` is a reminder of this on every close rule that reads
   `all_benign`.
 - **The first decisive element stops the others.** When `any_malicious` decides the
   caller, or the caller decides another way, the elements still running are
   cancelled as no longer relevant, unless the call is `always: true`. An escalation on
   the first malicious link spares the cost of the other nine.
+- **An element stopped on purpose is not "could not tell".** Its entry in `items`
+  reads `outcome: couldnt_tell` (the five outcomes do not change) with `reason:
+  irrelevant`. The reason is what tells the cases apart: `irrelevant` (nothing needed
+  its verdict any more), `truncated` (past `max_items`, never run), `cancelled` or
+  `budget_exhausted` (the run itself was cancelled or ran out of budget, so the
+  element is "stopped before answering"), or no reason when it ran and could not
+  tell. A call that decided (`any_malicious` true) is `ok` even when other elements
+  were stopped: it is not `check_couldnt_tell`, and the stopped elements are in no
+  `missing` and not in the case's unknowns.
 - **Nesting multiplies.** An `each` call inside a check that is itself called with
   `each` multiplies. The run may hold at most 50 check instances, counted at the
   worst case when the template is validated (`check_size_limit`).
@@ -867,7 +946,7 @@ three links.
    `couldnt_tell` with that link in `missing`.
 5. A message with 30 links runs 25 of them. If all 25 close, `all_benign` is still
    unknown, because five links were not checked. The run does not close, and the
-   narrative says "25 of 30 links checked (limit 25)".
+   narrative says "25 of 30 links checked: 25 benign, 5 not checked (limit 25)".
 
 To record the check's verdict of each link on the case, put a `record` on the call
 step. It reads the call's `items`:
@@ -928,7 +1007,8 @@ step. It reads the call's `items`:
   run recorded and never read the check again, so editing a check does not change
   what an earlier run decided.
 - **See what a save would break, before you save.** Validating a check with its record
-  name returns `used_by`: every template that calls it, directly or through another
+  `name` (without it, the engine cannot know which record the draft replaces, and the
+  report has no `used_by`) returns `used_by`: every template that calls it, directly or through another
   check, validated again against your draft, with its status, whether it is still
   valid and its issues. The console and the authoring tools show "Saving this breaks
   2 templates". Nothing blocks the save, since a pipeline from a Git repository writes
@@ -953,8 +1033,11 @@ step. It reads the call's `items`:
 - **In the narrative**, the call's **Why** reads `Run the check <name>: <description>`
   unless you wrote a `why`. **Found** reads `Escalated by <rule>: <sentence>`,
   `Closed by <rule>: <sentence>` or `Could not tell: <n> step(s) missing` and, for
-  `each`, "10 of 14 links checked (limit 10): 1 malicious (credential_page), 9
-  benign".
+  `each`, a count of every kind apart: "1 of 4 links checked: 1 malicious
+  (credential_page), 2 not needed once item `<key>` was malicious, 1 not checked
+  (limit 3)." It says "once rule `<id>` decided the run" when the deciding rule did
+  not rest on this call, and "once stop_when `<expr>` held" in a wave. "Could not
+  tell" counts only elements that ran and could not tell.
 - **In the case**, the caller's decision sentence comes first, then a sentence naming
   the check. The check's `record` entries are written into the **caller's** case, titled
   `<check>: <title>`, for the element that wrote them; its telemetry is added only
@@ -972,7 +1055,8 @@ callers. Any other kind of sample for a check is `check_not_startable`; a `param
 sample for an alert template is `bad_request` (`bad_sample`).
 
 For a template that calls checks, each sample lists what every call answered in
-`checks: [{call, template, version, outcome, rule, item_key}]`, `verdict.decided_by.via`
+`checks: [{call, template, version, outcome, rule, item_key, reason}]` (`reason`
+`irrelevant` tells an element stopped on purpose from one that could not tell), `verdict.decided_by.via`
 names the calls the deciding rule read, and the summary counts each check rule as
 `<call>/<rule>`: how many samples it decided the call, and how many of the decisions
 that agreed with an analyst rested on it. That count is for information only.
@@ -1097,7 +1181,9 @@ useful ones are below; the authoring kit returns the complete list as `codes`.
 | `record_only_step` | A step only its `record:` reads: nothing gathers it, so it is cancelled and records nothing. Mark it `always: true`. |
 | `operator_denied` | Your policy does not allow the operator, so the step is always unknown. |
 | `rule_never_holds` | A rule reads a step that is always unknown. |
-| `contradictory_rules` | A rule that can never be true, or one condition on both sides. |
+| `contradictory_rules` | A rule that can never be true, or an escalate rule and a close rule that always hold together (the same conditions, or all of one rule's conditions also required by the other). Rules that only share a condition are not flagged. |
+| `say_step_never_gathered` | A step that only rules' sentences (`say`) read can never be gathered when those rules hold, because its `only_if` excludes what the rule requires: the sentence would always show `[unknown: ...]`. |
+| `reserved_name` | A step or a check param uses a [reserved name](#a-check) (`ai_review`, `alert_time`, `is_ok`, `now`, `org`, `p`, `signals`, `verdict`), or a param shares a step's name. |
 | `signal_missing_explanation` | A signal lacks its `benign_when` or `malicious_when`. |
 | `act_class_off` | The policy has this action class `off`; it is never proposed. |
 | `auto_tag_permanent` | A `tag` or `tag.add` entry has no `ttl`: a tag holds no lease, so it stays on the sensor until someone removes it. Set `attrs.ttl`. |
@@ -1117,6 +1203,12 @@ it would exceed. A check's steps are counted, and an `each` call counts at its
 behind each AI-assisted rule; for a check validated with its record name,
 `used_by` lists the templates that call it, validated against your draft (see
 [Versions](#versions-and-what-saving-a-check-does)).
+
+Validation, `used_by` and the other reads you use while authoring (the template list,
+the operators, the effective policy, the packs and the authoring kit) **see what you
+just saved**: a parent template validated a second after its check was saved sees the
+new check, not the copy cached before the save. An organization's first fact pack is
+seen by the next read too.
 
 ## Test on past alerts
 

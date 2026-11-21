@@ -61,7 +61,7 @@ is `investigation.set` + `insight.evt.get`. See [Permissions](permissions.md).
 | `GET /runs` | read | One page of the organization's runs, newest first. |
 | `GET /runs/{id}` | read | State, phase, outcome and what decided it, actions, effective policy, `ai_may_decide`, `ai_agent`, usage, critical path. |
 | `DELETE /runs/{id}` | write | Delete a run for good: `{"deleted": true, "run_id": ...}`. `409` while it is running, writing its case, or has actions waiting, executing or holding an effect. |
-| `GET /runs/{id}/steps` | read | The step log with timing, cost, cancellations and each step's `narrative` (`why`, `found`, `used`), the plan graph edges, the outcome `timeline`, the run's `ai_may_decide` and the critical path. `values=true` includes customer values (the narratives are rendered with them). |
+| `GET /runs/{id}/steps` | read | The step log with timing, cost, cancellations and each step's `narrative` (`why`, `found`, `used`), the plan graph edges, the outcome `timeline`, the run's `ai_may_decide` and the critical path. A step cancelled as no longer needed that matters again later (for example a step only the deciding rule's `say` reads, gathered after the decision) keeps **one row**, with its cancelled attempts in `earlier_attempts`. `values=true` includes customer values (the narratives are rendered with them). |
 | `GET /runs/{id}/graph` | read | The run's entity graph, paged. |
 | `GET /runs/{id}/events` | read | Run events by long-poll. |
 | `GET /runs/{id}/case` | read | The case document the run wrote, with `written`, `case_id` and `case_error`. `404` until it has one. |
@@ -70,7 +70,7 @@ is `investigation.set` + `insight.evt.get`. See [Permissions](permissions.md).
 | `POST /runs/{id}/labels` | write | Submit your assessment of a run: `{"assessment": "benign" \| "threat" \| "disputed" \| "unlabeled", "revision": <positive integer>}`. A label is stored and read back; no decision reads it. Use a higher `revision` to correct one. |
 | `POST /runs/{id}/inputs` | write | Add an input or a new alert to a running run: `inputs` (object) and/or `detection_id`. Only the identity that started the run may. |
 | `POST /runs/{id}/cancel` | write | Cancel. Body `revert_leases` (boolean). |
-| `POST /runs/{id}/compare` | write | Re-evaluate the run's recorded answers under another template or a tighter policy, including a lower `ai_may_decide`. Each side carries `outcome` and `decided_by`; diff kinds include `outcome`, `decided_by` and `ai_may_decide`. Calls no operator. The run must have finished (`409` otherwise). |
+| `POST /runs/{id}/compare` | write | Re-evaluate the run's recorded answers under another template or a tighter policy, including a lower `ai_may_decide`. Each side carries `outcome` and `decided_by`; diff kinds include `outcome`, `decided_by` and `ai_may_decide`. Calls no operator. A template that calls checks is evaluated over the checks the run froze, so comparing a run with itself gives the run's own answer, and an edit to the parent is judged over the same check facts. The run must have finished (`409` otherwise). |
 | `GET /stats` | read + `investigation_policy.set` | The performance report. See [Stats](#stats). |
 
 **Listing runs.** Filters are combined with AND and evaluated by the engine, so they
@@ -224,7 +224,16 @@ ids). Add the optional `name` (the check's record name) to the body when you val
 a **check**, and the answer has `used_by`: `[{template, status, valid,
 issues}]`, one per template that calls it, directly or through another check,
 validated again against your draft. It is what saving would break; nothing blocks the
-save.
+save. Without `name` there is no `used_by`: the engine cannot know which record the
+draft replaces.
+
+Validation, and the other authoring reads (`GET /templates`, `GET /operators`,
+`GET /policy/effective`, `GET /packs`, `GET /authoring-kit`), read the organization's
+records fresh, so they see a record saved a moment ago (for example a check saved a
+second before its parent is validated). If the records do not answer within 2 seconds,
+the cached copy is served. Step ids and check `params` cannot take a reserved name
+(`ai_review`, `alert_time`, `is_ok`, `now`, `org`, `p`, `signals`, `verdict`): the
+error `reserved_name` lists them.
 
 #### Authoring kit
 
@@ -309,8 +318,11 @@ A step that calls a check is one step in `GET /runs/{id}/steps`: its `op` is
 check's verdict (`malicious`, `benign`, `outcome`, `label`, `rule`, `say`,
 `ai_assisted`, `template`, `version`; for a call with `each`, `items`, `any_malicious`,
 `all_benign`, the counts, `first_malicious`, `item_count` and `not_run`). It is
-`ok` and complete once the check decided, and `unknown` with `check_couldnt_tell`,
-`check_conflict` or `check_input_unknown` otherwise. The check's own steps are
+`ok` and complete once the check decided (even when elements of an `each` call were
+stopped because nothing needed them), and `unknown` with `check_couldnt_tell`,
+`check_conflict` or `check_input_unknown` otherwise. In `items`, an element stopped on
+purpose reads `outcome: couldnt_tell` with `reason: irrelevant`; one past `max_items`
+is counted in `not_run` and the call's reason is `truncated`. The check's own steps are
 ordinary steps named `<call>__<step>` (`<call>[<i>]__<step>` per element) with
 `parent` set to the call, and `item_key` for an element.
 
@@ -400,7 +412,7 @@ against the organization's concurrent run cap, and is kept as a run of `kind: wa
 | `steps` | Each step has an `id` and exactly one of `op` (an operator) or `use` (a fact pack, or `template:<name>` for a [check](templates.md#checks-templates-other-templates-call), which may take `each`, `as`, `key` and `max_items`; its answer is the check's verdict), plus `args`. A string argument that is a whole reference such as `"$alert__trigger.sid"` reads another step's value and makes the step wait for it. |
 | `select` | Field paths of the value to return (`matches[0].entity_id`, `matches[*].entity_id`). For a pack step, the names of exports. |
 | `limit` | Per step, 1 to 1000, default 10: the most list elements returned. |
-| `stop_when` | Up to 8 conditions with the same rules as a template's rules. The first one that is true cancels the steps still running. An unknown step never makes one true. |
+| `stop_when` | Up to 8 conditions with the same rules as a template's rules. The first one that is true cancels the steps still running (the elements of an `each` check call that were still running read `reason: irrelevant`). An unknown step never makes one true. |
 | `deadline_ms` | Default 30000, capped by the policy's wall-time budget. |
 | `inputs` | Named values steps and conditions may read as `$name`. |
 | `full` | `true` returns raw values instead of compact ones. |
