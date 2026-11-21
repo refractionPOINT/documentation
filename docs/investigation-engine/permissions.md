@@ -19,10 +19,10 @@ with `unauthorized: missing permission <name>`.
 
 | To do this | Required permissions |
 |---|---|
-| Read runs, steps, the evidence graph, events, case documents, labels, templates, operators, fact packs, the effective policy, the approvals inbox and the authoring kit; validate a template; read test results | `investigation.get`, `insight.evt.get` |
+| Read runs, steps, the run graph, events, case documents, labels, templates, operators, fact packs, the effective policy, the approvals inbox and the authoring kit; validate a template; read test results | `investigation.get`, `insight.evt.get` |
 | Start a run or a wave; add inputs; cancel, compare or delete a run; submit a label; **test a template on past alerts** | `investigation.set`, `insight.evt.get` |
 | Approve, deny, revert, extend or confirm an action | `investigation.set`, `insight.evt.get`, **and the permission of the action's class** (below) |
-| Read the performance stats; filter the run list by verdict | `investigation.get`, `insight.evt.get` **and `investigation_policy.set`** |
+| Read the performance stats; filter the run list by outcome or verdict | `investigation.get`, `insight.evt.get` **and `investigation_policy.set`** |
 
 `insight.evt.get` is required everywhere because a run's results are what a search of
 the organization's telemetry found: a role that can use Cases but cannot read
@@ -70,6 +70,8 @@ Templates and policies are Hive records with the usual
 | Delete templates | `investigation_plan.del` |
 | Read or change template metadata only | `investigation_plan.get.mtd`, `investigation_plan.set.mtd` |
 | Read, change or delete policies and their metadata | `investigation_policy.get`, `.set`, `.del`, `.get.mtd`, `.set.mtd` |
+| Change what the AI may decide for a template (**AI may decide** in the console, `ai_may_decide` in the `default` policy record) | `investigation_policy.get`, `investigation_policy.set` |
+| Use organization fact packs (`investigation_pack` records) | The `investigation_plan.*` permissions above |
 
 Running a validation needs the read permissions, and a test the write permissions. A
 test creates no run, case or action; its result is kept for 24 hours.
@@ -107,7 +109,7 @@ A run executes with the permissions of its identity: the token of the person or 
 that started it, or the API key the policy names. Everything it reads and every action
 it takes is checked against those permissions; a run can never read or do what its
 identity cannot. The gateway permissions above only get a call to the engine; each
-operator then needs the permission of its own data source. Without it the fact is
+operator then needs the permission of its own data source. Without it the step is
 `unknown` (`forbidden`), never empty. A recommended starting set for a policy identity
 is in [step 3 of the walkthrough](walkthrough.md#3-the-run-identity-an-api-key-the-policy-names).
 

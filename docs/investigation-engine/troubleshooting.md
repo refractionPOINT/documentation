@@ -28,8 +28,8 @@ fixes each one.
 
 | `reason_code` | `error_code` (HTTP) | Cause | What to do |
 |---|---|---|---|
-| `no_template_applies` | `bad_request` (400) | No **active** template's `applies_to` matches the trigger. | Activate a template whose `applies_to` covers the alert, or name a template. See [How templates are chosen](templates.md#how-templates-are-chosen). |
-| `unknown_template` | `bad_request` (400) | The request names a template the organization does not have. | Fix the name, or install the template. |
+| `no_template_applies` | `bad_request` (400) | No **active** template's `applies_to` matches the trigger. | Activate a template whose `applies_to` covers the alert, or name a template. See [How templates are chosen](templates.md#how-templates-are-chosen). A template record in the earlier format is not loaded and never matches: see below. |
+| `unknown_template` | `bad_request` (400) | The request names a template the organization does not have, or one whose record the engine cannot load. | Fix the name, or install the template. A record in the earlier format (`facts`, `proofs`, `respond`...) is not loaded: rewrite it, or reinstall it from the library. |
 | `inline_plan_not_allowed` | `bad_request` (400) | A start without a person brought an inline plan. | Name a stored template. |
 | `no_policy_identity` | `bad_request` (400) | The policy names no secret identity for a run without a person. | Set `identity.default` (a `hive://secret/<name>`) in the `default` policy, or `identity.templates.<name>.default`. See [Run identity](policies.md#run-identity). |
 | `identity_secret_unavailable` | `bad_request` (400) | The secret the policy names is missing, disabled or empty, or holds a key the platform refuses (a user API key, a deleted key). | Store an **organization** API key in that secret and enable it. |
@@ -113,21 +113,56 @@ A rule that uses `start investigation` cannot be saved where the Investigation E
 is not enabled: saving fails with `start investigation is not enabled in this
 environment`.
 
-## A run finished but the verdict means little
+## Outcomes at a glance
+
+| `verdict.outcome` | A person... |
+|---|---|
+| `closed_by_rule`, `escalated_by_rule` | ...reads the rule's sentence (`decided_by.say`). The engine acted within the policy. |
+| `closed_by_ai`, `escalated_by_ai` | ...knows the AI decided, because `ai_may_decide` allows it for this template. Actions on an AI decision still wait for a person. |
+| `ai_recommends_benign`, `ai_recommends_malicious` | ...decides: nothing was done. See [What "AI recommends" means](walkthrough.md#9-what-ai-recommends-means). |
+| `couldnt_tell` | ...reads `verdict.missing` (below) and answers its `ask`, or fixes the cause. |
+| `conflict` | ...decides, and fixes the rules. |
+
+## A run finished but the outcome means little
+
+Start from the outcome. `couldnt_tell` and the AI recommendations always list what
+was missing in `verdict.missing`, each with a `reason`.
 
 | You see | It usually means | Do |
 |---|---|---|
-| Facts `unknown` with reason `forbidden` | The run's identity may not read that data. | Grant the identity the permission of that data source (see [step 3 of the walkthrough](walkthrough.md#3-the-run-identity-an-api-key-the-policy-names)). |
-| Facts `unknown` with reason `llm_agent_not_found` | There is no `investigation-judge` AI agent record. | Create it (see [step 2](walkthrough.md#2-the-ai-agent-record-the-judgements-run-with)). |
-| Facts `unknown` with reason `missing_input` | The template reads an input the trigger does not provide. | Derive it from `detection.get`. See [Run inputs](templates.md#run-inputs). |
-| Facts `unknown` with reason `policy_denied` | The policy does not allow the operator. | Allow it in `operators.allow`, or accept the unknown. |
-| Facts `unknown` with reason `not_found` on the trigger detection | The detection was not stored yet when the run started, and the engine gave up after its wait. | Usually transient. Rerun the investigation. |
-| Many `inconclusive` verdicts | The data a proof needs is missing or incomplete. | Read `verdict.unknowns`. Inconclusive is a correct answer when data is missing. |
+| `couldnt_tell`, steps `unknown` with reason `forbidden` | The run's identity may not read that data. | Grant the identity the permission of that data source (see [step 3 of the walkthrough](walkthrough.md#3-the-run-identity-an-api-key-the-policy-names)). |
+| `couldnt_tell`, a `lookup.get` step `unknown` with reason `not_found` | The Lookup the rule reads does not exist yet. | Create it. Until then no rule that reads it can hold. |
+| `ask_ai` steps or the review `unknown` with reason `llm_agent_not_found` | No AI agent record: the policy's `llm.agent` names none, and there is no `investigation-judge` record. | Create the record (see [step 2](walkthrough.md#2-the-ai-agent-record)) or set `llm.agent`. |
+| Steps `unknown` with reason `policy_denied` | The policy does not allow the operator. | Allow it in `operators.allow`, or accept the unknown. |
+| Steps `skipped` with reason `only_if_false` | The step's `only_if` was false, as designed. | Nothing, unless a rule needed it: then the condition is too narrow. |
+| Steps `skipped` with reason `condition_unknown` or `dependency_skipped` | A step the condition reads failed, or the step reads a skipped step. | Fix the first step that failed; its `reason` says why. |
+| A step `unknown` with reason `not_found` on the trigger detection | The detection was not stored yet when the run started, and the engine gave up after its wait. | Usually transient. Rerun the investigation. |
+| Many `couldnt_tell` across runs | The rules miss the fact that decides, or the data they need is often incomplete. | Test the template on past alerts and read `unknown_reasons`. `couldnt_tell` is a correct answer when data is missing. |
+| Many `ai_recommends_benign` closed by people for the same reason | A list or a rule is missing. | Add the reason to a Lookup (**Add to list and close**) or write the rule. See [How to Think About Templates](how-to-think-about-templates.md#8-turn-repeated-decisions-into-rules). |
+| `conflict` | An escalate rule and a close rule both held. | Decide the run, then fix the rules so they cannot both hold (`contradictory_rules` warns about some cases). |
+| `closed_by_ai` or `escalated_by_ai` where you expected a recommendation | `ai_may_decide` lets the AI decide for this template, through the template's own entry or `"*"`. | Check `ai_may_decide` on the run object and in `GET /policy/effective`; lower it in the `default` record. |
 | `case_error` on the run | The case could not be written: `case write failed`, `case refused: <reasons>`, or `case not written: the run's credentials have expired` (or are unavailable). | Check Cases is subscribed and the identity has `investigation.set`. A run on a person's token cannot write after the token expires: use a secret identity. |
 | An action ended `failed` with `is not wired` | The template proposes a class that cannot be executed. | See [Action classes](policies.md#action-classes). |
-| An action stays `awaiting_approval` under `auto` | The action has no registered authorization, so a person must decide (reason `no_registered_authorization`). | Approve it, or see [Autonomy modes](policies.md#autonomy-modes). |
+| An action stays `awaiting_approval` under `auto` | The action has no registered authorization, so a person must decide (reason `no_registered_authorization`). Every action that fires on an AI decision is in this case. | Approve it, or see [Autonomy modes](policies.md#autonomy-modes). |
 | Approve is refused with `this action class is in suggest mode` | The action was proposed in `suggest` mode. | Raise the class in the policy, then start a new run on an active template. |
 | Approvals blocked for everyone | The class's `approvers` list matches nobody. | List approvers by the exact email or API key name they act as. |
+
+## A template is refused when you save or validate it
+
+`validate_plan` and the console report coded issues; the Hive refuses the same
+records when you save them. The most common ones:
+
+| Code | Cause | Do |
+|---|---|---|
+| `legacy_template_format` | The template uses the earlier format: `facts`, `inputs`, `proofs`, `evidence`, `prior`, `signals`, `respond`, `report`, `decision`. | Rewrite it: facts become `gather` steps, proofs become `rules` with ids, `respond` becomes `act` with `on`, `report` becomes `case`. Drop evidence, priors and thresholds. Or reinstall the template from the library. |
+| `invalid_template` | A key the format does not have, a wrong type, or YAML that does not parse. | Read the message: it names the line and the key. |
+| `unknown_reference` | A step or a rule reads `$name` the starting point does not provide (for example `$hash`). | Derive it with a step from `detection.get`, or read a caller's value as `$?name` in a step's args (see [starts_from](templates.md#where-a-run-starts-starts_from)). |
+| `bad_reference` | A rule, a condition or an `act` entry reads `$?name`. | Expressions read steps only. |
+| `no_verdict_path` | No rule and no `ai_review`. | Add a rule, or the review. |
+| `unknown_rule` | An `act` entry's `on` names a rule the template does not have. | Fix the id. |
+
+The full list is in the authoring kit's `codes` and on
+[Plan Templates](templates.md#validate).
 
 ## Policy warnings
 
@@ -136,7 +171,7 @@ environment`.
 | Warning | Meaning |
 |---|---|
 | `policy_records_rejected` | An enabled `investigation_policy` record does not parse. The engine keeps the last good set (or suggest-only when it has none), and the answer shows what is enforced. Fix or disable the record. |
-| `legacy_policy_fields_ignored` | A stored record still carries a removed field (`spot_check`, `pause_when` or `triggers`). It is ignored; edit the record to remove it. |
+| `legacy_policy_fields_ignored` | A stored record still carries a removed field (`min_confidence`, the `decision` section with its thresholds and mandatory checks, `spot_check`, `pause_when` or `triggers`). It is ignored; edit the record to remove it. |
 | `case_trigger_moved_to_dr_rule` | A stored record still has `triggers.case_created`. New cases start runs only through a D&R rule now: see [D&R rules on a new case](automation.md#dr-rules-on-a-new-case). |
 | `legacy_automation_routes_ignored` | A stored record still has `automation_routes`. It grants nothing. |
 | `approvers_empty_means_nobody` | A class has `approvers: []`: nobody may approve it. |

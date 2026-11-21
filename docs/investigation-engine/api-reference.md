@@ -40,7 +40,7 @@ Templates and policies are not written here: they are the `investigation_plan` a
 - Pages are `limit` (1 to 200, default 50) and an opaque `cursor`; send the cursor back
   with the same filters. A cursor names a position, not an offset, so runs started
   between pages never repeat or hide one. Run events take `limit` up to 500 (default
-  200); the evidence graph pages with `offset` (`limit` up to 1000, default 200).
+  200); the run's graph pages with `offset` (`limit` up to 1000, default 200).
 - An API key must have a key id; a key without one is refused on every route.
 - Errors are `{"error", "error_code", "http_status", ...}`. Every code, and every
   `reason_code` of a refused start, is in [Troubleshooting](troubleshooting.md).
@@ -59,24 +59,25 @@ is `investigation.set` + `insight.evt.get`. See [Permissions](permissions.md).
 |---|---|---|
 | `POST /runs` | write | Start a run. `201` for a new run, `200` when it joined an open one. |
 | `GET /runs` | read | One page of the organization's runs, newest first. |
-| `GET /runs/{id}` | read | State, phase, verdict, proof, actions, effective policy, usage, critical path. |
+| `GET /runs/{id}` | read | State, phase, outcome and what decided it, actions, effective policy, `ai_may_decide`, `ai_agent`, usage, critical path. |
 | `DELETE /runs/{id}` | write | Delete a run for good: `{"deleted": true, "run_id": ...}`. `409` while it is running, writing its case, or has actions waiting, executing or holding an effect. |
-| `GET /runs/{id}/steps` | read | The step log with timing, cost and cancellations, the plan graph edges, the belief curve and the critical path. `values=true` includes customer values. |
-| `GET /runs/{id}/graph` | read | The evidence graph, paged. |
+| `GET /runs/{id}/steps` | read | The step log with timing, cost, cancellations and each step's `narrative` (`why`, `found`, `used`), the plan graph edges, the outcome `timeline`, the run's `ai_may_decide` and the critical path. `values=true` includes customer values (the narratives are rendered with them). |
+| `GET /runs/{id}/graph` | read | The run's entity graph, paged. |
 | `GET /runs/{id}/events` | read | Run events by long-poll. |
 | `GET /runs/{id}/case` | read | The case document the run wrote, with `written`, `case_id` and `case_error`. `404` until it has one. |
 | `GET /runs/{id}/trace` | read | An anonymized trace of the run. |
-| `GET /runs/{id}/labels` | read | Labels recorded against the run. Query `fact`, `kind`, `all`. |
+| `GET /runs/{id}/labels` | read | Labels recorded against the run. Query `fact` (a step), `kind`, `all`. |
 | `POST /runs/{id}/labels` | write | Submit your assessment of a run: `{"assessment": "benign" \| "threat" \| "disputed" \| "unlabeled", "revision": <positive integer>}`. A label is stored and read back; no decision reads it. Use a higher `revision` to correct one. |
-| `POST /runs/{id}/inputs` | write | Add evidence or a new alert to a running run: `inputs` (object) and/or `detection_id`. Only the identity that started the run may. |
+| `POST /runs/{id}/inputs` | write | Add an input or a new alert to a running run: `inputs` (object) and/or `detection_id`. Only the identity that started the run may. |
 | `POST /runs/{id}/cancel` | write | Cancel. Body `revert_leases` (boolean). |
-| `POST /runs/{id}/compare` | write | Re-evaluate the run's recorded facts under another template or a tighter policy. Calls no operator. The run must have finished (`409` otherwise). |
+| `POST /runs/{id}/compare` | write | Re-evaluate the run's recorded answers under another template or a tighter policy, including a lower `ai_may_decide`. Each side carries `outcome` and `decided_by`; diff kinds include `outcome`, `decided_by` and `ai_may_decide`. Calls no operator. The run must have finished (`409` otherwise). |
 | `GET /stats` | read + `investigation_policy.set` | The performance report. See [Stats](#stats). |
 
 **Listing runs.** Filters are combined with AND and evaluated by the engine, so they
 cover every run: `state` (`queued`, `running`, `decided`, `completed`, `cancelled`,
-`failed`, `budget_exhausted`), `verdict` (`true_positive`, `false_positive`,
-`inconclusive`, or `undecided`; needs `investigation_policy.set`), `template`
+`failed`, `budget_exhausted`), `verdict` (the label of the outcome: `true_positive`,
+`false_positive`, `inconclusive` for a recommendation, `couldnt_tell` or a conflict,
+or `undecided` when nothing settled yet; needs `investigation_policy.set`), `template`
 (`inline` for an inline plan), `trigger` (`detection`, `entity`, `case`, `question` or
 `message`), `entity`, `started_by` (an identity such as `user:<uid>`, or a user's
 email or key name), `idempotency_key`, `kind` (`template` or `wave`), `session`,
@@ -120,16 +121,16 @@ still undoes what it left in place.
 |---|---|
 | `trigger` | At least one of `detection_id`, `case_id`, `entity_id` or `question`, or a non-empty `inputs` with a named template. `category`, `priority`, `severity` and `tags` describe what fired: they select the policy records and, with no `plan`, the template. |
 | `plan` | `{"template": "<name>"}` for a stored template, or `{"inline": "<template YAML>"}` for a template you supply (always a draft; refused for a start without a person). **Leave `plan` out** to let the engine choose the active template whose `applies_to` matches the trigger (`no_template_applies` when none does). `{"auto": true}` is refused for a person. |
-| `inputs` | Named values for the template's facts. |
+| `inputs` | Named values the template's steps may read as optional inputs (`$?name`). A template reads `$name` only for the ids its `starts_from` provides. |
 | `urgency` | `low`, `medium`, `high` or `critical`. Without it: derived from the priority or the severity (8 or more, or `critical`, is `critical`; 6 or more, or `high`, is `high`; 3 or more, or `medium`, is `medium`; otherwise `low`), and `medium` when the trigger carries neither. |
-| `mode` | `full` (the default: triage, scoping and containment), `triage` (stop at the verdict) or `scope` (skip triage). |
+| `mode` | `full` (the default: triage, scoping and containment), `triage` (stop at the outcome) or `scope` (skip triage). |
 | `overrides`, `strict` | Tighten the policy for this run. See [Per-run overrides](policies.md#per-run-overrides). |
 | `case` | `create`, `attach:<case number>` or `none`. Without it, a run on a detection or a case writes a **new** case unless the policy's `case` is `none`; to write into an existing case, send `attach:<case number>`. |
 | `coalesce_key` | A start with the same key joins the open run of the same organization, starter and run identity. Without a key nothing joins. |
 | `idempotency_key` | A repeated start with the same key returns the same run. Scoped to your identity. |
 | `identity` | `caller`, or `hive://secret/<name>`; accepted only if the policy allows it for the template. |
 | `notify` | `output:<name>` destinations for this run's events. |
-| `wait_seconds` | Block up to this long for the verdict, for a synchronous caller. |
+| `wait_seconds` | Block up to this long for the outcome, for a synchronous caller. |
 | `serial` | `true` starts the serial baseline used to measure the speed-up: one step at a time, no speculation, forced to `case: none` and `suggest`. |
 
 The response is `{"run": {...}, "joined": false}`. A run object, abbreviated:
@@ -140,15 +141,20 @@ The response is `{"run": {...}, "joined": false}`. A run object, abbreviated:
   "state": "decided",
   "phase": ["triage", "scoping", "containment"],
   "template": "suspicious-process",
-  "template_version": 6,
+  "template_version": 1,
   "template_by": "request",
   "identity": {"kind": "secret", "secret_name": "investigation-engine-key"},
   "verdict": {
+    "outcome": "escalated_by_rule",
     "label": "true_positive",
-    "p": 0.97,
-    "proof": {"rule": "...", "facts": ["f12", "f31"]},
-    "unknowns": [{"fact": "f40", "reason": "outside_free_window"}]
+    "decided": true,
+    "decided_by": {"kind": "rule", "rule": "banned_binary", "say": "The binary ... is on our banned software list."},
+    "recommendation": null,
+    "missing": [],
+    "unknowns": [{"fact": "f40", "key": "live_net", "reason": "timeout"}]
   },
+  "ai_may_decide": "off",
+  "ai_agent": "investigation-judge",
   "actions": [{"id": "a1", "class": "contain.network", "target": "...", "state": "awaiting_approval", "mode": "approve",
                "eligibility": {"approve": true, "deny": true, "extend": true, "confirm": true, "revert": true, "approvers_required": false}}],
   "policy": {"applied": ["builtin", "default"], "clamped": []},
@@ -173,7 +179,7 @@ once the write made after the run ended has landed.
 Action states, in the order the inbox lists them: `awaiting_approval`, `proposed`,
 `uncertain`, `executing`, `reverting`, `active`, `confirmed`, `reverted`, `failed`,
 `denied`, `expired`. Within a state the most recently changed action is first. Each
-item is the action plus `run` (`run_id`, `template`, `urgency`, `verdict`, `state`,
+item is the action plus `run` (`run_id`, `template`, `urgency`, `verdict` (the outcome), `state`,
 `case_id`, `created`). `approve`/`deny` apply to `awaiting_approval`,
 `extend`/`confirm` to `active`, `revert` to `active` or `confirmed`. The approvers rule
 is in [Approvals](policies.md#approvals).
@@ -185,7 +191,7 @@ is in [Approvals](policies.md#approvals).
 | `GET /templates` | read | The organization's templates: `name`, `version`, `description`, `applies_to`, `status`. |
 | `POST /plans/validate` | read | Body `{"yaml": "..."}`. Type-checks a template against the organization's operator catalog. |
 | `GET /operators` | read | The operator catalog: typed `args` and `output`, and availability under your policy. |
-| `GET /packs` | read | The fact packs. Query `name` for one. |
+| `GET /packs` | read | The fact packs: tested bundles of steps. Query `name` for one. |
 | `GET /authoring-kit` | read | Everything needed to write a template. Query `sections`. |
 | `POST /test-plan` | write | Dry run of a template on past alerts. |
 | `GET /test-plan/{test_id}` | read | Poll a test. Query `after`, `wait` (0 to 10). |
@@ -197,8 +203,9 @@ is in [Approvals](policies.md#approvals).
 
 `POST /plans/validate` answers with `valid`, `errors[]` and `warnings[]` (each
 `{code, path, message, suggestion?}`), `worst_case_steps`, `cost_class`,
-`free_window_compliant`, `steps_by_class`, and an `estimate` of the worst case of one
-run:
+`free_window_compliant`, `steps_by_class`, `ai_rules` (the ids of the AI-assisted
+rules, which decide only where `ai_may_decide` allows) and an `estimate` of the worst
+case of one run:
 
 ```json
 "estimate": {"steps": 14, "search_steps": 3, "llm_steps": 1, "billed_steps": 0, "wall_seconds": 95, "exceeds": ["max_steps_per_run"]}
@@ -220,6 +227,10 @@ own size.
 | `codes` | Every validation code with its meaning and fix. |
 | `packs` | The fact packs. |
 | `library` | The whole [default library](templates.md#the-default-library): per template `name`, `description`, `version`, `status`, `applies_to` and the `yaml` to store, and under `rules` the library's D&R rules (`name`, `description`, `hive`, `yaml`). Only when asked for by name. |
+
+Every answer also has `kit_version` (6) and `capabilities`: the only template format
+the engine accepts (`v5`), the outcomes a run can end with, the step statuses (`ok`,
+`unknown`, `skipped`, `cancelled`) and the positions of `ai_may_decide`.
 
 #### Test a template on past alerts
 
@@ -243,9 +254,26 @@ Give **exactly one** of `template` (stored, draft or active) and `inline` (YAML)
 with a `test_id` while the test runs, and `200` when it is over or the template is
 invalid (`state: "invalid"` with the validation report, nothing started). Poll
 `GET /test-plan/{test_id}?after=<samples seen>&wait=10` until `done`. Each result has
-`verdict`, `proof`, `unknowns`, `steps`, `cost`, `wall_ms`, `would_propose` and, for an
-alert in a closed classified case, `expected` and `agreement` (`agree`, `disagree`,
-`undecided` or `none`); the `summary` has the counts and an `agreement_rate`. See
+`verdict` (the outcome, `decided_by`, `recommendation`, `missing`, `unknowns`),
+`steps`, `cost`, `wall_ms`, `would_propose` and, for an alert in a closed classified
+case, `expected` and `agreement` (`{"rule": "agree", "ai": "none"}`). The `summary`
+has `decided_by_rules`, `rules` (per rule id: `decided`, `agree`, `disagree`), `ai`
+(`recommended`, `agree`, `disagree`, `unclear`), `by_outcome`, `unknown_reasons`,
+`cost_per_sample` and `wall_ms`:
+
+```json
+"summary": {"samples": 10, "ran": 10, "errors": 0,
+            "decided_by_rules": 8,
+            "rules": {"known_sender": {"decided": 5, "agree": 4, "disagree": 1},
+                      "clicked_credential_harvest": {"decided": 3, "agree": 3, "disagree": 0}},
+            "ai": {"recommended": 1, "agree": 1, "disagree": 0, "unclear": 0},
+            "by_outcome": {"closed_by_rule": 5, "escalated_by_rule": 3, "ai_recommends_benign": 1, "couldnt_tell": 1},
+            "with_expected": 6, "expected_complete": true,
+            "unknown_reasons": {"index_lag": 2},
+            "cost_per_sample": {"steps": 6.5, "llm_usd": 0.002, "wall_ms": 2400}}
+```
+
+These numbers are informational: nothing at run time reads them. See
 [Test on past alerts](templates.md#test-on-past-alerts).
 
 ### Stats
@@ -257,9 +285,10 @@ says more matched), and a result can be up to 5 seconds old.
 
 ```json
 {
-  "window": {"template": "phishing-triage", "runs_considered": 41, "truncated": false},
+  "window": {"template": "mailsec-message", "runs_considered": 41, "truncated": false},
   "runs": {"total": 41, "by_state": {"completed": 30, "decided": 8, "cancelled": 3},
-           "by_verdict": {"true_positive": 9, "false_positive": 28, "inconclusive": 2, "undecided": 2}},
+           "by_verdict": {"true_positive": 9, "false_positive": 28, "inconclusive": 2, "undecided": 2},
+           "by_outcome": {"escalated_by_rule": 9, "closed_by_rule": 26, "closed_by_ai": 2, "couldnt_tell": 2, "": 2}},
   "time_to_verdict_ms": {"p50": 410, "p95": 2300, "samples": 39},
   "speedup": {"p50": 2.4, "p95": 4.1, "samples": 6},
   "llm": {"usd": 0.31, "tokens": 91000},
@@ -268,7 +297,7 @@ says more matched), and a result can be up to 5 seconds old.
   "actions": {
     "by_class_state": {"close.false_positive": {"proposed": 5, "confirmed": 7, "reverted": 1, "denied": 1, "expired": 1}},
     "by_template_class": [
-      {"template": "phishing-triage", "action_class": "close.false_positive", "total": 15,
+      {"template": "mailsec-message", "action_class": "close.false_positive", "total": 15,
        "suggested": 3, "approved": 3, "denied": 1, "expired": 1, "auto_executed": 5, "failed": 0, "undone": 1,
        "held": 2, "held_by_reason": {"policy_no_approvers": 2},
        "by_state": {"proposed": 5, "confirmed": 7, "reverted": 1, "denied": 1, "expired": 1}}
@@ -279,6 +308,9 @@ says more matched), and a result can be up to 5 seconds old.
 
 The answer also has `concurrency`, `steps`, `speculation_efficiency` and `search`.
 
+- **`runs.by_outcome`** counts runs per outcome; runs nothing settled yet count under
+  `""`, and runs recorded before outcomes existed under their label.
+  `time_to_verdict_ms` is the time to the first decision.
 - **`speedup`** compares a run with a serial baseline of the same investigation (start
   one with `serial: true`); without a baseline it has `samples: 0`.
 - **`actions.by_template_class`** has one row per template and action class with at
@@ -293,13 +325,13 @@ The answer also has `concurrency`, `steps`, `speculation_efficiency` and `search
   in `held_by_reason`.
 - **`feedback`** counts the labels stored for the runs in the window. `corrections`
   can only be non-zero for runs labelled by earlier versions.
-- The report says what the engine did. It never scores whether a verdict was right,
+- The report says what the engine did. It never scores whether an outcome was right,
   and it changes nothing.
 
 ### Waves
 
 `POST /waves` (write) runs a batch of operator calls now and returns compact answers.
-There is no template, no verdict and no case. It runs with **your** token, counts
+There is no template, no outcome and no case. It runs with **your** token, counts
 against the organization's concurrent run cap, and is kept as a run of `kind: wave`.
 
 ```json
@@ -320,7 +352,7 @@ against the organization's concurrent run cap, and is kept as a run of `kind: wa
 | `steps` | Each step has an `id` and exactly one of `op` (an operator) or `use` (a fact pack), plus `args`. A string argument that is a whole reference such as `"$alert__trigger.sid"` reads another step's value and makes the step wait for it. |
 | `select` | Field paths of the value to return (`matches[0].entity_id`, `matches[*].entity_id`). For a pack step, the names of exports. |
 | `limit` | Per step, 1 to 1000, default 10: the most list elements returned. |
-| `stop_when` | Up to 8 conditions with the same rules as proofs. The first one that is true cancels the steps still running. An unknown step never makes one true. |
+| `stop_when` | Up to 8 conditions with the same rules as a template's rules. The first one that is true cancels the steps still running. An unknown step never makes one true. |
 | `deadline_ms` | Default 30000, capped by the policy's wall-time budget. |
 | `inputs` | Named values steps and conditions may read as `$name`. |
 | `full` | `true` returns raw values instead of compact ones. |

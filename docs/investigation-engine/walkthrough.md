@@ -9,11 +9,12 @@ follow it from top to bottom without guessing.
     - The Investigation Engine is in pre-release. Its routes exist only where it is
       enabled for your organization; elsewhere every `/v1/investigate/...` call answers
       the same `404` as an unknown path. See [API Reference](api-reference.md).
-    - Steps 1 to 6 are setup, done once. Steps 7 to 12 are the daily use.
+    - Steps 1 to 6 are setup, done once. Steps 7 to 13 are the daily use.
     - When a call is refused, look up its `reason_code` or `error_code` in
       [Troubleshooting](troubleshooting.md).
 
 The other pages are the reference for each part:
+[How to Think About Templates](how-to-think-about-templates.md),
 [Concepts](concepts.md), [Plan Templates](templates.md),
 [Policies and Autonomy](policies.md) and the
 [policy record reference](../7-administration/config-hive/investigation-policy.md),
@@ -49,8 +50,8 @@ You need:
 - for case-based investigations, the organization
   [subscribed to Cases](../5-integrations/extensions/limacharlie/cases.md): every run
   writes its result to a case by default;
-- an AI provider credential (an Anthropic API key, for example) for the
-  language-model judgements;
+- an AI provider credential (an Anthropic API key, for example) for the AI
+  questions and the AI review;
 - for the person doing the setup, the permissions below.
 
 | To do | Permissions |
@@ -78,14 +79,16 @@ curl -s "$API/investigate/$OID/templates" -H "Authorization: Bearer $LC_JWT"
 yet. A `404` with no `error_code` means the engine is not enabled on this API host.
 A `401` names the permission you are missing.
 
-## 2. The AI agent record the judgements run with
+## 2. The AI agent record
 
-Templates use the `llm.judge` operator for questions that need judgement, such as
-"is this command line malicious?". A judgement is one structured call through the
-organization's `ai_agent` [Hive record](../9-ai-sessions/dr-sessions.md#ai-agent-record-fields):
-the record decides the model, the system prompt and the provider credentials, and
-your provider bills the tokens on your credentials. The engine looks for the record
-named **`investigation-judge`**.
+Templates use the AI in two places: `ask_ai` steps, one focused question such as
+"is this command line malicious?", and the AI review, the fallback when no rule
+decided. Each call is one structured call through the organization's `ai_agent`
+[Hive record](../9-ai-sessions/dr-sessions.md#ai-agent-record-fields): the record
+decides the model, the system prompt and the provider credentials, and your provider
+bills the tokens on your credentials. The policy's `llm.agent` names the record
+(step 4); when it names none, the engine looks for the record named
+**`investigation-judge`**.
 
 Store the provider key as a secret, then create the record:
 
@@ -96,7 +99,7 @@ curl -s -X POST "$API/hive/secret/$OID/anthropic-key/data" \
   -d 'data={"secret":"<your Anthropic API key>"}' \
   -d 'usr_mtd={"enabled":true}'
 
-# The AI agent record the judgements run with.
+# The AI agent record the AI questions and the review run with.
 curl -s -X POST "$API/hive/ai_agent/$OID/investigation-judge/data" \
   -H "Authorization: Bearer $LC_JWT" \
   -d 'data={"anthropic_secret":"hive://secret/anthropic-key","prompt":"You are a security analyst. Answer each question about the data block with one of the allowed labels and a short rationale."}' \
@@ -104,9 +107,10 @@ curl -s -X POST "$API/hive/ai_agent/$OID/investigation-judge/data" \
 ```
 
 The record needs a `prompt` and one credential source; `model` is optional. It does
-not need `lc_api_key_secret`, since a judgement makes no tool calls. Without the
-record, every `llm.judge` fact is `unknown` with the reason `llm_agent_not_found`,
-and templates that rely on a judgement end `inconclusive`.
+not need `lc_api_key_secret`, since an AI question makes no tool calls. Without the
+record, every `ask_ai` step and the review are `unknown` with the reason
+`llm_agent_not_found`. Rules that do not read the AI still decide; the rest of the
+runs end `couldnt_tell`.
 
 ## 3. The run identity: an API key the policy names
 
@@ -141,7 +145,7 @@ write its case. Add what your templates and actions need, and nothing more:
 | Sensor tags (`tag.add`, `tag.remove`) | `sensor.tag` |
 | Closing a false-positive email (`close.false_positive` on a message) | `mailsec.set` |
 
-A fact the identity may not read comes back `unknown` with the reason `forbidden`,
+A step the identity may not read comes back `unknown` with the reason `forbidden`,
 never as "nothing found". The identity key is a powerful credential: a run started
 by a person executes with the **key's** permissions, not the person's, unless the
 request picks `caller` and the policy allows it.
@@ -152,12 +156,15 @@ The `investigation_policy` record named `default` sets the identity, the AI agen
 what the engine may do on its own. This minimal policy proposes actions but never
 executes one:
 
+<!-- validate: policy -->
 ```yaml
 # investigation_policy/default
 identity:
   default: hive://secret/investigation-engine-key
 llm:
   agent: hive://ai_agent/investigation-judge
+ai_may_decide:
+  "*": off                 # the AI recommends; a person decides (the default)
 autonomy:
   contain.network: {mode: suggest}
   contain.email: {mode: suggest}
@@ -170,7 +177,7 @@ Write it (the Hive takes the record's data as JSON):
 ```bash
 curl -s -X POST "$API/hive/investigation_policy/$OID/default/data" \
   -H "Authorization: Bearer $LC_JWT" \
-  -d 'data={"identity":{"default":"hive://secret/investigation-engine-key"},"llm":{"agent":"hive://ai_agent/investigation-judge"},"autonomy":{"contain.network":{"mode":"suggest"},"contain.email":{"mode":"suggest"},"tag.add":{"mode":"suggest"},"close.false_positive":{"mode":"suggest"}}}' \
+  -d 'data={"identity":{"default":"hive://secret/investigation-engine-key"},"llm":{"agent":"hive://ai_agent/investigation-judge"},"ai_may_decide":{"*":"off"},"autonomy":{"contain.network":{"mode":"suggest"},"contain.email":{"mode":"suggest"},"tag.add":{"mode":"suggest"},"close.false_positive":{"mode":"suggest"}}}' \
   -d 'usr_mtd={"enabled":true}'
 ```
 
@@ -179,7 +186,7 @@ Or save the YAML above as `policy.yaml` and run
 
 Saving a policy that names a secret for the first time needs read access to that
 secret, and the secret must already exist. Sections you leave out (budgets,
-operators, decision thresholds, speculation) keep the platform defaults. Always send
+operators, speculation) keep the platform defaults. Always send
 `usr_mtd.enabled: true` (or `--enabled`): a disabled record is ignored.
 
 Check what the engine will apply:
@@ -189,13 +196,14 @@ curl -s "$API/investigate/$OID/policy/effective" -H "Authorization: Bearer $LC_J
 limacharlie investigate policy get --oid "$OID"
 ```
 
-The answer lists the records applied, the budgets, the thresholds, each action
-class with its mode and where each value came from, the run identity, and
+The answer lists the records applied, the budgets, what the AI may decide
+(`ai_may_decide`), each action class with its mode and where each value came from, the run identity, and
 `warnings` (for example a record that does not parse).
 
 **What `approve` and `auto` change.** Once you trust what the engine proposes, raise
 one class at a time:
 
+<!-- validate: policy -->
 ```yaml
 autonomy:
   contain.network:
@@ -203,8 +211,7 @@ autonomy:
     approvers: [alice@example.com]     # optional: only these people may approve
     approval_timeout: 30m              # unanswered requests expire (default 15m)
   contain.email:
-    mode: auto                         # executed by itself once the bar is met
-    min_confidence: 0.90
+    mode: auto                         # executed by itself once the rule decided
     max_targets_per_run: 3
     max_targets_per_hour: 10
 ```
@@ -215,11 +222,15 @@ autonomy:
   approval.
 - `auto` executes the action without a person **only** when the template binds the
   action to an authorization the engine can re-check from the run's evidence (the
-  `authorize:` key of a respond step), and for the false-positive close the engine
-  proposes after a clear false-positive verdict. Any other action of an active
-  template waits for a person even under `auto`, with the reason
-  `no_registered_authorization`. Of the default library, only the `contain.email`
-  step of `phishing-campaign` carries an authorization.
+  `authorize:` key of an `act` entry), and for the false-positive close the engine
+  proposes after a close outcome. Any other action of an active template waits for a
+  person even under `auto`, with the reason `no_registered_authorization`. In the
+  default library, only the `contain.email` entries of `mailsec-message` and
+  `phishing-campaign` carry an authorization.
+- `ai_may_decide` is separate from the modes: it says whether an AI answer may
+  **decide** the outcome for a template (`off`, `escalate`, `close_and_escalate`).
+  Leave it `off` until you have read how the AI's recommendations compare with your
+  analysts' decisions. See [What the AI may decide](policies.md#what-the-ai-may-decide).
 - To stop all automatic execution at once, save the `autonomy-manual-pause` record
   (see [Emergency pause](../7-administration/config-hive/investigation-policy.md#emergency-pause-and-resume)).
 
@@ -238,11 +249,11 @@ limacharlie investigate kit --section library --oid "$OID"
 ```
 
 Each entry has `name`, `description`, `version`, `status`, `applies_to` and the
-`yaml` to store. Install `endpoint-detection-triage`, the generic template for any
-detection on a sensor, as a **draft**:
+`yaml` to store. Install `endpoint-detection`, the template for any detection on a
+sensor, as a **draft**:
 
 ```bash
-limacharlie investigate templates install-defaults --name endpoint-detection-triage --oid "$OID"
+limacharlie investigate templates install-defaults --name endpoint-detection --oid "$OID"
 ```
 
 Over the API, write the entry's `yaml` as the record. The Hive takes the template as
@@ -250,34 +261,43 @@ the record's `data`; with `jq` and `yq` installed:
 
 ```bash
 curl -s "$API/investigate/$OID/authoring-kit?sections=library" -H "Authorization: Bearer $LC_JWT" \
-  | jq -r '.library[] | select(.name=="endpoint-detection-triage") | .yaml' > endpoint-detection-triage.yaml
-curl -s -X POST "$API/hive/investigation_plan/$OID/endpoint-detection-triage/data" \
+  | jq -r '.library[] | select(.name=="endpoint-detection") | .yaml' > endpoint-detection.yaml
+curl -s -X POST "$API/hive/investigation_plan/$OID/endpoint-detection/data" \
   -H "Authorization: Bearer $LC_JWT" \
-  --data-urlencode "data=$(yq -o=json '.' endpoint-detection-triage.yaml)" \
+  --data-urlencode "data=$(yq -o=json '.' endpoint-detection.yaml)" \
   -d 'usr_mtd={"enabled":true}'
 ```
 
 An MCP agent fetches the library with `investigate_authoring_kit` (`sections:
 ["library"]`) and saves it with `investigate_save_plan`, which always writes a draft.
 
+**Create the lists its rules read.** `endpoint-detection` closes on your
+`approved-software` Lookup and escalates on your `banned-software` Lookup, both keyed
+by file hash. Until they exist, those rules never hold (the Lookup read is
+`unknown(not_found)`), and the run falls back to the AI-assisted rules and the review.
+Create them in **Lookups** with the hashes you already know, or later from the
+console's **Add to list and close** (step 9).
+
 **Test it on past alerts** before it acts. A test runs the template's real read-only
 steps on alerts that already happened, as you, and writes nothing but its own result:
 
 ```bash
-limacharlie investigate templates test endpoint-detection-triage \
+limacharlie investigate templates test endpoint-detection \
   --detect-cat <a detection category you have> --last 10 --oid "$OID"
 ```
 
 ```bash
 curl -s -X POST "$API/investigate/$OID/test-plan" -H "Authorization: Bearer $LC_JWT" \
   -H "Content-Type: application/json" \
-  -d '{"template": "endpoint-detection-triage", "samples": [{"detect_cat": "<category>", "last": 10}], "wait_seconds": 10}'
+  -d '{"template": "endpoint-detection", "samples": [{"detect_cat": "<category>", "last": 10}], "wait_seconds": 10}'
 # 202 while it runs: poll with the test_id it returned
 curl -s "$API/investigate/$OID/test-plan/<test_id>?after=0&wait=10" -H "Authorization: Bearer $LC_JWT"
 ```
 
-Read the verdicts, the unknowns and their reasons, and the agreement with closed
-cases. See [Test on past alerts](templates.md#test-on-past-alerts).
+Read the summary: how many samples a rule decided (`decided_by_rules`), how often
+each rule agreed with the analysts (`rules`), how the AI's recommendations fared on
+the rest (`ai`), and the reasons steps stayed unknown. See
+[Test on past alerts](templates.md#test-on-past-alerts).
 
 **Publish it.** A person makes a template active, and only an active template can be
 started by a D&R rule or chosen automatically. In the console open
@@ -285,7 +305,7 @@ started by a D&R rule or chosen automatically. In the console open
 signed in as a user (`limacharlie auth login --oauth`):
 
 ```bash
-limacharlie investigate templates promote endpoint-detection-triage --confirm --oid "$OID"
+limacharlie investigate templates promote endpoint-detection --confirm --oid "$OID"
 ```
 
 A write of `status: active` from an API key is refused by default, so an AI agent
@@ -298,6 +318,7 @@ To hear about decisions and pending approvals, add `notify` to the `default` pol
 record. Events are written to the organization's audit log, which your Outputs on the
 audit stream deliver:
 
+<!-- validate: policy -->
 ```yaml
 notify:
   action.needs_approval: ['output:slack-soc']
@@ -313,16 +334,16 @@ See [Notifications](policies.md#notifications).
 ```bash
 curl -s -X POST "$API/investigate/$OID/runs" -H "Authorization: Bearer $LC_JWT" \
   -H "Content-Type: application/json" \
-  -d '{"trigger": {"detection_id": "<detection id>"}, "plan": {"template": "endpoint-detection-triage"}, "wait_seconds": 30}'
+  -d '{"trigger": {"detection_id": "<detection id>"}, "plan": {"template": "endpoint-detection"}, "wait_seconds": 30}'
 ```
 
 ```bash
-limacharlie investigate runs start --template endpoint-detection-triage \
+limacharlie investigate runs start --template endpoint-detection \
   --detection-id <detection id> --wait 30 --oid "$OID"
 ```
 
 - The answer is `{"run": {...}, "joined": false}`, HTTP `201` (`200` when the start
-  joined an open run). `wait_seconds` blocks up to that long for the verdict.
+  joined an open run). `wait_seconds` blocks up to that long for the outcome.
 - Leave `plan` out to let the engine choose the **active** template whose
   `applies_to` matches the trigger. `{"auto": true}` is refused for a person.
 - To investigate an existing case **and write into it**, send
@@ -348,7 +369,7 @@ respond:
   - action: report
     name: suspicious-powershell
   - action: start investigation
-    template: endpoint-detection-triage
+    template: endpoint-detection
 ```
 
 ```bash
@@ -391,7 +412,7 @@ curl -s -X POST "$API/investigate/$OID/runs" -H "Authorization: Bearer $LC_JWT" 
   -H "Content-Type: application/json" \
   --data-binary @- <<'EOF'
 {"trigger": {"detection_id": "<detection id>"},
- "plan": {"inline": "description: One-off check of what else fired on the host.\ninputs:\n  detection_id: '{{ .detection.detect_id }}'\nfacts:\n  trigger:\n    op: detection.get\n    args: {detect_id: $detection_id, window: [-29d, now]}\n  related:\n    op: detection.list\n    args: {sids: [$trigger.sid], window: [-7d, now]}\nevidence:\n  - {id: busy_host, when: 'related.count >= 5', weight: 1.0}\nreport:\n  case: none\n"},
+ "plan": {"inline": "description: \"One-off check: escalate when the host raised five or more detections this week.\"\nstarts_from: detection\ngather:\n  trigger:\n    op: detection.get\n    args: {detect_id: $detection_id, window: [-29d, now]}\n  related:\n    op: detection.list\n    args: {sids: ['$trigger.sid'], window: [-7d, now]}\nrules:\n  escalate:\n    - {id: busy_host, when: 'related.count >= 5', say: \"The host raised {related.count} detections this week.\"}\ncase:\n  mode: none\n"},
  "case": "none"}
 EOF
 ```
@@ -399,7 +420,7 @@ EOF
 An inline plan is always a draft (actions capped at `suggest`), runs with the
 caller's own token unless the policy has an `identity.templates.inline` entry, and is
 refused for a run started by a rule (`inline_plan_not_allowed`). For a one-off
-question that needs no verdict, a [wave](concepts.md#waves-and-fact-packs) is lighter.
+question that needs no decision, a [wave](concepts.md#waves-and-fact-packs) is lighter.
 
 ## 8. Follow the run
 
@@ -408,12 +429,24 @@ curl -s "$API/investigate/$OID/runs/<run id>" -H "Authorization: Bearer $LC_JWT"
 limacharlie investigate runs get <run id> --oid "$OID"
 ```
 
-- **State:** `queued`, `running`, `decided` (the verdict is final, scoping or actions
-  may still run), `completed`, `cancelled`, `failed` or `budget_exhausted`.
-- **Verdict:** `verdict.label` is `true_positive`, `false_positive` or `inconclusive`,
-  with `p` (the probability of a true positive), the `proof` and the `unknowns` with
-  their reasons. An `inconclusive` verdict with unknowns is a correct answer when data
-  was missing.
+- **State:** `queued`, `running`, `decided` (the outcome is final, scoping or
+  actions may still run), `completed`, `cancelled`, `failed` or `budget_exhausted`.
+- **Outcome:** `verdict.outcome` is one of the eight outcomes below, with
+  `decided_by` (the rule or the AI that decided, and its sentence), the AI's
+  `recommendation` when it recommends, and `missing` (what stayed unknown, why, which
+  rule needed it, and the question for a person). `verdict.label` is derived from it.
+  `ai_agent` names the AI agent record the run used.
+
+  | `verdict.outcome` | What it means | What you do |
+  |---|---|---|
+  | `closed_by_rule` | A close rule held on complete evidence. `decided_by.say` is its sentence. | Nothing. The close runs under the `close.false_positive` mode. |
+  | `escalated_by_rule` | An escalate rule held. | Work the case. The rule's `act` entries are proposed under their modes. |
+  | `closed_by_ai` | The AI decided to close, because `ai_may_decide` lets it close for this template. | Nothing, or spot-check. |
+  | `escalated_by_ai` | The AI decided to escalate, because `ai_may_decide` lets it. | Work the case. Its actions wait for a person. |
+  | `ai_recommends_benign` | The AI recommends closing. Nothing was done. | Decide: see [step 9](#9-what-ai-recommends-means). |
+  | `ai_recommends_malicious` | The AI recommends escalating. Nothing was done. | Decide: see [step 9](#9-what-ai-recommends-means). |
+  | `couldnt_tell` | No rule decided and the AI did not answer either way. | Read `missing`: answer its `ask`, or fix what made a step unknown ([Troubleshooting](troubleshooting.md#a-run-finished-but-the-outcome-means-little)). |
+  | `conflict` | Rules on both sides held. | Decide, then fix the rules so they cannot both hold. |
 - **Events**, as a long-poll: pass the last `next` as `after` until `done` is true.
 
   ```bash
@@ -422,15 +455,68 @@ limacharlie investigate runs get <run id> --oid "$OID"
   ```
 
   Event types include `run.created`, `run.state`, `run.phase`, `step`, `fact`,
-  `verdict`, `action`, `input`, `case`, `usage` and `final`. Event data carries
-  structure, never customer values.
-- **Steps**, the plan graph and the belief curve: `GET .../runs/<run id>/steps`
-  (`runs steps` in the CLI).
+  `verdict` (it carries the outcome), `action`, `input`, `case`, `usage` and `final`.
+  Event data carries structure, never customer values.
+- **Steps**, the plan graph and the outcome timeline: `GET .../runs/<run id>/steps`
+  (`runs steps` in the CLI). Every step carries `narrative`: `why` it ran, what it
+  `found`, and what `used` it (`rule:<id>`, `ai_review`, another step, or nothing:
+  "not used for the decision"). A step its `only_if` skipped is `skipped`, with the
+  reason.
 - **The case:** `case_id` appears with the first case write and `case_final` turns
-  `true` once the write made after the run ended has landed. The case document the run
-  wrote: `GET .../runs/<run id>/case` (`runs case`). Open the case itself in Cases.
+  `true` once the write made after the run ended has landed. The case leads with the
+  outcome sentence. The case document the run wrote: `GET .../runs/<run id>/case`
+  (`runs case`). Open the case itself in Cases.
 
-## 9. Approve, deny, undo
+## 9. What "AI recommends" means
+
+`ai_recommends_benign` and `ai_recommends_malicious` mean the AI answered, but the
+policy does not let it decide for this template (`ai_may_decide` is `off`, or
+`escalate` for a benign answer). So **nothing was done**: no case close, no
+containment. A person decides. The run gives you what you need:
+
+- `verdict.recommendation`: `label` (`benign` or `malicious`), `rationale`,
+  `citations` (the step fields it used: open those steps), `by` (the AI-assisted rule
+  or `ai_review`) and `self_rated_confidence`. The confidence is the AI's own rating:
+  it is not a probability, and the engine never uses it.
+- The steps' narratives, and `missing`: what the AI did not have.
+
+**To close (you agree it is benign).** After `ai_recommends_benign` the engine
+proposes the case close (`close.false_positive`) capped at `approve`. Approving it is
+the console's **Close as benign**:
+
+```bash
+# Find the close the run proposed
+curl -s "$API/investigate/$OID/actions?run_id=<run id>&class=close.false_positive&state=awaiting_approval" \
+  -H "Authorization: Bearer $LC_JWT"
+# Approve it
+curl -s -X POST "$API/investigate/$OID/runs/<run id>/actions/<action id>/approve" -H "Authorization: Bearer $LC_JWT"
+```
+
+You need `investigation.set` and `insight.evt.get`, plus `investigation.set` to close
+a case or `mailsec.set` to close an email message. If the class's mode is `suggest`,
+there is nothing to approve: close the case in Cases.
+
+**To escalate (you think it is malicious, or you disagree with a benign
+recommendation).** Deny the proposed close with a note, then work the case. This is
+the console's **Escalate**:
+
+```bash
+curl -s -X POST "$API/investigate/$OID/runs/<run id>/actions/<action id>/deny" -H "Authorization: Bearer $LC_JWT" \
+  -H "Content-Type: application/json" -d '{"note": "escalated: unexpected parent process"}'
+```
+
+After `ai_recommends_malicious` nothing is proposed: open the case and contain by
+hand, or start a new run once you have a rule that decides.
+
+**To make the next one decide by rule.** When a cited step read one of your Lookups
+(`lookup.get`), the console offers **Add to list and close**: it adds the keys the
+Lookup did not list (the hash, the domain) to that Lookup, then approves the close.
+The next identical alert is `closed_by_rule`, with no AI call. Over the API, add the
+key to the `lookup` Hive record, then approve as above. When people keep making the
+same call, write the rule: see
+[How to Think About Templates](how-to-think-about-templates.md#8-turn-repeated-decisions-into-rules).
+
+## 10. Approve, deny, undo
 
 ```bash
 # The approvals inbox: what waits for a person, across every run
@@ -459,7 +545,7 @@ curl -s -X POST "$API/investigate/$OID/runs/<run id>/actions/<action id>/deny" -
 - The CLI has `actions approve` and `actions deny`; use the API or the console for the
   other verbs.
 
-## 10. Cancel
+## 11. Cancel
 
 ```bash
 curl -s -X POST "$API/investigate/$OID/runs/<run id>/cancel" -H "Authorization: Bearer $LC_JWT" \
@@ -472,22 +558,22 @@ no longer be approved. Active leases stay in place unless `revert_leases` is `tr
 a lease of a class whose permission you do not hold is not reverted and is listed in
 `skipped_reverts`. Cancelling a run that already ended changes nothing.
 
-## 11. Read the performance stats
+## 12. Read the performance stats
 
 ```bash
-curl -s "$API/investigate/$OID/stats?since=2026-11-01T00:00:00Z&template=endpoint-detection-triage" \
+curl -s "$API/investigate/$OID/stats?since=2026-11-01T00:00:00Z&template=endpoint-detection" \
   -H "Authorization: Bearer $LC_JWT"
-limacharlie investigate stats --template endpoint-detection-triage --oid "$OID"
+limacharlie investigate stats --template endpoint-detection --oid "$OID"
 ```
 
 The report needs `investigation_policy.set` on top of the read permissions: a
-person without it gets `403`. It covers runs by state and verdict, time to verdict, the speed-up against a serial baseline,
+person without it gets `403`. It covers runs by state and by outcome (`runs.by_outcome`), time to a decision, the speed-up against a serial baseline,
 search and AI cost, per-operator calls and errors, and for each template and action
 class what became of the actions (suggested, approved, denied, expired, executed
 automatically, failed, undone, held). The report says what the engine did; it never
-scores whether a verdict was right. See [Stats](api-reference.md#stats).
+scores whether an outcome was right. See [Stats](api-reference.md#stats).
 
-## 12. Limits and costs
+## 13. Limits and costs
 
 | What | Limit |
 |---|---|
@@ -501,15 +587,18 @@ scores whether a verdict was right. See [Stats](api-reference.md#stats).
 Who pays:
 
 - **Searches** stay inside the free time range, so they carry no search charge.
-- **Judgements** run on the provider credentials of your `ai_agent` record, so your
-  provider bills those tokens. The run reports what they cost and stops launching new
-  judgements once `max_llm_usd_per_run` is reached; a judgement already in flight can
-  take it slightly past.
+- **AI questions and reviews** run on the provider credentials of your `ai_agent`
+  record, so your provider bills those tokens. The run reports what they cost and
+  stops launching new AI calls once `max_llm_usd_per_run` is reached; a call already
+  in flight can take it slightly past. A template whose rules decide most alerts
+  costs little: the review runs only when no rule decided.
 - **Operators that bill per use**, such as artifact collection, are off unless the
   policy allows them.
 
 ## Next
 
+- Write your own template, or understand the library's:
+  [How to Think About Templates](how-to-think-about-templates.md).
 - Something was refused or did not start: [Troubleshooting](troubleshooting.md).
-- Write your own template with an AI agent:
+- Write and tune templates with an AI agent:
   [Build and Tune Templates with an AI Agent](build-templates-with-ai.md).

@@ -393,7 +393,6 @@ hives:
         autonomy:
           close.false_positive:
             mode: suggest
-            min_confidence: 0.90
             max_targets_per_run: 3
             max_targets_per_hour: 50
             lease: 2h

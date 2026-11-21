@@ -114,14 +114,18 @@ limacharlie investigate templates test my-template \
 | `--detect-cat` with `--last N` | The newest N alerts of the category (1 to 25, default 10). |
 | `--sample JSON`, `--samples-file FILE` | Free samples. At most 25 alerts in all. |
 | `--mode triage\|full` | `triage` (the default, the cheap pass) or `full`. |
-| `--strict` | Refuse the test, instead of reducing the value, when an override in `--overrides-json` would loosen the policy. Without overrides it changes nothing. It does not fail the test because of unknown facts; read the unknowns in the result. |
+| `--strict` | Refuse the test, instead of reducing the value, when an override in `--overrides-json` would loosen the policy. Without overrides it changes nothing. It does not fail the test because of unknown steps; read the unknowns in the result. |
 | `--overrides-json JSON` | Tighten-only overrides, such as `{"budgets": {"max_wall_seconds": 120}}`. |
 | `--wait SECONDS`, `--timeout SECONDS`, `--no-wait` | How long the start call and the whole command wait. `--no-wait` prints the `test_id` and returns. |
 | `--test-id ID` | Keep waiting on a test started earlier. |
 | `--include-steps` | Keep every step of every sample (large). By default only the steps that did not succeed. |
 
 The result is the one described in [Test on past alerts](templates.md#test-on-past-alerts):
-per sample the verdict, proof, unknowns, cost and agreement with the case, and a summary.
+per sample the outcome, the deciding rule, the AI's recommendation, what was missing,
+the cost and the agreement of the rule and of the AI with the case; and a summary with
+the share decided by rules, agree/disagree per rule and the AI's record on the rest.
+Read it in this order: the validation, the summary, each disagreement (tighten or
+remove that rule), then the undecided samples (`couldnt_tell`, `conflict`).
 
 ## Authoring helpers
 
@@ -161,11 +165,11 @@ limacharlie investigate runs case <run id> --oid $OID
 
 | Command | What it does |
 |---|---|
-| `runs start` | Starts a run on `--detection-id`, `--case-id`, `--entity-id` or `--question`, with exactly one of `--template NAME`, a template file `-f`, or `--auto` (sends no template: the engine picks the active template whose `applies_to` matches the trigger, and refuses with a reason when none does). `--category`, `--severity`, `--priority` and `--tag` (repeatable) describe the alert: they feed `--auto` and the run-scoped policy records, and `--severity` and `--priority` set the default urgency. `--urgency low\|medium\|high\|critical` overrides it. `--input KEY=VALUE` and `--inputs-json` give run inputs; `--mode triage\|full\|scope` (default `full`); `--case-mode create\|none\|attach:<id>`; `--idempotency-key`; `--wait SECONDS` (up to 60) to block for the verdict; `--follow` to stream events until the run ends. |
-| `runs get RUN_ID` | State, phase, verdict, actions and usage. |
-| `runs list` | The organization's runs, newest first. Filters `--state`, `--verdict`, `--template`, `--trigger`, `--entity`, `--started-by`, `--idempotency-key`, `--since`, `--until`; `--limit` and `--cursor` page; `--all` follows every page. |
+| `runs start` | Starts a run on `--detection-id`, `--case-id`, `--entity-id` or `--question`, with exactly one of `--template NAME`, a template file `-f`, or `--auto` (sends no template: the engine picks the active template whose `applies_to` matches the trigger, and refuses with a reason when none does). `--category`, `--severity`, `--priority` and `--tag` (repeatable) describe the alert: they feed `--auto` and the run-scoped policy records, and `--severity` and `--priority` set the default urgency. `--urgency low\|medium\|high\|critical` overrides it. `--input KEY=VALUE` and `--inputs-json` give run inputs; `--mode triage\|full\|scope` (default `full`); `--case-mode create\|none\|attach:<id>`; `--idempotency-key`; `--wait SECONDS` (up to 60) to block for the outcome; `--follow` to stream events until the run ends. |
+| `runs get RUN_ID` | State, phase, the outcome with `decided_by`, `recommendation` and `missing`, `ai_may_decide`, `ai_agent`, actions and usage. |
+| `runs list` | The organization's runs, newest first, with their outcome and what decided it. Filters `--state`, `--outcome` (one of the eight outcomes, or `undecided`), `--verdict` (the label), `--template`, `--trigger`, `--entity`, `--started-by`, `--idempotency-key`, `--since`, `--until`; `--limit` and `--cursor` page; `--all` follows every page. |
 | `runs events RUN_ID` | The run's events after `--after`. `--follow` keeps polling until the run is over, one event per line. It exits 0 when the run finished and 1 when `--timeout` is reached. |
-| `runs steps RUN_ID [--values]` | The step log, plan graph, usage and belief curve. `--values` includes customer values; by default the output is structure only. |
+| `runs steps RUN_ID [--values]` | The step log with each step's narrative (why it ran, what it found, what used it), the plan graph, usage and the outcome timeline. `--values` includes customer values; by default the output is structure only. |
 | `runs case RUN_ID` | The case document the run wrote. |
 | `runs cancel RUN_ID [--revert-leases]` | Cancels a run, and optionally reverts the leases of its active actions. |
 
@@ -179,6 +183,8 @@ limacharlie investigate actions approve <run id> <action id> --oid $OID
 limacharlie investigate actions deny <run id> <action id> --note "Expected maintenance" --oid $OID
 
 limacharlie investigate policy get --category rare-process --priority 5 --oid $OID
+limacharlie investigate policy ai --oid $OID
+limacharlie investigate policy ai-set suspicious-process escalate --confirm --oid $OID
 limacharlie investigate stats --template suspicious-process --since 2026-11-01T00:00:00Z --oid $OID
 ```
 
@@ -188,6 +194,8 @@ limacharlie investigate stats --template suspicious-process --since 2026-11-01T0
 | `actions approve RUN_ID ACTION_ID` | Approves an action. Refused for an action in `suggest` mode, and for a person who is not on the class's `approvers` list when it has one. | write, plus the action class's permission |
 | `actions deny RUN_ID ACTION_ID [--note TEXT]` | Denies an action (same `approvers` check). | same |
 | `policy get [--category] [--priority] [--severity] [--target-tag]... [--class] [--template]` | The effective policy, record by record, for those attributes. `--template` shows the run identity that template would use. | read |
+| `policy ai` | What the AI may decide per template: the `ai_may_decide` field of the `default` policy record (`off` when a template has no entry). | `investigation_policy.get` |
+| `policy ai-set TEMPLATE\|'*' off\|escalate\|close_and_escalate --confirm` | Changes only that field of the `default` record, conditional on the version it read. A person's decision: see [What the AI may decide](policies.md#what-the-ai-may-decide). | `investigation_policy.get`, `investigation_policy.set` |
 | `stats [--template] [--since] [--until]` | The [performance report](api-reference.md#stats). | read and `investigation_policy.set` |
 | `runs delete RUN_ID --confirm` | Deletes a finished run for good. | write |
 

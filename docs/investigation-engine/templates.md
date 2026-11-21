@@ -322,7 +322,7 @@ rules:
       when: ['approved.found', 'live_file.matches', 'live_file.verified']   # a list is "all of"
       say: "The binary is on our approved list, and the file on the host is that file, signed and verified."
   never_close_when:
-    - 'message.stored_credential_harvest'
+    - 'live_autoruns.found'      # never close while the binary is set to start on its own
 ```
 
 | Key | Meaning |
@@ -429,8 +429,8 @@ steps and the review are unknown (`llm_agent_not_found`).
 
 ```yaml
 act:
-  - {class: contain.email, target: '$message.msg_id', attrs: {group_id: '$recipients.action_attrs.group_id'}, on: [clicked_credential_harvest]}
-  - {class: contain.network, target: '$sensor', on: [banned_binary, payload_after_click]}
+  - {class: contain.network, target: '$ctx__trigger.sid', on: [banned_binary, judged_malicious_on_noisy_host]}
+  - {class: tag.add, target: '$ctx__trigger.sid', attrs: {tag: 'ie:banned-binary', ttl: 86400}, on: [banned_binary]}
 ```
 
 | Key | Meaning |

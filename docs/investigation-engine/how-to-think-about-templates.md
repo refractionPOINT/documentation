@@ -181,7 +181,7 @@ ai_review:
 
 The review **recommends**: the outcome is `ai_recommends_benign` or
 `ai_recommends_malicious`, nothing is acted on, and a person decides with one click
-(see [What "AI recommends" means](walkthrough.md#what-ai-recommends-means)). Its
+(see [What "AI recommends" means](walkthrough.md#9-what-ai-recommends-means)). Its
 self-rated confidence is shown, labelled "self-rated", and never used.
 
 A narrower tool is the `ask_ai` step: one focused question whose answer rules can

@@ -56,12 +56,13 @@ respond:
   template whose `applies_to` best matches (see
   [How templates are chosen](templates.md#how-templates-are-chosen)).
 - The run gets the detection id plus exactly the `inputs` the action lists. A template
-  that takes `detection_id` and derives everything else works unchanged. See
-  [Run inputs](templates.md#run-inputs).
+  with `starts_from: detection` that derives everything else from the detection works
+  unchanged; the action's other inputs are optional inputs (`$?name`) the template's
+  steps may read. See [Where a run starts](templates.md#where-a-run-starts-starts_from).
 - The detection the rule reported travels with the start, so the run reads it at
   once. When it cannot (an event restricted by resource ACL tags), the engine reads the
   detection itself and, since it may not be stored yet, retries that lookup for up to
-  about two minutes before the fact is `unknown(not_found)`.
+  about two minutes before the step is `unknown(not_found)`.
 - Starting a run never delays the rule and never fails the detection.
 
 ## D&R rules on a new case

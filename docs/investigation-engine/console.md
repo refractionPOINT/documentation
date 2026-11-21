@@ -66,7 +66,7 @@ started without a person". The causes are the `reason_code` values in
   only**, **Full (triage, scoping, containment)**, **Scope only**).
 - **Speculation**: Conservative, Balanced or Aggressive; empty uses the policy
   default.
-- **Create a case**: on by default. "Write the verdict and its proof to a case."
+- **Create a case**: on by default. "Write the outcome and what decided it to a case."
 - **Also run a serial baseline**: starts a second run of the same alert, one step at a
   time, so the speedup is measured instead of estimated. The baseline never writes a
   case and never acts.
@@ -74,9 +74,8 @@ started without a person". The causes are the `reason_code` values in
   loosen the policy.
 
 **Policy context** (category, priority, severity) feeds the policy lookup. **Tighten the
-policy for this run** lets you lower budgets, raise decision thresholds, lower an
-action class's autonomy mode or raise its minimum confidence. Overrides can only make
-the policy stricter. A value looser than the policy is moved to the policy value, and
+policy for this run** lets you lower budgets or lower an action class's autonomy
+mode. Overrides can only make the policy stricter. A value looser than the policy is moved to the policy value, and
 the launcher says so: **Some overrides were reduced to the policy value**.
 
 The panel on the right is the **Effective policy** for the inputs you entered.
@@ -86,29 +85,56 @@ The panel on the right is the **Effective policy** for the inputs you entered.
 The **Runs** tab lists the organization's runs, newest first, 50 at a time. While the
 first page holds a run that is still in progress it refreshes every few seconds; a page
 of finished runs does not refresh by itself, so reload to see runs started since.
-Columns: State, Verdict, Trigger, Started by, Template, Time to
-verdict, Speedup, Started and Actions (how many await a decision). Filters are
-evaluated by the engine, so they cover all runs: search (detection, case, entity,
-message or question), State, Verdict, Template, Time range, Started by, and **Mine**.
+Columns: State, Outcome (such as **Closed by rule**, **AI recommends: benign** or
+**Couldn't tell**), Trigger, Started by, Template, Time to verdict, Speedup, Started
+and Actions (how many await a decision). Filters are evaluated by the engine, so they
+cover all runs: search (detection, case, entity, message or question), State,
+Outcome, Template, Time range, Started by, and **Mine**.
 
 ### A run
 
 Opening a run shows its header (template and version, how the template was picked,
-who started it, the identity it **Runs as**), a verdict chip, the live **P(true
-positive)**, the run state and phase, and a strip of statistics: time to verdict,
-speedup versus serial, steps (and how many were cancelled), cache hits, search events,
-and LLM cost. A finished run is replayed from its log, and a live one updates itself.
+who started it, the identity it **Runs as**), the run state and phase, and a strip of
+statistics: time to verdict (to the first decision), speedup versus serial, steps (and how many were
+cancelled), cache hits, search events, and AI cost. A finished run is replayed from its
+log, and a live one updates itself.
+
+At the top, the **outcome banner** says how the run ended, in one of eight
+[outcomes](concepts.md#outcomes): **Closed by rule**, **Escalated by rule**, **Closed by
+the AI**, **Escalated by the AI**, **AI recommends: benign**, **AI recommends:
+malicious**, **Couldn't tell** or **Conflict: the rules disagree**. Under it is what
+decided: the rule's id and its own sentence (**Decided by rule**), or **Decided by the
+AI-assisted rule**, or **Decided by the AI review**. While nothing has decided it reads
+**Investigating**.
+
+**When the AI recommends**, the banner says **Waiting for you** and **What the AI
+recommends** shows the label, the AI's rationale, what it **Cited** (click a citation
+to open that step) and "Self-rated confidence N%, not a probability". The buttons:
+
+- **Close as benign** approves the case close the engine proposed (capped at
+  approval), after a confirmation. The case is closed as a false positive.
+- **Escalate** denies that proposed close, with a note, and opens the run's case.
+- **Add `<keys>` to "`<lookup>`" and close** appears when a cited step read one of your
+  [Lookups](../7-administration/config-hive/lookups.md). It adds the keys the Lookup
+  did not list, then closes as benign. The next alert a rule checks against that list
+  closes by rule, with no AI call. It needs write access to that Lookup; an optimized
+  Lookup is refused with a pointer to the Lookups page.
+
+See [What "AI recommends" means](walkthrough.md#9-what-ai-recommends-means).
+
+**What was missing** lists, when nothing decided, each step that stayed unknown, why,
+what needed it (**Needed by**), and the question for a person (**Ask:**).
 
 The six tabs:
 
 | Tab | What it shows |
 |---|---|
-| **Plan** | A dependency graph of the facts the engine gathered, by wave, ending in the proof. Click a node for its status, latency, request and result. Legend: in the completed proof, critical path, cancelled, speculative, unknown. Beside it, the **belief** chart (P(true positive) over time with the escalate, scope and dismiss thresholds) and **Why**: the plain-language reason for the verdict, the evidence that raised or lowered the probability, and the facts that are unknown. |
-| **Timeline** | Bars per kind of step (indexed read, scan, live task, LLM judgement, action) showing what ran in parallel, what was cancelled and the critical path, with the time a serial run would have taken. |
-| **Evidence** | Every fact the run gathered, filterable to *unknown* or *in proof*. A fact is **Known**, **Nothing found** (a real, complete negative), **Partial** (possibly incomplete) or **Unknown** (could not be determined, which is not a finding of absence). |
+| **Plan** | A dependency graph of the steps the engine gathered, by wave, ending in the outcome. The path of the steps that decided it is highlighted; a recommendation or "Couldn't tell" highlights none. Click a node for its status, latency, request and result, and **In plain words**: **Why** it ran, what it **Found**, and what **Used by** it (a rule, another step, the AI review, the case), or **Not used for the decision**. A step its `only_if` skipped shows as **Skipped by its condition**, with the reason. |
+| **Timeline** | Bars per kind of step (indexed read, scan, live task, AI question, action) showing what ran in parallel, what was cancelled and the critical path, with the time a serial run would have taken. |
+| **Evidence** | Every step the run gathered, filterable to *unknown* or **Behind the decision**. A step is **Known**, **Nothing found** (a real, complete negative), **Partial** (possibly incomplete), **Unknown** (could not be determined, which is not a finding of absence) or skipped. |
 | **Actions** | The actions the run proposed or took, with the **Automatic actions** switch and, for a live run, **Cancel run** (with an option to also revert active leases). |
-| **Case** | The case document the run wrote: summary, proof with cited facts, conclusion, signals, detections, entities, telemetry, artifacts, unknowns and actions, and a link to open the case. |
-| **Compare** | What-if evaluation of the facts the run recorded, under another template or a tighter policy. It runs no new queries and changes nothing. Available once the run has finished. |
+| **Case** | The case document the run wrote: the outcome sentence, signals and how each was answered, detections, entities, telemetry, the evidence, what stayed unknown, the open question and the actions, and a link to open the case. |
+| **Compare** | What-if evaluation of what the run recorded, under another template or a tighter policy: the outcome and **What decided** on each side. It runs no new queries and changes nothing. Available once the run has finished. |
 
 ## Approvals
 
@@ -118,9 +144,9 @@ waiting for a person without opening each run. By default it shows actions in
 Executing, Reverting, Confirmed, Reverted, Failed, Denied and Expired) and by action
 class.
 
-Each row shows the run it came from, with its template, state, verdict, urgency and
+Each row shows the run it came from, with its template, state, outcome, urgency and
 case, and a link to open the run's evidence. The action card shows the class (such as
-**Isolate from network**), the target, its state and mode, the confidence, the
+**Isolate from network**), the target, its state and mode, the
 deadline for a decision, the lease time left, who decided, and its history.
 
 | State | Buttons |
@@ -219,16 +245,20 @@ total:
 - **A case**, by case id: its classification is the expected answer;
 - **Last N of a category**: the newest N detections of that category, N from 1 to 25.
 
-The result shows a progress bar, then summary cards: **Alerts tested**, **Verdicts**,
-**Agreement with closed cases**, **Unknowns**, **Cost** and **Time per alert**. Below,
-**Results per alert** gives each alert's verdict, probability and basis, the proof, the
-unknowns, the cost, the actions the template **would propose**, and a chip: **Agrees
-with the case**, **Disagrees with the case**, **Undecided** or **No closed case**.
+The result shows a progress bar, then the summary: **Decided by rules** (how many of
+the alerts a rule decided), one line per rule (how many it decided, how many agree
+and disagree with the analysts), **AI recommendation on the rest** (agree, disagree,
+unclear), the unknowns, the cost per alert and the time. Below, **Results per alert**
+gives each alert's outcome, the deciding rule or **AI recommends: ...**, **What was
+missing**, the cost, the actions the template **would propose**, and two chips:
+**Rule agrees with the case** or **Rule disagrees with the case**, and **AI agrees
+with the case**, **AI disagrees with the case** or **AI unclear** (or **No closed
+case**). These figures are for your information: nothing waits on them.
 
 If steps were refused for lack of permission, a banner lists them: the test ran with
 the permissions of whoever started it, so grant the permission of the product each of
-those facts reads (for example `mailsec.get` for email steps) and test again. Until
-then those facts stay unknown and the verdicts mean little. Results are kept for 24
+those steps reads (for example `mailsec.get` for email steps) and test again. Until
+then those steps stay unknown and the outcomes mean little. Results are kept for 24
 hours. You need `investigation.set`, `investigation.get` and `insight.evt.get`: the
 console starts the test with the first and follows it with the second.
 
@@ -236,8 +266,21 @@ console starts the test with the first and follows it with the second.
 
 On the template's page:
 
+- **What this template does** outlines the template in plain words: where it
+  **Starts from**, the steps it gathers (with **Only if**, **Ask a person** and the AI
+  steps marked), **Escalate when** and **Close when** rules (the **AI-assisted** ones
+  marked), **Never close when**, the signals to explain, the **AI review**, the
+  actions and when each fires, and the case severity.
+- **AI may decide** sets what the AI may decide for this template: **Off: the AI only
+  recommends** (the default), **May escalate** or **May close and escalate**. It
+  writes `ai_may_decide.<template>` in the `default` policy record after a
+  confirmation, says where the current value comes from (this template's entry, the
+  `"*"` entry, or off by default), and lists any other policy record that allows less.
+  The last test on past alerts is shown beside it, for information only. It needs
+  `investigation_policy.get` to read and `investigation_policy.set` to change. See
+  [What the AI may decide](policies.md#what-the-ai-may-decide).
 - **Make active** asks for confirmation and shows the last test from this browser
-  (alerts run, verdict counts and the agreement with closed cases), or
+  (alerts run, how many the rules decided and how they agreed with closed cases), or
   "This template has not been tested from this browser." A test is not required, but
   look at it. **Make active** is disabled until the engine reports the template valid.
   Active templates "are picked by detections, rules and cases on their own, and can
@@ -275,9 +318,9 @@ shows:
 - **Effective policy**: what the organization's policy allows, record by record. Leave
   the lookup empty for the organization default, or enter a category, severity,
   priority and a template to see what applies to that alert (the template selects its
-  run identity). It lists the records applied, the budgets, decision thresholds,
-  speculation by urgency, and each action class with its mode, minimum confidence,
-  lease, approvers and the record each value comes from. When no secret identity is
+  run identity). It lists the records applied, the budgets, speculation by urgency,
+  and each action class with its mode, lease, approvers and the record each value
+  comes from. When no secret identity is
   configured it says that runs started by detections or cases are refused.
 - **Automatic actions**: the pause switch.
 
@@ -295,9 +338,9 @@ The same switch is at the top of every run's **Actions** tab.
 
 The **Performance** tab aggregates runs over the last 24 hours, 7 days, 30 days or a
 custom range, optionally for one template. It shows the **speed-up versus serial**,
-where the gain comes from (steps running together versus stopping early), time to
-verdict, cancelled work, cache hit rate, batched calls, speculation efficiency, search
-events (billed and free), LLM spend, analyst feedback (labels and corrections), the
+where the gain comes from (steps running together versus stopping early), runs by
+outcome, time to decision, cancelled work, cache hit rate, batched calls, speculation
+efficiency, search events (billed and free), AI spend, analyst feedback (labels and corrections), the
 operator latency table and the actions by class and state.
 
 The speedup is only shown for runs that have a serial baseline of the same

@@ -26,7 +26,7 @@ The table below lists the permissions each tool needs **at the gateway**. Give t
 API key those, plus only the permissions of the data the checks you ask for read. A
 wave or a test executes with the key's own permissions, so for example the `org_roster`
 pack also needs `sensor.list`, and live sensor reads need `sensor.task.read` (or `sensor.task`) plus `output.set`;
-without them the facts come back `unknown`. A **run** (`investigate_start`) is different:
+without them the steps come back `unknown`. A **run** (`investigate_start`) is different:
 it executes as the policy's identity (`identity.default`) unless the request picks
 `caller` and the policy allows it, so on an active template it can act with that secret's
 permissions even if the key has none of them (see [Run identity](policies.md#run-identity)). Profiles select tools; each call still
@@ -39,16 +39,16 @@ checks the key's permissions at the gateway.
 | `investigate_authoring_kit` | One call for everything needed to write a template: the template JSON Schema, the authoring guide, the organization's typed operator catalog, the default template library, the effective policy and every validation code. `sections` (`schema`, `guide`, `operators`, `examples`, `policy`, `codes`, `packs`, `library`) fetches part of it. The whole kit is large: start with `guide,schema,codes`. | `investigation.get`, `insight.evt.get` |
 | `investigate_operators` | The operator catalog, with `filter`, `names` and `brief`. | same |
 | `investigate_packs` | The fact packs as a compact index: parameters with types, exports with type, reference form and a short meaning. `name` returns one pack in full. Enough to write waves without the operator catalog. | same |
-| `investigate_validate_plan` | Type-checks a template (`yaml`): structure, operators, references, expressions, free time range and budgets. | `investigation.get`, `insight.evt.get` |
-| `investigate_test_plan` | Dry run on real past alerts: a stored `template` or `yaml`, plus `samples` (a detection id, a case id, the newest alerts of a category, or free inputs with an expected label). Waits and polls (`wait_seconds` up to 180, default 60) and returns the agreement rate, disagreements, unknowns and costs. `test_id` continues a test that is still running. `include_steps` adds every step. No run, case, label or action is written; the test result itself is kept for 24 hours. | `investigation.set`, `investigation.get`, `insight.evt.get` (starting needs `investigation.set`; the polling and `test_id` continuation read with `investigation.get`) |
+| `investigate_validate_plan` | Type-checks a template (`yaml`): structure, operators, references, expressions, free time range and budgets. The report lists `ai_rules` (the AI-assisted rules); a template in the earlier format is `legacy_template_format`. | `investigation.get`, `insight.evt.get` |
+| `investigate_test_plan` | Dry run on real past alerts: a stored `template` or `yaml`, plus `samples` (a detection id, a case id, the newest alerts of a category, or free inputs with an expected label). Waits and polls (`wait_seconds` up to 180, default 60) and returns, per alert, which rule decided or what the AI recommended, whether each agreed with the analyst, and what was missing; the summary has the share decided by rules, agree/disagree per rule, the AI's agree/disagree/unclear on the rest, and costs. `test_id` continues a test that is still running. `include_steps` adds every step. No run, case, label or action is written; the test result itself is kept for 24 hours. | `investigation.set`, `investigation.get`, `insight.evt.get` (starting needs `investigation.set`; the polling and `test_id` continuation read with `investigation.get`) |
 | `investigate_save_plan` | Saves a template to the `investigation_plan` Hive, **always as a draft**. | `investigation_plan.get`, `investigation_plan.set`, `investigation.get`, `insight.evt.get` |
 | `investigate_list_templates` | The organization's templates: name, version, description, `applies_to`, status. `status` filters draft or active. | `investigation.get`, `insight.evt.get` |
-| `investigate_start` | Starts a run on a `template` for a `detection_id`, `case_id`, `entity_id` or `question`. Optional `inputs`, `urgency` (`low`, `medium`, `high`, `critical`), `mode` (`full`, `triage`, `scope`), `case` (`create`, `none`, `attach:<case number>`: send `attach:` to write into an existing case), `idempotency_key`, and `wait_seconds` (up to 60) to wait for the verdict. A draft template runs with autonomy capped at `suggest`. | `investigation.set`, `insight.evt.get` |
+| `investigate_start` | Starts a run on a `template` for a `detection_id`, `case_id`, `entity_id` or `question`. Optional `inputs`, `urgency` (`low`, `medium`, `high`, `critical`), `mode` (`full`, `triage`, `scope`), `case` (`create`, `none`, `attach:<case number>`: send `attach:` to write into an existing case), `idempotency_key`, and `wait_seconds` (up to 60) to wait for the outcome. The answer is the run: `verdict.outcome`, `decided_by`, `recommendation`, `missing`, `ai_agent`. A draft template runs with autonomy capped at `suggest`. | `investigation.set`, `insight.evt.get` |
 | `investigate_delete` | Deletes a run for good by its `run_id`. Refused while the run is active or has actions in effect. | `investigation.set`, `insight.evt.get` |
 | `investigate_get_pack` | Reads an organization-authored fact pack: its YAML, etag and enabled state. | `investigation_plan.get` |
 | `investigate_save_pack` | Creates an organization-authored fact pack, or replaces one when given the `etag` from `investigate_get_pack`. Like an active template, a pack can only be written by a person: the Hive refuses it from an API key unless the organization opted out (see [Permissions](permissions.md#active-templates-can-only-be-written-by-a-person)). | `investigation_plan.set` |
 | `investigate_delete_pack` | Deletes an organization-authored fact pack (`confirm: true`). | `investigation_plan.del` |
-| `investigate_get` | Reads a run. `view` is `run` (default), `steps`, `events` (long-poll: `after`, `wait` up to 10) or `case`. | `investigation.get`, `insight.evt.get` |
+| `investigate_get` | Reads a run. `view` is `run` (default: the outcome and what decided it), `steps` (each step with its `narrative`: why it ran, what it found, what used it), `events` (long-poll: `after`, `wait` up to 10) or `case`. | `investigation.get`, `insight.evt.get` |
 | `investigate_wave` | Runs a batch of questions (operators or fact packs) in parallel and returns compact typed answers, stopping as soon as a `stop_when` condition is true. Steps carry `select` and `limit`; `full` returns raw values; `validate_only` checks a wave without running it; `deadline_ms` defaults to 30000. | `investigation.set`, `insight.evt.get` |
 
 All of them work against the organization the session is connected to.
@@ -62,7 +62,11 @@ and install one by writing it as an `investigation_plan/<name>` record with the 
 tools. Library entries are drafts (`status: draft`): keep that status and have a person
 promote the template once it is tested, or install from the console. The Hive refuses by
 default an `active` write from an API key (an administrator can opt out; see
-[Permissions](permissions.md#active-templates-can-only-be-written-by-a-person)). Fact packs (`use:` in a fact) are built into the engine, like operators.
+[Permissions](permissions.md#active-templates-can-only-be-written-by-a-person)). Fact packs (`use:` in a step) are built into the engine, like operators.
+
+No tool changes what the AI may decide. `ai_may_decide` is a person's policy decision,
+made in the console on the template's page or in the `default` policy record (see
+[What the AI may decide](policies.md#what-the-ai-may-decide)).
 
 ## `investigate_save_plan` and what it refuses
 
@@ -97,7 +101,9 @@ full workflow. In tool terms:
 3. Draft the YAML.
 4. `investigate_validate_plan` until `errors` is empty.
 5. `investigate_test_plan` on real past alerts, including known true and false
-   positives; read the disagreements and unknowns, refine, test again.
+   positives; read which rule decided each alert, every disagreement with the
+   analysts, what the AI recommended on the rest and what was missing; refine, test
+   again.
 6. `investigate_save_plan` with a `test_summary`.
 
 ## Investigating a novel question without a template
