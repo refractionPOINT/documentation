@@ -537,6 +537,9 @@ nav:
       - Using the CLI with other Frontier Models: 6-developer-guide/frontier-models.md
       - Building Extensions:
           - Getting Started: 6-developer-guide/extensions/building-extensions.md
+          - Step-by-Step Walkthrough: 6-developer-guide/extensions/walkthrough.md
+          - Common Patterns: 6-developer-guide/extensions/patterns.md
+          - Design Considerations & Gotchas: 6-developer-guide/extensions/design-considerations.md
           - Schema & Data Types: 6-developer-guide/extensions/schema-data-types.md
           - User Interface: 6-developer-guide/extensions/building-ui.md
           - Testing Extensions: 6-developer-guide/extensions/testing.md

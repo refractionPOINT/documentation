@@ -18,7 +18,7 @@ This is the answer to most cases of "my extension is not being called." Check th
 
 ### Configuration Is Treated Differently
 
-The configuration attached to requests and events goes through a similar but *not* identical pass. The differences matter:
+The configuration attached to requests goes through a similar but *not* identical pass. The differences matter:
 
 | | Request parameters | Configuration |
 | --- | --- | --- |
@@ -27,6 +27,8 @@ The configuration attached to requests and events goes through a similar but *no
 | Unknown keys | Rejected with an error | **Silently dropped** before your extension sees them |
 | Types checked | Yes | Yes |
 | Secrets resolved | Yes | Yes |
+
+The table describes the configuration attached to **requests**. Event callbacks (`subscribe`, `unsubscribe`, `update`) and configuration validation receive the configuration as stored: secret references are not resolved and unknown keys are not dropped. Do work that needs a resolved secret from a request action.
 
 The silent drop is the one to watch: removing a field from your config schema does not just hide it, it strips any stored value for that field out of the configuration your extension receives, with no error anywhere. Keep a field in the schema until you are sure nothing depends on it.
 
@@ -109,6 +111,8 @@ A field with a `default_value` is always present by the time requirements are ch
 `secret` is the mechanism for handling third-party credentials, and it is worth understanding properly: it is not just a picker.
 
 The user selects a secret from their organization's secrets manager, and what is stored is only a *reference*, of the form `hive://secret/<secret-name>`. When a request or configuration carrying that reference reaches the platform, the reference is **replaced with the secret's actual value** before it is forwarded to your extension. Your handler receives the plaintext credential; the credential is never stored by, or visible to, your extension outside of that call.
+
+This applies to request parameters and to the configuration attached to requests. Event callbacks and configuration validation receive the configuration as stored, with the reference unresolved (see [Configuration Is Treated Differently](#configuration-is-treated-differently)).
 
 Substitution is triggered by the `hive://secret/` prefix, not by the field's type. A `secret` field holding anything else is passed through unchanged, so a caller can supply a literal value — do not assume a `secret` parameter always arrived by reference.
 
