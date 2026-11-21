@@ -75,7 +75,9 @@ is `investigation.set` + `insight.evt.get`. See [Permissions](permissions.md).
 
 **Listing runs.** Filters are combined with AND and evaluated by the engine, so they
 cover every run: `state` (`queued`, `running`, `decided`, `completed`, `cancelled`,
-`failed`, `budget_exhausted`), `verdict` (the label of the outcome: `true_positive`,
+`failed`, `budget_exhausted`), `outcome` (one of the eight
+[outcomes](concepts.md#outcomes), or `undecided`; needs `investigation_policy.set`),
+`verdict` (the label of the outcome: `true_positive`,
 `false_positive`, `inconclusive` for a recommendation, `couldnt_tell` or a conflict,
 or `undecided` when nothing settled yet; needs `investigation_policy.set`), `template`
 (`inline` for an inline plan), `trigger` (`detection`, `entity`, `case`, `question` or
