@@ -113,9 +113,10 @@ The outcome travels with what is behind it:
 - `also_held` (omitted when empty) lists the other escalate rules that held after an
   escalation. The first escalate rule that held decides and never moves; each rule in
   `also_held` fires its own `act` entries.
-- `contradicted_by` (omitted when empty) lists the close rules that held after an
-  escalation. An escalated run is pinned: they are noted in the case for the analyst,
-  and never make the run a `conflict` or propose a close.
+- `contradicted_by` (omitted when empty) lists the rules of the other side that held
+  after the decision: close rules after an escalation, escalate rules after a close. A
+  decision is pinned both ways: they are noted in the case for the analyst, and never
+  make the run a `conflict`, propose a close or undo an escalation.
 - `missing` lists, when nothing decided, each step that stayed unknown: `step`,
   `reason`, `needed_by` (the rules or the review that needed it) and `ask` (the
   question for a person, from the step's `ask:`).
@@ -254,7 +255,7 @@ fired signals and how each was answered, the triggering detections, the evidence
 (each step a rule or the review read that answered, with its sentence), the entities,
 telemetry and artifacts the template's steps `record:` (each entity with its verdict,
 and, for a list such as recipients, one entity per item) plus the ones the engine adds
-by itself (the telemetry of the steps the decision read, the email message), what
+by itself (the telemetry of each step a rule or the review reads, the email message), what
 stayed unknown and why, the open question for a person (a missing step's `ask`), the actions
 proposed, approved, executed and reverted with who decided, severity (by outcome, as
 the template's `case.severity` says), status, tags and a classification, and a link

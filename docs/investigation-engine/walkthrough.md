@@ -187,8 +187,9 @@ open for a day; the default, 15 minutes, would expire it before most people look
 decided run that only waits for a person holds no concurrent-run slot
 (`budgets.max_concurrent_runs` counts the runs that still gather or execute), so a
 day of pending closes does not stop new investigations. The backlog is bounded:
-once an organization has 50 times `max_concurrent_runs` decided runs waiting for a
-person (500 at the default), new starts are refused with `too_many_runs` until some
+once an organization has about 50 times `max_concurrent_runs` decided runs waiting
+for a person (500 at the default; the engine counts it per server, so refusals can
+start somewhat later), new starts are refused with `too_many_runs` until some
 are decided or expire. Work the approvals inbox daily.
 
 Write it (the Hive takes the record's data as JSON):
@@ -619,7 +620,7 @@ scores whether an outcome was right. See [Stats](api-reference.md#stats).
 | What | Limit |
 |---|---|
 | Concurrent runs per organization | `budgets.max_concurrent_runs`, default 10: the runs that still gather or execute. Over it a start is refused (`too_many_runs`, `429`). Tests and waves count too; a decided run that only waits for a person does not. |
-| Decided runs waiting for a person | 50 times `max_concurrent_runs` (500 by default). Over it a start is refused (`too_many_runs`) until some are decided or expire. |
+| Decided runs waiting for a person | About 50 times `max_concurrent_runs` (500 by default, counted per engine server, so refusals can start somewhat later). Over it a start is refused (`too_many_runs`) until some are decided or expire. |
 | A run's time, steps and AI spend | `max_wall_seconds` 600, `max_steps_per_run` 200, `max_llm_usd_per_run` 0.50 by default. |
 | Search history | Every search stays within the last 30 days (`lookback_days`, at most 30). |
 | API rate limits, per caller and organization | 300 starts, 600 waves, 300 tests and 600 comparisons per hour. |

@@ -57,8 +57,10 @@ rules:
   and cancels what can no longer matter (the outcome, or an action that can still
   fire).
 - **Which rule decides.** The escalate rule that holds first decides, and the
-  decision never moves: a close rule that holds later is only listed in
-  `verdict.contradicted_by` and noted in the case. Other escalate rules that have `act` entries keep counting:
+  decision never moves, either way: a rule of the other side that holds later is only
+  listed in `verdict.contradicted_by` and noted in the case. A close waits for an
+  escalate rule that is still open on a step marked `always: true`, so it never turns
+  into a conflict. Other escalate rules that have `act` entries keep counting:
   one that also holds is listed in `verdict.also_held` and fires its own `act`
   entries. On the close side, the first deterministic close rule in order that holds
   decides, then the first AI-assisted one.
@@ -134,6 +136,13 @@ gather:
     why: "Is this binary on our banned software list?"
     op: lookup.get
     args: {name: banned-software, keys: ['$alert__trigger.hash']}
+    record:                         # what the case shows: the binary, with its verdict
+      kind: entity
+      entity_type: hash
+      indicator: alert__trigger.hash
+      title: The remote-admin binary
+      malicious_when: 'banned.found'
+      benign_when: 'approved.found and file_on_host.matches and file_on_host.verified'
   approved:
     why: "Is this binary on our approved remote-admin tools list?"
     op: lookup.get
@@ -144,13 +153,6 @@ gather:
     op: sensor.read.file_hash
     args: {sid: '$alert__trigger.sid', path: '$alert__trigger.file_path', hash: '$alert__trigger.hash'}
     only_if: 'approved.found'
-    record:                         # what the case shows: the binary, with its verdict
-      kind: entity
-      entity_type: hash
-      indicator: alert__trigger.hash
-      title: The remote-admin binary
-      malicious_when: 'banned.found'
-      benign_when: 'file_on_host.verified'
   starts_on_its_own:
     op: sensor.read.autoruns
     args: {sid: '$alert__trigger.sid', hash: '$alert__trigger.hash'}
@@ -187,14 +189,21 @@ The case is what an analyst reads, so decide what it shows while you write the s
 - **The evidence** lists each step a rule or the review read that answered, with its
   sentence (`why` and what it found). The engine also adds by itself the telemetry of
   those steps and, for an email, the message.
-- **Entities with verdicts** come from `record:` on a step. Above, `file_on_host`
-  records the binary's hash as malicious when it is banned and benign when the file on
-  the host is verified, and unknown otherwise: an unknown never asserts a verdict.
+- **Entities with verdicts** come from `record:` on a step. Above, `banned` records the
+  binary's hash: malicious when it is banned, benign when it is approved and the file
+  on the host is that file, signed and verified, and unknown otherwise. The record sits
+  on `banned` because that step always answers: a record on a step that was skipped
+  (like `file_on_host` when the binary is not approved) reads "not established".
 - **One entity per item** of a list, such as each recipient of a phishing message with
   "clicked" or "did not click", comes from `record:` with `each` (see
   [What a step records](templates.md#what-a-step-records-record)). A "did not click"
   holds only when the click check is complete.
 - **The open question** is the `ask:` of a step that stayed unknown.
+
+A `record:` does not make a step run. If a step exists only so the case can show it
+(who else received the message, the host's other alerts), mark it `always: true`;
+otherwise it is cancelled and the case gets nothing (validation warns
+`record_only_step`).
 
 ## 5. Add the AI review only for what rules cannot decide
 
@@ -273,7 +282,8 @@ fewer need the AI or a person.
 - [ ] Each close rule rests on positive, complete evidence, never on "nothing found".
 - [ ] The cheapest rules come first, and each escalate rule carries the actions it alone justifies.
 - [ ] Every step is read by a rule, the review, an `act` entry or another step, or
-      is `always: true`.
+      is `always: true` (a `record:` alone does not make a step run:
+      `record_only_step`).
 - [ ] Expensive steps have an `only_if`.
 - [ ] Steps a person could answer have an `ask`.
 - [ ] `validate_plan` has no errors and no warnings you cannot explain.

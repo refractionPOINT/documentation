@@ -358,7 +358,11 @@ rules:
   or guard, still read (below).
 - **A close rule decides once it holds on complete answers** and nothing blocks a
   close (a fired signal not explained, a `never_close_when` condition). It does not
-  wait for steps only escalate rules read: those are cancelled.
+  wait for steps only escalate rules read: those are cancelled. The exception: a close
+  waits while an escalate rule, or a fired signal's malicious check, is still open on
+  a step that runs anyway (`always: true`, or a step such a step reads). It decides once
+  that step answered, so it never turns into a conflict. Waiting costs time, not
+  steps: meanwhile the run gathers only what a decided close would.
 - **An escalate rule and a close rule that hold at once**, at the moment of the first
   decision, end the run `conflict`.
   `contradictory_rules` warns about a rule that can never be true, or the same
@@ -367,7 +371,12 @@ rules:
   it reads arrived first; at the same moment, a deterministic rule before an
   AI-assisted one, then the template's order), or, on the close side, the first
   deterministic close rule in order, then the first AI-assisted one. The
-  decision is written at once and never moves. An escalation is pinned: later answers only add rules to `also_held`. A close rule that holds afterwards is listed in `verdict.contradicted_by` and noted in the case for the analyst; it never turns the outcome into `conflict` and never proposes a close.
+  decision is written at once and never moves: it is pinned, both ways. After an
+  escalation, later answers only add rules to `also_held`, and a close rule that holds
+  afterwards is listed in `verdict.contradicted_by` and noted in the case for the
+  analyst, never a `conflict` and never a close. After a close, an escalate rule that
+  holds later is listed in `contradicted_by` the same way, and the case note says
+  which side stands.
 - **Other escalate rules keep counting** after an escalation when they have `act`
   entries: the steps they read are not cancelled until each rule is true, false or
   finally unknown, within the run's budgets. One that holds is listed in
@@ -537,7 +546,8 @@ with a verdict, and one account entity per recipient with its own outcome.
 | Key | Meaning |
 |---|---|
 | `kind` | `telemetry`, `entity` or `artifact` (`bad_record_kind` otherwise). |
-| `title`, `note` | The item's title and sentence. `{step.path}` puts a value in the note. |
+| `title` | The step's title in the case: the first record's `title` is used for all of the step's items. |
+| `note` | The item's sentence. `{step.path}` puts a value in. |
 | `entity_type` | For an entity: `ip`, `domain`, `hash`, `url`, `user`/`account`, `email`/`sender`, `file`, `host`... |
 | `indicator` | For an entity: the path of its value (`link_landing.final_domain`). An entity needs `indicator` or `each` (`entity_needs_indicator`). |
 | `malicious_when`, `benign_when` | Conditions, in the [expression language](#expressions), that give the entity its verdict. |
@@ -548,24 +558,35 @@ with a verdict, and one account entity per recipient with its own outcome.
 | `source`, `type`, `ref` | For an artifact: where it lives, its type, and its reference (`mailsec/messages/{message.msg_uuid}`). |
 
 - **The verdict.** `malicious` when `malicious_when` holds, else `benign` when
-  `benign_when` holds, else `unknown`. An unknown never asserts a verdict, a step that
-  did not answer records "not established", and an entity whose value is not known is
-  not written.
+  `benign_when` holds, else `unknown`. An unknown never asserts a verdict, and an
+  entity whose value is not known is not written. A record on a step that did not
+  answer (skipped, unknown or cancelled) is "not established", whatever its conditions
+  say: put it on a step that always answers.
 - **Absence needs completeness.** With `each`, an outcome listed in `absence` holds
   only when the step is complete; on an incomplete step that element reads `unknown`.
 - **Notes do not overclaim.** A note that claims causation or activity is written only
-  when its condition holds; otherwise the item reads "<title>: <verdict>".
-- **An artifact `ref` holds ids only**, never customer data: a case whose reference
-  carries a caller's input (a sender, for example) is refused. Without `ref`, it points
-  at the step in the run.
+  when its condition holds; otherwise the item reads "<title>: <verdict>", and with
+  `each` it reads its outcome word.
+- **An artifact `ref` holds ids only.** Once rendered it may contain only lower-case
+  letters, digits, `:`, `_`, `-` and `/`, and never a caller's input (a sender, for
+  example). Otherwise the **whole case is refused** (`case_error` "case refused: ...",
+  see [Troubleshooting](troubleshooting.md#a-run-finished-but-the-outcome-means-little)),
+  and validation does not catch it: keep domains and file names out of a `ref`.
+  Without `ref`, it points at the step in the run.
+- **A `record:` does not make a step run.** A step is gathered when a rule, a
+  condition, the review, an `act` entry or another step reads it, or it is
+  `always: true`. A step that only a record reads is cancelled and records nothing:
+  validation warns `record_only_step`. Mark such a step `always: true`, or record what
+  the case needs on a step a rule reads.
 - Paths are checked like any reference (`unknown_field`, and `not_an_array` for an
   `each` that is not a list). A `use:` step takes no `record`: record the pack's step
   on a step that reads it.
 - **What the engine adds by itself:** the telemetry of each step a rule or the review
   reads (its sensor event when it references one, else its finding), an `entity.get`
   step's entity, and the `mailsec/messages/<uuid>` artifact of each
-  `mailsec.message_get` step. What a step records itself replaces the default of the
-  same kind.
+  `mailsec.message_get` step. A step's own telemetry or entity record replaces the
+  default of that kind; the message artifact is added unless the step records the same
+  reference.
 
 ## A complete example
 
@@ -684,6 +705,7 @@ useful ones are below; the authoring kit returns the complete list as `codes`.
 | `bad_record_kind`, `entity_needs_indicator` | A step's `record` has a kind other than `telemetry`, `entity` or `artifact`, or an entity with neither `indicator` nor `each`. |
 | `reads_review` | A rule, a condition or a step reads `ai_review`. |
 | `unused_step` | A step nothing reads, and not `always`. It only costs a step. |
+| `record_only_step` | A step only its `record:` reads: nothing gathers it, so it is cancelled and records nothing. Mark it `always: true`. |
 | `operator_denied` | Your policy does not allow the operator, so the step is always unknown. |
 | `rule_never_holds` | A rule reads a step that is always unknown. |
 | `contradictory_rules` | A rule that can never be true, or one condition on both sides. |
@@ -723,8 +745,8 @@ never calls `extension.request` (those steps stay unknown with the reason
 
 For each sample you get:
 
-- `verdict`: the outcome, `decided_by` (`kind` and `rule`), the AI's
-  `recommendation`, `missing` and `unknowns`. A test result carries no rendered
+- `verdict`: the outcome, `decided_by` (`kind` and `rule`), `also_held`,
+  `contradicted_by`, the AI's `recommendation`, `missing` and `unknowns`. A test result carries no rendered
   sentences: `decided_by` has no `say` and the recommendation no `rationale`;
 - the steps with status, reason and timing, the `cost` and the time;
 - the actions the template **would** propose, by target reference only;
