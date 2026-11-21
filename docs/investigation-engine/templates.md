@@ -704,9 +704,11 @@ rules:
 - A check's `status` is informational: a check never acts on its own. An active
   template that calls a `draft` check gets the warning `check_is_draft`.
 - A check can be tested on its own with `params` samples
-  ([below](#test-a-check)), and is never started as a run: naming one where a run is
-  started (start a run, an automatic start, a D&R `start investigation`, a test with
-  no `params` sample) is `check_not_startable`.
+  ([below](#test-a-check)), and is never started as a run: naming one where a template
+  that starts a run is expected is `check_not_startable`. That covers starting a run
+  (the API, the console, the CLI, MCP), the template an automatic source or a policy's
+  template choice names, a D&R rule's `start investigation`, and a test with no
+  `params` sample. Name the template that calls the check instead.
 
 ### Calling a check
 
@@ -896,11 +898,18 @@ step. It reads the call's `items`:
   AI-assisted rule: reading `malicious`, `any_malicious`, `first_malicious`,
   `malicious_count` or `outcome` rests on the check's escalate rules; reading
   `benign`, `all_benign` or `benign_count` rests on its close rules and
-  `never_close_when`; reading `items` or `rule` rests on both. The validation report
-  lists the caller's AI-assisted rules in `ai_rules`, and, for each one that rests on
-  a check, the check's rules behind it in `ai_rules_via`. With the switch off, a
-  caller rule whose check rule was AI-assisted only recommends, as any AI-assisted
-  rule does.
+  `never_close_when`; reading `items` or `rule` rests on both. The test is strict:
+  a **negated** read (`not links.any_malicious`, which holds because the check
+  closed) rests on the opposite side, and **any comparison** on a call fact rests on
+  either side. A call whose `args` read an AI answer (an `ask_ai` step of the caller)
+  is AI-assisted too, so every rule that reads it is.
+- **The report names the check rules behind each one.** The validation report lists
+  the caller's AI-assisted rules in `ai_rules`, a list of rule ids. A separate field,
+  `ai_rules_via`, maps each AI-assisted caller rule that rests on a check to the check
+  rules behind it, each entry `<call>/<check>/<rule>`: if `url-harm` had an
+  AI-assisted escalate rule `ai_says_phish`, `phishing_link` would map to
+  `["links/url-harm/ai_says_phish"]`. With the switch off, a caller rule whose check rule was
+  AI-assisted only recommends, as any AI-assisted rule does.
 - **A decision that rests on a call never gets a registered authorization.** The
   [mail guard](#act) reads the caller's own `mailsec.*` steps, never a check's, and a
   decision that read a call fact is capped at `approve` like any decision without
@@ -1094,6 +1103,7 @@ useful ones are below; the authoring kit returns the complete list as `codes`.
 | `auto_tag_permanent` | A `tag` or `tag.add` entry has no `ttl`: a tag holds no lease, so it stays on the sensor until someone removes it. Set `attrs.ttl`. |
 | `bad_check_call`, `check_missing`, `check_not_callable`, `check_invalid` | A [check](#checks-templates-other-templates-call) call is malformed, names no check or an alert template, or the check fails its own validation (the message starts with the check's own code). |
 | `check_forbidden_key`, `params_on_alert` | A check has a key only an alert template may have, or an alert template has `params`. |
+| `check_not_startable` | A check is named where a template that starts a run is expected (start a run, an automatic source, a policy's template choice, a D&R `start investigation`, a test with no `params` sample). Name the template that calls it. |
 | `check_cycle`, `check_depth_limit`, `check_size_limit`, `bad_max_items` | Checks that call themselves, nest more than 3 deep, expand past 256 steps or 50 instances, or an `each` call whose `max_items` is not 1 to 25. |
 | `check_is_draft`, `check_never_benign`, `check_param_unused`, `each_close_on_cap` | Warnings: an active template calls a draft check; a rule reads `benign` of a check with no close rule; a param nothing reads; a close rule reads `all_benign` of an `each` call (a longer list never closes). |
 | `applies_to_never_matches` | An `applies_to` key a D&R rule cannot match. |

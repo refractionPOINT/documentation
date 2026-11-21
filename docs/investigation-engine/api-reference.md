@@ -218,9 +218,10 @@ case of one run:
 
 For a template that calls [checks](templates.md#checks-templates-other-templates-call)
 the estimate counts the checks' steps (an `each` call at its `max_items`), and
-`ai_rules_via` maps each AI-assisted rule that reads a call to the check rules behind
-it (`<call>/<check>/<rule>`). Add the check's record `name` to the body when you
-validate a **check**, and the answer has `used_by`: `[{template, status, valid,
+`ai_rules_via` maps each AI-assisted rule that rests on a call to the check rules
+behind it: `{"<rule>": ["<call>/<check>/<rule>"]}` (`ai_rules` stays a list of rule
+ids). Add the optional `name` (the check's record name) to the body when you validate
+a **check**, and the answer has `used_by`: `[{template, status, valid,
 issues}]`, one per template that calls it, directly or through another check,
 validated again against your draft. It is what saving would break; nothing blocks the
 save.
