@@ -144,6 +144,13 @@ gather:
     op: sensor.read.file_hash
     args: {sid: '$alert__trigger.sid', path: '$alert__trigger.file_path', hash: '$alert__trigger.hash'}
     only_if: 'approved.found'
+    record:                         # what the case shows: the binary, with its verdict
+      kind: entity
+      entity_type: hash
+      indicator: alert__trigger.hash
+      title: The remote-admin binary
+      malicious_when: 'banned.found'
+      benign_when: 'file_on_host.verified'
   starts_on_its_own:
     op: sensor.read.autoruns
     args: {sid: '$alert__trigger.sid', hash: '$alert__trigger.hash'}
@@ -170,6 +177,24 @@ case:
 When neither list has the binary and it does not start on its own, no rule holds and
 the run ends `couldnt_tell`, listing what it could not establish. That is the right
 answer: the template does not know enough to decide, and it says so.
+
+### What the case says
+
+The case is what an analyst reads, so decide what it shows while you write the steps:
+
+- **The first line** is the deciding rule's `say`, or the AI's recommendation and what
+  was missing. Write `say` as the sentence you would want to read at 3 AM.
+- **The evidence** lists each step a rule or the review read that answered, with its
+  sentence (`why` and what it found). The engine also adds by itself the telemetry of
+  those steps and, for an email, the message.
+- **Entities with verdicts** come from `record:` on a step. Above, `file_on_host`
+  records the binary's hash as malicious when it is banned and benign when the file on
+  the host is verified, and unknown otherwise: an unknown never asserts a verdict.
+- **One entity per item** of a list, such as each recipient of a phishing message with
+  "clicked" or "did not click", comes from `record:` with `each` (see
+  [What a step records](templates.md#what-a-step-records-record)). A "did not click"
+  holds only when the click check is complete.
+- **The open question** is the `ask:` of a step that stayed unknown.
 
 ## 5. Add the AI review only for what rules cannot decide
 

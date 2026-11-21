@@ -251,8 +251,11 @@ Each run writes a [case](../5-integrations/extensions/limacharlie/cases.md) by
 default. An engine-written case leads with the outcome sentence: the deciding
 rule's `say`, or the AI's recommendation and what was missing. It then lists the
 fired signals and how each was answered, the triggering detections, the evidence
-(each step a rule or the review read that answered, with its sentence), what stayed
-unknown and why, the open question for a person (a missing step's `ask`), the actions
+(each step a rule or the review read that answered, with its sentence), the entities,
+telemetry and artifacts the template's steps `record:` (each entity with its verdict,
+and, for a list such as recipients, one entity per item) plus the ones the engine adds
+by itself (the telemetry of the steps the decision read, the email message), what
+stayed unknown and why, the open question for a person (a missing step's `ask`), the actions
 proposed, approved, executed and reverted with who decided, severity (by outcome, as
 the template's `case.severity` says), status, tags and a classification, and a link
 back to the run.

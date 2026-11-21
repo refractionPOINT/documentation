@@ -101,6 +101,13 @@ gather:                            # the steps: what to look at
   link_landing:
     op: mailsec.link_resolve
     args: {links: '$message.links', links_complete: '$message.links_complete', sender_domain: '$message.sender_domain', reply_to_domain: '$message.reply_to_domain', detonation: '$message.detonation'}
+    record:                        # what the case shows of this step
+      kind: entity
+      entity_type: domain
+      indicator: link_landing.final_domain
+      title: Where the link lands
+      note: "The link lands on {link_landing.final_domain}."
+      malicious_when: 'link_landing.credential_harvest'
   recipients:
     op: mailsec.group_recipients
     args: {group_id: '$message.group_id'}
@@ -109,6 +116,19 @@ gather:                            # the steps: what to look at
     op: endpoint.click_check
     args: {copies: '$recipients.copies', domains: '$link_landing.malicious_domains', window: [{at: '$message.received'}, now]}
     only_if: 'link_landing.credential_harvest'
+    record:                        # one entity per recipient, with its own verdict
+      kind: entity
+      entity_type: account
+      title: Recipient outcome
+      each: clicks.per_recipient
+      item_key: recipient
+      outcome_key: outcome
+      outcome_map: {clicked: malicious, possible: suspicious, not_clicked: benign, unknown: unknown}
+      absence: [not_clicked]       # "did not click" holds only when the check is complete
+      outcome_notes:
+        clicked: "The recipient's machine looked up the link's landing domain after the message was delivered."
+        not_clicked: "The recipient's machine reported events after delivery and none looked up the link's landing domain."
+        unknown: "Could not be checked: the machine or its telemetry was not available."
 rules:                             # what decides
   escalate:
     - id: clicked_credential_harvest
@@ -219,6 +239,7 @@ also takes:
 | `why` | The question the step answers, for the person reading the run. It replaces the operator's default sentence. |
 | `ask` | The question for a person when the step stays unknown. The case asks it. |
 | `only_if` | Run the step only when this condition is true (below). |
+| `record` | What the step puts in the case: an entity with a verdict, one entity per list item, a telemetry reference or an artifact. See [What a step records](#what-a-step-records-record). |
 | `always: true` | Gather it for the case even after a rule decided (the triggering detection, who else received it). Without it, a step that can no longer change the outcome is cancelled. |
 
 ### References
@@ -507,6 +528,45 @@ lists the fired signals, the detections, the evidence (each step a rule or the r
 read that answered, with its sentence), what stayed unknown, the actions and the open
 question. A test writes no case.
 
+### What a step records: `record:`
+
+A step says what the case shows of it with `record:`, one record or a list. The
+[anatomy example](#anatomy-of-a-template) has two: the landing domain as an entity
+with a verdict, and one account entity per recipient with its own outcome.
+
+| Key | Meaning |
+|---|---|
+| `kind` | `telemetry`, `entity` or `artifact` (`bad_record_kind` otherwise). |
+| `title`, `note` | The item's title and sentence. `{step.path}` puts a value in the note. |
+| `entity_type` | For an entity: `ip`, `domain`, `hash`, `url`, `user`/`account`, `email`/`sender`, `file`, `host`... |
+| `indicator` | For an entity: the path of its value (`link_landing.final_domain`). An entity needs `indicator` or `each` (`entity_needs_indicator`). |
+| `malicious_when`, `benign_when` | Conditions, in the [expression language](#expressions), that give the entity its verdict. |
+| `each`, `item_key`, `outcome_key` | One entity per element of the list at `each`: `item_key` names the element's field that holds the value, `outcome_key` the field that holds its outcome word. |
+| `outcome_map` | Outcome word to verdict (`{clicked: malicious, not_clicked: benign}`). |
+| `absence` | The outcome words that are claims of absence (`not_clicked`): they hold only when the step is complete. |
+| `outcome_notes` | The note per outcome word (with `each`) or per verdict (without). |
+| `source`, `type`, `ref` | For an artifact: where it lives, its type, and its reference (`mailsec/messages/{message.msg_uuid}`). |
+
+- **The verdict.** `malicious` when `malicious_when` holds, else `benign` when
+  `benign_when` holds, else `unknown`. An unknown never asserts a verdict, a step that
+  did not answer records "not established", and an entity whose value is not known is
+  not written.
+- **Absence needs completeness.** With `each`, an outcome listed in `absence` holds
+  only when the step is complete; on an incomplete step that element reads `unknown`.
+- **Notes do not overclaim.** A note that claims causation or activity is written only
+  when its condition holds; otherwise the item reads "<title>: <verdict>".
+- **An artifact `ref` holds ids only**, never customer data: a case whose reference
+  carries a caller's input (a sender, for example) is refused. Without `ref`, it points
+  at the step in the run.
+- Paths are checked like any reference (`unknown_field`, and `not_an_array` for an
+  `each` that is not a list). A `use:` step takes no `record`: record the pack's step
+  on a step that reads it.
+- **What the engine adds by itself:** the telemetry of each step a rule or the review
+  reads (its sensor event when it references one, else its finding), an `entity.get`
+  step's entity, and the `mailsec/messages/<uuid>` artifact of each
+  `mailsec.message_get` step. What a step records itself replaces the default of the
+  same kind.
+
 ## A complete example
 
 A rare-process detection. A banned binary escalates by rule and proposes host
@@ -621,6 +681,7 @@ useful ones are below; the authoring kit returns the complete list as `codes`.
 | `window_outside_free_range` | A search window starts earlier than 30 days ago. |
 | `no_verdict_path` | No rule and no `ai_review`: the template can never decide or recommend. |
 | `unknown_rule` | An `act` entry's `on_rules` names a rule the template does not have. |
+| `bad_record_kind`, `entity_needs_indicator` | A step's `record` has a kind other than `telemetry`, `entity` or `artifact`, or an entity with neither `indicator` nor `each`. |
 | `reads_review` | A rule, a condition or a step reads `ai_review`. |
 | `unused_step` | A step nothing reads, and not `always`. It only costs a step. |
 | `operator_denied` | Your policy does not allow the operator, so the step is always unknown. |
