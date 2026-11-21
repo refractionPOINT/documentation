@@ -447,6 +447,7 @@ limacharlie investigate runs get <run id> --oid "$OID"
   | `ai_recommends_malicious` | The AI recommends escalating. Nothing was done. | Decide: see [step 9](#9-what-ai-recommends-means). |
   | `couldnt_tell` | No rule decided and the AI did not answer either way. | Read `missing`: answer its `ask`, or fix what made a step unknown ([Troubleshooting](troubleshooting.md#a-run-finished-but-the-outcome-means-little)). |
   | `conflict` | Rules on both sides held. | Decide, then fix the rules so they cannot both hold. |
+
 - **Events**, as a long-poll: pass the last `next` as `after` until `done` is true.
 
   ```bash
