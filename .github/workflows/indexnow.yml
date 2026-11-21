@@ -1,0 +1,75 @@
+name: IndexNow
+
+# Tells search engines which documentation pages changed, so they are recrawled
+# within hours instead of whenever a crawler next comes by. Bing reads these
+# submissions, and ChatGPT search and Copilot both draw on Bing's index.
+#
+# scripts/indexnow.mjs fingerprints the visible text of every page in the live
+# sitemap, compares it with the fingerprints saved by the previous run, and
+# submits only the pages that were added, changed or removed. The sitemap's own
+# dates cannot be used here: MkDocs stamps every page with the build date.
+#
+# Runs after each successful deploy. It is a separate workflow so that a failed
+# submission never marks a deploy as failed. It can also be started by hand:
+# tick "submit_all" once, for the very first run, to submit the whole sitemap.
+on:
+  workflow_run:
+    workflows: ["Deploy to GitHub Pages"]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      submit_all:
+        description: Submit every URL in the sitemap (first run only)
+        type: boolean
+        default: false
+      dry_run:
+        description: Report what would be submitted without sending or saving anything
+        type: boolean
+        default: false
+
+# One run at a time, so two runs never save competing fingerprints.
+concurrency:
+  group: indexnow
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  submit:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Restore fingerprints from the previous run
+        uses: actions/cache/restore@v6
+        with:
+          path: .indexnow
+          key: indexnow-state-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: indexnow-state-
+
+      # The runner's own Node is enough: the script has no dependencies.
+      - name: Submit changed pages
+        run: node scripts/indexnow.mjs
+        env:
+          INDEXNOW_HOST: docs.limacharlie.io
+          # Not a secret: the protocol requires it to be served publicly, at
+          # https://docs.limacharlie.io/<key>.txt (docs/<key>.txt in this repo).
+          INDEXNOW_KEY: 8fe2525221f21527efdaafad25386683
+          # GitHub Pages can serve the previous version of a page for a few
+          # minutes after a deploy. Fetch past the cache.
+          INDEXNOW_CACHE_BUST: 'true'
+          INDEXNOW_SUBMIT_ALL: ${{ inputs.submit_all }}
+          INDEXNOW_DRY_RUN: ${{ inputs.dry_run }}
+
+      # Saved only after a successful run, so a failed submission is retried.
+      - name: Save fingerprints for the next run
+        if: success() && inputs.dry_run != true
+        uses: actions/cache/save@v6
+        with:
+          path: .indexnow
+          key: indexnow-state-${{ github.run_id }}-${{ github.run_attempt }}
