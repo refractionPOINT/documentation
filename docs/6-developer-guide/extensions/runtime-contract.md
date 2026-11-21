@@ -194,9 +194,9 @@ Once registered and subscribed, an extension can be invoked from several places.
 
     See [D&R response actions](../../3-detection-response/tutorials/dr-rule-building-guidebook.md) for the full syntax, including templating request values from the matched event.
 
-Requests made this way go through the same validation, and are billed and retried the same way as requests made from the web app.
+Requests made this way go through the same validation, and are billed the same way as requests made from the web app.
 
-A request from a D&R rule is **fire-and-forget**. The rule does not wait for the answer, and your response is discarded. Nothing is queued either: if your extension cannot be reached, the request is attempted a few times and then dropped, leaving only an org error. An extension driven by D&R rules has to report its results itself, for example through an [extension adapter](#pushing-telemetry-into-an-organization).
+A request from a D&R rule is **fire-and-forget**. The rule does not wait for the answer, and your response is discarded. Nothing is queued either: if your extension cannot be reached, the request is attempted a few times and then dropped, leaving only an org error. The D&R engine retries on top of the platform's own attempts, so a request from a D&R rule that keeps getting a retriable error can reach your extension more than the 3 times listed above. Deduplicate on the idempotency key. An extension driven by D&R rules has to report its results itself, for example through an [extension adapter](#pushing-telemetry-into-an-organization).
 
 A request from another extension is an ordinary API call made with that extension's credentials. It is synchronous, and the caller gets your response.
 

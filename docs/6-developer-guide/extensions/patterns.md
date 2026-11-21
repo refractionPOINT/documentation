@@ -81,10 +81,10 @@ There are three shapes, in order of how much infrastructure they need.
 
 **Event-driven chains.** When the slow part happens on an endpoint, do not wait for it. Send the task, return, and let a D&R rule bring the result back. See [Tasking Sensors and Getting Results Back](#tasking-sensors-and-getting-results-back). This handles work that takes hours.
 
-**A queue and workers.** The request handler validates the input, puts a job on a queue, and returns straight away. Separate workers take jobs off the queue and do the heavy lifting, then report results through an [extension adapter](#pushing-telemetry-into-the-organization) or the LimaCharlie API. This is the shape for CPU-heavy work such as parsing or scanning large artifacts. Two things to know:
+**A queue and workers.** The request handler validates the input, puts a job on a queue, and returns straight away. Separate workers take jobs off the queue and do the heavy lifting. This is the shape for CPU-heavy work such as parsing or scanning large artifacts. Two things to know:
 
-- The worker has no webhook call to borrow credentials from. If it needs the LimaCharlie API, have the handler put what it needs in the job, and keep the work short enough that the token it was handed is still valid (it is valid for at least about 30 minutes from receipt). For longer work, have the worker report back by sending a request to your own extension through a continuation, rather than holding a token.
-- Report billing metrics from the handler, using the request's idempotency key, so a redelivered job is not billed twice.
+- The worker has no webhook call, so it has no LimaCharlie credentials, and it should not be handed a token to keep. Have the worker write its result to your own store, keyed on organization ID and job ID. Have the request handler return a [continuation](runtime-contract.md#continuations) to an action that checks the job. That action arrives with a fresh token: if the job is finished, it does the LimaCharlie side of the work (sending events through an [extension adapter](#pushing-telemetry-into-the-organization), writing records); if not, it returns another continuation. With the 300-second maximum delay and 100-level depth, one chain can wait a little over 8 hours.
+- Bill from the response of the action that sees the finished job, so you only bill work that succeeded. Use a metric idempotency key derived from the original request's key and the job ID, so a redelivered job or a repeated check is not billed twice.
 
 ## Tasking Sensors and Getting Results Back
 
