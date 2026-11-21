@@ -149,8 +149,10 @@ const mapWithConcurrency = async (items, limit, fn) => {
 }
 
 /**
- * A fingerprint for every URL. A page that cannot be fetched keeps the
- * fingerprint it had, so a timeout is never reported as a change.
+ * A fingerprint for every URL. A page that cannot be fetched (a timeout, a 429
+ * or a 5xx) keeps the fingerprint it had, so a bad moment on the server is
+ * never reported as a change. A redirect, 404 or 410 is recorded: that page
+ * really did change.
  */
 export const fingerprintAll = async (
   entries,
@@ -161,6 +163,9 @@ export const fingerprintAll = async (
     if (trustLastmod && lastmod) return [loc, `lastmod:${lastmod}`]
     try {
       const { status, text } = await fetchPage(loc)
+      // 429 and 5xx say the server is struggling, not that the page changed.
+      // Treat them like a timeout, so the page keeps its fingerprint.
+      if (status === 429 || status >= 500) throw new Error(`HTTP ${status}`)
       return [loc, status === 200 ? `text:${hashText(extractText(text))}` : `status:${status}`]
     } catch {
       failed += 1
@@ -178,76 +183,137 @@ const readState = async (path) => {
   }
 }
 
-const main = async () => {
-  const env = process.env
+const writeState = async (path, host, fingerprints) => {
+  await mkdir(dirname(path), { recursive: true })
+  await writeFile(
+    path,
+    `${JSON.stringify({ host, savedAt: new Date().toISOString(), urls: fingerprints })}\n`,
+  )
+}
+
+/** POSTs one batch to IndexNow and returns the HTTP status. */
+const submitBatch = async (payload) => {
+  const response = await fetch(ENDPOINT, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json; charset=utf-8', 'User-Agent': USER_AGENT },
+    body: JSON.stringify(payload),
+    signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+  })
+  return response.status
+}
+
+export const configFromEnv = (env) => {
   const host = env.INDEXNOW_HOST
   const key = env.INDEXNOW_KEY
   if (!host || !key) throw new Error('INDEXNOW_HOST and INDEXNOW_KEY are required')
-  const sitemapUrl = env.INDEXNOW_SITEMAP || `https://${host}/sitemap.xml`
-  const statePath = env.INDEXNOW_STATE || `.indexnow/${host}.json`
-  const trustLastmod = env.INDEXNOW_TRUST_LASTMOD === 'true'
-  const submitAll = env.INDEXNOW_SUBMIT_ALL === 'true'
-  const dryRun = env.INDEXNOW_DRY_RUN === 'true'
+  return {
+    host,
+    key,
+    sitemapUrl: env.INDEXNOW_SITEMAP || `https://${host}/sitemap.xml`,
+    statePath: env.INDEXNOW_STATE || `.indexnow/${host}.json`,
+    trustLastmod: env.INDEXNOW_TRUST_LASTMOD === 'true',
+    submitAll: env.INDEXNOW_SUBMIT_ALL === 'true',
+    dryRun: env.INDEXNOW_DRY_RUN === 'true',
+  }
+}
 
-  const sitemap = await fetchText(sitemapUrl)
+/**
+ * One run. Everything that touches the network or the disk is passed in, so
+ * the rules below can be tested:
+ *
+ * - a dry run sends nothing and saves nothing;
+ * - nothing is sent unless the key file is being served with the right key;
+ * - fingerprints are saved only after every batch is answered 200 or 202, so a
+ *   failed run is retried by the next one.
+ */
+export const run = async (
+  config,
+  {
+    fetchPage = fetchText,
+    submit = submitBatch,
+    loadState = readState,
+    saveState = writeState,
+  } = {},
+) => {
+  const { host, key, sitemapUrl, statePath, trustLastmod, submitAll, dryRun } = config
+
+  const sitemap = await fetchPage(sitemapUrl)
   if (sitemap.status !== 200) throw new Error(`${sitemapUrl} answered ${sitemap.status}`)
   const entries = parseSitemap(sitemap.text).filter(({ loc }) => new URL(loc).host === host)
   if (entries.length === 0) throw new Error(`${sitemapUrl} lists no URLs on ${host}`)
 
-  const previous = await readState(statePath)
-  const { fingerprints, failed } = await fingerprintAll(entries, { trustLastmod, previous })
+  const previous = await loadState(statePath)
+  const { fingerprints, failed } = await fingerprintAll(entries, {
+    trustLastmod,
+    previous,
+    fetchPage,
+  })
   const { added, changed, removed } = diffFingerprints(previous, fingerprints)
   const urls = submitAll ? Object.keys(fingerprints) : [...added, ...changed, ...removed]
-
-  const lines = [
-    `### IndexNow: ${host}`,
-    '',
-    `- URLs in the sitemap: ${entries.length}`,
-    `- Previous run on record: ${previous ? 'yes' : 'no (first run)'}`,
-    `- Added: ${added.length}, changed: ${changed.length}, removed: ${removed.length}`,
-    `- Pages that could not be fetched: ${failed}`,
-    `- To submit: ${urls.length}${submitAll ? ' (every URL, as requested)' : ''}${dryRun ? ' (dry run: nothing sent)' : ''}`,
-    '',
-    ...urls.slice(0, 50).map((url) => `  - ${url}`),
-    ...(urls.length > 50 ? [`  - and ${urls.length - 50} more`] : []),
-  ]
-  console.log(lines.join('\n'))
-  if (env.GITHUB_STEP_SUMMARY) await appendFile(env.GITHUB_STEP_SUMMARY, `${lines.join('\n')}\n\n`)
-
-  if (dryRun) return
+  const report = {
+    host,
+    total: entries.length,
+    firstRun: !previous,
+    added,
+    changed,
+    removed,
+    failed,
+    urls,
+    submitAll,
+    dryRun,
+    submitted: 0,
+    saved: false,
+  }
+  if (dryRun) return report
 
   if (urls.length > 0) {
     // Engines fetch the key file to check the submission is from the site
     // owner. Check it first: without it every URL would be rejected.
     const keyUrl = `https://${host}/${key}.txt`
-    const keyFile = await fetchText(keyUrl)
+    const keyFile = await fetchPage(keyUrl)
     if (keyFile.status !== 200 || keyFile.text.trim() !== key) {
       throw new Error(
         `${keyUrl} does not serve the key (status ${keyFile.status}); nothing was submitted`,
       )
     }
     for (const batch of chunk(urls, MAX_URLS_PER_REQUEST)) {
-      const response = await fetch(ENDPOINT, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json; charset=utf-8', 'User-Agent': USER_AGENT },
-        body: JSON.stringify(buildPayload(host, key, batch)),
-        signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
-      })
+      const status = await submit(buildPayload(host, key, batch))
       // 200: received. 202: received, key validation pending.
-      if (response.status !== 200 && response.status !== 202) {
+      if (status !== 200 && status !== 202) {
         throw new Error(
-          `IndexNow answered ${response.status} for ${batch.length} URLs; state not saved, the next run retries`,
+          `IndexNow answered ${status} for ${batch.length} URLs; fingerprints not saved, the next run retries`,
         )
       }
-      console.log(`submitted ${batch.length} URLs: ${response.status}`)
+      report.submitted += batch.length
     }
   }
 
-  await mkdir(dirname(statePath), { recursive: true })
-  await writeFile(
-    statePath,
-    `${JSON.stringify({ host, savedAt: new Date().toISOString(), urls: fingerprints })}\n`,
-  )
+  await saveState(statePath, host, fingerprints)
+  report.saved = true
+  return report
+}
+
+export const summarize = (r) =>
+  [
+    `### IndexNow: ${r.host}`,
+    '',
+    `- URLs in the sitemap: ${r.total}`,
+    `- Previous run on record: ${r.firstRun ? 'no (first run)' : 'yes'}`,
+    `- Added: ${r.added.length}, changed: ${r.changed.length}, removed: ${r.removed.length}`,
+    `- Pages that could not be fetched: ${r.failed}`,
+    `- To submit: ${r.urls.length}${r.submitAll ? ' (every URL, as requested)' : ''}${r.dryRun ? ' (dry run: nothing sent)' : ''}`,
+    `- Submitted: ${r.submitted}`,
+    '',
+    ...r.urls.slice(0, 50).map((url) => `  - ${url}`),
+    ...(r.urls.length > 50 ? [`  - and ${r.urls.length - 50} more`] : []),
+  ].join('\n')
+
+const main = async () => {
+  const report = await run(configFromEnv(process.env))
+  const summary = summarize(report)
+  console.log(summary)
+  if (process.env.GITHUB_STEP_SUMMARY)
+    await appendFile(process.env.GITHUB_STEP_SUMMARY, `${summary}\n\n`)
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
