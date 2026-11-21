@@ -14,7 +14,7 @@ The policy record is the only thing that decides what the engine may do. Each ac
 | `off` | Creates no proposal for the action. |
 | `suggest` | Records what the engine would do, without changing the product. Use this for a dry run. |
 | `approve` | Requires an authorized explicit approval before the approval deadline. |
-| `auto` | Runs automatically when the effective policy, confidence, limits, permissions, evidence and target checks allow it, and the action has a registered authorization; an action without one waits for a person (`no_registered_authorization`, see [Autonomy modes](../../investigation-engine/policies.md#autonomy-modes)). The engine holds an action as a suggestion when a limit, permission, evidence or target check does not pass, or when the approver lists leave nobody (`policy_no_approvers`). |
+| `auto` | Runs automatically, once the rule the action fires on decided, when the effective policy, limits, permissions, evidence and target checks allow it, and the action has a registered authorization; an action without one waits for a person (`no_registered_authorization`, see [Autonomy modes](../../investigation-engine/policies.md#autonomy-modes)). The engine holds an action as a suggestion when a limit, permission, evidence or target check does not pass, or when the approver lists leave nobody (`policy_no_approvers`). |
 
 There is no label-count requirement or separate route graduation, enablement or demotion step. Investigation intake settings decide what to investigate; they do not grant automatic action authority. Draft, shadow and test execution contexts remain read-only.
 
@@ -22,11 +22,13 @@ There is no label-count requirement or separate route graduation, enablement or 
 
 The following is the action section of the starter policy. It is the `data` of the `default` record in the `investigation_policy` hive. The record name is supplied separately, not as a YAML field. Merge this section into your existing policy while preserving identity, budgets, intake and other settings.
 
+<!-- validate: policy -->
 ```yaml
+ai_may_decide:
+  "*": off
 autonomy:
   close.false_positive:
     mode: suggest
-    min_confidence: 0.90
     max_targets_per_run: 3
     max_targets_per_hour: 50
     lease: 2h
@@ -39,7 +41,7 @@ autonomy:
 
 Starter content does not overwrite an installed policy. The explicit `approve` entries govern eradication and tag removal; check `undo_supported` before approving any action, since some operations have no undo.
 
-To allow automatic false-positive closes, deliberately change the governing `close.false_positive` mode to `auto` after reviewing the proposed actions, permissions and the matching policy records.
+To allow automatic false-positive closes, deliberately change the governing `close.false_positive` mode to `auto` after reviewing the proposed actions, permissions and the matching policy records. A close then runs by itself after `closed_by_rule`, and after `closed_by_ai` only for the templates where `ai_may_decide` lets the AI close. `ai_may_decide: {"*": off}` keeps every AI answer a recommendation; see [What the AI may decide](../../investigation-engine/policies.md#what-the-ai-may-decide).
 
 ### Fields and defaults
 
@@ -48,7 +50,6 @@ Defaults below apply only after all matching policy entries have been combined.
 | Field | Accepted value | Default when unresolved |
 |-------|----------------|-------------------------|
 | `mode` | `off`, `suggest`, `approve`, `auto` | `suggest` |
-| `min_confidence` | Number from 0 through 1 | `0.85` |
 | `max_targets_per_run` | Positive integer, at most 2147483647 | 3 for containment/eradication; otherwise unlimited |
 | `max_targets_per_hour` | Positive integer, at most 2147483647 | 10 for containment/eradication; otherwise unlimited |
 | `lease` | Positive duration | `2h` |
@@ -61,12 +62,13 @@ Supported concrete classes are `close.false_positive`, `contain.network`, `conta
 
 ### How multiple records combine
 
-Every applicable entry contributes restrictions. The lowest mode wins in the order `off`, `suggest`, `approve`, `auto`; confidence uses the highest minimum; positive target caps, lease and approval timeout use the lowest value. Present approver lists intersect. An empty approver intersection limits the effective mode to at most `suggest`, with reason `policy_no_approvers`.
+Every applicable entry contributes restrictions. The lowest mode wins in the order `off`, `suggest`, `approve`, `auto`; positive target caps, lease and approval timeout use the lowest value. Present approver lists intersect. An empty approver intersection limits the effective mode to at most `suggest`, with reason `policy_no_approvers`.
 
 A named record cannot loosen a matching restriction from `default`. For example, adding `mode: auto` to a named record will not override `mode: suggest` in a matching default entry. Review the `investigation_policy` records that match the run to find the restriction to edit.
 
 Scope a named record using record-level `match`, as in this fictional `review-mail-triage` record:
 
+<!-- validate: policy -->
 ```yaml
 match:
   run: template == "fictional-mail-triage"
@@ -85,6 +87,7 @@ The policy has no setting that starts an investigation. A person, an API client 
 
 To pause automatic actions organization-wide while continuing to see suggestions, create an enabled, unscoped `investigation_policy` record named `autonomy-manual-pause` with this `data`:
 
+<!-- validate: policy -->
 ```yaml
 autonomy:
   "*":
@@ -99,7 +102,7 @@ If Git Sync manages this hive, coordinate the pause with your repository and syn
 
 ## Engine performance
 
-`GET /v1/investigate/{oid}/stats` reports, from the engine's own records, what it did with the actions this policy allowed: per template and action class, how many were suggested, approved, denied, expired, executed automatically, failed, undone or held, and why they were held. It needs `investigation.get`, `insight.evt.get` and `investigation_policy.set`. It does not score whether verdicts were right, and it does not change policy. See [Stats](../../investigation-engine/api-reference.md#stats).
+`GET /v1/investigate/{oid}/stats` reports, from the engine's own records, what it did with the actions this policy allowed: per template and action class, how many were suggested, approved, denied, expired, executed automatically, failed, undone or held, and why they were held. It needs `investigation.get`, `insight.evt.get` and `investigation_policy.set`. It does not score whether outcomes were right, and it does not change policy. See [Stats](../../investigation-engine/api-reference.md#stats).
 
 ## Permissions and safe edits
 
@@ -115,7 +118,7 @@ API keys can manage policy with the same grants; editing policy does not itself 
 
 Save through native Hive operations with the version you read (compare-and-swap). Merge only intended changes and preserve unrelated fields. If someone else edited the record, reload and reconcile; do not force-overwrite. Policy changes can tighten an existing action, but loosening policy cannot promote an old held action to automatic execution. Existing receipt-based undo remains available with normal permissions even if policy is now `off`.
 
-Validation rejects duplicate keys, multiple YAML documents, aliases/merge keys, null action fields, unknown action fields, wrong scalar types and out-of-range values. Durations use unsigned integer components with units `d`, `h`, `m`, `s`, `ms`, `us`, `ns`; `d` means 24 hours, so `7d` and `168h` are equivalent. Validation errors include `error_code`, `error` and a JSON Pointer `path` into record `data`.
+Validation rejects the removed fields (`min_confidence` on an action entry, the whole `decision` section with its thresholds and mandatory checks) with `policy_unknown_field`. A record that is already stored with them keeps loading: the engine ignores them and reports `legacy_policy_fields_ignored`. Validation also rejects duplicate keys, multiple YAML documents, aliases/merge keys, null action fields, unknown action fields, wrong scalar types and out-of-range values. Durations use unsigned integer components with units `d`, `h`, `m`, `s`, `ms`, `us`, `ns`; `d` means 24 hours, so `7d` and `168h` are equivalent. Validation errors include `error_code`, `error` and a JSON Pointer `path` into record `data`.
 
 Legacy route-decision and autonomy mutation endpoints return `410 route_control_retired`; edit `investigation_policy` instead. Legacy `automation_routes` data grants no action authority. Review existing policy explicitly when changing versions rather than assuming previous route state will preserve the intended mode. If support is missing, controls are read-only with `upgrade_required`; a network outage is a separate error.
 

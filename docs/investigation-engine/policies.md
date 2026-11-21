@@ -1,8 +1,8 @@
 # Policies and Autonomy
 
 A policy decides **what the engine may do**: how much it may spend, which operators
-it may use, which actions it may propose or take on its own, who approves, and which
-identity runs execute as. Templates say what to investigate; policies say how far the
+it may use, which actions it may propose or take on its own, what the AI may decide
+alone, who approves, and which identity runs execute as. Templates say what to investigate; policies say how far the
 engine may go. **The policy record is the only thing that decides what the engine may
 do**: no history, score or label changes a decision.
 
@@ -38,9 +38,11 @@ from the widest to the narrowest:
 5. The permissions of the run's identity. A run can never read or do anything its
    identity cannot.
 
-*Strictest* means a lower autonomy mode, a higher confidence bar, a shorter lease, a
-smaller cap, a smaller budget, fewer allowed operators, and the intersection of
-approver lists. Autonomy modes rank `off < suggest < approve < auto`.
+*Strictest* means a lower autonomy mode, less that the AI may decide, a shorter
+lease, a smaller cap, a smaller budget, fewer allowed operators, and the intersection
+of approver lists. Autonomy modes rank `off < suggest < approve < auto`;
+`ai_may_decide` ranks `off < escalate < close_and_escalate` and only the `default`
+record can grant it.
 
 If a policy record cannot be parsed, it never loosens anything: the engine keeps the
 last good set of records, or suggest-only when it has none, and the effective policy
@@ -56,6 +58,7 @@ reports `policy_records_rejected`.
 A match expression that cannot be evaluated, because an attribute is missing, counts
 as a match: records only tighten, so "don't know" applies the restriction.
 
+<!-- validate: policy -->
 ```yaml
 # investigation_policy/servers
 match:
@@ -64,6 +67,7 @@ autonomy:
   contain.network: {mode: approve}
 ```
 
+<!-- validate: policy -->
 ```yaml
 # investigation_policy/low-priority-detections
 match:
@@ -79,10 +83,10 @@ An unset field never means "unlimited" or "allowed".
 | Section | Platform default |
 |---|---|
 | `budgets` | `max_concurrent_runs` 10, `max_wall_seconds` 600, `max_steps_per_run` 200, `max_llm_usd_per_run` 0.50, `search_slot_share` 0.5, `lookback_days` 30 |
-| `decision` | `escalate_at` 0.90, `dismiss_at` 0.03, `scope_at` 0.40, `ask_approval_at` 0.60 |
 | `speculation` | `low` conservative, `medium` balanced, `high` and `critical` aggressive |
 | `operators` | The platform's read operators allowed; evidence collection (`sensor.collect.*`) denied |
-| `autonomy` | Every class `suggest`. Unset fields: `min_confidence` 0.85, `lease` 2h, `approval_timeout` 15m; containment and eradication capped at 3 targets per run and 10 per hour |
+| `autonomy` | Every class `suggest`. Unset fields: `lease` 2h, `approval_timeout` 15m; containment and eradication capped at 3 targets per run and 10 per hour |
+| `ai_may_decide` | `off` for every template: the AI only recommends |
 | `case` | `create` |
 | `identity` | None: runs use the caller's token, and runs started by rules are refused |
 
@@ -94,19 +98,19 @@ An unset field never means "unlimited" or "allowed".
 | `budgets` | `max_concurrent_runs`, `max_wall_seconds`, `max_steps_per_run`, `max_llm_usd_per_run`, `search_slot_share` (above 0, up to 1) and `lookback_days` (1 to 30). |
 | `operators` | `allow` and `deny` patterns over operator names (`entity.*`). Allow lists intersect across records. `extension_requests` is a list of exact `<extension>/<action>` pairs the `extension.request` operator may call: denied by default, granted only by the `default` record, narrowed by every other. |
 | `speculation` | Urgency (`low`, `medium`, `high`, `critical`) to profile (`conservative`, `balanced`, `aggressive`). |
-| `decision` | `escalate_at`, `dismiss_at`, `scope_at`, `ask_approval_at` (each 0 to 1) and `mandatory_checks` per urgency. |
-| `autonomy` | Per action class or pattern: `mode`, `min_confidence`, `lease`, `approval_timeout`, `max_targets_per_run`, `max_targets_per_hour`, `approvers`. See the [field reference](../7-administration/config-hive/investigation-policy.md#fields-and-defaults). |
+| `ai_may_decide` | Per template name, or `"*"`: `off`, `escalate` or `close_and_escalate`. **Granted only by the `default` record**; other records narrow it. See [What the AI may decide](#what-the-ai-may-decide). |
+| `autonomy` | Per action class or pattern: `mode`, `lease`, `approval_timeout`, `max_targets_per_run`, `max_targets_per_hour`, `approvers`. See the [field reference](../7-administration/config-hive/investigation-policy.md#fields-and-defaults). |
 | `identity` | Which credentials runs execute with. **`default` record only.** See [Run identity](#run-identity). |
 | `case` | `create` or `none`: whether a run on a detection or a case writes a case by default. **`default` record only.** |
 | `notify` | Events to destinations. **`default` record only.** See [Notifications](#notifications). |
-| `llm` | `agent`: `hive://ai_agent/<name>`, the AI agent record of the evidence reviewer. The `llm.judge` operator runs with the record named `investigation-judge` (see the [walkthrough](walkthrough.md#2-the-ai-agent-record-the-judgements-run-with)). |
+| `llm` | `agent`: `hive://ai_agent/<name>`, the AI agent record that `ask_ai` steps and the AI review run with. Without it they use the record named `investigation-judge` (see the [walkthrough](walkthrough.md#2-the-ai-agent-record)). |
 
 A record saved with no `usr_mtd` at all is enabled, unlike most Hive types; a
 `usr_mtd` that leaves out `enabled` (as Git Sync and some clients send) creates it
 disabled. A disabled record is ignored by the engine, so **always set
 `usr_mtd.enabled: true`**, above all on the `autonomy-manual-pause` record. Unknown keys are refused when the
-record is saved (`policy_unknown_field`); the removed `triggers` section is one of
-them. New cases start runs through a [D&R rule](automation.md#dr-rules-on-a-new-case).
+record is saved (`policy_unknown_field`); the removed `triggers` and `decision`
+sections and the removed `min_confidence` field are among them. New cases start runs through a [D&R rule](automation.md#dr-rules-on-a-new-case).
 
 ## Autonomy modes
 
@@ -116,19 +120,20 @@ Autonomy is set **per action class**.
 |---|---|
 | `off` | The action class is never proposed. |
 | `suggest` | Proposed with its reasoning, never executed, **not even if a person approves it**: approving is refused with `this action class is in suggest mode`. A proposal keeps the mode it was made with. |
-| `approve` | Executed after a person approves. The request goes out once P(true positive) passes `ask_approval_at`, so it can be before the verdict is final. |
-| `auto` | Executed by itself once `min_confidence` is met, within the caps, **when the action has a registered authorization** (below). |
+| `approve` | Executed after a person approves. The request goes out as soon as the rule its `act` entry names decided. |
+| `auto` | Executed by itself once the rule its `act` entry names decided, within the caps, **when the action has a registered authorization** (below). |
 
 Two rules hold whatever the policy says:
 
 - **An action with no registered authorization asks for a person.** Under `auto`, an
   action of an active template is executed by itself only when the template binds it
   to an authorization the engine can re-check from the run's evidence (the
-  `authorize:` key of a respond step), and for the false-positive close the engine
-  proposes after a clear false-positive verdict. Any other action waits in
-  `awaiting_approval` with the reason `no_registered_authorization`, and a person
-  decides. Of the default library, only the `contain.email` step of `phishing-campaign`
-  carries an authorization (`mail.verified_credential_harvest.v1`).
+  `authorize:` key of an `act` entry), and for the false-positive close the engine
+  proposes after a close outcome. Any other action waits in `awaiting_approval` with
+  the reason `no_registered_authorization`, and a person decides. An action that fires
+  on a decision the AI made never has a registered authorization. In the default
+  library, only the `contain.email` entries of `mailsec-message` and
+  `phishing-campaign` carry an authorization (`mail.verified_credential_harvest.v1`).
 - **An action that cannot be undone runs by itself only when its exact class says
   `auto`.** A pattern such as `eradicate.*` or `*` with `mode: auto` resolves to
   `approve` for `eradicate.file` and `tag.remove`, with the reason
@@ -147,7 +152,7 @@ ever suggest.
 | `tag.add` (also `tag`) | Yes | Add a sensor tag, with an optional TTL. | Yes, engine additions only |
 | `tag.remove` | Yes | Remove a sensor tag. | No |
 | `eradicate.file` | Yes | Delete one file by absolute path. | No |
-| `close.false_positive` | Yes | Close the case the run wrote, or the email message, as a false positive, after a clear false-positive verdict. Proposed by the engine itself, not by templates. | Yes |
+| `close.false_positive` | Yes | Close the case the run wrote, or the email message, as a false positive. Proposed by the engine itself, not by templates: under the class's mode after `closed_by_rule` or `closed_by_ai`, and capped at `approve` after `ai_recommends_benign`. | Yes |
 | `eradicate.process` | No | Refused (`unsupported_safe_identity`): a process cannot be identified safely by the sensor. | |
 | `contain.process`, `contain.identity`, `collect.memory`, `collect.file`, `collect.artifact` | No | Recognized by the policy and templates, but not carried out: the attempt fails with `action class ... is not wired` and the action ends `failed` with nothing done. | |
 
@@ -164,16 +169,16 @@ decides an action needs the class's permission too (see
 - **Irreversible actions never run before the evidence-preserving collection** that
   the template lists with `before:`, when collection is allowed.
 - **Every action transition is recorded** in the run's event log with the run, the
-  proof and who decided.
+  rule that decided and who decided.
 - **Nothing waits forever.** Every open action state has a deadline: a proposal waiting
-  for confidence or a prerequisite (1 hour), an approval (`approval_timeout`, after
+  for a prerequisite (1 hour), an approval (`approval_timeout`, after
   which it expires and is treated as denied), an execution (5 minutes), and a lease.
 - **Unknown outcomes are not failures.** If a call to execute an action times out, the
   action becomes `uncertain`. A late success makes it active, a late failure makes it
   failed, and if nothing answers a reversible action is undone to be safe. An
   irreversible action in this state is escalated to a person.
 - **A run that ends early settles its approvals.** When a run is cancelled, fails, or
-  runs out of budget before it reached a verdict, every action still waiting for a
+  runs out of budget before it decided, every action still waiting for a
   person expires at once and can no longer be approved. A run that has decided keeps
   its approvals until their own `approval_timeout`.
 
@@ -190,6 +195,48 @@ identity of the person deciding: the user's email, or the API key's name. A list
 matches nobody (including `approvers: []`) blocks every decision but revert. Each
 action returned by the API carries `eligibility`, what the caller may decide on it.
 
+## What the AI may decide
+
+The AI takes part in a run through `ask_ai` steps (a focused question whose answer
+rules read) and the AI review (the fallback when no rule decided). By default it only
+**recommends**: the run ends `ai_recommends_benign` or `ai_recommends_malicious`,
+nothing is acted on, and a person decides. `ai_may_decide` lets it decide alone, per
+template:
+
+<!-- validate: policy -->
+```yaml
+# investigation_policy/default
+ai_may_decide:
+  mailsec-message: close_and_escalate    # the AI may close and escalate for this template
+  suspicious-process: escalate           # the AI may escalate; a close stays a recommendation
+  "*": off                               # every other template: the AI only recommends
+```
+
+| Position | An AI-assisted rule or the AI review that... |
+|---|---|
+| `off` (the default when absent) | ...holds only recommends. |
+| `escalate` | ...escalates decides (`escalated_by_ai`); a close stays a recommendation. |
+| `close_and_escalate` | ...escalates or closes decides (`escalated_by_ai`, `closed_by_ai`). |
+
+- A template's own entry wins over `"*"`.
+- **Only the `default` record grants.** Every other matching record, and a run's
+  overrides, can only lower it. A run override that would raise it is clamped
+  (`policy.clamped` lists `ai_may_decide.<key>`), or refused with `strict`.
+- A run keeps the position it started with (`ai_may_decide` on the run object). The
+  engine's close check re-decides with the lower of the run's position and the
+  organization's current one, so turning the switch down is obeyed before an
+  AI-decided close runs. A policy the engine cannot read lets the AI decide nothing.
+- The switch decides the **outcome**, not the actions. An `act` entry that fires on an
+  AI decision has no registered authorization, so it waits for a person whatever the
+  autonomy mode. The case close (`close.false_positive`) is the one action the switch
+  controls: after `closed_by_ai` it runs under the class's mode.
+- There is no prerequisite. Results of a [test on past alerts](templates.md#test-on-past-alerts)
+  are shown beside the switch in the console, for information only: nothing checks
+  them. You can turn the switch on for many organizations at once.
+
+In the console the switch is **AI may decide** on each template's page. It writes
+`ai_may_decide.<template>` in the `default` record.
+
 ## Run identity
 
 A run executes as one of two identities, recorded on the run as `identity`:
@@ -200,13 +247,14 @@ A run executes as one of two identities, recorded on the run as `identity`:
   short-lived token. Only an **organization API key** works; a user API key is refused
   when the run starts.
 
+<!-- validate: policy -->
 ```yaml
 # investigation_policy/default
 identity:
   default: hive://secret/investigation-engine-key   # or "caller"
   allow: [caller]                                   # what a request may name besides the default
   templates:                                        # per-template overrides
-    mailsec-suspicious-message: {default: hive://secret/mail-key, allow: [caller]}
+    mailsec-message: {default: hive://secret/mail-key, allow: [caller]}
 ```
 
 - `identity` is accepted only in the `default` record.
@@ -239,6 +287,7 @@ The engine writes events to the organization's **audit log**, and your Outputs o
 audit stream deliver them like any other audit entry. Nothing is written unless the
 policy's `notify` (or the request's own `notify` list) asks for it.
 
+<!-- validate: policy -->
 ```yaml
 notify:
   action.needs_approval: ['output:slack-soc', 'output:pagerduty']
@@ -247,7 +296,7 @@ notify:
 
 | Event | Audit event type | When |
 |---|---|---|
-| `run.decided` | `ie_run_decided` | The run reached a verdict (once per run). |
+| `run.decided` | `ie_run_decided` | The run reached its outcome: when a rule or the AI decided, or at the end of the run for any other outcome (once per run). |
 | `action.needs_approval` | `ie_action_needs_approval` | An action entered `awaiting_approval`. |
 | `action.executed` | `ie_action_executed` | An action executed and became active or confirmed. |
 | `action.reverted` | `ie_action_reverted` | An action was reverted by a person or by its lease ending. |
@@ -275,9 +324,9 @@ A request can narrow the policy for one run:
 }
 ```
 
-Overrides can only make the policy stricter: lower the mode, raise confidence, shorten
-leases and timeouts, lower caps and budgets, narrow approvers, raise `escalate_at`,
-`scope_at` and `ask_approval_at`, **lower** `dismiss_at`, add operator denies. A looser
+Overrides can only make the policy stricter: lower the mode, lower what the AI may
+decide (`"ai_may_decide": {"*": "off"}`), shorten leases and timeouts, lower caps and
+budgets, narrow approvers, add operator denies. A looser
 value is **clamped** to the policy value and listed in the run's `policy.clamped`.
 With `"strict": true` the request fails with a `400` instead.
 
@@ -286,8 +335,8 @@ With `"strict": true` the request fails with a `400` instead.
 `GET /v1/investigate/{oid}/policy/effective` answers "what would the engine do for
 this alert or this host?", record by record. Query parameters: `category`, `priority`,
 `severity`, `target_tags` (comma separated), `class` and `template` (the template whose
-run identity to explain). It returns the records applied, the budgets, thresholds and
-speculation, each action class with its mode and the record each value came from, the
+run identity to explain). It returns the records applied, the budgets, what the AI may
+decide (`ai_may_decide`) and the speculation, each action class with its mode and the record each value came from, the
 run identity (`identity: {default, allowed[], source, configured}`), the extension
 requests allowed, and `warnings` (see [Troubleshooting](troubleshooting.md#policy-warnings)).
 In the console it is the **Policy** tab.

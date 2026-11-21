@@ -716,6 +716,7 @@ nav:
   - Investigation Engine:
       - Overview: investigation-engine/index.md
       - "Walkthrough: Empty Org to Finished Investigation": investigation-engine/walkthrough.md
+      - How to Think About Templates: investigation-engine/how-to-think-about-templates.md
       - Concepts: investigation-engine/concepts.md
       - Console: investigation-engine/console.md
       - Plan Templates: investigation-engine/templates.md

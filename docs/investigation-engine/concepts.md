@@ -7,91 +7,143 @@ uses.
 
 | Object | Stored as | What it is |
 |---|---|---|
-| **Plan template** | Hive record `investigation_plan/<name>` | A reusable plan for a class of alerts: the facts to gather, the proofs that settle a verdict, how weaker evidence moves the probability, and the actions to propose. See [Plan Templates](templates.md). |
-| **Policy** | Hive record `investigation_policy/<name>` | What the engine may do: budgets, allowed operators, autonomy per action class, approvers, the identity runs execute as. See [Policies and Autonomy](policies.md). |
-| **Run** | Engine store | One investigation: its inputs, the effective policy, state, evidence graph, steps, actions and verdict. |
-| **Step** | Part of a run | One operator call (one way of obtaining a fact), with its timing, cost and outcome. |
-| **Fact** | Part of a run | A typed result of a step, with its provenance. A fact is `ok`, `unknown` (with a reason) or `incomplete`. |
-| **Action** | Part of a run | A containment, eradication or collection step with a target, a class, a state and, for reversible ones, a lease. |
-| **Operator** | Built into the engine | One way to obtain a fact or perform an action: an entity lookup, a search, a sensor read, a threat-intel lookup, an LLM judgement. The org's operator list shows which ones your policy allows. |
+| **Plan template** | Hive record `investigation_plan/<name>` | How to investigate one kind of alert: the steps to gather, the rules that decide, an optional AI review, and the actions to propose. See [Plan Templates](templates.md) and [How to Think About Templates](how-to-think-about-templates.md). |
+| **Policy** | Hive record `investigation_policy/<name>` | What the engine may do: budgets, allowed operators, autonomy per action class, what the AI may decide per template, approvers, the identity runs execute as. See [Policies and Autonomy](policies.md). |
+| **Run** | Engine store | One investigation: its inputs, the effective policy, state, steps, actions and outcome. |
+| **Step** | Part of a run | One operator call (or one fact pack), with its timing, cost, status and three sentences: why it ran, what it found and what used it. |
+| **Rule** | Part of a template | A condition over steps that decides: an `escalate` rule or a `close` rule, with an id and a sentence for the case. |
+| **Action** | Part of a run | A containment, eradication, tagging or close step with a target, a class, a state and, for reversible ones, a lease. |
+| **Operator** | Built into the engine | One way to obtain an answer or perform an action: an entity lookup, a search, a Lookup read, a sensor read, a threat-intel lookup, an AI question. The org's operator list shows which ones your policy allows. |
 
-## Facts, signals and proof
+## Gather, rules and the AI
 
-A template lists **facts**. Each fact is one operator call whose arguments can
-refer to run inputs and to other facts. A fact that reads another fact waits for
-it. Every other fact starts immediately, in parallel.
+A template lists the steps to **gather**. Each step is one operator call whose
+arguments can read the run's inputs and other steps. A step that reads another waits
+for it. Every other step starts at once, in parallel.
 
 ```yaml
-facts:
+starts_from: detection
+gather:
   trigger:                    # the detection record itself
     op: detection.get
     args: {detect_id: $detection_id, window: [-29d, now]}
-  host:                       # waits for `trigger`, reads its `sid`
-    op: entity.resolve
-    args: {type: sensor_id, value: $trigger.sid}
-  related:                    # also waits for `trigger`; runs in parallel with `host`
+  banned:                     # waits for `trigger`, reads its hash
+    op: lookup.get
+    args: {name: banned-software, keys: ['$trigger.hash']}
+  related:                    # also waits for `trigger`; runs in parallel with `banned`
     op: detection.list
-    args: {sids: [$trigger.sid], window: [-7d, now]}
+    args: {sids: ['$trigger.sid'], window: [-7d, now]}
+    only_if: 'not banned.found'   # only worth a search when the binary is not banned
 ```
 
-**Proofs** are conditions over facts that settle the verdict. A proof is a list of
-alternatives (any one completing is enough); each alternative is a condition or
-an `all` / `any` group of conditions:
+**Rules** decide. An `escalate` rule decides as soon as it holds. A `close` rule
+decides once it holds on complete answers and nothing blocks a close. Each rule has
+an `id`, a condition (`when`) and a sentence (`say`) the case leads with:
 
 ```yaml
-proofs:
-  false_positive:
-    - 'related.count <= 1 and judge.label == "no"'
-  true_positive:
-    - all: ['judge.label == "yes"', 'related.count >= 5']
+rules:
+  escalate:
+    - {id: banned_binary, when: 'banned.found', say: "The binary is on our banned software list."}
+  close:
+    - id: approved_and_signed
+      when: ['approved.found', 'file_on_host.matches', 'file_on_host.verified']
+      say: "The binary is on our approved list, and the file on the host is that file, signed and verified."
 ```
 
-**Evidence** is the softer path. When no proof completes, each `evidence` rule
-whose condition is true adds its `weight` (a log-odds value; negative favors a
-false positive) to the template's `prior`. The result is the probability of a
-true positive, `P(TP)`.
+As soon as a rule decides, the engine **cancels every step that can no longer
+change the outcome** and records why. This is where most of the time saved comes
+from.
+
+**The AI** takes part in two ways, and by default both only recommend:
+
+- An **`ask_ai` step** asks one focused question about what other steps gathered
+  ("is this command line malicious?"). Its answer is `yes`, `no` or `unclear`, with a
+  self-rated confidence and a short rationale. A rule that reads it, directly or
+  through another step, is **AI-assisted**.
+- The **AI review** (`ai_review`) is the fallback. It runs only when no rule decided
+  and nothing relevant is left to gather. It reads the steps it is given and answers
+  malicious, benign or unclear, citing what it used.
+
+The organization's policy says, per template, whether the AI may decide alone
+(`ai_may_decide`: `off`, `escalate` or `close_and_escalate`). It is `off` by default.
+An AI-assisted rule or the review then produces a **recommendation**, and a person
+decides. See [What the AI may decide](policies.md#what-the-ai-may-decide).
 
 **Signals** apply to detections that carry several reasons for firing, such as an
-email detection. Each signal that fired is given a question, a condition under
-which it is *malicious* (holds) and one under which it is *benign* (explained).
-`signals.all_explained` is a common backbone of a false-positive proof.
+Email Security detection. `explain_signals` gives each reason a question, a condition
+under which it is benign (`benign_when`) and one under which it is malicious
+(`malicious_when`). Every reason that fired must be explained benign before anything
+closes, and a reason whose malicious condition holds blocks every close.
 
-### How a verdict is reached
+## Outcomes
 
-| Outcome | When |
+Every run ends with one outcome. It is the run's `verdict.outcome`; `verdict.label`
+is derived from it.
+
+| Outcome | Meaning | `label` |
+|---|---|---|
+| `closed_by_rule` | A close rule decided. | `false_positive` |
+| `escalated_by_rule` | An escalate rule decided. | `true_positive` |
+| `closed_by_ai` | An AI-assisted close rule or the AI review decided, because the policy lets the AI close for this template. | `false_positive` |
+| `escalated_by_ai` | An AI-assisted escalate rule or the AI review decided, because the policy lets the AI escalate for this template. | `true_positive` |
+| `ai_recommends_benign` | The AI recommends closing. Nothing is acted on; a person decides. | `inconclusive` |
+| `ai_recommends_malicious` | The AI recommends escalating. Nothing is acted on; a person decides. | `inconclusive` |
+| `couldnt_tell` | No rule decided and the AI did not answer either way. The run lists what was missing and why. | `inconclusive` |
+| `conflict` | An escalate rule and a close rule hold at once, or an AI-assisted rule recommends against a deterministic rule of the other side. A person decides; fix the rules. | `inconclusive` |
+
+The outcome travels with what is behind it:
+
+```json
+"verdict": {
+  "outcome": "closed_by_rule",
+  "label": "false_positive",
+  "decided": true,
+  "decided_by": {"kind": "rule", "rule": "approved_and_signed", "say": "The binary is on our approved list, and the file on the host is that file, signed and verified."},
+  "recommendation": null,
+  "missing": [],
+  "unknowns": []
+}
+```
+
+- `decided_by` names what decided: `kind` is `rule`, `ai_rule` (an AI-assisted rule)
+  or `ai_review`, with the rule id and its rendered sentence.
+- `recommendation` is set when the AI recommends: `label` (`benign`, `malicious` or
+  `unclear`), `self_rated_confidence` (shown, never used), `rationale`, `citations`
+  (the step fields it used) and `by` (the rule id or `ai_review`).
+- `missing` lists, when nothing decided, each step that stayed unknown: `step`,
+  `reason`, `needed_by` (the rules or the review that needed it) and `ask` (the
+  question for a person, from the step's `ask:`).
+
+**`couldnt_tell` is a good answer when data is missing.** The case says what could
+not be established and why, and asks the question a person can answer.
+
+## Unknown is never false
+
+A step ends in one of four states:
+
+| Status | Meaning |
 |---|---|
-| `true_positive` | A true-positive proof completes, or the evidence alone brings `P(TP)` to the policy's `escalate_at` (0.90 by default). |
-| `false_positive` | A false-positive proof completes, or the evidence alone brings `P(TP)` to `dismiss_at` (0.03) or below and nothing is left to run. **Both paths wait for the required checks** (`mandatory_checks` of the run's urgency): while one is unknown or unfinished, the run cannot be dismissed, and if it stays unknown after everything has run, the run ends `inconclusive`. |
-| `inconclusive` | Nothing more can be learned and neither side was reached. The case lists what stayed unknown and asks one open question. |
-
-When a proof completes, the engine **cancels every step that can no longer matter**
-and records why. This is where most of the time saved comes from.
-
-## Unknown, absent and incomplete
-
-A fact has one of three conditions:
-
-| Condition | Meaning |
-|---|---|
-| **ok** | The operator answered and the answer is complete. |
-| **unknown** | There is no answer. The fact has a `reason` such as `timeout`, `forbidden`, `not_found`, `policy_denied`, `missing_input` or `outside_free_window`. |
-| **incomplete** | There is an answer, but it may be missing data: a truncated list, a search over the last few minutes (`index_lag`), a window clamped to the free time range. |
+| `ok` | The operator answered. The answer is **complete**, or **incomplete** when it may be missing data: a truncated list, a search over the last few minutes (`index_lag`), a lower bound. |
+| `unknown` | There is no answer. The step has a `reason` such as `timeout`, `forbidden`, `not_found`, `policy_denied`, `llm_agent_not_found` or `outside_free_window`. |
+| `skipped` | Its `only_if` was false (`only_if_false`), a step its condition reads failed (`condition_unknown`), or it reads a skipped step (`dependency_skipped`). A skipped step reads as unknown. |
+| `cancelled` | A rule decided and the step could no longer change the outcome. |
 
 The engine uses three-valued (Kleene) logic, and this is the rule behind every
-proof:
+decision:
 
-- A comparison on an unknown fact is **unknown, never false**. `not unknown` is
+- A comparison on an unknown step is **unknown, never false**. `not unknown` is
   unknown. `unknown and false` is false, and `unknown or true` is true.
-- A proof completes only when its expression is **true**. A fact that is unknown
-  can never complete a proof.
-- An **incomplete** fact supports only answers that can only get stronger with
-  more data: `count > 0`, `found`, `x in list`. A claim of absence (`found == false`,
-  `count == 0`) on an incomplete fact is unknown.
+- A rule decides only when its condition is **true**. An unknown answer can never
+  make a rule hold.
+- An **escalate** rule reads an incomplete answer for what it shows: `count > 0`,
+  `found`, `x in list` are true as soon as the data shows them. A claim of absence
+  (`found == false`, `count == 0`) on an incomplete answer is unknown.
+- A **close** rule decides only on complete answers. A lower bound ("seen on 50+
+  hosts") or a derived value never closes anything.
 
-So "no click was seen" proves nothing until the data it rests on is complete.
-**Inconclusive is a good answer when data is missing.** The case says what could not
-be established and why. See [Writing templates](templates.md#proofs-evidence-and-signals) for
-how to write conditions that respect this.
+So "no click was seen" proves nothing until the data it rests on is complete. See
+[How to Think About Templates](how-to-think-about-templates.md) for how to write rules
+that respect this.
 
 ## Runs
 
@@ -100,23 +152,21 @@ how to write conditions that respect this.
 A run is `queued`, `running`, `decided`, `completed`, `cancelled`, `failed` or
 `budget_exhausted`. While it runs it moves through phases that overlap:
 
-1. **Triage** looks for the shortest proof of true or false positive.
-2. **Scoping** gathers the facts the template lists under `scope` (see
-   [Plan Templates](templates.md#scope)). In the `balanced` and `aggressive`
-   speculation profiles it starts once `P(TP)` passes the policy's `scope_at` bar, usually
-   before the verdict is final. In the `conservative` profile it waits for a decided
-   true positive. The template names every fact to gather: the engine does not discover
-   new entities or generate searches of its own.
-3. **Containment** proposes actions as the facts they depend on arrive and executes
-   them according to policy once their confidence bar is met. That can happen before the
-   verdict is final: see [Respond](templates.md#respond-and-report).
+1. **Triage** gathers what the rules read, and stops as soon as one decides.
+2. **Scoping** gathers the steps the template lists under `scope.from` (who else,
+   what else). It starts only once a rule, or the AI where the policy allows it,
+   escalated. The template names every step: the engine does not discover new
+   entities or generate searches of its own.
+3. **Containment** proposes the `act` entries of the rule that decided and executes
+   them according to policy. A recommendation proposes nothing but the case close
+   a person can confirm. See [Act](templates.md#act).
 
-`decided` means the verdict is final while scoping or actions may still be running.
+`decided` means the outcome is final while scoping or actions may still be running.
 A run is `completed` when its steps are done and every action is settled.
 
 ### Modes and urgency
 
-A run starts in one of three modes: `triage` (stop at the verdict), `full` (triage,
+A run starts in one of three modes: `triage` (stop at the outcome), `full` (triage,
 scoping and containment) or `scope` (skip triage, for a confirmed incident).
 `urgency` (`low`, `medium`, `high`, `critical`) selects how aggressively the engine
 spends parallel work: a *speculation profile* of `conservative`, `balanced` or
@@ -174,25 +224,30 @@ policy.
 ### What a run costs
 
 - **Searches** stay inside the free time range, so they are free of search charges.
-- **Language-model judgements** (`llm.judge`) run on the organization's `ai_agent`
-  record named `investigation-judge`, which decides the model and the provider
-  credentials: your provider bills those tokens. The usage is also reported with the
-  organization's other AI usage, under the feature `investigation_engine`, with the run
-  id as the reference. The policy's `max_llm_usd_per_run` budget **stops the run from
-  launching further judgements** once the cost already recorded reaches it. It is not a
-  hard cap: a judgement already in flight (or several launched together) can take the
-  run past it, and a judgement with no known price adds nothing to the recorded cost.
+- **AI calls** (`ask_ai` steps and the AI review) run on the organization's
+  `ai_agent` record that the policy's `llm.agent` names, or the record named
+  `investigation-judge` when the policy names none. The record decides the model and
+  the provider credentials: your provider bills those tokens. The usage is also
+  reported with the organization's other AI usage, under the feature
+  `investigation_engine`, with the run id as the reference. The policy's
+  `max_llm_usd_per_run` budget **stops the run from launching further AI calls** once
+  the cost already recorded reaches it. It is not a hard cap: a call already in
+  flight (or several launched together) can take the run past it, and a call with no
+  known price adds nothing to the recorded cost.
 - **Operators that bill per use**, such as artifact collection and some extensions, are
   off in the default policy. An organization enables them by policy.
 
 ### The case
 
 Each run writes a [case](../5-integrations/extensions/limacharlie/cases.md) by
-default. An engine-written case contains the triggering detections, a plain-language
-summary with the verdict and proof (each claim cites a fact), entities and
-telemetry with a verdict and a reason each, the unknowns that mattered, the actions
-proposed, approved, executed and reverted with who decided, severity, status, tags
-and a classification, and a link back to the run.
+default. An engine-written case leads with the outcome sentence: the deciding
+rule's `say`, or the AI's recommendation and what was missing. It then lists the
+fired signals and how each was answered, the triggering detections, the evidence
+(each step a rule or the review read that answered, with its sentence), what stayed
+unknown and why, the open question for a person (a missing step's `ask`), the actions
+proposed, approved, executed and reverted with who decided, severity (by outcome, as
+the template's `case.severity` says), status, tags and a classification, and a link
+back to the run.
 
 People's edits of an engine case (closing it, changing its classification, a note)
 are not read by the engine and change nothing it does. A person can submit an explicit
@@ -205,13 +260,13 @@ A template is for an alert that comes back. A one-off question ("what did this h
 do after that download?", "who else received this message?") does not need one.
 
 A **wave** is a batch of operator calls, or fact packs, that the engine runs now,
-in parallel, and returns compact answers for. It has no plan and no verdict, but
+in parallel, and returns compact answers for. It has no rules and no outcome, but
 the engine still batches, caches, enforces the free time range and applies policy.
 A wave can reference earlier steps of the same wave, can `select` just the fields
 you need, and can stop early with `stop_when` conditions that follow the same
-unknown-is-never-false rule as proofs.
+unknown-is-never-false rule as rules.
 
-A **fact pack** is a named, tested bundle of facts with parameters and described
+A **fact pack** is a named, tested bundle of steps with parameters and described
 exports. The engine has these built in: `app_control_context`, `cloud_audit_context`,
 `cloud_exposure_path`, `cloud_finding_context`, `cloud_resource_exposure`,
 `container_context`, `detection_context`, `domain_reputation`, `hash_spread`,
@@ -222,9 +277,9 @@ them with their parameters and exports. An organization can add its own packs as
 `investigation_pack` Hive records; templates and waves `use:` them like the built-in
 ones. Like an active template, an organization pack can only be written by a person
 (or by an API key when the organization opted out), so an AI agent's key cannot change
-what an active template runs by replacing a pack. A pack can be used in a wave or as a fact
-(`use:` instead of `op:`) in a template, where it expands into ordinary facts named
-`<id>__<fact>`.
+what an active template runs by replacing a pack. A pack can be used in a wave or as a step
+(`use:` instead of `op:`) in a template, where it expands into ordinary steps named
+`<id>__<step>` (`host__card`), which rules read like any other step.
 
 Waves are what an AI agent uses to answer a question in three or four calls instead
 of thirty. See [MCP Tools](mcp.md) and [API Reference](api-reference.md#waves).
