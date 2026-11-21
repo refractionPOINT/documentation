@@ -244,7 +244,7 @@ echo '{
       }
     }
   }
-}' | limacharlie hive set --hive-name cloud_sensor --key otel-hook
+}' | limacharlie hive set --hive-name cloud_sensor --key otel-hook --enabled
 ```
 
 ### 2. Get the base URL

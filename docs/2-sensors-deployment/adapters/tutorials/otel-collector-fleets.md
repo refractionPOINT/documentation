@@ -96,10 +96,10 @@ webhook:
 ```
 
 ```bash
-limacharlie hive set --hive-name cloud_sensor --key otel-fleet --input-file otel-fleet.yaml
+limacharlie hive set --hive-name cloud_sensor --key otel-fleet --input-file otel-fleet.yaml --enabled
 ```
 
-The hive checks the whole `opamp` block when you save. A secret is required while `enabled` is `true`.
+`--enabled` matters: a new `cloud_sensor` record is created disabled otherwise, and a disabled webhook serves nothing. The hive checks the whole `opamp` block when you save. A secret is required while `opamp.enabled` is `true`.
 
 ## Connect collectors
 
