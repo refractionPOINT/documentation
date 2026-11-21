@@ -135,7 +135,7 @@ rules:
       when: ['cmd.label == "yes"', 'related.count >= 5']
       say: "The command was judged malicious on a host that raised {related.count} detections this week."
 act:
-  - {class: contain.network, target: '$trigger.sid', on: [banned_binary]}
+  - {class: contain.network, target: '$trigger.sid', on_rules: [banned_binary]}
 case:
   severity: {escalated_by_rule: high, escalated_by_ai: high, ai_recommends_malicious: high, default: medium}
 ```
@@ -253,7 +253,7 @@ ai_review:
   sees: [trigger, related]
   needs: [trigger]
 act:
-  - {class: contain.network, target: '$trigger.sid', on: [banned_binary]}
+  - {class: contain.network, target: '$trigger.sid', on_rules: [banned_binary]}
 case:
   severity: {escalated_by_rule: high, escalated_by_ai: high, ai_recommends_malicious: high, closed_by_rule: low, default: medium}
 ```
@@ -348,7 +348,7 @@ field name, read it from the operator catalog; never change the policy.
 | Writing the earlier format (`facts`, `proofs`, `evidence`, `respond`) | Validation fails with `legacy_template_format`. Use `gather`, `rules`, `ai_review` and `act`. |
 | A close rule on absence ("nothing found") or on incomplete data | The rule never holds. Use positive benign evidence, or accept `couldnt_tell`. |
 | A signal with no `benign_when`, then a close on `signals.all_explained` | The signal can never be explained, so nothing closes while it fires. |
-| An `act` entry on a rule that is not first to hold | Only the deciding rule's entries fire. Put the most specific rule first. |
+| Putting containment on a broad escalate rule | Every escalate rule that holds fires its own `act` entries (`verdict.also_held`). Give each rule the actions it alone justifies. |
 | Guessing a field name | Validation fails with `unknown_field` and a suggestion. |
 | A window older than 30 days | Validation fails with `window_outside_free_range`. |
 | Proposing a class the policy has `off` | The action is never proposed (`act_class_off`). |

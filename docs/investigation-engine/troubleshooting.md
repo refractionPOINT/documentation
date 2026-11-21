@@ -155,12 +155,12 @@ field; `validate_plan` names it `legacy_template_format`. The most common ones:
 
 | Code | Cause | Do |
 |---|---|---|
-| `legacy_template_format` | The template uses the earlier format: `facts`, `inputs`, `proofs`, `evidence`, `prior`, `signals`, `respond`, `report`, `decision`. | Rewrite it: facts become `gather` steps, proofs become `rules` with ids, `respond` becomes `act` with `on`, `report` becomes `case`. Drop evidence, priors and thresholds. Or reinstall the template from the library. |
+| `legacy_template_format` | The template uses the earlier format: `facts`, `inputs`, `proofs`, `evidence`, `prior`, `signals`, `respond`, `report`, `decision`. | Rewrite it: facts become `gather` steps, proofs become `rules` with ids, `respond` becomes `act` with `on_rules`, `report` becomes `case`. Drop evidence, priors and thresholds. Or reinstall the template from the library. |
 | `invalid_template` | A key the format does not have, a wrong type, or YAML that does not parse. | Read the message: it names the line and the key. |
 | `unknown_reference` | A step or a rule reads `$name` the starting point does not provide (for example `$hash`). | Derive it with a step from `detection.get`, or read a caller's value as `$?name` in a step's args (see [starts_from](templates.md#where-a-run-starts-starts_from)). |
 | `bad_reference` | A rule, a condition or an `act` entry reads `$?name`. | Expressions read steps only. |
 | `no_verdict_path` | No rule and no `ai_review`. | Add a rule, or the review. |
-| `unknown_rule` | An `act` entry's `on` names a rule the template does not have. | Fix the id. |
+| `unknown_rule` | An `act` entry's `on_rules` names a rule the template does not have. | Fix the id. |
 
 The full list is in the authoring kit's `codes` and on
 [Plan Templates](templates.md#validate).

@@ -51,7 +51,7 @@ rules:
 ```
 
 As soon as a rule decides, the engine **cancels every step that can no longer
-change the outcome** and records why. This is where most of the time saved comes
+change the outcome or an action that can still fire** and records why. This is where most of the time saved comes
 from.
 
 **The AI** takes part in two ways, and by default both only recommend:
@@ -110,6 +110,9 @@ The outcome travels with what is behind it:
 - `recommendation` is set when the AI recommends: `label` (`benign`, `malicious` or
   `unclear`), `self_rated_confidence` (shown, never used), `rationale`, `citations`
   (the step fields it used) and `by` (the rule id or `ai_review`).
+- `also_held` (omitted when empty) lists the other escalate rules that held after an
+  escalation. The first escalate rule that held decides and never moves; each rule in
+  `also_held` fires its own `act` entries.
 - `missing` lists, when nothing decided, each step that stayed unknown: `step`,
   `reason`, `needed_by` (the rules or the review that needed it) and `ask` (the
   question for a person, from the step's `ask:`).

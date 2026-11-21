@@ -124,7 +124,7 @@ explain_signals:                   # for alerts that come with reasons
     malicious_when: 'sender_history.prior_messages_30d == 0'
     benign_when: 'sender_history.prior_messages_30d > 0'
 act:                               # what to propose when a rule decides
-  - {class: contain.email, target: '$message.msg_id', attrs: {group_id: '$recipients.action_attrs.group_id'}, on: [clicked_credential_harvest]}
+  - {class: contain.email, target: '$message.msg_id', attrs: {group_id: '$recipients.action_attrs.group_id'}, on_rules: [clicked_credential_harvest]}
 case:                              # how the case reads
   mode: create
   severity: {escalated_by_rule: high, closed_by_rule: low, default: medium}
@@ -140,7 +140,7 @@ the JSON Schema of every key.
 A record in the earlier format (`facts`, `inputs`, `proofs`, `evidence`, `prior`,
 `signals`, `signals_from`, `respond`, `report`, `decision`...) is refused with
 `legacy_template_format`, and the engine does not run it. Rewrite it: facts become
-`gather` steps, proofs become rules with ids, `respond` becomes `act` with `on`,
+`gather` steps, proofs become rules with ids, `respond` becomes `act` with `on_rules`,
 `report` becomes `case`, and evidence, priors and thresholds go.
 
 - `deadline` (`10m`, `2h`, `1d`) caps the run's wall time. It never loosens the
@@ -332,16 +332,26 @@ rules:
 | `say` | The sentence the case leads with when the rule decides. `{step.path}` puts a value in. |
 | `never_close_when` | Conditions that block every close while one of them is true or unknown. Only a known false lets a close through. |
 
-- **An escalate rule decides as soon as it holds**, and gathering stops.
+- **An escalate rule decides as soon as it holds**, and gathering stops, except for
+  the steps that other escalate rules with `act` entries, or an `act` entry's target
+  or guard, still read (below).
 - **A close rule decides once it holds on complete answers** and nothing blocks a
   close (a fired signal not explained, a `never_close_when` condition). It does not
   wait for steps only escalate rules read: those are cancelled.
 - **An escalate rule and a close rule that hold at once** end the run `conflict`.
   `contradictory_rules` warns about a rule that can never be true, or the same
   condition on both sides.
-- **Which rule decides:** a deterministic rule before an AI-assisted one, then the
-  first in order on its side. Put the most specific rule first, since only the
-  deciding rule's `act` entries fire.
+- **Which rule decides:** the escalate rule that held **first** (the last of the steps
+  it reads arrived first; at the same moment, a deterministic rule before an
+  AI-assisted one, then the template's order), or the first close rule in order. The
+  decision is written at once and never moves.
+- **Other escalate rules keep counting** after an escalation when they have `act`
+  entries: the steps they read are not cancelled until each rule is true, false or
+  finally unknown, within the run's budgets. One that holds is listed in
+  `verdict.also_held` and in the case's decision sentence, and fires its own `act`
+  entries under the normal policy and authorization rules (an AI-assisted one only
+  where the AI may escalate). The cost: those steps can still run after the
+  decision.
 - When no rule decides and nothing relevant is left to gather, the run ends
   `couldnt_tell` (or the AI review runs). Never write a rule that turns missing data
   into a decision.
@@ -416,7 +426,7 @@ ai_review:
   every step it `needs` (by default every step it sees) is known and complete, and
   every claim checks out. Otherwise the answer is unclear.
 - Nothing reads the review: it is not a step in `gather`, and no rule or condition
-  reads it. `act` entries name it in `on: [ai_review]`.
+  reads it. `act` entries name it in `on_rules: [ai_review]`.
 - It decides only where the policy's `ai_may_decide` allows; otherwise it
   recommends.
 
@@ -429,8 +439,8 @@ steps and the review are unknown (`llm_agent_not_found`).
 
 ```yaml
 act:
-  - {class: contain.network, target: '$ctx__trigger.sid', on: [banned_binary, judged_malicious_on_noisy_host]}
-  - {class: tag.add, target: '$ctx__trigger.sid', attrs: {tag: 'ie:banned-binary', ttl: 86400}, on: [banned_binary]}
+  - {class: contain.network, target: '$ctx__trigger.sid', on_rules: [banned_binary, judged_malicious_on_noisy_host]}
+  - {class: tag.add, target: '$ctx__trigger.sid', attrs: {tag: 'ie:banned-binary', ttl: 86400}, on_rules: [banned_binary]}
 ```
 
 | Key | Meaning |
@@ -438,7 +448,7 @@ act:
 | `class` | The action class. See [Action classes](policies.md#action-classes). |
 | `target` | A step path or a literal. |
 | `attrs` | An object of literals or step paths, for the class (a tag and its TTL, a message group). |
-| `on` | Required. The rule ids, or `ai_review`, whose decision fires the entry. A recommendation fires nothing. |
+| `on_rules` | Required. The rule ids, or `ai_review`, whose decision fires the entry, each named once. A recommendation fires nothing. The key is `on_rules`, not `on`: some YAML readers turn a bare `on` into the boolean true, so `on` is refused as an unknown field. |
 | `before` | A class whose actions on the same target must wait for this one: evidence before eradication. |
 | `authorize` | A registered authorization the engine re-checks from the run's evidence (below). |
 
@@ -463,7 +473,9 @@ decision the AI made, waits for a person even under `auto` (the reason
 **The case close.** `closed_by_rule` and `closed_by_ai` propose `close.false_positive`
 under the policy's mode for that class. `closed_by_ai` closes by itself only while the
 policy still lets the AI close for the template. `ai_recommends_benign` proposes the
-close capped at `approve`: it is the person's **Close as benign** button.
+close of the case and of the message capped at `approve`, whatever the class's mode:
+it is the person's **Close as benign** button. `ai_recommends_malicious` proposes no
+close.
 
 `before: <class>` makes this entry a prerequisite of the actions of the named class
 on the same target: `collect.file` with `before: eradicate.file` means the collection
@@ -539,7 +551,7 @@ ai_review:
   sees: [ctx__trigger, host__card, spread__prevalence]
   needs: [ctx__trigger]
 act:
-  - {class: contain.network, target: '$ctx__trigger.sid', on: [banned_binary]}
+  - {class: contain.network, target: '$ctx__trigger.sid', on_rules: [banned_binary]}
 case:
   mode: create
   severity: {escalated_by_rule: high, escalated_by_ai: high, ai_recommends_malicious: high, default: medium}
@@ -605,7 +617,7 @@ useful ones are below; the authoring kit returns the complete list as `codes`.
 | `unknown_field` | A reference reads a field the operator does not return. The suggestion is the field you probably meant. |
 | `window_outside_free_range` | A search window starts earlier than 30 days ago. |
 | `no_verdict_path` | No rule and no `ai_review`: the template can never decide or recommend. |
-| `unknown_rule` | An `act` entry's `on` names a rule the template does not have. |
+| `unknown_rule` | An `act` entry's `on_rules` names a rule the template does not have. |
 | `reads_review` | A rule, a condition or a step reads `ai_review`. |
 | `unused_step` | A step nothing reads, and not `always`. It only costs a step. |
 | `operator_denied` | Your policy does not allow the operator, so the step is always unknown. |

@@ -515,8 +515,8 @@ policy. If the class is in `suggest`, the close is only suggested: there is noth
 approve or deny, so close the case, or work it, in Cases.
 
 **To close (you agree it is benign).** After `ai_recommends_benign` the engine
-proposes the case close (`close.false_positive`) capped at `approve`, so it waits in
-`awaiting_approval` even when the class is `auto`. Approving it is the console's
+proposes the close (`close.false_positive`) of the case and of the message capped at
+`approve`, so it waits in `awaiting_approval` even when the class is `auto`. Approving it is the console's
 **Close as benign**:
 
 ```bash

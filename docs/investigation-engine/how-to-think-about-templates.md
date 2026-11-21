@@ -54,9 +54,13 @@ rules:
   a rule true, and a close rule only decides on complete answers. See
   [Unknown is never false](concepts.md#unknown-is-never-false).
 - **An escalate rule decides the moment it holds**, and the engine stops gathering
-  and cancels what can no longer matter.
-- **Order matters.** Put the most specific rule first on each side. The first rule
-  that holds decides, and only its `act` entries fire.
+  and cancels what can no longer matter (the outcome, or an action that can still
+  fire).
+- **Which rule decides.** The escalate rule that holds first decides, and the
+  decision never moves. Other escalate rules that have `act` entries keep counting:
+  one that also holds is listed in `verdict.also_held` and fires its own `act`
+  entries. On the close side, the first close rule in order that holds decides.
+  Give each rule the actions it alone justifies.
 - The `say` sentence is what the case leads with. `{step.path}` puts a value in.
 
 Start with the rules that read cheap, exact answers. A Lookup read costs almost
@@ -155,7 +159,7 @@ rules:
       when: ['approved.found', 'file_on_host.matches', 'file_on_host.verified']
       say: "The binary is on our approved remote-admin tools list, and the file on the host is that file, signed and verified."
 act:
-  - {class: contain.network, target: '$alert__trigger.sid', on: [banned_tool, unapproved_and_persisted]}
+  - {class: contain.network, target: '$alert__trigger.sid', on_rules: [banned_tool, unapproved_and_persisted]}
 case:
   mode: create
   severity: {escalated_by_rule: high, closed_by_rule: low, default: medium}
@@ -240,7 +244,7 @@ fewer need the AI or a person.
 ## Checklist
 
 - [ ] Each close rule rests on positive, complete evidence, never on "nothing found".
-- [ ] The cheapest rules come first; the most specific rule on each side is first.
+- [ ] The cheapest rules come first, and each escalate rule carries the actions it alone justifies.
 - [ ] Every step is read by a rule, the review, an `act` entry or another step, or
       is `always: true`.
 - [ ] Expensive steps have an `only_if`.
