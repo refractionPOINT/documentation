@@ -1,10 +1,10 @@
 # LimaCharlie Documentation
 
-Welcome to the official documentation for **LimaCharlie** - the Agentic SecOps Workspace.
+Welcome to the official documentation for **LimaCharlie**.
 
 ## What is LimaCharlie?
 
-LimaCharlie is the **Agentic SecOps Workspace** delivering security operations for the modern era. The platform provides comprehensive enterprise protection that brings together critical cybersecurity capabilities and eliminates integration challenges and security gaps for more effective protection against today's threats.
+LimaCharlie is cloud-hosted security operations infrastructure that serves as an EDR, a SIEM, or both. Endpoint sensors, log ingestion, and detection and response (D&R) rules run on one multi-tenant system with a year of searchable telemetry. Pricing is usage-based, with a free tier. You run it from the web app, the `limacharlie` CLI, or the API, and AI agents use the same CLI and API.
 
 ## Quick Navigation
 
