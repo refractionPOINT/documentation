@@ -1,6 +1,6 @@
 site_name: LimaCharlie Documentation
 site_url: https://docs.limacharlie.io/
-site_description: Official documentation for LimaCharlie Agentic SecOps Workspace
+site_description: "Official documentation for LimaCharlie: cloud-hosted security operations infrastructure that serves as an EDR, a SIEM, or both."
 site_author: refractionPOINT
 repo_url: https://github.com/refractionPOINT/documentation
 repo_name: refractionPOINT/documentation

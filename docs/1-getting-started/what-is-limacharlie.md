@@ -1,12 +1,10 @@
 # What is LimaCharlie?
 
-LimaCharlie is the **Agentic SecOps Workspace** - delivering security operations for the modern era.
+LimaCharlie is cloud-hosted security operations infrastructure that serves as an EDR, a SIEM, or both. Endpoint sensors, log ingestion, and detection and response (D&R) rules run on one multi-tenant system. It is a commercial service with usage-based pricing and a free tier.
 
-LimaCharlie's Agentic SecOps Workspace provides you with comprehensive enterprise protection that brings together critical cybersecurity capabilities and eliminates integration challenges and security gaps for more effective protection against today's threats.
+The LimaCharlie [sensor](../2-sensors-deployment/index.md) provides EDR on Windows, macOS, Linux, and ChromeOS. [Adapters](../2-sensors-deployment/adapters/index.md) bring in logs from cloud, identity, and SaaS sources, and telemetry from an existing EDR such as CrowdStrike, SentinelOne, or Microsoft Defender. [D&R rules](../3-detection-response/index.md) act on every event as it arrives, and a year of telemetry stays searchable for hunting and investigation.
 
-The Agentic SecOps Workspace offers a unified platform where you can build customized solutions effortlessly. With open APIs, centralized telemetry, and automated detection and response mechanisms, it's time cybersecurity moves into the modern era.
-
-Simplifying procurement, deployment and integration of best-of-breed cybersecurity solutions, the Agentic SecOps Workspace delivers complete protection tailored to each organization's specific needs, much in the same way IT Clouds have supported enterprises for years.
+Each environment is its own organization, so service providers run every client from one account, and security teams run every business unit the same way. You run LimaCharlie from the web app, the `limacharlie` CLI, or the API, and [AI assistants](../6-developer-guide/mcp-server.md) operate it through the same CLI or the MCP server.
 
 Our documentation can walk you through setting up your own Organization, deploying Sensors, writing detection and response rules, or outputting your data to any destination of your choosing. To dive in immediately, see our [Quickstart](quickstart.md) guide.
 
