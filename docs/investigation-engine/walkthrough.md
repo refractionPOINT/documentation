@@ -153,8 +153,10 @@ request picks `caller` and the policy allows it.
 ## 4. The policy: start in `suggest`
 
 The `investigation_policy` record named `default` sets the identity, the AI agent and
-what the engine may do on its own. This minimal policy proposes actions but never
-executes one:
+what the engine may do on its own. This minimal policy never executes anything without
+a person: containment and tagging are only suggested, and closing a case as a false
+positive waits for a person's approval, so that **Close as benign**, **Escalate** and
+**Add to list and close** (step 9) have something to act on:
 
 <!-- validate: policy -->
 ```yaml
@@ -164,25 +166,45 @@ identity:
 llm:
   agent: hive://ai_agent/investigation-judge
 ai_may_decide:
-  "*": off                 # the AI recommends; a person decides (the default)
+  "*": "off"               # the AI recommends; a person decides (the default)
 autonomy:
   contain.network: {mode: suggest}
   contain.email: {mode: suggest}
   tag.add: {mode: suggest}
-  close.false_positive: {mode: suggest}
+  close.false_positive: {mode: approve, approval_timeout: 24h}   # a person confirms every close
 ```
+
+Quote `"off"`: some YAML readers, including the one `limacharlie hive set` uses, turn
+a bare `off` into the boolean false, and the policy is then refused (`policy_type` at
+`/ai_may_decide/*`).
+
+Why `approve` for the close: after `ai_recommends_benign` the engine proposes the close
+capped at `approve`. Under `suggest` it stays a suggestion, so there is nothing to
+approve or deny and the step 9 buttons do nothing: you would close the case in Cases
+instead. With `approve`, a close a rule decided (`closed_by_rule`) also waits for a
+person until you raise the class to `auto`. `approval_timeout: 24h` keeps a proposal
+open for a day; the default, 15 minutes, would expire it before most people look.
 
 Write it (the Hive takes the record's data as JSON):
 
 ```bash
 curl -s -X POST "$API/hive/investigation_policy/$OID/default/data" \
   -H "Authorization: Bearer $LC_JWT" \
-  -d 'data={"identity":{"default":"hive://secret/investigation-engine-key"},"llm":{"agent":"hive://ai_agent/investigation-judge"},"ai_may_decide":{"*":"off"},"autonomy":{"contain.network":{"mode":"suggest"},"contain.email":{"mode":"suggest"},"tag.add":{"mode":"suggest"},"close.false_positive":{"mode":"suggest"}}}' \
+  -d 'data={"identity":{"default":"hive://secret/investigation-engine-key"},"llm":{"agent":"hive://ai_agent/investigation-judge"},"ai_may_decide":{"*":"off"},"autonomy":{"contain.network":{"mode":"suggest"},"contain.email":{"mode":"suggest"},"tag.add":{"mode":"suggest"},"close.false_positive":{"mode":"approve","approval_timeout":"24h"}}}' \
   -d 'usr_mtd={"enabled":true}'
 ```
 
 Or save the YAML above as `policy.yaml` and run
 `limacharlie hive set --hive-name investigation_policy --key default --input-file policy.yaml --enabled --oid "$OID"`.
+
+To change what the AI may decide for one template later, without touching the rest of
+the record, use the CLI (it writes only `ai_may_decide`, conditional on the version it
+read):
+
+```bash
+limacharlie investigate policy ai --oid "$OID"
+limacharlie investigate policy ai-set suspicious-process escalate --confirm --oid "$OID"
+```
 
 Saving a policy that names a secret for the first time needs read access to that
 secret, and the secret must already exist. Sections you leave out (budgets,
@@ -345,7 +367,14 @@ limacharlie investigate runs start --template endpoint-detection \
 - The answer is `{"run": {...}, "joined": false}`, HTTP `201` (`200` when the start
   joined an open run). `wait_seconds` blocks up to that long for the outcome.
 - Leave `plan` out to let the engine choose the **active** template whose
-  `applies_to` matches the trigger. `{"auto": true}` is refused for a person.
+  `applies_to` matches the trigger. A person's start is matched on what the request
+  says, not on the detection's record, so add the detection's category (and `tags` or
+  `severity` if your `applies_to` uses them) to `trigger`:
+  `{"trigger": {"detection_id": "<detection id>", "category": "<detect_cat>"}}`.
+  `detect_cat` matches `category`, `tag` matches `tags`, `severity` matches `severity`,
+  and `source` is `api`. Without a category, no `detect_cat` matches, not even `*`, and
+  the start is refused with `no_template_applies`. The console's **Investigate** sends
+  them for you. `{"auto": true}` is refused for a person.
 - To investigate an existing case **and write into it**, send
   `"trigger": {"case_id": "<case number>"}` with `"case": "attach:<case number>"`.
   Without `case`, a run on a case writes a **new** case (the policy default,
@@ -439,14 +468,14 @@ limacharlie investigate runs get <run id> --oid "$OID"
 
   | `verdict.outcome` | What it means | What you do |
   |---|---|---|
-  | `closed_by_rule` | A close rule held on complete evidence. `decided_by.say` is its sentence. | Nothing. The close runs under the `close.false_positive` mode. |
+  | `closed_by_rule` | A close rule held on complete evidence. `decided_by.say` is its sentence. | Approve the proposed close (with step 4's policy it waits for a person), or nothing once `close.false_positive` is `auto`. |
   | `escalated_by_rule` | An escalate rule held. | Work the case. The rule's `act` entries are proposed under their modes. |
-  | `closed_by_ai` | The AI decided to close, because `ai_may_decide` lets it close for this template. | Nothing, or spot-check. |
-  | `escalated_by_ai` | The AI decided to escalate, because `ai_may_decide` lets it. | Work the case. Its actions wait for a person. |
+  | `closed_by_ai` | The AI decided to close, because `ai_may_decide` lets it close for this template. | The close follows the `close.false_positive` mode: approve it, or nothing under `auto`. Spot-check. |
+  | `escalated_by_ai` | The AI decided to escalate, because `ai_may_decide` lets it. | Work the case. Its `act` entries wait for a person. |
   | `ai_recommends_benign` | The AI recommends closing. Nothing was done. | Decide: see [step 9](#9-what-ai-recommends-means). |
   | `ai_recommends_malicious` | The AI recommends escalating. Nothing was done. | Decide: see [step 9](#9-what-ai-recommends-means). |
   | `couldnt_tell` | No rule decided and the AI did not answer either way. | Read `missing`: answer its `ask`, or fix what made a step unknown ([Troubleshooting](troubleshooting.md#a-run-finished-but-the-outcome-means-little)). |
-  | `conflict` | Rules on both sides held. | Decide, then fix the rules so they cannot both hold. |
+  | `conflict` | Rules on both sides held, or an AI-assisted rule recommended against a deterministic rule of the other side. | Decide, then fix the rules so they cannot both hold. |
 
 - **Events**, as a long-poll: pass the last `next` as `after` until `done` is true.
 
@@ -481,9 +510,14 @@ containment. A person decides. The run gives you what you need:
   it is not a probability, and the engine never uses it.
 - The steps' narratives, and `missing`: what the AI did not have.
 
+These actions need `close.false_positive` in `approve` (or `auto`), as in step 4's
+policy. If the class is in `suggest`, the close is only suggested: there is nothing to
+approve or deny, so close the case, or work it, in Cases.
+
 **To close (you agree it is benign).** After `ai_recommends_benign` the engine
-proposes the case close (`close.false_positive`) capped at `approve`. Approving it is
-the console's **Close as benign**:
+proposes the case close (`close.false_positive`) capped at `approve`, so it waits in
+`awaiting_approval` even when the class is `auto`. Approving it is the console's
+**Close as benign**:
 
 ```bash
 # Find the close the run proposed
@@ -493,9 +527,8 @@ curl -s "$API/investigate/$OID/actions?run_id=<run id>&class=close.false_positiv
 curl -s -X POST "$API/investigate/$OID/runs/<run id>/actions/<action id>/approve" -H "Authorization: Bearer $LC_JWT"
 ```
 
-You need `investigation.set` and `insight.evt.get`, plus `investigation.set` to close
-a case or `mailsec.set` to close an email message. If the class's mode is `suggest`,
-there is nothing to approve: close the case in Cases.
+You need `investigation.set` and `insight.evt.get`; closing an email message also needs
+`mailsec.set`. The proposal expires after the class's `approval_timeout`.
 
 **To escalate (you think it is malicious, or you disagree with a benign
 recommendation).** Deny the proposed close with a note, then work the case. This is

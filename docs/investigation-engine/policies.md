@@ -207,9 +207,18 @@ template:
 ```yaml
 # investigation_policy/default
 ai_may_decide:
-  mailsec-message: close_and_escalate    # the AI may close and escalate for this template
-  suspicious-process: escalate           # the AI may escalate; a close stays a recommendation
-  "*": off                               # every other template: the AI only recommends
+  mailsec-message: "close_and_escalate"  # the AI may close and escalate for this template
+  suspicious-process: "escalate"         # the AI may escalate; a close stays a recommendation
+  "*": "off"                             # every other template: the AI only recommends
+```
+
+Quote the values. Some YAML readers, including the one `limacharlie hive set` uses,
+turn a bare `off` into the boolean false, and the record is then refused
+(`policy_type`). The CLI changes one entry without editing YAML:
+
+```bash
+limacharlie investigate policy ai --oid "$OID"
+limacharlie investigate policy ai-set suspicious-process escalate --confirm --oid "$OID"
 ```
 
 | Position | An AI-assisted rule or the AI review that... |
@@ -229,7 +238,12 @@ ai_may_decide:
 - The switch decides the **outcome**, not the actions. An `act` entry that fires on an
   AI decision has no registered authorization, so it waits for a person whatever the
   autonomy mode. The case close (`close.false_positive`) is the one action the switch
-  controls: after `closed_by_ai` it runs under the class's mode.
+  controls: after `closed_by_ai` it runs under the class's mode, so with
+  `close_and_escalate` and `close.false_positive: {mode: auto}` the AI closes cases
+  with no person.
+- `"*"` grants every template that has no entry of its own. `"*": "close_and_escalate"`
+  lets the AI close alerts for every template the organization has, including ones
+  added later.
 - There is no prerequisite. Results of a [test on past alerts](templates.md#test-on-past-alerts)
   are shown beside the switch in the console, for information only: nothing checks
   them. You can turn the switch on for many organizations at once.

@@ -25,7 +25,7 @@ The following is the action section of the starter policy. It is the `data` of t
 <!-- validate: policy -->
 ```yaml
 ai_may_decide:
-  "*": off
+  "*": "off"
 autonomy:
   close.false_positive:
     mode: suggest
@@ -41,7 +41,7 @@ autonomy:
 
 Starter content does not overwrite an installed policy. The explicit `approve` entries govern eradication and tag removal; check `undo_supported` before approving any action, since some operations have no undo.
 
-To allow automatic false-positive closes, deliberately change the governing `close.false_positive` mode to `auto` after reviewing the proposed actions, permissions and the matching policy records. A close then runs by itself after `closed_by_rule`, and after `closed_by_ai` only for the templates where `ai_may_decide` lets the AI close. `ai_may_decide: {"*": off}` keeps every AI answer a recommendation; see [What the AI may decide](../../investigation-engine/policies.md#what-the-ai-may-decide).
+To allow automatic false-positive closes, deliberately change the governing `close.false_positive` mode to `auto` after reviewing the proposed actions, permissions and the matching policy records. A close then runs by itself after `closed_by_rule`, and after `closed_by_ai` only for the templates where `ai_may_decide` lets the AI close. `ai_may_decide: {"*": "off"}` keeps every AI answer a recommendation (quote `"off"`: some YAML readers, including the one `limacharlie hive set` uses, turn a bare `off` into false, and the record is refused); see [What the AI may decide](../../investigation-engine/policies.md#what-the-ai-may-decide).
 
 ### Fields and defaults
 

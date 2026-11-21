@@ -70,8 +70,10 @@ Reference: [Permissions](permissions.md), [API Reference](api-reference.md),
   `active`.
 - **Nothing is installed for you.** An organization's templates are exactly its
   `investigation_plan` records, and no D&R rule is added for you.
-- **The AI recommends unless you say otherwise.** It decides alone only for the
-  templates your policy's `ai_may_decide` names, and an action that fires on an AI
-  decision always waits for a person.
+- **The AI recommends unless you say otherwise.** It decides alone only where the
+  `default` policy's `ai_may_decide` allows it: a template's own entry, or `"*"` for
+  every template. An `act` entry that fires on an AI decision always waits for a
+  person. The case close after `closed_by_ai` follows the `close.false_positive`
+  mode, so under `auto` it runs by itself.
 - **Nothing is learned behind your back.** Templates decide exactly as their rules
   say, and no history, score or label changes what the engine may do.

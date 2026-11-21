@@ -463,7 +463,7 @@ decision the AI made, waits for a person even under `auto` (the reason
 **The case close.** `closed_by_rule` and `closed_by_ai` propose `close.false_positive`
 under the policy's mode for that class. `closed_by_ai` closes by itself only while the
 policy still lets the AI close for the template. `ai_recommends_benign` proposes the
-close capped at `approve`: it is the person's **Close** button.
+close capped at `approve`: it is the person's **Close as benign** button.
 
 `before: <class>` makes this entry a prerequisite of the actions of the named class
 on the same target: `collect.file` with `before: eradicate.file` means the collection
@@ -486,7 +486,8 @@ case:
 `severity` is keyed by outcome (`closed_by_rule`, `escalated_by_rule`,
 `closed_by_ai`, `escalated_by_ai`, `ai_recommends_benign`,
 `ai_recommends_malicious`, `couldnt_tell`, `conflict`) plus `default`, with values
-`low`, `medium`, `high` and `critical`. The case leads with the outcome sentence and
+`low`, `medium`, `high` and `critical`. A close outcome without its own key
+(`closed_by_rule`, `closed_by_ai`) is `low`; `default` does not raise it. The case leads with the outcome sentence and
 lists the fired signals, the detections, the evidence (each step a rule or the review
 read that answered, with its sentence), what stayed unknown, the actions and the open
 question. A test writes no case.
@@ -556,7 +557,10 @@ answer benign only with the detection's own record known.
 A run names its template, or the engine picks one. A run **with no person** (a D&R
 rule) that names no template gets the **active** template whose `applies_to` matches
 the trigger. A person who starts a run from the console on a detection or a case gets
-the same automatic choice.
+the same automatic choice. A person's start through the API is matched on the
+request's own `trigger`, so it must carry the detection's `category` (and `tags` or
+`severity` when `applies_to` uses them): without a category, no `detect_cat` matches,
+not even `*`.
 
 | `applies_to` key | Matches |
 |---|---|

@@ -118,10 +118,10 @@ environment`.
 | `verdict.outcome` | A person... |
 |---|---|
 | `closed_by_rule`, `escalated_by_rule` | ...reads the rule's sentence (`decided_by.say`). The engine acted within the policy. |
-| `closed_by_ai`, `escalated_by_ai` | ...knows the AI decided, because `ai_may_decide` allows it for this template. Actions on an AI decision still wait for a person. |
+| `closed_by_ai`, `escalated_by_ai` | ...knows the AI decided, because `ai_may_decide` allows it for this template (its own entry or `"*"`). `act` entries on an AI decision still wait for a person; the case close after `closed_by_ai` follows the `close.false_positive` mode, so under `auto` it runs by itself. |
 | `ai_recommends_benign`, `ai_recommends_malicious` | ...decides: nothing was done. See [What "AI recommends" means](walkthrough.md#9-what-ai-recommends-means). |
 | `couldnt_tell` | ...reads `verdict.missing` (below) and answers its `ask`, or fixes the cause. |
-| `conflict` | ...decides, and fixes the rules. |
+| `conflict` | ...decides, and fixes the rules (rules on both sides held, or an AI-assisted rule recommended against a deterministic rule of the other side). |
 
 ## A run finished but the outcome means little
 
@@ -139,18 +139,19 @@ was missing in `verdict.missing`, each with a `reason`.
 | A step `unknown` with reason `not_found` on the trigger detection | The detection was not stored yet when the run started, and the engine gave up after its wait. | Usually transient. Rerun the investigation. |
 | Many `couldnt_tell` across runs | The rules miss the fact that decides, or the data they need is often incomplete. | Test the template on past alerts and read `unknown_reasons`. `couldnt_tell` is a correct answer when data is missing. |
 | Many `ai_recommends_benign` closed by people for the same reason | A list or a rule is missing. | Add the reason to a Lookup (**Add to list and close**) or write the rule. See [How to Think About Templates](how-to-think-about-templates.md#8-turn-repeated-decisions-into-rules). |
-| `conflict` | An escalate rule and a close rule both held. | Decide the run, then fix the rules so they cannot both hold (`contradictory_rules` warns about some cases). |
+| `conflict` | An escalate rule and a close rule both held, or an AI-assisted rule recommended against a deterministic rule of the other side. | Decide the run, then fix the rules so they cannot both hold (`contradictory_rules` warns about some cases). |
 | `closed_by_ai` or `escalated_by_ai` where you expected a recommendation | `ai_may_decide` lets the AI decide for this template, through the template's own entry or `"*"`. | Check `ai_may_decide` on the run object and in `GET /policy/effective`; lower it in the `default` record. |
 | `case_error` on the run | The case could not be written: `case write failed`, `case refused: <reasons>`, or `case not written: the run's credentials have expired` (or are unavailable). | Check Cases is subscribed and the identity has `investigation.set`. A run on a person's token cannot write after the token expires: use a secret identity. |
 | An action ended `failed` with `is not wired` | The template proposes a class that cannot be executed. | See [Action classes](policies.md#action-classes). |
-| An action stays `awaiting_approval` under `auto` | The action has no registered authorization, so a person must decide (reason `no_registered_authorization`). Every action that fires on an AI decision is in this case. | Approve it, or see [Autonomy modes](policies.md#autonomy-modes). |
+| An action stays `awaiting_approval` under `auto` | The action has no registered authorization, so a person must decide (reason `no_registered_authorization`). Every `act` entry that fires on an AI decision is in this case. | Approve it, or see [Autonomy modes](policies.md#autonomy-modes). |
 | Approve is refused with `this action class is in suggest mode` | The action was proposed in `suggest` mode. | Raise the class in the policy, then start a new run on an active template. |
 | Approvals blocked for everyone | The class's `approvers` list matches nobody. | List approvers by the exact email or API key name they act as. |
 
 ## A template is refused when you save or validate it
 
 `validate_plan` and the console report coded issues; the Hive refuses the same
-records when you save them. The most common ones:
+records when you save them. The Hive refuses an old-format record as an unknown
+field; `validate_plan` names it `legacy_template_format`. The most common ones:
 
 | Code | Cause | Do |
 |---|---|---|
@@ -171,7 +172,7 @@ The full list is in the authoring kit's `codes` and on
 | Warning | Meaning |
 |---|---|
 | `policy_records_rejected` | An enabled `investigation_policy` record does not parse. The engine keeps the last good set (or suggest-only when it has none), and the answer shows what is enforced. Fix or disable the record. |
-| `legacy_policy_fields_ignored` | A stored record still carries a removed field (`min_confidence`, the `decision` section with its thresholds and mandatory checks, `spot_check`, `pause_when` or `triggers`). It is ignored; edit the record to remove it. |
+| `legacy_policy_fields_ignored` | A stored record still carries a removed field (`min_confidence`, the `decision` section with its thresholds and mandatory checks, `spot_check` or `pause_when`). It is ignored; edit the record to remove it. |
 | `case_trigger_moved_to_dr_rule` | A stored record still has `triggers.case_created`. New cases start runs only through a D&R rule now: see [D&R rules on a new case](automation.md#dr-rules-on-a-new-case). |
 | `legacy_automation_routes_ignored` | A stored record still has `automation_routes`. It grants nothing. |
 | `approvers_empty_means_nobody` | A class has `approvers: []`: nobody may approve it. |

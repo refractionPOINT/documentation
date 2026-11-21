@@ -148,8 +148,9 @@ Why it looks like this:
   reads it, so it is **AI-assisted**: with the policy's AI switch off for this
   template, it recommends instead of deciding.
 - There is no close rule yet. Nothing here is positive benign evidence, and "the AI
-  said no" alone should not close an alert. Runs that no rule decides end
-  `couldnt_tell`, which is honest.
+  said no" alone should not close an alert. Runs where no rule holds end
+  `couldnt_tell` (there is no review yet), which is honest; when the AI-assisted rule
+  holds, the run ends `ai_recommends_malicious`.
 - `act` proposes isolation only on the deterministic rule. The policy decides whether
   that proposal is only suggested, needs approval or runs.
 
@@ -346,7 +347,7 @@ field name, read it from the operator catalog; never change the policy.
 | Reading `$hash` or `$sid` as an input | The starting point does not provide it: validation fails with `unknown_reference`. Derive it from `detection.get`, or read a caller's value as `$?hash` through `plan.pick`. |
 | Writing the earlier format (`facts`, `proofs`, `evidence`, `respond`) | Validation fails with `legacy_template_format`. Use `gather`, `rules`, `ai_review` and `act`. |
 | A close rule on absence ("nothing found") or on incomplete data | The rule never holds. Use positive benign evidence, or accept `couldnt_tell`. |
-| A signal with only a `malicious_when` or only a `benign_when`, then a close on `signals.all_explained` | The signal can never be explained, so nothing closes while it fires. |
+| A signal with no `benign_when`, then a close on `signals.all_explained` | The signal can never be explained, so nothing closes while it fires. |
 | An `act` entry on a rule that is not first to hold | Only the deciding rule's entries fire. Put the most specific rule first. |
 | Guessing a field name | Validation fails with `unknown_field` and a suggestion. |
 | A window older than 30 days | Validation fails with `window_outside_free_range`. |

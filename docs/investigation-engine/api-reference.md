@@ -77,9 +77,9 @@ is `investigation.set` + `insight.evt.get`. See [Permissions](permissions.md).
 cover every run: `state` (`queued`, `running`, `decided`, `completed`, `cancelled`,
 `failed`, `budget_exhausted`), `outcome` (one of the eight
 [outcomes](concepts.md#outcomes), or `undecided`; needs `investigation_policy.set`),
-`verdict` (the label of the outcome: `true_positive`,
-`false_positive`, `inconclusive` for a recommendation, `couldnt_tell` or a conflict,
-or `undecided` when nothing settled yet; needs `investigation_policy.set`), `template`
+`verdict` (the label: `true_positive`, `false_positive`,
+`inconclusive` (any recommendation, `couldnt_tell` or `conflict`) or `undecided`;
+needs `investigation_policy.set`), `template`
 (`inline` for an inline plan), `trigger` (`detection`, `entity`, `case`, `question` or
 `message`), `entity`, `started_by` (an identity such as `user:<uid>`, or a user's
 email or key name), `idempotency_key`, `kind` (`template` or `wave`), `session`,
@@ -122,7 +122,7 @@ still undoes what it left in place.
 | Field | Meaning |
 |---|---|
 | `trigger` | At least one of `detection_id`, `case_id`, `entity_id` or `question`, or a non-empty `inputs` with a named template. `category`, `priority`, `severity` and `tags` describe what fired: they select the policy records and, with no `plan`, the template. |
-| `plan` | `{"template": "<name>"}` for a stored template, or `{"inline": "<template YAML>"}` for a template you supply (always a draft; refused for a start without a person). **Leave `plan` out** to let the engine choose the active template whose `applies_to` matches the trigger (`no_template_applies` when none does). `{"auto": true}` is refused for a person. |
+| `plan` | `{"template": "<name>"}` for a stored template, or `{"inline": "<template YAML>"}` for a template you supply (always a draft; refused for a start without a person). **Leave `plan` out** to let the engine choose the active template whose `applies_to` matches the trigger (`no_template_applies` when none does). A person's start is matched on the request's own `trigger`, not on the detection's record: `detect_cat` matches `trigger.category`, `tag` matches `tags`, `severity` matches `severity`, and `source` is `api`. Without `category`, no `detect_cat` matches, not even `*`. `{"auto": true}` is refused for a person. |
 | `inputs` | Named values the template's steps may read as optional inputs (`$?name`). A template reads `$name` only for the ids its `starts_from` provides. |
 | `urgency` | `low`, `medium`, `high` or `critical`. Without it: derived from the priority or the severity (8 or more, or `critical`, is `critical`; 6 or more, or `high`, is `high`; 3 or more, or `medium`, is `medium`; otherwise `low`), and `medium` when the trigger carries neither. |
 | `mode` | `full` (the default: triage, scoping and containment), `triage` (stop at the outcome) or `scope` (skip triage). |
@@ -181,8 +181,8 @@ once the write made after the run ended has landed.
 Action states, in the order the inbox lists them: `awaiting_approval`, `proposed`,
 `uncertain`, `executing`, `reverting`, `active`, `confirmed`, `reverted`, `failed`,
 `denied`, `expired`. Within a state the most recently changed action is first. Each
-item is the action plus `run` (`run_id`, `template`, `urgency`, `verdict` (the outcome), `state`,
-`case_id`, `created`). `approve`/`deny` apply to `awaiting_approval`,
+item is the action plus `run` (`run_id`, `template`, `urgency`, `outcome`, `verdict` (its
+label, `""` while there is none), `decided`, `state`, `case_id`, `created`). `approve`/`deny` apply to `awaiting_approval`,
 `extend`/`confirm` to `active`, `revert` to `active` or `confirmed`. The approvers rule
 is in [Approvals](policies.md#approvals).
 

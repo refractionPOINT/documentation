@@ -120,7 +120,10 @@ to open that step) and "Self-rated confidence N%, not a probability". The button
   closes by rule, with no AI call. It needs write access to that Lookup; an optimized
   Lookup is refused with a pointer to the Lookups page.
 
-See [What "AI recommends" means](walkthrough.md#9-what-ai-recommends-means).
+These buttons act on the close the engine proposed, so they need
+`close.false_positive` in `approve` or `auto` in the policy. In `suggest` the close is
+only a suggestion: there is nothing to approve or deny, and you close or work the case
+in Cases. See [What "AI recommends" means](walkthrough.md#9-what-ai-recommends-means).
 
 **What was missing** lists, when nothing decided, each step that stayed unknown, why,
 what needed it (**Needed by**), and the question for a person (**Ask:**).
