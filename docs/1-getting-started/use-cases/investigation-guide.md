@@ -4,7 +4,7 @@ This guide provides opinionated best practices for SOC analysts using LimaCharli
 
 ## Policy-controlled investigation actions
 
-For Investigation Engine actions, use an `investigation_policy` Hive record to choose `off`, `suggest`, `approve` or `auto`. Start in `suggest` to inspect what the engine would do without changing the product. The [Investigation Action Policies guide](../../7-administration/config-hive/investigation-policy.md) explains confidence and limits, emergency pause and resume, permissions, Git Sync management and the engine performance report (`limacharlie investigate stats`). Check the guide's version-support note before using the new controls.
+For Investigation Engine actions, use an `investigation_policy` Hive record to choose `off`, `suggest`, `approve` or `auto`. Start in `suggest` to inspect what the engine would do without changing the product. The [Investigation Action Policies guide](../../7-administration/config-hive/investigation-policy.md) explains action modes and limits, what the AI may decide (`ai_may_decide`), emergency pause and resume, permissions, Git Sync management and the engine performance report (`limacharlie investigate stats`). Check the guide's version-support note before using the new controls.
 
 ## Tag Format Specification
 
