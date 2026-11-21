@@ -205,7 +205,7 @@ LimaCharlie answers like an OTLP/HTTP server, so exporters handle every outcome 
 
 | Status | When | Exporter behavior |
 |---|---|---|
-| `200` | Accepted. If [webhook D&R rules](#filtering-at-the-webhook) rejected some records, `partial_success` gives their number and the rule. | Done (it logs the partial success) |
+| `200` | Accepted. If [webhook D&R rules](#flagging-records-at-the-webhook) flagged some records, `partial_success` reports 0 rejected and a message saying how many were flagged. Every record is still ingested. | Done (it logs the message as a warning) |
 | `400` | Invalid OID, a body that is not valid OTLP, `Content-Encoding: gzip` on a body that is not gzip, or attribute values nested more than about 40 levels deep | Drops the data |
 | `401` | Wrong or missing secret, unknown organization or hook, or a failed [signature check](webhook-adapter.md#creating-a-webhook-adapter) | Drops the data |
 | `413` | The body or its decoded events are over the [limits](#limits) | Drops the data |
@@ -339,9 +339,9 @@ respond:
 
 Without `event_type_path`, match on `event/otel_type` instead of `event:`. Numbers can be compared directly, for example `op: is greater than` on `event/severityNumber` with `value: 16` for every log at `ERROR` or above.
 
-### Filtering at the webhook
+### Flagging records at the webhook
 
-A webhook can also drop records before they are ingested, with D&R rules evaluated at the webhook (`dr_rules` on the webhook record and rules with `target: webhook`). Each OTLP record is evaluated on its own, under `event/`:
+A webhook can also evaluate D&R rules on each record as it arrives (`dr_rules` on the webhook record and rules with `target: webhook`). Each OTLP record is evaluated on its own, under `event/`:
 
 ```yaml
 detect:
@@ -358,7 +358,7 @@ respond:
   - action: webhook reject
 ```
 
-Rejected records are marked `__lc_accepted: false` and counted in the response's `partial_success`, so the exporter does not retry them.
+A record a `webhook reject` rule matches is not dropped. It is ingested like the others, marked `__lc_accepted: false` (and `__lc_rule_match` with the rule's name), so later rules and searches can tell it apart. The OTLP response stays a success with 0 rejected records, and its `partial_success` message says how many records were flagged, for example `3 of 120 records flagged __lc_accepted=false by the webhook's D&R rule "flag-debug"; every record is recorded in LimaCharlie`. The exporter logs that message as a warning and does not retry.
 
 ## Related articles
 

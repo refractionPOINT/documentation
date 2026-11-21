@@ -11,26 +11,52 @@ A fleet is a [webhook adapter](webhook-adapter.md) with an `opamp` block. The da
 
 The full list of fields, limits and allowed components is in the [fleet configuration reference](otel-collector-fleet-reference.md).
 
-## Collectors may only send data to LimaCharlie
+## Fleet modes
 
-A managed collector sends its data to LimaCharlie and nowhere else. LimaCharlie enforces this in three places:
+A fleet runs in one of two modes, set with `opamp.mode` or **Fleet mode** on the Configs tab:
+
+| Mode | `opamp.mode` | Where collectors may send data | Price |
+|---|---|---|---|
+| LimaCharlie only | `limacharlie` (the default, also when absent) | LimaCharlie only | Included |
+| Any destination | `any_destination` | LimaCharlie and any other backend | $0.75 per managed collector per month, billed per collector-day. Needs a paid plan. |
+
+### LimaCharlie only
+
+A managed collector sends its data to LimaCharlie and nowhere else. LimaCharlie enforces this in four places:
 
 1. **Fleet configs contain no exporters.** You write receivers, processors, connectors and pipelines. LimaCharlie adds its own exporter to every pipeline when it renders the config for a collector. Saving a config that has an `exporters` section, an unknown component, or a `${...}` reference fails with an error naming the config and the setting.
 2. **The effective config is checked.** Every collector reports the configuration it actually runs, which includes any local configuration files on the host. If that configuration sends data anywhere other than this webhook, or sends the collector's own telemetry somewhere, LimaCharlie marks the collector **Blocked** and stops sending it configurations. It keeps running whatever it runs, and the console shows why it is blocked.
 3. **A collector must report its effective config and accept remote config.** One that does not is blocked until its supervisor turns both on.
+4. **Bindplane BDOT v1 collectors are blocked.** BDOT v1 reports only its main configuration file, so files passed with extra `--config` flags cannot be checked. It is blocked with `BDOT v1 collectors require a paid fleet (mode any_destination)`.
 
 Exporters that keep data on the host are allowed in local files: `debug` (stdout, stderr or local files) and `nop`.
 
-!!! note "Bindplane BDOT v1"
-    BDOT v1 reports only its main configuration file, `collector.yaml`. Other files passed with extra `--config` flags are not reported, so LimaCharlie cannot check them. The console marks these collectors with `lc.collector.local_config_visible: false`.
+### Any destination (paid)
+
+In this mode, collectors may send data to other backends as well as to LimaCharlie:
+
+- Fleet configs may define their own exporters, of any type, and list them in pipelines.
+- A pipeline with no exporters still goes to LimaCharlie only. To send a pipeline both to your own exporters and to LimaCharlie, list the placeholder exporter `limacharlie` in it. Do not define it under `exporters`: LimaCharlie replaces it with its own exporter.
+- Configs may use `${env:NAME}` and `${file:/absolute/path}` references, for example for a backend's API key. Every other `${...}` reference is still refused.
+- Configs may define the authenticator extensions exporters use: `basicauth`, `bearertokenauth`, `oauth2client`, `headers_setter` and `sigv4auth`.
+- The effective config is not checked for where data goes. A collector is blocked only if it does not report its effective config or accept remote config, or if the config it reports is not valid YAML.
+- BDOT v1 collectors are allowed.
+
+The receivers, processors and connectors you can use are the same in both modes. See the [reference](otel-collector-fleet-reference.md#any-destination-mode) for every rule.
+
+A paid plan means an organization whose sensor quota is above 2. Saving a fleet in this mode in an organization without one fails with `paid plan required for fleet mode any_destination`. If an organization stops being on a paid plan, its paid fleets behave as **LimaCharlie only**: collectors that send data elsewhere, and BDOT v1 collectors, are blocked with `paid plan required for this fleet mode`, no fleet collector receives new configs, and nothing is billed. They are checked again and unblocked once the plan is back. While LimaCharlie cannot read the plan, the reason is `paid plan could not be verified for this fleet mode; retrying`, and it clears on its own.
+
+#### Billing
+
+A paid fleet costs $0.75 per managed collector per month, counted as collector-days at $0.025 each. A collector counts for a day when it checks in that day, is not blocked, and has reported its effective config. A collector that is blocked or offline all day, and every collector of a **LimaCharlie only** fleet, is not counted. The organization's usage shows the count as **Managed OpenTelemetry collectors**.
 
 ## Supported collectors
 
 | Collector | How it connects | Notes |
 |---|---|---|
-| Upstream `otelcol-contrib` under the upstream `opampsupervisor`, v0.165.0 | OpAMP over HTTPS (polling) | The reference setup. The console's setup steps install it. |
-| Bindplane BDOT v2, under its supervisor | OpAMP over HTTPS | Use the same `supervisor.yaml` with `agent.executable` pointing at the BDOT binary. |
-| Bindplane BDOT v1 (1.x) | OpAMP over WebSocket (`wss://`) | Needs the site's OpAMP host. Local `--config` files are not visible (see above). |
+| Upstream `otelcol-contrib` under the upstream `opampsupervisor`, v0.165.0 | OpAMP over HTTPS (polling) | The reference setup. The console's setup steps install it. Both fleet modes. |
+| Bindplane BDOT v2, under its supervisor | OpAMP over HTTPS | Use the same `supervisor.yaml` with `agent.executable` pointing at the BDOT binary. Both fleet modes. |
+| Bindplane BDOT v1 (1.x) | OpAMP over WebSocket (`wss://`) | **Any destination fleets only.** Needs the site's OpAMP host. Local `--config` files are not visible: the console marks these collectors with `lc.collector.local_config_visible: false`. |
 
 Other collectors built on the OpenTelemetry Collector work under `opampsupervisor` if they include the components your configs use. LimaCharlie picks the exporter name from the version the collector reports: `otlp_http/limacharlie` for official OpenTelemetry Collector releases from v0.144.0 on, `otlphttp/limacharlie` for anything older or unknown.
 
@@ -39,7 +65,7 @@ Other collectors built on the OpenTelemetry Collector work under `opampsuperviso
 1. You create the fleet: a webhook with `opamp.enabled: true` and an ordered list of named configs, each with a selector.
 2. The supervisor on each host connects to the fleet's OpAMP endpoint with the webhook secret and describes the collector: `service.name`, `service.version`, `os.type`, `host.name` and any attribute you add.
 3. LimaCharlie checks the effective config the collector reports. If it is clean, LimaCharlie picks the first config whose selector matches the collector's attributes.
-4. It adds the LimaCharlie exporter and a resource processor that tags every record with the collector's instance ID and config name, and sends the result.
+4. It adds the LimaCharlie exporter and a resource processor that tags every record with the collector's instance ID, host name and config name, and sends the result.
 5. The supervisor applies it and reports `APPLIED`, or `FAILED` with the collector's error. A config that failed is not sent again until you change it.
 6. On every check-in (30 seconds by default) the collector reports changes, and receives the new config if you edited it.
 
@@ -74,10 +100,11 @@ webhook:
     sensor_seed_key: otel-fleet
     mapping:
       sensor_key_path: resource/lc.collector.instance_uid
-      sensor_hostname_path: resource/host.name
+      sensor_hostname_path: resource/lc.collector.host_name
       event_type_path: otel_type
   opamp:
     enabled: true
+    mode: limacharlie   # or any_destination (paid)
     configs:
       - name: linux-hosts
         selector:
@@ -99,7 +126,7 @@ webhook:
 limacharlie hive set --hive-name cloud_sensor --key otel-fleet --input-file otel-fleet.yaml --enabled
 ```
 
-`--enabled` matters: a new `cloud_sensor` record is created disabled otherwise, and a disabled webhook serves nothing. The hive checks the whole `opamp` block when you save. A secret is required while `opamp.enabled` is `true`.
+`--enabled` matters: a new `cloud_sensor` record is created disabled otherwise, and a disabled webhook serves nothing. The hive checks the whole `opamp` block when you save. A secret is required while `opamp.enabled` is `true`, and `mode: any_destination` needs a paid plan.
 
 ## Connect collectors
 
@@ -245,14 +272,16 @@ BDOT v2 runs under the same OpAMP supervisor. Use the supervisor configuration a
 
 ### Bindplane BDOT v1
 
-BDOT v1 has its own OpAMP client, which only speaks WebSocket. It connects to the site's OpAMP host, listed as `opamp` in `limacharlie org urls` on sites that have one. Its `manager.yaml`:
+BDOT v1 collectors are supported only in **Any destination** fleets. In a **LimaCharlie only** fleet they are blocked.
+
+BDOT v1 has its own OpAMP client, which only speaks WebSocket, and does not use the supervisor. It connects to the site's OpAMP host, not the hooks domain. The Setup tab of a paid fleet shows the full `manager.yaml`. Set these two keys in it:
 
 ```yaml
 endpoint: "wss://<opamp-host>/<OID>/<FLEET NAME>/v1/opamp"
 secret_key: "<SECRET>"
-agent_id: "<A UNIQUE ID FOR THIS COLLECTOR>"
-labels: "env=prod"
 ```
+
+Keep the `agent_id` and `labels` the file already has, then restart the collector. BDOT v1 sends `Authorization: Secret-Key <secret>`, which the fleet accepts.
 
 BDOT v1 receives the full collector configuration, which replaces its `collector.yaml`. It reports no health, so the console shows its health as unknown. Its labels reach LimaCharlie as the `service.labels` attribute, which selectors can match (`service.labels: "*env=prod*"`).
 
@@ -264,7 +293,7 @@ Open the fleet's **Configs** tab. Each config has a name, a selector and the col
 
 - A selector lists attributes that must all match. A value matches exactly, or as a pattern where `*` matches any text and `?` one character: `host.name: web-*`. An empty selector matches every collector, which makes it a good last entry.
 - Collectors report `service.name`, `service.version`, `service.instance.id`, `os.type` (`linux`, `windows`, `darwin`), `os.description`, `host.arch`, `host.name`, and whatever you set under `agent.description` in the supervisor configuration.
-- Leave pipeline `exporters` empty. LimaCharlie sends every pipeline to itself. A pipeline may list connectors as exporters, to route data into another pipeline.
+- In a **LimaCharlie only** fleet, leave pipeline `exporters` empty. LimaCharlie sends every pipeline to itself. A pipeline may list connectors as exporters, to route data into another pipeline.
 
 An example for Windows hosts, placed before a catch-all:
 
@@ -294,6 +323,36 @@ service:
       processors: [batch]
 ```
 
+In an **Any destination** fleet, a config can send to your own backend too. This one sends logs both to an OTLP backend of your own and to LimaCharlie, and host metrics to LimaCharlie only:
+
+```yaml
+receivers:
+  file_log:
+    include: [/var/log/syslog]
+  host_metrics:
+    scrapers:
+      cpu: {}
+      memory: {}
+exporters:
+  otlp_http/archive:
+    endpoint: https://otel.example.com
+    headers:
+      Authorization: "Bearer ${env:ARCHIVE_TOKEN}"
+processors:
+  batch: {}
+service:
+  pipelines:
+    logs:
+      receivers: [file_log]
+      processors: [batch]
+      exporters: [otlp_http/archive, limacharlie]
+    metrics:
+      receivers: [host_metrics]
+      processors: [batch]
+```
+
+`${env:ARCHIVE_TOKEN}` is read from the collector's environment on the host, so the token never goes through LimaCharlie. LimaCharlie's resource attributes are added only to the copy it receives, not to the data sent to your backend.
+
 Click **Save configs**. If LimaCharlie refuses the configs, its message names the config and the setting at fault, for example `opamp: config "windows-hosts": exporters: not allowed, LimaCharlie adds its own exporter (pipelines without exporters are sent to LimaCharlie)`. Collectors pick up the change at their next check-in.
 
 **Manage collectors** turns the fleet off and on (`opamp.enabled`). While it is off, collectors are refused and keep running the configuration they last received.
@@ -315,10 +374,24 @@ LimaCharlie tags every record a managed collector sends with resource attributes
 | Attribute | Value |
 |---|---|
 | `lc.collector.instance_uid` | The collector's OpAMP instance ID |
+| `lc.collector.host_name` | The host name the collector reported in its description |
 | `lc.collector.config` | The name of the config it runs |
-| `host.name` | The host name the collector reported, if the record has none |
+| `host.name` | The same host name, added only if the record has no `host.name` of its own |
 
-The fleet's mapping (`sensor_key_path: resource/lc.collector.instance_uid`, `sensor_hostname_path: resource/host.name`) turns each collector into its own sensor, named after its host, and `event_type_path: otel_type` sets the event type to `log`, `span`, `metric` or `opamp_status`. The console sets this mapping when it creates a fleet. Records without the collector tag, such as [fleet status events](#fleet-status-events) or OTLP sent directly to the webhook, appear on the fleet's own sensor.
+The fleet's mapping turns each collector into its own sensor:
+
+```yaml
+mapping:
+  sensor_key_path: resource/lc.collector.instance_uid
+  sensor_hostname_path: resource/lc.collector.host_name
+  event_type_path: otel_type
+```
+
+Each collector's sensor is named after the host the collector runs on, whatever `host.name` the records themselves carry, and `event_type_path: otel_type` sets the event type to `log`, `span`, `metric` or `opamp_status`. The console sets this mapping when it creates a fleet. Fleets created with `sensor_hostname_path: resource/host.name` keep working, but a record's own `host.name` then names the sensor.
+
+[Fleet status events](#fleet-status-events) carry the same `lc.collector.*` resource attributes, so they appear on the collector's sensor next to its data.
+
+OTLP sent directly to the fleet's webhook, by an SDK or a collector the fleet does not manage, has no `lc.collector.instance_uid`. It appears on the fleet's own sensor, the one named after `client_options.hostname`, and its own `host.name` does not rename that sensor.
 
 See [Ingesting OpenTelemetry Data via Webhook](otel-webhook.md#event-format) for the fields of each event.
 
@@ -329,6 +402,7 @@ When a collector's state changes, LimaCharlie adds an event to the fleet's webho
 | Field | Value |
 |---|---|
 | `otel_type` | `opamp_status` |
+| `resource` | `lc.collector.instance_uid`, plus `lc.collector.host_name` and `host.name` when the collector reported a host name |
 | `change` | `connected`, `config_applied`, `config_failed`, `blocked`, `unblocked`, `unhealthy` or `healthy` |
 | `instanceUid` | The collector's instance ID |
 | `hostName` | Its host name, when reported |
@@ -368,8 +442,10 @@ It relies on `event_type_path: otel_type`. Without it, match `event/otel_type` w
 **Sensors > OpenTelemetry Fleets** lists the organization's fleets, with their status, number of configs, collectors online out of total, and how many are blocked or failed. Open a fleet to get three tabs:
 
 - **Collectors**: every collector, with its host, status (Online, Offline or Blocked with its reason), health, assigned config, config status (Applied, Applying, Failed with its error, or No match), version and last seen. Filters and search run over every collector of the fleet, read to the last page first. Click a collector to see its attributes, capabilities and effective configuration (what it really runs, with the webhook secret redacted). **Forget collector** removes an offline collector from the fleet. If it connects again, it comes back as a new collector. Its sensor and events stay.
-- **Configs**: the ordered configs, **Manage collectors** and **Check-in interval**. Saving writes the whole record. If someone else saved the fleet after you opened it, the console refuses the save and keeps your edits until you reload.
-- **Setup**: the supervisor configuration for Linux, Windows and Docker, the install commands, and the base URL for sending OTLP directly. The secret is masked until you reveal it. If it is a `hive://secret/` reference, showing it needs `secret.get`.
+- **Configs**: the ordered configs, **Fleet mode**, **Manage collectors** and **Check-in interval**. **Any destination** can only be picked in an organization on a paid plan. In a paid fleet whose organization is no longer on one, the console asks you to switch back to **LimaCharlie only** before it saves. Saving writes the whole record. If someone else saved the fleet after you opened it, the console refuses the save and keeps your edits until you reload.
+- **Setup**: the supervisor configuration for Linux, Windows and Docker, the install commands, the base URL for sending OTLP directly and, in paid fleets, the BDOT v1 `manager.yaml`. The secret is masked until you reveal it. If it is a `hive://secret/` reference, showing it needs `secret.get`.
+
+A collector blocked because of the fleet mode or the plan gets an explanation next to its reason in the collector drawer.
 
 A collector is online when it checked in within three check-in intervals.
 
@@ -429,8 +505,12 @@ Times are Unix milliseconds. `remote_config_status` is `UNSET`, `APPLYING`, `APP
 | The supervisor logs `400` about WebSocket or `Content-Type` | The endpoint starts with `ws://` or `wss://`. The upstream supervisor needs the `https://` URL. |
 | `429` | The fleet already tracks 50,000 collectors. Forget offline ones or use another fleet. |
 | `503` | Temporary. The supervisor retries on its own. |
+| Saving fails with `paid plan required for fleet mode any_destination` | The organization is not on a paid plan (sensor quota above 2), or its plan could not be read. Raise the sensor quota, or use `mode: limacharlie`. |
+| Blocked: `BDOT v1 collectors require a paid fleet (mode any_destination)` | BDOT v1 joined a **LimaCharlie only** fleet. Switch the fleet to **Any destination**, or connect the collector to a paid fleet. |
+| Blocked: `paid plan required for this fleet mode` | The fleet is in **Any destination** mode but the organization is no longer on a paid plan. Raise the sensor quota, or switch the fleet to **LimaCharlie only** and remove the other destinations. |
+| Blocked: `paid plan could not be verified for this fleet mode; retrying` | LimaCharlie could not read the organization's plan. It clears on its own once the plan is read. |
 | Blocked: `collector does not accept remote config` or `does not report its effective config` | Set `accepts_remote_config: true` and `reports_effective_config: true` in `supervisor.yaml` and restart the supervisor. |
-| Blocked: `exports to non-LimaCharlie destination: exporters::<id>` | A local configuration file on the host adds an exporter. Remove it. Only `debug` and `nop` may stay. |
+| Blocked: `exports to non-LimaCharlie destination: exporters::<id>` | In a **LimaCharlie only** fleet, a local configuration file on the host adds an exporter. Remove it (only `debug` and `nop` may stay), or switch the fleet to **Any destination**. |
 | Blocked: `LimaCharlie exporter changed: ...` | A local file changes LimaCharlie's exporter (endpoint, TLS, proxy, extra keys). Remove the override. |
 | Blocked: `own telemetry exported: service::telemetry::...` | The collector's own logs, metrics or traces are sent somewhere. Keep `reports_own_*: false` and remove `service::telemetry` readers or processors from local files. |
 | Blocked: `opamp extension ...` or `extension not allowed: ...` | A local file adds an extension LimaCharlie does not allow, or changes the supervisor's own `opamp` extension. |

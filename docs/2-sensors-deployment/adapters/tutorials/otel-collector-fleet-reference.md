@@ -16,6 +16,7 @@ webhook:
   client_options: {}           # as for any webhook
   opamp:
     enabled: true
+    mode: limacharlie          # optional: limacharlie (default) or any_destination
     heartbeat_seconds: 30      # optional
     configs:
       - name: linux-prod
@@ -35,6 +36,7 @@ webhook:
 | Field | Type | Rules |
 |---|---|---|
 | `enabled` | boolean | `true` serves the fleet's OpAMP endpoint. `false` answers `403` to collectors, which keep their last configuration. When `true`, `webhook.secret` must be set. |
+| `mode` | string | `limacharlie` (the default, also when absent) or `any_destination`, the paid mode. Saving `any_destination` needs a paid plan, an organization with a sensor quota above 2. Saving the same paid fleet again unchanged, or turning it off, does not check the plan. |
 | `heartbeat_seconds` | integer | Optional check-in interval offered to collectors, 5 to 3600. Absent or `0` keeps the supervisor's 30 seconds. |
 | `configs` | list | Up to 100 entries, matched in order. |
 | `configs[].name` | string | `[a-z0-9][a-z0-9_-]{0,63}`, unique in the fleet. |
@@ -71,7 +73,7 @@ Matching:
 
 ## Config rules
 
-A fleet config is the collector configuration without exporters. LimaCharlie allows only what is listed here. Anything else is refused when you save.
+In the default mode, a fleet config is the collector configuration without exporters. LimaCharlie allows only what is listed here. Anything else is refused when you save. The [Any destination mode](#any-destination-mode) relaxes some of these rules.
 
 ### YAML
 
@@ -165,6 +167,20 @@ These components can open outbound connections with local credentials, so only t
 
 A pipeline's `exporters` is either empty or lists only connectors defined in the config. The pipeline graph is checked too: every connector used as an exporter must feed a pipeline that receives from it with a compatible signal, `routing` targets must be pipelines fed by that connector, and connectors may not form a cycle. Every path through the graph ends in a pipeline without exporters, which LimaCharlie sends to itself.
 
+### Any destination mode
+
+With `mode: any_destination`, every rule above applies, with these differences:
+
+| Rule | Any destination |
+|---|---|
+| `exporters` | Allowed, any type. Exporter ids `limacharlie` and `<type>/limacharlie` are reserved. |
+| Pipeline `exporters` | Exporters and connectors defined in the config, and the placeholder `limacharlie`. A pipeline with no exporters goes to LimaCharlie only. |
+| `${...}` | `${env:NAME}` (NAME is letters, digits and `_`, not starting with a digit, no `:-` default) and `${file:/absolute/path}` (or `C:\...`, `C:/...`; no UNC or network paths) in values. Every other scheme (`http`, `https`, `s3`, `yaml`, secret managers), the bare `${NAME}` form, nested references, `$$`, and any `${` in a key are refused. |
+| Extensions | Also `basicauth`, `bearertokenauth`, `oauth2client`, `headers_setter` and `sigv4auth`, with any settings. `opamp` and `http_forwarder` stay refused. |
+| Reserved names | Connectors named `<type>/limacharlie` and pipelines named `<signal>/limacharlie`, which LimaCharlie adds itself. |
+
+The receivers, processors and connectors allowed, the settings of the fixed-shape components, the `*_file` rule for receivers and processors, and the `service::telemetry` limits are the same in both modes.
+
 ## What LimaCharlie adds
 
 For each collector, LimaCharlie renders the selected config and adds:
@@ -183,10 +199,12 @@ processors:
       - {key: lc.collector.instance_uid, value: <instance ID>, action: upsert}
       - {key: lc.collector.config, value: <config name>, action: upsert}
       - {key: host.name, value: <host.name the collector reported>, action: insert}
+      - {key: lc.collector.host_name, value: <host.name the collector reported>, action: upsert}
 ```
 
 - Every pipeline without exporters gets `exporters: [otlp_http/limacharlie]` and `resource/limacharlie` as its last processor. Pipelines that export to connectors are left as they are.
-- The `host.name` line is added only when the collector reported a host name, and `insert` keeps a `host.name` the record already has.
+- The `host.name` and `lc.collector.host_name` lines are added only when the collector reported a host name. `insert` keeps a `host.name` the record already has, while `lc.collector.host_name` is always the collector's own host name.
+- In the Any destination mode, your exporters are kept and LimaCharlie's is added next to them. A pipeline whose only exporter is the placeholder `limacharlie` is rendered like a pipeline without exporters. In a pipeline that lists the placeholder next to other exporters, the placeholder becomes the connector `forward/limacharlie`, which feeds an added `<signal>/limacharlie` pipeline: `resource/limacharlie`, then LimaCharlie's exporter. LimaCharlie's attributes are added only to that copy, never to the data your exporters send. `${env:...}` and `${file:...}` references are kept as written, and the collector expands them on its host.
 - The exporter id is `otlp_http/limacharlie` for official OpenTelemetry Collector releases (`otelcol`, `otelcol-contrib`, `otelcol-k8s`, `otelcol-otlp`) from v0.144.0 on. Bindplane collectors get it based on the collector core version their release builds on. Everything else gets `otlphttp/limacharlie`, which collectors up to at least v0.165.0 still accept.
 - The output is canonical: keys sorted, comments dropped. The same config gives the same bytes, and its SHA-256 is the config hash shown in the console. A change to the config, the secret or the exporter id changes the hash, and the collector gets the new config.
 
@@ -194,9 +212,14 @@ The supervisor merges this with its own configuration and any local `config_file
 
 ## What blocks a collector
 
-LimaCharlie checks the effective config each collector reports. It blocks the collector, and stops sending it configs, when:
+LimaCharlie checks the effective config each collector reports. In every mode, it blocks the collector, and stops sending it configs, when it does not have the `AcceptsRemoteConfig` or the `ReportsEffectiveConfig` capability.
 
-- it does not have the `AcceptsRemoteConfig` or the `ReportsEffectiveConfig` capability;
+In an **Any destination** fleet whose organization is on a paid plan, that is the only check besides the config itself: the collector is blocked only if the main effective config is missing, empty, larger than 1 MiB, or not a single YAML mapping (and the same for the unexpanded `raw` config when it is reported). Where it sends data is not checked, and BDOT v1 is allowed.
+
+In a paid fleet whose organization is not on a paid plan, the fleet is checked as **LimaCharlie only**. A collector that only the paid mode would allow (it sends data elsewhere, or it is BDOT v1) gets the reason `paid plan required for this fleet mode`, or `paid plan could not be verified for this fleet mode; retrying` while the plan cannot be read. No collector of the fleet receives new configs until the plan is back.
+
+In a **LimaCharlie only** fleet, a BDOT v1 collector is blocked with `BDOT v1 collectors require a paid fleet (mode any_destination)`. Any other collector is blocked when:
+
 - the effective config is not valid YAML, is larger than 1 MiB, or has top-level keys other than `receivers`, `processors`, `exporters`, `connectors`, `extensions` and `service`;
 - an exporter is anything other than LimaCharlie's own, `debug` (writing only to stdout, stderr or local files) or `nop`;
 - LimaCharlie's exporter is changed: an `endpoint` other than this fleet's, per-signal endpoints, TLS, proxy, auth or any other key than transport tuning (`timeout`, buffer sizes, connection limits, `compression`, `encoding`, `retry_on_failure`, `sending_queue` with `file_storage` only, `keepalive`, `compression_params`), or there are two of them;
