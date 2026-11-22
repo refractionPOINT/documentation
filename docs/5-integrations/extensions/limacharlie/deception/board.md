@@ -15,6 +15,8 @@ The board shows one row per organization, across every organization you can see,
 
 The board loads every page of organizations before it filters or sorts, so a filter is always complete. Until then it shows "Loading N of M organizations" and the filters are off.
 
+**Order.** The board is sorted by live hits in the last 24 hours, most first, then by the worst status, then by hits in 7 days, so an organization that is being hit comes before one whose housekeeping is late. Click a column to sort by it. The sort and the filters are kept in the page's address, so a view can be shared.
+
 ### Statuses
 
 Each row has one status: the first of these rules that matches, in this order. A tooltip names every reason that matched.
@@ -37,15 +39,15 @@ Partial paths, edited shipped rules, unverified token forms and paths not tested
 
 ### Columns and freshness
 
-Columns: Organization, Status, Protected / targeted, Rollout, Broken, Unverified, Unavailable, Mode, Hits 24h, Hits 7d, Last hit, Active tokens, Last test and As of. A totals strip above the rows adds them up across the scope.
+Columns: Organization, Status, Hits 24h, Hits 7d, Last hit, Alert paths, Hosts with decoys, Mode, Active tokens and Last test. Hits come first. **Alert paths** gives the number broken (split into broken by a rule and broken by a test), unverified and unavailable. A totals strip above the rows adds them up across the scope: organizations by status (click one to filter), hosts with decoys, live and observe hits, active tokens, what needs attention and the oldest summary. **Show only** narrows the board to organizations that are broken, unverified, not tested in 48 hours, with a rollout not complete, observing, or hit in 24 hours or 7 days.
 
 - **Hits and test results are live**: they are read when the board loads.
 - **The coverage half of a row** (sensors, paths, rules, rollout, mode) is computed by the organization's daily run, and again whenever someone opens that organization's **Coverage** tab. It can be up to about a day old. **As of** says when it was computed. If a later computation failed, the row keeps the earlier numbers and shows **Last run failed** with the reason.
-- **Protected** is the billed covered-sensor count of the last completed UTC day, at its peak. **Targeted** is the number of distinct sensors the enabled policies target.
+- **Hosts with decoys** is the number of hosts that hold a placed or verified decoy of an enabled policy, out of the distinct hosts the enabled policies target (`coverage.sensors`, see [`coverage`](requests.md#coverage)). It is not the billing count, and it says how far the rollout got, not how many hosts a decoy has been verified on. The billed covered-sensor count of the last completed UTC day, at its peak, is in the organization's side panel.
 - A count shown as `≥N` is a lower bound: the extension stopped counting at a bound, so the real number can be higher.
 - **Mode** reads Live, or "Observing N of M" with the earliest end time, or "open-ended" when a policy observes with no `observe_until`.
 
-**Details** on a row shows why it has its status, the top reasons, the requirement missing most often (for example "Subscribe ext-exfil"), up to 10 failing test paths, and links to the organization's Deception page and its cases.
+**Details** on a row opens a side panel next to the table (over it on a narrow window) without leaving the board. It shows why the row has its status, its numbers (hosts with decoys, alert paths with the broken ones split by rule and by test, mode, hits, tokens, last test, covered sensors for billing, and when the coverage was computed and by what), the top reasons, the requirement missing most often (for example "Subscribe ext-exfil"), up to 10 failing test paths, and links to the organization's Deception page and its cases.
 
 If a datacenter does not answer, its organizations are listed with no numbers and the totals are marked partial. The board can be reloaded about once every two minutes at the largest scope; past its rate limit it asks you to wait a minute.
 

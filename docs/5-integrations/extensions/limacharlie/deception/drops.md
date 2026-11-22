@@ -180,7 +180,7 @@ There is no machine to isolate, so `respond` refuses to isolate or tag on a toke
 
 The token stays wherever you put it. Deleting it stops the alerts. Remove it from the wiki, ticket or share too.
 
-Page through tokens with `list_drops` (filters `forms`, `states`, `text`, `name`, `managed_by` (`config` or `api`) and `include_test`, applied before paging, newest first). Every token carries `managed_by` and, for a declared token, its `name`.
+Page through tokens with `list_drops` (filters `forms`, `states`, `text`, `name`, `managed_by` (`config` or `api`) and `include_test`, applied before paging, newest first). Every token carries `managed_by` and, for a declared token, its `name`. Every row of `list_drops` and the token of `get_drop` carries `hit_count_7d`: the token's hits over the last 7 days (the current UTC hour and the 167 before it), `0` when there were none. It counts real hits, in live and observe mode alike, including link previews and scanners (it counts hits, not alerts). It does not count test hits, `deception_coverage_warning` events, or hits of other tokens, and a redelivered hit counts once.
 
 ## Testing and coverage
 

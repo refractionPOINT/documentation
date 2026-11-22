@@ -35,7 +35,7 @@ Read this page before you rely on Deception. Items marked **not verified** have 
 - A sensor keeps at most 100 Exfil watch rules, shared with everything else you collect on it. Deception's rules count only on sensors that hold a decoy of their template. See [Watch-rule budget](decoys.md#watch-rule-budget).
 - DNS lookups: Windows sensors report failed lookups. Linux and macOS report a lookup only if the name resolves.
 - The command-line fallback rule sees an argument vector truncated at 511 bytes on Linux eBPF sensors.
-- A template with a fixed folder (such as `~/.aws` or `~/.kube`) needs that folder to exist. Where it is missing the template is skipped, and shown as `directory missing`. The extension creates only the folders a template names with a generated name, and removes them again with the last decoy in them; a folder that holds anything else stays.
+- A template with a fixed folder (such as `~/.aws` or `~/.kube`) needs that folder to exist. Where it is missing the template is skipped on purpose (shown as "Folder not on host", cause `directory_missing`): it is not a failure and does not lower the host's status. The extension creates only the folders a template names with a generated name, and removes them again with the last decoy in them; a folder that holds anything else stays.
 - Supported architectures are x86-64 and ARM64. Other architectures are not covered.
 
 ## Log source limits

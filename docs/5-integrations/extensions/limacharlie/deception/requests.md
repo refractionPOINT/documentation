@@ -50,11 +50,11 @@ The sentence may be reworded in a later release; the code will not. Scripts, pip
 
 Codes also appear:
 
-- in `issues` (of `deploy`, `plan`, `verify`, `rotate`, `remove`, `test_fire`, `uninstall` and the daily run), as a `code` field next to the `reason`, when the cause is one you can act on. An issue without a code is an internal cause or a progress note;
+- in `issues` (of `deploy`, `plan`, `verify`, `rotate`, `remove`, `test_fire`, `uninstall`, the rollout and the daily run), as a `code` field next to the `reason`. Every issue has one: a refusal's code from the tables below, or, for a note about what was or was not done, a [note code](#codes-notes-of-plan-deploy-test_fire-and-the-daily-run). A failed step whose cause is internal carries `step_failed`;
 - in the daily run's response, as `config_error_code` beside `config_error`;
 - in `respond`, as the `code` of each action that was not done, next to its `reason`.
 
-A failure on the extension's side, a store or platform error for example, never shows its internal text and carries no code. It reads `internal error (ref <id>)`, with an id that is new for each failure and that LimaCharlie support can use to find the details. Quote the id when you contact support. The `reason` of a failed decoy (in `list`) keeps its own form, for example `placement could not start: internal error [placement_start_failed]`, and is grouped by its [failure cause](#list).
+A failure on the extension's side, a store or platform error for example, never shows its internal text. It reads `internal error (ref <id>)`, with an id that is new for each failure and that LimaCharlie support can use to find the details. Quote the id when you contact support. The `reason` of a failed decoy (in `list`) keeps its own form, for example `placement could not start: internal error [placement_start_failed]`, and is grouped by its [failure cause](#list).
 
 The codes, by area. A code's meaning never changes; new codes may be added.
 
@@ -102,7 +102,7 @@ The codes, by area. A code's meaning never changes; new codes may be added.
 | `scope_required` | Rotate or remove names no instance_ids, sid, policy or template: it would act on every decoy of the org. |
 | `unknown_failure_cause` | A cause filter is not a known failure cause. |
 | `failure_cause_state` | A cause filter is given with states other than failed. |
-| `unknown_host_status` | A status filter is not protected, pending, failed or none. |
+| `unknown_host_status` | A status filter is not protected, partial, pending, failed, skipped, no_decoy or none. |
 | `test_fire_target_conflict` | Test_fire names a policy and a drop_id; it takes one. |
 | `bad_event` | An event sent by the extension's own rules lacks a field it needs. |
 | `event_too_large` | An event sent by the extension's own rules is larger than the extension accepts. |
@@ -213,6 +213,112 @@ The codes, by area. A code's meaning never changes; new codes may be added.
 | `policy_not_in_config` | The hit's policy is not in the configuration, so it asks for no automatic response. |
 | `ai_triage_unavailable` | Starting an AI triage session from the extension is not available in this release. |
 
+### Codes: notes of plan, deploy, test_fire and the daily run
+
+An issue that is not a refusal still has a `code`, taken from this table, and names what it is about in fields next to the sentence (all absent when they do not apply): `sid`, `hostname`, `instance_id`, `policy`, `template`, `layer` (or `layers`), `field` (the configuration field of a configuration problem, for example `templates[3].spec.file_name`), `rule`, `lookup`, `status`, and `count` with `total` when the sentence is about "N of M". The sentence may be reworded; the code and the fields will not change. A note that means what a refusal means reuses the refusal's code (for example `sensor_offline`, `sensor_gone`, `instance_not_found`, `drop_cap`, `org_inactive`, `request_timeout`, `uninstalling`). No code is in both tables, so a caller can tell a refusal from a note by looking the code up. Note codes never travel inside an error message.
+
+| Code | Meaning |
+|---|---|
+| `step_failed` | A step failed for a cause that is not the customer's to act on; the text names the step (the cause is logged, never shown). |
+| `more_issues` | More issues than one answer lists; count is how many were left out. |
+| `request_already_completed` | This request (its idempotency key) already completed: nothing was started again. |
+| `config_problem` | A field of the configuration has a problem; field names it. |
+| `config_record_skipped` | A record of the configuration was skipped on read; field names it. |
+| `retire_held_config_disabled` | The configuration record is disabled: the daily run retires no decoy until it is enabled. |
+| `retire_held_config_skipped` | Records of the configuration were skipped on read: the daily run retires no decoy for configuration reasons until it is fixed. |
+| `retire_not_counted` | Records of the configuration were skipped on read: plan does not count the decoys to retire. |
+| `policy_schema_too_new` | The policy's schema_version is newer than this extension understands: it is skipped. |
+| `template_disabled` | The template is disabled: the policy places none of it. |
+| `template_not_found` | The policy names a template that is not in the configuration. |
+| `template_schema_too_new` | The template's schema_version is newer than this extension understands: it is skipped. |
+| `template_unknown_kind` | The template's kind is not one this extension knows: it is skipped. |
+| `template_kind_version_too_new` | The template's kind_version is newer than its kind understands: it is skipped. |
+| `template_spec_invalid` | The template's spec is not valid for its kind; the text says why. |
+| `template_plan_failed` | The kind could not plan the template on the sensor; the text says why. |
+| `template_needs_ext_artifact` | The template places a file, which needs a subscription to ext-artifact. |
+| `placement_skipped` | A planned decoy was not placed on the sensor this time (another pass superseded it, an earlier attempt on this inventory found the placement impossible, or the kind produced an unusable placement); the text says which. |
+| `host_cloud_sensor` | The sensor is an adapter or cloud sensor: no decoy is ever placed on it. |
+| `host_daemonset` | The sensor is a Kubernetes DaemonSet sensor, which sees the node read-only: no decoy can be placed. |
+| `host_sleeper_mode` | The sensor is in lc:sleeper mode: no decoy can be placed (the extension never changes sensor modes). |
+| `host_only_unavailable_templates` | Every template that targets the sensor is unavailable in this release: nothing is placed on it (coverage lists those paths as unavailable). |
+| `host_response_mode` | The sensor is in lc:response mode: no decoy can be placed (the extension never changes sensor modes). |
+| `targets_unlisted` | The platform could not list the targeted sensors this time: the counts come from the first pages of the sensor list. |
+| `target_count_lower_bound` | The policy targets more sensors than were counted: its count is a lower bound. |
+| `decoy_count_lower_bound` | The policy's sensors with decoys were counted over its first decoys only: the count is a lower bound. |
+| `detail_sampled` | Only the first pages of sensors were inspected: the detail covers a sample of the sensors. |
+| `detail_first_sensors` | Placed, to-place and to-retire cover the first targeted sensors only (count is how many). |
+| `more_plan_notes` | More reasons something was not planned than plan lists; count is how many were left out. |
+| `plan_stopped` | Plan ran out of time before every sensor was planned. |
+| `no_inventory_today` | Sensors have no inventory from today: what would be placed on them is not counted (deploy collects it first). |
+| `sensor_not_targeted` | No enabled policy targets the sensor. |
+| `deploy_policy_disabled` | The policy is disabled: nothing to deploy. |
+| `no_enabled_policy` | No policy is enabled: nothing to deploy. |
+| `dc_logon_ignored` | The policy's dc_logon_collection is ignored in this release. |
+| `observe_no_end` | The policy is in observe mode with no observe_until: its on-host hits alert at low priority with no automatic response until mode is set back to live. |
+| `observe_until_set` | The policy is in observe mode until its observe_until. |
+| `observe_ended` | The policy's observe_until has passed, so it is live; set mode: live to make that explicit. |
+| `observe_rule_not_shipped` | A detection rule that judges observe-mode hits is not the shipped one; rule names it. |
+| `lookups_partly_checked` | The reader allowlists reference more Lookups than plan checks; count is how many, total how many were checked. |
+| `lookup_approves_nothing` | A reader allowlist Lookup approves no reader; lookup names it, status says why. |
+| `lookup_invalid_records` | Records of a reader allowlist Lookup are not valid allowlist entries and approve nothing; count of total. |
+| `signal_unsupported` | A template asks for an event type this release does not forward. |
+| `signal_matcher_invalid` | A template's path, command-line or domain matcher cannot be made into a safe candidate rule and is skipped; rule names the candidate rule, the text says why. |
+| `watch_entry_skipped` | The template's ext-exfil watch entry cannot be built; the text says why. |
+| `fim_entry_skipped` | The template's ext-integrity rule cannot be built; the text says why. |
+| `rollout_all_policies` | The org's rollout round places every enabled policy together, the named one included. |
+| `rollout_continues` | The rollout continues on its own; count is the targeted sensors done, total all of them when known. |
+| `rollout_resumes_later` | The rollout resumes within 30 minutes; count is the targeted sensors done, total all of them when known. |
+| `rollout_idle` | No rollout pass ran now; the text says why. |
+| `rollout_paging` | The platform's resolution of the targeted sensors is too slow: the rollout pages the sensor list. |
+| `rollout_fail_streak` | The rollout pass stopped after too many sensors in a row failed: the next pass retries them. |
+| `rollout_resolve_failed` | The targeted sensors could not be resolved: the next pass tries again. |
+| `rollout_no_time` | The daily run had no time left for the rollout: a round under way continues on its own. |
+| `instance_ids_truncated` | More instance_ids than one request processes; count is how many were processed. |
+| `instance_other_policy` | The decoy belongs to another policy than the request names. |
+| `instance_other_sensor` | The decoy is on another sensor than the request names. |
+| `instance_other_template` | The decoy is of another template than the request names. |
+| `sensors_offline` | Sensors were offline; count is how many, the text says what happens to their work. |
+| `sensors_busy` | Sensors have an inventory or planning pass already running: they are placed when it completes. |
+| `template_tags_added` | Template tags were added for decoys already on sensors; count is the sensors, total the tags. |
+| `more_decoys_match` | More decoys match: send the request again to continue. |
+| `test_decoy_not_rotated` | Test decoys are not rotated. |
+| `teardown_stopped` | The teardown stopped before every decoy was handled. |
+| `teardown_sensors_offline` | Sensors were offline during the teardown: their decoys stay inert on disk. |
+| `teardown_bounded` | More decoys than one teardown handles: the rest stay inert on disk. |
+| `tag_sweep_bounded` | The template has more live decoys than one daily run reads: missing tags are added for those read, none is removed. |
+| `stranded_placements_failed` | Decoys whose placement never started were failed and will be planned again. |
+| `stranded_test_decoys_retired` | Test decoys whose placement never started were retired and will be recreated. |
+| `reconcile_stopped_early` | The reconcile stopped early to leave the rollout its time: the next daily run continues it. |
+| `failed_placements_redeployed` | Sensors whose last placement of a wanted decoy failed were deployed again. |
+| `pack_check_failed` | The shipped detection rules could not be checked this time. |
+| `pack_rule_broken` | A shipped detection rule is missing or disabled; rule names it. |
+| `nothing_to_test` | No alert path to test: no enabled policy selects a usable template. |
+| `path_not_testable` | The alert path is not tested because of its coverage status (status). |
+| `more_paths` | More alert paths than one test_fire request tests: call it again to continue (count). |
+| `path_unavailable_in_release` | The alert paths (layers) are unavailable in this release: not tested. |
+| `more_unavailable_paths` | More policy and template pairs have alert paths unavailable in this release than are listed (count). |
+| `test_decoy_lacks_file_events` | The test decoy is on a sensor that cannot report the file events this alert path needs: not tested. |
+| `test_already_starting` | An earlier request with the same key is still starting this test: not tested again. |
+| `test_not_buildable` | The kind could not build a test for this alert path. |
+| `test_no_action` | The kind describes no test action for this alert path. |
+| `test_unsupported_binding` | The kind's test action has a binding the sensor command does not support. |
+| `test_decoy_has_no_file` | The alert path's sensor action needs a decoy file, which the test decoy does not have. |
+| `test_decoy_path_unusable` | The test decoy's path cannot be used by the placement helper. |
+| `test_collector_unavailable` | The collector's internal test path is not configured for this extension: not tested. |
+| `test_decoy_no_secret` | The test decoy has no secret of the type its test needs: not tested. |
+| `test_pipeline_unavailable` | The hit pipeline is not available to this extension: not tested. |
+| `test_decoy_placing` | Not tested yet: the test decoy is being placed (test_fire again in a few minutes). |
+| `test_tag_restored` | Not tested yet: the test decoy's sensor had lost the template's tag, which is back; the rules reach it within minutes. |
+| `test_rules_settling` | Not tested yet: the test decoy is new and the template's watch rules are still reaching its sensor. |
+| `test_sensor_search_continues` | Not tested yet: no sensor looked at so far can take the test decoy; test_fire again to keep looking. |
+| `test_no_sensor_with_file_events` | Not tested: no online sensor of the policy looked at can report the file events the alert path needs. |
+| `test_no_sensor_with_inventory` | Not tested: no online sensor of the policy has an inventory from today (deploy collects inventories). |
+| `check_failed` | The drop detection rules could not be checked this time. |
+| `drop_rule_broken` | A drop detection rule is missing or disabled. |
+| `not_tested` | The drop form has not been tested yet: the daily test-fire tests it. |
+| `test_not_detected` | The latest test hit of the drop form was not detected. |
+| `rule_edited` | A drop detection rule differs from the shipped one: the extension does not judge edits. |
+
 ## plan
 
 Read-only. Shows, per policy, how many sensors it targets, how many hold its decoys already, what would be placed or retired, and what is unavailable and why.
@@ -221,7 +327,7 @@ Read-only. Shows, per policy, how many sensors it targets, how many hold its dec
 - `sensors_with_decoys` (with `sensors_with_decoys_exact`) is the number of distinct sensors holding a placed or verified decoy of the policy. With `sensors` it is the rollout's progress per policy.
 - `already_placed`, `to_place` and `to_retire` are computed over the sensors planned in detail: `detail.sensors` of them, the lowest sensor ids, at most 100 (`detail.complete` says whether that is every targeted sensor). Send `sid` to plan one sensor.
 - A sensor with no inventory from today is not counted in `to_place` (`deploy` collects the inventory first), and `to_retire` is not computed while some configuration records were skipped on read.
-- Why a template could not be placed is in `plan.issues` (`<policy>/<template> <field>: <reason>`, with how many of the planned sensors it applies to), most frequent first.
+- Why a template could not be placed is in `plan.issues` (`<policy>/<template> <field>: <reason>`, with how many of the planned sensors it applies to), most frequent first. Each such issue carries the skip's `code`, `policy`, `template`, `field`, and `count` (the sensors it applies to) with `total` (the sensors planned), so a script never reads the sentence. "Nothing can be placed" carries the host's code (`host_cloud_sensor`, `host_daemonset`, `host_sleeper_mode` or `host_response_mode`).
 
 It also reports:
 
@@ -232,7 +338,7 @@ It also reports:
 - `reader_lookups`: every Lookup the reader allowlists reference, read now, with its `status`, records, entries, where it is used and its invalid records (see [Lookups](configuration.md#share-one-list-across-organizations-lookups)).
 - `isolation_cap`: the hourly isolation cap in effect (`per_hour`, `source`). Absent when `respond` could not know it and would refuse to isolate.
 - `drops`: what the next sync of your declared tokens would do (see [Declare tokens in the configuration](drops.md#declare-tokens-in-the-configuration)).
-- `warnings`: configuration records skipped on read, rule signals skipped as unsafe, policies that observe and until when, a passed `observe_until`, shipped observe rules that are missing or not current, Lookups that approve nothing, and a warning for each policy that sets `dc_logon_collection` (ignored in this release).
+- `warnings` (a list of strings) and `warning_details` (the same warnings in the same order, each an issue whose `reason` is the text, with its `code` and subject fields, for example `config_problem` with the `field`): configuration records skipped on read, rule signals skipped as unsafe, policies that observe and until when, a passed `observe_until`, shipped observe rules that are missing or not current, Lookups that approve nothing, and a warning for each policy that sets `dc_logon_collection` (ignored in this release).
 
 ```bash
 limacharlie extension request --name ext-deception --action plan \
@@ -300,6 +406,8 @@ Paginated list of decoys, ordered by state then id. Test decoys are hidden unles
 | `text` | Only decoys whose path, template, policy, hostname or sensor id contains this text (case-insensitive, at most 128 characters). |
 | `summary` | Also count every decoy the filters match, before paging (below). |
 | `include_test` | Include test-fire decoys. |
+| `include_superseded` | Include the failed attempts that were superseded (see below). |
+| `exclude_skipped` | With `states: ["failed"]`, leave out the decoys skipped on purpose, so only faults are listed. Live states are not affected. |
 | `page_token`, `page_size` | Paging. |
 
 ```json
@@ -322,24 +430,33 @@ Paginated list of decoys, ordered by state then id. Test decoys are hidden unles
 | `gone` | The sensor is gone. Tokens are kept for a retention period. |
 | `failed` | Placement or removal failed. |
 
-A failed decoy carries a `cause`: `directory_missing`, `path_in_use`, `directory_appeared`, `placement_not_started`, `task_not_sent`, `helper_refused`, `helper_failed`, `placement_check_failed`, `never_landed`, `timed_out`, `org_inactive` or `other`.
+The `failed` filter, the `cause` filter and the summary show **current** failures only: one row per sensor, template and path, the latest attempt, and none while a live decoy of that template is on the sensor (see [Failed decoys](decoys.md#failed-decoys)). `include_superseded` brings back the earlier attempts, for a host's history; nothing is deleted. A failed decoy carries a `cause`: `directory_missing`, `path_in_use`, `directory_appeared`, `placement_not_started`, `task_not_sent`, `helper_refused`, `helper_failed`, `placement_check_failed`, `never_landed`, `timed_out`, `org_inactive` or `other`.
 
-With `summary: true` the answer adds `summary`: the number of `decoys` and distinct `sensors` the filters match, and `causes` (each with its decoy and sensor counts and one sample reason, largest first). It reads at most the first 100,000 matching decoys: past that, `capped` is true and the counts are lower bounds. The web app's failed-decoy view and its scoped actions rely on it.
+`directory_missing` is a decoy **skipped on purpose**, not a fault: the template's fixed folder (such as `~/.aws`) is not on the host, and the extension never creates a folder that other software owns. A failed decoy that is a skip has `skipped: true` next to its `cause`. The `cause` filter still lists skips.
+
+With `summary: true` the answer adds `summary`: the number of `decoys` and distinct `sensors` the filters match, `failed` and `skipped` (each `{decoys, sensors}` over the matching failed decoys: the faults and the skips, a sensor with both is in both), and `causes` (each with its decoy and sensor counts and one sample reason, largest first, and `skipped: true` on a cause that is a skip). It reads at most the first 100,000 matching decoys: past that, `capped` is true and the counts are lower bounds. The web app's failed-decoy view and its scoped actions rely on it.
 
 ## list_hosts
 
-Paginated by sensor id: each sensor that has a decoy record, with its hostname, a `status` and its decoys. It answers which hosts a template covers without one sensor lookup per row. The web app shows it as **Decoys** > **View: Hosts**.
+Paginated by sensor id: every **targeted** sensor, with a decoy or not, with its hostname, a `status`, its decoys and the last rollout visit. It answers "which of my targeted hosts are not protected" without one sensor lookup per row. The web app shows it as **Decoys** > **View: Hosts** and on each sensor's Overview page.
 
 | Parameter | Meaning |
 | --- | --- |
 | `policy`, `template` | Filters. `template` keeps the sensors that have a decoy of that template. |
-| `status` | Only sensors of this status: `protected`, `pending`, `failed` or `none`, judged over the decoys the other filters match. |
-| `text` | Only sensors with a decoy whose hostname, sensor id, path, template or policy contains this text (case-insensitive). |
+| `sid` | One sensor. |
+| `status` | Only sensors of this status: `protected`, `partial`, `pending`, `failed`, `skipped`, `no_decoy` or `none` (see [Host status](decoys.md#host-status)), judged over the decoys the other filters match. |
+| `text` | Only sensors whose hostname, sensor id, or a decoy's path, template or policy contains this text (case-insensitive). |
 | `states` | Default: `planned`, `placed`, `verified`, `failed`. |
 | `include_test` | Include test-fire decoys. |
+| `include_superseded` | Judge the status over every failed attempt, not only the current ones. |
+| `summary` | Also return `summary`: `{hosts, by_status, capped, scan_cap}`, the number of hosts of each status at once, ignoring the `status` filter. Counts are lower bounds when `capped` is true. |
 | `page_token`, `page_size` | Paging. |
 
-The `status` is `protected` (a verified decoy), `pending` (planned or placed only), `failed` (every decoy failed) or `none` (only retired or removed decoys). Each row has the counts per state and up to 50 decoys in the same shape as `list` (`more` marks a cut list; the status and counts cover all of them). A sensor in scope that has no decoy record yet (nothing planned, or everything unavailable) has no row. `plan` and `coverage` say what is missing for a policy or a template, not why a particular sensor was skipped: sensor mode, a Kubernetes DaemonSet sensor and a Windows sensor without file events are decided per sensor, internally.
+The `status` is `protected` (a verified decoy and no fault), `partial` (a verified decoy and a current failure: a decoy the policy wants is missing), `pending` (planned or placed only), `failed` (no live decoy and a fault), `skipped` (no live decoy, and only decoys skipped on purpose), `no_decoy` (targeted, nothing placed yet) or `none` (only retired or removed decoys). Each row has the counts per state (`counts.failed` counts faults only, and `skipped` counts the skips), and up to 50 decoys in the same shape as `list` (`more` marks a cut list; the status and counts cover all of them).
+
+A targeted sensor with no decoy has a row with status `no_decoy`. Every row of a listed sensor carries `rollout`: `{outcome, detail, code, visited_at, policies}`, what the last rollout round did when it reached the host. `outcome` is `offline` (offline then), `blocked` (nothing can be placed on it; `code` is the reason, for example `host_cloud_sensor`, `host_daemonset`, `host_sleeper_mode`, `host_response_mode` or `host_only_unavailable_templates`), `inventory` (its inventory was started; decoys follow), `planned`, `nothing_planned` (no room, or no template fits) or `failed` (the round could not deploy to it and tries again next round). It is the state at that visit, not live.
+
+The answer's `targets` says what is listed: `listed` (false when the filters select decoys rather than hosts, as with `template`, or when no policy in scope is enabled, so only hosts with decoys are listed), `listed_since` and `rollout` (the round's progress, as in `plan`). A targeted sensor the rollout has not reached yet has no row; `rollout.remaining` says how many are left.
 
 ## verify, rotate and remove
 
@@ -365,7 +482,7 @@ limacharlie extension request --name ext-deception --action test_fire \
   --data '{"policy":"linux-servers"}' --oid "$OID"
 ```
 
-`test_fire` takes an optional `policy`, or a `drop_id` to fire one token instead (not both: `test_fire_target_conflict`). The extension picks the test decoys and their sensors. The response lists the started `runs` (run id, policy, template, layer, deadline; never a token or planted name), `issues`, and a `pack_check` object with the result of the [rule integrity](decoys.md#rule-integrity) check. A call starts at most 20 runs. A large configuration is covered by repeated calls, and the daily run walks it over time. Only alert paths whose requirements you meet are tested, since testing a path that cannot work would only report it broken. Paths that are not available in this release (fake AD accounts, internal-domain hostnames) are not tested: `issues` names at most 10 of those policy and template pairs and says how many more there are, and `coverage` lists every one. Refused while an uninstall is in progress.
+`test_fire` takes an optional `policy`, or a `drop_id` to fire one token instead (not both: `test_fire_target_conflict`). The extension picks the test decoys and their sensors. The response lists the started `runs` (run id, policy, template, layer, deadline; never a token or planted name), `issues` (each "not tested" outcome has a `code` from the [note table](#codes-notes-of-plan-deploy-test_fire-and-the-daily-run), and `policy`, `template` and `layer`, plus the test decoy's `sid`, `hostname` and `instance_id` when it is about one), and a `pack_check` object with the result of the [rule integrity](decoys.md#rule-integrity) check. A call starts at most 20 runs. A large configuration is covered by repeated calls, and the daily run walks it over time. Only alert paths whose requirements you meet are tested, since testing a path that cannot work would only report it broken. Paths that are not available in this release (fake AD accounts, internal-domain hostnames) are not tested: `issues` names at most 10 of those policy and template pairs and says how many more there are, and `coverage` lists every one. Refused while an uninstall is in progress.
 
 A run is final as soon as its detection comes back, or, when none does, about an hour after it starts (see [When the result is final](detections.md#test-fire)). A test detection is reported under the reserved `__deception-test` category, which the platform never lists, so read the outcome with `list_test_runs` and `coverage`. A Windows sensor that does not report file events is not used for the paths that need them (see [Sensor versions](decoys.md#sensor-versions-windows)).
 
@@ -423,10 +540,13 @@ The first page also has `unknown_process`: reads whose event named no process, w
 
 ## coverage
 
-Per template and layer: `active`, `unavailable` with the missing piece, `partial` or `broken` (`blind` is not set in this release). A template that uses the AD phantom-account form or the internal hostname form shows every layer `unavailable` with "not available in this release". A quiet Entra ID or Okta sign-in feed adds an informational note ("no sign-in observed in N hours") and never changes a status. The view is organization-level: it does not list hosts, and `active` is not proof that every selected host is covered. Host-level exclusions (sensor mode, Kubernetes DaemonSet sensors, a Windows sensor without file events) are decided per sensor and are not part of this answer or of `plan`; `list_hosts` shows which sensors have decoys. See [Coverage statuses](decoys.md#coverage-statuses). It also returns:
+Per template and layer: `active`, `unavailable` with the missing piece, `partial` or `broken` (`blind` is not set in this release). A template that uses the AD phantom-account form or the internal hostname form shows every layer `unavailable` with "not available in this release". A quiet Entra ID or Okta sign-in feed adds an informational note ("no sign-in observed in N hours") and never changes a status. The per-template view is organization-level: it does not list hosts, and `active` is not proof that every selected host is covered; the org-wide host counts below, and `list_hosts`, are. Host-level exclusions (sensor mode, Kubernetes DaemonSet sensors, a Windows sensor without file events) are decided per sensor and are not part of this answer or of `plan`; `list_hosts` shows which sensors have decoys. See [Coverage statuses](decoys.md#coverage-statuses). It also returns:
+
+- `coverage.sensors`: `{targeted, targeted_exact, with_decoys, with_decoys_exact}`, the organization's host counts: the distinct sensors an enabled policy targets that a decoy can go on, and those holding a placed or verified decoy of an enabled policy (test decoys excluded). An exact flag that is false means the count is a lower bound. Only an organization-wide request on a usable configuration returns it (not one with `policy`). The [board's](board.md#columns-and-freshness) **Hosts with decoys** column is these numbers. They count hosts holding a decoy that is placed or verified, so they can be higher than the verified-only count of `list_hosts`' summary.
+- An item whose only missing piece is a decoy [skipped on purpose](decoys.md#failed-decoys) has the requirement `decoy-skipped` and `skipped_sensors`; its note counts the skips apart from failed placements.
 
 - `coverage.tag_gaps` and `coverage.tag_check_note`: verified decoys on sensors that do not carry the template's tag yet (see [Coverage statuses](decoys.md#coverage-statuses)).
-- `drops`: one row per token form in use (see [Testing and coverage](drops.md#testing-and-coverage)).
+- `drops`: one row per token form in use (see [Testing and coverage](drops.md#testing-and-coverage)). A form that is not `active` has a `reason`: `check_failed` (its detection rules could not be checked), `drop_rule_broken`, `not_tested`, `test_not_detected` or `rule_edited`.
 - `sources`: what the organization sends.
 - `metering`: `day` (the last completed UTC day), with that day's `covered_sensors` and `covered_sensors_distinct`, and `active_drops`, the number of active tokens counted when the request ran.
 - `coverage.pack_check` and `coverage.pack_issues`: the [rule integrity](decoys.md#rule-integrity) result for the shipped detection rules (`checked_at`, `attempted_at`, and each rule that is missing, disabled or edited).
