@@ -257,7 +257,7 @@ An approved read or modification is recorded as a `deception_read_allowed` event
 }
 ```
 
-`allowed_by` names the entry that approved the read: `scope` (`org` or `policy`), the policy, the entry's index and comment, and, for an entry from a Lookup, `lookup` and `record`. The event never carries a command line or any decoy content.
+`allowed_by` names the entry that approved the read: `scope` (`org` or `policy`), the policy, the entry's index and comment, and, for an entry from a Lookup, `lookup` and `record`. `test_decoy: true` is added when the decoy read is a policy's test decoy (outside any test run); the field is absent for a real decoy. The event never carries a command line or any decoy content.
 
 ### Find the readers: `list_readers`
 
