@@ -165,7 +165,7 @@ Google Workspace is not a supported source. **Not verified:** that Entra ID and 
 
 **Lower bounds.** Counts of verified, pending and failed decoys are read from the registry in bounded pages. On a very large organization they are lower bounds, and the item's note says so.
 
-**Tokens.** `coverage.drops` has one row per token form your organization uses: `active`, `broken` or `unverified`. See [Testing and coverage](drops.md#testing-and-coverage).
+**Tokens.** The top-level `drops` of the `coverage` answer has one row per token form your organization uses: `active`, `broken` or `unverified`. See [Testing and coverage](drops.md#testing-and-coverage).
 
 `broken` appears in `coverage` only. The extension does not send an alert or event when a path breaks, so check `coverage` after changes to a rule.
 

@@ -45,7 +45,7 @@ The **Deception** page of your organization in the web app is the way to manage 
 | Coverage | Each alert path (a template on a layer) with its status and what is stopping alerts, the token alert paths, template tag gaps, the per-sensor watch-rule budget, the shipped detection rules, and **Test fire** with the latest result of every path. |
 | Policies | Your policies and templates: add, edit, enable, disable and delete them. A template viewer and editor edit a template as a form or as its JSON, the **Template Library** copies the built-in templates into your configuration, and the whole record can be edited as JSON. |
 
-Observe mode, the reader allowlist, custom domains and the isolation cap have no form of their own: edit them in the raw JSON editor of the **Policies** tab, or in your configuration as code.
+A policy's **Mode** (Live or Observe) and **Observe until** are in the policy editor. The reader allowlist, custom domains and the isolation cap have no form of their own: edit them in the raw JSON editor of the **Policies** tab, or in your configuration as code.
 
 The **Deception** board, in the web app's top navigation, shows every organization you can see in one table: see [Managing many organizations](deception/board.md).
 
@@ -102,7 +102,7 @@ On subscribe, the extension:
 
 - creates a webhook adapter named `ext-deception` in the organization. Confirmed hits arrive through it as `deception_hit` events.
 - writes its own plumbing rules in `dr-service` (names start with `ext-deception-`) and installs the default detection rules in your `dr-general` hive (names start with `deception-`). A default rule is installed only when missing. An edited rule is never overwritten.
-- places nothing. No decoy goes on any host until you write and enable a policy that selects templates. After that, decoys are placed by `deploy`, by the daily run on matching sensors that lack them, and when a new sensor connects to a policy that sets `setup_on_new_sensors`.
+- places nothing. No decoy goes on any host until you write and enable a policy that selects templates. After that, decoys are placed by [rollouts](deception/operations.md#rollouts) (started by `deploy`, by a configuration change, and by a weekly recheck in the daily run), and when a new sensor connects to a policy that sets `setup_on_new_sensors`.
 - does not enable your configuration record. The extension never writes it. See [Enabling the configuration record](deception/configuration.md#enabling-the-configuration-record).
 
 Then subscribe the extensions your decoys depend on (`ext-artifact`, `ext-exfil`, `ext-integrity`, and optionally `ext-cases`).
