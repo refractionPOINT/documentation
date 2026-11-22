@@ -422,7 +422,7 @@ Force deletion through configuration sync remains limited to selected hives and 
 
 ### Preserve emergency pauses
 
-The emergency pause is an enabled `investigation_policy` record named `autonomy-manual-pause` with `data` equal to `autonomy: {"*": {mode: suggest}}`. Keep it in the authoritative git configuration for as long as the pause is intended, or adjust sync selection so it is preserved. A force-deleting sync could remove a console-created pause absent from git.
+The emergency pause is an enabled `investigation_policy` record named `autonomy-manual-pause` with `data` equal to `autonomy: {"*": {mode: approve}}`: nothing runs by itself, and a person can still approve. A pause that an earlier console saved with `mode: suggest` also refuses approvals; pause again in the console to rewrite it. Keep it in the authoritative git configuration for as long as the pause is intended, or adjust sync selection so it is preserved. A force-deleting sync could remove a console-created pause absent from git.
 
 To resume, remove the pause from git and delete the record with normal Hive deletion permission. An ordinary extension pull will not delete it for you. If left in git, a later pull can recreate it. Other policy restrictions still apply, and previously held suggestions never automatically execute on resume.
 

@@ -19,10 +19,10 @@ with `unauthorized: missing permission <name>`.
 
 | To do this | Required permissions |
 |---|---|
-| Read runs, steps, the run graph, events, case documents, labels, templates, operators, fact packs, the effective policy, the approvals inbox and the authoring kit; validate a template; read test results | `investigation.get`, `insight.evt.get` |
+| Read runs, steps, the run graph, events, case documents, labels, templates, operators, fact packs, the effective policy, the approvals inbox, the log of automatic actions, the auto-investigation overview and the authoring kit; validate a template; read test results | `investigation.get`, `insight.evt.get` |
 | Start a run or a wave; add inputs; cancel, compare or delete a run; submit a label; **test a template on past alerts** | `investigation.set`, `insight.evt.get` |
-| Approve, deny, revert, extend or confirm an action | `investigation.set`, `insight.evt.get`, **and the permission of the action's class** (below) |
-| Read the performance stats; filter the run list by outcome or verdict | `investigation.get`, `insight.evt.get` **and `investigation_policy.set`** |
+| Approve, deny, revert, extend or confirm an action; dismiss a suggestion; **undo an automatic action** | `investigation.set`, `insight.evt.get`, **and the permission of the action's class** (below). Undoing an automatic action needs the first two. |
+| Read the performance stats (the console hides the **Performance** tab without it); filter the run list by outcome or verdict | `investigation.get`, `insight.evt.get` **and `investigation_policy.set`** |
 
 `insight.evt.get` is required everywhere because a run's results are what a search of
 the organization's telemetry found: a role that can use Cases but cannot read
@@ -42,7 +42,7 @@ does, because approving is how a person authorizes the engine to do it:
 | `eradicate.process`, `eradicate.file` | `sensor.task` |
 | `collect.memory`, `collect.file`, `collect.artifact` | `sensor.task` |
 | `tag`, `tag.add`, `tag.remove` | `sensor.tag` |
-| `close.false_positive` | `investigation.set` for a case; `mailsec.set` for an email message |
+| `close.false_positive` | Nothing more for a case (the `investigation.set` every decision needs); `mailsec.set` for an email message, and for a close whose product is unknown |
 
 A class with no mapping is refused (fail closed). Which classes can actually execute
 is in [Action classes](policies.md#action-classes).
@@ -66,7 +66,7 @@ Templates and policies are Hive records with the usual
 | To do this | Required permission |
 |---|---|
 | Read a template's record (its YAML) from the Hive | `investigation_plan.get`. Listing the templates the engine serves (`GET /templates`) needs only the run read permissions. |
-| Create or edit templates, promote a draft | `investigation_plan.get`, `investigation_plan.set` |
+| Create or edit templates, make a draft active | `investigation_plan.get`, `investigation_plan.set` |
 | Delete templates | `investigation_plan.del` |
 | Read or change template metadata only | `investigation_plan.get.mtd`, `investigation_plan.set.mtd` |
 | Read, change or delete policies and their metadata | `investigation_policy.get`, `.set`, `.del`, `.get.mtd`, `.set.mtd` |
@@ -81,7 +81,7 @@ test creates no run, case or action; its result is kept for 24 hours.
 A write that results in `status: active` is **refused when it comes from an API
 key**, including an API key owned by a user. Only a person signed in as a user, in the
 console or with an interactive login in the CLI (`limacharlie auth login --oauth`),
-can create an active template, promote a draft or edit an active one. Demoting a
+can create an active template, make a draft active or edit an active one. Demoting a
 template to `draft` always works.
 
 This is deliberate: an AI agent or a script holding an API key can write drafts but
@@ -90,7 +90,7 @@ organization that manages active templates with API keys, for example from a
 Git-synced pipeline, can opt out by adding the tag `allow-api-key-promotion` to the
 enabled `investigation_policy/default` record. Setting that tag needs
 `investigation_policy.set.mtd`, so **never give an AI agent's key any
-`investigation_policy.*` permission**: it could turn the gate off and promote its own
+`investigation_policy.*` permission**: it could turn the gate off and make its own
 drafts. If the policy record cannot be read, the write is refused.
 
 ### Naming a secret as the run identity
@@ -123,9 +123,9 @@ are refused. For an observe-only identity, grant `sensor.task.read` instead of
 
 ## The key that turning a source on creates
 
-Turning on automatic investigation for a source (the **Autopilot** settings in the
-console) sets up everything the engine needs in one step: it installs the template
-recipe for that product, creates an **organization API key** with the permissions
+Turning on auto-investigation for a source (**Auto-investigation**, **Settings** in
+the console) sets up everything the engine needs in one step: it installs or activates the
+template for that product, creates an **organization API key** with the permissions
 that source needs, stores it in a Hive secret named
 `investigation-engine-autopilot-<source>`, names that secret as the run identity, and
 subscribes the source's detections. A key created this way is **setup-owned**: the
@@ -135,7 +135,12 @@ policies), never the engine's own credential.
 
 ### What each source's key gets
 
-**Each source's key holds what that source's template needs, and nothing more.** An
+**Each source's key holds what that source's template needs, and nothing more**,
+except where [Narrowing and extra permissions](#narrowing-and-extra-permissions) and
+[One secret can serve several templates](#one-secret-can-serve-several-templates) say
+otherwise: permissions an administrator added, the permissions of other templates bound
+to the same secret, and the full library set when the secret can be selected by runs
+setup cannot predict. An
 email-only source never gets a sensor permission. The set is worked out from the
 template, from a fixed table, so the same template gets the same permissions in every
 organization: nothing is learned and there is no setting to tune. It adds up:
@@ -196,7 +201,8 @@ table does not know is refused when you turn the source on, with
 These are ordinary LimaCharlie permissions. **What runs by itself is still decided by
 the policy**, not by the key: the autonomy modes, the caps and the
 [registered authorizations](policies.md#autonomy-modes) apply whatever the key can do.
-A source starts in `shadow` mode, which investigates and records without changing
+A source starts in **Watch** mode (`shadow` in the settings record), which investigates
+and records without changing
 anything.
 
 ### When the template changes
@@ -245,7 +251,7 @@ identity for inline plans, so it keeps every grant."
 
 ### The readiness check
 
-The Autopilot settings and the `GET /autopilot` route report, for each source that is
+The auto-investigation **Settings** and **Overview** (and the `GET /autopilot` route) report, for each source that is
 turned on, `identity_readiness`: `{source, identity, ready, missing_permissions,
 extra_permissions, error_code, fix_hint}`. `identity` names the Hive secret, never the
 key. A source is `ready` when its key holds every permission its template needs
@@ -261,7 +267,7 @@ secret, or the source itself for its intake rules) and what to do:
 Extra permissions are informational and never block readiness. On a setup-owned key,
 the extras that setup gave come with a hint to re-run setup to narrow the key. A
 template that is not in the Hive or the library is `recipe_not_found`, one that does
-not parse `recipe_invalid`. Reading the check needs `investigation_policy.get`,
+not parse `recipe_invalid` (the codes keep the engine's older word for a template). Reading the check needs `investigation_policy.get`,
 `investigation_plan.get`, `secret.get` and `apikey.ctrl`; without them the answer is
 `identity_unavailable`.
 
@@ -295,8 +301,10 @@ grant `sensor.task.read` and `output.set` rather than `sensor.task`, as in
 
 ### Turning a source on: what to expect from setup
 
-Turning a source on is one operation. Its answer lists the steps (`recipe`,
-`identity`, `detection_subscription`, `enable`), each with a status and a reason:
+Turning a source on is one operation. Its answer lists the steps (`recipe`, the
+template; `identity`, the investigation key; `detection_subscription`, the detection
+intake; and `enable`, the settings), each with a status and a reason, which the console
+shows under the step:
 
 | Status | Meaning |
 |---|---|
@@ -311,7 +319,7 @@ Turning a source on is one operation. Its answer lists the steps (`recipe`,
   permissions can be worked out, that the policy and the secret are usable and that a
   key you supplied holds what it must. A refusal there writes nothing: no template is
   installed or activated, and the policy and secrets are untouched.
-- **A write refused later is undone.** If promoting the template, writing the secret,
+- **A write refused later is undone.** If activating the template, writing the secret,
   creating the key or writing the policy is refused or gets no answer, setup reverts
   what it wrote to the template in the same call: an activated draft goes back to
   draft, and a library template it installed is removed (only while it still holds
@@ -338,7 +346,9 @@ template, and re-running setup replaces it with the template's set.
 ## Console access
 
 The console needs `investigation.get` **and** `insight.evt.get` to show the
-Investigations section at all. Controls the gateway would refuse are disabled with a
+Investigations section at all, and the automatic-actions log needs only those two to
+read (**Undo** needs `investigation.set`). The **Performance** tab needs
+`investigation_policy.set` as well and is hidden without it. Controls the gateway would refuse are disabled with a
 tooltip naming the permissions you need. See [Console](console.md).
 
 ## Keys: two limits to know

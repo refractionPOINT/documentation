@@ -3,7 +3,7 @@
 The [LimaCharlie MCP server](https://github.com/refractionPOINT/lc-mcp-server) exposes
 the Investigation Engine to AI assistants. The tools are built for an agent that
 **writes, tests and saves plan templates**, and that **answers one-off questions** by
-driving waves of parallel checks. Saving is always a draft: a person promotes it.
+driving waves of parallel checks. Saving is always a draft: a person makes it active.
 
 !!! info "Pre-release"
     The `investigate_*` tools exist only when the server is started with
@@ -60,7 +60,7 @@ engine ships a **default library** of ready-made templates. It is content, not p
 any organization: read it with `investigate_authoring_kit` and `sections: ["library"]`,
 and install one by writing it as an `investigation_plan/<name>` record with the Hive
 tools. Library entries are drafts (`status: draft`): keep that status and have a person
-promote the template once it is tested, or install from the console. The Hive refuses by
+make the template active once it is tested, or install from the console. The Hive refuses by
 default an `active` write from an API key (an administrator can opt out; see
 [Permissions](permissions.md#active-templates-can-only-be-written-by-a-person)). Fact packs (`use:` in a step) are built in, and an organization can add its own
 (`investigate_save_pack`).
@@ -89,7 +89,7 @@ A draft never runs on its own. The tool is built so an agent cannot get around t
   nothing is written.
 
 A successful save answers with the name, the etag, the warnings, and a reminder that a
-person reviews the draft in the console and promotes it.
+person reviews the draft in the console and makes it active.
 
 ## The authoring loop
 

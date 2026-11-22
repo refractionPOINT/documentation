@@ -146,7 +146,24 @@ Two rules hold whatever the policy says:
   `irreversible_requires_exact_class`.
 
 A draft template, a [serial](api-reference.md#starting-a-run) run and a test only
-ever suggest.
+ever suggest. A **suggestion** has no Approve button in the console (**Deny** becomes
+**Dismiss**) and the engine refuses an approval of it from the API: it is never
+executed, whoever asks.
+
+### Pausing automatic actions
+
+The emergency pause is an `investigation_policy` record named `autonomy-manual-pause`
+with `autonomy: {"*": {mode: approve}}` (the console's **Pause automatic actions** writes
+it). It caps every action class at `approve`, which means:
+
+- nothing runs by itself: an action the policy would have executed automatically waits
+  in the [approvals inbox](console.md#approvals) for a person;
+- a person can still approve, with the same permissions and approver lists;
+- a class the policy already holds at `suggest` or `off` stays there, since a pause only
+  lowers a mode, and never turns a suggestion into something that can be approved.
+
+Resuming deletes the record. See the
+[record reference](../7-administration/config-hive/investigation-policy.md#emergency-pause-and-resume).
 
 ### Action classes
 
@@ -195,7 +212,16 @@ decides an action needs the class's permission too (see
 
 An action in `approve` mode appears in the [approvals inbox](console.md#approvals) and,
 if the policy asks, as a notification. Deciding needs `investigation.set`,
-`insight.evt.get` and the permission of the action's class.
+`insight.evt.get` and the permission of the action's class. Every request has a
+deadline, `approval_timeout` (15 minutes unless the policy says otherwise): the inbox
+lists the soonest first, and a request nobody decides in time expires and is treated as
+denied. A run that is cancelled, fails or runs out of budget before it decided settles
+its requests at once.
+
+An action whose outcome is **uncertain** takes no decision from anyone: the engine
+settles it by itself (see [Rules no policy can change](#rules-no-policy-can-change)).
+The inbox can approve or deny many requests at once. Each is still checked as if decided
+on its own, and an action that cannot be undone is never approved in bulk.
 
 When the class's policy names `approvers`, only those people may **approve, deny,
 extend or confirm** it; **revert** stays open to anyone with the class permission,

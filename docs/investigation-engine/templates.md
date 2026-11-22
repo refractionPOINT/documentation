@@ -2,7 +2,7 @@
 
 A plan template tells the Investigation Engine how to investigate one kind of
 alert. This page is the reference: where templates live, the default library, every
-section of a template, and how to validate, test and promote one. For the method
+section of a template, and how to validate, test and make one active. For the method
 (what to write first, and why), read
 [How to Think About Templates](how-to-think-about-templates.md). For a guided
 workflow with an AI agent, see
@@ -73,7 +73,7 @@ list you have not written.
 - **API or AI agent:** fetch the library with the authoring kit section
   `library` (each entry has `name`, `description`, `version`, `status`, `applies_to`
   and the `yaml` to store), then write the record `investigation_plan/<name>` with
-  that YAML. Keep `status: draft` when you store one, and have a person promote it
+  that YAML. Keep `status: draft` when you store one, and have a person make it active
   once it is tested. Writing `status: active` is refused by default from an API key.
   See [Permissions](permissions.md#active-templates-can-only-be-written-by-a-person),
   [API Reference](api-reference.md#authoring-kit) and [MCP Tools](mcp.md).
@@ -1208,7 +1208,11 @@ Validation, `used_by` and the other reads you use while authoring (the template 
 the operators, the effective policy, the packs and the authoring kit) **see what you
 just saved**: a parent template validated a second after its check was saved sees the
 new check, not the copy cached before the save. An organization's first fact pack is
-seen by the next read too.
+seen by the next read too. The engine confirms this by comparing the versions of your
+records with the ones its cached copy was built from, and that comparison has a
+2-second limit: if the Hive does not answer within it, the read serves the cached copy
+instead of waiting, and the copy is refreshed at the latest within five minutes. If a
+read right after a save shows the old record, read again.
 
 ## Test on past alerts
 
@@ -1260,7 +1264,7 @@ The `summary` gives:
 | `expected_complete` | `false` when the engine could not read every closed case (it looks at the newest 100): a sample without `expected` may still have a case. |
 
 **These numbers are informational.** Nothing at run time reads them, and nothing
-waits for them before a template is promoted or the AI may decide.
+waits for them before a template is made active or the AI may decide.
 
 | You see | It usually means | Do |
 |---|---|---|
@@ -1271,7 +1275,7 @@ waits for them before a template is promoted or the AI may decide.
 | Most samples decided by the AI, few by rules | The rules miss the deciding fact. | Add a rule on that fact, often a Lookup of your own. |
 | High `wall_ms` or step count | Too many scans or AI questions. | Drop steps nothing reads, add `only_if`. |
 
-## Draft, active and promotion
+## Draft and active
 
 New templates, and everything written by an AI agent, are **drafts**. A draft:
 
@@ -1280,8 +1284,8 @@ New templates, and everything written by an AI agent, are **drafts**. A draft:
   `policy.clamped`;
 - cannot be started by a D&R rule, and is never picked by `applies_to`.
 
-A person **promotes** a template by setting `status: active` in the Hive record
-(in the console, with **Make active** on the template's page). Read what was tested
-first. Promotion does not change the policy: an active template still only does what
+A person **makes a template active** with **Make active** on the template's page in
+the console, or by setting `status: active` in the Hive record. Read what was tested
+first. Making a template active does not change the policy: an active template still only does what
 [the policy](policies.md) allows, and the AI still only recommends until someone turns
 on [AI may decide](policies.md#what-the-ai-may-decide) for it.

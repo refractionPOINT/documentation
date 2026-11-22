@@ -4,7 +4,7 @@ An AI agent is good at the mechanical part of writing a plan template: reading t
 operator catalog, drafting YAML, fixing validation errors and reading test results.
 It is a poor judge of whether a plan is *right* for your environment. This guide
 splits the work accordingly: **the agent drafts, validates, tests and saves a draft;
-a person reads the evidence and promotes it.**
+a person reads the evidence and makes it active.**
 
 The workflow:
 
@@ -15,9 +15,9 @@ The workflow:
 5. Test on past alerts.
 6. Refine and test again.
 7. Save as a draft.
-8. A person reviews and promotes it.
+8. A person reviews it and makes it active.
 
-The agent cannot promote a template. The save tool always writes `status: draft` and
+The agent cannot make a template active. The save tool always writes `status: draft` and
 refuses to overwrite an active template, and the Hive refuses an `active` write that
 comes from an API key (unless the organization opted out; see
 [Permissions](permissions.md#active-templates-can-only-be-written-by-a-person)).
@@ -52,7 +52,7 @@ identity](policies.md#run-identity)).
 !!! warning "Do not give the agent key any `investigation_policy.*` permission"
     The opt-out tag `allow-api-key-promotion` is set on a policy record with
     `investigation_policy.set.mtd`. A key that holds any broad `investigation_policy.*`
-    grant could set it, turn off the promotion gate and then promote its own drafts. The
+    grant could set it, turn off the gate on active templates and then make its own drafts active. The
     agent only needs the `investigation_plan.*` permissions above.
 
 !!! tip "Keep the key away from containment"
@@ -297,7 +297,7 @@ template covers, how many samples it ran on, how many the rules decided and how 
 rule agreed with the analysts, how the AI's recommendations fared on the rest, what
 stayed unknown and why, what it would propose, and what it costs per run.
 
-## 8. A person promotes
+## 8. A person makes it active
 
 A person opens the draft in the [console](console.md#templates), reads the template
 and the test summary, tests it once more if needed, and sets `status: active`. At that
@@ -310,7 +310,7 @@ point:
   on [AI may decide](policies.md#what-the-ai-may-decide) for it. That is a third
   decision, and the agent never makes it.
 
-Promote in two steps for anything that proposes containment. First activate the
+Go live in two steps for anything that proposes containment. First activate the
 template with the relevant action classes at `suggest` in the policy, and watch what
 it proposes. Raise a class to `approve`, and only later to `auto`, when you trust it.
 
@@ -333,7 +333,7 @@ You are writing an Investigation Engine plan template for detections of category
    the rest, the unknown reasons, and cost.
 6. Refine at most three times, testing the same samples each time.
 7. Save the best version as a draft. You cannot activate it.
-8. Finish with a summary for the person who will promote it.
+8. Finish with a summary for the person who will make it active.
 
 Rules: unknown is never false; a close rule needs positive, complete benign
 evidence, never "nothing found"; keep every window within 30 days; never guess a

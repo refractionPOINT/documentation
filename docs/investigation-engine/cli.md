@@ -23,14 +23,14 @@ The permissions each command needs are the ones of the corresponding
 
 A command that completes but says "no" (an invalid template or wave; a save the CLI
 itself refuses because the template does not validate, a record of that name exists, or
-it would replace an active template; a promotion that did not happen because the
+it would replace an active template; an activation (`templates promote`) that did not happen because the
 template is already active or does not validate) prints the engine's coded answer and **exits with code 4**. A call that fails
 keeps the CLI's standard exit codes: **2** when the API answers 401 or 403
 (authentication or permission), **3** for a resource that does not exist, **4** for
 invalid input, **5** for a rate limit, and **1** for anything else: a timeout, a test
 that failed, an `install-defaults` that could not write a template, and every other
 error status. That includes the Hive's own refusals, which the CLI receives as an HTTP
-`400` carrying an `error_code`: a promotion or save the Hive rejects (for instance an
+`400` carrying an `error_code`: an activation or save the Hive rejects (for instance an
 `active` write from an API key, `error_code` `INVALID`) exits **1**, not 4. A missing
 Hive permission is also a `400` from the Hive (`error_code` `UNAUTHORIZED`) and exits
 **1**; the CLI then writes `"status": 403` in the error document, which is a label for
@@ -68,14 +68,14 @@ limacharlie investigate templates install-defaults --name suspicious-process --o
 | `templates validate -f FILE` | Checks a template (`-` for stdin) and runs nothing. Exit 4 when it has errors. |
 | `templates test [NAME] -f FILE ...` | Dry run on past alerts. See below. |
 | `templates save NAME -f FILE` | Validates, then saves a **draft** record. Exit 4 when the CLI refuses it; exit 1 when the Hive does (see above). |
-| `templates promote NAME --confirm` | Makes a reviewed draft **active**. A person's decision. |
+| `templates promote NAME --confirm` | Makes a reviewed draft **active** (the console's **Make active**). A person's decision. |
 | `templates delete NAME --confirm` | Deletes the record. |
 | `templates install-defaults` | Writes the [default library](templates.md#the-default-library) into the organization. |
 
 **`templates install-defaults`** never overwrites silently: a template that already
 exists is skipped unless you pass `--overwrite`. `--name` (repeatable) installs only
 the templates you name. `--status` is the status the templates are written with,
-whatever the library says; the CLI default is `draft`, so review and promote what you
+whatever the library says; the CLI default is `draft`, so review and make active what you
 want to run on its own.
 
 **`templates save`** writes a draft. `--comment` stores what the template was tested on
@@ -84,7 +84,7 @@ and how it did as the record's comment, `--tag` (repeatable) adds tags, and
 `draft`. Writing an active template is a person's decision, and by default the Hive
 refuses it from an API key (see [Permissions](permissions.md#active-templates-can-only-be-written-by-a-person)).
 
-**`templates promote`** requires `--confirm`. It writes `status: active`, which the Hive
+**`templates promote`** (named for the step it performs, **Make active** in the console) requires `--confirm`. It writes `status: active`, which the Hive
 refuses by default when the CLI is authenticated with an **API key** (unless an
 administrator opted out; see [Permissions](permissions.md#active-templates-can-only-be-written-by-a-person)). Run it with a user login
 (`limacharlie auth login --oauth`), or have a person click **Make active** in the console.

@@ -249,7 +249,7 @@ ones analysts closed as true positive and as false positive
 Read every disagreement. The numbers are for you: nothing at run time reads them,
 and nothing waits for them.
 
-## 7. Promote
+## 7. Make it active
 
 A person makes the template active (**Make active** on the template's page). Its
 rules now act within your [policy](policies.md)'s modes: with every class in
@@ -312,4 +312,4 @@ next run.
 - [ ] `validate_plan` has no errors and no warnings you cannot explain.
 - [ ] Logic that two templates repeat is a check, not a copy.
 - [ ] The test on past alerts shows the rules agreeing with analysts.
-- [ ] The template is saved as a draft; a person promotes it.
+- [ ] The template is saved as a draft; a person makes it active.

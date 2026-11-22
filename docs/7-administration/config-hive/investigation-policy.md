@@ -16,7 +16,7 @@ The policy record is the only thing that decides what the engine may do. Each ac
 | `approve` | Requires an authorized explicit approval before the approval deadline. |
 | `auto` | Runs automatically, once the rule the action fires on decided, when the effective policy, limits, permissions, evidence and target checks allow it, and the action has a registered authorization; an action without one waits for a person (`no_registered_authorization`, see [Autonomy modes](../../investigation-engine/policies.md#autonomy-modes)). The engine holds an action as a suggestion when a limit, permission, evidence or target check does not pass, or when the approver lists leave nobody (`policy_no_approvers`). |
 
-There is no label-count requirement or separate route graduation, enablement or demotion step. Investigation intake settings decide what to investigate; they do not grant automatic action authority. Draft, shadow and test execution contexts remain read-only.
+There is no label-count requirement or separate route graduation, enablement or demotion step. Investigation intake settings decide what to investigate; they do not grant automatic action authority. Draft, serial-baseline and test execution contexts remain read-only.
 
 ## Start with a visible policy
 
@@ -85,16 +85,24 @@ The policy has no setting that starts an investigation. A person, an API client 
 
 ## Emergency pause and resume
 
-To pause automatic actions organization-wide while continuing to see suggestions, create an enabled, unscoped `investigation_policy` record named `autonomy-manual-pause` with this `data`:
+To stop the engine from running anything by itself while a person can still approve, create an enabled, unscoped `investigation_policy` record named `autonomy-manual-pause` with this `data`:
 
 <!-- validate: policy -->
 ```yaml
 autonomy:
   "*":
-    mode: suggest
+    mode: approve
 ```
 
-The console's manual pause uses this same record. It combines with all other policies; entries already set to `off` remain off. This pauses automatic execution, while authorized explicit approvals remain possible. Use `mode: off` in the applicable policy if you also need to suppress proposals. Existing confirmed effects require their normal undo or remediation procedure.
+The console's manual pause (**Pause automatic actions**) writes this same record. It combines with all other policies by the strictest rule, so it caps every action class at `approve`:
+
+- **Nothing runs by itself.** An action the policy would have executed automatically waits in the [approvals inbox](../../investigation-engine/console.md#approvals) for a person.
+- **A person can still approve.** Approving works as usual, with the same permissions and approver lists.
+- **A class the policy already sets to `suggest` or `off` stays that way.** The pause never turns a suggestion into something a person can approve, and it never raises a mode.
+
+Use `mode: off` in the applicable policy if you also need to suppress proposals, and use `mode: suggest` in it if nothing may be approved either. Existing confirmed effects require their normal undo or remediation procedure.
+
+A pause record saved by an earlier console, with `mode: suggest`, still pauses automatic execution, but it also makes every action a suggestion that nobody can approve. The console shows it as paused and says so. Pausing again rewrites it as `approve`.
 
 To resume, delete `autonomy-manual-pause` using normal Hive deletion permissions. The remaining policy determines what new actions may do. Removing the record does not release previously held suggestions into automatic execution.
 

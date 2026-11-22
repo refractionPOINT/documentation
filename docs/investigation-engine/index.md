@@ -31,7 +31,7 @@ The engine, not the AI, decides what runs next, what can be skipped and when to 
    writing a template, from the analyst's questions to rules you own.
 3. [Concepts](concepts.md): steps, rules, outcomes, unknowns, runs, identity.
 4. [Plan Templates](templates.md): the library and every section of a template,
-   validation, testing, promotion.
+   validation, testing, making a template active.
 5. [Policies and Autonomy](policies.md), with the
    [policy record reference](../7-administration/config-hive/investigation-policy.md):
    what the engine may do on its own, and what the AI may decide.
@@ -50,8 +50,9 @@ Reference: [Permissions](permissions.md), [API Reference](api-reference.md),
 | **Plan templates** | Reusable, versioned plans for a class of alerts, stored as Hive records in your organization: steps to gather, rules that decide, an optional AI review. Install the [default library](templates.md#the-default-library), edit it, write your own. |
 | **Checks** | Logic several templates repeat, written once as a [check](templates.md#checks-templates-other-templates-call) (for example where a link lands) and called by each template, once or per element of a list. |
 | **Test on past alerts** | Run a template, read-only, on real past detections and cases: which rule decided each alert, and whether it agreed with your analysts. |
-| **Policies and autonomy** | Per action class: `off`, `suggest`, `approve` or `auto`, with leases, caps and approvers; per template, whether the AI may decide. The policy record is the only thing that decides what the engine may do. |
-| **Approvals inbox** | Every action that waits for a person, across all runs, in one list. |
+| **Policies and autonomy** | Per action class: `off`, `suggest`, `approve` or `auto`, with leases, caps and approvers; per template, whether the AI may decide. The policy record is the only thing that decides what the engine may do. One Policy page lists the records, what the engine ignores in them and what the AI may decide per template, and a pause switch stops anything running by itself while a person can still approve. |
+| **Approvals inbox** | Every action that waits for a person, across all runs, in one list: why each is there, the soonest deadline first, filters by template, target and what you may decide, and approve or deny several at once. A suggestion has no Approve button, and an action whose outcome is uncertain has none either. |
+| **Auto-investigation** | Turn on a product (Email Security, for example) and the engine investigates its alerts by itself, starting in **Watch** mode where it changes nothing. One step installs the template, the key and the detection intake, and the console shows what each did. A log lists everything the engine did on its own, and each entry can be undone. |
 | **Automatic starts** | A D&R rule starts a run with the [`start investigation`](../8-reference/response-actions.md#start-investigation) response action, on a detection or on a new case. |
 | **Cases** | Each run writes its case: the outcome sentence, the evidence behind it, entities, telemetry, what stayed unknown, the open question, the actions. |
 | **Performance stats** | What the engine did, how fast and at what cost, per template and action class. |
@@ -67,8 +68,8 @@ Reference: [Permissions](permissions.md), [API Reference](api-reference.md),
 - **A run can never do more than its identity can.** Every read and every action
   uses the permissions of the identity the run executes as.
 - **A draft template never acts on its own.** Drafts run only when a person starts
-  them, with every action capped at `suggest`. A person promotes a template to
-  `active`.
+  them, with every action capped at `suggest`. A person makes a template
+  active.
 - **Nothing is installed for you.** An organization's templates are exactly its
   `investigation_plan` records, and no D&R rule is added for you.
 - **The AI recommends unless you say otherwise.** It decides alone only where the

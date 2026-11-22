@@ -308,6 +308,6 @@ A template carries `status: draft` (the default) or `status: active`.
 | Can a D&R rule start it? | No | Yes |
 | Picked automatically by `applies_to`? | No | Yes |
 
-**A person promotes a draft** by setting `status: active` in the Hive record. None of
+**A person makes a draft active** (**Make active** in the console, or `status: active` in the Hive record). None of
 the AI-agent tools can do it, and by default the Hive refuses it from an API key (see
 [Permissions](permissions.md#active-templates-can-only-be-written-by-a-person)).

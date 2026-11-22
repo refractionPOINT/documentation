@@ -260,14 +260,15 @@ autonomy:
   **decide** the outcome for a template (`off`, `escalate`, `close_and_escalate`).
   Leave it `off` until you have read how the AI's recommendations compare with your
   analysts' decisions. See [What the AI may decide](policies.md#what-the-ai-may-decide).
-- To stop all automatic execution at once, save the `autonomy-manual-pause` record
+- To stop everything from running by itself at once, with a person still able to
+  approve, save the `autonomy-manual-pause` record
   (see [Emergency pause](../7-administration/config-hive/investigation-policy.md#emergency-pause-and-resume)).
 
 The full record reference is
 [Investigation Action Policies](../7-administration/config-hive/investigation-policy.md);
 how records combine is in [Policies and Autonomy](policies.md).
 
-## 5. Install a template from the library and publish it
+## 5. Install a template from the library and make it active
 
 An organization's templates are exactly its `investigation_plan` records. The default
 library is content you choose to install. List it:
@@ -328,7 +329,7 @@ each rule agreed with the analysts (`rules`), how the AI's recommendations fared
 the rest (`ai`), and the reasons steps stayed unknown. See
 [Test on past alerts](templates.md#test-on-past-alerts).
 
-**Publish it.** A person makes a template active, and only an active template can be
+**Make it active.** A person makes a template active, and only an active template can be
 started by a D&R rule or chosen automatically. In the console open
 **Investigations**, **Templates**, the template, and **Make active**. From the CLI,
 signed in as a user (`limacharlie auth login --oauth`):
@@ -338,7 +339,7 @@ limacharlie investigate templates promote endpoint-detection --confirm --oid "$O
 ```
 
 A write of `status: active` from an API key is refused by default, so an AI agent
-can draft and test but never publish. See
+can draft and test but never make a template active. See
 [Active templates can only be written by a person](permissions.md#active-templates-can-only-be-written-by-a-person).
 
 ## 6. Optional: notifications

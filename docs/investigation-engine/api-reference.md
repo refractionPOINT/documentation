@@ -58,7 +58,7 @@ is `investigation.set` + `insight.evt.get`. See [Permissions](permissions.md).
 | Method and route | Permission | Purpose |
 |---|---|---|
 | `POST /runs` | write | Start a run. `201` for a new run, `200` when it joined an open one. |
-| `GET /runs` | read | One page of the organization's runs, newest first. |
+| `GET /runs` | read | One page of the organization's runs, newest first unless `sort` says otherwise. |
 | `GET /runs/{id}` | read | State, phase, outcome and what decided it, actions, effective policy, `ai_may_decide`, `ai_agent`, usage, critical path. |
 | `DELETE /runs/{id}` | write | Delete a run for good: `{"deleted": true, "run_id": ...}`. `409` while it is running, writing its case, or has actions waiting, executing or holding an effect. |
 | `GET /runs/{id}/steps` | read | The step log with timing, cost, cancellations and each step's `narrative` (`why`, `found`, `used`), the plan graph edges, the outcome `timeline`, the run's `ai_may_decide` and the critical path. A step cancelled as no longer needed that matters again later (for example a step only the deciding rule's `say` reads, gathered after the decision) keeps **one row**, with its cancelled attempts in `earlier_attempts`. `values=true` includes customer values (the narratives are rendered with them). |
@@ -85,6 +85,15 @@ needs `investigation_policy.set`), `template`
 email or key name), `idempotency_key`, `kind` (`template` or `wave`), `session`,
 `since` and `until` (RFC 3339, on the creation time). A bad value is `400` naming the
 parameter. The answer is `{"runs": [...], "next_cursor": ""}`.
+
+`sort` orders the whole list, not the page: `-created` (newest first, the default),
+`created` (oldest first), `time_to_verdict` (shortest first) and `-time_to_verdict`
+(longest first). A run with no time to verdict yet (it did not decide, or has not
+finished executing) is listed after every run that has one, in both directions. Ties
+fall to the creation time and the run id, so paging neither repeats nor skips a run. A
+cursor belongs to its order: reusing it with another `sort` is `400`, and you start again
+from the first page. `idempotency_key` is a lookup of the few runs started with that key,
+always newest first. The filters combine with every order.
 
 **Events.** `GET /runs/{id}/events?after=N&wait=S&limit=L` returns as soon as an event
 with `seq > after` exists, or after `wait` seconds (0 to 10) with none. The answer is
@@ -159,7 +168,7 @@ The response is `{"run": {...}, "joined": false}`. A run object, abbreviated:
   "ai_agent": "investigation-judge",
   "actions": [{"id": "a1", "class": "contain.network", "target": "...", "state": "awaiting_approval", "mode": "approve",
                "eligibility": {"approve": true, "deny": true, "extend": true, "confirm": true, "revert": true, "approvers_required": false}}],
-  "policy": {"applied": ["builtin", "default"], "clamped": []},
+  "policy": {"applied": ["builtin", "default"], "clamped": [], "lookback_days": 30},
   "usage": {"steps": 61, "cancelled": 14, "llm_usd": 0.08, "wall_ms": 41000},
   "case_id": "...",
   "case_final": false,
@@ -167,7 +176,12 @@ The response is `{"run": {...}, "joined": false}`. A run object, abbreviated:
 }
 ```
 
-`template_by` is `request` or `applies_to`. Wait for `case_final` (not just `case_id`)
+`policy.lookback_days` is the free search range the run gathered in: the effective
+`budgets.lookback_days` after the run's overrides (they only tighten it), at most 30; a
+run recorded before the field existed omits it. A verdict whose `outcome` is `conflict`
+names both sides, `"conflict": {"escalate": "<rule id>", "close": "<rule id>"}`, and
+carries no `decided_by`. `also_held` and `contradicted_by` are set only after a
+decision, never on a conflict. `template_by` is `request` or `applies_to`. Wait for `case_final` (not just `case_id`)
 when you need the finished case: `case_id` appears with the first write, `case_final`
 once the write made after the run ended has landed.
 
@@ -175,19 +189,72 @@ once the write made after the run ended has landed.
 
 | Method and route | Permission | Purpose |
 |---|---|---|
-| `GET /actions` | read | The approvals inbox: one page of actions across all runs, `awaiting_approval` first. Query `state` (one or a comma-separated list), `class`, `run_id`, `limit`, `cursor`. |
+| `GET /actions` | read | The approvals inbox: one page of actions across all runs, `awaiting_approval` first. Query `state` (one or a comma-separated list), `class`, `template`, `target`, `run_id`, `decidable_by_me`, `automatic`, `sort`, `limit`, `cursor`. |
 | `POST /runs/{id}/actions/{aid}/{verb}` | write + the action class's permission | `verb` is `approve`, `deny`, `revert`, `extend` or `confirm`. Body: `note` (deny, revert), `seconds` (extend). Answers with the action. |
 
 Action states, in the order the inbox lists them: `awaiting_approval`, `proposed`,
 `uncertain`, `executing`, `reverting`, `active`, `confirmed`, `reverted`, `failed`,
-`denied`, `expired`. Within a state the most recently changed action is first. Each
-item is the action plus `run` (`run_id`, `template`, `urgency`, `outcome`, `verdict` (its
-label, `""` while there is none), `decided`, `state`, `case_id`, `created`). `approve`/`deny` apply to `awaiting_approval`,
+`denied`, `expired`. Each item is the action plus `run` (see below). `approve`/`deny` apply to `awaiting_approval`,
 `extend`/`confirm` to `active`, `revert` to `active` or `confirmed`. The approvers rule
 is in [Approvals](policies.md#approvals). A `tag` or `tag.add` holds no lease: it goes
 from `executing` straight to `confirmed`, its `lease_until` is the zero time, and
 `extend` and `confirm` are `false` in its `eligibility` whoever asks and answer `409`.
 `revert` removes the tag.
+
+**What is filtered, and in what order.** Every filter and both orders are served by the
+engine, page by page, never by filtering a page after the fact.
+
+- `template` (the template of the action's run), `class` and `target` (the action's
+  target, such as a sensor id or `mail:<id>`) are exact matches of at most 1,024 bytes.
+  An action proposed before its template was recorded has none and is not matched by
+  `template`, though it still lists.
+- `automatic=true` keeps only what the policy ran by itself; `automatic=false` keeps
+  every other action (proposed, awaiting a person, approved by a person, denied...);
+  absent lists both.
+- `decidable_by_me=true` keeps the approval requests the verified caller may approve or
+  deny now, under each action's pinned policy (a policy that names no approvers admits
+  everyone). It implies `state=awaiting_approval`, so a `state` list that leaves that
+  state out answers an empty page.
+- Inside a state, `sort=updated` (the default) puts the most recently changed action
+  first, and `sort=deadline` the soonest `deadline` first (an action with no deadline
+  last). Ties fall to the run id and the action id. A cursor belongs to its filters and
+  order: a changed filter or `sort` needs a new cursor (`400` otherwise). A page can be
+  shorter than `limit` while `next_cursor` is not empty.
+
+**The run an item belongs to.** `run` holds `run_id`, `template`, `urgency`, `outcome`,
+`verdict` (its label, `""` while there is none), `decided` (a rule or the AI decided; a
+recommendation, `couldnt_tell` and a conflict are not decisions), `state`, `case_id`,
+`created` and two blocks that say why the action is in the inbox:
+
+- `trigger`, when something that can be shown started the run: `source`, `rule` (the D&R
+  rule), `detection_id`, `case_id`, `message_id`, `entity_id`, `category`, `severity`
+  and `question`. Never the detection document or any evidence. A field is cut at 256
+  bytes (`question` at 512), ends with `…` when cut, and sets `truncated: true`.
+- `decided_by`, only when the run was decided: `kind` (`rule`, `ai_rule` or
+  `ai_review`), `rule`, `say` (the rendered sentence, at most 1,024 bytes) and `via` (the
+  checks behind the decision, at most 8). It holds the same customer values `GET
+  /runs/{id}` returns to the same caller.
+
+A `close.false_positive` action also carries `close_product`: `cases` (deciding it needs
+`investigation.set`) or `mailsec` (it needs `mailsec.set` too). An action of a run that
+retention already removed is not listed.
+
+#### Automatic actions and auto-investigation
+
+| Method and route | Permission | Purpose |
+|---|---|---|
+| `GET /autopilot` | read (identity-bound) | The auto-investigation settings, with their `etag`; spend and counters; and `identity_readiness`, one entry per source that is on. Query `source`, `period`, `from`, `to`. |
+| `PUT /autopilot` | `investigation.get`, `insight.evt.get`, `investigation_policy.get`, `investigation_policy.set` | Replace the settings. Needs `If-Match` with the `etag` from the read, or `?force=true`; a missing or stale one is `409`. Turning a source on is one operation: see [setup](permissions.md#turning-a-source-on-what-to-expect-from-setup). |
+| `GET /autopilot/alerts` | read | The alerts and the runs they started, with the state of each and the named reason when one was skipped. Filters `source`, `state`, `group_id`, `run_id`, `from`, `to`, `limit`, `cursor`. |
+| `GET /autopilot/actions` | read | The log of what the engine did by itself, with counts. Filters `product`, `route_id`, `action_type`, `state`, `from`, `to`, `limit` (1 to 200), `cursor`. Open to anyone who can read runs. |
+| `GET /autopilot/actions/{aid}` | read | One automatic action's metadata. Query `run_id`. |
+| `POST /autopilot/actions/{aid}/undo`, `POST /autopilot/actions/undo` | write | Undo one action, or up to 100 by `ids` or per-item `items`, with `was_engine_wrong` for the answer to "was the engine wrong?". Each result reports its state and whether it can be retried. Undoing by a `selector` (a bounded route, product and time range) needs a caller the engine treats as an auditor. |
+
+A setup refusal answers with the failed step's own code and the steps with their
+statuses (`done`, `already_present`, `rotated`, `undone`, `failed`); `409
+setup_in_progress` means another setup is running and nothing was written. The
+readiness entry is `{source, identity, ready, missing_permissions, extra_permissions,
+error_code, fix_hint}`; `identity` names the Hive secret, never the key.
 
 ### Templates, policy and authoring
 
