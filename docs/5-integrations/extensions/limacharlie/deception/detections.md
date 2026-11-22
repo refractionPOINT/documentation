@@ -156,7 +156,7 @@ If you disable or edit the `deception-test` rule so it no longer produces a dete
 
 ## Hits are detections first
 
-Cases are optional. Deception does not need `ext-cases` for anything. Every confirmed hit becomes a `deception_hit` event on the `ext-deception` adapter, and the [default rules](#default-detection-rules) turn it into an ordinary detection (a `deception.*` category, priority 10 for a real hit that is not a deletion). That detection is the same kind as one from any other rule:
+Cases are optional. Deception does not need `ext-cases` for anything. Every confirmed hit becomes a `deception_hit` event on the `ext-deception` adapter, and the [default rules](#default-detection-rules) turn it into an ordinary detection (a `deception.*` category: priority 10 for a real hit that is not a deletion, 5 for a deletion, 2 for a hit in observe mode, and 3 for a token hit that looks like a link preview or a scanner). That detection is the same kind as one from any other rule:
 
 - it appears in the organization's **Detections** list and stream, with the hit's evidence;
 - it goes to every [output](../../../outputs/index.md) you have set up for detections (syslog, a webhook, a SIEM, a bucket and so on), and your own D&R rules can react to the `deception_hit` event or to the detection;
@@ -166,7 +166,7 @@ Cases are optional. Deception does not need `ext-cases` for anything. Every conf
 
 ## Cases
 
-If the `ext-cases` extension is subscribed and ingesting your detections, a `deception.*` detection at priority 10 opens a critical case (priorities 8 to 10 map to critical). With the default rules this is the case for real hits that are not deletions. Deletion hits are priority 5, and synthetic (test) hits never open a case. If you edit the rules, the priorities and cases follow your edits. The case grouping key keeps hits from different machines in different cases, even though they all arrive through the same adapter. Hits on one machine within an incident window group together. A hit that came through the collector (a secret used over the network) is filed under the host the decoy was planted on, with that host's hostname, not under the extension's adapter.
+If the `ext-cases` extension is subscribed and ingesting your detections, a `deception.*` detection at priority 10 opens a critical case (priorities 8 to 10 map to critical). With the default rules this is the case for real hits that are not deletions. Deletion hits are priority 5, observe-mode hits priority 2, token hits that look like a preview or a scanner priority 3, and synthetic (test) hits never open a case. If you edit the rules, the priorities and cases follow your edits. The case grouping key keeps hits from different machines in different cases, even though they all arrive through the same adapter. Hits on one machine within an incident window group together. A hit that came through the collector (a secret used over the network) is filed under the host the decoy was planted on, with that host's hostname, not under the extension's adapter.
 
 **Observe mode.** An observe-mode hit (priority 2) opens a low-severity case. A critical hit on the same host joins that case and raises it.
 

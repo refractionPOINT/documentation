@@ -6,7 +6,7 @@ Once a day per organization, and on every configuration update, the extension co
 
 - verifies the decoys of the sensors it reconciles, drops sensors that no longer exist, and times out stale operations,
 - retires the decoys of a template that no enabled policy selects any more, for example because you removed the policy or the template (a decoy that another enabled policy still selects stays, and so does a decoy on a sensor that merely stopped matching a policy's targeting). When any record was skipped as invalid on read, nothing is retired for configuration reasons, so a typo cannot remove decoys,
-- first, retries the placements that failed: it deploys again the sensors whose last placement of a wanted decoy failed, three times 6 hours apart and then weekly (see [Failed decoys](decoys.md#failed-decoys)). A decoy skipped on purpose because its folder is missing is checked again the same way, with the same back-off, and is not a fault,
+- first, retries the placements that failed: it deploys again the sensors whose last placement of a wanted decoy failed, at most once per run and only when the newest failure is at least 6 hours old: three retries, then weekly (see [Failed decoys](decoys.md#failed-decoys)). A decoy skipped on purpose because its folder is missing is checked again the same way, with the same back-off, and is not a fault,
 - runs a pass of the organization's [rollout](#rollouts), starts a new round once a week to catch sensors that started matching a policy, and restarts a round whose passes stopped,
 - applies your [declared tokens](drops.md#declare-tokens-in-the-configuration) again and fires the hidden test tokens,
 - puts back missing [template tags](decoys.md#per-host-watch-rules) and removes the ones no decoy accounts for,
