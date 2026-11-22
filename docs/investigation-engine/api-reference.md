@@ -74,8 +74,9 @@ is `investigation.set` + `insight.evt.get`. See [Permissions](permissions.md).
 | `GET /stats` | read + `investigation_policy.set` | The performance report. See [Stats](#stats). |
 
 **Listing runs.** Filters are combined with AND and evaluated by the engine, so they
-cover every run: `state` (`queued`, `running`, `decided`, `completed`, `cancelled`,
-`failed`, `budget_exhausted`), `outcome` (one of the eight
+cover every run: `state` (`queued`, `running`, `decided` (the run has its answer and its
+actions wait for a person; the console says **Waiting for a decision**), `completed`,
+`cancelled`, `failed`, `budget_exhausted`), `outcome` (one of the eight
 [outcomes](concepts.md#outcomes), or `undecided`; needs `investigation_policy.set`),
 `verdict` (the label: `true_positive`, `false_positive`,
 `inconclusive` (any recommendation, `couldnt_tell` or `conflict`) or `undecided`;

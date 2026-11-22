@@ -290,8 +290,9 @@ The deadline says what it means in each state:
 
 | State | Buttons |
 |---|---|
-| Awaiting approval | **Approve**, **Deny** |
-| Active | **Revert**, **Extend lease** (+1 h or +2 h), **Confirm** |
+| Awaiting approval, or a proposal held for a prerequisite | **Approve**, **Deny** |
+| Active | **Revert**, **Extend lease** (+1 h or +2 h), **Confirm**. An action that cannot be undone has **Confirm** only. |
+| Confirmed | **Revert**, unless the action cannot be undone |
 | Suggestion | **Dismiss** only (see below) |
 | Outcome uncertain | None |
 
