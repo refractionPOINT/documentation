@@ -68,14 +68,14 @@ Read this page before you rely on Deception. Items marked **not verified** have 
 ## Security limits
 
 - **The placement helper is not code-signed.** The extension ships a small static program per operating system and architecture and runs it on the host by absolute path. Endpoint protection products or application control policies on the host may flag or block an unsigned binary. **Not verified** against any specific product. Allow it by its hash if needed. No signed build exists.
-- **A user with read access to your organization can learn some decoys** from detections, the files on disk, placement payloads and events. Generated secrets are never returned by a request or written to a readable record.
+- **A user with read access to your organization can learn some decoys** from detections, the files on disk, placement payloads and events. Generated secrets of decoys placed on hosts are never returned by a request or written to a readable record. A token's value is returned by `create_drop`, `get_drop` and `rotate_drop`, because you paste it: treat those responses as secret.
 - Decoy file names, the names inside files and the fake services' answers are generated per organization so defaults are not a public list, but a determined attacker who has seen decoys in your environment can learn your names. `rotate` replaces secrets.
 - Decoys planted by an earlier build keep the service names they were planted with, which are not per-organization. Replace those decoys with `rotate` to move them to per-organization names.
 - The extension checks a decoy's contents by hash and never rewrites a changed decoy, so an attacker who edits a decoy causes a `modify` hit and a retired instance, not a silent overwrite.
 
 ## Lifecycle limits
 
-- A reconcile that is paused between its lifecycle check and its write can recreate a rule after cleanup removed it, and a cleanup can overlap a new subscription's setup. Closing this needs a stored per-organization lifecycle lease. The next `deploy` or daily run converges the state, and your own `cancel` repairs a cleanup that overreached.
+- A reconcile that is paused between its lifecycle check and its write can recreate a rule after cleanup removed it, and a cleanup can overlap a new subscription's setup. The next `deploy` or daily run converges the state, and your own `cancel` repairs a cleanup that overreached.
 - If the platform loses the subscribe event of a re-subscribe, the organization stays inactive (nothing alerts) until its stored data is purged and a later update sets it up fresh. An update never reactivates an organization the extension saw unsubscribe.
 - Final cleanup mutations the platform already received when a cleanup lease ended cannot be recalled, and can still delete a rule, entry, tag, payload, key or the adapter that a newer owner or a `cancel` had restored. Repair it with `cancel`, `deploy`, or the next daily run. Nothing is lost permanently.
 - Test-fire history is bounded (see [Test-fire](detections.md#test-fire)).

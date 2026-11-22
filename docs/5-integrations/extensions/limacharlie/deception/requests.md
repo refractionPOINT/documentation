@@ -343,13 +343,13 @@ The `status` is `protected` (a verified decoy), `pending` (planned or placed onl
 
 ## verify, rotate and remove
 
-All three act on the decoys named by `instance_ids`, or on the live decoys of a scope: a `sid`, a `policy`, a `template`, or a combination of them (for example every decoy of one template on one host). `template` need not be in your configuration any more, so the decoys of a removed template stay reachable. `rotate` and `remove` refuse to act on the whole organization: one of `instance_ids`, `sid`, `policy` or `template` is required (`scope_required`). Test decoys are never included.
+All three act on the decoys named by `instance_ids`, or on the live decoys of a scope: a `sid`, a `policy`, a `template`, or a combination of them (for example every decoy of one template on one host). `template` need not be in your configuration any more, so the decoys of a removed template stay reachable. `rotate` and `remove` refuse to act on the whole organization: one of `instance_ids`, `sid`, `policy` or `template` is required (`scope_required`). A scoped call never includes test decoys; a test decoy you name by id in `instance_ids` is acted on.
 
 The decoys a scoped call acts on are exactly the ones `list` with the same `sid`, `policy` and `template` and `summary: true` counts. Each call handles a bounded batch (verification: at most 200 decoys) and answers `more: true` when there is more: send it again to continue. The web app's **All decoys of …** menu on the Decoys tab does this for you.
 
 - **`verify`** starts a read-only `file_hash` check of each decoy. The daily run also verifies the decoys of the sensors it reconciles. An offline sensor is not queued: run it again when the sensor is online.
 - **`rotate`** retires the decoys and plants replacements with new secrets at new paths, for example after a decoy leaked or a decoy domain is burned. A replacement is planted only where the helper can create the file exclusively: if a changed file still occupies the path, the replacement fails as `path in use` and is reported. For decoys on offline sensors, rotate the ones its issues name by `instance_ids` later: a new scoped rotation would rotate the whole scope again, its own replacements included.
-- **`remove`** removes the decoys from their hosts after checking that each file is still the one the extension placed. A file the extension cannot prove is its own is left in place and the instance is retired; it never counts as removed. A removal for an offline sensor is queued and runs when it connects. The daily run plants a decoy again while a policy still selects its template. For a full cleanup before unsubscribing, use [`uninstall`](operations.md#uninstalling-before-you-unsubscribe).
+- **`remove`** removes the decoys from their hosts after checking that each file is still the one the extension placed. A file the extension cannot prove is its own is left in place and the instance is retired; it never counts as removed. A removal for an offline sensor is queued and runs when it connects. While a policy still selects the template, the next rollout round plants a replacement: that is the next configuration change, change of sources or weekly recheck, so run `deploy` (or `deploy` with the `sid`) if you want it back now. For a full cleanup before unsubscribing, use [`uninstall`](operations.md#uninstalling-before-you-unsubscribe).
 
 ```bash
 limacharlie extension request --name ext-deception --action rotate \
@@ -428,9 +428,9 @@ Per template and layer: `active`, `unavailable` with the missing piece, `partial
 - `coverage.tag_gaps` and `coverage.tag_check_note`: verified decoys on sensors that do not carry the template's tag yet (see [Coverage statuses](decoys.md#coverage-statuses)).
 - `drops`: one row per token form in use (see [Testing and coverage](drops.md#testing-and-coverage)).
 - `sources`: what the organization sends.
-- `metering`: the numbers reported for billing for the last completed UTC day (`covered_sensors`, `covered_sensors_distinct` and `active_drops`).
-- `pack_check` and `pack_issues`: the [rule integrity](decoys.md#rule-integrity) result for the shipped detection rules (`checked_at`, `attempted_at`, and each rule that is missing, disabled or edited).
-- `test_results_unread`: how many alert paths' latest test result this request could not read. Those paths are not marked `broken` by it.
+- `metering`: `day` (the last completed UTC day), with that day's `covered_sensors` and `covered_sensors_distinct`, and `active_drops`, the number of active tokens counted when the request ran.
+- `coverage.pack_check` and `coverage.pack_issues`: the [rule integrity](decoys.md#rule-integrity) result for the shipped detection rules (`checked_at`, `attempted_at`, and each rule that is missing, disabled or edited).
+- `coverage.test_results_unread`: how many alert paths' latest test result this request could not read. Those paths are not marked `broken` by it.
 - `coverage.time_to_protected_seconds`, per policy (only the requested policy's when you pass `policy`): the average time from the later of a sensor's enrollment and the policy's first recorded decoy to the sensor's first verified decoy, estimated from a bounded sample, when known.
 
 Counts are read from the registry in bounded pages. When a registry is very large, the counts are lower bounds and the item's note says so. An organization-wide `coverage` also refreshes the organization's row on the [Deception board](board.md#the-deception-board).

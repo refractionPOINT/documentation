@@ -63,7 +63,7 @@ What it does not do:
 
 - **It does not prevent anything.** It tells you early. Isolation is an opt-in response, not a guarantee.
 - **It is not a defense against an attacker who ignores credential files.** A hit needs the attacker to touch a decoy.
-- **It does not hide from someone with read access to your LimaCharlie organization.** Detections, the files on disk, and placement events let an insider with that access learn some decoys. Generated decoy instances and their secrets are kept out of customer-readable configuration, and no request ever returns a secret value, but the residual risk exists.
+- **It does not hide from someone with read access to your LimaCharlie organization.** Detections, the files on disk, and placement events let an insider with that access learn some decoys. Generated decoy instances and their secrets are kept out of customer-readable configuration, and no request returns the secret value of a decoy placed on a host, but the residual risk exists. (A [token](deception/drops.md)'s value is returned by the requests that hand it to you to paste.)
 - **It does not catch a decoy secret used somewhere LimaCharlie cannot see.** For example, an AWS decoy whose keys are copied to another machine without its config file will talk to real AWS, where the keys are invalid and nothing is reported. The read of the file on the original host is still caught.
 
 ## What this release covers

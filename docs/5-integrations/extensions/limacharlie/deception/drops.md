@@ -69,7 +69,8 @@ drops:
 - Each time the record changes, the extension makes the organization's named tokens match the list: a new name creates its token with its own secret, a changed entry updates it, and a removed entry deletes it (it stops alerting at once). Renaming an entry deletes the old token and creates a new one.
 - A name that comes back within 90 days of its token's deletion gets the same token and secret back, so reverting a commit revives copies already pasted or printed. After 90 days the name creates a new token.
 - `form`, `format` and `domain` cannot change. An entry that changes one is refused with `drop_config_immutable`: give it a new name.
-- A bad entry refuses the whole record when it is saved (code `invalid_config`, each problem naming its field), so nothing is half applied. A disabled or unreadable record never deletes a token.
+- An entry that is malformed, or that this deployment cannot serve (an unknown domain or format, a redirect target that is not an acceptable public `https` URL), refuses the whole record when it is saved (code `invalid_config`, each problem naming its field). A disabled or unreadable record never deletes a token.
+- Some problems are found only when the list is applied, entry by entry, and do not stop the other entries: a change of `form`, `format` or `domain` on an existing token (`drop_config_immutable`), a redirect target Google Web Risk lists or could not check, and the token limit. Those entries are left as they were and reported in `blocked` (in the answer of `deploy` and the daily run, and in `plan` as `drops.blocked` with `drops.sync: blocked`), while the other entries are applied. After a push, check `plan` until `drops.sync` is `applied`.
 - Tokens made with `create_drop` or the web app have no name and are never touched by the list. A token the list declares cannot be edited or deleted with `update_drop` or `delete_drop` (`drop_config_managed`): change its entry instead. `rotate_drop` and `test_fire` work on it.
 - Read a declared token's link, host name, QR code or document with `get_drop` and its `name`:
 
@@ -79,7 +80,7 @@ drops:
     ```
 
 - `plan` shows what the next sync would create, restore, update and delete (`drops.pending`), whether the list is applied (`drops.sync`: `applied`, `pending`, `running` or `blocked`), and how many pending creates would not fit under the [limit](#limits) (`drops.cap`). `deploy` and the daily run apply the list again and report what they did (`drops`: `created`, `restored`, `updated`, `deleted`, `blocked`).
-- A large list is applied in bounded passes: the configuration change starts it and the 30-minute sweep finishes it, minutes for thousands of tokens.
+- A large list is applied in bounded passes (about 20 seconds and 2,000 token writes each). The configuration change runs the first pass, and the rest is picked up by the 30-minute sweep, so thousands of new tokens can take up to about 30 minutes to all exist. Wait for `drops.sync: applied` in `plan` before handing out their links or documents.
 
 The list holds at most 10,000 entries; the record's 1 MB size limit is usually reached first, at a few thousand. Creates count toward the organization's token limit and hourly create rate. An entry that does not fit because of tokens made in the web app is reported (`drop_cap`) and created by the next `deploy` or daily run once there is room.
 
@@ -102,7 +103,7 @@ A url or qr token can send the visitor on to a page you choose after the hit is 
 - The target must be a public `https://` URL of at most 2,048 bytes: no IP address, no `localhost`, no single-label or private-use name (such as `.local`, `.internal` or `.corp`), no user name or password, nothing under a decoy domain, and a port from 1 to 65535. An international host name is stored in punycode. A target that breaks a rule is refused with `redirect_invalid`, and the text says why.
 - Every time a target is written (on create, and on an update that changes it), it is checked with **Google Web Risk**. A target listed as malware, social engineering or unwanted software is refused (`redirect_flagged`). If the check cannot be made right now the write is refused too (`redirect_check_unavailable`): try again later. An unchanged target, removing a target (`""`), rotating, disabling and deleting cost no check.
 - Each check first takes one of the organization's target checks (10,000 an hour, 1,000 a minute), and counts even when the target is flagged or the check fails. A target shared by many organizations costs one check in each.
-- A stored target is not checked again later: a page that becomes malicious after you saved it stays the target until the token's next write.
+- A stored target is not checked again later: a page that becomes malicious after you saved it stays the target until you change or remove the redirect. Editing the label or saving the same target again does not check it again.
 - A changed or removed redirect takes effect within a minute. A disabled token keeps its redirect, so a printed badge keeps working.
 
 ## Link previews and mail scanners

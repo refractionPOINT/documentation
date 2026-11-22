@@ -24,7 +24,7 @@ Each row has one status: the first of these rules that matches, in this order. A
 | Uninstalling | An [uninstall](operations.md#uninstalling-before-you-unsubscribe) is in progress. |
 | Broken | An alert path is broken, a token form is broken, a shipped detection rule is missing or disabled, or a test-fire found a path that raised no detection. |
 | Not tested | Nothing is deployed yet, so nothing could be tested, or there is no test-fire result in the last 48 hours. |
-| Unavailable | Policies select templates the organization cannot run, or a source the decoys need is quiet. |
+| Unavailable | Policies select templates the organization cannot run. (A quiet source would count here too, but no source is ever judged quiet in this release: see the `blind` status in [Coverage statuses](decoys.md#coverage-statuses).) |
 | Rolling out | Not every targeted sensor holds a decoy yet, a [rollout](operations.md#rollouts) is still running, or a sensor count is a lower bound, so whether the rollout is complete is unknown (never assumed complete). |
 | Observing | A policy is in [observe mode](configuration.md#observe-mode): its reads do not alert yet. |
 | Protected | None of the above. |
