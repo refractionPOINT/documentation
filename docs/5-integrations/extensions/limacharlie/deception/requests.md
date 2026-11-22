@@ -6,55 +6,233 @@ You drive Deception with extension requests, from the CLI, the API, MCP or a D&R
 limacharlie extension request --name ext-deception --action <action> --data '<json>' --oid "$OID"
 ```
 
-Every request is idempotent and listed in the extension's request schema, so the CLI, the web app and MCP discover them. Sending a request needs the `ext.request` permission. Requests that plan, place, remove, verify or test decoys are refused for an organization that is not subscribed or is being unsubscribed.
+Every request is idempotent and listed in the extension's request schema, so the CLI, the web app and MCP discover them. Sending a request needs the `ext.request` permission. Requests that plan, place, remove, verify or test decoys, and the token requests, are refused for an organization that is not subscribed or is being unsubscribed (`not_subscribed`).
 
-Requests that read your policies and templates (`plan`, `deploy`, `verify`, `rotate`, `remove`, `test_fire`, `coverage`, and `list` with a policy) also refuse while the `ext-deception` configuration record is disabled, with "the ext-deception configuration is disabled". The extension never writes that record, so it never enables it for you: see [Enabling the configuration record](configuration.md#enabling-the-configuration-record). `list` and `list_hosts` without a policy, `list_hits` and `list_test_runs` read the extension's own store and keep working while the record is disabled. (`list` and `list_hosts` with a policy filter check the name against your configuration and refuse while it is disabled; `list_hits` and `list_test_runs` take `policy` as a plain filter.) `uninstall` and `uninstall_status` need only a subscribed organization, so they work even when your configuration is broken.
+Requests that read your policies and templates (`plan`, `deploy`, `verify`, `rotate`, `remove`, `test_fire`, `coverage`, the token requests, and `list` or `list_hosts` with a policy) also refuse while the `ext-deception` configuration record is disabled (`config_disabled`). The extension never writes that record, so it never enables it for you: see [Enabling the configuration record](configuration.md#enabling-the-configuration-record). `list` and `list_hosts` without a policy, `list_hits`, `list_test_runs` and `list_readers` read the extension's own store and keep working while the record is disabled (`list_readers` then judges no reader approved and says so in `allowlist_unavailable`). `list_hits` and `list_test_runs` take `policy` as a plain filter, so they accept the name of a policy you have since removed. `uninstall` and `uninstall_status` need only a subscribed organization, so they work even when your configuration is broken.
 
-Secret values never appear in any response or log. Decoys are described by instance id, template, path and type.
-
-## Errors
-
-A request that fails with a mistake in your request or your own configuration says what is wrong, naming the field. A failure on the extension's side, a store or platform error for example, never shows its internal text. It reads `internal error (ref <id>)`, with an id that is new for each failure and that LimaCharlie support can use to find the details. Quote the id when you contact support. The same applies to the `issues` of `deploy`, `test_fire`, `uninstall` and the daily run, and to the `reason` of a failed decoy (for example `placement could not start: internal error [placement_start_failed]`, where the bracketed code is stable).
+Secret values of decoys placed on hosts never appear in any response or log: decoys are described by instance id, template, path and type. The one exception is a token, whose value is what you paste: `create_drop`, `get_drop` and `rotate_drop` return it (see [Tokens](drops.md)).
 
 | Action | Purpose |
 | --- | --- |
-| [`plan`](#plan) | Read-only preview of what `deploy` would do. |
-| [`deploy`](#deploy) | Converge rules and configuration entries, then start placement. |
-| [`list`](#list) | Page through decoys, with filters. |
+| [`plan`](#plan) | Read-only preview of what `deploy` would do, with rollout progress. |
+| [`deploy`](#deploy) | Converge rules and configuration entries, then start a rollout. |
+| [`list`](#list) | Page through decoys, with filters and an optional summary by failure cause. |
 | [`list_hosts`](#list_hosts) | Page through the sensors that have decoys. |
-| [`verify`](#verify) | Re-check that decoys are still in place. |
-| [`rotate`](#rotate) | Retire decoys and plant replacements. |
-| [`remove`](#remove) | Remove decoys from their hosts. |
-| [`test_fire`](#test_fire) | Check the synthetic detection path of each alert. |
+| [`verify`](#verify-rotate-and-remove) | Re-check that decoys are still in place. |
+| [`rotate`](#verify-rotate-and-remove) | Retire decoys and plant replacements. |
+| [`remove`](#verify-rotate-and-remove) | Remove decoys from their hosts. |
+| [`test_fire`](#test_fire) | Check the synthetic detection path of each alert, or of one token. |
 | [`list_test_runs`](#list_test_runs) | Page through recent `test_fire` runs and their outcomes. |
 | [`list_hits`](#list_hits) | Page through the hits the extension recorded. |
+| [`list_readers`](#list_readers) | Who reads the decoys, and an allowlist entry to approve each. |
 | [`coverage`](#coverage) | What is active, unavailable, partial or broken, per template and layer. |
-| [`list_kinds`](#list_kinds) | Decoy kinds, their schemas, and the default template library. |
+| [`list_kinds`](#list_kinds) | Decoy kinds, their schemas, the template library and the benign-reader starter list. |
+| [`create_drop`, `list_drops`, `get_drop`, `update_drop`, `rotate_drop`, `delete_drop`](drops.md) | Tokens. |
 | [`uninstall`](operations.md#uninstalling-before-you-unsubscribe) | Remove everything the extension owns, before you unsubscribe. |
 | [`uninstall_status`](#uninstall_status) | Read where an uninstall stands, without changing anything. |
 | [`respond`](detections.md#the-respond-request) | Called by detection rules on a hit, and by the web app's Isolate host and Tag host actions. |
 
-`list`, `list_hosts`, `list_test_runs`, `list_hits` and `uninstall_status` are the read-only requests the web app is built on. Every `list*` request applies its filters before it cuts a page, so a page holds `page_size` rows unless it is the last one, and `next_page_token` is empty exactly when nothing more exists. A token is opaque and tied to the filters it was issued for.
+Every `list*` request applies its filters before it cuts a page, so a page holds `page_size` rows unless it is the last one, and `next_page_token` is empty exactly when nothing more exists. A token is opaque and tied to the filters it was issued for (`invalid_page_token` otherwise). `page_size` is at most 500, default 100.
 
-`candidate`, `task_reply`, `helper_start`, `sweep`, `connected`, `daily` and `test_detected` are internal. The extension's own rules call them, they are not user-facing, and you do not need to send them. The `daily` request is how the extension advances each organization once a day. The `sweep` request runs every 30 minutes.
+`candidate`, `task_reply`, `helper_start`, `sweep`, `rollout`, `connected`, `daily` and `test_detected` are internal. The extension's own rules call them, and you do not need to send them. The `daily` request advances each organization once a day, `sweep` runs every 30 minutes, and `rollout` continues a [rollout](operations.md#rollouts).
 
-Most requests accept `policy` (limit to one policy) and `sid` (limit to one sensor). Requests that read your configuration reject an unknown policy name. `list_hits` and `list_test_runs` read the extension's own history and take `policy` as a plain filter, so they accept the name of a policy you have since removed.
+Most requests accept `policy` (limit to one policy) and `sid` (limit to one sensor). Requests that read your configuration reject an unknown policy name (`unknown_policy`).
+
+## Errors and refusal codes
+
+A request that is refused because of something in your request, your configuration or the organization's state says what is wrong in English, naming the field, and ends with a **stable code** in brackets:
+
+```text
+drop limit reached for the organization [drop_cap]
+```
+
+The sentence may be reworded in a later release; the code will not. Scripts, pipelines and AI agents should react to the code: take the **last** bracketed token of the message that is a code from the table below (your own input, such as a quoted policy name, comes before it). The platform hands a caller only the text of an extension's error, which is why the code travels inside it.
+
+Codes also appear:
+
+- in `issues` (of `deploy`, `plan`, `verify`, `rotate`, `remove`, `test_fire`, `uninstall` and the daily run), as a `code` field next to the `reason`, when the cause is one you can act on. An issue without a code is an internal cause or a progress note;
+- in the daily run's response, as `config_error_code` beside `config_error`;
+- in `respond`, as the `code` of each action that was not done, next to its `reason`.
+
+A failure on the extension's side, a store or platform error for example, never shows its internal text and carries no code. It reads `internal error (ref <id>)`, with an id that is new for each failure and that LimaCharlie support can use to find the details. Quote the id when you contact support. The `reason` of a failed decoy (in `list`) keeps its own form, for example `placement could not start: internal error [placement_start_failed]`, and is grouped by its [failure cause](#list).
+
+The codes, by area. A code's meaning never changes; new codes may be added.
+
+### Codes: the organization and its configuration
+
+| Code | Meaning |
+| --- | --- |
+| `not_subscribed` | The organization is not subscribed to ext-deception, or is being unsubscribed. |
+| `subscribed_again` | The organization subscribed again while a cleanup of its earlier subscription ran; the cleanup was abandoned. |
+| `config_disabled` | The ext-deception configuration record is disabled, so there are no policies. |
+| `config_unreadable` | The configuration record could not be read or confirmed just now (retried); in a respond action: the isolation cap is unknown because of it. |
+| `invalid_config` | The configuration is invalid; the text names the fields. |
+| `config_etag_mismatch` | The configuration record changed while the extension was writing it. |
+| `entry_not_owned` | The extension refused to change an entry it did not create. |
+| `engine_unavailable` | Decoy planning and placement are not available in this deployment. |
+| `request_timeout` | The request ran out of time before it finished; it is retried. |
+
+### Codes: the platform refusing the extension
+
+| Code | Meaning |
+| --- | --- |
+| `extension_permission_missing` | The extension's API key is missing a permission (named in the text when the platform says which). |
+| `platform_forbidden` | The platform refused the extension's permissions or credentials for this organization. |
+| `sensor_not_in_org` | The platform says the sensor does not exist in this organization. |
+| `sensor_offline` | The platform could not deliver a task to the sensor: it is offline or unreachable. |
+| `platform_rate_limited` | The platform is rate limiting the organization or its quota is used up. |
+
+### Codes: request shape and filters
+
+| Code | Meaning |
+| --- | --- |
+| `bad_request_type` | The request's data does not have the shape of the action. |
+| `unknown_policy` | The request names a policy that is not in the configuration. |
+| `unknown_state` | A state filter or value is not one the request accepts. |
+| `unknown_layer` | A layer filter is not a known alert layer. |
+| `unknown_event_type` | An event_types filter names an unknown hit event type. |
+| `too_many_event_types` | The event_types filter lists more types than exist. |
+| `unknown_classification` | A classification filter is not a known classification. |
+| `unknown_mode` | A mode is neither live nor observe. |
+| `unknown_platform` | A platform is not windows, linux or macos. |
+| `filter_text_too_long` | A text filter is longer than allowed. |
+| `invalid_time_window` | Since is not before until. |
+| `invalid_days` | Days is out of range. |
+| `invalid_page_token` | The page token is not the next_page_token of the previous page. |
+| `scope_required` | Rotate or remove names no instance_ids, sid, policy or template: it would act on every decoy of the org. |
+| `unknown_failure_cause` | A cause filter is not a known failure cause. |
+| `failure_cause_state` | A cause filter is given with states other than failed. |
+| `unknown_host_status` | A status filter is not protected, pending, failed or none. |
+| `test_fire_target_conflict` | Test_fire names a policy and a drop_id; it takes one. |
+| `bad_event` | An event sent by the extension's own rules lacks a field it needs. |
+| `event_too_large` | An event sent by the extension's own rules is larger than the extension accepts. |
+| `unknown_sign_in_source` | A sign-in source is not one the extension knows. |
+
+### Codes: decoys, sensors and operations
+
+| Code | Meaning |
+| --- | --- |
+| `sensor_not_found` | The sensor is not one the extension knows in this organization. |
+| `instance_not_found` | The decoy instance is not one the extension knows in this organization. |
+| `too_many_instances` | The sensor holds more decoy instances than one request processes. |
+| `unsupported_platform` | The sensor's platform is not supported. |
+| `operation_not_found` | The operation the request continues does not exist. |
+| `resume_needs_sid` | Resuming an operation needs a sensor id. |
+| `rotation_contended` | Other requests are changing the rotation's record; try again. |
+| `test_fire_incomplete` | Earlier attempts of this test request did not complete; retry with a new request. |
+| `sweep_backlog` | Held events remain after the 30-minute sweep's time budget; it is retried to continue. |
+| `held_candidates_failed` | Some held events could not be judged (the text says how many). |
+
+### Codes: uninstall
+
+| Code | Meaning |
+| --- | --- |
+| `uninstalling` | An uninstall is in progress: nothing is placed or reinstalled. |
+| `uninstall_flags_conflict` | Uninstall was given force and cancel together. |
+| `uninstall_superseded` | The uninstall request belongs to an earlier subscription of the organization. |
+| `uninstall_moved` | The uninstall state changed while the request ran; run it again. |
+| `cleanup_running` | The final cleanup is running and cannot be cancelled now. |
+| `cleanup_lease_lost` | The final cleanup is no longer owned by this request. |
+| `entries_left_unsubscribed` | Entries of ours remain in the config of extensions the organization left, and the platform refuses their removal. |
+
+### Codes: tokens (drops)
+
+| Code | Meaning |
+| --- | --- |
+| `drops_unavailable` | Drops are not available in this deployment (no token issuer or decoy domain is configured). |
+| `drop_not_found` | The drop is not one of the organization's. |
+| `invalid_drop_id` | The drop_id does not have the shape of a drop id. |
+| `drop_cap` | The organization has reached its drop limit. |
+| `drop_rate` | Too many drops were created in the last hour. |
+| `drop_rotations` | The drop was rotated too often recently. |
+| `drop_version_conflict` | The drop changed since it was read; read it again and retry with its version. |
+| `drop_deleted` | The drop is deleted and cannot change. |
+| `drop_invalid` | The drop write is outside the store's bounds; the text says which. |
+| `drop_contended` | The drop kept changing while the request read or deleted it; retry. |
+| `unknown_form` | The drop form is not url, qr, hostname or document. |
+| `invalid_label` | The drop label is missing, too long or holds control characters. |
+| `invalid_memo` | The drop memo is too long or holds control characters. |
+| `invalid_observe_until` | Observe_until is not an RFC 3339 time. |
+| `observe_until_live` | Observe_until is set on a drop that is not in observe mode. |
+| `unknown_domain` | The domain is not one of this deployment's decoy domains. |
+| `format_document_only` | A format is given for a drop that is not a document. |
+| `format_unavailable` | The document format is not generated in this release. |
+| `format_required` | A document drop needs a format. |
+| `unknown_format` | The document format is unknown. |
+| `invalid_state_change` | Update_drop sets a state other than active or disabled. |
+| `drop_not_active` | The drop is disabled or deleted, so it cannot be tested. |
+| `drop_test_unavailable` | Drops cannot be tested in this deployment. |
+| `drop_test_timed_out` | The request's earlier drop tests timed out without a detection; the next request tests again. |
+| `redirect_flagged` | Google Web Risk lists the redirect target as malware, social engineering or unwanted software. |
+| `redirect_check_unavailable` | The redirect target could not be checked against Google Web Risk right now; try again later. |
+| `redirect_unavailable` | Redirect targets are not available in this deployment (no URL reputation check is configured). |
+| `redirect_form` | A redirect applies to url and qr drops only. |
+| `redirect_invalid` | The redirect_url is not an acceptable public https URL; the text says why. |
+| `target_check_rate_hour` | Too many redirect target checks for the organization in the last hour. |
+| `target_check_rate_minute` | Too many redirect target checks for the organization this minute. |
+
+### Codes: tokens declared in the configuration
+
+| Code | Meaning |
+| --- | --- |
+| `drop_config_managed` | The drop is declared in the configuration's drops: change or remove its entry there instead. |
+| `drop_config_immutable` | A drops entry changes its drop's form, format or domain, which cannot change: give the entry a new name. |
+| `drop_sync_backlog` | The configuration's drops are not all applied after a sync pass's time budget; the request is retried to continue. |
+| `drop_ref_required` | Get_drop takes a drop_id or a name, exactly one of them. |
+| `unknown_managed_by` | A managed_by filter is neither config nor api. |
+
+### Codes: `respond`: the request
+
+| Code | Meaning |
+| --- | --- |
+| `hit_id_required` | Respond names no hit_id. |
+| `unknown_action` | Respond names an action other than isolate, tag, ai_triage or policy. |
+
+### Codes: `respond`: an action not done (the action's code)
+
+| Code | Meaning |
+| --- | --- |
+| `hit_not_found` | The hit is not one of the organization's. |
+| `synthetic_hit` | The hit is a synthetic (test) hit. |
+| `unmatched_test_instance_hit` | The hit is on a test decoy that no test run matches. |
+| `delete_only_hit` | The hit is a delete only, which never isolates. |
+| `off_host_hit` | The hit has no on-host evidence from the sensor. |
+| `scanner_likely_hit` | The hit looks like a scanner. |
+| `sensor_gone` | The decoy's sensor is gone. |
+| `host_rebuilt` | The host was enrolled again after the hit. |
+| `hit_too_old` | The hit is older than the response window. |
+| `isolation_in_progress` | Another request is isolating for the same incident. |
+| `already_isolated_for_incident` | The incident was already isolated. |
+| `org_hourly_cap` | The organization's hourly isolation cap is reached. |
+| `org_inactive` | The organization is unsubscribed. |
+| `no_endpoint` | The hit names no endpoint (a drop hit, or a hit without a sensor). |
+| `isolation_cap_invalid` | The configuration's isolation_cap_per_hour is invalid, so the isolation cap is unknown. |
+| `observe_mode_hit` | The hit was judged in observe mode: no automatic response. |
+| `no_automatic_response` | The hit's policy asks for no automatic response. |
+| `policy_disabled` | The hit's policy is disabled, so it asks for no automatic response. |
+| `policy_not_in_config` | The hit's policy is not in the configuration, so it asks for no automatic response. |
+| `ai_triage_unavailable` | Starting an AI triage session from the extension is not available in this release. |
 
 ## plan
 
-Read-only. Shows, per policy, how many sensors match, how many decoys are placed already, how many would be placed or retired, and what is unavailable and why. The numbers are bounded previews, so read `plan.issues` before you rely on one:
+Read-only. Shows, per policy, how many sensors it targets, how many hold its decoys already, what would be placed or retired, and what is unavailable and why.
 
-- `sensors` is a lower bound when a policy targets more sensors than the request counts (it reads a bounded number of pages).
-- `already_placed`, `to_place` and `to_retire` are computed over the first 100 targeted sensors only. Send `sid` to plan one sensor.
+- `sensors` is the number of sensors the policy targets, resolved by the platform, and exact up to 100,000 per policy (`sensors_exact`). Past that, or when the platform could not resolve the targets this time, it is a lower bound and an issue says so.
+- `sensors_with_decoys` (with `sensors_with_decoys_exact`) is the number of distinct sensors holding a placed or verified decoy of the policy. With `sensors` it is the rollout's progress per policy.
+- `already_placed`, `to_place` and `to_retire` are computed over the sensors planned in detail: `detail.sensors` of them, the lowest sensor ids, at most 100 (`detail.complete` says whether that is every targeted sensor). Send `sid` to plan one sensor.
 - A sensor with no inventory from today is not counted in `to_place` (`deploy` collects the inventory first), and `to_retire` is not computed while some configuration records were skipped on read.
-- A decoy is counted to retire only when no enabled policy selects its template any more.
+- Why a template could not be placed is in `plan.issues` (`<policy>/<template> <field>: <reason>`, with how many of the planned sensors it applies to), most frequent first.
 
 It also reports:
 
-- `pack`: the state of each shipped detection rule (`missing`, `current` or `modified`). For a modified rule it includes the current shipped version, so you can compare it with yours. A newer shipped version is offered here and never applied implicitly.
-- `watch_budget`: Exfil watch rules against the sensor limit of 100.
+- `plan.deploy`: `in_progress` while a [rollout](operations.md#rollouts) round is running, and `rollout`, its progress.
+- `pack`: the state of each shipped detection rule (`missing`, `current` or `modified`). For a modified rule it includes the current shipped version, so you can compare it with yours. A newer shipped version is offered here and never applied implicitly (see [Upgrading](operations.md#upgrading)).
+- `watch_budget`: Exfil watch rules per sensor against the limit of 100 (see [Watch-rule budget](decoys.md#watch-rule-budget)).
 - `sources`: which of `ext-artifact`, `ext-exfil`, `ext-integrity` are subscribed and which adapters the organization has.
-- `warnings`: configuration records skipped on read, rule signals that would be skipped as unsafe, and a warning for each policy that sets `dc_logon_collection` (the field is ignored in this release).
+- `reader_lookups`: every Lookup the reader allowlists reference, read now, with its `status`, records, entries, where it is used and its invalid records (see [Lookups](configuration.md#share-one-list-across-organizations-lookups)).
+- `isolation_cap`: the hourly isolation cap in effect (`per_hour`, `source`). Absent when `respond` could not know it and would refuse to isolate.
+- `drops`: what the next sync of your declared tokens would do (see [Declare tokens in the configuration](drops.md#declare-tokens-in-the-configuration)).
+- `warnings`: configuration records skipped on read, rule signals skipped as unsafe, policies that observe and until when, a passed `observe_until`, shipped observe rules that are missing or not current, Lookups that approve nothing, and a warning for each policy that sets `dc_logon_collection` (ignored in this release).
 
 ```bash
 limacharlie extension request --name ext-deception --action plan \
@@ -65,14 +243,22 @@ limacharlie extension request --name ext-deception --action plan \
 {
   "plan": {
     "policies": [
-      {"policy": "linux-servers", "enabled": true, "sensors": 42,
-       "already_placed": 0, "to_place": 84, "to_retire": 0,
+      {"policy": "linux-servers", "enabled": true,
+       "sensors": 4200, "sensors_exact": true,
+       "sensors_with_decoys": 1310, "sensors_with_decoys_exact": true,
+       "already_placed": 62, "to_place": 76, "to_retire": 0,
        "unavailable": [{"id": "ext-exfil", "human": "Subscribe ext-exfil"}]}
-    ]
+    ],
+    "detail": {"sensors": 100, "complete": false},
+    "deploy": {"in_progress": true,
+               "rollout": {"state": "running", "trigger": "deploy", "done": 1450, "total": 4200,
+                           "total_exact": true, "remaining": 2750, "started": 1300, "offline": 120,
+                           "skipped": 25, "failed": 5, "passes": 14}}
   },
   "pack": [{"name": "deception-alert", "state": "current"}],
-  "watch_budget": {"limit": 100, "owned": 0, "customer": 12, "total": 12, "over": false},
-  "sources": {"ext_artifact": true, "ext_exfil": false, "ext_integrity": true}
+  "watch_budget": {"limit": 100, "sensors": 100, "sid": "…", "owned": 3, "customer": 12, "total": 15, "over": false},
+  "sources": {"ext_artifact": true, "ext_exfil": false, "ext_integrity": true},
+  "isolation_cap": {"per_hour": 5, "source": "default"}
 }
 ```
 
@@ -82,14 +268,14 @@ Idempotent. Converges, in order:
 
 1. the webhook adapter,
 2. the plumbing rules in `dr-service`,
-3. the missing shipped detection rules in `dr-general` (never overwriting one you edited),
+3. the missing shipped detection rules in `dr-general` (never overwriting one you edited, and never replacing one with a newer shipped version unless you ask with `apply_pack`),
 4. the `ext-deception-` entries in the `ext-exfil` and `ext-integrity` configurations (and removes any `ext-deception-` entry an earlier build left in `ext-artifact`; this release adds none there),
 
-then starts decoy placement. It never subscribes the organization to another extension: extensions it needs that are not subscribed are listed in `not_subscribed`.
+applies your declared tokens (`drops`) again, then starts the organization's [rollout](operations.md#rollouts) round when none is running, works on it for about 20 seconds, and returns its progress. The round goes on by itself after the request returns: you do not need to call `deploy` again. A second `deploy` while it runs only reports. With `policy`, the round still places every enabled policy, that one included, and the answer says so. With `sid`, only that sensor is deployed, at once. It never subscribes the organization to another extension: extensions it needs that are not subscribed are listed in `not_subscribed`.
 
 | Parameter | Meaning |
 | --- | --- |
-| `policy`, `sid` | Limit placement to a policy or a sensor. |
+| `policy`, `sid` | `sid` deploys to one sensor now (the web app's **Place on this host now**). |
 | `apply_pack` | List of shipped rule names to overwrite with the current shipped version, for example `["deception-alert"]`. The rule is restored as a whole, including its tags and expiry, so it also repairs a rule that reads `unverified`. |
 | `apply_all_pack` | Overwrite every shipped rule. Replaces your edits. |
 
@@ -99,20 +285,22 @@ limacharlie extension request --name ext-deception --action deploy \
   --data '{"apply_pack":["deception-alert"]}' --oid "$OID"
 ```
 
-The response has `ops` (`started`, `skipped`, `operations` ids, `issues`), `plumbing_written`, `pack_installed`, `pack_applied`, `others_updated`, `not_subscribed` and `warnings` (which include the `dc_logon_collection` warning). Placement is asynchronous: sensors reply later, and a decoy counts only after its hash is verified. Use `list` and `coverage` to follow it. Only sensors that are online are tasked. The daily run places decoys on matching sensors that lack them.
+The response has `ops` (`started`, `skipped`, `operations` ids, `issues`, `rollout` with the round's progress, and `more`, true while the round is not finished), `plumbing_written`, `pack_installed`, `pack_applied`, `others_updated`, `not_subscribed`, `drops` and `warnings`. Placement is asynchronous: sensors reply later, and a decoy counts only after its hash is verified. Use `plan`, `list` and `coverage` to follow it. Every sensor a deploy reaches also gets the missing [template tags](decoys.md#per-host-watch-rules) of the decoys it already holds.
 
 ## list
 
-Paginated list of decoys. Test decoys are hidden unless you ask. It lists decoy instances only: coverage-warning events are not returned here.
+Paginated list of decoys, ordered by state then id. Test decoys are hidden unless you ask.
 
 | Parameter | Meaning |
 | --- | --- |
 | `policy`, `sid` | Filters. |
 | `template`, `kind` | Only decoys of this template name, or of this kind. |
 | `states` | Any of `planned`, `placed`, `verified`, `retired`, `gone`, `failed`. Default: `planned`, `placed`, `verified`. |
+| `cause` | Only failed decoys of this cause (below). `states` must then be empty or `failed` (`failure_cause_state`). |
 | `text` | Only decoys whose path, template, policy, hostname or sensor id contains this text (case-insensitive, at most 128 characters). |
+| `summary` | Also count every decoy the filters match, before paging (below). |
 | `include_test` | Include test-fire decoys. |
-| `page_token`, `page_size` | Paging. `page_size` up to 500, default 100. Follow `next_page_token` until it is empty. |
+| `page_token`, `page_size` | Paging. |
 
 ```json
 {"instances": [{
@@ -123,7 +311,7 @@ Paginated list of decoys. Test decoys are hidden unless you ask. It lists decoy 
  "next_page_token": ""}
 ```
 
-`hostname` is the sensor's hostname when the decoy was placed (absent on a decoy placed before it was recorded); the sensor id is the identity. `reason` explains a `failed`, `retired` or `gone` state. A failure caused by the extension's own side shows a stable code, not the underlying error (see [Errors](#errors)). Instance states:
+`hostname` is the sensor's hostname when the decoy was placed (absent on a decoy placed before it was recorded); the sensor id is the identity. `reason` explains a `failed`, `retired` or `gone` state. Instance states:
 
 | State | Meaning |
 | --- | --- |
@@ -134,40 +322,39 @@ Paginated list of decoys. Test decoys are hidden unless you ask. It lists decoy 
 | `gone` | The sensor is gone. Tokens are kept for a retention period. |
 | `failed` | Placement or removal failed. |
 
+A failed decoy carries a `cause`: `directory_missing`, `path_in_use`, `directory_appeared`, `placement_not_started`, `task_not_sent`, `helper_refused`, `helper_failed`, `placement_check_failed`, `never_landed`, `timed_out`, `org_inactive` or `other`.
+
+With `summary: true` the answer adds `summary`: the number of `decoys` and distinct `sensors` the filters match, and `causes` (each with its decoy and sensor counts and one sample reason, largest first). It reads at most the first 100,000 matching decoys: past that, `capped` is true and the counts are lower bounds. The web app's failed-decoy view and its scoped actions rely on it.
+
 ## list_hosts
 
-Paginated by sensor id: each sensor that has a decoy record, with its hostname, a `status` and its decoys. It answers which hosts a template covers without one sensor lookup per row.
+Paginated by sensor id: each sensor that has a decoy record, with its hostname, a `status` and its decoys. It answers which hosts a template covers without one sensor lookup per row. The web app shows it as **Decoys** > **View: Hosts**.
 
 | Parameter | Meaning |
 | --- | --- |
 | `policy`, `template` | Filters. `template` keeps the sensors that have a decoy of that template. |
+| `status` | Only sensors of this status: `protected`, `pending`, `failed` or `none`, judged over the decoys the other filters match. |
 | `text` | Only sensors with a decoy whose hostname, sensor id, path, template or policy contains this text (case-insensitive). |
 | `states` | Default: `planned`, `placed`, `verified`, `failed`. |
 | `include_test` | Include test-fire decoys. |
 | `page_token`, `page_size` | Paging. |
 
-The `status` is `protected` (a verified decoy), `pending` (planned or placed only), `failed` or `none`. Each row has the counts per state and up to 50 decoys in the same shape as `list` (`more` marks a cut list; the status and counts cover all of them). A sensor in scope that has no decoy record yet (nothing planned, or everything unavailable) has no row. `plan` and `coverage` say what is missing for a policy or a template, not why a particular sensor was skipped: sensor mode, a Kubernetes DaemonSet sensor and a Windows sensor without file events are decided per sensor, internally.
+The `status` is `protected` (a verified decoy), `pending` (planned or placed only), `failed` (every decoy failed) or `none` (only retired or removed decoys). Each row has the counts per state and up to 50 decoys in the same shape as `list` (`more` marks a cut list; the status and counts cover all of them). A sensor in scope that has no decoy record yet (nothing planned, or everything unavailable) has no row. `plan` and `coverage` say what is missing for a policy or a template, not why a particular sensor was skipped: sensor mode, a Kubernetes DaemonSet sensor and a Windows sensor without file events are decided per sensor, internally.
 
-## verify
+## verify, rotate and remove
 
-Starts hash verification of the decoys named by `instance_ids`, or of a sensor's or policy's decoys. Verification is a read-only `file_hash` task. The daily run also verifies the decoys of the sensors it reconciles.
+All three act on the decoys named by `instance_ids`, or on the live decoys of a scope: a `sid`, a `policy`, a `template`, or a combination of them (for example every decoy of one template on one host). `template` need not be in your configuration any more, so the decoys of a removed template stay reachable. `rotate` and `remove` refuse to act on the whole organization: one of `instance_ids`, `sid`, `policy` or `template` is required (`scope_required`). Test decoys are never included.
+
+The decoys a scoped call acts on are exactly the ones `list` with the same `sid`, `policy` and `template` and `summary: true` counts. Each call handles a bounded batch (verification: at most 200 decoys) and answers `more: true` when there is more: send it again to continue. The web app's **All decoys of …** menu on the Decoys tab does this for you.
+
+- **`verify`** starts a read-only `file_hash` check of each decoy. The daily run also verifies the decoys of the sensors it reconciles. An offline sensor is not queued: run it again when the sensor is online.
+- **`rotate`** retires the decoys and plants replacements with new secrets at new paths, for example after a decoy leaked or a decoy domain is burned. A replacement is planted only where the helper can create the file exclusively: if a changed file still occupies the path, the replacement fails as `path in use` and is reported. For decoys on offline sensors, rotate the ones its issues name by `instance_ids` later: a new scoped rotation would rotate the whole scope again, its own replacements included.
+- **`remove`** removes the decoys from their hosts after checking that each file is still the one the extension placed. A file the extension cannot prove is its own is left in place and the instance is retired; it never counts as removed. A removal for an offline sensor is queued and runs when it connects. The daily run plants a decoy again while a policy still selects its template. For a full cleanup before unsubscribing, use [`uninstall`](operations.md#uninstalling-before-you-unsubscribe).
 
 ```bash
-limacharlie extension request --name ext-deception --action verify \
-  --data '{"sid":"<sid>"}' --oid "$OID"
+limacharlie extension request --name ext-deception --action rotate \
+  --data '{"template":"kubeconfig-backup"}' --oid "$OID"
 ```
-
-## rotate
-
-Retires the given decoys and plants replacements with new secrets, for example after you learn a decoy leaked, or a decoy domain is burned. Requires `instance_ids`, a `sid` or a `policy`. It refuses to act on the whole organization.
-
-A replacement is planted only where the helper can create the file exclusively. If a changed file still occupies the path, the replacement fails as `path in use` and is reported, not retried on the same inventory.
-
-## remove
-
-Removes the given decoys from their hosts after checking that each file is still the one the extension placed. Requires `instance_ids`, a `sid` or a `policy`; it refuses to act on the whole organization. A file the extension cannot prove is its own is left in place and the instance is retired. It never counts as removed.
-
-For a full cleanup before unsubscribing, use [`uninstall`](operations.md#uninstalling-before-you-unsubscribe) instead.
 
 ## test_fire
 
@@ -178,9 +365,9 @@ limacharlie extension request --name ext-deception --action test_fire \
   --data '{"policy":"linux-servers"}' --oid "$OID"
 ```
 
-`test_fire` takes only an optional `policy`: the extension picks the test decoys and their sensors. The response lists the started `runs` (run id, policy, template, layer, deadline; never a token or planted name), `issues`, and a `pack_check` object with the result of the [rule integrity](decoys.md#rule-integrity) check. A call starts at most 20 runs. A large configuration is covered by repeated calls, and the daily run walks it over time. Only alert paths whose requirements you meet are tested, since testing a path that cannot work would only report it broken. Paths that are not available in this release (fake AD accounts, internal-domain hostnames) are not tested: `issues` names at most 10 of those policy and template pairs and says how many more there are, and `coverage` lists every one. Refused while an uninstall is in progress.
+`test_fire` takes an optional `policy`, or a `drop_id` to fire one token instead (not both: `test_fire_target_conflict`). The extension picks the test decoys and their sensors. The response lists the started `runs` (run id, policy, template, layer, deadline; never a token or planted name), `issues`, and a `pack_check` object with the result of the [rule integrity](decoys.md#rule-integrity) check. A call starts at most 20 runs. A large configuration is covered by repeated calls, and the daily run walks it over time. Only alert paths whose requirements you meet are tested, since testing a path that cannot work would only report it broken. Paths that are not available in this release (fake AD accounts, internal-domain hostnames) are not tested: `issues` names at most 10 of those policy and template pairs and says how many more there are, and `coverage` lists every one. Refused while an uninstall is in progress.
 
-The outcome of a run is final about an hour after it starts, not when it ends (see [When the result is final](detections.md#test-fire)). A test detection is reported under the reserved `__deception-test` category, which the platform never lists, so read the outcome with `list_test_runs` and `coverage`. A Windows sensor that does not report file events is not used for the paths that need them (see [Sensor versions](decoys.md#sensor-versions-windows)).
+A run is final as soon as its detection comes back, or, when none does, about an hour after it starts (see [When the result is final](detections.md#test-fire)). A test detection is reported under the reserved `__deception-test` category, which the platform never lists, so read the outcome with `list_test_runs` and `coverage`. A Windows sensor that does not report file events is not used for the paths that need them (see [Sensor versions](decoys.md#sensor-versions-windows)).
 
 ## list_test_runs
 
@@ -201,34 +388,57 @@ Read-only, paginated, newest first: the hits the extension recorded, as they wer
 | Parameter | Meaning |
 | --- | --- |
 | `since`, `until` | Unix seconds. `until` is exclusive. |
-| `layer`, `template`, `policy`, `sid`, `classification` | Filters. |
-| `event_type` | `deception_hit` or `deception_coverage_warning`. Default: both. |
+| `layer`, `template`, `policy`, `sid` | Filters. |
+| `classification` | `unknown`, `human-likely`, `automated`, `ai-agent-likely`, `scanner-likely`, `sanctioned-agent-touched-decoy`, `copied-decoy` or `link-preview-likely` (tokens). |
+| `mode` | `observe` or `live`. Hits recorded before observe mode existed read as live. Default: both. |
+| `event_type` | `deception_hit`, `deception_drop_hit` or `deception_coverage_warning`. Default: every type. `event_types` takes a list instead. |
+| `drop_id` | Only the hits of this token. |
 | `include_test` | Include the synthetic hits of `test_fire` runs, which are left out by default. |
 | `page_token`, `page_size` | Paging. |
 
-A row is the [`deception_hit` event](detections.md#the-deception_hit-event): `hit_id`, `event_type`, `time`, `decoy_id`, `kind`, `template`, `policy`, `layer`, `sid`, `hostname`, `on_host`, `classification`, `synthetic`, `case_group_key`, `source_ip`, `user_agent`, `process` and `details`.
+A row is the [`deception_hit` event](detections.md#the-deception_hit-event) (or the [token hit](drops.md#what-a-hit-looks-like)): `hit_id`, `event_type`, `time`, `decoy_id`, `kind`, `template`, `policy`, `layer`, `sid`, `hostname`, `on_host`, `classification`, `mode`, `platform`, `reader_key`, `synthetic`, `case_group_key`, `source_ip`, `user_agent`, `process` and `details`, plus `drop_id` and `label` on token hits. Approved reads are not hits and are not listed: they are [`deception_read_allowed`](configuration.md#every-approved-read-is-recorded) events in your telemetry.
 
 ```bash
 limacharlie extension request --name ext-deception --action list_hits \
-  --data '{"layer":"read","page_size":50}' --oid "$OID"
+  --data '{"layer":"read","mode":"observe","page_size":50}' --oid "$OID"
 ```
+
+## list_readers
+
+Read-only, paginated by reader: who reads the decoys. It aggregates the recorded on-host reads and modifications of decoys (not uses, not test hits) of the last `days` days by reader identity (platform, image path, and the code signer on Windows and macOS or the SHA-256 on Linux) and by the policy whose decoys it read. Use it with [observe mode](configuration.md#observe-mode) to build your allowlist.
+
+| Parameter | Meaning |
+| --- | --- |
+| `days` | The window, ending now: default 30, at most 90 (`invalid_days`). |
+| `policy`, `template`, `platform` | Filters, applied before paging. |
+| `page_token`, `page_size` | Paging. |
+
+Each row of `readers` has `reader_key`, `policy`, `platform`, `image_path`, `signer` or `file_hash`, the counts `hits`, `observe_hits`, `live_hits`, `decoys` and `hosts`, `first_seen`, `last_seen`, and:
+
+- `allowed` and `allowed_by`: whether the current allowlist approves the reader for that policy's decoys, and by which entries (at most 20 listed, `allowed_by_truncated`). An entry that also constrains the user, package or ancestry is marked `conditional`.
+- `approvable` and `allowlist_entry`: an entry to paste into `reader_allowlist` as is, when the identity has what one needs; otherwise `not_approvable_reason`. A shared interpreter, a missing signer or hash, or an unknown platform is never approvable.
+- `library_id`: the [starter-list](configuration.md#starter-list-of-benign-readers) entry this reader is, if any.
+
+The first page also has `unknown_process`: reads whose event named no process, which can never be approved. `lookups` describes the Lookups the page was judged with. A page reads at most the newest 50,000 hits of the window, counted before the filters: when the window holds more, `window.capped` is true and `window.since` is the oldest hit read.
 
 ## coverage
 
-Per template and layer: `active`, `unavailable` with the missing piece, `partial` or `broken` (`blind` is not set in this release). A template that uses the AD phantom-account form or the internal hostname form shows every layer `unavailable` with "not available in this release". A quiet Entra ID or Okta sign-in feed adds an informational note ("no sign-in observed in N hours") and never changes a status. The view is organization-level: it does not list hosts, and `active` is not proof that every selected host is covered. Host-level exclusions (sensor mode, Kubernetes DaemonSet sensors, a Windows sensor without file events) are decided per sensor and are not part of this answer or of `plan`; `list_hosts` shows which sensors have decoys. See [Coverage statuses](decoys.md#coverage-statuses). Coverage-warning events are not part of this answer: they are emitted as events and detections (see [Detections](detections.md#the-deception_coverage_warning-event)). Also returns:
+Per template and layer: `active`, `unavailable` with the missing piece, `partial` or `broken` (`blind` is not set in this release). A template that uses the AD phantom-account form or the internal hostname form shows every layer `unavailable` with "not available in this release". A quiet Entra ID or Okta sign-in feed adds an informational note ("no sign-in observed in N hours") and never changes a status. The view is organization-level: it does not list hosts, and `active` is not proof that every selected host is covered. Host-level exclusions (sensor mode, Kubernetes DaemonSet sensors, a Windows sensor without file events) are decided per sensor and are not part of this answer or of `plan`; `list_hosts` shows which sensors have decoys. See [Coverage statuses](decoys.md#coverage-statuses). It also returns:
 
+- `coverage.tag_gaps` and `coverage.tag_check_note`: verified decoys on sensors that do not carry the template's tag yet (see [Coverage statuses](decoys.md#coverage-statuses)).
+- `drops`: one row per token form in use (see [Testing and coverage](drops.md#testing-and-coverage)).
 - `sources`: what the organization sends.
-- `metering`: the covered-sensor numbers reported for billing, for the last completed UTC day (`covered_sensors` and `covered_sensors_distinct`).
+- `metering`: the numbers reported for billing for the last completed UTC day (`covered_sensors`, `covered_sensors_distinct` and `active_drops`).
 - `pack_check` and `pack_issues`: the [rule integrity](decoys.md#rule-integrity) result for the shipped detection rules (`checked_at`, `attempted_at`, and each rule that is missing, disabled or edited).
 - `test_results_unread`: how many alert paths' latest test result this request could not read. Those paths are not marked `broken` by it.
-- `coverage.time_to_protected_seconds`, per policy: the average time from the later of a sensor's enrollment and the policy's first recorded decoy to the sensor's first verified decoy, estimated from a bounded sample, when known. A sensor that existed before the policy is measured from the rollout, not from its original enrollment.
+- `coverage.time_to_protected_seconds`, per policy (only the requested policy's when you pass `policy`): the average time from the later of a sensor's enrollment and the policy's first recorded decoy to the sensor's first verified decoy, estimated from a bounded sample, when known.
 
-Counts are read from the registry in bounded pages. When a registry is very large, the counts are lower bounds and the item's note says so.
+Counts are read from the registry in bounded pages. When a registry is very large, the counts are lower bounds and the item's note says so. An organization-wide `coverage` also refreshes the organization's row on the [Deception board](board.md#the-deception-board).
 
 ## list_kinds
 
-Every decoy kind with its settings version and JSON schema, plus `library` (the default templates, built into the extension and shipped with each release) and the record `schema_version`. Use it to write a valid template for a kind you have not used, including from an AI agent.
+Every decoy kind with its settings version and JSON schema, plus `library` (the default templates, built into the extension and shipped with each release), `benign_readers` (the [starter list of benign readers](configuration.md#starter-list-of-benign-readers)) and the record `schema_version`. Use it to write a valid template for a kind you have not used, including from an AI agent.
 
 ## uninstall_status
 
-Read-only view of the [uninstall](operations.md#uninstalling-before-you-unsubscribe). Unlike `uninstall`, it never starts an uninstall, removes a decoy, deletes a rule, renews a lease or cancels anything, and it takes no parameters. It answers with `state` (`not_started`, `removing_decoys`, `removing_rules`, `done`, `cancelled` or `engine_unavailable`), `safe_to_unsubscribe`, a `message`, the `decoys` counts, `rules_kept`, `leftovers`, `started_at` and, once done, `finished_at`. It needs no configuration.
+Read-only view of the [uninstall](operations.md#uninstalling-before-you-unsubscribe). Unlike `uninstall`, it never starts an uninstall, removes a decoy, deletes a rule, renews a lease or cancels anything, and it takes no parameters. It answers with `state` (`not_started`, `removing_decoys`, `removing_rules`, `done`, `cancelled` or `engine_unavailable`), `safe_to_unsubscribe`, a `message`, the `decoys` counts, `rules_kept`, `leftovers`, `tags_left`, `started_at` and, once done, `finished_at`. It needs no configuration.

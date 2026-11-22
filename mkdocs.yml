@@ -456,10 +456,12 @@ nav:
               - Deception:
                   - Overview: 5-integrations/extensions/limacharlie/deception.md
                   - Decoys and Coverage: 5-integrations/extensions/limacharlie/deception/decoys.md
+                  - Tokens (Drops): 5-integrations/extensions/limacharlie/deception/drops.md
                   - Configuration: 5-integrations/extensions/limacharlie/deception/configuration.md
                   - Requests: 5-integrations/extensions/limacharlie/deception/requests.md
                   - Detections, Cases and Response: 5-integrations/extensions/limacharlie/deception/detections.md
                   - Operations: 5-integrations/extensions/limacharlie/deception/operations.md
+                  - Managing Many Organizations: 5-integrations/extensions/limacharlie/deception/board.md
                   - Known Limitations: 5-integrations/extensions/limacharlie/deception/limitations.md
               - DLP: 5-integrations/extensions/limacharlie/dlp.md
               - Dumper: 5-integrations/extensions/limacharlie/dumper.md

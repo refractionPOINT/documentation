@@ -3,7 +3,7 @@
 !!! warning "Early release"
     Deception has not been validated on a broad set of real hosts and identity tenants yet. Statements below that depend on real endpoint or log-source behavior are marked **not verified**. Read [Known limitations](deception/limitations.md) before relying on it as a primary control.
 
-Deception plants unique decoys on your endpoints through the LimaCharlie sensor: credential files, service and MCP configuration files, notes naming decoy hostnames, and notes holding phantom accounts (cloud-account form in this release). Nothing legitimate has a reason to touch a decoy, so a decoy that is read or used is a high-fidelity signal. With the default rules enabled, a real hit that is not a deletion becomes a priority 10 detection, and, if `ext-cases` is subscribed, opens a critical case. A hit can also isolate the host if you opt in, and only when the evidence is an event the decoy's own sensor reported (never a network address). Deletion hits are priority 5, and test hits never open a case. The rules are yours to edit.
+Deception plants unique decoys on your endpoints through the LimaCharlie sensor: credential files, service and MCP configuration files, documents, notes naming decoy hostnames, and notes holding phantom accounts (cloud-account form in this release). It also gives you **tokens**: links, QR codes, hostnames and documents you put anywhere an intruder would look, such as a wiki page, a ticket or a file share. Nothing legitimate has a reason to touch a decoy, so a decoy that is read or used is a high-fidelity signal. With the default rules enabled, a real hit that is not a deletion becomes a priority 10 detection, and, if `ext-cases` is subscribed, opens a critical case. A hit can also isolate the host if you opt in, and only when the evidence is an event the decoy's own sensor reported (never a network address). Deletion hits are priority 5, and test hits never open a case. The rules are yours to edit.
 
 It is built mainly to catch AI-driven attackers early. An AI agent that lands on a host reads every credential file it finds, tries every key and follows every breadcrumb, usually within minutes. A human attacker who goes through the same files trips the same decoys.
 
@@ -12,7 +12,9 @@ It is built mainly to catch AI-driven attackers early. An AI agent that lands on
 Every decoy raises alerts on one or both of two things:
 
 - **Read.** The decoy file was opened, modified, or deleted. The sensor reports this.
-- **Use.** A secret inside the decoy was used. Every secret carries its own destination, and the destination is LimaCharlie's: a decoy Kubernetes config points at a fake API server, a decoy AWS profile points its endpoint at a fake AWS API, a decoy `.env` names fake internal services. Phantom accounts are usernames that exist nowhere, so a sign-in attempt with one shows up in logs you already send to LimaCharlie.
+- **Use.** A secret inside the decoy was used, or a decoy document was opened. Every secret carries its own destination, and the destination is LimaCharlie's: a decoy Kubernetes config points at a fake API server, a decoy AWS profile points its endpoint at a fake AWS API, a decoy `.env` names fake internal services. Phantom accounts are usernames that exist nowhere, so a sign-in attempt with one shows up in logs you already send to LimaCharlie.
+
+[Tokens](deception/drops.md) need no sensor: a request to a token's link or host name, or a token document being opened, is the hit, and it names the label you gave the token.
 
 Each secret in each decoy is generated per decoy and per host. A hit therefore names the machine the secret was planted on, even when the secret is used from somewhere else.
 
@@ -22,13 +24,13 @@ Deception is self-serve. It never creates accounts, mailboxes, cloud keys, or DN
 
 ## How it works
 
-1. You subscribe to the extension and describe what you want in its configuration record: **templates** (what each decoy looks like) and **policies** (which templates go on which sensors, and what to do on a hit). The default [template library](deception/decoys.md#default-template-library) is built into the extension and ships with each release. Nothing in it is placed until you copy a template into your own configuration, and the copy is yours to edit.
-2. `deploy` places decoys through sensor tasking. A decoy counts as covered only after the extension checks the file's hash on the host. A task acknowledgement alone is not proof. A folder with a generated name that the host does not have is created by the extension and removed again with its last decoy (see [File names and paths](deception/decoys.md#file-names-and-paths)).
-3. Decoy reads reach the cloud through rules the extension writes in other extensions' configurations (Exfil watch rules, Integrity FIM rules) and its own rules. Decoy use reaches the cloud through a public LimaCharlie-operated collector, or through the sign-in logs you already send.
+1. You subscribe to the extension and describe what you want in its configuration record: **templates** (what each decoy looks like), **policies** (which templates go on which sensors, whether they start in [observe mode](deception/configuration.md#observe-mode), and what to do on a hit), approved readers, and optionally [tokens](deception/drops.md#declare-tokens-in-the-configuration). Everything that changes what alerts is in that record, so it deploys the same way to one tenant or thousands. The default [template library](deception/decoys.md#default-template-library) is built into the extension and ships with each release. Nothing in it is placed until you copy a template into your own configuration, and the copy is yours to edit.
+2. `deploy`, or any change to the record, starts a [rollout](deception/operations.md#rollouts) that places decoys through sensor tasking on every targeted sensor and finishes on its own, however large the organization. A decoy counts as covered only after the extension checks the file's hash on the host. A task acknowledgement alone is not proof. A folder with a generated name that the host does not have is created by the extension and removed again with its last decoy (see [File names and paths](deception/decoys.md#file-names-and-paths)).
+3. Decoy reads reach the cloud through rules the extension writes in other extensions' configurations (Exfil watch rules, Integrity FIM rules), which reach only the hosts that hold a decoy of their template, and through its own rules. Decoy use reaches the cloud through a public LimaCharlie-operated collector, or through the sign-in logs you already send.
 4. Every candidate event is checked against a registry of the decoys the extension planted. Only a confirmed match becomes a `deception_hit` event. Everything else is dropped.
 5. The default detection rules turn `deception_hit` events into detections, and, if you opted in, a guarded isolation of the host.
 
-See [Decoys and coverage](deception/decoys.md), [Configuration](deception/configuration.md), [Requests](deception/requests.md), [Detections, cases and response](deception/detections.md), [Operations](deception/operations.md) and [Known limitations](deception/limitations.md).
+See [Decoys and coverage](deception/decoys.md), [Tokens](deception/drops.md), [Configuration](deception/configuration.md), [Requests](deception/requests.md), [Detections, cases and response](deception/detections.md), [Operations](deception/operations.md), [Managing many organizations](deception/board.md) and [Known limitations](deception/limitations.md).
 
 ## The web app
 
@@ -36,11 +38,16 @@ The **Deception** page of your organization in the web app is the way to manage 
 
 | Tab | What it does |
 | --- | --- |
-| Overview | A four-step setup checklist (subscribe what the decoys rely on, choose templates and a policy, place decoys, prove it works), the number of active alert paths and covered sensors, what needs attention, and the latest hits. |
-| Hits | Every hit the extension recorded, newest first, over the last 24 hours, 7 days, 30 days or 90 days. Filter by layer, template, host and classification. A hit shows what happened, the evidence, the case it opened and, where the [guards](deception/detections.md#isolation) allow it, **Isolate host** and **Tag host**. |
-| Decoys | Every decoy, with filters for state, policy, template, kind and host, and **Verify**, **Rotate** and **Remove**. Test decoys are hidden unless you ask. |
-| Coverage | Each alert path (a template on a layer) with its status and what is missing or broken, and **Test fire** with the latest result of every path. |
+| Overview | A four-step setup checklist (subscribe what the decoys rely on, choose templates and a policy, place decoys, prove it works), the number of active alert paths, covered sensors, enabled policies and hits in 7 days, what needs attention (such as failed decoys), and the latest hits. |
+| Hits | Every hit the extension recorded, newest first, over the last 24 hours, 7 days, 30 days or 90 days. Filter by layer, template, host, class, coverage warnings, and decoys on hosts or tokens. A hit shows what happened, the evidence, the case it opened and, where the [guards](deception/detections.md#isolation) allow it, **Isolate host** and **Tag host**. |
+| Decoys | Every decoy, with filters for state, policy, template, kind and host, and **Verify**, **Rotate** and **Remove** on selected decoys or, through **All decoys of …**, on every live decoy of a policy, template or host. Failed decoys are grouped by cause. **View: Hosts** lists each host that holds a decoy with its status (Protected, Pending, Failed) and **Place on this host now**. Test decoys are hidden unless you ask. |
+| Tokens | Your [tokens](deception/drops.md): **Create token**, the link, QR code or document to put in place, **Send a test hit**, edit, disable, rotate and delete. |
+| Coverage | Each alert path (a template on a layer) with its status and what is stopping alerts, the token alert paths, template tag gaps, the per-sensor watch-rule budget, the shipped detection rules, and **Test fire** with the latest result of every path. |
 | Policies | Your policies and templates: add, edit, enable, disable and delete them. A template viewer and editor edit a template as a form or as its JSON, the **Template Library** copies the built-in templates into your configuration, and the whole record can be edited as JSON. |
+
+Observe mode, the reader allowlist, custom domains and the isolation cap have no form of their own: edit them in the raw JSON editor of the **Policies** tab, or in your configuration as code.
+
+The **Deception** board, in the web app's top navigation, shows every organization you can see in one table: see [Managing many organizations](deception/board.md).
 
 **Deploy** in the page header shows a preview of what a deploy would do (hosts targeted, decoys to place and retire, shipped rules that are missing or differ) and starts it when you confirm. **Uninstall Deception** in the menu next to it runs the [uninstall](deception/operations.md#uninstalling-before-you-unsubscribe) and shows its status. If your configuration record is disabled, the page says so and offers **Enable configuration**.
 
@@ -63,7 +70,7 @@ What it does not do:
 
 Deception ships a deliberately narrow, complete scope:
 
-- **Available:** credential and configuration file decoys, fake MCP and service endpoints, decoy hostnames under LimaCharlie-operated decoy domains, and phantom cloud accounts (UPN form) watched through Entra ID or Okta sign-in logs.
+- **Available:** credential and configuration file decoys, Word and SVG document decoys, fake MCP and service endpoints, decoy hostnames under LimaCharlie-operated decoy domains, phantom cloud accounts (UPN form) watched through Entra ID or Okta sign-in logs, and tokens (links, QR codes, hostnames and Word or SVG documents).
 - **Not available in this release, on every layer:** fake Active Directory accounts, and decoy hostnames under your own internal domain. Their templates stay in the library and your configuration still accepts them, but they report as unavailable in `plan`, `coverage` and `test_fire`, and nothing is planted, collected or forwarded for them.
 - **Deferred:** an alert when a phantom account signs in **successfully**. Failed sign-ins against a phantom account still alert.
 
@@ -77,11 +84,13 @@ Deception works with what your organization already sends. The extension checks 
 | --- | --- |
 | Placing any file decoy | The `ext-artifact` extension subscribed, and a LimaCharlie sensor on the host in a supported mode (see [Sensor modes](deception/decoys.md#sensor-modes-and-what-they-cost)) |
 | Read, modify and delete alerts | `ext-exfil` (read) and `ext-integrity` (modify and delete) subscribed, sensors with the file collectors on, and, on Windows, a sensor that reports file events: 5.3.16 or later on the 5.3 line, or 5.4.3 or later (see [Sensor versions](deception/decoys.md#sensor-versions-windows)) |
-| Use alerts for credential files, MCP configs, and registry-form hostnames | Nothing else. The destination is LimaCharlie's collector. |
+| Use alerts for credential files, MCP configs, documents, and registry-form hostnames | Nothing else. The destination is LimaCharlie's collector. |
+| Tokens | Nothing: no sensor and no other extension. |
 | Phantom accounts, UPN form | The Entra ID adapter with the `sign_ins` source (Entra ID P1 or P2), or the Okta adapter |
 | Phantom accounts, AD form | **Not available in this release.** See [Known limitations](deception/limitations.md#not-built). |
 | Hostnames under your internal domain | **Not available in this release.** See [Known limitations](deception/limitations.md#not-built). |
-| Cases for hits | The `ext-cases` extension, if you want hits to open cases |
+| Cases for hits | The `ext-cases` extension, if you want hits to open cases (token hits open cases with no sensor) |
+| Shared reader allowlists in a Lookup | On organizations subscribed before Lookup support, a one-time `limacharlie extension rekey --name ext-deception` |
 
 The extension never subscribes these for you. `deploy` and `coverage` name any that are missing.
 
@@ -128,6 +137,8 @@ Then subscribe the extensions your decoys depend on (`ext-artifact`, `ext-exfil`
         templates:
           select_tags: [credentials]
         setup_on_new_sensors: true
+        mode: observe                          # start quietly; see who reads the decoys
+        observe_until: "2026-12-15T00:00:00Z"  # live again from then on
         responses:
           isolate: false
     ```
@@ -144,18 +155,24 @@ Then subscribe the extensions your decoys depend on (`ext-artifact`, `ext-exfil`
     limacharlie hive enable --hive-name extension_config --key ext-deception --oid "$OID"
     ```
 
-3. See what `deploy` would do, then do it:
+3. See what `deploy` would do, then do it. The rollout continues on its own after `deploy` returns; follow it with `plan` (`plan.deploy.rollout`):
 
     ```bash
     limacharlie extension request --name ext-deception --action plan --oid "$OID"
     limacharlie extension request --name ext-deception --action deploy --oid "$OID"
     ```
 
-4. Check what is covered, and check the synthetic detection path (`test_fire` does not prove your real-alert rules, cases or isolation, and its results are final about an hour after the run starts; see [Test-fire](deception/detections.md#test-fire)):
+4. Check what is covered, and check the synthetic detection path (`test_fire` does not prove your real-alert rules, cases or isolation, and a run with no detection is final about an hour after it starts; see [Test-fire](deception/detections.md#test-fire)):
 
     ```bash
     limacharlie extension request --name ext-deception --action coverage --oid "$OID"
     limacharlie extension request --name ext-deception --action test_fire --oid "$OID"
+    ```
+
+5. While the policy observes, list who reads the decoys and copy the benign readers into `reader_allowlist`, then set `mode: live` (or let `observe_until` pass):
+
+    ```bash
+    limacharlie extension request --name ext-deception --action list_readers --oid "$OID"
     ```
 
 Before you unsubscribe, run [`uninstall`](deception/operations.md#uninstalling-before-you-unsubscribe), then check it with `uninstall_status` until it reports `safe_to_unsubscribe`.

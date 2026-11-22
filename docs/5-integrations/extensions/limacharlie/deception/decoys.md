@@ -9,6 +9,9 @@ A **kind** is a mechanism built into the extension: how a decoy is placed, how a
 | `file` | A credential file, service configuration or note on the endpoint. Secrets inside point at LimaCharlie's collector. | read, modify, delete (sensor); use (collector) |
 | `hostname` | A file (inventory note, FTP/SFTP client config) naming decoy hostnames. Registry form: names under LimaCharlie-operated decoy domains. Internal form (names under your own internal domain): **not available in this release**, see below. | read, modify, delete (sensor); use (DNS lookup seen by the sensor, request on the collector) |
 | `phantom_account` | A file naming a username that exists nowhere, with a fake password. UPN form (`user@domain`) for Entra ID or Okta. The AD form (`DOMAIN\user`) is **not available in this release**. | read, modify, delete (sensor); use (failed sign-in in your logs) |
+| `document` | A generated Word (`docx`) or SVG (`svg`) document whose linked image is on the collector. | read, modify, delete (sensor); use (the document opened in a viewer that loads the image, see [Documents](drops.md#documents)) |
+
+Decoys that no sensor places (a link, a QR code, a host name or a document you put in a wiki, a ticket or an email) are [tokens](drops.md).
 
 ### Alert layers
 
@@ -19,9 +22,9 @@ Every hit carries a `layer`:
 | `read` | The decoy file was opened, or its path appeared on a command line. | Priority 10 |
 | `modify` | The decoy file was modified. | Priority 10 |
 | `delete` | The decoy file was deleted unexpectedly. The decoy is planted again afterward. | Priority 5, never isolates |
-| `use` | A secret inside the decoy was used. | Priority 10 |
+| `use` | A secret inside the decoy was used, or a document decoy was opened. | Priority 10 |
 
-Priority 10 applies to the default rules, which you can edit. A `use` hit that arrives from the collector or a sign-in log never isolates the host, by design, even when the secret is used from the original host: a network address is not proof of which machine used the secret. Only an event reported by the decoy's own sensor can isolate (see [Isolation](detections.md#isolation)). That is a read, a modification, a command-line match, or, for a `hostname` decoy, the DNS lookup of a decoy name reported by the sensor of the host the decoy was planted on, which is a `use` hit with on-host evidence. All of them are subject to the usual guards.
+Priority 10 applies to the default rules, which you can edit. While a policy is in [observe mode](configuration.md#observe-mode), its read and modify hits are priority 2 instead, with no automatic response; its use hits stay priority 10. A `use` hit that arrives from the collector or a sign-in log never isolates the host, by design, even when the secret is used from the original host: a network address is not proof of which machine used the secret. Only an event reported by the decoy's own sensor can isolate (see [Isolation](detections.md#isolation)). That is a read, a modification, a command-line match, or, for a `hostname` decoy, the DNS lookup of a decoy name reported by the sensor of the host the decoy was planted on, which is a `use` hit with on-host evidence. All of them are subject to the usual guards.
 
 A modification counts as a hit because on Linux an open for read-write is reported by the sensor as a modification, not a read. An unexpected delete is more often cleanup than an attack, so it gets a lower priority.
 
@@ -57,10 +60,15 @@ The library is built into the extension and ships with each release, so a newer 
 | `ops-runbook-breadcrumb` | file | Linux, macOS, Windows | A runbook naming the decoy API, decoy MCP server and decoy credentials, so an agent follows several decoys in sequence |
 | `passwords-note`, `passwords-csv` | file | Linux, macOS, Windows | A notes file and an exported-browser-passwords CSV naming decoy login pages |
 | `root-api-config`, `root-backup-credentials` | file | Linux | Root-only files in `/root`, `/etc`, `/opt` or `/var/backups` |
-| `win-web-config` | file | Windows | IIS `web.config` with connection strings, under a generated folder |
+| `win-web-config` | file | Windows | A leftover IIS `web.config` with an API base URL and key on the collector, under a generated folder. It has no database connection string. |
+| `mysql-dump-backup` | file | Linux, macOS, Windows | A `mysqldump` of an application database in a backup folder: a planted account and password hash, and a settings row naming a sign-in portal on the collector with that account's password. A sign-in with it is a use hit. Nothing listens for MySQL itself. |
+| `svn-auth-cache` | file | Linux, macOS, Windows | A leftover copy of a Subversion credential cache entry for a repository server on the collector. Using the credential (`svn ls <url> --username … --password …`) is a use hit. |
+| `doc-network-passwords-docx`, `doc-vpn-setup-docx` | document | Windows, macOS | A Word note of office Wi-Fi and router logins, and of a VPN setup, in a folder of the user's documents. Opening it in Word, on the host or after it was copied off, is a use hit. |
+| `doc-network-diagram-svg` | document | Linux, macOS, Windows | An SVG network diagram in the user's documents. Opening it in a browser is a use hit. A file-share and desktop decoy, not one to mail. |
 | `hostname-registry-inventory` | hostname | Linux, macOS, Windows | An inventory note naming decoy hosts under a decoy domain |
 | `hostname-internal-inventory` | hostname | Windows | An inventory note naming decoy hosts under your internal domain. **Not available in this release**: every alert layer reports unavailable and nothing is planted. |
 | `win-filezilla-sitemanager`, `win-winscp-ini` | hostname | Windows | FileZilla and WinSCP site lists naming decoy hosts |
+| `win-desktop-ini-folder` | hostname | Windows | **Opt-in.** A generated System folder whose `desktop.ini` icon is on a decoy host that does not resolve. Showing the folder in Explorer (browsing its parent) makes Windows look the host up, and the sensor reports the lookup as a use hit. Windows stops at the failed lookup: it never connects and never offers a login. Fires for anyone who browses the parent folder, the machine's own user included, and never for a shell, so it suits hosts nobody browses and interactive (RDP) intruders. |
 | `phantom-upn-credentials` | phantom_account | Linux, macOS, Windows | A note with a phantom cloud account |
 | `phantom-ad-credentials`, `win-groups-xml`, `win-unattend-xml` | phantom_account | Windows | A note, a Group Policy Preferences `Groups.xml` and an `unattend.xml` with a phantom AD account. **Not available in this release**: every alert layer reports unavailable and nothing is planted. |
 
@@ -117,9 +125,11 @@ When the version could not be read, the extension keeps the host's behavior: it 
 | Decoy | Needs | Without it |
 | --- | --- | --- |
 | File decoys, placement | `ext-artifact` subscribed, a supported sensor | Placement is Unavailable for the whole organization, with "Subscribe ext-artifact". |
-| File decoys, read alert | `ext-exfil` subscribed, file collectors on, and on Windows a sensor that [reports file events](#sensor-versions-windows) | Each layer is judged on its own. A template that also alerts on use is still planted: the read layer shows `partial` and only use is caught. A template whose only alert is read has three layers (read, modify, delete): it is planted as long as at least one of them works, for example with `ext-integrity` subscribed and `ext-exfil` missing, when only modify and delete are caught. It is not planted, and shows `unavailable`, only when none of its layers can work. |
+| File decoys, read alert | `ext-exfil` subscribed, file collectors on, and on Windows a sensor that [reports file events](#sensor-versions-windows) | Each layer is judged on its own. A template that also alerts on use is still planted: the read layer shows `partial`, and use is caught (plus modify and delete when `ext-integrity` is subscribed). A template whose only alert is read has three layers (read, modify, delete): it is planted as long as at least one of them works, for example with `ext-integrity` subscribed and `ext-exfil` missing, when only modify and delete are caught. It is not planted, and shows `unavailable`, only when none of its layers can work. |
 | File decoys, modify and delete alerts | `ext-integrity` subscribed, file collectors on | The modify and delete layers show `partial` or `unavailable` in the same way. Losing `ext-integrity` does not remove the read layer, which depends on `ext-exfil`. |
 | File, MCP and registry-hostname decoys, use alert | Nothing else | Always available. |
+| Document decoys | The same as file decoys for placement and the read, modify and delete alerts. The opened (use) alert needs nothing else. | As for file decoys. |
+| [Tokens](drops.md) | Nothing: no sensor and no other extension. | Always available. |
 | Hostnames under your internal domain | **Not available in this release.** Internal-domain hostname decoys are deferred to a later release. | Not planted. Every alert layer reports unavailable. |
 | Phantom accounts, UPN form | Entra ID adapter with the `sign_ins` source (Entra ID P1 or P2), or the Okta adapter | Not planted. |
 | Phantom accounts, AD form | **Not available in this release.** Fake Active Directory accounts are deferred to a later release, whatever your tenant does. | Not planted. Every alert layer reports unavailable. |
@@ -151,6 +161,12 @@ Google Workspace is not a supported source. **Not verified:** that Entra ID and 
 | `blind` | **Never set in this release.** The platform does not report when an adapter last delivered data, so the extension cannot tell. A quiet sign-in feed shows as an informational note instead (see above). Monitor the health of your sign-in log sources independently. |
 | `broken` | The latest `test_fire` for that layer produced no detection, or a shipped alert rule is missing or disabled (see below). |
 
+**Template tags.** The read, modify and delete alerts of a template reach a sensor only while it carries the template's tag (see [Per-host watch rules](#per-host-watch-rules)). `coverage` checks this for verified decoys. When some of the sensors holding a verified decoy of a template lack its tag, the item's note says how many, and `coverage.tag_gaps` lists `{policy, template, verified_sensors, untagged_sensors}`. When none of them carries it, an `active` item becomes `partial` with the missing requirement `template-tag`. A `deploy` or the daily run adds the missing tags, and the gaps then go away on their own. At most 25 templates are checked per request, within a time budget: past that, `coverage.tag_check_note` says the tags were not all checked, and no gap listed is not proof that there is none. The `use` layer does not depend on the tag.
+
+**Lower bounds.** Counts of verified, pending and failed decoys are read from the registry in bounded pages. On a very large organization they are lower bounds, and the item's note says so.
+
+**Tokens.** `coverage.drops` has one row per token form your organization uses: `active`, `broken` or `unverified`. See [Testing and coverage](drops.md#testing-and-coverage).
+
 `broken` appears in `coverage` only. The extension does not send an alert or event when a path breaks, so check `coverage` after changes to a rule.
 
 ### Rule integrity
@@ -171,8 +187,24 @@ Test results are read for every alert path of the configuration, in bounded batc
 
 A policy with `setup_on_new_sensors: true` places decoys when a matching sensor first connects, without waiting for the daily run. The policy matches by sensor tags, so tags applied by the installation key at enrollment work. Placement only tasks a sensor that is online. The daily reconcile compares the registry with the sensor list: a sensor that is gone has its placement state dropped, but its tokens stay in the registry for a retention period, so a credential stolen from a node that no longer exists is still caught when used, and the hit names the original host.
 
-A clone of a sensor carries the source host's decoy files at the template paths, so it gets no decoys of its own for those templates (they are skipped as `path in use`).
+A clone of a sensor carries the source host's decoy files at the template paths, so it gets no decoys of its own for those templates (they are skipped as `path in use`), and no template tags for them either. The copies on a clone alert on use and through the command-line rule, not on a plain file read (see [Copied decoys](#copied-decoys)).
+
+## Per-host watch rules
+
+Read, modify and delete alerts come from rules the extension writes in `ext-exfil` (watch rules, for reads) and `ext-integrity` (FIM rules, for modifications and deletions). Those rules reach only the sensors that hold a decoy of their template, so a sensor's rules grow with what is on that host, never with the number of templates or sensors in the organization:
+
+- While a sensor holds a decoy of a template, the extension puts a tag named `deception-t-` followed by 16 hexadecimal characters on it (one tag per template; the name comes from a hash of the template's name). The tag goes on before the first decoy of the template is placed and comes off with the last one.
+- The template's watch and FIM rules are filtered by that tag and by the platforms of the policies that select the template. Your policy's targeting tags decide where decoys go; they are not part of these rules.
+- A `deploy`, a rollout, and the daily run put back a template tag that is missing on a sensor holding its decoy. The daily run also removes template tags that no decoy accounts for. Do not remove `deception-t-` tags yourself: a sensor without the tag stops reporting reads, modifications and deletions of that template's decoys until the tag is back (use alerts and the command-line rule keep working), and `coverage` reports it as a [tag gap](#coverage-statuses).
+- A sensor reloads its watch and FIM rules about every 5 minutes, not when a tag changes. A plain read or modification in the first minutes after the first decoy of a template lands on a host can therefore be missed. The command-line rule and use alerts are not affected.
+- The platform keeps at most 256 tags per sensor and silently ignores a tag past that. On a sensor already at that limit a decoy is placed, but its read, modify and delete rules never reach it.
+
+### Copied decoys
+
+A decoy copied to another host is caught there by its use, which names the host it was planted on, and by the command-line rule when a command names the file. A plain read or modification of the copy is not caught on a host that holds no decoy of that template, because no watch or FIM rule reaches that host.
 
 ## Watch-rule budget
 
-A sensor keeps at most 100 Exfil watch rules, shared with everything else you collect. A read alert costs one watch rule per template for the whole organization, not one per host. A template that several policies deploy with different sensor tags costs one rule for each distinct tag set. `plan` returns `watch_budget` with the limit, the number of rules the extension owns, the number that are yours, and, when the total exceeds the limit, the names of your newest rules that a sensor would drop. The figure is an organization-level upper bound: per-sensor tag and platform filters are not applied. Whether the extension's own rules sort ahead of yours on a sensor depends on `ext-exfil` behavior that is **not verified** here, so keep the total under 100.
+A sensor keeps at most 100 Exfil watch rules, shared with everything else you collect on it. A template's read alert costs a sensor one watch rule per file-name pattern it watches, and only on sensors that hold a decoy of that template. So the cost on a host is the sum over the templates it holds, not over the organization.
+
+`plan` returns `watch_budget` per sensor, over the sensors it planned in detail (at most 100): the busiest of them (`sid`, the rules the extension `owned`, your own `customer` rules that reach it, the `total`, and `at_risk`: the names of the newest rules that sensor would drop past the limit), plus `over` and up to 20 `over_sensors`. It counts the templates the sensor holds or would get from this plan, so it is an estimate for that sample, not a check of every sensor. The **Coverage** tab shows the same figure under **Exfil watch rules**. Whether the extension's own rules sort ahead of yours on a sensor depends on `ext-exfil` behavior that is **not verified** here, so keep each sensor under 100.

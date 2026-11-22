@@ -18,6 +18,9 @@ Every confirmed hit is one normalized event of type `deception_hit`, sent throug
   "reporting_sid": "",
   "on_host": false,
   "classification": "automated",
+  "mode": "live",
+  "platform": "linux",
+  "reader_key": "",
   "synthetic": false,
   "case_group_key": "<sid>:<incident id>",
   "source_ip": "198.51.100.7",
@@ -38,13 +41,16 @@ Every confirmed hit is one normalized event of type `deception_hit`, sent throug
 | `reporting_sid` | The sensor that reported it, when different from `sid`. |
 | `on_host` | True only when the evidence is an event the decoy's own sensor reported (a file read, a modification, a command-line match or, for a `hostname` decoy, a DNS lookup of a decoy name, on the host the decoy was planted on); `details.on_host_basis` is then `sensor_event`. **It is always `false` for a collector hit and for a sign-in**, whatever the source address, by design: see [Isolation](#isolation). |
 | `classification` | A label, see below. |
+| `mode` | `observe` for an on-host read or modification of a decoy whose policy is in [observe mode](configuration.md#observe-mode), `live` for everything else, uses included. |
+| `platform` | The decoy sensor's platform, when known. |
+| `reader_key` | A stable key of the reader's identity (platform, image path, and signer or SHA-256), the same one `list_readers` groups by. Empty when the event names no process. |
 | `synthetic` | True only for the extension's own test hits. It is set on the server side. Nothing in an incoming request can set it. |
 | `case_group_key` | `<sid>:<incident id>`. Hits on the same sensor within an incident window (30 minutes by default) share an incident. |
 | `source_ip`, `user_agent` | For collector hits. |
 | `process` | The acting process, when the event carried it. |
 | `details` | Kind-specific, from an allowlist of fields. Secret values are scrubbed from every string, and headers that carry credentials are never copied. For collector hits it includes the service, method, path and request details such as an MCP tool name. For sensor events: the event type, the observed path and the decoy path. For hits that carry a source address, it also holds [address evidence](#address-evidence-is-enrichment-only). |
 
-The envelope is common to every kind, so the default rules match on it and a new kind raises detections with no rule change.
+The envelope is common to every kind, so the default rules match on it and a new kind raises detections with no rule change. Token hits use the same envelope under their own event type, `deception_drop_hit` (see [What a token hit looks like](drops.md#what-a-hit-looks-like)), so rules written for `deception_hit` do not match them. An approved reader's read is not a hit: it is a [`deception_read_allowed`](configuration.md#every-approved-read-is-recorded) event.
 
 A command-line match and the file read of the same access, and a launcher shell and the shell it starts, are collapsed into one hit (see [One access, one hit](decoys.md#one-access-one-hit)). The extension's own placement and verification reads never raise a hit (see [The extension's own reads never alert](decoys.md#the-extensions-own-reads-never-alert)).
 
@@ -80,21 +86,25 @@ A label only ever sits on top of a confirmed hit and never decides whether a hit
 | `ai-agent-likely` | An MCP tool call, or a User-Agent naming a known AI client or agent framework. |
 | `automated` | A scripting or CLI User-Agent (curl, wget, Python, Go, kubectl, aws-cli, git and similar). |
 | `human-likely` | A browser User-Agent on the collector, or a read from a graphical file manager. |
+| `link-preview-likely` | Tokens only: a link unfurler, a link checker or an entry of your preview list. See [Link previews](drops.md#link-previews-and-mail-scanners). |
 
 The labels based on how many decoys one process or address touched within a minute are **not active** in this release. The extension collapses the events of one access into one hit, but it does not join a file read to its process's `NEW_PROCESS` event to fill in the process, so `process` and the reader matching below depend on what the forwarded event carries. Neither is verified on real hosts.
 
 ## Default detection rules
 
-On subscribe the extension installs six rules in your `dr-general` hive, named `deception-*`. They are ordinary D&R rules. You own them: edit, disable or replace them. The extension never overwrites one you changed. When a newer shipped version exists, `plan` shows it as `modified` with the shipped copy, and `deploy` applies it only when you pass `apply_pack` or `apply_all_pack`; applying a rule restores the shipped rule as a whole, including its tags and expiry. `coverage` checks the stored rules against the shipped ones (see [Rule integrity](decoys.md#rule-integrity)). On unsubscribe or uninstall, only rules still equal to the shipped version are removed. A rule you edited stays.
+On subscribe the extension installs nine rules in your `dr-general` hive, named `deception-*`. They are ordinary D&R rules. You own them: edit, disable or replace them. The extension installs a shipped rule that is missing (on subscribe, on every `deploy` and configuration update, and in the daily run), but it never overwrites one that exists, whether you edited it or it is an older shipped version. When a newer shipped version differs, `plan` shows it as `modified` with the shipped copy, and `deploy` applies it only when you pass `apply_pack` or `apply_all_pack`; applying a rule restores the shipped rule as a whole, including its tags and expiry. See [Upgrading](operations.md#upgrading). `coverage` checks the stored rules against the shipped ones (see [Rule integrity](decoys.md#rule-integrity)). On unsubscribe or uninstall, only rules still equal to the shipped version are removed. A rule you edited stays.
 
 | Rule | Matches | Does |
 | --- | --- | --- |
-| `deception-alert` | A real (not synthetic) hit, layer not `delete`, and not a sanctioned-agent read | Report, category `deception.<kind>.<layer>`, **priority 10**, with the case grouping key |
-| `deception-alert-sanctioned-agent` | A real hit classified as a sanctioned agent, layer not `use` | Report, priority 6 (never matches in this release, see above) |
+| `deception-alert` | A real (not synthetic) hit, layer not `delete`, mode not `observe`, and not a sanctioned-agent read | Report, category `deception.<kind>.<layer>`, **priority 10**, with the case grouping key |
+| `deception-alert-observe` | A real hit, layer not `delete`, mode `observe` | Report, priority 2. No response. |
+| `deception-alert-sanctioned-agent` | A real hit classified as a sanctioned agent, layer not `use`, mode not `observe` | Report, priority 6 (never matches in this release, see above) |
 | `deception-alert-decoy-deleted` | A real hit with layer `delete` | Report, priority 5. Never isolates. |
-| `deception-respond` | A real hit, not `delete`, `on_host` true, classification neither `scanner-likely` nor sanctioned | Calls the extension's `respond` request with the hit id and action `policy` (which isolates only if the hit's policy sets `responses.isolate`) |
+| `deception-respond` | A real hit, not `delete`, mode not `observe`, `on_host` true, classification neither `scanner-likely` nor sanctioned | Calls the extension's `respond` request with the hit id and action `policy` (which isolates only if the hit's policy sets `responses.isolate`) |
 | `deception-test` | A synthetic hit | Report under the reserved category `__deception-test`, no response |
 | `deception-coverage-warning` | A `deception_coverage_warning` event | Report `deception.coverage`, priority 3 |
+| `deception-drop-alert` | A real `deception_drop_hit`, live, not `link-preview-likely` or `scanner-likely` | Report, priority 10, filed with no sensor (see [Tokens](drops.md#cases-and-response)) |
+| `deception-drop-preview` | A real `deception_drop_hit` that is `link-preview-likely`, `scanner-likely` or in observe mode | Report, priority 3 |
 
 The detection metadata carries `case_group_key`, `case_sid` and `case_hostname` (the hit's own endpoint, so a case is filed under the host the decoy was planted on, not under the extension's adapter), and a `deception` object (`hit_id`, `decoy_id`, `kind`, `template`, `layer`, `classification`) so your own rules and cases can use them.
 
@@ -112,6 +122,10 @@ detect:
     - op: is
       path: event/layer
       value: delete
+      not: true
+    - op: is
+      path: event/mode
+      value: observe
       not: true
     - op: or
       rules:
@@ -144,6 +158,12 @@ If you disable or edit the `deception-test` rule so it no longer produces a dete
 
 If the `ext-cases` extension is subscribed and ingesting your detections, a `deception.*` detection at priority 10 opens a critical case (priorities 8 to 10 map to critical). With the default rules this is the case for real hits that are not deletions. Deletion hits are priority 5, and synthetic (test) hits never open a case. If you edit the rules, the priorities and cases follow your edits. The case grouping key keeps hits from different machines in different cases, even though they all arrive through the same adapter. Hits on one machine within an incident window group together. A hit that came through the collector (a secret used over the network) is filed under the host the decoy was planted on, with that host's hostname, not under the extension's adapter.
 
+**Observe mode.** An observe-mode hit (priority 2) opens a low-severity case. A critical hit on the same host joins that case and raises it.
+
+**Tokens.** A token hit opens one case per token and incident, filed with no sensor, with the token's label where the host name usually is. Priority 10 is critical and priority 3 (a link preview, a scanner or an observe-mode token) is medium. See [Tokens](drops.md#cases-and-response).
+
+**In the web app**, a case that holds Deception detections shows a **Deception** section: up to five hits with what happened (layer and class), when, the endpoint (or "No endpoint (token)"), the policy or the token's label, the process, user and signer, whether the hit was in observe mode, and links to the hit and the decoy or token in the Deception page.
+
 Test hits are reported under `__deception-test`. `ext-cases` ignores categories that start with `__`, so tests never open a case. The `deception.coverage` detection (priority 3) is a normal detection. Whether it opens a case depends on how Cases ingests your detections, which is **not verified** here.
 
 ## Response
@@ -157,9 +177,9 @@ Test hits are reported under `__deception-test`. `ext-cases` ignores categories 
 | `isolate` | Network-isolates the decoy's sensor, behind the guards below. |
 | `tag` | Tags the sensor `deception-hit` for 30 days. Refused for a synthetic hit, a hit that names no sensor, or an inactive organization. The shipped rules do not call it. |
 | `ai_triage` | **Not built.** The request says so. Add a `start ai agent` response to your own detection rule instead. |
-| `policy` | Does what the hit's policy asks: `isolate` if `responses.isolate` is `true`. `responses.start_ai` produces the `ai_triage` answer above. A policy that asks for nothing answers "no automatic response". |
+| `policy` | Does what the hit's policy asks: `isolate` if `responses.isolate` is `true`. `responses.start_ai` produces the `ai_triage` answer above. It does nothing, whatever the rule that calls it, when the hit was in observe mode (`observe_mode_hit`), its policy is disabled (`policy_disabled`) or no longer in the configuration (`policy_not_in_config`), or the policy asks for nothing (`no_automatic_response`). The hit still alerts. |
 
-The answer lists each action and whether it was done, or why it was refused.
+The answer lists each action with `done` and, for an action not done, its `reason` and a stable `code` (see [Errors and refusal codes](requests.md#errors-and-refusal-codes)). An explicit `isolate` or `tag`, from the web app or your own rule, is a person's or a rule's decision: it still acts on an observe-mode hit or a hit whose policy is disabled, behind the same guards.
 
 ### Isolation
 
@@ -172,6 +192,7 @@ The extension refuses to isolate, whatever your rules say, when the hit is:
 
 | Refusal reason | Case |
 | --- | --- |
+| `no_endpoint` | A token hit, or a hit that names no sensor: there is no machine to isolate. |
 | `synthetic_hit`, `unmatched_test_instance_hit` | A test hit, or a hit on a test decoy that no test run claims. |
 | `delete_only_hit` | A deletion. |
 | `off_host_hit` | Not from the decoy's own host: not `on_host`, or resting on a source address. |
@@ -182,7 +203,7 @@ The extension refuses to isolate, whatever your rules say, when the hit is:
 | `already_isolated_for_incident`, `isolation_in_progress` | A recorded isolation prevents repeats: an incident is isolated once, even if an analyst later releases the host. A concurrent delivery sees it in progress. If the host was isolated but the extension could not record it (a storage failure that outlasts its retries), nothing marks the incident as done, and a later delivery can isolate it again once the claim lapses. This is a narrow window. |
 | `org_hourly_cap` | The organization already isolated its [hourly cap](configuration.md#isolation-cap) of hosts in the last hour (default 5). |
 
-A failed isolation frees the incident for a retry. `respond` also refuses to isolate when the organization's configuration cannot be read.
+A failed isolation frees the incident for a retry. `respond` also refuses to isolate when it cannot know your isolation cap: the configuration is disabled (`config_disabled`), cannot be read (`config_unreadable`), or its `isolation_cap_per_hour` is invalid (`isolation_cap_invalid`). `plan` shows the cap in effect as `isolation_cap`.
 
 ## Test-fire
 
@@ -199,9 +220,12 @@ Test-fire checks that each read, modify and use alert path works, on demand with
 - **Broken paths show up.** If a run produces no detection (the `deception-test` rule was edited, disabled or deleted, for example), `coverage` marks the path `broken`. `coverage` reads the latest test result of every alert path in your configuration, in bounded batches, and says how many it could not read (`test_results_unread`). The response of `test_fire` also carries a `pack_check` object with the rule integrity result (see [Rule integrity](decoys.md#rule-integrity)).
 - **Paths that are unavailable in this release are not tested.** `test_fire` runs nothing for the fake AD account and internal-domain hostname templates. It lists at most 10 such policy and template pairs in its `issues` ("not tested: the alert paths are unavailable"), then says how many more there are. The `coverage` request lists every one.
 
+- **New test decoys wait for their rules.** A read or modify test runs only once the test decoy's sensor has carried the template's [tag](decoys.md#per-host-watch-rules) for 10 minutes (two rule reloads), counted from the decoy's creation or from the last time the tag was put back. Until then the issue says why, and the use test runs at once.
+- **Tokens are tested too.** One hidden test token per form your organization uses is fired each day, and `test_fire` with `drop_id` fires one token now. See [Testing and coverage](drops.md#testing-and-coverage).
+
 Which alert paths a test can reach depends on the deployment: a collector test needs the extension's internal collector path, and a path the deployment cannot test is reported in the `issues` of the answer rather than silently passed.
 
-**When the result is final.** A run's detection can be held for a while (see [Alert latency](#alert-latency)), so a run is not finalized as "no detection" until its window, the hold time and a margin have passed: about an hour after the run starts (5 minutes of run window, 10 minutes of hold, then up to 42 minutes for the extension to settle held events and a slow detection). Until then `list_test_runs` shows the run as `pending` with the time its outcome is due (`expected_final_at`), and `coverage` does not mark its path `broken` for it. A run past its due time is recorded by the extension's next maintenance pass, not by the 30-minute sweep that releases held events. A test detection is reported under the reserved `__deception-test` category, which the platform never lists or sends to outputs: it does not appear in the detection list whatever filter you use, so read the outcome with `list_test_runs` and `coverage`.
+**When the result is final.** A run whose detection comes back is final at once, as `detected`, and `coverage` shows it from then on. A run whose helper the sensor never started is final at once as `not_detected`, since nothing touched the decoy. Otherwise a run's detection can be held for a while (see [Alert latency](#alert-latency)), so a run is not finalized as "no detection" until its window, the hold time and a margin have passed: about an hour after the run starts (5 minutes of run window, 10 minutes of hold, then up to 42 minutes for the extension to settle held events and a slow detection). Until then `list_test_runs` shows the run as `pending` with the time its outcome is due (`expected_final_at`), and `coverage` does not mark its path `broken` for it. A run past its due time is recorded by the extension's next maintenance pass, not by the 30-minute sweep that releases held events. A test detection is reported under the reserved `__deception-test` category, which the platform never lists or sends to outputs: it does not appear in the detection list whatever filter you use, so read the outcome with `list_test_runs` and `coverage`.
 
 Test history is bounded: a test operation's full record expires 7 days after it closes, and its idempotency record and run rows 30 days after, so a `test_fire` request replayed after 30 days is a new request.
 
@@ -217,4 +241,5 @@ Decoy reads reach the extension through the sensor and a forwarding rule, and us
 
 - A file event that arrives before the extension has confirmed whether its own placement helper caused it is held for up to 10 minutes, and a 30-minute sweep releases held events. About 40 minutes is therefore the **nominal** delay for such a real hit when there is no backlog and nothing fails. It is not a maximum: when many held events are waiting, or a step fails and is retried, the release can take longer, each retry being a platform retry or the next 30-minute sweep. This only affects events on a decoy that has an operation running a helper at that moment. It does not delay hits on idle decoys.
 - A read by an unknown process that falls inside one of the extension's own operations on that decoy is held while it asks the sensor whether the reader is the sensor itself. That normally takes a second or two. When the answers never come, the read becomes due for judgment after two minutes and is then judged like any other read: a real hit. It is released by the next event of that sensor or, at the latest, by the 30-minute sweep, so it can wait up to about 32 minutes in the nominal case, and longer under backlog or failures. The extension asks a given sensor one question at a time and at most 12 per ten minutes; beyond that every read is judged as it arrives.
+- A host's first decoy of a template is watched for reads and modifications only once the sensor reloads its rules, 0 to 5 minutes after the template's tag is put on it (see [Per-host watch rules](decoys.md#per-host-watch-rules)). Use alerts and the command-line rule are not affected. This delay has not been measured on a live sensor.
 - Sensor drops under load: the Linux file collector can drop records silently on a busy host, so a decoy read can be missed. This is a sensor limitation.
