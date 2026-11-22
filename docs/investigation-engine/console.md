@@ -95,8 +95,8 @@ serial baseline.
   case, entity, message or question), State, Outcome, Template, Time range, Started by
   (an email, or an identity such as `user:<id>`) and **Mine**. **Not decided yet** under
   Outcome lists the runs that have no outcome. The **Waiting for a person** chip lists
-  the runs in the state **Waiting for a decision** (they have their answer, and their
-  actions wait for a person).
+  the runs in the state **Waiting for a decision** (`decided`): the outcome is final, and
+  steps or actions may still be running, most often an action that waits for a person.
 - **The filter is in the address.** Every filter is read from and written to the page's
   query string (`kind`, `session`, `state`, `outcome`, `template`, `q`, `since`,
   `entity`, `started_by`), so a link to the page reproduces your view. A value the
@@ -416,8 +416,8 @@ as a draft at version 1.
   seconds, budgets exceeded).
 - **Save** writes the Hive record. Saving never changes the status: "New templates and
   copies are drafts; use Make active on the template's page."
-- Editing an active template warns that the change applies right away to the runs that start by themselves
-  right away. Move it back to draft first to test safely.
+- Editing an active template warns that the change applies right away to the runs that start by themselves.
+  Move it back to draft first to test safely.
 - Saving needs `investigation_plan.get` and `investigation_plan.set`. If the record
   changed since you opened it, you are told to reload and apply your edit again.
 
@@ -589,7 +589,9 @@ investigate a product's alerts by itself, with no rule to write. Turning a sourc
 one step that installs or activates that product's template, creates the key it
 investigates with and subscribes its detections: see
 [the key that turning a source on creates](permissions.md#the-key-that-turning-a-source-on-creates).
-Turning one on needs permission to change investigation policies.
+Turning one on needs `investigation_policy.get` and `investigation_policy.set`, plus the
+permissions of what setup writes with your token (the template, the secret and the key):
+see [the key that turning a source on creates](permissions.md#the-key-that-turning-a-source-on-creates).
 
 ### A source's mode
 

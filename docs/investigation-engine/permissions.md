@@ -91,7 +91,7 @@ Git-synced pipeline, can opt out by adding the tag `allow-api-key-promotion` to 
 enabled `investigation_policy/default` record. Setting that tag needs
 `investigation_policy.set.mtd`, so **never give an AI agent's key any
 `investigation_policy.*` permission**: it could turn the gate off and make its own
-drafts. If the policy record cannot be read, the write is refused.
+drafts active. If the policy record cannot be read, the write is refused.
 
 ### Naming a secret as the run identity
 
@@ -130,8 +130,11 @@ that source needs, stores it in a Hive secret named
 `investigation-engine-autopilot-<source>`, names that secret as the run identity, and
 subscribes the source's detections. A key created this way is **setup-owned**: the
 engine made it, and it may replace it later. Everything it does uses your token and
-your permissions (turning a source on needs permission to change investigation
-policies), never the engine's own credential.
+your permissions, never the engine's own credential. Turning a source on therefore needs
+`investigation_policy.get` and `investigation_policy.set` for the settings, plus the
+permissions of what setup writes with your token: `investigation_plan.get` and
+`investigation_plan.set` for the template, `secret.get` and `secret.set` for the secret,
+and `apikey.ctrl` for the key. A write the platform refuses is undone (see below).
 
 ### What each source's key gets
 

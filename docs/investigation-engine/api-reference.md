@@ -74,8 +74,9 @@ is `investigation.set` + `insight.evt.get`. See [Permissions](permissions.md).
 | `GET /stats` | read + `investigation_policy.set` | The performance report. See [Stats](#stats). |
 
 **Listing runs.** Filters are combined with AND and evaluated by the engine, so they
-cover every run: `state` (`queued`, `running`, `decided` (the run has its answer and its
-actions wait for a person; the console says **Waiting for a decision**), `completed`,
+cover every run: `state` (`queued`, `running`, `decided` (the outcome is final; steps or
+actions may still run, often an action that waits for a person; the console says
+**Waiting for a decision**), `completed`,
 `cancelled`, `failed`, `budget_exhausted`), `outcome` (one of the eight
 [outcomes](concepts.md#outcomes), or `undecided`; needs `investigation_policy.set`),
 `verdict` (the label: `true_positive`, `false_positive`,
@@ -195,8 +196,9 @@ once the write made after the run ended has landed.
 
 Action states, in the order the inbox lists them: `awaiting_approval`, `proposed`,
 `uncertain`, `executing`, `reverting`, `active`, `confirmed`, `reverted`, `failed`,
-`denied`, `expired`. Each item is the action plus `run` (see below). `approve`/`deny` apply to `awaiting_approval`,
-`extend`/`confirm` to `active`, `revert` to `active` or `confirmed`. The approvers rule
+`denied`, `expired`. Each item is the action plus `run` (see below). `approve`/`deny` apply to `awaiting_approval` and to a `proposed` action; a suggestion
+is a `proposed` action that can only be denied, which the console calls **Dismiss**.
+`extend`/`confirm` apply to `active`, `revert` to `active` or `confirmed`. The approvers rule
 is in [Approvals](policies.md#approvals). A `tag` or `tag.add` holds no lease: it goes
 from `executing` straight to `confirmed`, its `lease_until` is the zero time, and
 `extend` and `confirm` are `false` in its `eligibility` whoever asks and answer `409`.
@@ -245,7 +247,7 @@ retention already removed is not listed.
 | Method and route | Permission | Purpose |
 |---|---|---|
 | `GET /autopilot` | read (identity-bound) | The auto-investigation settings, with their `etag`; spend and counters; and `identity_readiness`, one entry per source that is on. Query `source`, `period`, `from`, `to`. |
-| `PUT /autopilot` | `investigation.get`, `insight.evt.get`, `investigation_policy.get`, `investigation_policy.set` | Replace the settings. Needs `If-Match` with the `etag` from the read, or `?force=true`; a missing or stale one is `409`. Turning a source on is one operation: see [setup](permissions.md#turning-a-source-on-what-to-expect-from-setup). |
+| `PUT /autopilot` | `investigation.get`, `insight.evt.get`, `investigation_policy.get`, `investigation_policy.set`, and what setup writes with your token (`investigation_plan.set`, `secret.set`, `apikey.ctrl`) | Replace the settings. Needs `If-Match` with the `etag` from the read, or `?force=true`; a missing or stale one is `409`. Turning a source on is one operation: see [setup](permissions.md#turning-a-source-on-what-to-expect-from-setup). |
 | `GET /autopilot/alerts` | read | The alerts and the runs they started, with the state of each and the named reason when one was skipped. Filters `source`, `state`, `group_id`, `run_id`, `from`, `to`, `limit`, `cursor`. |
 | `GET /autopilot/actions` | read | The log of what the engine did by itself, with counts. Filters `product`, `route_id`, `action_type`, `state`, `from`, `to`, `limit` (1 to 200), `cursor`. Open to anyone who can read runs. |
 | `GET /autopilot/actions/{aid}` | read | One automatic action's metadata. Query `run_id`. |

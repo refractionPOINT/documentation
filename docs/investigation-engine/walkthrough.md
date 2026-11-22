@@ -255,7 +255,10 @@ autonomy:
   proposes after a close outcome. Any other action of an active template waits for a
   person even under `auto`, with the reason `no_registered_authorization`. In the
   default library, only the `contain.email` entries of `mailsec-message` and
-  `phishing-campaign` carry an authorization.
+  `phishing-campaign` carry one. Tags are the other case: under `auto`, a `tag`,
+  `tag.add` or `tag.remove` entry runs by itself when a rule that does not use the AI
+  decided and holds again on the run's own evidence (see
+  [Tags](templates.md#tags-run-by-themselves-and-last-their-ttl)).
 - `ai_may_decide` is separate from the modes: it says whether an AI answer may
   **decide** the outcome for a template (`off`, `escalate`, `close_and_escalate`).
   Leave it `off` until you have read how the AI's recommendations compare with your
