@@ -26,7 +26,7 @@ Each row has one status: the first of these rules that matches, in this order. A
 | Not tested | Nothing is deployed yet, so nothing could be tested, or there is no test-fire result in the last 48 hours. |
 | Unavailable | Policies select templates the organization cannot run. (A quiet source would count here too, but no source is ever judged quiet in this release: see the `blind` status in [Coverage statuses](decoys.md#coverage-statuses).) |
 | Rolling out | Not every targeted sensor holds a decoy yet, a [rollout](operations.md#rollouts) is still running, or a sensor count is a lower bound, so whether the rollout is complete is unknown (never assumed complete). |
-| Observing | A policy is in [observe mode](configuration.md#observe-mode): its reads do not alert yet. |
+| Observing | A policy is in [observe mode](configuration.md#observe-mode): its unapproved reads and modifications alert at low priority, with no automatic response. |
 | Protected | None of the above. |
 
 Observing comes after every problem status, so it never hides a problem, and a healthy organization in observe mode reads Observing, not Protected. An **Observing** badge is also shown next to any other status.

@@ -9,7 +9,7 @@ limacharlie extension config-get --name ext-deception --oid "$OID"
 limacharlie extension config-set --name ext-deception --input-file deception.yaml --oid "$OID"
 ```
 
-You can also edit the record in the web app: the **Policies** tab edits policies and templates, copies templates from the Template Library, and has a raw editor for the whole record (custom domains, the reader allowlist, the isolation cap and template settings: these have no form of their own; a policy's mode and observe end are in the policy editor). Tokens made in the **Tokens** tab are not part of the record; tokens you declare under `drops` are. The extension validates a save the same way, and a save that conflicts with a newer version is refused without overwriting it.
+You can also edit the record in the web app: the **Policies** tab edits policies and templates, copies templates from the Template Library, and has a raw editor for the whole record (custom domains, the reader allowlist and the isolation cap: these have no form of their own; a policy's mode and observe end are in the policy editor, and a template's settings in the template editor). Tokens made in the **Tokens** tab are not part of the record; tokens you declare under `drops` are. The extension validates a save the same way, and a save that conflicts with a newer version is refused without overwriting it.
 
 ## Enabling the configuration record
 
@@ -94,7 +94,7 @@ policies:
 | Field | Meaning |
 | --- | --- |
 | `name` | Unique. Required. |
-| `enabled` | A disabled policy plants nothing and supplies nothing to a hit: no allowlist, no mode and no automatic response. The daily run retires its decoys unless another enabled policy still selects their templates. Until then they keep alerting, live, and only the organization-wide `reader_allowlist` approves their readers. |
+| `enabled` | A disabled policy plants nothing and supplies nothing to a hit: no allowlist, no mode and no automatic response. The daily run retires its decoys unless another enabled policy still selects their templates. Until then, a hit on one of them is judged live and only the organization-wide `reader_allowlist` approves its reader, but the rules that forward a template's on-host events (reads, modifications, deletions, command lines) are removed at the next configuration update once no enabled policy selects it, so only use hits that arrive through the collector or your sign-in logs still reach those decoys. |
 | `targeting` | `tags`, `platforms` and `sids` combine. At least one must be set: an empty targeting would match every sensor and is rejected. |
 | `templates` | `select_tags` and `names`; at least one required. Only templates in this same record are selectable. The default library is outside it. |
 | `responses.isolate` | Lets the default `deception-respond` rule isolate the host when the evidence is an event the decoy's own sensor reported. Default `false`. See [Isolation](detections.md#isolation). |
