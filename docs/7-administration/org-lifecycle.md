@@ -107,7 +107,9 @@ Organization API keys cannot delete an organization. Use a user session or a use
 === "Python"
 
     ```python
+    import time
     from limacharlie.client import Client
+    from limacharlie.errors import ApiError
     from limacharlie.sdk.organization import Organization
 
     client = Client(oid='ORG_ID', uid='USER_ID', api_key='USER_API_KEY')
@@ -115,8 +117,18 @@ Organization API keys cannot delete an organization. Use a user session or a use
 
     # First call returns {"confirmation": "<token>"}
     token = org.delete_org()["confirmation"]
-    # Second call, within 1 minute, deletes
-    org.delete_org(token)
+
+    # Second call, within 1 minute, deletes. A 503 means the deletion
+    # is still running: retry with the same token.
+    deadline = time.time() + 15 * 60
+    while True:
+        try:
+            org.delete_org(token)
+            break
+        except ApiError as e:
+            if e.status_code != 503 or time.time() > deadline:
+                raise
+            time.sleep(2)
     ```
 
 === "REST API"
@@ -133,9 +145,9 @@ Organization API keys cannot delete an organization. Use a user session or a use
       -H "Authorization: Bearer $LC_JWT"
     ```
 
-Send the `DELETE` within one minute of getting the token. The deletion can take several minutes. If it returns `503` with `retryable: true`, wait for the `Retry-After` delay and retry the same `DELETE` with the same token. Once the deletion has been accepted, the token can be retried for up to 15 minutes. If the API says the token expired and the organization still exists, get a new confirmation token.
+Send the `DELETE` within one minute of getting the token. The deletion can take several minutes. If it returns `503`, the JSON body carries `"retryable": true` next to `error` and `reason` fields: wait for the `Retry-After` delay (in seconds) and retry the same `DELETE` with the same token. Once the deletion has been accepted, the token can be retried for up to 15 minutes. If the API says the token expired and the organization still exists, get a new confirmation token.
 
-The Python `delete_org()` and the CLI do not retry a `503` for you. Retry the second call yourself.
+The Python `delete_org()` and the CLI do not retry a `503` for you. Retry the second call yourself, as the Python example above does. In Python the `503` raises `ApiError` with `status_code` 503.
 
 ### Offboarding a customer organization
 
