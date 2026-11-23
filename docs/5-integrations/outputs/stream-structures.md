@@ -383,14 +383,17 @@ output about once a minute.
 | `output` | string | Name of the output that dropped data |
 | `module` | string | Output module type (`webhook`, `s3`, `kafka`, etc.) |
 | `stream` | string | Stream the dropped records belonged to: `event`, `detect`, `audit`, `log`, `tailored` or `billing`. Never `deployment` (see below) |
-| `count` | integer | Number of drops in the aggregation window. A lower bound on the records lost: a batch output that fails to upload counts as one drop however many records the batch held, and records skipped while the output is disabled are not counted. See [Output Delivery Guarantees](delivery.md#finding-out-about-failures) |
+| `count` | integer | Number of drops observed in the aggregation window, not every record lost. A failed batch upload can show up as one drop or none, and records skipped while the output is disabled are not counted. See [Output Delivery Guarantees](delivery.md#finding-out-about-failures) |
 | `bytes` | integer | Total serialized bytes dropped in the window. May be 0 for saturation drops where the record is dropped before serialization. |
 
 #### Behavior notes
 
 - **Aggregated, not per-record.** Drops are coalesced over a window of about one
-  minute per output. An output that fails on every record still produces at most
-  one event a minute, and `count` holds the whole window's drops.
+  minute per output. An output that fails on every record normally produces one
+  event a minute, and `count` holds the whole window's drops. A final summary can
+  come sooner when an output stops.
+- **Best-effort.** The summary events can themselves be lost, so they can miss
+  some drops.
 - **Drops on the deployment stream itself are not reported.** A broken
   deployment-stream output would otherwise emit drop events that get dropped in
   turn, forever.

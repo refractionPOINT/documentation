@@ -6,4 +6,4 @@ After you have confirmed that the output configurations works, you can switch th
 
 If you are running into an error configuring an output, the error details will be listed in the Platform Logs section under Errors, with the key that looks like `output/OUTPUT_NAME`.
 
-If an output fails, it gets disabled temporarily to avoid spam. Records that arrive while it is disabled are dropped. It is re-enabled automatically within about an hour, or immediately when you change its configuration. See [Output Delivery Guarantees](delivery.md) for what happens on a failure.
+If an output fails, it gets disabled temporarily to avoid spam. Records that arrive while it is disabled are dropped. LimaCharlie retries it at the next configuration refresh, normally within about an hour. Changing its configuration can bring it back sooner, once the change takes effect. See [Output Delivery Guarantees](delivery.md) for what happens on a failure.

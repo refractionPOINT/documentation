@@ -889,7 +889,7 @@ except LimaCharlieError as e:
 
 The `Client` retries HTTP 504 (gateway timeout) with exponential backoff. It does not retry HTTP 429 (rate limit) by default, and raises `RateLimitError` instead. The API does not normally send a `Retry-After` header, so `retry_after` is usually `None`.
 
-To retry 429 responses automatically, create the client with `is_retry_quota_errors=True`. It makes 3 attempts in total, with waits that start at 10 seconds and double each time.
+To retry 429 responses automatically, create the client with `is_retry_quota_errors=True`. A request then gets 3 attempts in total. After consecutive 429 responses the client waits 10 seconds before the second attempt and 20 seconds before the third, then waits 40 seconds before raising `RateLimitError`.
 
 ```python
 client = Client(oid='ORG_ID', api_key='API_KEY', is_retry_quota_errors=True)

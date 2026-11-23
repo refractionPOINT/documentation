@@ -96,7 +96,7 @@ We suggest you set up an [Output](../../5-integrations/outputs/index.md) to send
 
 ## What are the API rate limits?
 
-A regular API key or user can make 500 requests per 60 seconds. A bulk key can make 1,000. Going over returns an `HTTP 429` response, and a few expensive endpoints have tighter hourly limits. See [API Rate Limits](../api-rate-limits.md) for the full list and for how to retry.
+A regular API key or user can make 500 requests per 60 seconds. A bulk key can make 1,000. Going over returns an `HTTP 429` response, and a few expensive endpoints have tighter hourly limits. See [API Rate Limits](../api-rate-limits.md) for endpoint examples and retry guidance.
 
 ## Does LimaCharlie offer reporting capabilities?
 

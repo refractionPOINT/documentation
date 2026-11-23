@@ -2,7 +2,7 @@
 
 Outputs are best-effort. LimaCharlie keeps no durable queue between the platform and your destination. When a destination is down or too slow, data can be lost. A record can also arrive more than once, and records can arrive out of order.
 
-This page describes what happens when a delivery fails, how to find out, and how to build a pipeline that loses as little as possible.
+This page describes what happens when a delivery fails, how to find out, and how to set up a pipeline that reduces the risk of loss.
 
 ## Streaming and batch outputs
 
@@ -10,16 +10,20 @@ Outputs fall into two groups, and they fail differently.
 
 | Group | Outputs | How records are sent |
 |-------|---------|----------------------|
-| Streaming | Syslog, Webhook, Kafka, Google Pub/Sub, Azure Event Hub, Slack, Microsoft Teams, Telegram, SMTP and similar | One record at a time, as it arrives |
-| Batch | Amazon S3, Google Cloud Storage, Azure Storage Blob, SFTP, SCP, BigQuery, Elastic, OpenSearch, Humio and Webhook Bulk | Records pile up in a local file that is uploaded as a whole |
+| Streaming | Syslog, Webhook, Kafka, Google Pub/Sub, Azure Event Hub, Slack, Microsoft Teams, Telegram, SMTP and similar | The output accepts records one at a time. Some destinations, such as Google Pub/Sub, group them for transmission. |
+| Batch | Amazon S3, Google Cloud Storage, Azure Storage Blob, SFTP, SCP, BigQuery, Elastic, OpenSearch, Humio and Webhook Bulk | Records are buffered locally and uploaded together as a batch. |
 
 ## Streaming outputs
 
-Each record gets up to 3 attempts, and the whole delivery of one record has a hard limit of about 5 seconds. The wait before the second attempt is 200 ms and the wait before the third is 400 ms. When the 5 seconds run out, LimaCharlie stops retrying even if attempts are left. If every attempt fails, LimaCharlie drops the record and [disables the output](#after-a-failure).
+A failed send is retried up to 3 attempts in total. The wait before the second attempt is 200 ms and the wait before the third is 400 ms. Retries for one record stop once about 5 seconds have passed, even if attempts are left. A single send can take longer than that for some destinations: Azure Event Hub, for example, has its own 10-second timeout. Some destinations, such as Google Pub/Sub, report a failure only after the send has returned.
+
+If every attempt fails, LimaCharlie drops the record and [disables the output](#after-a-failure).
 
 ### Webhook
 
-Each request times out after 2 seconds, and any response outside the 2xx range counts as a failure. Inside each attempt, LimaCharlie retries a failed request up to 3 times. The 5-second limit above still applies to all of it, so a record whose receiver keeps timing out gets at most two or three requests before it is dropped. A slow receiver can still see the same record more than once, so make the receiver idempotent and keep it fast. A receiver that needs more than 2 seconds to answer is treated as down.
+A request times out after 2 seconds for a payload under 1 MiB, plus 1 second for each whole MiB. Only a final `2xx` response counts as delivered. Redirects are followed. Each send attempt makes up to 3 HTTP requests, and all of them share the 5-second limit above.
+
+So a receiver can see the same record more than once. Make it idempotent and have it answer within 2 seconds.
 
 ### Syslog
 
@@ -27,35 +31,37 @@ Syslog outputs use TCP, optionally with TLS (`is_tls`). UDP is not supported. A 
 
 ### Falling behind
 
-Each output holds up to 100,000 records in flight. When a destination is so slow that the limit is reached, LimaCharlie drops new records until there is room again and logs an `output cannot keep up` error.
+By default an output processes up to 100,000 records at the same time. When the destination is so slow that this limit is reached, LimaCharlie drops new records until there is room again and can log an `output cannot keep up, data dropped` error.
 
 ## Batch outputs
 
-LimaCharlie buffers records locally and cuts a file when either of these happens first:
+LimaCharlie buffers records locally and sends a batch when either of these happens first:
 
 - `sec_per_file` seconds have passed. The default is 120 and the maximum is 3600.
-- The file reaches about 10 MB.
+- The batch holds about 10 MiB of records, measured before compression.
 
-Each file is uploaded with up to 50 attempts, 2 seconds apart, which is about 100 seconds in total. If the last attempt fails, LimaCharlie discards the whole file and [disables the output](#after-a-failure).
+Each batch gets up to 50 upload attempts, 2 seconds apart. Counting the uploads themselves, that is about 100 seconds or more. An error that a retry cannot fix stops the retries earlier. After the last failed attempt, LimaCharlie discards the batch. Part of it may already have reached the destination.
 
-A retried upload to Amazon S3 or Google Cloud Storage rewrites the same object name, so it does not leave a duplicate. A retried Webhook Bulk upload can deliver the same batch twice.
+The output itself is [disabled](#after-a-failure) when the next record arrives after the failed upload.
+
+A retried upload to Amazon S3 or Google Cloud Storage reuses the same object name. Webhook Bulk can deliver the same batch more than once.
 
 ## After a failure
 
-When an output gives up on a record or a file, LimaCharlie disables it for a while:
+When an output gives up on a record or a batch, LimaCharlie disables it for a while:
 
 - Records that arrive while the output is disabled are dropped.
-- The output comes back on its own within about an hour.
-- Editing the output's configuration brings it back immediately. Any change works, including saving it unchanged.
+- LimaCharlie retries the output at the next configuration refresh, normally within about an hour.
+- Changing the output's configuration can bring it back sooner, once the change takes effect. Saving it without changes may not.
 
-The `is_delete_on_failure` option changes this. When it is `true`, a failure deletes the output configuration for good instead of disabling it. It suits a temporary output you do not want to clean up later. The web app shows it as Delete on Failure. Do not set it on an output you depend on.
+The `is_delete_on_failure` option changes this. When it is `true`, LimaCharlie tries to delete the output configuration for good on a delivery failure instead of disabling it. Records dropped because the output is falling behind do not trigger the deletion on their own. The option suits a temporary output you do not want to clean up later. The web app shows it as Delete on Failure. Do not set it on an output you depend on.
 
 ## Finding out about failures
 
-- **Platform logs.** Each failure is logged in Platform Logs under Errors with the key `output/OUTPUT_NAME`, at most once a minute per output.
-- **`output_drop` events.** LimaCharlie sends a summary event to the `deployment` stream for each output that dropped data, about once a minute. See [`output_drop` events](stream-structures.md#output_drop-events) for the fields.
+- **Platform logs.** Errors appear in Platform Logs under Errors with the key `output/OUTPUT_NAME`. This is best-effort, and normally at most once a minute per output.
+- **`output_drop` events.** LimaCharlie sends a summary event to the `deployment` stream for each output that dropped data. It is best-effort, normally about once a minute while drops continue, and can come sooner when an output stops. Outputs of the `deployment` stream and temporary live outputs produce no `output_drop` events. See [`output_drop` events](stream-structures.md#output_drop-events) for the fields.
 
-The `count` in an `output_drop` event is a lower bound. A failed batch counts as one drop however many records it held, and records skipped while the output is disabled are not counted.
+The `count` in an `output_drop` event counts the drops LimaCharlie observed, not every record lost. A failed batch upload can show up as one drop or none, and records skipped while the output is disabled are not counted.
 
 You can alert on these events with a [D&R rule on the `deployment` target](../../3-detection-response/alternate-targets.md#target-deployment):
 
@@ -75,13 +81,11 @@ respond:
 
 If the rule gets noisy, add a [suppression](../../8-reference/response-actions.md#suppression) to the action.
 
-## Building a reliable pipeline
-
-If you need every record:
+## Reducing the risk of loss
 
 1. Send to a destination that is highly available and absorbs bursts, such as a cloud storage bucket, Google Pub/Sub or Kafka. Run any slower system behind it.
-2. Alert on `output_drop` so you notice a gap.
-3. Keep Webhook receivers under 2 seconds and idempotent.
+2. Alert on `output_drop` to detect delivery gaps. It does not catch every loss.
+3. Keep Webhook receivers idempotent and have them answer within 2 seconds.
 4. Test the output after any change. See [Testing Outputs](testing.md).
 
 ## Related
