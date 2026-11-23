@@ -31,7 +31,7 @@ The full set of guarantees — timeouts, retries, size limits, signing — is in
 
 Anyone can build an extension. An extension definition belongs to one user, the one who created it, not to an organization. New definitions are private, and ownership cannot be transferred.
 
-Subscribing any organization to any extension requires the `billing.ctrl` and `user.ctrl` permissions on that organization. A **private** extension additionally can only be subscribed by its owner. That owner can subscribe it into any organization, in any region, including your customers' organizations, as long as they hold those two permissions there. Nobody else can, even with the same permissions, and neither can an Organization API key. Subscribe the organization as the extension owner before applying Git Sync configuration. Automation that subscribes it must call the subscription API with the owner's user API key.
+Subscribing any organization to any extension requires the `billing.ctrl` and `user.ctrl` permissions on that organization. A **private** extension additionally can only be subscribed by its owner. That owner can subscribe it into any organization, in any region, including your customers' organizations, as long as they hold those two permissions there. Nobody else can, even with the same permissions, and neither can an Organization API key or Git Sync. Subscribe the organization as the extension owner before applying Git Sync configuration. Automation that subscribes it must call the subscription API with the owner's user API key.
 
 The target organization needs a billing plan on file. Unsubscribing only needs `billing.ctrl`, and anyone with it can do so.
 
