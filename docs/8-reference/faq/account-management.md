@@ -1,14 +1,32 @@
 # FAQ - Account Management
 
+## What Permission Do I Need to Create an Organization?
+
+None. Any signed-in user can create an organization and becomes its Owner. The request has to come from a user, either a web login or a user API key. Organization API keys cannot create organizations. See [Organization Lifecycle](../../7-administration/org-lifecycle.md#creating-an-organization).
+
 ## How Can I Create More Than Two Organizations?
 
-By default, LimaCharlie has a limit of two organizations. If you need to create more organizations, please reach out to the support team and we will change this limit.
+By default, each user can belong to two organizations. Organizations you created and organizations you were added to individually both count. Access through an Organization Group does not. If you need more, reach out to the support team and we will change this limit.
+
+## Which Region Codes Can I Use When Creating an Organization?
+
+`usa`, `canada`, `europe`, `uk`, `india`, `australia`, or `auto`. The region cannot be changed after creation, and `auto` only picks `usa`, `europe` or `australia`, so name the region in automation. The full table with GCP regions is in [Regions](../../7-administration/org-lifecycle.md#regions).
 
 ## How Do I Delete an Organization?
 
-Please navigate to the bottom of the Billing & Usage section of the organization you want to delete, and click Delete Organization button. Note that this action is final and cannot be undone.
+You need both `billing.ctrl` and `user.ctrl` on the organization, which among the built-in roles only Owner has. Navigate to the bottom of the Billing & Usage section of the organization you want to delete, and click Delete Organization button. Note that this action is final and cannot be undone.
 
 ![account 3](../../assets/images/account-3.png)
+
+Deletion is also available through the API, SDKs and CLI, and does not uninstall agents from endpoints. See [Deleting an Organization](../../7-administration/org-lifecycle.md#deleting-an-organization) for the steps and an offboarding checklist.
+
+## Can I Install a Private Extension in My Customers' Organizations?
+
+Yes, if you own the extension and hold `billing.ctrl` and `user.ctrl` on the customer organization. See [Private extensions in other organizations](../../5-integrations/extensions/using-extensions.md#private-extensions-in-other-organizations).
+
+## How Do I Rotate an API Key?
+
+Create a new key, switch your clients to it, then delete the old one. See [Rotating API keys](../../7-administration/access/api-keys.md#rotating-api-keys).
 
 ## Is There a Way to Wipe an Organization?
 
@@ -43,7 +61,7 @@ You can set your preferred time zone under `Display` section of the `User Settin
 
 ## How Can I Unsubscribe/Cancel/Delete My Limacharlie Account?
 
-You can unsubscribe / cancel your subscription from app.limacharlie.io by logging in and going to the Billing & Usage under the Billing section. Click the Delete Organization button at the bottom of the page and follow the instructions on screen.
+You can unsubscribe / cancel your subscription from app.limacharlie.io by logging in and going to the Billing & Usage under the Billing section. Click the Delete Organization button at the bottom of the page and follow the instructions on screen. See [Organization Lifecycle](../../7-administration/org-lifecycle.md#deleting-an-organization) for who can delete and what deletion removes.
 
 ![account 3](../../assets/images/account-3.png)
 

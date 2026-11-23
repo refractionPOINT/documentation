@@ -18,10 +18,10 @@ LimaCharlie uses a granular permission system that controls access to all platfo
 | Permission | Description |
 | --- | --- |
 | org.get | View organization information |
-| org.del | Delete organization |
-| org.set\_quota | Manage organization quotas |
 | org.conf.get | View organization configuration |
 | org.conf.set | Modify organization configuration |
+
+Deleting an organization is not a grantable permission. It requires both `billing.ctrl` and `user.ctrl` on the organization, held by a user. See [Organization Lifecycle](../7-administration/org-lifecycle.md#deleting-an-organization). Creating an organization needs no permission.
 
 ### User & Access Control
 

@@ -188,7 +188,7 @@ limacharlie
 
 ### Client
 
-The `Client` handles HTTP communication, JWT generation/refresh, retry with exponential backoff, and rate limit awareness.
+The `Client` handles HTTP communication, JWT generation/refresh, and retry with exponential backoff. It retries HTTP 504 by default. Retrying HTTP 429 is off unless you pass `is_retry_quota_errors=True`.
 
 ```python
 from limacharlie.client import Client
@@ -315,7 +315,7 @@ orgs = org.list_accessible_orgs()
 availability = Organization.check_name(client, 'my-new-org')
 
 # Create a new organization
-new_org = Organization.create_org(client, 'my-new-org', location='us')
+new_org = Organization.create_org(client, 'my-new-org', location='usa')
 ```
 
 ## Sensor Management
@@ -877,7 +877,8 @@ except AuthenticationError as e:
 except NotFoundError as e:
     print(f"Not found: {e}")
 except RateLimitError as e:
-    print(f"Rate limited, retry after: {e.retry_after}s")
+    # retry_after is None unless the response carried a Retry-After header
+    print(f"Rate limited, retry after: {e.retry_after}")
 except LimaCharlieError as e:
     print(f"Error: {e}")
     if e.suggestion:
@@ -886,7 +887,13 @@ except LimaCharlieError as e:
 
 ### Built-in Retry Logic
 
-The `Client` automatically retries on HTTP 429 (rate limit) and 504 (gateway timeout) with exponential backoff. No manual retry logic is needed for transient errors.
+The `Client` retries HTTP 504 (gateway timeout) with exponential backoff. It does not retry HTTP 429 (rate limit) by default, and raises `RateLimitError` instead. The API does not normally send a `Retry-After` header, so `retry_after` is usually `None`.
+
+To retry 429 responses automatically, create the client with `is_retry_quota_errors=True`. It makes 3 attempts in total, with waits that start at 10 seconds and double each time.
+
+```python
+client = Client(oid='ORG_ID', api_key='API_KEY', is_retry_quota_errors=True)
+```
 
 ## Complete Examples
 

@@ -8,11 +8,13 @@ The list of available permissions can be programmatically retrieved from the `pe
 
 ## Managing
 
-The API Keys are managed through the Organization view of the <https://limacharlie.io> web interface.
+Organization API keys are managed from the Organization view of the web app, the REST API, or the CLI. See [Programmatic Management](#programmatic-management). Managing them requires the `apikey.ctrl` permission.
+
+Each key has a name, unique within the organization. The secret is shown once, when the key is created. Keys never expire, so rotate them on your own schedule, see [Rotating API Keys](#rotating-api-keys).
 
 ## Getting a JWT
 
-Issue an HTTP POST to `https://jwt.limacharlie.io` with the Organization ID and API key. The returned JWT is valid for one hour.
+Issue an HTTP POST to `https://jwt.limacharlie.io` with the Organization ID and API key. The returned JWT is valid for one hour by default. To change that, add an `expiry` form parameter holding the lifetime in seconds.
 
 === "REST API"
 
@@ -52,6 +54,8 @@ Issue an HTTP POST to `https://jwt.limacharlie.io` with the Organization ID and 
     limacharlie auth login
     ```
 
+A JWT carries the permissions the key had when the JWT was minted. A permission or membership change reaches a client only after its current JWT expires.
+
 ### User API Keys
 
 User API keys are to generate JSON web tokens (JWTs) for the REST API. In contrast to Organization API keys, the User API keys are associated with a specific user and provide the exact same access across all organizations.
@@ -71,6 +75,8 @@ You may also use a User API Key to get the list of organizations available to it
 `curl "https://api.limacharlie.io/v1/user/orgs?fields=oid,name&limit=1000" -H "Authorization: Bearer <YOUR_JWT>"`
 
 The response is a JSON object with an `orgs` list, each entry carrying the requested `oid` and `name`. Use `offset` and `limit` to page through large lists.
+
+User API keys are managed from your user settings in the web app. The CLI and the REST routes documented here manage Organization API keys only. Rotate a user key the same way as an Organization key: create a new one, switch your clients over, delete the old one.
 
 #### Ingestion Keys
 
@@ -126,7 +132,7 @@ Similar to agents, Sensors send telemetry to the LimaCharlie platform in the for
 ## Programmatic Management
 
 !!! info "Prerequisites"
-    Managing API keys programmatically requires an existing API key with the `apikey.ctrl` permission. See [Managing](#managing) for initial setup through the web interface.
+    Managing API keys programmatically requires an existing API key with the `apikey.ctrl` permission. Use the web app for the first key.
 
 ### List API Keys
 
@@ -260,6 +266,24 @@ Similar to agents, Sensors send telemetry to the LimaCharlie platform in the for
     ```bash
     limacharlie api-key delete --key-hash KEY_HASH_TO_DELETE --confirm
     ```
+
+## Rotating API Keys
+
+There is no edit or rotate call. To rotate an Organization API key:
+
+1. Create a new key with a new name and the same permissions.
+2. Switch your clients to the new key. If the key lives in the [secret hive](../config-hive/secrets.md), `limacharlie api-key create --store-secret` writes it there in one step.
+3. Delete the old key.
+
+Deleting a key does not cut off access instantly:
+
+- No new JWT can be minted from the key after about 10 seconds.
+- A JWT already issued stays valid until it expires, one hour by default.
+- A call that sends the raw key in the `X-LC-API-KEY` header uses a JWT that is cached for up to 30 minutes. A deleted key can keep working that way for that long.
+
+If a key leaked, delete it right away and treat access as possible until the longest of those windows has passed.
+
+API keys are secrets and are not part of [Git Sync](../../5-integrations/extensions/limacharlie/git-sync.md) or Infrastructure as Code. Create them per organization.
 
 ---
 

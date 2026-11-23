@@ -29,9 +29,17 @@ The full set of guarantees — timeouts, retries, size limits, signing — is in
 
 ### Public and Private Extensions
 
-Anyone can build an extension. Subscribing any organization to any extension requires the `billing.ctrl` and `user.ctrl` permissions on that organization. A **private** extension additionally can only be subscribed by its owner, so while it is private you can only install it into organizations you can administer yourself.
+Anyone can build an extension. An extension definition belongs to one user, the one who created it, not to an organization. New definitions are private, and ownership cannot be transferred.
+
+Subscribing any organization to any extension requires the `billing.ctrl` and `user.ctrl` permissions on that organization. A **private** extension additionally can only be subscribed by its owner. That owner can subscribe it into any organization, in any region, including your customers' organizations, as long as they hold those two permissions there. Nobody else can, even with the same permissions, and neither can an Organization API key. Automation that subscribes a private extension, such as Infrastructure as Code, has to run with the owner's user API key.
+
+The target organization needs a billing plan on file. Unsubscribing only needs `billing.ctrl`, and anyone with it can do so.
+
+There is no sharing between private and public, such as per organization or per group. If you serve many customers, create the extension from a dedicated service account rather than a personal one, since you cannot hand ownership to someone else later. A user can own roughly 50 private extensions.
 
 To make an extension public, and optionally monetize it, contact `answers@limacharlie.io`. Once public, it is visible to and subscribable by everyone.
+
+Members of a subscribed organization with `ext.request` or `ext.conf.get` can see the extension's definition. Only the owner sees its secret and URL.
 
 ## Install
 

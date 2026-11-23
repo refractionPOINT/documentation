@@ -123,7 +123,7 @@ openssl rand -hex 32
 
 Then create the definition from [your published add-ons page](https://app.limacharlie.io/add-ons/published). The fields are described in [Getting Started](building-extensions.md#registering-the-extension). For the example extension, the only permission needed is `sensor.list`.
 
-The definition is private to you until you ask for it to be made public. You can subscribe any organization you administer, which is what the next step does.
+The definition is private to you until you ask for it to be made public. As its owner you can subscribe it into any organization where you hold `billing.ctrl` and `user.ctrl`, including your customers' organizations. The next step does this for one organization. See [Public and Private Extensions](building-extensions.md#public-and-private-extensions) for the full rules.
 
 ## 7. Subscribe an Organization
 
