@@ -278,7 +278,7 @@ There is no edit or rotate call. To rotate an Organization API key:
 Deleting a key does not cut off access instantly:
 
 - No new JWT can be minted from the key after about 10 seconds.
-- A JWT already issued stays valid until it expires, one hour by default.
+- A JWT already issued stays valid until its own expiry: one hour by default, or longer if it was minted with a custom `expiry`.
 - A call that sends the raw key in the `X-LC-API-KEY` header uses a JWT that is cached for up to 30 minutes. A deleted key can keep working that way for that long.
 
 If a key leaked, delete it right away and treat access as possible until the longest of those windows has passed.

@@ -42,7 +42,9 @@ The REST call also accepts `description` and `template`, an [Infrastructure as C
 
 ### Organization limit
 
-Each user can belong to 2 organizations by default. The count covers every organization the user is a direct member of, whether they created it or were added to it individually. Access through an [Organization Group](access/user-access.md) does not count.
+By default, a user can create a new organization only while they are a direct member of fewer than 2 organizations. The count covers every organization the user is a direct member of, whether they created it or were added to it individually. Access through an [Organization Group](access/user-access.md) does not count. The limit only applies to creating organizations: other people can still add the user to more organizations.
+
+For MSSPs, this means an analyst who was added directly to two customer organizations can no longer create one. Grant access through Organization Groups, and have one account with a raised limit create the organizations.
 
 When you hit the limit, the API returns `Maximum number of organization reached, contact support@limacharlie.io to get more`. Contact support to raise it.
 
@@ -131,7 +133,7 @@ Organization API keys cannot delete an organization. Use a user session or a use
       -H "Authorization: Bearer $LC_JWT"
     ```
 
-The delete call can take several minutes. If it returns `503` with a `Retry-After` header, retry with the same token. The token is accepted for up to 15 minutes.
+Make the delete call within 1 minute of getting the token. The deletion can take several minutes. If the delete call returns `503` with a `Retry-After` header, the deletion is still running: retry the same call with the same token. For those retries, the token stays accepted for up to 15 minutes.
 
 ### Offboarding a customer organization
 

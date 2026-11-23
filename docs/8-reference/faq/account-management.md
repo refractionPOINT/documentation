@@ -6,7 +6,7 @@ None. Any signed-in user can create an organization and becomes its Owner. The r
 
 ## How Can I Create More Than Two Organizations?
 
-By default, each user can belong to two organizations. Organizations you created and organizations you were added to individually both count. Access through an Organization Group does not. If you need more, reach out to the support team and we will change this limit.
+By default, you can create a new organization only while you are a direct member of fewer than two. Organizations you created and organizations you were added to individually both count. Access through an Organization Group does not. If you need more, reach out to the support team and we will change this limit. See [Organization limit](../../7-administration/org-lifecycle.md#organization-limit).
 
 ## Which Region Codes Can I Use When Creating an Organization?
 
