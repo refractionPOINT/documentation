@@ -26,7 +26,7 @@ The request must come from a user identity, either a web login or a [user API ke
     from limacharlie.client import Client
     from limacharlie.sdk.organization import Organization
 
-    client = Client(uid='USER_ID', api_key='USER_API_KEY')
+    client = Client(oid='-', uid='USER_ID', api_key='USER_API_KEY')
     new_org = Organization.create_org(client, 'my-new-org', location='usa')
     ```
 
@@ -50,15 +50,15 @@ When you hit the limit, the API returns `Maximum number of organization reached,
 
 ### Names
 
-Organization names are unique across all of LimaCharlie. After you delete an organization, its name stays reserved for about 2 hours. The error you get when creating with that name says how many minutes remain.
+Organization names are unique across all of LimaCharlie, ignoring case. Check name availability before creating an organization, with `GET /v1/orgs/new?name=NAME` or `Organization.check_name`. After deletion starts, the name used to create the organization stays reserved for about 2 hours by default. The create error tells you how long remains. Renaming an organization later changes only its display name, so the original name is the one that stays reserved.
 
 ## Regions
 
-The region decides which datacenter stores and processes the organization's data. It is set at creation and cannot be changed afterwards.
+The region is the organization's primary data region. It decides which datacenter hosts the organization. It is set at creation and cannot be changed afterwards.
 
 Pass the region as `loc` in the REST API, `location` in the SDKs, or `--location` in the CLI. Matching is case-insensitive.
 
-| Code | Datacenter | GCP region |
+| Code | Datacenter | Primary GCP region |
 | --- | --- | --- |
 | `usa` | United States | `us-central1` |
 | `canada` | Canada | `northamerica-northeast1` |
@@ -66,15 +66,15 @@ Pass the region as `loc` in the REST API, `location` in the SDKs, or `--location
 | `uk` | United Kingdom | `europe-west2`, London |
 | `india` | India | `asia-south1`, Mumbai |
 | `australia` | Australia | `australia-southeast1`, Sydney |
-| `auto` | The datacenter nearest the API server that handles the call | Varies |
+| `auto` | The default region of the API server that handles the request | Varies |
 
-`auto` is the CLI default, but today it only ever lands on `usa`, `europe` or `australia`. For `canada`, `uk` or `india`, name the region. In automation and Infrastructure as Code, always pass an explicit code so the result does not depend on where the call was routed.
+`auto` is the CLI default. Today it resolves to `usa`, `europe` or `australia`, depending on which API server handles the request. Pass an explicit code to control placement. Always do so in automation and Infrastructure as Code, and for `canada`, `uk` or `india`, which `auto` does not pick today.
 
 The web app lists the regions available to the signed-in user, taken from `GET /v1/plans`. If you use a [custom plan](billing/custom-plans.md), see that page for how to select it.
 
 ## Deleting an Organization
 
-Deleting an organization cannot be undone. There is no restore.
+Deletion can't be undone from the web app or API.
 
 ### Who can delete
 
@@ -85,8 +85,8 @@ Organization API keys cannot delete an organization. Use a user session or a use
 ### What deletion does
 
 - The subscription is cancelled immediately.
-- All configuration is removed: Hive records, D&R rules, outputs, extension subscriptions, installation keys, API keys, and user and group memberships.
-- Telemetry storage is deleted immediately. Backups are purged about 2 days later.
+- Deletion removes the organization's configuration: Hive records, D&R rules, outputs, extension subscriptions, installation keys, API keys, and user and group memberships.
+- Deleting the organization starts cleanup of its stored telemetry. Backups become eligible for purge after about 2 days. Cleanup can take longer.
 - Every connected sensor is told to disconnect. The agent is **not** uninstalled from the endpoint, so uninstall it first if you want it gone.
 
 ### How to delete
@@ -133,7 +133,9 @@ Organization API keys cannot delete an organization. Use a user session or a use
       -H "Authorization: Bearer $LC_JWT"
     ```
 
-Make the delete call within 1 minute of getting the token. The deletion can take several minutes. If the delete call returns `503` with a `Retry-After` header, the deletion is still running: retry the same call with the same token. For those retries, the token stays accepted for up to 15 minutes.
+Send the `DELETE` within one minute of getting the token. The deletion can take several minutes. If it returns `503` with `retryable: true`, wait for the `Retry-After` delay and retry the same `DELETE` with the same token. Once the deletion has been accepted, the token can be retried for up to 15 minutes. If the API says the token expired and the organization still exists, get a new confirmation token.
+
+The Python `delete_org()` and the CLI do not retry a `503` for you. Retry the second call yourself.
 
 ### Offboarding a customer organization
 
@@ -142,7 +144,7 @@ For an MSSP removing a customer, a safe order is:
 1. Export what you want to keep. Pull the configuration with [Git Sync](../5-integrations/extensions/limacharlie/git-sync.md) or an Infrastructure as Code export, and make sure outputs or archives have delivered the telemetry you need.
 2. Uninstall the endpoint agents. See [Endpoint Agent Uninstallation](../2-sensors-deployment/endpoint-agent/uninstallation.md). Deleting the organization stops the agents from reporting but leaves them installed.
 3. Delete the organization as above. This also removes it from every Organization Group, so no separate cleanup is needed there.
-4. Wait about 2 hours before reusing the organization name.
+4. Wait for the name hold reported by the API before reusing the name.
 
 ---
 

@@ -41,18 +41,18 @@ Extensions can be interacted with using a few different APIs:
 - Getting the schema for an Extension: [https://api.limacharlie.io/static/swagger/#/Extension-Schema](https://api.limacharlie.io/static/swagger/#/Extension-Request)
 - Making requests to an Extension: <https://api.limacharlie.io/static/swagger/#/Extension-Request>
 
-LimaCharlie Extensions allow users to expand and customize their security environments by integrating third-party tools, automating workflows, and adding new capabilities. Organizations subscribe to Extensions, which are granted specific permissions to interact with their infrastructure. Extensions are either private, usable only by their owner, or public, usable by everyone. This framework supports scalability, flexibility, and secure, repeatable deployments.
+LimaCharlie Extensions allow users to expand and customize their security environments by integrating third-party tools, automating workflows, and adding new capabilities. Organizations subscribe to Extensions, which are granted specific permissions to interact with their infrastructure. Only the owner can subscribe organizations to a private extension. Authorized users in a subscribed organization can use it. Public extensions are listed for everyone. This framework supports scalability, flexibility, and secure, repeatable deployments.
 
 ## Private Extensions in Other Organizations
 
 A private extension belongs to the one user who created it. That user can subscribe it into any organization, in any region, including customer organizations, if they hold `billing.ctrl` and `user.ctrl` on that organization. No one else can subscribe it. Per-organization or per-group sharing does not exist.
 
-Organization API keys cannot subscribe a private extension. Infrastructure as Code or Git Sync that subscribes one has to run with the owner's user API key. See [Public and Private Extensions](../../6-developer-guide/extensions/building-extensions.md#public-and-private-extensions) for the full rules.
+Organization API keys cannot subscribe a private extension, and Git Sync cannot either. Subscribe the organization as the extension owner before applying Git Sync configuration. Automation that subscribes it must call the subscription API with the owner's user API key. See [Public and Private Extensions](../../6-developer-guide/extensions/building-extensions.md#public-and-private-extensions) for the full rules.
 
 ## Programmatic Management
 
 !!! info "Prerequisites"
-    Subscribing to an extension requires `billing.ctrl` and `user.ctrl` on the organization, and unsubscribing requires `billing.ctrl`. Other extension operations use the `ext.*` permissions listed in [Permissions](../../8-reference/permissions.md). See [API Keys](../../7-administration/access/api-keys.md) for setup.
+    Subscribing to an extension requires `billing.ctrl` and `user.ctrl` on the organization, and unsubscribing requires `billing.ctrl`. Permissions for other operations vary. See each endpoint's requirements in the [API reference](https://api.limacharlie.io/static/swagger/). See [API Keys](../../7-administration/access/api-keys.md) for setup.
 
 ### List Subscribed Extensions
 

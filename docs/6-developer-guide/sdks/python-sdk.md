@@ -305,7 +305,7 @@ org.set_user_role('user@example.com', 'Operator')
 from limacharlie.client import Client
 from limacharlie.sdk.organization import Organization
 
-client = Client(uid='USER_ID', api_key='USER_API_KEY')
+client = Client(oid='-', uid='USER_ID', api_key='USER_API_KEY')
 org = Organization(client)
 
 # List accessible organizations

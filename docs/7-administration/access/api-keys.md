@@ -54,7 +54,7 @@ Issue an HTTP POST to `https://jwt.limacharlie.io` with the Organization ID and 
     limacharlie auth login
     ```
 
-A JWT carries the permissions the key had when the JWT was minted. A permission or membership change reaches a client only after its current JWT expires.
+A JWT carries a snapshot of permissions. To pick up changed permissions, request a new JWT. Some operations, like deleting an organization, check current permissions on every request.
 
 ### User API Keys
 
@@ -132,7 +132,7 @@ Similar to agents, Sensors send telemetry to the LimaCharlie platform in the for
 ## Programmatic Management
 
 !!! info "Prerequisites"
-    Managing API keys programmatically requires an existing API key with the `apikey.ctrl` permission. Use the web app for the first key.
+    Managing organization API keys needs a JWT with `apikey.ctrl`. A signed-in user with that permission can create the first key in the web app or through the API.
 
 ### List API Keys
 
@@ -271,9 +271,9 @@ Similar to agents, Sensors send telemetry to the LimaCharlie platform in the for
 
 There is no edit or rotate call. To rotate an Organization API key:
 
-1. Create a new key with a new name and the same permissions.
+1. Create a new key with a new name, the permissions it needs, and the same [allowed IP range](#allowed-ip-range) if the old key has one.
 2. Switch your clients to the new key. If the key lives in the [secret hive](../config-hive/secrets.md), `limacharlie api-key create --store-secret` writes it there in one step.
-3. Delete the old key.
+3. Check that your clients use the new key, then delete the old one.
 
 Deleting a key does not cut off access instantly:
 
@@ -281,9 +281,9 @@ Deleting a key does not cut off access instantly:
 - A JWT already issued stays valid until its own expiry: one hour by default, or longer if it was minted with a custom `expiry`.
 - A call that sends the raw key in the `X-LC-API-KEY` header uses a JWT that is cached for up to 30 minutes. A deleted key can keep working that way for that long.
 
-If a key leaked, delete it right away and treat access as possible until the longest of those windows has passed.
+Delete a leaked key immediately. The cached credentials above can still be accepted for a while after deletion, and JWTs minted from the key before then stay valid until their own expiry, which the caller chooses. Don't treat the one-hour default as a containment deadline.
 
-API keys are secrets and are not part of [Git Sync](../../5-integrations/extensions/limacharlie/git-sync.md) or Infrastructure as Code. Create them per organization.
+The organization configuration format used by [Git Sync](../../5-integrations/extensions/limacharlie/git-sync.md) and Infrastructure as Code does not manage API keys. Create keys through the web app, API or CLI. If you store a key in the secret hive, exclude that hive from Git exports so the value is not written to your repository.
 
 ---
 
