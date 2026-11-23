@@ -47,7 +47,6 @@ Release notes for the EDR sensor installed on Windows, macOS, Linux and Chrome e
 #### Improvements
 
 - Host posture: custom rules are now evaluated exactly like the built-in ones, with no difference in how unreadable or missing evidence is treated.
-- Windows: the kernel driver now carries Microsoft's signature alone on every architecture, instead of LimaCharlie's with Microsoft's nested inside it. A driver allow list that trusts it by LimaCharlie's certificate needs to trust Microsoft's instead.
 - Windows: when the kernel driver fails to start, the sensor now reports the failing driver component and its error code to LimaCharlie, so support can diagnose the cause.
 
 ---
