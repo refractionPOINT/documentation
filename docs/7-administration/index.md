@@ -4,6 +4,7 @@ Organization configuration and management.
 
 ## Documentation
 
+- [Organization Lifecycle](org-lifecycle.md) - Creating, placing and deleting organizations
 - [LimaCharlie CLI](../6-developer-guide/sdk-overview.md) - Command line interface
 - [SDKs](../6-developer-guide/sdks/index.md) - Python and Go SDK documentation
 

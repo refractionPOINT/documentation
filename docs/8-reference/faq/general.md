@@ -12,7 +12,7 @@ LimaCharlie is SOC 2 Type 2 and PCI-DSS compliant. Our infrastructure is housed 
 
 ## Where will my data be processed and stored?
 
-The LimaCharlie global infrastructure is built on the Google Cloud Platform (GCP). Currently, computing resources are available in the USA, Canada, Europe, India, and the United Kingdom. New data centers can be spun up anywhere GCP is available upon request.
+The LimaCharlie global infrastructure is built on the Google Cloud Platform (GCP). Currently, computing resources are available in the USA, Canada, Europe, India, the United Kingdom, and Australia. The region codes used when creating an organization are listed in [Regions](../../7-administration/org-lifecycle.md#regions). New data centers can be spun up anywhere GCP is available upon request.
 
 When you set up an Organization for the first time, you can select the Data Residency Region of your choice:
 

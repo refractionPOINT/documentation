@@ -9,7 +9,7 @@ If your organization has a custom pricing plan, follow these steps to ensure it'
 How to apply your custom billing plan to newly created organizations:
 
 - Web UI: When creating your organization, select your assigned plan from the drop-down menu.
-- API Users: If using the API, specify your plan using the appropriate `loc` parameter.
+- API Users: If using the API, specify your plan using the appropriate `loc` parameter. The standard region codes are listed in [Regions](../org-lifecycle.md#regions).
 - REST API: Use the `loc` parameter (general location). If you need to specify a custom plan, provide the exact plan ID. [API Documentation](https://api.limacharlie.io/static/swagger/#/Organizations/requestCreateOrg)
 - Python SDK: Use the `location` parameter for the same purpose. [Python SDK Reference](https://github.com/refractionPOINT/python-limacharlie/blob/master/limacharlie/sdk/organization.py)
 

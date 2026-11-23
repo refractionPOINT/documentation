@@ -1010,7 +1010,7 @@ fmt.Printf("Quota set: %v\n", success)
 ```go
 // Create a new organization
 newOrg, err := org.CreateOrganization(
-    "us",                    // location
+    "usa",                   // location
     "New Organization Name", // name
 )
 if err != nil {
@@ -1029,7 +1029,7 @@ detection:
 `
 
 newOrg, err = org.CreateOrganization(
-    "us",
+    "usa",
     "Templated Org",
     templateYAML,
 )
