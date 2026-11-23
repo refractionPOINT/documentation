@@ -600,6 +600,7 @@ The table above lists the ways to run an adapter. These are the patterns an MSSP
 - The adapter loads its record when it starts, so the host needs outbound HTTPS to `api.limacharlie.io` at that moment. Run it as a service that restarts on failure.
 
 **One syslog collector per customer site.** Do not point each firewall at LimaCharlie separately. Run one adapter on a small host at the site, as a [syslog](../2-sensors-deployment/adapters/types/syslog.md) listener (TCP, optionally with TLS or mutual TLS), and send all the site's firewalls to it. Pick the platform that matches the firewall, or `text` with a grok pattern. Parsers such as `fortigate` and `cef` create one sensor per device found in the logs; if you would rather have one sensor for the whole collector, set a constant sensor key and hostname as described in [Using One Sensor for All Devices](../2-sensors-deployment/adapters/usage.md#using-one-sensor-for-all-devices).
+
 **Filter at the source, not later.** External telemetry is billed per GB, counted on the bytes LimaCharlie receives from the adapter. Data that is never sent is never billed, so cut noise as close to the source as you can:
 
 - On the firewall or device itself, send only the events you will detect on (denies and threat events, selected facilities and severities) instead of all traffic. The [data estimation guide](../7-administration/billing/data-estimation.md) shows how much smaller threat-only logs are. The syslog adapter has no generic event filter, so this is where syslog volume is controlled.
@@ -2200,12 +2201,12 @@ A good first prompt for a user session or a SOC Bot:
 ```text
 Look at the last 20 cases the triage agent closed. List the investigation
 steps that were identical every time. Write them as one Python playbook
-that takes a sensor ID and a detection ID, runs those steps with the
+that takes a sensor ID, runs those steps with the
 LimaCharlie SDK, and returns the results as a dictionary. Dry-run it on
 three of those cases and show me the output before saving it.
 ```
 
-Then save it (the record's data is a `python` field holding the code, as in the [Playbook IaC example](../5-integrations/extensions/limacharlie/playbook.md#infrastructure-as-code)) and call it two ways:
+Then save it (the record's data is a `python` field holding the code, as in the [Playbook IaC example](../5-integrations/extensions/limacharlie/playbook.md#infrastructure-as-code)) and call it from an agent or from a rule:
 
 ```bash
 limacharlie playbook set --key enrich-detection --input-file enrich-detection.yaml --enabled
@@ -2216,7 +2217,9 @@ limacharlie extension request --name ext-playbook --action run_playbook \
 ```
 
 ```yaml
-# From a D&R rule, so the result is ready before any agent starts:
+# From a D&R rule. The request is asynchronous: the rule does not get the
+# returned data. Use this when the playbook acts on its own, for example
+# by returning a detection (see the notes below).
 - action: extension request
   extension name: ext-playbook
   extension action: run_playbook
@@ -2230,7 +2233,7 @@ limacharlie extension request --name ext-playbook --action run_playbook \
 Notes on how this works:
 
 - The request carries the playbook `name`, an API key `credentials` reference (the key becomes the `sdk` the playbook runs with, so give it only the permissions the steps need) and a `data` object that arrives in `data["data"]`. The agent's own key needs `ext.request` to call it.
-- A playbook returns a dictionary with optional `data`, `error`, `detection` and `cat` keys. Returning `detection` makes the playbook raise a detection, so the same code can enrich and alert.
+- A playbook returns a dictionary with optional `data`, `error`, `detection` and `cat` keys. Returning `detection` makes the playbook raise a detection, so the same code can enrich and alert. That is the only result a rule-triggered playbook can surface: a D&R rule does not receive the returned `data`, and a `start ai agent` action never sees it. To get a result into an agent, have the agent call the playbook itself with the CLI, as above.
 - Playbooks are a LABS extension. A run is limited to 10 minutes and there is no state between runs, so keep each one to a single focused job.
 - Keep the AI for the work that varies. Keep anything that is the same every time in a Playbook or a D&R rule.
 
