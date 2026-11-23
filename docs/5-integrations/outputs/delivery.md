@@ -15,11 +15,11 @@ Outputs fall into two groups, and they fail differently.
 
 ## Streaming outputs
 
-Each record gets up to 3 attempts within about 5 seconds. The wait before the second attempt is 200 ms, it doubles for the third, and it never exceeds 1.5 seconds. If every attempt fails, LimaCharlie drops the record and [disables the output](#after-a-failure).
+Each record gets up to 3 attempts, and the whole delivery of one record has a hard limit of about 5 seconds. The wait before the second attempt is 200 ms and the wait before the third is 400 ms. When the 5 seconds run out, LimaCharlie stops retrying even if attempts are left. If every attempt fails, LimaCharlie drops the record and [disables the output](#after-a-failure).
 
 ### Webhook
 
-Each request times out after 2 seconds, and any response outside the 2xx range counts as a failure. LimaCharlie retries a failed request up to 3 times inside one attempt, so a single record can reach your receiver several times. Make the receiver idempotent, and keep it fast. A receiver that needs more than 2 seconds to answer will be seen as down.
+Each request times out after 2 seconds, and any response outside the 2xx range counts as a failure. Inside each attempt, LimaCharlie retries a failed request up to 3 times. The 5-second limit above still applies to all of it, so a record whose receiver keeps timing out gets at most two or three requests before it is dropped. A slow receiver can still see the same record more than once, so make the receiver idempotent and keep it fast. A receiver that needs more than 2 seconds to answer is treated as down.
 
 ### Syslog
 
