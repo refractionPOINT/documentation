@@ -16,7 +16,7 @@ The policy record is the only thing that decides what the engine may do. Each ac
 | `approve` | Requires an authorized explicit approval before the approval deadline. |
 | `auto` | Runs automatically, once the rule the action fires on decided, when the effective policy, limits, permissions, evidence and target checks allow it, and the action has a registered authorization; an action without one waits for a person (`no_registered_authorization`, see [Autonomy modes](../../investigation-engine/policies.md#autonomy-modes)). The engine holds an action as a suggestion when a limit, permission, evidence or target check does not pass, or when the approver lists leave nobody (`policy_no_approvers`). |
 
-There is no label-count requirement or separate route graduation, enablement or demotion step. Investigation intake settings decide what to investigate; they do not grant automatic action authority. Draft, serial-baseline and test execution contexts remain read-only.
+There is no label-count requirement or separate route graduation, enablement or demotion step. What gets investigated is decided by the D&R rules that start investigations (the [`start investigation`](../../8-reference/response-actions.md#start-investigation) response action); they grant no automatic action authority. Draft, serial-baseline and test execution contexts remain read-only.
 
 ## Start with a visible policy
 

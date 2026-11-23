@@ -242,22 +242,13 @@ A `close.false_positive` action also carries `close_product`: `cases` (deciding 
 `investigation.set`) or `mailsec` (it needs `mailsec.set` too). An action of a run that
 retention already removed is not listed.
 
-#### Automatic actions and auto-investigation
+#### Automatic actions
 
 | Method and route | Permission | Purpose |
 |---|---|---|
-| `GET /autopilot` | read (identity-bound) | The auto-investigation settings, with their `etag`; spend and counters; and `identity_readiness`, one entry per source that is on. Query `source`, `period`, `from`, `to`. |
-| `PUT /autopilot` | `investigation.get`, `insight.evt.get`, `investigation_policy.get`, `investigation_policy.set`, and what setup writes with your token (`investigation_plan.set`, `secret.set`, `apikey.ctrl`) | Replace the settings. Needs `If-Match` with the `etag` from the read, or `?force=true`; a missing or stale one is `409`. Turning a source on is one operation: see [setup](permissions.md#turning-a-source-on-what-to-expect-from-setup). |
-| `GET /autopilot/alerts` | read | The alerts and the runs they started, with the state of each and the named reason when one was skipped. Filters `source`, `state`, `group_id`, `run_id`, `from`, `to`, `limit`, `cursor`. |
-| `GET /autopilot/actions` | read | The log of what the engine did by itself, with counts. Filters `product`, `route_id`, `action_type`, `state`, `from`, `to`, `limit` (1 to 200), `cursor`. Open to anyone who can read runs. |
-| `GET /autopilot/actions/{aid}` | read | One automatic action's metadata. Query `run_id`. |
-| `POST /autopilot/actions/{aid}/undo`, `POST /autopilot/actions/undo` | write | Undo one action, or up to 100 by `ids` or per-item `items`, with `was_engine_wrong` for the answer to "was the engine wrong?". Each result reports its state and whether it can be retried. Undoing by a `selector` (a bounded route, product and time range) needs a caller the engine treats as an auditor. |
-
-A setup refusal answers with the failed step's own code and the steps with their
-statuses (`done`, `already_present`, `rotated`, `undone`, `failed`); `409
-setup_in_progress` means another setup is running and nothing was written. The
-readiness entry is `{source, identity, ready, missing_permissions, extra_permissions,
-error_code, fix_hint}`; `identity` names the Hive secret, never the key.
+| `GET /actions/automatic` | read | The log of what the engine did by itself, with counts. Filters `product`, `route_id`, `action_type`, `state`, `from`, `to`, `limit` (1 to 200), `cursor`. Open to anyone who can read runs. |
+| `GET /actions/automatic/{aid}` | read | One automatic action's metadata. Query `run_id`. |
+| `POST /actions/automatic/{aid}/undo`, `POST /actions/automatic/undo` | write | Undo one action, or up to 100 by `ids` or per-item `items`, with `was_engine_wrong` for the answer to "was the engine wrong?". Each result reports its state and whether it can be retried. Undoing by a `selector` (a bounded route, product and time range) needs a caller the engine treats as an auditor. |
 
 ### Templates, policy and authoring
 

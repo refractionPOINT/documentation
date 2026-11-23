@@ -8,9 +8,8 @@ disabled with a tooltip naming what you need. See [Permissions](permissions.md).
 
 Inside the section, the tabs are **Runs**, **Approvals**, **Templates**, **Policy**
 and **Performance** (shown only to people who hold `investigation_policy.set`, which
-the statistics need). **Auto-investigation** has its own sections: **Overview**,
-**Automatic actions** and **Settings**. A **New investigation** button is always at the
-top.
+the statistics need). **Automatic actions** lists what the engine did by itself. A
+**New investigation** button is always at the top.
 
 ## Start an investigation
 
@@ -334,7 +333,7 @@ The dialog lists the classes and how many targets each touches.
 - **An action held for a reason** lists why under **Policy notes**: it rests on an AI
   decision or on a check's verdict (so it has no registered authorization and waits for
   a person even in `auto`), it cannot be undone and the policy names no exact class for
-  it, the approver lists have nobody in common, the source is off, or the engine could not
+  it, the approver lists have nobody in common, or the engine could not
   read the policy. See [Policies](policies.md#autonomy-modes).
 - **An uncertain action** has **no buttons**: the engine could not confirm whether the
   action took effect, and it settles it by itself. A late answer from the platform makes
@@ -527,8 +526,7 @@ shows, from top to bottom:
   per warning (the codes are in [Troubleshooting](troubleshooting.md#policy-warnings)).
   A record that does not parse is shown in the error tone: the engine is enforcing the
   last good policy, or suggest-only, and what the page shows is what is enforced. The
-  same banner appears in the launcher's policy panel and on the auto-investigation
-  overview.
+  same banner appears in the launcher's policy panel.
 - **Policy records.** One row per `investigation_policy` record: its name, what it
   applies to (every run, or the runs or the targets its `match` selects), whether it
   is on, who **last changed** it and when, and what the engine **ignores** in it
@@ -574,82 +572,24 @@ resuming lets actions in `auto` mode run by themselves again, in every run of th
 organization. Resuming deletes the record. Changing the switch needs the Hive
 permissions of that record (`investigation_policy.set` to pause,
 `investigation_policy.del` to resume). The same switch is at the top of every run's
-**Actions** tab and in the auto-investigation settings.
+**Actions** tab.
 
 A pause that an earlier console saved (`mode: suggest`) still reads as paused, with a
 note that it also refuses approvals; pause again to rewrite it. A pause record that is
 present but disabled, or that someone edited, is shown as not in effect, with a button to
 restore it.
 
-## Auto-investigation
+## Investigate automatically
 
-**Auto-investigation** has its own sections under Investigations: **Overview**,
-**Automatic actions** and **Settings**. It is the switch that makes the engine
-investigate a product's alerts by itself, with no rule to write. Turning a source on is
-one step that installs or activates that product's template, creates the key it
-investigates with and subscribes its detections: see
-[the key that turning a source on creates](permissions.md#the-key-that-turning-a-source-on-creates).
-Turning one on needs `investigation_policy.get` and `investigation_policy.set`, plus the
-permissions of what setup writes with your token (the template, the secret and the key):
-see [the key that turning a source on creates](permissions.md#the-key-that-turning-a-source-on-creates).
+There is no switch in the console that makes the engine investigate a product's alerts by
+itself. An investigation starts without a person only through a D&R rule with the
+[`start investigation`](../8-reference/response-actions.md#start-investigation)
+response action, on a detection or on a new case: you write it, or install one from the
+library, and deploy it like any other rule. The run uses the key the policy names for its
+template (see [The key a template's runs use](permissions.md#the-key-a-templates-runs-use)),
+and the [policy](policies.md) alone decides what it may do by itself.
 
-### A source's mode
-
-Each source (Email Security, Endpoint detections, Cloud and identity alerts; the page
-marks the ones that are not available yet) has a mode:
-
-| Mode | What the engine does |
-|---|---|
-| **Watch** | Investigates every alert and records what it found and what it would have done. It changes nothing, and your team works as before. A new source starts here. |
-| **Suggest** | Investigates every alert and posts a recommendation on it. It changes nothing on its own. |
-| **Automatic** | Investigates every alert and takes the actions your policy sets to `auto`. The policy, not the mode, decides what runs. |
-
-The mode never grants anything: the [policy](policies.md) alone decides what the engine
-may do, so the engine reads no history or score to move a source from one mode to the next: you change it in **Settings**. **Settings** also
-holds the detection categories that feed each source (empty uses the product's default;
-end a name with `*` to match a prefix), the spending limits (per day, per month, per
-investigation and how many run at the same time) and the template each source runs
-(the one the product's setup installed, unless you switch it). When a limit is reached,
-the remaining alerts are skipped and your team handles them as usual; the overview says
-how many.
-
-### Setup, step by step
-
-Turning a source on, or saving its settings, lists the steps the engine took, each
-with its own status: **done**, **already in place, nothing changed**, **replaced, and the
-old key was revoked** (the setup-owned key was rotated; the reason names what was added
-and removed), **undone, because a later step failed**, or **failed**. The engine's reason
-is shown under every step that has one. The steps are the template, the investigation
-key, the detection intake and the settings. After a save, **What the last save did**
-keeps the list, so a key rotation and its reason stay visible. A refusal carries its
-reason code, translated; a code the console does not know is shown as sent. See
-[Turning a source on: what to expect from setup](permissions.md#turning-a-source-on-what-to-expect-from-setup).
-
-Two answers are not edit conflicts:
-
-- **Setup is already running** for this organization (from another tab or person). It
-  finishes within a few minutes; **Reload** then.
-- **Someone else changed these settings** while you were editing. Nothing was saved;
-  reload to see their changes, or save yours over theirs after a confirmation.
-
-### Key readiness
-
-**Key readiness**, on **Settings** and on the **Overview**, has one row per source that
-is on: the key's reference (never the key), **Ready** or **Not ready**, the permissions it
-lacks, the engine's hint on how to fix it, and the extra permissions it holds (for
-information only). A key that is not ready also appears under **Needs you**. The check
-runs with your own permissions. See [The readiness check](permissions.md#the-readiness-check).
-
-### Overview
-
-The overview shows, for today, 7 days or 30 days: the alerts the engine saw, the ones it
-investigated, grouped into campaigns (each investigated once), skipped for budget,
-skipped because the product's data was not complete within 24 hours, failed, in
-progress and waiting for product data. It shows spending against the limits, **Needs
-you** (a limit reached or near, failed investigations, keys that are not ready) and a
-list of the alerts with what happened to each and why.
-
-### Automatic actions
+## Automatic actions
 
 **Automatic actions** is the log of everything the engine did by itself. Each entry says
 why, links to its investigation and can be undone, one at a time or up to 100 selected
