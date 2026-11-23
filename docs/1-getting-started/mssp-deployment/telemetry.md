@@ -40,7 +40,7 @@ Add [Sensor Cull](../../5-integrations/extensions/limacharlie/sensor-cull.md) fo
 
 ### Sleeper mode
 
-A sensor tagged `lc:sleeper` stays installed but dormant. Put the tag on an installation key and every machine enrolled with it starts asleep. Removing the tag wakes the sensor within about ten minutes, with no reboot and no change on the host.
+A sensor tagged `lc:sleeper` stays installed but dormant. Put the tag on an installation key and every machine enrolled with it starts asleep. To wake sensors, raise the organization's quota to cover them, then remove the tag. They come back within about ten minutes, with no reboot and no change on the host.
 
 This is how Northwind pre-deploys to every ACME machine during onboarding while only monitoring the servers at first, and how it offers a retainer: the sensors are already there when an incident starts. Sleeping sensors bill on usage (connected time and events) instead of quota, and need billing enabled on the organization. See [Sleeper deployment](../../2-sensors-deployment/endpoint-agent/sleeper.md) and the [sleeper mode use case](../use-cases/sleeper-mode.md).
 
@@ -62,12 +62,14 @@ There are three ways to run one. Pick in this order:
 
 Cloud adapters need nothing at the customer. Configure them in Git and they start.
 
-A [cloud-managed adapter](../../2-sensors-deployment/adapters/cloud-managed.md) needs the binary once, started with only the record's GUID and the organization ID. After that you change its configuration in the record, from Git or the CLI, and the adapter picks the change up within about a minute. You never go back to the customer to edit a file. Know its documented limits before you rely on it:
+A [cloud-managed adapter](../../2-sensors-deployment/adapters/cloud-managed.md) needs the binary once, started with only the record's GUID and the organization ID. After that you change its configuration in the record, with `limacharlie external-adapter set` or in the web app, and the adapter picks the change up within about a minute. You never go back to the customer to edit a file. Know its documented limits before you rely on it:
 
 - Changing `sensor_type`, or removing an option, applies only after the adapter process restarts.
 - Disabling or deleting the record does not stop a running adapter. Stop it on the host first, then delete the record.
-- `hive://secret/...` references are not resolved. The credential sits in the record itself.
+- `hive://secret/...` references are not resolved. The installation key and any source credential sit in the record itself, in plain text.
 - Anyone with the organization ID and the record's GUID can read the record. Treat the GUID as a secret and keep it out of Git and tickets.
+
+Because the record body holds credentials, keep `external_adapter` records out of Git Sync: leave `sync_hives.external_adapter` and `export_hives.external_adapter` off. Keep the record templates in your repository with placeholders, and have CI fill in the credentials from its own secret store and run `limacharlie external-adapter set` for each tenant.
 
 ### One collector for the customer's appliances
 
@@ -142,7 +144,7 @@ For anything past one year, the bucket from step 1 above is the archive.
 | Installation keys and their tags | `installation_keys:` |
 | Exfil, Artifact Collection rules | `extension_config` records `ext-exfil`, `ext-artifact` |
 | Cloud adapters | `cloud_sensor` records |
-| Cloud-managed adapters | `external_adapter` records (keep the GUIDs out of the repository) |
+| Cloud-managed adapters | `external_adapter` records, set from CI with `limacharlie external-adapter set`, not through Git Sync, because they hold credentials inline. Keep the GUIDs out of the repository too. |
 | Outputs | `outputs:`, with `hive://secret/` references |
 | Saved queries | `query` records |
 | Usage Alerts, Sensor Cull | `extension_config` records |

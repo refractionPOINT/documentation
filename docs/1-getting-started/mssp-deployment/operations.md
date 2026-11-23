@@ -20,7 +20,7 @@ Three habits keep it working:
 
 ### What Git Sync does not cover yet
 
-Git Sync carries detection and false-positive rules, lookups, saved queries, YARA, playbooks, AI agents, SOPs, org notes, adapters, Application Control policies and rules, investigation policies and plans, outputs, extension subscriptions and settings, and installation keys. It does not cover every product's configuration yet. Push the rest from the same repository with the CLI in your CI:
+Git Sync carries detection and false-positive rules, lookups, saved queries, YARA, playbooks, AI agents, SOPs, org notes, cloud adapters, Application Control policies and rules, investigation policies and plans, outputs, extension subscriptions and settings, and installation keys. It does not cover every product's configuration yet. Push the rest from the same repository with the CLI in your CI:
 
 | Product | Records | How to push them |
 | --- | --- | --- |
@@ -28,8 +28,9 @@ Git Sync carries detection and false-positive rules, lookups, saved queries, YAR
 | Email Security | `mailsec_provider` | A `limacharlie hive set` loop over the files, one per tenant. |
 | Cloud Security | `cloudsec_provider`, `cloudsec_policy`, `cloudsec_query`, `cloudsec_code_rule` | A `limacharlie hive set` loop. See [Cloud Security API and IaC](../../8-reference/cloud-security-api-iac.md) and [Multi-tenant policy push](../../cloud-security/automation.md#multi-tenant-policy-push). |
 | Host Posture (coming soon) | Default rules | The extension's install flow, run in your onboarding script. |
+| Cloud-managed adapters | `external_adapter` | Git Sync can carry them, but leave it off: the record holds the installation key and source credentials in plain text, because these records cannot use `hive://secret/` references. CI fills the credentials in from its own secret store and runs `limacharlie external-adapter set`. See [Cloud-managed adapters](telemetry.md#logs-adapters). |
 
-Keep these files out of the `index.yaml` that Git Sync reads, so the two tools never write the same record. An Organization API key works on one organization only, so CI needs a key per tenant. Credentials stay in each tenant's `secret` hive, never in the repository.
+Keep these files out of the `index.yaml` that Git Sync reads, so the two tools never write the same record. An Organization API key works on one organization only, so CI needs a key per tenant. Credentials stay in each tenant's `secret` hive or in your CI's secret store, never in the repository.
 
 ## The tuning loop
 
