@@ -25,7 +25,7 @@ Read this first. It explains most of the choices below.
 
 Create a control org for your own team and one org per customer. Keep every org in one data center region for now (see [Pick one region](mssp-walkthrough.md#pick-one-region-and-stick-with-it-for-now)).
 
-By default a user can create organizations only while they are a direct member of fewer than two, so the third command below fails on a new account. Ask support to raise the limit for the account that creates your customer organizations first. See [Organization limit](../7-administration/org-lifecycle.md#organization-limit).
+With the default limit and no other direct memberships, a new account can create two organizations, so the third command below fails until support raises the limit. Ask support to raise it for the account that creates your customer organizations before you start. See [Organization limit](../7-administration/org-lifecycle.md#organization-limit).
 
 ```bash
 limacharlie org create --name northwind-control --location usa

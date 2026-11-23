@@ -61,7 +61,7 @@ You can set your preferred time zone under `Display` section of the `User Settin
 
 ## How Can I Unsubscribe/Cancel/Delete My Limacharlie Account?
 
-You can unsubscribe / cancel your subscription from app.limacharlie.io by logging in and going to the Billing & Usage under the Billing section. Click the Delete Organization button at the bottom of the page and follow the instructions on screen. See [Organization Lifecycle](../../7-administration/org-lifecycle.md#deleting-an-organization) for who can delete and what deletion removes.
+Delete Organization cancels that organization's subscription and deletes the organization. It deletes one organization, not your user account. You can unsubscribe / cancel your subscription from app.limacharlie.io by logging in and going to the Billing & Usage under the Billing section. Click the Delete Organization button at the bottom of the page and follow the instructions on screen. See [Organization Lifecycle](../../7-administration/org-lifecycle.md#deleting-an-organization) for who can delete and what deletion removes.
 
 ![account 3](../../assets/images/account-3.png)
 
