@@ -1692,7 +1692,7 @@ if sensor.LastError != nil {
 
 ### Retry Logic
 
-The SDK includes automatic retry for transient failures (401, 429, 504).
+The SDK retries a request automatically after a transient failure. A request gets 4 attempts in total. The SDK waits 10 seconds after a 429 and normally 5 seconds after a retryable 504. After an eligible 401 it can refresh the JWT once and retry, which uses an attempt from the same budget. See [API Rate Limits](../../8-reference/api-rate-limits.md) for the limits behind a 429.
 
 ## Best Practices
 

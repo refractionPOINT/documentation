@@ -243,7 +243,7 @@ value: version
 
 A single `task` request fans out server-side: the extension resolves the `tag` or `selector` to the full sensor list, queues one task per sensor, and paces the deliveries itself. To send one command to many sensors, make **one** API call with a `tag` or `selector` — do not loop over sensors making one call per `sid`.
 
-Like all LimaCharlie REST API calls, requests to the extension endpoint are subject to per-credential API rate limits, measured over a 60-second window. A client exceeding its quota receives an `HTTP 429` response that includes `X-RateLimit-Quota` (requests allowed per window) and `X-RateLimit-Period` (window length in seconds) headers; back off and retry after the window when you receive one. With server-side fan-out, even very large deployments should only need a handful of API calls, keeping you well below the limits.
+Requests to the extension endpoint count against the general API rate limit for the calling credential (500 requests per 60 seconds, 1,000 for a bulk key). See [API Rate Limits](../../../8-reference/api-rate-limits.md). A client exceeding its quota receives an `HTTP 429` response that includes `X-RateLimit-Quota` (requests allowed per window) and `X-RateLimit-Period` (window length in seconds) headers; back off and retry after the window when you receive one. With server-side fan-out, even very large deployments should only need a handful of API calls, keeping you well below the limits.
 
 ## Migrating Rule from legacy Service to new Extension
 

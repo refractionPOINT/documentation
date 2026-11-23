@@ -116,7 +116,7 @@ Flairs are used to modify the behavior of an API key or provide some usage hints
 
 The following flairs are currently supported:
 
-- `bulk`: indicates to the REST API that this key is meant to do a large amount of calls, the API gateway tweaks the API call limits accordingly.
+- `bulk`: indicates to the REST API that this key is meant to do a large amount of calls, a bulk key can make 1,000 API calls per 60 seconds instead of 500. See [API Rate Limits](../../8-reference/api-rate-limits.md).
 - `segment`: indicates that only resources created by this key will be visible by this key. This is useful to provide access to a 3rd party in a limited fashion.
 
 ## Allowed IP Range

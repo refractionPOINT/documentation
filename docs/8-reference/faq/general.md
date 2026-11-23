@@ -94,6 +94,10 @@ LimaCharlie stores management/audit logs for one year.
 
 We suggest you set up an [Output](../../5-integrations/outputs/index.md) to send logs to an external destination if you are looking to have your logs stored for over one year.
 
+## What are the API rate limits?
+
+A regular API key or user can make 500 requests per 60 seconds. A bulk key can make 1,000. Going over returns an `HTTP 429` response, and a few expensive endpoints have tighter hourly limits. See [API Rate Limits](../api-rate-limits.md) for endpoint examples and retry guidance.
+
 ## Does LimaCharlie offer reporting capabilities?
 
 It is very common for users to bring different log, network and endpoint data into the LimaCharlie to leverage our detection and response, advanced correlation and storage. If you wish to leverage data visualization capabilities, we make it easy to send the data you need to Splunk, Tableau or any other solution of your choice via public API.

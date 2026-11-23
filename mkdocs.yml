@@ -414,6 +414,7 @@ nav:
       - Outputs:
           - Overview: 5-integrations/outputs/index.md
           - Stream Structures: 5-integrations/outputs/stream-structures.md
+          - Delivery Guarantees: 5-integrations/outputs/delivery.md
           - Testing: 5-integrations/outputs/testing.md
           - Allowlisting: 5-integrations/outputs/allowlisting.md
           - Billing: 5-integrations/outputs/billing.md
@@ -589,6 +590,7 @@ nav:
       - Permissions: 8-reference/permissions.md
       - Cloud Security API & IaC: 8-reference/cloud-security-api-iac.md
       - Error Codes: 8-reference/error-codes.md
+      - API Rate Limits: 8-reference/api-rate-limits.md
       - Auth Resource Locator: 8-reference/authentication-resource-locator.md
       - YARA Modules: 8-reference/yara-modules.md
       - Latency: 8-reference/latency.md
