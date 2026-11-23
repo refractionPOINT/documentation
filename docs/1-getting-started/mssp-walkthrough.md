@@ -27,7 +27,7 @@ The parts below build the service in the order you set it up. Once it is running
 | When you need to... | Go to |
 | --- | --- |
 | Onboard a new customer | The one-page checklist in Part 18, the onboarding script in [Part 10](#automate-the-new-customer-onboarding), and the smoke test in Part 17. |
-| Change something for one customer or for all of them | Edit the Git repository, merge, and let Git Sync apply it: Part 15 and the [Git Sync tutorial](mssp-iac-tutorial.md). Nothing is changed by hand in a customer org. |
+| Change something for one customer or for all of them | Edit the Git repository, merge, and let Git Sync apply it: Part 15 and the [Git Sync tutorial](mssp-iac-tutorial.md). Email Security, Cloud Security and Application Control config is pushed from the same repository with the `limacharlie sync` CLI in CI instead. Nothing is changed by hand in a customer org. |
 | Tune detections that are too noisy | Replay, false-positive rules and rule tests in Part 6, then the quarterly false-positive review in [Part 16](#feedback-loop-on-detection-quality). |
 | Keep costs predictable | Usage Alerts, Sensor Cull, sleeper mode and output volume in Part 16, and what you ingest in [Part 5](#adapters-logs-cloud-saas-third-party-edr). |
 | Review who has access | The quarterly check in [Part 10](#verify-access-on-a-cadence). |
@@ -126,7 +126,7 @@ Every MSSP customer = **exactly one organization**. Don't share orgs across cust
 
 Your *staff* don't get permissions per-customer; they get permissions through **Organization Groups** that contain N customer orgs. You'll have a handful of groups by job function (engineers, L1 analysts, L2 analysts, read-only) and you'll add every new customer org to each relevant group at onboarding time. After that, staff onboarding/offboarding is a one-line operation.
 
-Every config that matters is **a YAML file in a Hive**. The Infrastructure extension reads/writes those files; the Git Sync extension keeps them in lockstep with a Git repository. If you treat that Git repo as the source of truth from day one, you'll never have to "figure out" what's deployed where — you read the repo.
+Every config that matters is **a YAML file in a Hive**. The Infrastructure extension reads/writes those files; the Git Sync extension keeps most of them in lockstep with a Git repository (Part 15 lists the product configs it does not cover, which you push with the CLI instead). If you treat that Git repo as the source of truth from day one, you'll never have to "figure out" what's deployed where — you read the repo.
 
 That's the model. The rest of this article is filling it in.
 
@@ -2263,6 +2263,7 @@ The step-by-step guide is its own page: **[Tutorial: Run Your MSSP from Git with
 
 - **One repository, one folder per org.** An org reads only `orgs/<OID>/index.yaml`. That file includes shared files, usually from a `global/` folder, so a rule is written once and reaches every customer. Customer-specific files go next to that customer's `index.yaml`. A layout such as `customers/acme/main.yaml` cannot be read by Git Sync.
 - **Use the `hives:` form.** Detection rules, false-positive rules, lookups, saved queries, YARA and AI agents live under `hives:`. The settings of Exfil, Integrity and Artifact are records of the `extension_config` hive (`ext-exfil`, `ext-integrity`, `ext-artifact`). The old top-level `rules`, `fps`, `integrity`, `exfil`, `artifact` and `yara` sections are ignored by Git Sync.
+- **Git Sync does not cover every product's configuration.** It syncs the hives that `limacharlie extension schema --name ext-git-sync` lists. Email Security (`mailsec_provider`, `mailsec_policy`, `dr-mail`), Cloud Security (`cloudsec_policy`, `cloudsec_provider`, `cloudsec_query`, `cloudsec_code_rule`) and Application Control policies and rules are not in that list. The `limacharlie sync` command does cover them, with `--hive-mailsec-provider`, `--hive-mailsec-policy`, `--hive-dr-mail`, `--hive-cloudsec-*` and `--hive-app-control-*`. Keep those records in the same repository, in their own files that the org's Git Sync `index.yaml` does not include, and have your CI run `limacharlie sync push --config-file <file> --oid <OID>` with those flags after a merge. Use a dry run (`--dry-run`) first on a new customer.
 - **A pull never deletes.** Git Sync adds and updates. A rule you remove from Git keeps running in the org until you delete it there. The tutorial shows the two-step removal.
 - **Secrets stay out of Git.** Every credential in your YAML is a `hive://secret/<name>` reference. The secrets live in each org's `secret` hive and are created out-of-band, including the deploy key itself. Never enable the `secret` hive in Git Sync.
 - **Schedules are hourly at the fastest.** Pull and push each take `-`, `1h`, `3h`, `6h`, `12h`, `24h` or `168h`. For a change that cannot wait, press **PULL FROM GIT** or run `limacharlie extension request --name ext-git-sync --action apply`.
