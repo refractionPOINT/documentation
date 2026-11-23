@@ -5,6 +5,51 @@ Release notes for the LimaCharlie web application. For the latest releases of ev
 !!! tip "Subscribe"
     Get each release as it ships with the [Web App RSS feed](https://docs.limacharlie.io/10-release-notes/web-app.xml).
 
+## 2026-11-23
+
+### Web App 6.6.10
+
+Organization colors, one card for free-tier orgs to set up billing, a reworked Host Posture page, clearer SOC Bots status, and keyboard and screen reader fixes across the console.
+
+#### New Features
+
+- **Organization color**: a new Organization Settings > General page lets you give each org a color. The color shows as a banner with the org name at the top of every org page, as an edge on the org menu, and as a dot in the org switcher and org lists. This helps you see which org you are working in. The org rename card moves from Billing & Usage to this page.
+- **Start paying from the free tier**: free-tier orgs open Billing & Usage on one "Start paying for LimaCharlie" card. You choose to protect endpoints, or to only ingest logs or connect a cloud service. The submit button shows the monthly price. Paid orgs see "Endpoints to cover", with one price per endpoint and a monthly total. The confirmation states the monthly cost and that changes are prorated. "vSensor Quota" is now "Sensor Quota".
+- **Host Posture page**: Overview, Hosts, Results by rule, Standards, Rules, and Settings are now tabs with their own URLs, and every tab uses the same filter layout. The Hosts tab and a host's findings show failing results first.
+- **SOC Bots**:
+  - The bot screen shows what each bot is doing, as reported by the bot manager. It alerts you when a bot stalls and says why a message is waiting.
+  - Progress notes between tool calls render Markdown.
+  - Images in bot messages load only when you choose to show them.
+  - Turns the runtime ends on its own, routine runs stopped by their spending limit, and refused requests now say why. A rejected AI provider credential shows a "Reconnect provider" link.
+  - The bot form shows Claude Opus 5.5 as the default model.
+  - Requests already answered in the bot conversation no longer show as waiting in the AI Terminal or on the Active Sessions grid.
+- **Email Security message trace**: when Microsoft 365 message trace shows "Permission not granted" or "Unsupported" in Provider coverage, the panel now explains what to do.
+- **Select menus**: the selected option has a tint, bold text, and a check mark, so you can tell it apart from the hovered option.
+- **Product tours**: brand-new accounts no longer get the full-screen "Introducing SOC Bots" tour.
+- **Accessibility**: a "Skip to main content" link is the first keyboard stop on every page. Confirm dialogs close with Escape, start on the safest button, and return focus to the button that opened them. Recently changed pages got more keyboard, focus, and screen reader fixes.
+
+#### Bug Fixes
+
+- Detection and event times on the Entities page and in the Timeline Builder are correct again.
+- D&R and false positive rules with `%` in their name open without crashing.
+- Opening a private extension created through the API no longer crashes the app.
+- The "Unable to load this page" and crash pages are readable in dark mode.
+- The verify-email screen no longer sends a new email on every reload. The extra sends were refused as too many attempts.
+- Host Posture: the Unsupported host filter no longer fails, and opening a rule's Not applicable, Pass, or Error hosts no longer crashes the app.
+- The Cases page, the create-case dialog, and Cases settings load orgs page by page, with search, so every eligible org can be found.
+- The webhook adapter's Events Path field, added in 6.6.9, is removed. It will return as an option shared by all adapters.
+
+#### Academy
+
+- The practice step lists your own organizations instead of asking for an organization ID. Every step links to your organization in LimaCharlie.
+- A first visit opens a welcome with a "How the Academy works" video. You pick a stream once for the whole Academy: "The basics" (the first level of each course) or "Full training" (every level). You also pick once how to follow along: in an organization the Academy creates, in one you already have, or not at all.
+- Email sign-up sends the verification email once, shows failures, and has a Resend button.
+- Rule and query editors with starter code say that the code is yours to change.
+- The home page invites learners to the LimaCharlie community.
+- The Academy uses the LimaCharlie favicon.
+
+---
+
 ## 2026-11-16
 
 ### Web App 6.6.9
