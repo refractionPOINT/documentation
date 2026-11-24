@@ -280,7 +280,7 @@ sensor command. Requires sensor version 5.4.0 or later, 5.4.4 on Linux.
 | `0x080` | The policy's `on_enable` action did not finish for the installed policy. |
 | `0x100` | The policy's list of the sensor's own signing identities is not applied on this host. |
 | `0x200` | The last policy the cloud sent was refused. `APP_CONTROL_REFUSED` says why. |
-| `0x400` | Linux: an enforcing allowlist that trusts the OS vendor runs as `permissive_sync`, because the host's package database lists no distribution package. See [Application Control on Linux](../5-integrations/extensions/limacharlie/app-control/linux.md#os-vendor-trust-package-provenance). |
+| `0x400` | Linux: an enforcing allowlist that trusts the OS vendor runs as `permissive_sync`, because the host's package index lists no platform package. See [Application Control on Linux](../5-integrations/extensions/limacharlie/app-control/linux.md#when-the-host-has-no-package-information). |
 
 Each `APP_CONTROL_RULE` carries:
 
