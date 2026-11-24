@@ -388,7 +388,7 @@ Git Sync carries the configuration of these products, so one repository configur
 | Email Security | `mailsec_provider` | the mail connection (Microsoft 365, Google Workspace or IMAP) |
 | Email Security | `mailsec_policy` | automations, exclusions, VIPs, thresholds, banners, retention |
 | Email Security | `dr-mail` | custom mail rules |
-| Host Posture | `host_posture_rule` | posture rules, one per record, named after the rule's `id` |
+| Host Posture (coming soon) | `host_posture_rule` | posture rules, one per record, named after the rule's `id` |
 
 Each hive has its own `sync_hives` and `export_hives` switch, off by default. Records use the same `data` and `usr_mtd` wrapper as every other hive. A pull sends `usr_mtd.enabled` as written, so a record without `usr_mtd: {enabled: true}` is saved disabled.
 
@@ -396,7 +396,7 @@ Each hive has its own `sync_hives` and `export_hives` switch, off by default. Re
 
 **Email Security connections.** Hive tags each `mailsec_provider` record `mailsec:provider:<provider>` itself. Git Sync leaves that tag out of exports and comparisons, so you do not write it in the repository. Hive allows one enabled connection per provider type in an organization, and a pull that would enable a second one fails.
 
-**Host Posture rules.** Saving or enabling a rule makes the extension run it on the organization's sensors. Hive therefore requires `sensor.task` as well as `host_posture.set` for that write, and Git Sync has both.
+**Host Posture rules.** Host Posture is not generally available yet. Saving or enabling a rule makes the extension run it on the organization's sensors. Hive therefore requires `sensor.task` as well as `host_posture.set` for that write, and Git Sync has both.
 
 **Older subscriptions need a rekey.** An organization's Git Sync key gets its permissions when the organization subscribes. If a pull or push of these hives fails with `UNAUTHORIZED - access to <OID> requires mailsec.get` (or `mailsec_provider.get`, `host_posture.get`), the subscription predates them. Rekey it once, as an Owner of the organization (the call needs `billing.ctrl` and `user.ctrl`):
 
