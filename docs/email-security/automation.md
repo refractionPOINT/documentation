@@ -4,9 +4,11 @@
 
 Email Security is not a side-car product with its own event bus. Everything it
 sees becomes ordinary LimaCharlie telemetry, in the same lake as your endpoint,
-cloud and identity data — which is what makes "a phish was delivered, and then
-that user's endpoint ran a new binary" one rule instead of two products and a
-spreadsheet.
+cloud and identity data. The same D&R language, Outputs, Cases and search cover
+mail and everything else. A rule sees one sensor at a time, though, so a
+sequence such as "a phish was delivered, then that user's endpoint ran a new
+binary" is not a single rule. The tip under [The `mailbox` object](#the-mailbox-object)
+lists what to use instead.
 
 ## The sensors
 
@@ -63,8 +65,23 @@ is your abuse mailbox. The person who sent the report is `event/reporter`.
 
 !!! tip "Joining mail to sign-ins"
     `event/mailbox/upn` is indexed as a `user`, so an IOC search for a person's
-    UPN finds their mail events next to their identity telemetry, and a rule can
-    correlate a delivered phish with that user's next sign-in.
+    UPN lists the mailbox sensor and the identity adapters that saw that person.
+    Then read those sensors' events to compare times.
+
+    A single D&R rule cannot follow "phish delivered, then that user's next
+    sign-in". Stateful rules and sensor variables are per sensor, and the
+    mailbox and the identity adapter are different sensors. Use one of these
+    instead:
+
+    - The IOC search above, run by an analyst or by an AI agent that a rule
+      starts on the malicious verdict.
+    - [Entities](../cloud-security/entity-pivot.md): the User card shows the
+      person's flagged mail, and its **Cloud sign-ins** lead lists their sampled
+      sign-ins. Entities need a Cloud Security subscription.
+    - The [`pivot` operator and template functions](../cloud-security/rule-pivots.md)
+      in a rule, to move from the mailbox to the person's confirmed devices. They
+      need Cloud Security and a device source that names the owner. They give you
+      the host, not the sign-in.
 
 ## The events
 

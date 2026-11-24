@@ -129,7 +129,9 @@ disabled unless you say otherwise, and a disabled record does not run. The rest 
 the standard Hive surface — `limacharlie hive list`, `get`, `enable`, `disable`,
 `delete` and `validate` with `--hive-name cloudsec_code_rule`, or the
 `/v1/hive/cloudsec_code_rule/<oid>/<key>` REST routes. Like the other `cloudsec_*`
-Hives, it is not walked by `limacharlie sync`.
+Hives, it can be pushed with `limacharlie sync push --hive-cloudsec-code-rule`
+(see [Cloud Security API and IaC](../../8-reference/cloud-security-api-iac.md#hive-is-the-iac-surface)),
+but Git Sync does not carry it.
 
 A record is checked when you save it, and a rule that cannot run is rejected with
 an error naming it:

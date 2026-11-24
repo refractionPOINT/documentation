@@ -79,15 +79,17 @@ autonomy:
 
 ## Emergency pause and resume
 
-To pause automatic actions organization-wide while continuing to see suggestions, create an enabled, unscoped `investigation_policy` record named `autonomy-manual-pause` with this `data`:
+To pause automatic actions organization-wide, create an enabled, unscoped `investigation_policy` record named `autonomy-manual-pause` with this `data`:
 
 ```yaml
 autonomy:
   "*":
-    mode: suggest
+    mode: approve
 ```
 
-The console's manual pause uses this same record. It combines with all other policies; entries already set to `off` remain off. This pauses automatic execution, while authorized explicit approvals remain possible. Use `mode: off` in the applicable policy if you also need to suppress proposals. Existing confirmed effects require their normal undo or remediation procedure.
+The console's manual pause writes this same record. It caps every action class at `approve`, so nothing runs on its own while the record is enabled. Every action the policy would have run automatically waits in the approvals inbox for a person, and authorized explicit approvals still work. It combines with all other policies by the strictest rule: a class the policy already sets to `suggest` or `off` stays that way, and a class no `default` entry names keeps the platform's `suggest`. The pause never turns approvals into suggestions. Use `mode: off` in the applicable policy if you also need to suppress proposals. Existing confirmed effects require their normal undo or remediation procedure.
+
+Consoles before 2026-11-21 wrote `mode: suggest` in this record. The engine still treats that content as a pause, but the cap is stricter: actions that would have waited for approval are recorded as suggestions only. Replace it with `mode: approve` if you want approvals to stay possible during the pause.
 
 To resume, delete `autonomy-manual-pause` using normal Hive deletion permissions. The remaining policy determines what new actions may do. Removing the record does not release previously held suggestions into automatic execution.
 
