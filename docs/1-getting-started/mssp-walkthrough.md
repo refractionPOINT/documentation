@@ -2104,15 +2104,15 @@ hives:
 
 ### The responder agent: what it actually does
 
-The responder starts when the investigator adds a case note that mentions `@responder` (the recipe's D&R rule also checks that the note's author holds `ai_agent.exec`). For a critical-severity case with confirmed malicious activity, the responder isolates sensors and blocks IOCs on its own, without waiting for a human. For every other case it only documents recommended actions.
+The responder starts when the investigator adds a case note that mentions `@responder` (the recipe's D&R rule also checks that the note's author holds `ai_agent.exec`). For a critical-severity case with confirmed malicious activity, the recipe's prompt tells the responder to isolate sensors and block IOCs on its own, without waiting for a human. For every other case it only documents recommended actions.
 
-That is autonomous containment, not an approval-gated flow. The recipe prompt can ask for approval through the Feedback extension, but it says to keep auto-containing critical cases even when an SOP directs approval, so an SOP does not turn this off. If your service requires a human to approve isolation, take the capability away from the agent instead of asking it to hold back:
+The recipe is designed for autonomous containment, not an approval-gated flow. The recipe prompt can ask for approval through the Feedback extension, but it says to keep auto-containing critical cases even when an SOP directs approval, so an SOP does not turn this off. If your service requires a human to approve isolation, take the capability away from the agent instead of asking it to hold back:
 
 - Do not give the responder's API key `sensor.task` (the permission that isolates a sensor), and drop `lookup.set` if blocking IOCs also needs approval.
 - Add the isolation and lookup commands to the agent's `denied_tools` ([Tool Permissions](../9-ai-sessions/tool-permissions.md)).
 - Have the agent record its recommendation on the case, then let an analyst, or a separate step that holds the permission, carry it out after approval.
 
-Core actions inside the responder's prompt:
+The shipped prompt uses older commands for these actions: `sensor isolate` and `lookup --name <lookup> --add`. Neither exists in CLI 5.13.0. The prompt tells the agent to check `--ai-help` when a command fails, so it may recover, but do not count on that for unattended containment. Update the prompt to the current commands before you deploy the recipe. The commands below are the current CLI equivalents, not the text of the shipped prompt:
 
 ```bash
 # Network isolation
