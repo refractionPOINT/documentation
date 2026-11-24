@@ -2275,7 +2275,7 @@ The step-by-step guide is its own page: **[Tutorial: Run Your MSSP from Git with
 - **Schedules are hourly at the fastest.** Pull and push each take `-`, `1h`, `3h`, `6h`, `12h`, `24h` or `168h`. For a change that cannot wait, press **PULL FROM GIT** or run `limacharlie extension request --name ext-git-sync --action apply`.
 - **Bootstrap with a push.** Configure Git Sync, press **PUSH TO GIT** in the control org, and the extension writes `exports/orgs/<OID>/` for you. Then move what you want to keep into `global/` and `orgs/<OID>/`.
 
-In CI, for each org, push the product configs Git Sync does not carry. Email Security rules and policy go through `limacharlie sync push` (see [Email Security custom rules](../email-security/custom-rules.md#infrastructure-as-code)). Cloud Security records and Email Security mail connections go through `limacharlie hive set`, one record per file, as in [Cloud Security API and IaC](../8-reference/cloud-security-api-iac.md):
+In CI, for each org, push the product configs Git Sync does not carry. Email Security rules and policy go through `limacharlie sync push` (see [Email Security custom rules](../email-security/custom-rules.md#infrastructure-as-code)). Cloud Security records and Email Security mail connections go through `limacharlie sync push` with `--hive-cloudsec-*` or `--hive-mailsec-provider` (see [Cloud Security API and IaC](../8-reference/cloud-security-api-iac.md#hive-is-the-iac-surface)), or through `limacharlie hive set`, one record per file, as in this loop:
 
 ```bash
 # Email Security rules and policy
@@ -2297,7 +2297,7 @@ for f in mailsec_provider/*.json; do
 done
 ```
 
-Apply the same loop to the other `cloudsec_*` hives you use (`cloudsec_query`, `cloudsec_code_rule`). The released CLI also has `--hive-cloudsec-*` and `--hive-mailsec-provider` flags on `limacharlie sync`, but the documented route is the `hive set` loop above.
+Apply the same loop to the other `cloudsec_*` hives you use (`cloudsec_query`, `cloudsec_code_rule`). The `hive set` loop above is the alternative to `limacharlie sync push --config-file ... --hive-cloudsec-*` and `--hive-mailsec-provider`, which push every record in a config file in one call.
 
 A merge reaches only the orgs set up for it. Each org pulls on its own schedule, applies only the config types enabled in its Git Sync configuration, and reads only the files its `index.yaml` includes. A new org gets nothing until you subscribe it and add its folder. A merge also does not install sensors: the installation key definition can come from Git, but you create each customer's key in their org and hand it to their IT team.
 
