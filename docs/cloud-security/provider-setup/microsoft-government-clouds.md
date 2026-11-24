@@ -14,7 +14,8 @@ Set **Microsoft cloud** on the connection (web app: **Configuration** step), or
 In the web app, **Microsoft cloud** is a select on the Azure and Entra ID
 **Configuration** step. It defaults to **Commercial**, which writes nothing to the
 record. Pick **GCC High** or **DoD** if your tenant signs in at
-`login.microsoftonline.us`. The provider list then shows the cloud next to the
+`login.microsoftonline.us`. Pick **GCC** if your tenant is Microsoft 365 GCC
+(moderate); the test cannot detect that choice for you. The provider list then shows the cloud next to the
 tenant, and the setup instructions and generated PowerShell follow your choice.
 
 | Value | Web app label | Use it when |
@@ -151,8 +152,11 @@ and
 A GCC tenant uses the commercial defaults.
 
 Everything else in the script is unchanged: the application permissions,
-`Exchange.ManageAsApp`, **Global Reader**, and the Power BI / Fabric security
-group.
+`Exchange.ManageAsApp` and **Global Reader**. The Power BI / Fabric security
+group and its Fabric admin setting are needed only in Commercial: the Fabric
+controls are [not assessed](#checks-that-are-not-assessed-in-a-cloud) in GCC,
+GCC High and DoD, so skip that step there. In GCC High and DoD the Teams controls
+are not assessed either, so `Connect-MicrosoftTeams` is never needed for them.
 
 ## What the connection test says
 
@@ -167,9 +171,10 @@ A GCC tenant is not told apart from a commercial one: Microsoft reports no
 separate sub-scope for it, so the test does not flag a `commercial` / `gcc`
 choice. Choosing between those two is your declaration.
 
-For GCC High and DoD, the test also requests an Exchange Online token, so a
-tenant that cannot be read there fails the test with a clear message instead of
-passing and leaving Exchange checks empty.
+For an `entra` connection in GCC High or DoD, the test also requests an Exchange
+Online token, so a tenant that cannot be read there fails the test with a clear
+message instead of passing and leaving Exchange checks empty. An `azure`
+connection does not read Exchange Online.
 
 ## Checks that are not assessed in a cloud
 
