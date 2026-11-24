@@ -127,7 +127,7 @@ Decoys are placed through the endpoint agent on sensors that a policy selects by
 
 ### Host Posture and Cloud Security (coming soon)
 
-When a tenant has both, each failing Host Posture rule shows up in Cloud Security as one finding that rolls up every failing host, next to the cloud misconfigurations. Host configuration and cloud configuration land in one worklist with one ranking.
+When a tenant has both, each failing Host Posture rule shows up in Cloud Security as one finding that rolls up every failing host, next to the cloud misconfigurations. Host configuration and cloud configuration land in one worklist with one ranking. If Cases ingests the per-host detections, each one is filed under the host it is about, not under the Host Posture adapter.
 
 ### Investigation Engine and everything (coming soon)
 
@@ -190,5 +190,4 @@ Do not build a service on these. They are listed because each is a reasonable th
 - **Cloud Security custom posture rules that use lookups, tags or sensor context.** Their operator allowlist excludes them.
 - **Cases that extract indicators from detections by themselves.** People, agents and the API attach entities to cases.
 - **App Control allow lists built from general process telemetry.** Observations come from App Control's own audit and enforcement events.
-- **Host Posture cases filed under the host** (coming soon). They group under the Host Posture adapter, with the host in the event.
 - **AI triage as a built-in Deception response** (coming soon). Start an agent from your own rule on Deception detections instead.

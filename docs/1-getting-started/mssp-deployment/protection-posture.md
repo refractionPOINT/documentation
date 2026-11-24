@@ -116,7 +116,7 @@ Host Posture is not generally available yet, and its documentation is not publis
 
 <!-- TODO(link): Host Posture rule records -> ../../7-administration/config-hive/host-posture-rule.md -->
 
-**What it produces.** `config_finding` events for failures and `config_finding_closed` when one clears, and a shipped D&R rule that reports each finding as a detection. If the tenant also has Cloud Security, each failing rule shows up there as one rolled-up finding across its hosts. Cases for these detections are filed under the Host Posture adapter's sensor, with the host named in the event.
+**What it produces.** `config_finding` events for failures and `config_finding_closed` when one clears, and a shipped D&R rule that reports each finding as a detection. If the tenant also has Cloud Security, each failing rule shows up there as one rolled-up finding across its hosts. Cases for these detections are filed under the host the finding is about, not under the Host Posture adapter.
 
 ## Deception (coming soon)
 
