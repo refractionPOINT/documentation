@@ -77,7 +77,7 @@ The walkthrough's [threat intelligence part](../mssp-walkthrough.md#part-13-thre
 
 ## Cases: the shared queue
 
-[Cases](../../5-integrations/extensions/limacharlie/cases.md) is the queue your analysts and agents work from. It is in public beta: it can change without notice.
+[Cases](../../5-integrations/extensions/limacharlie/cases.md) is the queue your analysts and agents work from. It is billed as a flat fee per organization per month, with no per-endpoint charge.
 
 In the default `all` ingestion mode, a rule the extension installs forwards the tenant's detections to Cases, whatever product produced them (internal categories starting with `__` are left out). In `tailored` mode, only detections a D&R rule forwards with the `ingest_detection` action become cases. Pick `tailored` when a tenant produces detections you want to keep but not triage. [Auto-grouping](../../5-integrations/extensions/limacharlie/cases.md#auto-grouping) is on by default. Detections from the same sensor within a 24-hour sliding window join one case, and a matching case that was already resolved or closed is reopened rather than a new one opened. Set the grouping key and window in the template.
 
@@ -155,4 +155,4 @@ What it may do is declared in an [`investigation_policy` record](../../7-adminis
 
 Nothing in the engine changes these modes on its own: no history, score or sampling promotes an action. The console's pause writes a policy record that caps every class at `approve`: investigations keep running, and nothing acts without a person's yes. Policies and plan templates are records, so Git Sync rolls them out; see [Investigation policies and plans](../../5-integrations/extensions/limacharlie/git-sync.md#investigation-policies-and-plans). An investigation starts without a person only from a D&R rule.
 
-For a new tenant, start with `close.false_positive` on `suggest` and every eradication action on `approve`, read what the engine would have done for two weeks, then move the classes you trust to `auto`.
+For a new tenant, start with `close.false_positive` on `suggest` and every eradication action on `approve`, read what the engine would have done on real cases, then move the classes you trust to `auto`.

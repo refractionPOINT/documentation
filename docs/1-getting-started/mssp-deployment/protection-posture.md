@@ -18,7 +18,7 @@ Three patterns repeat across all of them:
 
 **What it is.** Agentless posture for the customer's cloud and SaaS accounts in the same tenant: inventory and misconfigurations, attack paths, identity and permission analysis, data you declare sensitive, compliance frameworks, a merged asset inventory with coverage gaps (CAASM), a User and Host directory (Entities), [mail posture rules](../../cloud-security/mail-posture-rules.md) and [Code Security](../../cloud-security/code-security/index.md). It connects to AWS, GCP, Azure, Okta, Entra ID, Google Workspace, GitHub, GitLab and more with read-only credentials. See [Cloud Security](../../cloud-security/index.md).
 
-**When.** Week 2, once the customer's cloud and identity accounts are known. Turn it on even for customers with little cloud: Entities and the asset inventory work from LimaCharlie sensors alone, and other products join on them.
+**When.** After the customer's cloud and identity accounts are known. Turn it on even for customers with little cloud: Entities and the asset inventory work from LimaCharlie sensors alone, and other products join on them.
 
 **At scale.** Each connection is a `cloudsec_provider` record with its credential in the `secret` hive. Policies (classification, coverage expectations, suppressions, SLAs) are `cloudsec_policy` records. Git Sync does not carry `cloudsec_*` records yet, so your CI pushes them for each tenant with `limacharlie sync push --config-file cloudsec.yaml` and the `--hive-cloudsec-*` flags, or loops `limacharlie hive set` over the files in your repository. The docs show [onboarding a tenant](../../cloud-security/automation.md#onboarding-a-tenant), a [multi-tenant policy push](../../cloud-security/automation.md#multi-tenant-policy-push) and the [record reference](../../8-reference/cloud-security-api-iac.md). For the cross-tenant view, `limacharlie cloudsec fleet overview` rolls risk up across the organizations you manage (see [Cloud Security CLI](../../cloud-security/cli.md)).
 
@@ -30,7 +30,7 @@ Three patterns repeat across all of them:
 
 **What it is.** Post-delivery protection for mailboxes: Microsoft 365 and Google Workspace through their APIs, and other mailboxes over IMAP. No MX change and nothing in the mail path. Each message it ingests gets a verdict with the signals behind it, and you can quarantine, move, banner or restore at the provider. It does not replace the provider's own filtering. Coverage and remediation differ by provider; check the provider setup page for each. See [Email Security](../../email-security/index.md).
 
-**When.** Week 2. Start with the default automations, which only alert, and turn on actions per customer once you trust the verdicts on their mail.
+**When.** After the endpoints and identity sources are connected. Start with the default automations, which only alert, and turn on actions per customer once you trust the verdicts on their mail.
 
 **At scale.** Every piece of configuration is a record: `mailsec_provider` for the connection, `mailsec_policy` for automations, exclusions, VIPs, thresholds, banners and retention, and `dr-mail` for custom mail rules. Records compose in name order, and unknown fields are refused, so a typo fails the write instead of turning off a control. Onboarding a tenant is a script. See [Configuration as code](../../email-security/automation.md#configuration-as-code). Git Sync does not carry these records: push `dr-mail` and `mailsec_policy` with `limacharlie sync push --config-file mail.yaml --hive-dr-mail --hive-mailsec-policy` (see [Email Security rules as code](../../email-security/custom-rules.md#infrastructure-as-code)), and `mailsec_provider` the same way with `--hive-mailsec-provider`, or with a `limacharlie hive set` loop.
 
@@ -44,19 +44,19 @@ Three patterns repeat across all of them:
 
 **What it is.** By default, a daily package inventory from each supported Windows, macOS and Linux sensor, matched to CVEs, enriched with CISA KEV and EPSS, and ranked with an LC Risk score that uses your asset tags. A finding closes when a later inventory shows it no longer applies. Analysts can also mark one mitigated, accepted or false positive. See [Vulnerability Reporting](../../5-integrations/extensions/limacharlie/vulnerability-reporting.md).
 
-**When.** Week 2, once sensors are in.
+**When.** Once sensors are in.
 
 **At scale.** Put [asset tags](../../2-sensors-deployment/asset-tags.md) (`lc:asset:criticality:*`, `lc:asset:exposure:*`, `lc:asset:env:*`) on the installation keys, so a production server is scored as one from its first scan, with no per-tenant work. The extension's settings are an `extension_config` record, and `criticality_tag_overrides` maps tags you already use to the canonical values.
 
 **What it produces.** `vuln_finding.created`, `.closed`, `.kev_match` and `.state_changed` events. They are events, not detections: route them with an Output, or write a D&R rule that reports the ones you care about (for example KEV matches on critical assets) so they reach Cases.
 
-**Billed.** Per endpoint, on the organization's sensor quota.
+**Billed.** Per endpoint per month.
 
 ## Application Control
 
 **What it is.** An allowlist or blocklist of programs, applied by the sensor. Four modes: off, audit (`permissive`), rehearsal (`permissive_sync`) and enforcing. Enforcing blocks a program when it starts; audit lets it run and reports what enforcing would have blocked. It needs the endpoint agent. See [Application Control](../../5-integrations/extensions/limacharlie/app-control.md).
 
-**When.** Week 3 or 4, once the customer's normal software is known.
+**When.** Last, once the customer's normal software is known.
 
 **At scale.** Policies are `app_control_policy` records and rules are `app_control_rule` records, both synced by Git Sync. The documented rollout is by tag:
 
@@ -80,13 +80,13 @@ See [Rolling out](../../5-integrations/extensions/limacharlie/app-control.md#rol
 
 **What it produces.** `APP_CONTROL_DENIED` and related events. Four managed alert rules (enforced block, break-glass, policy refused, resident terminated) are off by default; turn them on in your template. A compliance evidence export gives the customer's auditor a report.
 
-**Billed.** Per endpoint, on the organization's sensor quota.
+**Billed.** Per endpoint per month.
 
 ## Integrity (FIM)
 
 **What it is.** File and registry change monitoring by pattern, scoped by platform and tag. A match is a `FIM_HIT` event in the sensor's timeline. See [Integrity](../../5-integrations/extensions/limacharlie/integrity.md) and the [FIM use case](../use-cases/fim.md).
 
-**When.** Week 1, for customers with compliance requirements or systems where any change matters.
+**When.** Early, for customers with compliance requirements or systems where any change matters.
 
 **At scale.** Rules are the `ext-integrity` record in the `extension_config` hive. Write a D&R rule on `FIM_HIT` for the paths you alert on. Deception uses Integrity for its modify and delete alerts.
 
@@ -135,11 +135,11 @@ Deception is in early access and is not generally available yet. Its documentati
 
 ## Rolling posture out across tenants
 
-| Week | Posture work for a new customer |
-| --- | --- |
-| 1 | Integrity rules where needed, YARA sources, EPP if you manage Defender. |
-| 2 | Cloud Security connections and the Cases toggle; Email Security in alert-only mode with the Cases pack; Vulnerability Reporting with asset tags on the keys; Host Posture default pack when available. |
-| 3 | Deception in observe mode when available. Email Security actions once verdicts are trusted. |
-| 3 to 4 | Application Control: audit everywhere, rehearsal on a pilot tag, then enforce by tag. |
+Recommended order for a new customer:
 
-Each line is a set of records in the customer's folder, or a shared file it includes, so the second customer takes the same commits as the first.
+1. Integrity rules where needed, YARA sources, EPP if you manage Defender.
+2. Cloud Security connections and the Cases toggle; Email Security in alert-only mode with the Cases pack; Vulnerability Reporting with asset tags on the keys; Host Posture default pack when available.
+3. Deception in observe mode when available. Email Security actions once verdicts are trusted.
+4. Application Control: audit everywhere, rehearsal on a pilot tag, then enforce by tag.
+
+Each step is a set of records in the customer's folder, or a shared file it includes, so the second customer takes the same commits as the first.
