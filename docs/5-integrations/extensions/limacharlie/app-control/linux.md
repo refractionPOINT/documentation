@@ -13,7 +13,7 @@ On Linux, [Application Control](../app-control.md) uses the same policies, rules
 - Endpoint agent **5.4.4** or later, installed as the service, so that it runs as root. See [Linux installation](../../../../2-sensors-deployment/endpoint-agent/linux/installation.md).
 - Kernel **5.0** or later, built with `CONFIG_FANOTIFY_ACCESS_PERMISSIONS`. Every mainstream distribution kernel released since 2019 has it. A host on an older kernel, such as the 3.10 kernel of RHEL and CentOS 7, reports why it cannot enforce and applies no policy.
 - `CAP_SYS_ADMIN` in the initial user namespace. The service install has it. A sensor running in a container, or under a service unit that drops capabilities, cannot take exec permission events.
-- `dpkg` (Debian, Ubuntu) or `rpm` (Red Hat Enterprise Linux, Fedora, CentOS, Rocky Linux, AlmaLinux, Amazon Linux, Oracle Linux, SUSE, openSUSE) for OS vendor trust. On a host with neither, nothing is vendor trusted and an allowlist has to name everything that may run.
+- `dpkg` (Debian, Ubuntu) or `rpm` (Red Hat Enterprise Linux, Fedora, CentOS, Rocky Linux, AlmaLinux, Amazon Linux, Oracle Linux, SUSE, openSUSE) for OS vendor trust. On a host with neither, nothing is vendor trusted. An enforcing allowlist with `trust_os_vendor: true` then [runs in Rehearsal](#when-the-host-has-no-package-information) instead of enforcing. To enforce on such a host, set `trust_os_vendor: false` and name everything that may run.
 - The extension, the permissions and the sensor version requirements of the [main page](../app-control.md#requirements), and a policy whose `platforms` names `linux`. An empty `platforms` list reaches Windows and macOS only, so a Linux host is never matched by a policy that does not name it. The console's `install-mode` and `lockdown` policies have no platform list, so [install mode](../app-control.md#install-mode) and [lockdown](../app-control.md#lockdown) do not reach Linux hosts; a policy that names `linux` and matches the same tag does.
 
 Linux Application Control has been exercised on Ubuntu 20.04, 24.04 and 26.04, Oracle Linux 9 and Fedora 45. On CentOS 7 the sensor reports but cannot enforce.
@@ -24,7 +24,8 @@ The sensor places a fanotify exec-permission mark on every mounted filesystem it
 
 Points worth knowing:
 
-- **Every mount the sensor can see is covered, as it appears.** The sensor re-reads the mount table when it changes, so a filesystem mounted after the sensor started is marked within a few seconds. Pseudo filesystems (`proc`, `sysfs`, `cgroup`, `devpts` and the like) and every FUSE filesystem are left unmarked on purpose.
+- **Every filesystem on the host is covered, as it appears.** The sensor re-reads the mount table when it changes, so a filesystem mounted after the sensor started is marked within a few seconds. Pseudo filesystems (`proc`, `sysfs`, `cgroup`, `devpts` and the like), every FUSE filesystem and `overlay` (container images, see [Containers](#containers)) are left unmarked on purpose.
+- **Private mount namespaces are covered too.** The mark is placed on each filesystem, not on one view of it, so it follows a process into a mount namespace of its own: a systemd service with `PrivateTmp` or `ProtectSystem`, a program started with `unshare -m`, or a container running a program from a host volume. The policy judges those executions like any other.
 - **A decision has a budget.** If the sensor cannot answer within 1.5 seconds, for example because a very large file is being hashed from a slow disk, it allows the execution and reports it as `APP_CONTROL_UNRESOLVED`.
 - **Interpreters and scripts.** The dynamic loader (`ld-linux-x86-64.so.2`) is opened for execution by the kernel for every dynamically linked program, so it is judged like any program and must be allowed. A script started directly, through its `#!` line, is judged as a file. A script read by an interpreter from standard input or passed with `-c` is not, because no file is opened for execution.
 - **Lineage.** Trusted installers work as on the other platforms. On Linux the sensor also looks through subshells and pipelines, which fork without executing a file, so a command started from `$( )` inside a package maintainer script still inherits the installer's trust.
@@ -102,15 +103,45 @@ Vendor trust therefore does not cover:
 
 The index is rebuilt within about two seconds of a change to the package database, and the sensor knows when a transaction is in progress. During that window, a file a platform package owns, whose content no longer matches the index, is **allowed** rather than refused, and reported as `APP_CONTROL_UNRESOLVED` with reason `52`. That is what lets `glibc`, `systemd` and `coreutils` be replaced under an `enforcing` allowlist without refusing the system's own loader. Process 1 is never denied on any policy, and is reported with reason `53` when it would have been.
 
+### When the host has no package information
+
+On Linux, OS vendor trust comes entirely from the package index. If the index lists no platform package at all, for example on a host with neither `dpkg` nor `rpm`, or one whose package database the sensor cannot read, an enforcing allowlist would refuse every program the operating system ships, `sshd` and systemd's own helpers included.
+
+So the sensor does not enforce such a policy there. When the installed policy is an `enforcing` `allowlist` with `trust_os_vendor: true` and the index lists no platform package, the sensor runs it in Rehearsal (`permissive_sync`): every execution is judged and reported, and nothing is refused. It returns to enforcing as soon as the index lists platform packages.
+
+You can see this state in the host's `APP_CONTROL_STATUS`: `APP_CONTROL_MODE` reads `2` (permissive_sync), and `APP_CONTROL_DEGRADED` has bit `0x400` set (see the [EDR events reference](../../../../8-reference/edr-events.md#app_control_policy_rep)).
+
+This applies only when the index lists no platform package at all. On a host where some packages are recognized and others are not, the policy enforces, and programs from the unrecognized packages are refused unless a rule allows them.
+
 ## Programs that are already running
 
 [`on_enable`](../app-control.md#programs-that-are-already-running) works as described on the main page. On Linux, `terminate` never stops process 1 or 2, a kernel thread, or the sensor itself. A program refused only because no rule matched it, when the policy names installers, is reported and left running, as on the other platforms.
+
+## Containers
+
+Programs in a container's image run without being judged, whatever the policy. The policy still applies to everything else a container runs.
+
+| What a container runs | Judged |
+| --- | --- |
+| A program from the container's image, started by Docker, podman, containerd or CRI-O running as root | No. It runs, and no Application Control event is reported for it. |
+| A file written inside the container at runtime, such as a binary dropped into its `/tmp` | Yes, under the host path of the container's writable layer. |
+| A program on a host volume mounted into the container | Yes, under its host path. |
+| A program in a rootless container (podman or Docker run by an unprivileged user) | Yes, under the host path of its layer. |
+
+The sensor recognizes a program as an image's when the file is in a read-only layer of an overlay mounted in the host's own mount namespace, and every layer of that overlay is a directory that only root can change. The container runtimes running as root set up their storage that way. A rootless container's overlay is mounted inside a user namespace, where an unprivileged user could put anything in its layers, so it gets no such trust. The same goes for an overlay that root mounts inside a private namespace of its own.
+
+Points worth knowing:
+
+- **The image is trusted as a whole.** A malicious image runs, so control what images your hosts can pull, through your registry and runtime configuration.
+- **Under an allowlist, rootless containers need rules.** Their programs belong to no host package, so an allowlist refuses them unless a `path` or `sha256` rule allows them.
+- **On older kernels, executions through an overlay are not reported to the sensor at all.** The 6 series kernels report them; the 5.4 kernel of Ubuntu 20.04 does not. On such a host, nothing a container runs from its own filesystem is judged, including files written at runtime. Programs on host volumes are still judged.
 
 ## Limitations
 
 - **Program files only.** Shared libraries, `LD_PRELOAD`, `dlopen`, scripts fed to an interpreter from standard input or `-c`, and programs executed from memory (`memfd_create`) are not controlled.
 - **No signatures.** `signer`, `signing_id` and `signer_root` rules never match. Third-party software has no durable identity on Linux, so it is allowed by path, with the exposure a path rule carries, or by hash, with the maintenance a hash rule carries.
 - **FUSE filesystems are not covered.** Programs under `sshfs`, `gvfs`, AppImage mounts and other FUSE filesystems run unjudged and unreported.
+- **Container images are trusted as a whole.** Programs from an image run unjudged and unreported; see [Containers](#containers). On older kernels, such as Ubuntu 20.04's 5.4, nothing a container runs from its own filesystem is judged.
 - **Network filesystems are judged but never cached.** A program on NFS, CIFS or 9p is hashed on every execution when the policy needs its digest.
 - **No user notification.** The policy's user notification and tray icon settings have no effect on Linux.
 - **Fail-open while the sensor is down**, as described above.
@@ -259,7 +290,7 @@ respond:
 Then follow the [rollout](../app-control.md#rolling-out) on the main page: Audit first, read the `APP_CONTROL_DENIED` events, add the installer rules and the path rules the reports call for, and only then move the host to Rehearsal and Enforcing.
 
 !!! warning "Enroll new hosts into Audit, not Enforcing"
-    A host that joins an `enforcing` allowlist at enrollment is judged from the moment the policy arrives. If its package database is not one the sensor recognizes, nothing is vendor trusted, and the policy refuses the host's own daemons, `sshd` included. Target enforcing policies by tag and add the tag only after the host's first Audit reports show the system's own programs as vendor trusted.
+    A host that joins an `enforcing` allowlist at enrollment is judged from the moment the policy arrives. A host whose package index lists no platform package at all is [held in Rehearsal](#when-the-host-has-no-package-information), but a host where only some packages are recognized is not: the policy refuses the programs of every other package, which can include the host's own daemons. Target enforcing policies by tag and add the tag only after the host's first Audit reports show the system's own programs as vendor trusted.
 
 ## See Also
 
