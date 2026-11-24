@@ -379,7 +379,7 @@ permission to add, and it marks the sweep as partial coverage, as before.
 |---|---|---|
 | Names a service control policy or resource control policy | Blocked by your organization policy | None. The guardrail is working. |
 | Plain `AccessDenied`, no organization policy named | Needs attention, with the grant to add | Add the permission to the role |
-| The API is not offered in that region | Not offered here (covered, no rows) | None |
+| The API is not offered in that region | Treated as covered with no rows; not a failure and not a block | None |
 
 ### What happens to blocked scopes
 
