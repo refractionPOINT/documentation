@@ -47,7 +47,7 @@ LimaCharlie hands you a small set of primitives that, once you internalize them,
 | **Organization** (a.k.a. **tenant**, or **org**) | A fully isolated unit: its own sensors, rules, data, billing, audit log. One org has one OID (a UUID). | The thing you create when you click "Create Organization". |
 | **Sensor / Adapter** | The thing that produces events. Sensors are EDR agents on hosts; adapters are connectors that ingest logs from cloud / SaaS / third-party security tools. Both stream events into the org. | [Sensors](../2-sensors-deployment/index.md), [Adapters](../2-sensors-deployment/adapters/index.md). |
 | **D&R Rule** | A `detect:` block + `respond:` block in YAML. If `detect` matches an event, `respond` runs. This is the entire automation engine. | [D&R Rules](../3-detection-response/index.md). |
-| **Hive** | The platform's typed key-value store. Each "kind" of configuration lives in its own hive: `dr-general` (your rules), `dr-managed` (rules managed by extensions/Sigma), `secret`, `lookup`, `query`, `yara`, `ai_agent`, `fp` (false positives), `extension_config`, etc. Everything you configure ends up as a record in some hive. | [Config Hive](../7-administration/config-hive/index.md). |
+| **Hive** | The platform's typed key-value store. Each "kind" of configuration lives in its own hive: `dr-general` (your rules), `dr-managed` (rules managed by extensions such as Soteria), `secret`, `lookup`, `query`, `yara`, `ai_agent`, `fp` (false positives), `extension_config`, etc. Everything you configure ends up as a record in some hive. | [Config Hive](../7-administration/config-hive/index.md). |
 | **Output** | A continuous stream of one of the four data types (`event`, `detect`, `audit`, `deployment`) to an external destination — Splunk, S3, BigQuery, Slack, Teams, syslog, etc. | [Outputs](../5-integrations/outputs/index.md). |
 
 ### The four data structures
@@ -681,27 +681,57 @@ Don't proceed to Part 6 until each connected source has produced at least one ev
 
 ## Part 6 — Detections: getting useful coverage in 30 minutes
 
-You don't write rules from scratch on day one. You import known-good rulesets, see what fires, then layer your own.
+You don't write rules from scratch on day one. Start from a managed ruleset, ask AI for rules that match what each customer cares about, and test every rule before it reaches a tenant.
 
-### Step 1: Subscribe to the Sigma ruleset
+### Step 1: Subscribe to the Soteria rulesets
 
-In the marketplace, subscribe to the `sigma` add-on. This auto-applies a curated subset of [SigmaHQ](https://github.com/SigmaHQ/sigma) rules that the LimaCharlie team keeps up to date. Free, on by default. After enabling, generate a couple of test events from a sensor and watch the **Detections** view light up.
+[Soteria EDR](../3-detection-response/managed-rulesets/soteria/edr.md) is the baseline for every customer with endpoints. It covers Windows, Linux and macOS, and the extension is `soteria-rules-edr`. It bills per endpoint per month, so make sure each customer's contract covers it. Subscribe from the marketplace, or with `limacharlie extension subscribe --name soteria-rules-edr`. For the customers who buy EDR monitoring, add `limacharlie --oid "$NEW_OID" extension subscribe --name soteria-rules-edr` to the [onboarding script](#automate-the-new-customer-onboarding).
 
-### Step 2: Browse the Community Rules library
+Where a customer runs those clouds, add [Soteria AWS](../3-detection-response/managed-rulesets/soteria/aws.md) (`soteria-rules-aws`) or [Soteria M365](../3-detection-response/managed-rulesets/soteria/m365.md) (`soteria-rules-o365`). They need the matching adapter feeding events first. For an AWS-heavy customer like Globex, Soteria AWS covers CloudTrail and GuardDuty events.
 
-In the web app, **Automation → Rules → Add Rule → Community Library**. Thousands of rules from Anvilogic, Sigma, Panther, and Okta. You can search by ATT&CK technique, CVE, or keyword, click "Load Rule", and the AI converter renders it as native LimaCharlie YAML in your editor. Pick five rules that match your customers' threat model. Common day-1 picks:
+You can't read or edit Soteria's rules. The rules land in the `dr-managed` hive, and the rules your team owns stay in `dr-general`. To see what a ruleset covers, use the ATT&CK Navigator layers linked from each ruleset page.
 
-- `T1059.001` — PowerShell encoded commands
-- `T1003.001` — LSASS access (credential dumping)
-- `T1218` — LOLBin abuse (e.g., rundll32, regsvr32)
-- `T1486` — ransomware-like file ops
-- `T1136` — new local-account creation
+### Step 2: Generate rules for what your customers care about
 
-See [Community Rules](../3-detection-response/managed-rulesets/community-rules.md).
+A managed ruleset covers common behavior. It can't know that Initech runs a custom ERP, or that ACME's board wants coverage for ransomware precursors. Ask AI for rules that fit. Start from a short list per customer: the business risks they named, plus the MITRE ATT&CK techniques you want covered. Common day-1 picks:
 
-### Step 3: Add the Soteria rulesets if you have customers in those clouds
+- `T1059.001`: PowerShell encoded commands
+- `T1003.001`: LSASS access (credential dumping)
+- `T1218`: LOLBin abuse (e.g., rundll32, regsvr32)
+- `T1486`: ransomware-like file operations
+- `T1136`: new local-account creation
 
-[Soteria EDR](../3-detection-response/managed-rulesets/soteria/edr.md), [Soteria AWS](../3-detection-response/managed-rulesets/soteria/aws.md), and [Soteria M365](../3-detection-response/managed-rulesets/soteria/m365.md) are LimaCharlie-curated production rulesets. AWS and M365 in particular catch a *lot* of identity-misuse activity that custom rules struggle with. Subscribe selectively per customer — for AWS-heavy customers like Globex, Soteria AWS pays for itself in coverage.
+Then run this loop for each one:
+
+```bash
+# 1. Generate the detection and the response as separate files
+limacharlie ai generate-detection \
+  --description "PowerShell launched with an encoded command (ATT&CK T1059.001) on Windows" \
+  --output yaml > detect-raw.yaml
+limacharlie ai generate-response \
+  --description "Report the detection with ATT&CK tag T1059.001 and the host, user and command line" \
+  --output yaml > respond-raw.yaml
+
+# 2. Keep only the `response` field of each file (not the outer envelope), review it,
+#    and save the results as detect.yaml and respond.yaml. Put the same two
+#    parts under `detect:` and `respond:` keys in rule.yaml for the test below.
+
+# 3. Check syntax
+limacharlie dr validate --detect detect.yaml --respond respond.yaml
+
+# 4. Run it over sample events that should and should not match
+limacharlie dr test --input-file rule.yaml --events events.json --trace
+
+# 5. Replay it over the last 7 days of a real tenant before enabling it
+limacharlie replay run --detect-file detect.yaml --respond-file respond.yaml \
+  --start "$(date -d '7 days ago' +%s)" --end "$(date +%s)"
+```
+
+Passing validation only proves the syntax. A replay with no hits doesn't prove the rule works either: the tenant may not have the telemetry. Read the matches, add the sample events as [unit tests](#step-9-unit-test-the-rules-you-care-about) in a `tests:` block, then commit the rule to your IaC repo and let Git Sync roll it out. `limacharlie ai generate-rule --prompt "..."` writes a whole rule in one step if you prefer. The [Writing and Testing Rules](../3-detection-response/tutorials/writing-testing-rules.md#using-ai-to-build-a-detection) tutorial has the full procedure, and Parts 14 and 15 show how to have an AI agent open the pull request for you.
+
+### Step 3: Browse the Community Rules library
+
+In the web app, **Automation → Rules → Add Rule → Community Library**. Thousands of third-party rules from Anvilogic, Sigma, Panther, and Okta. Search by ATT&CK technique, CVE, or keyword, click "Load Rule", and the AI converter renders it as native LimaCharlie YAML in your editor. Use it for one-off additions and as a source of ideas for Step 2, and run the same validate, test and replay steps before you keep a rule. See [Community Rules](../3-detection-response/managed-rulesets/community-rules.md).
 
 ### EDR event types you'll detect on most often
 
@@ -2420,7 +2450,7 @@ sudo cat /etc/passwd
 id
 ```
 
-Expected: a detection from a baseline rule (e.g., the Sigma `whoami` rule) appears in **Detections** within ~10 seconds.
+Expected: a detection from one of your own baseline rules appears in **Detections** within ~10 seconds. Push the `whoami-execution` rule from Part 1 first: save it as `whoami-execution.yaml` and run `limacharlie dr set --key whoami-execution --input-file whoami-execution.yaml --enabled` (see Part 6, Step 6). Then run the Windows command. The Linux and macOS commands only fire if you have a rule of your own that matches them. You can't read Soteria's rules, so don't count on a specific Soteria rule firing on these commands.
 
 ### 4. A case is created
 
@@ -2497,8 +2527,9 @@ Telemetry:
   [ ] Verify first events arrive on each connected source (Part 5 smoke test)
 
 Detection:
-  [ ] Sigma ruleset subscribed
   [ ] Soteria EDR ruleset subscribed (and AWS/M365 if applicable)
+  [ ] AI-generated rules for the customer's priorities and ATT&CK techniques,
+      validated, unit-tested and replayed
   [ ] Baseline custom rules applied via IaC
   [ ] Replay all baseline rules over last 24h, review noise
 
@@ -2528,7 +2559,7 @@ If your team can't run this list in under an hour by month two, you're missing a
 
 A pragmatic path, not a marketing taxonomy.
 
-**Month 1 — Visibility.** EDR + identity + M365/Workspace ingested for one or two friendly customers. Sigma + Soteria EDR running. Cases on. Slack alerts. IaC repo exists, single org committed.
+**Month 1 — Visibility.** EDR + identity + M365/Workspace ingested for one or two friendly customers. Soteria EDR running, plus a first set of AI-generated rules for each customer's priorities. Cases on. Slack alerts. IaC repo exists, single org committed.
 
 **Month 2 — Repeatability.** Onboarding script. Customer-org template. Git Sync pulling on every org, and exporting from the control org. Staff groups in place. Strict SSO enforced. Audit forwarded.
 

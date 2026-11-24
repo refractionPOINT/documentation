@@ -11,6 +11,6 @@ LimaCharlie makes merger and acquisition (M&A) cyber due diligence cost-effectiv
 ## LimaCharlie's solution
 
 - **Cost-effective and scalable:** LimaCharlie allows you to be a cost-effective, scalable solution to perform a compromise assessment on to-be-acquired networks, and evaluate pre-existing threats.
-- **Continuous visibility and control:** Automated, detection-as-code integration with powerful rulesets like Sigma and YARA rules provide continuous visibility into the merged organization's infrastructure, enabling you to detect and respond to potential threats in real-time.
+- **Continuous visibility and control:** Automated, detection-as-code integration with managed rulesets like Soteria and YARA rules provide continuous visibility into the merged organization's infrastructure, enabling you to detect and respond to potential threats in real-time.
 - **Integrate with any tool:** Our extensible platform allows you to customize your additional tools, all through a single agent, achieving maximum performance with minimal footprint.
 - **Centralized telemetry:** LimaCharlie's centralized platform provides a single pane of glass for monitoring and managing the merged infrastructure, simplifying the integration process and reducing the risk of security gaps.

@@ -29,18 +29,18 @@ flowchart LR
 
 ### Managed rulesets
 
-Subscribe these in the template so every tenant starts with coverage:
+Start every tenant with the Soteria rulesets that match what it runs:
 
-- [Sigma](../../3-detection-response/managed-rulesets/sigma-converter.md): LimaCharlie maintains the Sigma backend and a converted rule set.
-- Soteria rulesets for [EDR](../../3-detection-response/managed-rulesets/soteria/edr.md), [AWS](../../3-detection-response/managed-rulesets/soteria/aws.md) and [Microsoft 365](../../3-detection-response/managed-rulesets/soteria/m365.md).
-- [SOC Prime](../../3-detection-response/managed-rulesets/soc-prime.md), if you have a SOC Prime account.
-- The [Community Rules](../../3-detection-response/managed-rulesets/community-rules.md) library for one-off additions.
+- [Soteria EDR](../../3-detection-response/managed-rulesets/soteria/edr.md) (`soteria-rules-edr`) for Windows, Linux and macOS endpoints.
+- [Soteria AWS](../../3-detection-response/managed-rulesets/soteria/aws.md) and [Soteria Microsoft 365](../../3-detection-response/managed-rulesets/soteria/m365.md) where the customer runs those clouds. Each needs its adapter sending events first.
 
-Each managed ruleset has its own subscription terms. Check its marketplace listing and the [pricing page](https://limacharlie.io/pricing).
+You can't read or edit Soteria's rules, so they are a baseline, not your detection content. Put your own on top (next section). Other managed sources exist for specific needs: [SOC Prime](../../3-detection-response/managed-rulesets/soc-prime.md) if you have a SOC Prime account, the [Community Rules](../../3-detection-response/managed-rulesets/community-rules.md) library for one-off additions, and the [Sigma converter](../../3-detection-response/managed-rulesets/sigma-converter.md) if you already hold Sigma rules you want to translate.
+
+Each managed ruleset has its own subscription terms. The Soteria EDR rules bill per endpoint per month. Check each marketplace listing and the [pricing page](https://limacharlie.io/pricing).
 
 ### Your own rules
 
-Write your rules once in `global/` and every tenant that includes the file runs them. The CLI can draft a rule from a description (`limacharlie ai generate-detection`, see [Writing and testing rules](../../3-detection-response/tutorials/writing-testing-rules.md)), and the [D&R rule building guidebook](../../3-detection-response/tutorials/dr-rule-building-guidebook.md) covers the language. The [walkthrough](../mssp-walkthrough.md#step-4-a-detection-pattern-catalogue) has a catalogue of patterns to start from.
+Write your rules once in `global/` and every tenant that includes the file runs them. For the coverage your customers care about, have AI draft the rules. List what matters to the customer (the systems they run and the risks they named) and the MITRE ATT&CK techniques you want covered. Then ask for one rule per item with `limacharlie ai generate-detection` and `limacharlie ai generate-response`, or `limacharlie ai generate-rule` for a whole rule. See [Writing and testing rules](../../3-detection-response/tutorials/writing-testing-rules.md#using-ai-to-build-a-detection). A generated rule is a draft. Validate it with `limacharlie dr validate`, test it, replay it over history, and only then merge it (next section). The [D&R rule building guidebook](../../3-detection-response/tutorials/dr-rule-building-guidebook.md) covers the language. The [walkthrough](../mssp-walkthrough.md#step-2-generate-rules-for-what-your-customers-care-about) shows the loop with commands, and its [catalogue of patterns](../mssp-walkthrough.md#step-4-a-detection-pattern-catalogue) is a source of examples.
 
 Rules on adapter and product events work the same as rules on EDR events. A rule on `EMAIL_VERDICT`, `cloud_finding.created` or an Okta sign-in uses the same operators, the same response actions and the same suppression.
 

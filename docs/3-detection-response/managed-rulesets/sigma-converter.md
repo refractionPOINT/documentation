@@ -1,5 +1,8 @@
 # Sigma Converter
 
+!!! note "Not the recommended baseline"
+    The converted Sigma rules vary in quality and coverage, so we don't recommend them as your starting detection set. For baseline coverage, subscribe to the [Soteria EDR rules](soteria/edr.md), and [have AI generate rules](../tutorials/writing-testing-rules.md#using-ai-to-build-a-detection) for the behavior and ATT&CK techniques you care about. Use the converter for Sigma rules you already have or specific rules you want to apply.
+
 LimaCharlie is happy to contribute to the [Sigma Project](https://github.com/SigmaHQ/sigma) by maintaining the LimaCharlie Backend for Sigma, enabling most Sigma rules to be converted to the [Detection & Response rule](../examples.md) format.
 
 A LimaCharlie Service is available to apply [many of those converted rules](https://github.com/refractionPOINT/sigma-limacharlie/tree/rules) with a single click to an Organization.

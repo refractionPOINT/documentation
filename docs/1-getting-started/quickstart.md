@@ -6,7 +6,7 @@ That said, the majority of LimaCharlie users require basic endpoint detection an
 
 1. Creating a new [Organization](#creating-an-organization)
 2. Deploying a [Sensor](#deploying-a-sensor) to the Organization
-3. Adding [Sigma rules](#adding-sigma-rules) to detect suspicious activity
+3. Adding [detection rules](#adding-detection-rules) to detect suspicious activity
 4. Forwarding detections to an external destination as an [Output](#output)
 
 All of this can be done within our free tier, which offers full platform functionality for up to two (2) sensors. If you haven't already signed up for a free account, please do so at [app.limacharlie.io](https://app.limacharlie.io).
@@ -57,15 +57,19 @@ With a Windows sensor connected to the cloud, you should gain a lot of visibilit
 
 With telemetry coming in from the cloud, let's add rules to detect potentially malicious activity.
 
-## Adding Sigma Rules
+## Adding Detection Rules
 
-Writing security rules and automations from scratch is a huge effort. To set an open, baseline standard of coverage, LimaCharlie maintains a `sigma` add-on which can be enabled for free, and is kept up to date with the [openly maintained threat signatures](https://github.com/SigmaHQ/sigma).
+Writing security rules from scratch is a lot of work. For a baseline, subscribe to the Soteria EDR ruleset. It covers Windows, Linux and macOS endpoint telemetry. In the **Add-ons Marketplace**, search for Soteria and subscribe to `soteria-rules-edr`, or run `limacharlie extension subscribe --name soteria-rules-edr`. Check the marketplace listing for its terms. See [Soteria EDR Rules](../3-detection-response/managed-rulesets/soteria/edr.md) for the events it needs and its ATT&CK coverage.
 
-Enabling the Sigma add-on will automatically apply rules to your organization to match these threat signatures so we can begin to see Detections on incoming endpoint telemetry.
+Once subscribed, rules apply to your endpoint telemetry and matches appear under **Detections**.
 
-Writing Detection and Response rules
+For behavior that matters to you, or an ATT&CK technique you want covered, ask AI to draft a rule:
 
-Writing your own rules is outside the scope of this guide, but we do encourage checking out [Detection & Response](../3-detection-response/tutorials/writing-testing-rules.md) when you're finished.
+```bash
+limacharlie ai generate-rule --prompt "Detect PowerShell running an encoded command (ATT&CK T1059.001)"
+```
+
+Check a generated rule before you enable it. Validate it with `limacharlie dr validate`, run it over sample events and replay it over past telemetry. [Writing and Testing Rules](../3-detection-response/tutorials/writing-testing-rules.md#using-ai-to-build-a-detection) walks through the whole procedure.
 
 ## Output
 
