@@ -27,9 +27,9 @@ The parts below build the service in the order you set it up. Once it is running
 | When you need to... | Go to |
 | --- | --- |
 | Onboard a new customer | The one-page checklist in Part 18, the onboarding script in [Part 10](#automate-the-new-customer-onboarding), and the smoke test in Part 17. |
-| Change something for one customer or for all of them | Edit the Git repository, merge, and let Git Sync apply it: Part 15 and the [Git Sync tutorial](mssp-iac-tutorial.md). Email Security and Cloud Security config is pushed from the same repository with the `limacharlie` CLI in CI instead. Nothing is changed by hand in a customer org. |
+| Change something for one customer or for all of them | Edit the Git repository, merge, and let Git Sync apply it to each org that includes the changed file: Part 15 and the [Git Sync tutorial](mssp-iac-tutorial.md). Git Sync does not carry Email Security or Cloud Security config, so push that from the same repository with the `limacharlie` CLI in CI. Nothing is changed by hand in a customer org. |
 | Tune detections that are too noisy | Replay, false-positive rules and rule tests in Part 6, then the quarterly false-positive review in [Part 16](#feedback-loop-on-detection-quality). |
-| Keep costs predictable | Usage Alerts, Sensor Cull, sleeper mode and output volume in Part 16, and what you ingest in [Part 5](#adapters-logs-cloud-saas-third-party-edr). |
+| Keep costs predictable | Usage Alerts on output volume, Sensor Cull and sleeper mode in Part 16, and what you ingest in [Part 5](#adapters-logs-cloud-saas-third-party-edr). |
 | Review who has access | The quarterly check in [Part 10](#verify-access-on-a-cadence). |
 | Add or remove a staff member | Organization Groups in [Part 10](#the-five-organization-group-baseline); the identity provider does the rest ([Part 2](#enable-strict-sso-on-your-domain)). |
 | Offboard a customer | [Organization Lifecycle](../7-administration/org-lifecycle.md#offboarding-a-customer-organization): export, uninstall the agents, delete the org. |
@@ -126,7 +126,7 @@ Every MSSP customer = **exactly one organization**. Don't share orgs across cust
 
 Your *staff* don't get permissions per-customer; they get permissions through **Organization Groups** that contain N customer orgs. You'll have a handful of groups by job function (engineers, L1 analysts, L2 analysts, read-only) and you'll add every new customer org to each relevant group at onboarding time. After that, staff onboarding/offboarding is a one-line operation.
 
-Every config that matters is **a YAML file in a Hive**. The Infrastructure extension reads/writes those files; the Git Sync extension keeps most of them in lockstep with a Git repository (Part 15 lists the product configs it does not cover, which you push with the CLI instead). If you treat that Git repo as the source of truth from day one, you'll never have to "figure out" what's deployed where — you read the repo.
+Every config that matters is **a YAML file in a Hive**. The Infrastructure extension reads/writes those files; the Git Sync extension applies the config types you enable from a Git repository to every org that includes them (Part 15 lists the product configs it does not cover, which you push with the CLI instead). If you treat that Git repo as the source of truth from day one, you'll never have to "figure out" what's deployed where — you read the repo.
 
 That's the model. The rest of this article is filling it in.
 
@@ -160,7 +160,7 @@ If your team's emails all share a domain, opt into [Unified Billing](../7-admini
 LimaCharlie's pricing is usage-based across two main axes:
 
 - **EDR endpoints** — flat per-endpoint per-month, all telemetry included, with one year of Insight retention bundled in.
-- **External telemetry** (everything from adapters: M365, Okta, CloudTrail, etc.) — per GB ingested, with one year of retention included.
+- **External telemetry** (everything from adapters: M365, Okta, CloudTrail, etc.) — standard sources are metered on the bytes received and billed once at ingestion in organization-level GB blocks, with one year of retention included. A source on a subscription plan follows that plan.
 
 A few helpful order-of-magnitude estimates so you can quote customers credibly:
 
@@ -178,7 +178,7 @@ See [Estimating Data Ingestion](../7-administration/billing/data-estimation.md) 
 
 1. **Start with identity + cloud + EDR.** Highest signal, lowest volume.
 2. **Filter at the source.** Don't ingest "all firewall traffic" — ingest "denies + threat-tagged + anomalous". The customer's firewall is almost always the noisiest source.
-3. **Use the [Usage Alerts extension](../5-integrations/extensions/limacharlie/usage-alerts.md) (covered in Part 16)** to fire a detection when any SKU crosses a threshold.
+3. **Use the [Usage Alerts extension](../5-integrations/extensions/limacharlie/usage-alerts.md) (covered in Part 16)** to fire a detection when output data, artifact downloads or replay events cross a threshold, and review ingestion in each org's Billing & Usage page.
 
 ### Enable Strict SSO on your domain
 
@@ -440,15 +440,15 @@ For larger customers, ship via [Jamf](../2-sensors-deployment/endpoint-agent/mac
 
 ### Sleeper-mode pre-deployment — the MSSP cheat code
 
-The `lc:sleeper` tag pattern above is worth its own paragraph. A sleeper sensor is billed only for its connected time (per 30 days) while it stays installed with no telemetry collection running, which is a small fraction of a full endpoint. Your customer's IT team can roll the agent out to thousands of machines now; whenever you need real telemetry from any subset, you remove the tag (manually or via a D&R rule) and they wake up within 10 minutes. This is the foundation of being able to offer 20-minute IR SLAs.
+The `lc:sleeper` tag pattern above is worth its own paragraph. A sleeper sensor stops its normal telemetry collection and is billed only for its connected time (per 30 days) while it stays installed, which is a small fraction of a full endpoint. Sleeper mode needs billing enabled on the org first. Your customer's IT team can roll the agent out to thousands of machines now. When you need real telemetry from a subset, raise the quota, then remove the tag through the console or the API. The sensors resume normal operation within about 10 minutes. That wake-up time counts against any incident-response SLA, so confirm telemetry is arriving before you start the clock. A dormant sensor collects nothing, so a D&R rule on host telemetry cannot be the thing that wakes it.
 
 End-to-end sleeper flow:
 
 1. Create the customer's org. Set Quota to 3 to enable billing.
 2. Create an installation key with the `lc:sleeper` tag.
 3. Customer's IT installs the agent on every endpoint they want to pre-deploy.
-4. Sensors land in sleeper mode immediately (~10 min sync). Each one is billed for connected time only.
-5. When an incident happens: bump quota up to N, remove the `lc:sleeper` tag from the N sensors you want awake, wait ≤10 minutes, start collecting full telemetry.
+4. Sensors enter sleeper mode within about 10 minutes of connecting. Each one is billed for connected time only.
+5. When an incident happens: raise the quota to cover the N sensors you want awake, remove the `lc:sleeper` tag from them, wait up to 10 minutes, and confirm telemetry is arriving.
 6. When done, re-tag `lc:sleeper`, drop quota back. Costs revert.
 
 Sleeper changes don't touch the binary on disk — only the in-memory profile changes. No reboot needed. While in sleeper mode, things like YARA scans (which require process memory access) are paused.
@@ -601,13 +601,13 @@ The table above lists the ways to run an adapter. These are the patterns an MSSP
 
 **One syslog collector per customer site.** Do not point each firewall at LimaCharlie separately. Run one adapter on a small host at the site, as a [syslog](../2-sensors-deployment/adapters/types/syslog.md) listener (TCP, optionally with TLS or mutual TLS), and send all the site's firewalls to it. Pick the platform that matches the firewall, or `text` with a grok pattern. Parsers such as `fortigate` and `cef` create one sensor per device found in the logs; if you would rather have one sensor for the whole collector, set a constant sensor key and hostname as described in [Using One Sensor for All Devices](../2-sensors-deployment/adapters/usage.md#using-one-sensor-for-all-devices).
 
-**Filter at the source, not later.** External telemetry is billed per GB, counted on the bytes LimaCharlie receives from the adapter. Data that is never sent is never billed, so cut noise as close to the source as you can:
+**Filter at the source, not later.** Standard external telemetry is metered on the bytes LimaCharlie receives from the adapter and billed once at ingestion, in organization-level GB blocks. A source on a subscription plan follows that plan. Data that is never sent is never billed, so cut noise as close to the source as you can:
 
 - On the firewall or device itself, send only the events you will detect on (denies and threat events, selected facilities and severities) instead of all traffic. The [data estimation guide](../7-administration/billing/data-estimation.md) shows how much smaller threat-only logs are. The syslog adapter has no generic event filter, so this is where syslog volume is controlled.
 - On the [Windows Event Log adapter](../2-sensors-deployment/adapters/types/windows-event-log.md), give each channel an XPath filter in `evt_sources`, for example only logon events from `Security`, instead of the whole channel.
 - On the [macOS Unified Logging adapter](../2-sensors-deployment/adapters/types/mac-unified-logging.md), use the `predicate` option. On the Microsoft 365 adapter, list only the `content_types` you need. On the [file adapter](../2-sensors-deployment/adapters/types/file.md), match only the log files you need with `file_path`.
 
-The `client_options.mapping` options (`drop_fields`, `transform`, the parsers) run in LimaCharlie after the data is received. They shrink what is stored, but they do not reduce the bytes billed, so never rely on them to save cost.
+The `client_options.mapping` options (`drop_fields`, `transform`, the parsers) run in LimaCharlie after the data is received. Mapping changes the event that is stored. Dropping fields can make the stored event smaller, but the received bytes are already metered, so never rely on mapping to save cost.
 
 Data that LimaCharlie has already ingested can still be kept out of an output with the output filters in [Part 9](#filter-outputs-before-they-leave-the-platform). That saves output egress, not ingestion.
 
@@ -1449,18 +1449,18 @@ auth_header_value: hive://secret/acme-webhook-bearer
 
 ### Filter outputs before they leave the platform
 
-Every output can filter its stream before delivery, rather than shipping everything and filtering on the receiver side: by event type (`event_white_list`, `event_black_list`), by detection category (`cat_white_list`, `cat_black_list`), by sensor tag (`tag`, `tag_black_list`) and by rule tag (`rule_tag_white_list`, `rule_tag_black_list`). See [Filtering and Transforming Streams](../5-integrations/outputs/stream-structures.md#filtering-and-transforming-streams). Each list is a multiline string with one item per line, not a YAML array. For a noisy event type such as `MODULE_LOAD`, put it in `event_black_list`. For `event` to BigQuery, put the event types your dashboards consume in `event_white_list`. (The separate [Output Allowlisting](../5-integrations/outputs/allowlisting.md) page is about verifying webhook senders and IP allow lists, not about filtering.)
+An output can filter its stream before delivery, rather than shipping everything and filtering on the receiver side. The filters depend on the stream. For event telemetry, filter by event type (`event_white_list`, `event_black_list`) and by sensor tag (`tag`, which takes a single tag, and `tag_black_list`). For detections, filter by category (`cat_white_list`, `cat_black_list`) and by rule tag (`rule_tag_white_list`, `rule_tag_black_list`). See [Filtering and Transforming Streams](../5-integrations/outputs/stream-structures.md#filtering-and-transforming-streams). Each list is a multiline string with one item per line, not a YAML array. For a noisy event type such as `MODULE_LOAD`, put it in `event_black_list`. For `event` to BigQuery, put the event types your dashboards consume in `event_white_list`. (The separate [Output Allowlisting](../5-integrations/outputs/allowlisting.md) page is about verifying webhook senders and IP allow lists, not about filtering.)
 
 ### Ingest a superset, route out in the cloud
 
 A pattern that works well for MSSPs: send LimaCharlie a superset of the customer's telemetry, then use outputs to decide who gets what, instead of trimming at the customer's edge.
 
-- Ingest the sources you may need. The ingestion volume is billed once as external telemetry per GB, and it includes a year of retention in LimaCharlie ([Estimating Data Ingestion](../7-administration/billing/data-estimation.md)). Filter noise at the source first (Part 5), since data that is never sent is never billed. Routing with outputs, as described here, does not reduce ingestion billing, only what you send onward.
-- Give the full copy a cheap, long-term home: an output on the `event` stream to a cold storage bucket **in the same cloud region as the customer's LimaCharlie datacenter**. A [Google Cloud Storage](../5-integrations/outputs/destinations/google-cloud-storage.md) bucket works well for this, because a GCS, Pub/Sub or BigQuery output whose destination is in the datacenter's own region is not billed for output (see below).
-- Send only the security-relevant subset to the tool that charges by volume, such as a downstream SIEM or an AI triage tool: a second output with `event_white_list`, tag or category filters, or an output on the `detect` stream, which is small by nature.
+- Ingest the sources you may need. Standard external telemetry is billed once at ingestion, in organization-level GB blocks, and it includes a year of retention in LimaCharlie (a source on a subscription plan follows that plan) ([Estimating Data Ingestion](../7-administration/billing/data-estimation.md)). Filter noise at the source first (Part 5), since data that is never sent is never billed. Routing with outputs, as described here, does not reduce ingestion billing, only what you send onward.
+- Send an unfiltered copy of the `event` stream to a cheap, long-term home: a cold storage bucket **in the same cloud region as the customer's LimaCharlie datacenter**. A [Google Cloud Storage](../5-integrations/outputs/destinations/google-cloud-storage.md) bucket works well for this, because a GCS, Pub/Sub or BigQuery output whose destination is in the datacenter's own region is not billed for output (see below). Outputs are best effort, with no durable queue, so watch for `output_drop` events and check coverage where the archive has a retention requirement ([Output Delivery](../5-integrations/outputs/delivery.md)).
+- Send only the security-relevant subset to the tool that charges by volume, such as a downstream SIEM or an AI triage tool: a second output on the `event` stream with `event_white_list` or sensor-tag filters, or an output on the `detect` stream, which is small by nature and can filter by category or rule tag.
 - Do the routing in the cloud, in output configuration, and not at the customer's site. A change to what the SIEM receives is then one edit to a record in Git, with no firewall change, no collector reconfiguration and no troubleshooting on the customer network.
 
-How output egress is billed, in shape: outputs are billed at cost, as set out on the [pricing page](https://limacharlie.io/pricing), and the volume you send is what drives it. The exception is a GCS, Pub/Sub or BigQuery output whose destination is in the same region as the LimaCharlie datacenter the org lives in, which is not billed ([Output Billing](../5-integrations/outputs/billing.md) lists the datacenter regions). An S3 bucket, a webhook or a SIEM outside that region is billed. So the same-region cold bucket is the cheap leg, and the filtered leg to the SIEM is the one you size and watch with a Usage Alert on `output_data` (Part 16).
+How output egress is billed, in shape: outputs are billed at cost, as set out on the [pricing page](https://limacharlie.io/pricing), and the volume you send is what drives it. The exception is a GCS, Pub/Sub or BigQuery output whose destination is in the same region as the LimaCharlie datacenter the org lives in, which is not billed ([Output Billing](../5-integrations/outputs/billing.md) lists the datacenter regions). Any other output is billed at cost. So the same-region cold bucket is the cheap leg, and the filtered leg to the SIEM is the one you size and watch with a Usage Alert on `output_data` (Part 16).
 
 ---
 
@@ -1894,7 +1894,7 @@ Many feeds publish signatures, not just IOCs. The [threat-feed-rule tutorial](..
 
 ## Part 14 — AI: agentic SOC capabilities
 
-LimaCharlie is built to be operated by AI. The CLI, the API and the MCP server cover the whole platform, so any assistant that can run a terminal or use an MCP server can work in your orgs (see [Using the CLI with other Frontier Models](../6-developer-guide/frontier-models.md)). There is no separate charge for using the API, the CLI or the MCP server. Metered operations, such as searches, Playbook runtime and AI Session runtime, bill the same whichever interface starts them. On top of that, [AI Sessions](../9-ai-sessions/index.md) is a managed runtime: it runs agents in isolated containers, started by D&R rules, by schedules, or by your analysts. You bring the model credentials (Claude by default, with Bedrock and Vertex available; see [Bring your own provider](#bring-your-own-provider) below), and the model provider bills you for tokens. LimaCharlie bills the session runtime. See [AI Sessions billing](../9-ai-sessions/index.md#billing).
+LimaCharlie is built to be operated by AI. The API and the CLI cover the platform, and the MCP server exposes a set of platform tools for agents. Where an operation is not available over MCP, such as the file-based `limacharlie sync push`, use the CLI or the API. Any assistant that can run a terminal or use an MCP server can work in your orgs (see [Using the CLI with other Frontier Models](../6-developer-guide/frontier-models.md)). There is no separate charge for using the API, the CLI or the MCP server. Metered operations, such as searches, Playbook runtime and AI Session runtime, bill the same whichever interface starts them. On top of that, [AI Sessions](../9-ai-sessions/index.md) is a managed runtime: it runs agents in isolated containers, started by D&R rules, by schedules, or by your analysts. You bring the model credentials (Claude by default, with Bedrock and Vertex available; see [Bring your own provider](#bring-your-own-provider) below), and the model provider bills you for tokens. LimaCharlie bills the session runtime. See [AI Sessions billing](../9-ai-sessions/index.md#billing).
 
 ### Three ways to use it
 
@@ -1915,7 +1915,7 @@ The repo has other teams too, such as a baselining SOC for orgs with noisy detec
 
 ### Lean SOC architecture in detail
 
-Every agent runs with a budget cap that you set (see [Cost guardrails](#cost-guardrails-on-every-ai-agent)). A cheaper model does the high-volume triage, and the stronger model only sees what triage did not dismiss.
+Each of the four recipe agents configures a per-run budget cap (`max_budget_usd`), a value you choose (see [Cost guardrails](#cost-guardrails-on-every-ai-agent)). The cap is optional in the product, so set it on every agent you write. A cheaper model does the high-volume triage, and the stronger model only sees what triage did not dismiss.
 
 ```mermaid
 flowchart TD
@@ -1923,7 +1923,7 @@ flowchart TD
     triage -->|Obvious FP| dismissed["Dismissed<br/>cheapest path"]
     triage -->|creates case| inv["INVESTIGATOR<br/>opus, per-run cap"]
     inv -->|FP confirmed| closed["Closed<br/>false_positive"]
-    inv -->|"tag: needs-containment"| resp["RESPONDER<br/>sonnet, per-run cap"]
+    inv -->|"case note: @responder"| resp["RESPONDER<br/>sonnet, per-run cap"]
     resp --> actions[Actions documented on case]
     inv -->|Resolved/Escalated| human["Human review<br/>full documentation"]
 
@@ -1931,7 +1931,7 @@ flowchart TD
     reporter --> metrics[SOC metrics + SLA monitoring]
 ```
 
-Most alerts end at triage or after one investigation, so most of the model spend goes to the few cases that deserve it. Measure what your agents cost and what analyst work they took over with [Cost Tracking & Savings](../9-ai-sessions/cost-tracking.md), which works from your own case data and has a fleet view across all your tenants.
+The design intends most alerts to end at triage or after one investigation, so most of the model spend goes to the few cases that deserve it. How many do depends on your prompts and your tenants' data, so measure it. Measure what your agents cost and what analyst work they took over with [Cost Tracking & Savings](../9-ai-sessions/cost-tracking.md), which works from your own case data and has a fleet view across all your tenants.
 
 ### The triage agent — full IaC YAML
 
@@ -1982,7 +1982,7 @@ hives:
         debounce_key: lean-triage
         model: sonnet
         max_turns: 50
-        max_budget_usd: 2.00
+        max_budget_usd: <per-session-budget-usd>  # placeholder: set your own per-session budget
         ttl_seconds: 1200
         one_shot: true
         permission_mode: bypassPermissions
@@ -2067,7 +2067,7 @@ hives:
           event_id: event.event_id
         model: opus
         max_turns: 50
-        max_budget_usd: 5.0
+        max_budget_usd: <per-session-budget-usd>  # placeholder: set your own per-session budget
         ttl_seconds: 1800
         one_shot: true
         permission_mode: bypassPermissions
@@ -2104,7 +2104,13 @@ hives:
 
 ### The responder agent — what it actually does
 
-The responder is invoked when the investigator tags a case `needs-containment`. Critical-severity cases get auto-contained; everything else is *recommended* and documented for human approval.
+The responder starts when the investigator adds a case note that mentions `@responder` (the recipe's D&R rule also checks that the note's author holds `ai_agent.exec`). For a critical-severity case with confirmed malicious activity, the responder isolates sensors and blocks IOCs on its own, without waiting for a human. For every other case it only documents recommended actions.
+
+That is autonomous containment, not an approval-gated flow. The recipe prompt can ask for approval through the Feedback extension, but it says to keep auto-containing critical cases even when an SOP directs approval, so an SOP does not turn this off. If your service requires a human to approve isolation, take the capability away from the agent instead of asking it to hold back:
+
+- Do not give the responder's API key `sensor.task` (the permission that isolates a sensor), and drop `lookup.set` if blocking IOCs also needs approval.
+- Add the isolation and lookup commands to the agent's `denied_tools` ([Tool Permissions](../9-ai-sessions/tool-permissions.md)).
+- Have the agent record its recommendation on the case, then let an analyst, or a separate step that holds the permission, carry it out after approval.
 
 Core actions inside the responder's prompt:
 
@@ -2121,7 +2127,7 @@ limacharlie lookup get --key soc-blocked-ips --output json --oid <oid> \
          usr_mtd: .usr_mtd, etag: .sys_mtd.etag}' \
   | limacharlie lookup set --key soc-blocked-ips --oid <oid>
 
-# Human-in-the-loop approval before destructive actions
+# Optional human approval, if the prompt directs the agent to use it
 limacharlie feedback request-approval \
   --channel <slack-channel> \
   --question "Case #<n>: Isolate sensor <hostname> (<sid>)?" \
@@ -2129,7 +2135,7 @@ limacharlie feedback request-approval \
   --timeout 300 --timeout-choice denied --oid <oid>
 ```
 
-The [Feedback extension](../5-integrations/extensions/limacharlie/feedback.md) `request-approval` is the right hook for "AI is about to do something irreversible — get a human nod first". Default the timeout to a denial.
+The [Feedback extension](../5-integrations/extensions/limacharlie/feedback.md) `request-approval` is the right hook for "AI is about to do something irreversible — get a human nod first". Default the timeout to a denial. It only gates what the agent's prompt tells it to gate, so pair it with the permission limits above.
 
 ### The reporter agent — sample output
 
@@ -2190,11 +2196,11 @@ Agents run on Claude by default. To route Claude through your own AWS or GCP acc
 
 ### Event data is untrusted
 
-A command line, a file name or an email subject is chosen by whoever caused the event, and that is not always you. Pass event fields to an agent through `data:`, never by templating them into `prompt:`. The platform marks `data:` as untrusted for the model automatically, and the agents above do this (`data: oid: routing.oid`). Give each agent only the API key permissions its job needs, and keep destructive actions behind human approval, as the responder does. See [Untrusted event data](../9-ai-sessions/dr-sessions.md#untrusted-event-data).
+A command line, a file name or an email subject is chosen by whoever caused the event, and that is not always you. Pass event fields to an agent through `data:`, never by templating them into `prompt:`. The platform labels the extracted `data:` values as untrusted in the prompt, and the agents above pass only what they need (`data: oid: routing.oid`). That label is an instruction to the model, not a security boundary. Limit what the agent can do separately: give each agent only the API key permissions its job needs, and keep destructive actions behind a human approval step or out of its permissions. The sample responder, for one, contains critical cases on its own (see [the responder section](#the-responder-agent-what-it-actually-does)). See [Untrusted event data](../9-ai-sessions/dr-sessions.md#untrusted-event-data).
 
 ### Turn repeated investigation steps into a Playbook
 
-The cheapest token is the one the model never reads. When you see an agent run the same steps in the same order on every case (pull the process tree, resolve the parent hash, check a lookup, list the other sensors with that hash), stop paying for the model to rediscover them. Ask the AI to write those steps as a deterministic Python [Playbook](../5-integrations/extensions/limacharlie/playbook.md) and call it instead. A Playbook is a Python function stored as a record in the `playbook` hive, so it is code you review and keep in Git, and a run is billed for its execution seconds, not for tokens. The agent then reads the structured result and spends its tokens on the judgement.
+The cheapest token is the one the model never reads. When you see an agent run the same steps in the same order on every case (pull the process tree, resolve the parent hash, check a lookup, list the other sensors with that hash), stop paying for the model to rediscover them. Ask the AI to write those steps as a deterministic Python [Playbook](../5-integrations/extensions/limacharlie/playbook.md) and call it instead. A Playbook is a Python function stored as a record in the `playbook` hive, so it is code you review and keep in Git, and a run is billed for its execution time (whole seconds, one-second minimum), not for tokens. The agent then reads the structured result and spends its tokens on the judgement.
 
 A good first prompt for a user session or a SOC Bot:
 
@@ -2232,9 +2238,9 @@ limacharlie extension request --name ext-playbook --action run_playbook \
 
 Notes on how this works:
 
-- The request carries the playbook `name`, an API key `credentials` reference (the key becomes the `sdk` the playbook runs with, so give it only the permissions the steps need) and a `data` object that arrives in `data["data"]`. The agent's own key needs `ext.request` to call it.
+- The request carries the playbook `name`, an API key `credentials` reference (the key becomes the `sdk` the playbook runs with, so give it only the permissions the steps need; without `credentials` the playbook gets no SDK) and a `data` object that arrives in `data["data"]`. The agent's own key needs `ext.request` to call it.
 - A playbook returns a dictionary with optional `data`, `error`, `detection` and `cat` keys. Returning `detection` makes the playbook raise a detection, so the same code can enrich and alert. That is the only result a rule-triggered playbook can surface: a D&R rule does not receive the returned `data`, and a `start ai agent` action never sees it. To get a result into an agent, have the agent call the playbook itself with the CLI, as above.
-- Playbooks are a LABS extension. A run is limited to 10 minutes and there is no state between runs, so keep each one to a single focused job.
+- Playbooks are a LABS extension. A run is limited to 10 minutes. Do not rely on state surviving between runs: write each playbook to depend on its explicit inputs and current telemetry, and keep it to a single focused job.
 - Keep the AI for the work that varies. Keep anything that is the same every time in a Playbook or a D&R rule.
 
 ### Day-1 deployment
@@ -2244,7 +2250,7 @@ If you only deploy *one* AI thing on day 1, deploy **triage**:
 1. Store your Anthropic API key as a Hive Secret: `limacharlie secret set --key anthropic-key ...`
 2. Create an Org API key with the AI-agent-operator permission set (Part 10) and store it as `lean-triage`. It must include `ai_agent.operate`, or the agent cannot work in the org.
 3. Push the triage `ai_agent` record and the corresponding `dr-general` rule.
-4. Optionally write your escalation rules as [SOPs](../9-ai-sessions/sops.md). The triage prompt above checks for them before it starts, so your policy (who approves isolation, which hosts are never touched) is followed, not guessed.
+4. Optionally write your escalation rules as [SOPs](../9-ai-sessions/sops.md). The triage prompt above checks for them before it starts, so your triage policy (which detections to dismiss, which hosts matter most) is applied, not guessed. An SOP is guidance to the model, not an enforcement step. Enforce limits with API key permissions and `denied_tools`.
 5. Wait for the next detection. Watch the Live Feed.
 
 Even at low alert volumes, this saves your L1 hours per day and scales linearly because each session is independent.
@@ -2263,11 +2269,37 @@ The step-by-step guide is its own page: **[Tutorial: Run Your MSSP from Git with
 
 - **One repository, one folder per org.** An org reads only `orgs/<OID>/index.yaml`. That file includes shared files, usually from a `global/` folder, so a rule is written once and reaches every customer. Customer-specific files go next to that customer's `index.yaml`. A layout such as `customers/acme/main.yaml` cannot be read by Git Sync.
 - **Use the `hives:` form.** Detection rules, false-positive rules, lookups, saved queries, YARA and AI agents live under `hives:`. The settings of Exfil, Integrity and Artifact are records of the `extension_config` hive (`ext-exfil`, `ext-integrity`, `ext-artifact`). The old top-level `rules`, `fps`, `integrity`, `exfil`, `artifact` and `yara` sections are ignored by Git Sync.
-- **Git Sync does not cover every product's configuration.** It syncs only the hives that `limacharlie extension schema --name ext-git-sync` lists. Email Security (`mailsec_provider`, `mailsec_policy`, `dr-mail`) and Cloud Security (`cloudsec_*`) records are not among them. Push them from the same repository with the CLI in your CI instead. For Email Security rules and policy, `limacharlie sync push` takes `--hive-dr-mail` and `--hive-mailsec-policy` (see [Email Security custom rules](../email-security/custom-rules.md#infrastructure-as-code)). Cloud Security records are outside what `limacharlie sync` walks, so loop `limacharlie hive set` over your files, as in [Cloud Security API and IaC](../8-reference/cloud-security-api-iac.md); the same loop works for `mailsec_provider`. Keep these files out of the `index.yaml` that Git Sync reads.
+- **Git Sync does not cover every product's configuration.** It syncs only the hives that `limacharlie extension schema --name ext-git-sync` lists. Email Security (`mailsec_provider`, `mailsec_policy`, `dr-mail`) and Cloud Security (`cloudsec_*`) records are not among them, so Git Sync does not carry them. Push them from the same repository with the CLI in your CI instead, as shown after this list. Keep these files out of the `index.yaml` that Git Sync reads.
 - **A pull never deletes.** Git Sync adds and updates. A rule you remove from Git keeps running in the org until you delete it there. The tutorial shows the two-step removal.
 - **Secrets stay out of Git.** Every credential in your YAML is a `hive://secret/<name>` reference. The secrets live in each org's `secret` hive and are created out-of-band, including the deploy key itself. Never enable the `secret` hive in Git Sync.
 - **Schedules are hourly at the fastest.** Pull and push each take `-`, `1h`, `3h`, `6h`, `12h`, `24h` or `168h`. For a change that cannot wait, press **PULL FROM GIT** or run `limacharlie extension request --name ext-git-sync --action apply`.
 - **Bootstrap with a push.** Configure Git Sync, press **PUSH TO GIT** in the control org, and the extension writes `exports/orgs/<OID>/` for you. Then move what you want to keep into `global/` and `orgs/<OID>/`.
+
+In CI, for each org, push the product configs Git Sync does not carry. Email Security rules and policy go through `limacharlie sync push` (see [Email Security custom rules](../email-security/custom-rules.md#infrastructure-as-code)). Cloud Security records and Email Security mail connections go through `limacharlie hive set`, one record per file, as in [Cloud Security API and IaC](../8-reference/cloud-security-api-iac.md):
+
+```bash
+# Email Security rules and policy
+limacharlie sync push --oid "$OID" --config-file mail.yaml \
+  --hive-dr-mail --hive-mailsec-policy
+
+# Cloud Security records and mail connections, one file per record
+for f in cloudsec_provider/*.json; do
+  limacharlie hive set --hive-name cloudsec_provider --key "$(basename "$f" .json)" \
+    --oid "$OID" --input-file "$f" --enabled
+done
+for f in cloudsec_policy/*.json; do
+  limacharlie hive set --hive-name cloudsec_policy --key "$(basename "$f" .json)" \
+    --oid "$OID" --input-file "$f" --enabled
+done
+for f in mailsec_provider/*.json; do
+  limacharlie hive set --hive-name mailsec_provider --key "$(basename "$f" .json)" \
+    --oid "$OID" --input-file "$f" --enabled
+done
+```
+
+Apply the same loop to the other `cloudsec_*` hives you use (`cloudsec_query`, `cloudsec_code_rule`). The released CLI also has `--hive-cloudsec-*` and `--hive-mailsec-provider` flags on `limacharlie sync`, but the documented route is the `hive set` loop above.
+
+A merge reaches only the orgs set up for it. Each org pulls on its own schedule, applies only the config types enabled in its Git Sync configuration, and reads only the files its `index.yaml` includes. A new org gets nothing until you subscribe it and add its folder. A merge also does not install sensors: the installation key definition can come from Git, but you create each customer's key in their org and hand it to their IT team.
 
 That's the whole IaC loop. The Git repo is the source of truth, your IdP gates who can merge to `main`, every change is reviewed, every deploy is replayable.
 
@@ -2275,15 +2307,15 @@ That's the whole IaC loop. The Git repo is the source of truth, your IdP gates w
 
 ## Part 16 — Cost guardrails and operational hygiene
 
-Pay-as-you-go is great until a misconfigured adapter ingests terabytes in a weekend. Set the guardrails on day 1, in the template, so every customer gets them automatically.
+Pay-as-you-go is great until a misconfigured adapter ingests terabytes in a weekend. Set the guardrails on day 1, in the template, so every customer gets them automatically. Filter at the source (Part 5) and review each org's **Billing & Usage** page on a schedule to catch ingestion spikes. Usage Alerts, below, do not watch ingestion volume.
 
 ### Subscribe Usage Alerts on every customer org
 
-[Usage Alerts](../5-integrations/extensions/limacharlie/usage-alerts.md) is the platform's bill-runaway protection. It creates managed D&R rules that fire detections (so they hit your existing alert pipeline) when a SKU exceeds a threshold over a window. Useful presets to ship in the template:
+[Usage Alerts](../5-integrations/extensions/limacharlie/usage-alerts.md) creates managed D&R rules that fire detections (so they hit your existing alert pipeline) when a SKU exceeds a threshold over a window. The supported SKUs are `output_data` (data sent out through outputs), `artifacts_downloaded` and `replay_events`. It cannot alert on external ingestion volume or on sensor count. Useful presets to ship in the template:
 
-- Outbound output data > 1 GB / 30 days → fire detection.
-- Sensor count > N (your contracted size) → fire detection.
-- Insight retention > X events / 30 days → fire detection.
+- `output_data` over a threshold you choose, per 30 days → fire detection. This catches an output sending far more than planned.
+- `artifacts_downloaded` over a threshold → fire detection.
+- `replay_events` over a threshold → fire detection.
 
 The IaC entry that creates one of these:
 
@@ -2332,7 +2364,7 @@ Once a quarter, sweep the audit log of every customer org and the activity log o
 
 ### Sleeper everything you're not actively using
 
-If a customer's onboarding has stalled, tag their installed sensors `lc:sleeper`. They are then billed for connected time only instead of the full endpoint rate. Wake them up the moment the customer's IT readiness is fixed.
+If a customer's onboarding has stalled, tag their installed sensors `lc:sleeper`. They are then billed for connected time only instead of the full endpoint rate. Billing must be enabled on the org. Raise the quota before you remove the tag to wake them (it takes up to about 10 minutes), once the customer's IT readiness is fixed.
 
 ### Replay before you trust a new rule in production
 
