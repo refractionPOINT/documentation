@@ -27,6 +27,13 @@ them as PASS.
 
 There is no ARM or subscription setup.
 
+!!! info "GCC, GCC High and DoD tenants"
+    A tenant in one of Microsoft's US Government clouds needs
+    `microsoft_cloud` set to `gcc`, `gcc_high` or `dod` (the **Microsoft cloud**
+    select in the wizard). Setup uses the government portals and PowerShell
+    environments, and some Microsoft 365 services are not offered in every cloud.
+    See [Microsoft US Government clouds](microsoft-government-clouds.md).
+
 !!! tip "Already connecting Azure?"
     The [Azure](azure.md) provider collects this same directory as part of its
     sweep. You only need a standalone Entra record when there is no Azure

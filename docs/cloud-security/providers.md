@@ -84,6 +84,8 @@ Set `azure_tenant_id` and `azure_subscription_id`, and the app-registration
 (service-principal) client id in `azure_client_id`. The credential secret carries
 the client secret: `{"client_secret": "..."}`. For an Entra directory with **no**
 Azure infrastructure to enumerate, use the standalone `entra` provider instead.
+For a tenant in GCC High or DoD, also set `microsoft_cloud`; see
+[Microsoft US Government clouds](provider-setup/microsoft-government-clouds.md).
 
 ## Identity providers
 
@@ -113,7 +115,9 @@ app-registration client id in `entra_client_id`; the client secret goes in the
 credential secret. It collects users, groups, service principals, and
 conditional-access posture. If you also run an `azure` connection for the same
 tenant, the Azure connection defers its directory collection to the standalone
-`entra` record so the directory is never collected twice.
+`entra` record so the directory is never collected twice. A GCC, GCC High or DoD
+tenant sets `microsoft_cloud`; see
+[Microsoft US Government clouds](provider-setup/microsoft-government-clouds.md).
 
 ### Google Workspace (`google_workspace`)
 

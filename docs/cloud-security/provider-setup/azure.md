@@ -22,6 +22,12 @@ licensed, Conditional Access and sign-in activity.
     enumerate, use the [Entra ID](entra.md) provider instead — same app
     registration, none of the ARM setup.
 
+!!! info "Azure Government, GCC High and DoD"
+    A tenant in Microsoft's US Government clouds needs `microsoft_cloud: gcc_high`
+    (or `dod`) on the record, and its subscriptions and app registration are
+    created in the [Azure Government portal](https://portal.azure.us). See
+    [Microsoft US Government clouds](microsoft-government-clouds.md).
+
 ## What we check
 
 - **Governance.** Defender plans off, Defender alert emails off, no security

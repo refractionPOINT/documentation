@@ -26,6 +26,7 @@ extension (step 1 of
 | [Amazon Web Services](aws.md) | Cloud infra | IAM user that assumes a read-only role, external-ID gated |
 | [Microsoft Azure](azure.md) | Cloud infra | App registration + Reader on the subscription + Graph consent |
 | [Microsoft Entra ID](entra.md) | Identity | App registration + Graph consent (directory only, no Azure needed) |
+| [Microsoft US Government clouds](microsoft-government-clouds.md) | Identity / cloud infra | The Microsoft cloud setting for Azure and Entra tenants in GCC, GCC High or DoD |
 | [Okta](okta.md) | Identity | API Services app (private-key JWT) + 5 read scopes + a read-only admin role |
 | [Google Workspace](google-workspace.md) | Identity | Service account with domain-wide delegation impersonating a super admin |
 | [1Password](onepassword.md) | Identity | SCIM bridge URL + bearer token (optionally a Connect server) |
