@@ -329,7 +329,7 @@ if ($null -eq $service) {
 
 Older installers failed partway through instead. The MSI reported a generic error 1920, saying the service failed to start and asking you to check your privileges, and rolled back.
 
-**Solution:** Download the installer for the host's architecture from the tables above: x64 for 64-bit Intel and AMD, ARM64 for Windows on Arm.
+**Solution:** Download the installer for the host's architecture from the tables above: x64 for 64-bit Intel and AMD, ARM64 for Windows on Arm, x86 only for 32-bit Windows.
 
 ### Antivirus Blocking Installation
 
