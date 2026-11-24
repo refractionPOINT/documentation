@@ -60,6 +60,15 @@ Three patterns repeat across all of them:
 
 **At scale.** Policies are `app_control_policy` records and rules are `app_control_rule` records, both synced by Git Sync. The documented rollout is by tag:
 
+```mermaid
+flowchart LR
+    A["1. Audit policy, no tag<br/>nothing is blocked"] --> B["Would-be blocks<br/>APP_CONTROL_DENIED, not enforced"]
+    B --> C["2. Report and group them,<br/>write allow rules"]
+    C --> D["3. Rehearsal policy<br/>on a pilot tag"]
+    D --> E["4. Enforcing policy<br/>on app-control-enforce"]
+    E --> F["Tag a few machines,<br/>then more"]
+```
+
 1. A broad audit policy with no tag. Every program it would block shows up as an `APP_CONTROL_DENIED` event marked not enforced. Nothing is blocked.
 2. Turn those would-be blocks into allow rules. Report them with a D&R rule, group them by signer or path, and add a `signer` rule for software that appears across many machines (see [Reading would-be blocks](../../5-integrations/extensions/limacharlie/app-control.md#reading-would-be-blocks)). Audit mode is how the customer's allow list gets built, from what their machines actually run.
 3. A rehearsal policy on a pilot tag such as `app-control-soak`.

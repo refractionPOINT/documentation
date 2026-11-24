@@ -12,6 +12,14 @@ Once a few customers are running, the work moves from building to keeping thousa
 
 The repository is the source of truth. A change is a pull request: CI checks it, someone reviews, a merge rolls it out, and on its next pull Git Sync applies it in each tenant that includes the changed file. The [IaC tutorial](../mssp-iac-tutorial.md) sets up the pull request flow and a structure check. Add the rule tests on sample events and, where it helps, a replay over recent history as your own CI steps; [Test before you ship](detection-response.md#test-before-you-ship) has the commands. The [Git Sync reference](../../5-integrations/extensions/limacharlie/git-sync.md) lists every option.
 
+```mermaid
+flowchart LR
+    PR["Pull request"] --> CI["Your CI checks<br/>(structure, rule tests, replay)"]
+    CI --> REV["Review and merge"]
+    REV --> GS["Git Sync applies it on its next pull<br/>in each tenant that includes the file"]
+    REV --> CLI["CI pushes with the CLI the records<br/>Git Sync does not carry"]
+```
+
 Three habits keep it working:
 
 - **Shared files in `global/`, exceptions in the customer's folder.** If you find yourself copying a file into a customer folder to change one line, that line belongs in a false-positive rule or a tag instead.

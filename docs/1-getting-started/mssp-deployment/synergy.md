@@ -14,6 +14,14 @@ Each chain below says what connects the products, and what you have to set up. "
 
 Most chains are one of these four joins plus a product.
 
+```mermaid
+flowchart TB
+    SRC["Every source writes into the same tenant"] --> J1["1. One event stream<br/>one D&R language, your Outputs,<br/>detections in Cases"]
+    SRC --> J2["2. One IOC index<br/>which sensors saw a domain,<br/>hash, IP or UPN"]
+    SRC --> J3["3. Entities<br/>Users and Hosts from sensors, mailboxes<br/>and Cloud Security sources"]
+    J3 --> J4["4. Pivots in D&R rules and Outputs<br/>sensor to owner, email to sensors<br/>(needs Cloud Security)"]
+```
+
 ### 1. One detection pipeline
 
 The telemetry and finding sources in this guide write into the tenant as ordinary events from a sensor or an adapter:
@@ -88,6 +96,17 @@ Case events go to the organization's webhook adapter once you add one, so a D&R 
 
 The same sensor tags select the App Control policy, the Vulnerability Reporting risk weight (`lc:asset:*`), Exfil and Integrity rules, and, once launched, Host Posture rule scope and Deception policy targeting. Tags come from the installation key, the API, or a D&R `add tag` action with an optional time to live.
 
+```mermaid
+flowchart LR
+    KEY["Installation key"] --> TAG["Sensor tags"]
+    API["API"] --> TAG
+    DR["D&R add tag<br/>(optional time to live)"] --> TAG
+    TAG --> AC["App Control policy<br/>(lockdown: appctl-lockdown)"]
+    TAG --> VR["Vulnerability Reporting<br/>risk weight (lc:asset:*)"]
+    TAG --> EI["Exfil and Integrity rules"]
+    TAG --> LATER["Host Posture, Deception<br/>(coming soon)"]
+```
+
 The strongest example: once the reserved lockdown policy exists in the organization, a D&R rule on an endpoint event adds `appctl-lockdown`, and App Control locks a Windows or macOS host down on its next sync, while it stays reachable for your investigation. See [Automate lockdown with D&R](../../5-integrations/extensions/limacharlie/app-control.md#automate-lockdown-with-dr). The trigger has to be an event from the endpoint itself, so the tag lands on the right sensor.
 
 ### Lookups and every rule engine: one threat-intel record
@@ -126,9 +145,25 @@ These work with a rule or a playbook you write. The glue is named in each one.
 
 No shipped rule does this. Response actions act on the event's own sensor, which for a mail event is the mailbox, so `isolate network` or `add tag` on a mail rule would not reach the laptop.
 
+```mermaid
+flowchart LR
+    V["EMAIL_VERDICT event<br/>on the mailbox sensor"] --> R["D&R rule pivots from<br/>the mailbox UPN to owned.sensor_id<br/>(needs Cloud Security and an ownership source)"]
+    R --> D["Detection lists the sensor IDs<br/>and calls a playbook"]
+    D --> PB["Playbook checks each sensor<br/>against your response policy"]
+    PB --> ACT["Through the API: tag it, isolate it,<br/>or queue a Reliable Tasking request"]
+```
+
 The glue: a rule on `EMAIL_VERDICT` pivots from `event/mailbox/upn` to `owned.sensor_id`, puts the sensor IDs in the detection, and calls a [playbook](../../5-integrations/extensions/limacharlie/playbook.md). The playbook checks each sensor against your response policy, then acts on it through the API: tag it, isolate it, or queue a collection with [Reliable Tasking](../../5-integrations/extensions/limacharlie/reliable-tasking.md), which takes one sensor ID, tag or selector per request. It needs Cloud Security and an ownership source. See [Acting on the pivoted sensor](../../cloud-security/rule-pivots.md#acting-on-the-pivoted-sensor).
 
 ### A cloud finding, then act on the VM's sensor
+
+```mermaid
+flowchart LR
+    F["cloud_finding.created<br/>with runtime_sids"] --> R["D&R rule calls a playbook"]
+    R --> PB["Playbook checks those sensors"]
+    PB --> A["On each sensor: a Reliable Tasking request<br/>or an API call to tag it"]
+    F -.->|"no runtime_sids"| AN["Leave it to an analyst"]
+```
 
 A `cloud_finding.created` event carries the finding, with `event/finding/runtime_sids` when Cloud Security matched sensors to the resource. A rule on it calls a playbook that checks those sensors and acts on each one: a Reliable Tasking request for a collection or scan, or an API call to tag it. With no `runtime_sids`, leave it to an analyst. A plain `task` or `add tag` in the rule would act on the Cloud Security adapter's sensor instead.
 

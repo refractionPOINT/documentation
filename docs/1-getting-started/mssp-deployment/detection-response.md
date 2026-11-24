@@ -18,6 +18,15 @@ Build detection in three layers, each in its own place in Git:
 | Your rules | Northwind's own detections, written once | `dr-general` records in `global/` |
 | Customer exceptions | False-positive rules and tags for one customer | `fp` records in that customer's folder |
 
+```mermaid
+flowchart LR
+    EV["Events from every source"] --> DR["D&R rules"]
+    MR["Managed rulesets"] --> DR
+    YR["Your rules<br/>(global/)"] --> DR
+    DR --> FP["False-positive rules<br/>(per customer)"]
+    FP --> DET["Detections"]
+```
+
 ### Managed rulesets
 
 Subscribe these in the template so every tenant starts with coverage:
@@ -93,6 +102,23 @@ Two limits to plan around: Cases accepts up to 100 detections per minute per org
 Send detections where your team works with a `detect` [Output](../../5-integrations/outputs/index.md). Outputs have no case stream: to notify on cases, write a D&R rule on the case events from the webhook adapter and send what it matches to a `tailored` output. Destinations include [Slack](../../5-integrations/outputs/destinations/slack.md), [Microsoft Teams](../../5-integrations/outputs/destinations/ms-teams.md), a [webhook](../../5-integrations/outputs/destinations/webhook.md) and [Tines](../../5-integrations/outputs/destinations/tines.md). For ticketing, use a webhook, or an extension such as [HaloPSA](../../5-integrations/extensions/third-party/halopsa.md), [ServiceNow](../../5-integrations/extensions/third-party/servicenow.md) or [PagerDuty](../../5-integrations/extensions/third-party/pagerduty.md). Webhooks can carry a shared secret so the receiver can check the signature; see [Allowlisting and signatures](../../5-integrations/outputs/allowlisting.md).
 
 ## Response
+
+From detection to action:
+
+```mermaid
+flowchart LR
+    DET["Detections"] -->|"all or tailored<br/>ingestion mode"| CASES["Cases"]
+    CASES -->|"case events via the<br/>webhook adapter"| RULE["D&R rule"]
+    DET --> RULE
+    RULE --> SENSOR["Act on the event's own sensor<br/>(isolate, add tag, task)"]
+    RULE --> PB["Playbook<br/>(extension request)"]
+    RULE --> AI["AI agent<br/>(start ai agent)"]
+    RULE --> OUT["Tailored output<br/>(chat, webhook)"]
+    RULE --> IE["Investigation Engine<br/>(coming soon)"]
+    RULE -->|"destructive step"| FB["Feedback extension<br/>asks a person in chat"]
+    FB --> HAND["Playbook or handler<br/>checks for approved"]
+    HAND --> DEST["Destructive step"]
+```
 
 The [response actions](../../8-reference/response-actions.md) an MSSP uses most:
 

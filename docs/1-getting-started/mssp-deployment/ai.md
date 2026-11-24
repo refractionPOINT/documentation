@@ -26,6 +26,16 @@ For an MSSP, the useful version is the same assistant pointed at your Git reposi
 
 Let the AI change your configuration the same way your engineers do:
 
+```mermaid
+flowchart LR
+    AI["AI agent<br/>(CLI, MCP or API)"] -->|"reads detections, sensors,<br/>replays rules"| TEN["Tenants"]
+    AI -->|"opens a pull request"| PR["Pull request<br/>(rule, FP rule, tag change)"]
+    PR --> CI["Your CI checks"]
+    CI --> REV["A person reviews<br/>and merges"]
+    REV --> GS["Git Sync applies it on its next pull<br/>in each tenant that includes the file"]
+    GS --> TEN
+```
+
 1. The agent works on a branch of the repository that Git Sync reads, using the `limacharlie` CLI to read tenants (detections, false positives, sensor lists) and to replay rules.
 2. It opens a pull request: a new rule in `global/`, a false-positive rule in `orgs/<ACME OID>/`, a tag change on an installation key.
 3. Your CI runs the checks you added to it, such as rule tests on sample events (see [Test before you ship](detection-response.md#test-before-you-ship)). A person reviews and merges.
@@ -89,6 +99,14 @@ The Investigation Engine runs plan templates on detections and cases, with AI an
 The most useful thing to ask an AI is to make itself cheaper. When an agent runs the same steps on every alert of a kind (enrich an IP, check three lookups, look up the user, decide), those steps cost tokens every time and can come out slightly different each time.
 
 Ask the agent to write those steps as a [Python playbook](../../5-integrations/extensions/limacharlie/playbook.md): a `playbook(sdk, data)` function stored as a `playbook` record. When the request passes an API key in `credentials` (a `hive://secret/` reference), `sdk` is a client authenticated with it; without one, `sdk` is `None`. Have the playbook depend only on its inputs and current data, not on anything left over from an earlier run. Then:
+
+```mermaid
+flowchart LR
+    AG["AI agent"] -->|"writes the repeated steps"| PB["Playbook record<br/>(Git, review, tests)"]
+    DR["D&R rule<br/>(extension request)"] -->|"every matching event,<br/>no AI involved"| PB
+    AG -->|"calls it through<br/>the CLI or API"| PB
+    PB --> RET["Returns data to the caller<br/>and can raise a detection"]
+```
 
 - A D&R rule calls it with an `extension request` to `ext-playbook`, so the step runs on every matching event with no AI involved. A playbook can return a detection, so it can raise an alert itself.
 - The agent calls the same playbook through the CLI or API, and spends its tokens on what is left.

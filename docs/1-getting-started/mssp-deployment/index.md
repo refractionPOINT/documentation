@@ -106,6 +106,15 @@ There is no separate charge for using the API, the CLI or the MCP server. Metere
 
 This is the order Northwind follows for a new customer such as ACME. Each step builds on the one before. Apart from installing software at the customer, each step is a change to the customer's folder in Git or to a shared template it includes.
 
+```mermaid
+flowchart LR
+    W0["Week 0<br/>Organization, Git Sync,<br/>baseline rules, Cases,<br/>endpoint agent"] --> W01["Week 0 to 1<br/>Cloud-to-cloud sources"]
+    W01 --> W1["Week 1<br/>Syslog collector,<br/>Outputs, Usage Alerts"]
+    W1 --> W2["Week 2<br/>Cloud Security, Email Security,<br/>Vulnerability Reporting"]
+    W2 --> W24["Week 2 to 4<br/>Tune FP rules,<br/>AI triage on the case queue"]
+    W24 --> W34["Week 3 to 4<br/>Application Control,<br/>audit then enforce"]
+```
+
 | When | What | Why this order |
 | --- | --- | --- |
 | Week 0 | Create the organization in the right region, add it to your Organization Groups, connect Git Sync, subscribe the standard extensions, turn on the baseline rules and Cases. | The template is ready before any data arrives, so the first event already meets your rules. Run the walkthrough's [onboarding script](../mssp-walkthrough.md#automate-the-new-customer-onboarding) on the new organization, merge the customer's `index.yaml`, then run a first Git Sync apply and check its result before you connect sources or send installation keys. |

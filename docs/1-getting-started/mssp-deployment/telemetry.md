@@ -8,6 +8,17 @@ Part of [Recommended Deployment for MSSPs](index.md).
 
 The rule for telemetry is simple: bring in everything you need for detection and investigation, filter what you can at the source, and route copies out from the LimaCharlie cloud. This page covers each kind of source in the order you usually connect them, then the routing.
 
+```mermaid
+flowchart LR
+    EP["Endpoints<br/>(EDR sensor)"] --> TEN
+    CLOUD["Cloud and SaaS<br/>(cloud adapters)"] --> TEN
+    FW["Firewalls and appliances"] -->|"filter on the device"| COL["One adapter on a customer server<br/>(syslog collector)"]
+    COL --> TEN
+    TEN["Customer tenant<br/>(one year retention, searchable)"]
+    TEN -->|"Output: full copy"| COLD["Cold storage bucket<br/>(same region)"]
+    TEN -->|"Output: security subset"| SIEM["SIEM or AI triage tool"]
+```
+
 ## Endpoints: the EDR sensor
 
 Install the [endpoint agent](../../2-sensors-deployment/index.md) on every computer and server you monitor. It is the richest source you have, and Application Control, Vulnerability Reporting, Integrity, YARA scanning, live response and isolation all need it.
