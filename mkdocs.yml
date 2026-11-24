@@ -243,6 +243,14 @@ nav:
       - Core Concepts: 1-getting-started/core-concepts.md
       - Starting an MSSP — Walkthrough: 1-getting-started/mssp-walkthrough.md
       - MSSP Infrastructure as Code with Git Sync: 1-getting-started/mssp-iac-tutorial.md
+      - Recommended Deployment for MSSPs:
+          - Overview: 1-getting-started/mssp-deployment/index.md
+          - Telemetry and Routing: 1-getting-started/mssp-deployment/telemetry.md
+          - Protection and Posture: 1-getting-started/mssp-deployment/protection-posture.md
+          - Detection and Response: 1-getting-started/mssp-deployment/detection-response.md
+          - What the Products Do Together: 1-getting-started/mssp-deployment/synergy.md
+          - AI as a Main User: 1-getting-started/mssp-deployment/ai.md
+          - Operations: 1-getting-started/mssp-deployment/operations.md
       - Tutorials:
           - Overview: 1-getting-started/tutorials/index.md
 
