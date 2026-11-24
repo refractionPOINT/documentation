@@ -2102,7 +2102,7 @@ hives:
         tags: [ai-team:lean-soc:investigator]
 ```
 
-### The responder agent — what it actually does
+### The responder agent: what it actually does
 
 The responder starts when the investigator adds a case note that mentions `@responder` (the recipe's D&R rule also checks that the note's author holds `ai_agent.exec`). For a critical-severity case with confirmed malicious activity, the responder isolates sensors and blocks IOCs on its own, without waiting for a human. For every other case it only documents recommended actions.
 
