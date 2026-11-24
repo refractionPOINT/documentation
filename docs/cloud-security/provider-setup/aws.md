@@ -245,7 +245,7 @@ provider_type: aws
 aws_role_arn: "arn:aws:iam::<ACCOUNT_ID>:role/LimaCharlieCloudSecRO"
 aws_external_id: "<EXTERNAL_ID>"
 credentials: hive://secret/aws-credentials
-# aws_regions: [us-east-1, ...]                 # optional; omit = all enabled regions. Not needed for region-locked organizations.
+# aws_regions: [us-east-1, ...]                 # optional; omit = all enabled regions. Optional with region locks; see below.
 # aws_member_role_name: LimaCharlieCloudSecRO   # ONLY for AWS Organization member accounts
 ```
 
@@ -376,9 +376,11 @@ So in an account locked to `eu-north-1`, these are read in `eu-north-1`. Before,
 a refused first region could stop the whole service, and the allowed region was
 never read.
 
-Everything else behaves as before. Other collectors and checks still try every
-region, and a refusal there still shows as a failed check under **Needs
-attention** with the permission to add.
+Everything else behaves as before. Other collectors and checks (RDS, Lambda and
+SageMaker, for example) still try every region. A refusal there still shows as
+a failed check under **Needs attention**, even when an SCP you recognize is the
+cause. Adding a permission to the role only fixes a refusal that is a real
+permission gap.
 
 A policy shape Cloud Security cannot interpret blocks nothing. The scan then
 behaves as it did without this feature. The organization's management account
@@ -396,9 +398,10 @@ account:
 
 Only scopes that were actually skipped are listed. A blocked scope is not a
 failed check and does not count as an error. A refusal from a collector that
-was not skipped is a different thing: it is a gap in the role's permissions
-(or in a policy Cloud Security does not interpret), and it stays under **Needs
-attention**.
+was not skipped is a different thing. It stays under **Needs attention**
+whether the cause is a gap in the role's permissions, a policy shape Cloud
+Security does not interpret, or a recognized policy that denies a collector
+outside the list above. Only the first is fixed by adding a permission.
 
 ### What happens to blocked scopes
 
@@ -437,8 +440,10 @@ enabled-region list falls back to `us-east-1` alone. Listing that region in
 ### `aws_regions`
 
 `aws_regions` stays optional. Use it when you want to limit scanning on
-purpose, for example to cover only the regions you operate in. You do not need
-it to work with a region lock.
+purpose, for example to cover only the regions you operate in. The collectors
+listed above work with a region lock without it. For the other collectors,
+setting `aws_regions` to the allowed regions also removes the **Needs
+attention** entries from refused regions.
 
 ### CloudTrail
 
@@ -455,7 +460,7 @@ reduces them further.
 | `auth` fails: `… no EC2 IMDS role found` | Secret used the wrong key names → no static creds → default chain → IMDS | Use `access_key_id` / `secret_access_key` (no `aws_` prefix) |
 | `AccessDenied` on `sts:AssumeRole` | External ID mismatch, wrong trust-policy principal, or propagation | Confirm `aws_external_id` matches the trust condition; retry after a few seconds |
 | A region or service appears under **Blocked by your organization policy** | An SCP in your organization denies it | Nothing to fix. See [Organization policies that block reads](#organization-policies-that-block-reads) |
-| **Needs attention** shows a permission to add | The role itself lacks a read permission, or a policy Cloud Security does not interpret refuses it | Add the permission to the role (and to member-account roles), or check your SCPs |
+| **Needs attention** shows a permission to add | The role lacks a read permission, or an SCP denies a collector that does not skip blocked scopes yet | Add the permission to the role (and to member-account roles) only if no SCP denies the call. For a region lock, set `aws_regions` to the allowed regions |
 
 ## Private ECR images
 
