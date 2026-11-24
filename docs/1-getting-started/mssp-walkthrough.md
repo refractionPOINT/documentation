@@ -689,7 +689,7 @@ You don't write rules from scratch on day one. Start from a managed ruleset, ask
 
 Where a customer runs those clouds, add [Soteria AWS](../3-detection-response/managed-rulesets/soteria/aws.md) (`soteria-rules-aws`) or [Soteria M365](../3-detection-response/managed-rulesets/soteria/m365.md) (`soteria-rules-o365`). They need the matching adapter feeding events first. For an AWS-heavy customer like Globex, Soteria AWS covers CloudTrail and GuardDuty events.
 
-You can't read or edit Soteria's rules. The rules land in the `dr-managed` hive, and the rules your team owns stay in `dr-general`. To see what a ruleset covers, use the ATT&CK Navigator layers linked from each ruleset page.
+You can't read or edit Soteria's rules. The rules land in the `dr-managed` hive, and the rules your team owns stay in `dr-general`. To see what Soteria EDR covers, use the ATT&CK Navigator layers linked from its page.
 
 ### Step 2: Generate rules for what your customers care about
 
