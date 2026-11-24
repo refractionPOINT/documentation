@@ -637,6 +637,13 @@ Two conventions make this pleasant to keep in git:
 Onboarding a new tenant is then: subscribe the extension, write the secret, write
 the provider record, apply the policy directory, run the connection test.
 
+To keep the directory applied across many tenants, let
+[Git Sync](../5-integrations/extensions/limacharlie/git-sync.md#email-security-cloud-security-and-host-posture)
+pull it: turn on its `mailsec_provider`, `mailsec_policy` and `dr-mail` switches
+(and `lookup` and `dr-general` if those records are in the repository too). Leave
+its `secret` switch off and write each tenant's provider credential out of band:
+the provider record holds only the `hive://secret/` reference.
+
 ## Triage after initial analysis
 
 This platform D&R detection reports suspicious or malicious messages after the

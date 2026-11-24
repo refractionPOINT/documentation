@@ -27,7 +27,7 @@ The parts below build the service in the order you set it up. Once it is running
 | When you need to... | Go to |
 | --- | --- |
 | Onboard a new customer | The one-page checklist in Part 18, the onboarding script in [Part 10](#automate-the-new-customer-onboarding), and the smoke test in Part 17. |
-| Change something for one customer or for all of them | Edit the Git repository, merge, and let Git Sync apply it to each org that includes the changed file: Part 15 and the [Git Sync tutorial](mssp-iac-tutorial.md). Git Sync does not carry Email Security or Cloud Security config, so push that from the same repository with the `limacharlie` CLI in CI. Nothing is changed by hand in a customer org. |
+| Change something for one customer or for all of them | Edit the Git repository, merge, and let Git Sync apply it to each org that includes the changed file: Part 15 and the [Git Sync tutorial](mssp-iac-tutorial.md). This includes Email Security, Cloud Security and Host Posture config. Nothing is changed by hand in a customer org. |
 | Tune detections that are too noisy | Replay, false-positive rules and rule tests in Part 6, then the quarterly false-positive review in [Part 16](#feedback-loop-on-detection-quality). |
 | Keep costs predictable | Usage Alerts on output volume, Sensor Cull and sleeper mode in Part 16, and what you ingest in [Part 5](#adapters-logs-cloud-saas-third-party-edr). |
 | Review who has access | The quarterly check in [Part 10](#verify-access-on-a-cadence). |
@@ -126,7 +126,7 @@ Every MSSP customer = **exactly one organization**. Don't share orgs across cust
 
 Your *staff* don't get permissions per-customer; they get permissions through **Organization Groups** that contain N customer orgs. You'll have a handful of groups by job function (engineers, L1 analysts, L2 analysts, read-only) and you'll add every new customer org to each relevant group at onboarding time. After that, staff onboarding/offboarding is a one-line operation.
 
-Every config that matters is **a YAML file in a Hive**. The Infrastructure extension reads/writes those files; the Git Sync extension applies the config types you enable from a Git repository to every org that includes them (Part 15 lists the product configs it does not cover, which you push with the CLI instead). If you treat that Git repo as the source of truth from day one, you'll never have to "figure out" what's deployed where — you read the repo.
+Every config that matters is **a YAML file in a Hive**. The Infrastructure extension reads/writes those files; the Git Sync extension applies the config types you enable from a Git repository to every org that includes them (Part 15 lists the few records that stay out of Git because they hold credentials). If you treat that Git repo as the source of truth from day one, you'll never have to "figure out" what's deployed where — you read the repo.
 
 That's the model. The rest of this article is filling it in.
 
@@ -2299,35 +2299,13 @@ The step-by-step guide is its own page: **[Tutorial: Run Your MSSP from Git with
 
 - **One repository, one folder per org.** An org reads only `orgs/<OID>/index.yaml`. That file includes shared files, usually from a `global/` folder, so a rule is written once and reaches every customer. Customer-specific files go next to that customer's `index.yaml`. A layout such as `customers/acme/main.yaml` cannot be read by Git Sync.
 - **Use the `hives:` form.** Detection rules, false-positive rules, lookups, saved queries, YARA and AI agents live under `hives:`. The settings of Exfil, Integrity and Artifact are records of the `extension_config` hive (`ext-exfil`, `ext-integrity`, `ext-artifact`). The old top-level `rules`, `fps`, `integrity`, `exfil`, `artifact` and `yara` sections are ignored by Git Sync.
-- **Git Sync does not cover every product's configuration.** It syncs only the hives that `limacharlie extension schema --name ext-git-sync` lists. Email Security (`mailsec_provider`, `mailsec_policy`, `dr-mail`) and Cloud Security (`cloudsec_*`) records are not among them, so Git Sync does not carry them. Push them from the same repository with the CLI in your CI instead, as shown after this list. Keep these files out of the `index.yaml` that Git Sync reads.
+- **Product configuration goes through Git Sync too.** It syncs the hives that `limacharlie extension schema --name ext-git-sync` lists, which include Email Security (`mailsec_provider`, `mailsec_policy`, `dr-mail`), Cloud Security (`cloudsec_*`) and Host Posture (`host_posture_rule`). Each hive has its own switch, off by default. An org subscribed to Git Sync before it carried these hives needs a one-time `limacharlie extension rekey --name ext-git-sync` by an Owner; see [Git Sync](../5-integrations/extensions/limacharlie/git-sync.md#email-security-cloud-security-and-host-posture).
 - **A pull never deletes.** Git Sync adds and updates. A rule you remove from Git keeps running in the org until you delete it there. The tutorial shows the two-step removal.
 - **Secrets stay out of Git.** Every credential in your YAML is a `hive://secret/<name>` reference. The secrets live in each org's `secret` hive and are created out-of-band, including the deploy key itself. Never enable the `secret` hive in Git Sync.
 - **Schedules are hourly at the fastest.** Pull and push each take `-`, `1h`, `3h`, `6h`, `12h`, `24h` or `168h`. For a change that cannot wait, press **PULL FROM GIT** or run `limacharlie extension request --name ext-git-sync --action apply`.
 - **Bootstrap with a push.** Configure Git Sync, press **PUSH TO GIT** in the control org, and the extension writes `exports/orgs/<OID>/` for you. Then move what you want to keep into `global/` and `orgs/<OID>/`.
 
-In CI, for each org, push the product configs Git Sync does not carry. Email Security rules and policy go through `limacharlie sync push` (see [Email Security custom rules](../email-security/custom-rules.md#infrastructure-as-code)). Cloud Security records and Email Security mail connections go through `limacharlie sync push` with `--hive-cloudsec-*` or `--hive-mailsec-provider` (see [Cloud Security API and IaC](../8-reference/cloud-security-api-iac.md#hive-is-the-iac-surface)), or through `limacharlie hive set`, one record per file, as in this loop:
-
-```bash
-# Email Security rules and policy
-limacharlie sync push --oid "$OID" --config-file mail.yaml \
-  --hive-dr-mail --hive-mailsec-policy
-
-# Cloud Security records and mail connections, one file per record
-for f in cloudsec_provider/*.json; do
-  limacharlie hive set --hive-name cloudsec_provider --key "$(basename "$f" .json)" \
-    --oid "$OID" --input-file "$f" --enabled
-done
-for f in cloudsec_policy/*.json; do
-  limacharlie hive set --hive-name cloudsec_policy --key "$(basename "$f" .json)" \
-    --oid "$OID" --input-file "$f" --enabled
-done
-for f in mailsec_provider/*.json; do
-  limacharlie hive set --hive-name mailsec_provider --key "$(basename "$f" .json)" \
-    --oid "$OID" --input-file "$f" --enabled
-done
-```
-
-Apply the same loop to the other `cloudsec_*` hives you use (`cloudsec_query`, `cloudsec_code_rule`). The `hive set` loop above is the alternative to `limacharlie sync push --config-file ... --hive-cloudsec-*` and `--hive-mailsec-provider`, which push every record in a config file in one call.
+Email Security and Cloud Security connections are records like any other: put them in the customer's folder and include them from its `index.yaml`. A connection's `credentials` field is a `hive://secret/<name>` reference. Hive accepts nothing else there, so no credential reaches the repository. In CI, for each org, write the secrets those references name with `limacharlie secret set`, from your CI's secret store, before the first pull that includes the connection. Email Security refuses a connection whose secret does not exist yet. Each provider's setup page shows the secret's format, for example [Microsoft 365](../email-security/provider-setup/microsoft-365.md) and the Cloud Security [provider setup](../cloud-security/providers.md) pages. Leave Git Sync's own `secret` switch off.
 
 A merge reaches only the orgs set up for it. Each org pulls on its own schedule, applies only the config types enabled in its Git Sync configuration, and reads only the files its `index.yaml` includes. A new org gets nothing until you subscribe it and add its folder. A merge also does not install sensors: the installation key definition can come from Git, but you create each customer's key in their org and hand it to their IT team.
 

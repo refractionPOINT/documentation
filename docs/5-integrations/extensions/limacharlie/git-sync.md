@@ -55,7 +55,9 @@ Git Sync handles these types:
 | Installation keys | `installation_keys:` | `sync_installation_keys`, `export_installation_keys` |
 | Hive records | `hives: <hive>:` | `sync_hives.<hive>`, `export_hives.<hive>` |
 
-Detection rules, false-positive rules, lookups, saved queries, YARA rules, AI agents and the settings of extensions such as Exfil, Integrity and Artifact are all hive records: `dr-general`, `fp`, `lookup`, `query`, `yara`, `ai_agent` and `extension_config` (one record per extension, named after it, for example `ext-exfil`). The hives you can enable are listed by `limacharlie extension schema --name ext-git-sync`.
+Detection rules, false-positive rules, lookups, saved queries, YARA rules, AI agents and the settings of extensions such as Exfil, Integrity and Artifact are all hive records: `dr-general`, `fp`, `lookup`, `query`, `yara`, `ai_agent` and `extension_config` (one record per extension, named after it, for example `ext-exfil`). So is the configuration of Email Security, Cloud Security and Host Posture; see [Email Security, Cloud Security and Host Posture](#email-security-cloud-security-and-host-posture). The hives you can enable are listed by `limacharlie extension schema --name ext-git-sync`.
+
+A pull applies `secret`, `yara` and `lookup` first, so records that reference them find them. The other hives follow in a fixed order, with each product's connection records before its other records.
 
 The older top-level sections `rules`, `fps`, `integrity`, `exfil`, `artifact` and `yara` that the `limacharlie sync` command can write are **ignored** by Git Sync, without an error. Write them as `hives:` records.
 
@@ -372,6 +374,37 @@ limacharlie output delete --name <output> --confirm --oid <OID>
 ```
 
 To make an organization match its files exactly, run `limacharlie sync push --force` with the same `index.yaml` and the same types. Force deletes every record of those types that is not in the files, including records created in the web app, so run it with `--dry-run` first. See [the tutorial](../../../1-getting-started/mssp-iac-tutorial.md#step-11-delete-things).
+
+## Email Security, Cloud Security and Host Posture
+
+Git Sync carries the configuration of these products, so one repository configures them in every tenant along with everything else:
+
+| Product | Hive | Holds |
+| --- | --- | --- |
+| Cloud Security | `cloudsec_provider` | one connection per cloud, identity or SaaS account |
+| Cloud Security | `cloudsec_policy` | classification, coverage, exclusions, suppressions, compliance, custom posture rules, SLAs |
+| Cloud Security | `cloudsec_query` | saved graph queries |
+| Cloud Security | `cloudsec_code_rule` | Code Security static-analysis rules |
+| Email Security | `mailsec_provider` | the mail connection (Microsoft 365, Google Workspace or IMAP) |
+| Email Security | `mailsec_policy` | automations, exclusions, VIPs, thresholds, banners, retention |
+| Email Security | `dr-mail` | custom mail rules |
+| Host Posture | `host_posture_rule` | posture rules, one per record, named after the rule's `id` |
+
+Each hive has its own `sync_hives` and `export_hives` switch, off by default. Records use the same `data` and `usr_mtd` wrapper as every other hive. A pull sends `usr_mtd.enabled` as written, so a record without `usr_mtd: {enabled: true}` is saved disabled.
+
+**Credentials stay out of Git.** A `cloudsec_provider` or `mailsec_provider` record never holds a credential. Its `credentials` field is a `hive://secret/<name>` reference, and Hive refuses anything else. Exporting these hives writes the reference and the connection settings, such as account IDs and mailbox scope, but no secret. The secrets themselves are in the `secret` hive, which keeps its own switch: leave it off, and write each tenant's secrets out of band (for example from your CI's secret store) before the first pull that includes the connection. Email Security refuses a connection whose secret does not exist yet.
+
+**Email Security connections.** Hive tags each `mailsec_provider` record `mailsec:provider:<provider>` itself. Git Sync leaves that tag out of exports and comparisons, so you do not write it in the repository. Hive allows one enabled connection per provider type in an organization, and a pull that would enable a second one fails.
+
+**Host Posture rules.** Saving or enabling a rule makes the extension run it on the organization's sensors. Hive therefore requires `sensor.task` as well as `host_posture.set` for that write, and Git Sync has both.
+
+**Older subscriptions need a rekey.** An organization's Git Sync key gets its permissions when the organization subscribes. If a pull or push of these hives fails with `UNAUTHORIZED - access to <OID> requires mailsec.get` (or `mailsec_provider.get`, `host_posture.get`), the subscription predates them. Rekey it once, as an Owner of the organization (the call needs `billing.ctrl` and `user.ctrl`):
+
+```bash
+limacharlie extension rekey --name ext-git-sync --oid <OID>
+```
+
+A rekey replaces the extension's key in that organization. It changes nothing in the Git Sync configuration and needs no other step.
 
 ## Investigation policies and plans
 
