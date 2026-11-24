@@ -27,7 +27,7 @@ Linux audit logs are not part of the sensor stream. Collect them with the file a
 
 ### Install at scale
 
-Make one [installation key](../../2-sensors-deployment/installation-keys.md) per role and give each its tags, for example `server`, `workstation` and `vip`. Every sensor that enrolls with a key gets that key's tags, and those tags are what App Control policies, Host Posture rules, Deception policies, Exfil rules and your own D&R rules target later. Installation keys are synced by Git Sync, so the same keys exist in every tenant.
+Make one [installation key](../../2-sensors-deployment/installation-keys.md) per role and give each its tags, for example `server`, `workstation` and `vip`. Every sensor that enrolls with a key gets that key's tags, and those tags are what App Control policies, Host Posture rules, Deception policies, Exfil rules and your own D&R rules target later. Git Sync can create the same key names and tags in every tenant. The keys themselves are each organization's own enrollment credentials, so send each customer the keys from their own organization.
 
 Use the tools the customer already has:
 
@@ -40,9 +40,11 @@ Add [Sensor Cull](../../5-integrations/extensions/limacharlie/sensor-cull.md) fo
 
 ### Sleeper mode
 
-A sensor tagged `lc:sleeper` stays installed but dormant. Put the tag on an installation key and every machine enrolled with it starts asleep. To wake sensors, raise the organization's quota to cover them, then remove the tag. They come back within about ten minutes, with no reboot and no change on the host.
+A sensor tagged `lc:sleeper` stays installed but dormant: it stops collecting telemetry and is billed only for connected time. Sleeper mode needs billing enabled on the organization. Put the tag on an installation key and machines enrolled with it go to sleep within about ten minutes.
 
-This is how Northwind pre-deploys to every ACME machine during onboarding while only monitoring the servers at first, and how it offers a retainer: the sensors are already there when an incident starts. Sleeping sensors bill on usage (connected time and events) instead of quota, and need billing enabled on the organization. See [Sleeper deployment](../../2-sensors-deployment/endpoint-agent/sleeper.md) and the [sleeper mode use case](../use-cases/sleeper-mode.md).
+To wake sensors, raise the organization's quota to cover them, then remove the tag in the web app or through the API. Allow up to ten minutes, with no reboot and no change on the host, and check that telemetry is arriving before an incident-response clock starts.
+
+This is how Northwind pre-deploys to every ACME machine during onboarding while only monitoring the servers at first, and how it offers a retainer: the sensors are already there when an incident starts. See [Sleeper deployment](../../2-sensors-deployment/endpoint-agent/sleeper.md) and the [sleeper mode use case](../use-cases/sleeper-mode.md).
 
 ### How it is billed
 
@@ -58,9 +60,9 @@ There are three ways to run one. Pick in this order:
 | --- | --- | --- | --- |
 | Cloud adapter (cloud-to-cloud) | LimaCharlie runs it | A `cloud_sensor` record | Any source reachable from the internet: Microsoft 365, Entra ID, Okta, Google Workspace, AWS, Azure, GCP, third-party EDR consoles |
 | Cloud-managed adapter (External Adapter) | A binary on a customer host | An `external_adapter` record | Sources only reachable inside the customer network: syslog from firewalls, Windows Event Logs on a busy server, local files |
-| Locally configured adapter | A binary on a customer host | A file on that host | Air-gapped or special cases |
+| Locally configured adapter | A binary on a customer host | A file on that host | Hosts where you want to manage the configuration file yourself. It still needs outbound access to LimaCharlie |
 
-Cloud adapters need nothing at the customer. Configure them in Git and they start.
+Cloud adapters need nothing at the customer. Declare them as `cloud_sensor` records and they start.
 
 A [cloud-managed adapter](../../2-sensors-deployment/adapters/cloud-managed.md) needs the binary once, started with only the record's GUID and the organization ID. After that you change its configuration in the record, with `limacharlie external-adapter set` or in the web app, and the adapter picks the change up within about a minute. You never go back to the customer to edit a file. Know its documented limits before you rely on it:
 
@@ -77,7 +79,7 @@ Put one cloud-managed adapter on a customer server as the [syslog](../../2-senso
 
 ### Filter at the source
 
-Adapter data is billed on what LimaCharlie receives. Mapping options such as `drop_fields` run in the cloud after receipt: they shrink what is stored, not what is billed. Data you never send is never billed, so filter where the data starts:
+Adapter data is billed on what LimaCharlie receives. Mapping options such as `drop_fields` run in the cloud after receipt. They change the event that is stored, but the bytes were already counted. Data you never send is never billed, so filter where the data starts:
 
 | Source | Where to filter |
 | --- | --- |
@@ -91,11 +93,11 @@ The [data estimation page](../../7-administration/billing/data-estimation.md) ha
 
 ### A busy host
 
-The sensor is a security sensor, not a log shipper. Its outbound queue is bounded: under a sustained burst it drops the oldest events and reports the loss (`DATA_DROPPED`, `LOSS_ACCOUNTING`; see [EDR events](../../8-reference/edr-events.md)). For a host with sustained very high log volume, such as a large domain controller, keep the sensor for its EDR events and run the Windows Event Log adapter on that host for the event logs.
+The sensor is a security sensor, not a log shipper. Its outbound queue is bounded. Under a sustained burst it drops the oldest events and sends a [`DATA_DROPPED`](../../8-reference/platform-events.md#data_dropped) event. On sensor 5.3.6 and later, a `get_debug_data` request returns the host's cumulative [`LOSS_ACCOUNTING`](../../8-reference/edr-events.md#loss_accounting) counters. For a host with sustained very high log volume, such as a large domain controller, keep the sensor for its EDR events and run the Windows Event Log adapter on that host for the event logs.
 
 ### How it is billed
 
-Per GB ingested, counted once at ingestion, with a year of retention included. See [Estimating data ingestion](../../7-administration/billing/data-estimation.md) and the [billing FAQ](../../8-reference/faq/billing.md).
+Per GB that LimaCharlie receives, counted once at ingestion, with a year of retention included. A few third-party sources are billed on a plan of their own instead; the [pricing page](https://limacharlie.io/pricing) has the details. See [Estimating data ingestion](../../7-administration/billing/data-estimation.md) and the [billing FAQ](../../8-reference/faq/billing.md).
 
 ## Identity and SaaS
 
@@ -113,29 +115,29 @@ Identity adapters matter for more than their own detections. Their events index 
 
 ## Routing data out
 
-LimaCharlie keeps a year of every event searchable, so routing out is about what else needs a copy, not about storage. Do it with [Outputs](../../5-integrations/outputs/index.md) in the LimaCharlie cloud, not at the edge, so a change never needs the customer's firewall or a site visit.
+With Insight on, LimaCharlie keeps a year of events searchable, so routing out is about what else needs a copy, not about storage. Do it with [Outputs](../../5-integrations/outputs/index.md) in the LimaCharlie cloud, not at the edge, so a change never needs the customer's firewall or a site visit.
 
 The usual pattern for each customer:
 
-1. **Full copy to cold storage.** An Output on the `event` stream to a bucket, such as [Google Cloud Storage](../../5-integrations/outputs/destinations/google-cloud-storage.md) or [Amazon S3](../../5-integrations/outputs/destinations/amazon-s3.md). This is your archive past one year and your source for anything you want to replay into another system later.
-2. **Only the security subset downstream.** The `detect` stream to your SIEM, SOAR or AI triage tool, or a filtered `event` stream. Outputs filter by event type (`event_white_list`, `event_black_list`), by detection category and by sensor tag; see [Filtering and transforming streams](../../5-integrations/outputs/stream-structures.md#filtering-and-transforming-streams). For finer control, a D&R rule's [`output` action](../../8-reference/response-actions.md#output) sends only the events it matches to a named output.
+1. **Unfiltered copy to cold storage.** An Output on the `event` stream to a bucket, such as [Google Cloud Storage](../../5-integrations/outputs/destinations/google-cloud-storage.md) or [Amazon S3](../../5-integrations/outputs/destinations/amazon-s3.md). This is your archive past one year and your source for anything you want to replay into another system later.
+2. **Only the security subset downstream.** The `detect` stream to your SIEM, SOAR or AI triage tool, or a filtered `event` stream. An `event` output filters by event type (`event_white_list`, `event_black_list`) and by sensor tag. A `detect` output can also filter by detection category and rule tag. See [Filtering and transforming streams](../../5-integrations/outputs/stream-structures.md#filtering-and-transforming-streams). For finer control, a D&R rule's [`output` action](../../8-reference/response-actions.md#output) sends only the events it matches to a named output on the `tailored` stream.
 3. **The audit stream to long-term storage**, for your own compliance.
 
-Delivery is best effort, with retries and no durable queue. Send to a sink that is always up, such as a bucket, Pub/Sub or Kafka, and put slower systems behind it. See [Output delivery](../../5-integrations/outputs/delivery.md).
+Delivery is best effort, with retries and no durable queue. Send to a sink that is always up, such as a bucket, Pub/Sub or Kafka, and put slower systems behind it. Where a copy has a retention requirement, alert on `output_drop` events and check the archive for gaps. See [Output delivery](../../5-integrations/outputs/delivery.md).
 
-Output credentials go in the `secret` hive and the output refers to them as `hive://secret/<name>`, so Git Sync never writes them to your repository.
+Output credentials go in the `secret` hive and the output refers to them as `hive://secret/<name>`. Leave the `secret` hive out of Git Sync's sync and export settings, and the credentials never reach your repository.
 
 ### How it is billed
 
 Outputs bill on egress, at cost. Outputs that use a GCP mechanism (`gcs`, `pubsub`, `bigquery`) with a destination in the same region as the LimaCharlie datacenter are not charged. The [Output billing](../../5-integrations/outputs/billing.md) page lists the region for each datacenter. Filtering in an output does not reduce what was ingested. Filtering at the source does.
 
-Set [Usage Alerts](../../5-integrations/extensions/limacharlie/usage-alerts.md) on every tenant for ingestion and output volume, so a misconfigured firewall or output shows up as a detection, not as a surprise on the invoice.
+Set [Usage Alerts](../../5-integrations/extensions/limacharlie/usage-alerts.md) on every tenant for output volume, so a runaway output shows up as a detection once it crosses your threshold. Usage Alerts do not watch ingestion. For that, have a scheduled job read each tenant's usage with `limacharlie org stats` and flag a firewall that suddenly sends much more.
 
 ## Retention and search
 
-Every event from sensors and adapters is kept for one year and searchable with [LCQL](../../4-data-queries/index.md) in the Query Console, the CLI and the API. Searches are billed by the number of events evaluated, and the console shows an estimate before you run one (see [Query Console](../../4-data-queries/query-console-ui.md)). Narrow searches by sensor selector and event type to keep them fast and cheap. See [Query limits and performance](../../4-data-queries/query-limits-and-performance.md).
+With Insight on, every event from sensors and adapters is kept for one year and searchable with [LCQL](../../4-data-queries/index.md) in the Query Console, the CLI and the API. Searches are billed by the number of events evaluated, and the console shows an estimate before you run one (see [Query Console](../../4-data-queries/query-console-ui.md)). Narrow searches by sensor selector and event type to keep them fast and cheap. See [Query limits and performance](../../4-data-queries/query-limits-and-performance.md).
 
-For anything past one year, the bucket from step 1 above is the archive.
+For anything past one year, the bucket from step 1 above is the archive. Artifacts and product data such as cases have their own retention settings.
 
 ## In Git
 

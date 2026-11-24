@@ -10,21 +10,21 @@ Once a few customers are running, the work moves from building to keeping thousa
 
 ## Change everything through Git
 
-The repository is the source of truth. A change is a pull request: CI runs the rules' unit tests and a replay, someone reviews, a merge rolls it out, and Git Sync applies it to every tenant on its next pull. The [IaC tutorial](../mssp-iac-tutorial.md) sets this up, and the [Git Sync reference](../../5-integrations/extensions/limacharlie/git-sync.md) lists every option.
+The repository is the source of truth. A change is a pull request: CI runs the rule tests and a replay, someone reviews, a merge rolls it out, and on its next pull Git Sync applies it in each tenant that includes the changed file. The [IaC tutorial](../mssp-iac-tutorial.md) sets this up, and the [Git Sync reference](../../5-integrations/extensions/limacharlie/git-sync.md) lists every option.
 
 Three habits keep it working:
 
 - **Shared files in `global/`, exceptions in the customer's folder.** If you find yourself copying a file into a customer folder to change one line, that line belongs in a false-positive rule or a tag instead.
 - **A pull never deletes.** Removing a record from Git leaves it running in the tenant. Delete it there too; the tutorial's [Delete things](../mssp-iac-tutorial.md#step-11-delete-things) step shows how.
-- **Push catches drift.** A scheduled push writes each tenant's live configuration to `exports/`, so a change someone made in the console shows up as a diff.
+- **Export catches drift.** Turn on export for the types you want to watch, and a scheduled push writes each tenant's live configuration of those types to `exports/`, so a change someone made in the console shows up as a diff. Leave the `secret` hive out of both sync and export.
 
 ### What Git Sync does not cover yet
 
-Git Sync carries detection and false-positive rules, lookups, saved queries, YARA, playbooks, AI agents, SOPs, org notes, cloud adapters, Application Control policies and rules, investigation policies and plans, outputs, extension subscriptions and settings, and installation keys. It does not cover every product's configuration yet. Push the rest from the same repository with the CLI in your CI:
+Git Sync carries detection and false-positive rules, lookups, saved queries, YARA, playbooks, AI agents, SOPs, org notes, cloud adapters, Application Control policies and rules, investigation policies and plans, outputs, extension subscriptions and settings, and installation keys, for the types you enable in each tenant's Git Sync settings. It does not cover every product's configuration yet. Push the rest from the same repository with the CLI in your CI:
 
 | Product | Records | How to push them |
 | --- | --- | --- |
-| Email Security | `dr-mail`, `mailsec_policy` | `limacharlie sync push --hive-dr-mail --hive-mailsec-policy`. See [Email Security rules as code](../../email-security/custom-rules.md#infrastructure-as-code). |
+| Email Security | `dr-mail`, `mailsec_policy` | `limacharlie sync push --config-file mail.yaml --hive-dr-mail --hive-mailsec-policy`. See [Email Security rules as code](../../email-security/custom-rules.md#infrastructure-as-code). |
 | Email Security | `mailsec_provider` | A `limacharlie hive set` loop over the files, one per tenant. |
 | Cloud Security | `cloudsec_provider`, `cloudsec_policy`, `cloudsec_query`, `cloudsec_code_rule` | A `limacharlie hive set` loop. See [Cloud Security API and IaC](../../8-reference/cloud-security-api-iac.md) and [Multi-tenant policy push](../../cloud-security/automation.md#multi-tenant-policy-push). |
 | Host Posture (coming soon) | Default rules | The extension's install flow, run in your onboarding script. |
@@ -45,7 +45,7 @@ The walkthrough's [feedback loop](../mssp-walkthrough.md#feedback-loop-on-detect
 
 ## Watch costs
 
-- Put [Usage Alerts](../../5-integrations/extensions/limacharlie/usage-alerts.md) in the shared template, on ingestion and output volume. A firewall sending everything, or an output sending to the wrong region, becomes a detection the same day.
+- Put [Usage Alerts](../../5-integrations/extensions/limacharlie/usage-alerts.md) in the shared template, on output volume. An output that sends far more than planned becomes a detection once it crosses your threshold. Usage Alerts do not watch ingestion, so also run a scheduled job over `limacharlie org stats` for each tenant to catch a firewall that starts sending everything.
 - Keep sensors you are not monitoring in [sleeper mode](../../2-sensors-deployment/endpoint-agent/sleeper.md), and let [Sensor Cull](../../5-integrations/extensions/limacharlie/sensor-cull.md) remove the ones that are gone.
 - Prefer outputs to GCP destinations in the datacenter's region for the full copy; other destinations bill on egress. See [Output billing](../../5-integrations/outputs/billing.md).
 - Review AI spend per tenant in [cost tracking](../../9-ai-sessions/cost-tracking.md), and keep `max_budget_usd` on every agent.
@@ -58,9 +58,9 @@ The walkthrough's [cost guardrails part](../mssp-walkthrough.md#part-16-cost-gua
 Silence is the failure you do not see. Alert on it:
 
 - **Sensors and devices that stop sending.** A per-device syslog sensor stays online as long as the adapter runs. Use [Alerting on sensors that stop sending data](../../2-sensors-deployment/troubleshooting/non-responding-sensors.md).
-- **Cloud adapters that fail.** They report errors as events, and LimaCharlie disables one after a day of continuous failure. A D&R rule on the `deployment` target can alert on both. See [A Cloud Adapter keeps failing or was disabled](../../8-reference/faq/adapter-troubleshooting.md#a-cloud-adapter-keeps-failing-or-was-disabled).
+- **Cloud adapters that fail.** They report `cloud_adapter_error` events, and after 24 hours of continuous failure LimaCharlie disables the adapter and sends `cloud_adapter_disabled`. A D&R rule on the `deployment` target can alert on both. See [A Cloud Adapter keeps failing or was disabled](../../8-reference/faq/adapter-troubleshooting.md#a-cloud-adapter-keeps-failing-or-was-disabled).
 - **Git Sync runs that fail.** See [Alerting on failures](../../5-integrations/extensions/limacharlie/git-sync.md#alerting-on-failures).
-- **Outputs that drop.** A failing output is disabled until the next refresh and reports an `output_drop` event. See [Output delivery](../../5-integrations/outputs/delivery.md).
+- **Outputs that drop.** An output that gives up on a record is disabled for a while, and LimaCharlie sends `output_drop` summary events. They count the drops it observed, not every lost record. See [Output delivery](../../5-integrations/outputs/delivery.md).
 
 Each of these is a D&R rule you write once in `global/`.
 

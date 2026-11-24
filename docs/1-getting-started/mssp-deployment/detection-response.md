@@ -6,7 +6,7 @@ description: How an MSSP should build, tune, test and roll out detection and res
 
 Part of [Recommended Deployment for MSSPs](index.md).
 
-Every product in LimaCharlie ends up as events in the tenant. [Detection and response (D&R) rules](../../3-detection-response/index.md) are the one engine that acts on all of them: EDR, adapters, mail, cloud findings, App Control, vulnerabilities. This page covers how to build that layer once and run it in every tenant.
+The products in this guide all write events into the tenant. [Detection and response (D&R) rules](../../3-detection-response/index.md) are the one engine that acts on them: EDR, adapters, mail, cloud findings, App Control, vulnerabilities. This page covers how to build that layer once and run it in every tenant.
 
 ## Layer the rules
 
@@ -27,7 +27,7 @@ Subscribe these in the template so every tenant starts with coverage:
 - [SOC Prime](../../3-detection-response/managed-rulesets/soc-prime.md), if you have a SOC Prime account.
 - The [Community Rules](../../3-detection-response/managed-rulesets/community-rules.md) library for one-off additions.
 
-Managed rulesets are billed per add-on; see the marketplace listing and [pricing](https://limacharlie.io/pricing).
+Each managed ruleset has its own subscription terms. Check its marketplace listing and the [pricing page](https://limacharlie.io/pricing).
 
 ### Your own rules
 
@@ -45,11 +45,12 @@ For exceptions that change behaviour rather than silence an alert, use a tag. A 
 
 ## Test before you ship
 
-A change to `global/` reaches every tenant on the next pull, so test it first:
+A change to `global/` reaches every tenant that includes it on the next pull, so test it first:
 
 - **Unit tests.** A rule record can carry a `tests` block of events that should and should not match. LimaCharlie runs them when the rule is created or updated and refuses the rule if one fails. Stateful rules cannot carry tests. See [Unit tests](../../3-detection-response/unit-tests.md).
-- **Replay.** Run a rule over past events in a tenant, or over a file of sample events in CI, before you merge. Replay is billed per event evaluated. See [Replay](../../5-integrations/services/replay.md) and the walkthrough's [replay commands](../mssp-walkthrough.md#step-7-replay-against-historical-data-before-you-trust-it).
-- **Pull requests.** Run the tests and a replay in your repository's CI, and merge only when they pass. The [IaC tutorial](../mssp-iac-tutorial.md#step-10-run-changes-through-pull-requests) sets this up.
+- **Sample events.** `limacharlie dr test --input-file rule.yaml --events samples.json` runs a rule over a file of events you keep next to it.
+- **Replay.** `limacharlie replay run` runs a rule over a tenant's past events. Replay is billed per event evaluated. See [Replay](../../5-integrations/services/replay.md) and the walkthrough's [replay commands](../mssp-walkthrough.md#step-7-replay-against-historical-data-before-you-trust-it).
+- **Pull requests.** Run both in your repository's CI, and merge only when they pass. The [IaC tutorial](../mssp-iac-tutorial.md#step-10-run-changes-through-pull-requests) shows the pull request flow and a structure check; add the rule tests to that CI job yourself.
 
 ## Threat intel, shared across products
 
@@ -69,27 +70,27 @@ The walkthrough's [threat intelligence part](../mssp-walkthrough.md#part-13-thre
 
 [Cases](../../5-integrations/extensions/limacharlie/cases.md) is the queue your analysts and agents work from. It is in public beta: it can change without notice.
 
-In the default `all` ingestion mode, every detection in the tenant becomes a case, whatever product produced it. In `tailored` mode, only detections a D&R rule forwards with the `ingest_detection` action do. Pick `tailored` when a tenant produces detections you want to keep but not triage. Turn on [auto-grouping](../../5-integrations/extensions/limacharlie/cases.md#auto-grouping) in the template, so a new detection from a sensor joins that sensor's open case instead of opening another.
+In the default `all` ingestion mode, a rule the extension installs forwards the tenant's detections to Cases, whatever product produced them (internal categories starting with `__` are left out). In `tailored` mode, only detections a D&R rule forwards with the `ingest_detection` action become cases. Pick `tailored` when a tenant produces detections you want to keep but not triage. [Auto-grouping](../../5-integrations/extensions/limacharlie/cases.md#auto-grouping) is on by default: a detection joins an open case from the same sensor within a 24-hour sliding window instead of opening another. Set the grouping key and window in the template.
 
 What feeds the queue:
 
 | Source | How it reaches Cases |
 | --- | --- |
-| Your rules and managed rulesets | Any `report` action |
-| Cloud Security | The Cases toggle installs rules that open a case on high and critical findings, resolve it when the finding closes and reopen it if it comes back |
-| Email Security | The opt-in Cases detection pack: one case per message group |
+| Your rules and managed rulesets | Their `report` actions in `all` mode, or an `ingest_detection` request in `tailored` mode |
+| Cloud Security | The Cases toggle installs rules that open a case on each high or critical finding the feed emits, resolve it when the finding closes, and reopen it if it was closed while the finding is still open |
+| Email Security | The opt-in Cases detection pack, which keys detections to the message group so copies of one phish share a case |
 | Application Control | Four managed alert rules, off by default |
 | Vulnerability Reporting | A rule you write on `vuln_finding.*` events |
 | Host Posture (coming soon) | A shipped rule that reports each finding |
-| Deception (coming soon) | A shipped rule pack; each hit opens a critical case on the endpoint that held the decoy |
+| Deception (coming soon) | A shipped rule pack. A live decoy hit is a critical case on the endpoint that held the decoy; token hits are cases with no sensor |
 
-Cases has severity mapping, SLA targets, assignees, merging, notes, a dashboard and a summary report. Set the severity mapping, SLAs and `retention_days` in your onboarding script. Case events (creation, status changes, assignments, notes) are sent to the tenant's webhook adapter, so a D&R rule can react to a new case: start an AI agent, run a playbook, notify a channel. See [Webhook notifications](../../5-integrations/extensions/limacharlie/cases.md#webhook-notifications).
+Cases has severity mapping, SLA targets, assignees, merging, notes, a dashboard and a summary report. Set the severity mapping, SLAs and `retention_days` in your onboarding script. Cases sends case events (creation, status changes, assignments, notes) to the organization's webhook adapter. Add that adapter in your template, and a D&R rule can react to a new case: start an AI agent, run a playbook, notify a channel. See [Webhook notifications](../../5-integrations/extensions/limacharlie/cases.md#webhook-notifications).
 
 Two limits to plan around: Cases accepts up to 100 detections per minute per organization (fewer on the free tier), and a case's entities are added by people, agents or the API, not extracted automatically. [Cross-case entity search](../../5-integrations/extensions/limacharlie/cases.md#cross-case-entity-search) finds only what was attached.
 
 ### Getting alerts out
 
-Send cases and detections where your team works with [Outputs](../../5-integrations/outputs/index.md): [Slack](../../5-integrations/outputs/destinations/slack.md), [Microsoft Teams](../../5-integrations/outputs/destinations/ms-teams.md), a [webhook](../../5-integrations/outputs/destinations/webhook.md) or [Tines](../../5-integrations/outputs/destinations/tines.md). For ticketing, use a webhook, or an extension such as [HaloPSA](../../5-integrations/extensions/third-party/halopsa.md), [ServiceNow](../../5-integrations/extensions/third-party/servicenow.md) or [PagerDuty](../../5-integrations/extensions/third-party/pagerduty.md). Webhooks can carry a shared secret so the receiver can check the signature; see [Allowlisting and signatures](../../5-integrations/outputs/allowlisting.md).
+Send detections where your team works with a `detect` [Output](../../5-integrations/outputs/index.md). Outputs have no case stream: to notify on cases, write a D&R rule on the case events from the webhook adapter and send what it matches to a `tailored` output. Destinations include [Slack](../../5-integrations/outputs/destinations/slack.md), [Microsoft Teams](../../5-integrations/outputs/destinations/ms-teams.md), a [webhook](../../5-integrations/outputs/destinations/webhook.md) and [Tines](../../5-integrations/outputs/destinations/tines.md). For ticketing, use a webhook, or an extension such as [HaloPSA](../../5-integrations/extensions/third-party/halopsa.md), [ServiceNow](../../5-integrations/extensions/third-party/servicenow.md) or [PagerDuty](../../5-integrations/extensions/third-party/pagerduty.md). Webhooks can carry a shared secret so the receiver can check the signature; see [Allowlisting and signatures](../../5-integrations/outputs/allowlisting.md).
 
 ## Response
 
@@ -102,8 +103,8 @@ The [response actions](../../8-reference/response-actions.md) an MSSP uses most:
 | `add tag`, with an optional `ttl` | Moves the host into another policy: App Control lockdown, a stricter Exfil profile, a watch list |
 | `task` | Runs a sensor command on the host: collect a file, list processes, dump memory |
 | `extension request` | Calls any extension: a [playbook](../../5-integrations/extensions/limacharlie/playbook.md), [Reliable Tasking](../../5-integrations/extensions/limacharlie/reliable-tasking.md) for hosts that are offline, Email Security's mail actions |
-| `output` | Sends the matched event to one named output |
-| `start ai agent` | Starts an AI session with the event as untrusted input |
+| `output` | Sends the matched event to a named output on the `tailored` stream |
+| `start ai agent` | Starts an AI session, with the event fields you pick passed as data marked untrusted |
 
 Response actions act on the sensor the event came from. For an event from a mailbox, a firewall or the Cloud Security adapter, that is not the machine you want to act on. [What the products do together](synergy.md) shows how to reach the right host.
 
@@ -126,6 +127,6 @@ What it may do is declared in an [`investigation_policy` record](../../7-adminis
 | `approve` | The engine asks for approval and acts only on a yes before the deadline |
 | `auto` | The engine acts when the policy's limits, confidence, permissions and evidence checks pass; otherwise it holds the action as a suggestion |
 
-Nothing in the engine changes these modes on its own: no history, score or sampling promotes an action. A pause record stops everything. Policies and plan templates are records, so Git Sync rolls them out; see [Investigation policies and plans](../../5-integrations/extensions/limacharlie/git-sync.md#investigation-policies-and-plans). An investigation starts without a person only from a D&R rule.
+Nothing in the engine changes these modes on its own: no history, score or sampling promotes an action. The console's pause writes a policy record that caps every class at `approve`: investigations keep running, and nothing acts without a person's yes. Policies and plan templates are records, so Git Sync rolls them out; see [Investigation policies and plans](../../5-integrations/extensions/limacharlie/git-sync.md#investigation-policies-and-plans). An investigation starts without a person only from a D&R rule.
 
 For a new tenant, start with `close.false_positive` on `suggest` and every eradication action on `approve`, read what the engine would have done for two weeks, then move the classes you trust to `auto`.

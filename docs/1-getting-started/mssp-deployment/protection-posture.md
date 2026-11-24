@@ -11,8 +11,8 @@ Detection tells you something happened. The products on this page work before th
 Three patterns repeat across all of them:
 
 - **Each product is configured by records.** Policies, rules and connections are YAML you keep in Git and push to every tenant. Most go through Git Sync, including Application Control. Git Sync does not cover Email Security and Cloud Security records yet: you push those from the same repository with the CLI in your CI. See [Operations](operations.md#what-git-sync-does-not-cover-yet).
-- **Sensor tags decide where each one applies.** App Control policies, Host Posture rules, Deception policies and Integrity rules all target tags. Put the tags on the installation keys and a new machine gets the right protection the moment it enrolls. Moving a machine between stages is a tag change.
-- **Each product writes events into the same organization.** Findings and hits become events, D&R rules turn them into detections, and detections land in Cases. See [What the products do together](synergy.md).
+- **Sensor tags decide where each one applies.** App Control policies, Host Posture rules, Deception policies and Integrity rules all target tags. Put the tags on the installation keys and a new machine falls under the right policies from enrollment. Each product then acts on its own schedule: App Control on the sensor's next sync, Host Posture on its next sweep, Deception at first connection when its policy places decoys on new sensors. Moving a machine between stages is a tag change.
+- **Each product writes events into the same organization.** Findings and hits become events. D&R rules, shipped or yours, turn the ones you care about into detections, and Cases picks those up. See [What the products do together](synergy.md).
 
 ## Cloud Security
 
@@ -22,27 +22,27 @@ Three patterns repeat across all of them:
 
 **At scale.** Each connection is a `cloudsec_provider` record with its credential in the `secret` hive. Policies (classification, coverage expectations, suppressions, SLAs) are `cloudsec_policy` records. Git Sync does not carry `cloudsec_*` records yet, so your CI loops `limacharlie hive set` over the files in your repository for each tenant. The docs show [onboarding a tenant](../../cloud-security/automation.md#onboarding-a-tenant), a [multi-tenant policy push](../../cloud-security/automation.md#multi-tenant-policy-push) and the [record reference](../../8-reference/cloud-security-api-iac.md). For the cross-tenant view, `limacharlie cloudsec fleet overview` rolls risk up across the organizations you manage (see [Cloud Security CLI](../../cloud-security/cli.md)).
 
-**What it produces.** A worklist of findings ranked by risk, and `cloud_finding.created`, `.closed` and `.still_open` events in the tenant's event stream. The Cases toggle in Cloud Security's settings installs three D&R rules that open a case on high and critical findings, resolve it when the finding closes, and reopen it if it comes back. See [Findings and Cases automation](../../cloud-security/automation.md#findings-cases-automation).
+**What it produces.** A worklist of findings ranked by risk, and `cloud_finding.created`, `.closed` and `.still_open` events in the tenant's event stream. The Cases toggle in Cloud Security's settings installs three D&R rules: one opens a case for each high or critical finding the feed emits, one resolves the case when the finding closes, and one reopens a case that was closed while its finding is still open. See [Findings and Cases automation](../../cloud-security/automation.md#findings-cases-automation).
 
-**Billed.** A flat base fee per organization per month. Code Security adds a charge per protected repository. Organizations on the free tier get a [perpetual free allowance](../../cloud-security/free-tier.md).
+**Billed.** A flat base fee per organization per month. Code Security adds a charge per protected repository, counted daily. Organizations on the free tier get a [perpetual free allowance](../../cloud-security/free-tier.md).
 
 ## Email Security
 
-**What it is.** Post-delivery protection for Microsoft 365, Google Workspace and IMAP mailboxes through the providers' APIs. No MX change and nothing in the mail path. Each message gets a verdict with the signals behind it, and you can quarantine, move, banner or restore at the provider. It does not replace the provider's own filtering. See [Email Security](../../email-security/index.md).
+**What it is.** Post-delivery protection for mailboxes: Microsoft 365 and Google Workspace through their APIs, and other mailboxes over IMAP. No MX change and nothing in the mail path. Each message it ingests gets a verdict with the signals behind it, and you can quarantine, move, banner or restore at the provider. It does not replace the provider's own filtering. Coverage and remediation differ by provider; check the provider setup page for each. See [Email Security](../../email-security/index.md).
 
 **When.** Week 2. Start with the default automations, which only alert, and turn on actions per customer once you trust the verdicts on their mail.
 
-**At scale.** Every piece of configuration is a record: `mailsec_provider` for the connection, `mailsec_policy` for automations, exclusions, VIPs, thresholds, banners and retention, and `dr-mail` for custom mail rules. Records compose in name order, and unknown fields are refused, so a typo fails the write instead of turning off a control. Onboarding a tenant is a script. See [Configuration as code](../../email-security/automation.md#configuration-as-code). Git Sync does not carry these records: push `dr-mail` and `mailsec_policy` with `limacharlie sync push --hive-dr-mail --hive-mailsec-policy` (see [Email Security rules as code](../../email-security/custom-rules.md#infrastructure-as-code)), and `mailsec_provider` with a `limacharlie hive set` loop.
+**At scale.** Every piece of configuration is a record: `mailsec_provider` for the connection, `mailsec_policy` for automations, exclusions, VIPs, thresholds, banners and retention, and `dr-mail` for custom mail rules. Records compose in name order, and unknown fields are refused, so a typo fails the write instead of turning off a control. Onboarding a tenant is a script. See [Configuration as code](../../email-security/automation.md#configuration-as-code). Git Sync does not carry these records: push `dr-mail` and `mailsec_policy` with `limacharlie sync push --config-file mail.yaml --hive-dr-mail --hive-mailsec-policy` (see [Email Security rules as code](../../email-security/custom-rules.md#infrastructure-as-code)), and `mailsec_provider` with a `limacharlie hive set` loop.
 
-**What it produces.** Each mailbox is its own sensor on the `email` platform, with `EMAIL_MESSAGE`, `EMAIL_VERDICT`, `EMAIL_ACTION` and `EMAIL_USER_REPORT` events. Ordinary D&R rules act on them. The [opt-in Cases detection pack](../../email-security/groups.md#opt-in-cases-detection-pack) opens one case per message group, so a phish sent to forty people is one case, not forty.
+**What it produces.** Each mailbox is its own sensor on the `email` platform, with `EMAIL_MESSAGE`, `EMAIL_VERDICT`, `EMAIL_ACTION` and `EMAIL_USER_REPORT` events. Ordinary D&R rules act on them. The [opt-in Cases detection pack](../../email-security/groups.md#opt-in-cases-detection-pack) reports malicious, suspicious and user-reported messages and keys each detection to its message group, so a phish sent to forty people is one case, not forty.
 
 **Mail posture is a separate thing.** Forwarding rules, delegates, transport rules and DMARC, DKIM and SPF are configuration, and Cloud Security's [mail posture rules](../../cloud-security/mail-posture-rules.md) check them. Email Security looks at messages. Run both.
 
-**Billed.** Per protected mailbox per month, billed daily. Shared mailboxes count once. Mailbox sensors do not count against the sensor quota. Free-tier organizations get up to ten mailboxes. See [Security products billing](../../7-administration/billing/security-products.md).
+**Billed.** Per protected mailbox per month, counted daily. Shared mailboxes count once. Analysis is included; the mail events the mailbox sensors send are billed as adapter data. Mailbox sensors do not count against the sensor quota. Free-tier organizations get up to ten mailboxes. See [Security products billing](../../7-administration/billing/security-products.md).
 
 ## Vulnerability Reporting
 
-**What it is.** A daily package inventory from each Windows, macOS and Linux sensor, matched to CVEs, enriched with CISA KEV and EPSS, and ranked with an LC Risk score that uses your asset tags. Findings stay open until you resolve them as mitigated, accepted or false positive. See [Vulnerability Reporting](../../5-integrations/extensions/limacharlie/vulnerability-reporting.md).
+**What it is.** By default, a daily package inventory from each supported Windows, macOS and Linux sensor, matched to CVEs, enriched with CISA KEV and EPSS, and ranked with an LC Risk score that uses your asset tags. A finding closes when a later inventory shows it no longer applies. Analysts can also mark one mitigated, accepted or false positive. See [Vulnerability Reporting](../../5-integrations/extensions/limacharlie/vulnerability-reporting.md).
 
 **When.** Week 2, once sensors are in.
 
@@ -50,11 +50,11 @@ Three patterns repeat across all of them:
 
 **What it produces.** `vuln_finding.created`, `.closed`, `.kev_match` and `.state_changed` events. They are events, not detections: route them with an Output, or write a D&R rule that reports the ones you care about (for example KEV matches on critical assets) so they reach Cases.
 
-**Billed.** Per endpoint.
+**Billed.** Per endpoint, on the organization's sensor quota.
 
 ## Application Control
 
-**What it is.** An allowlist or blocklist of programs, enforced by the sensor when a process starts. Four modes: off, audit (`permissive`), rehearsal (`permissive_sync`) and enforcing. It needs the endpoint agent. See [Application Control](../../5-integrations/extensions/limacharlie/app-control.md).
+**What it is.** An allowlist or blocklist of programs, applied by the sensor. Four modes: off, audit (`permissive`), rehearsal (`permissive_sync`) and enforcing. Enforcing blocks a program when it starts; audit lets it run and reports what enforcing would have blocked. It needs the endpoint agent. See [Application Control](../../5-integrations/extensions/limacharlie/app-control.md).
 
 **When.** Week 3 or 4, once the customer's normal software is known.
 
@@ -67,11 +67,11 @@ Three patterns repeat across all of them:
 
 See [Rolling out](../../5-integrations/extensions/limacharlie/app-control.md#rolling-out) and the [staged rollout policies](../../7-administration/config-hive/app-control-policy.md#staged-rollout-by-tag). Keep the broad audit policy at the end: a sensor that stops matching every policy keeps enforcing the last one it received.
 
-**Lockdown.** A reserved `lockdown` policy matches the tag `appctl-lockdown` and lets only OS-vendor software, the sensor and rules you named for lockdown run. Windows and macOS only. Create the policy once per organization ("Set up lockdown" on the Policies tab), and a D&R `add tag` action can then contain a host automatically. See [Automate lockdown with D&R](../../5-integrations/extensions/limacharlie/app-control.md#automate-lockdown-with-dr).
+**Lockdown.** A reserved `lockdown` policy matches the tag `appctl-lockdown` and lets only OS-vendor software, the sensor and rules you named for lockdown run. Windows and macOS only. Create the policy once per organization ("Set up lockdown" on the Policies tab); tagging alone does not create it. A D&R `add tag` action can then contain a host automatically. Check that the host applied the policy. See [Automate lockdown with D&R](../../5-integrations/extensions/limacharlie/app-control.md#automate-lockdown-with-dr).
 
 **What it produces.** `APP_CONTROL_DENIED` and related events. Four managed alert rules (enforced block, break-glass, policy refused, resident terminated) are off by default; turn them on in your template. A compliance evidence export gives the customer's auditor a report.
 
-**Billed.** Per endpoint.
+**Billed.** Per endpoint, on the organization's sensor quota.
 
 ## Integrity (FIM)
 
@@ -103,11 +103,11 @@ Host Posture is not generally available yet, and its documentation is not publis
 
 **What it is.** Configuration checks that run on each Windows, macOS and Linux host inside the sensor, read-only: firewall off, SSH root login, disk encryption, SMB signing and similar. Each host gets pass, fail, error, not applicable or unsupported per rule. An error never counts as a pass, and an older sensor that cannot run a check shows as unsupported, not passing. Failures carry evidence and remediation text, mapped to standards such as CIS.
 
-**At scale.** Rules are `host_posture_rule` records, each scoped by sensor tags. Subscribing checks nothing by itself: the default rule pack has to be installed in each tenant through the extension's install flow, so put that step in your onboarding script. Sweeps run on a schedule you set in the extension's settings, and offline sensors are scanned when they come back.
+**At scale.** Rules are `host_posture_rule` records, each scoped by sensor tags. Subscribing checks nothing by itself: the default rule pack has to be installed in each tenant through the extension's install flow, so put that step in your onboarding script. Sweeps run on a schedule you set in the extension's settings. A sensor that is offline during a sweep is scanned when it reconnects, as long as the sweep's task is still pending.
 
 <!-- TODO(link): Host Posture rule records -> ../../7-administration/config-hive/host-posture-rule.md -->
 
-**What it produces.** `config_finding` events when a result changes, and a shipped D&R rule that reports each one as a detection. If the tenant also has Cloud Security, each failing rule shows up there as one rolled-up finding across its hosts. Cases for these detections are filed under the Host Posture adapter's sensor, with the host named in the event.
+**What it produces.** `config_finding` events for failures and `config_finding_closed` when one clears, and a shipped D&R rule that reports each finding as a detection. If the tenant also has Cloud Security, each failing rule shows up there as one rolled-up finding across its hosts. Cases for these detections are filed under the Host Posture adapter's sensor, with the host named in the event.
 
 ## Deception (coming soon)
 
@@ -115,14 +115,14 @@ Deception is in early access and is not generally available yet. Its documentati
 
 <!-- TODO(link): Deception -> ../../5-integrations/extensions/limacharlie/deception.md -->
 
-**What it is.** Two kinds of traps. Nothing legitimate ever touches either one, so a hit is a strong signal.
+**What it is.** Two kinds of traps that no user has a reason to touch, so a hit is a strong signal. Backup jobs, indexers and link-preview scanners can still touch them, which is what observe mode is for.
 
 - **Decoys** are placed on endpoints by the sensor: credential files, service and MCP configurations, documents, notes that name decoy hosts. A policy chooses where by platform, tag or sensor ID, and can place them on new sensors as they enroll.
 - **Tokens** are links, QR codes, hostnames and documents that you place yourself: in a wiki, a ticket queue, a file share. They need no sensor.
 
-**At scale.** One `extension_config` record holds the templates, policies, allowlist and tokens, so Git Sync covers it. A policy starts in observe mode, which lists who reads the decoys so you can allowlist backup and indexing software before going live. Read and modify alerts need the Exfil and Integrity extensions subscribed; file decoys need Artifact.
+**At scale.** One `extension_config` record holds the templates, policies, allowlist and tokens, so Git Sync covers it. Policies default to `live`. Set a new policy to `observe` first: hits are reported at low priority with no automatic response, and the extension lists who reads the decoys so you can allowlist backup and indexing software. Then set it to `live`, or set `observe_until`. Read and modify alerts need the Exfil and Integrity extensions subscribed; file decoys need Artifact.
 
-**What it produces.** A hit is a priority-10 detection. With Cases, it opens a critical case filed under the endpoint that held the decoy. A policy can also isolate that endpoint, with guards: only when the evidence came from the decoy's own sensor, never on a scanner-like hit, and within a per-organization rate limit.
+**What it produces.** The shipped rule pack reports a live decoy hit at priority 10, and Cases files it as a critical case under the endpoint that held the decoy. Observe-mode and other lower-confidence hits report at lower priority. A token has no endpoint, so its hits become cases with no sensor. A policy can also isolate that endpoint, with guards: only when the evidence came from the decoy's own sensor, never on a scanner-like hit, and within a per-organization rate limit.
 
 ## Rolling posture out across tenants
 

@@ -1,12 +1,12 @@
 ---
-description: How a managed security service provider should deploy every LimaCharlie product across many customer tenants, in what order, how each piece is configured as code and billed, and what the products do together.
+description: How a managed security service provider should deploy the core LimaCharlie products across many customer tenants, in what order, how each piece is configured as code and billed, and what the products do together.
 ---
 
 # Recommended Deployment for MSSPs
 
 This guide answers one question that service providers ask early: what is the best way to deploy LimaCharlie in a customer's environment? Not "it depends". A default you can follow for most customers and change when a customer gives you a reason.
 
-It is written for MSSPs, MSPs, MDR and incident response firms that run many customers, each in its own LimaCharlie organization. It covers every product, how we expect you to roll it out across thousands of tenants, how it is configured as code and how it is billed. Most of all, it covers what the products do together, because that is where most of the value is.
+It is written for MSSPs, MSPs, MDR and incident response firms that run many customers, each in its own LimaCharlie organization. It covers the products a standard MSSP rollout uses, how we expect you to roll each one out across thousands of tenants, how it is configured as code and how it is billed. Most of all, it covers what the products do together, because that is where most of the value is.
 
 Two other pages cover the rest of the job:
 
@@ -19,17 +19,17 @@ This guide links to both and does not repeat them. The examples use the walkthro
 
 **It is infrastructure.** LimaCharlie sells to you, the provider. You own the customer relationship, and you choose what goes into each offering and how you price it. The platform gives you the parts: sensors, log intake, a detection engine, storage and search, response, and a set of products built on those parts. You decide how they add up to a service.
 
-**Deterministic automation first, AI on top.** Detection and response rules, false-positive rules, playbooks and policies are code you can read, test and replay. They do the same thing every time and cost the same every time. AI agents work on top of that: they triage, investigate, write and tune the rules, and call the deterministic pieces. When an AI keeps doing the same steps, you ask it to turn those steps into a rule or a [Python playbook](../../5-integrations/extensions/limacharlie/playbook.md) so the next run costs seconds of compute instead of tokens. See [AI as a main user](ai.md).
+**Deterministic automation first, AI on top.** Detection and response rules, false-positive rules, playbooks and policies are code you can read, test and replay. They run the same logic every time and spend no tokens. AI agents work on top of that: they triage, investigate, write and tune the rules, and call the deterministic pieces. When an AI keeps doing the same steps, you ask it to turn those steps into a rule or a [Python playbook](../../5-integrations/extensions/limacharlie/playbook.md) so the next run costs seconds of compute instead of tokens. See [AI as a main user](ai.md).
 
-**Bring in a superset, route it out.** Send LimaCharlie everything you might need for detection and investigation. It keeps a year of it searchable. Then use [Outputs](../../5-integrations/outputs/index.md) to send a full copy to cheap long-term storage and only the subset that matters to whatever comes after it: your SIEM, an AI triage tool, the customer's own system. Doing the routing in the LimaCharlie cloud means you never touch the customer's firewall to change where data goes. See [Telemetry and routing](telemetry.md).
+**Bring in a superset, route it out.** Send LimaCharlie everything you might need for detection and investigation. Insight, the built-in retention that is on by default, keeps a year of those events searchable. Then use [Outputs](../../5-integrations/outputs/index.md) to send an unfiltered copy to cheap long-term storage and only the subset that matters to whatever comes after it: your SIEM, an AI triage tool, the customer's own system. Doing the routing in the LimaCharlie cloud means you never touch the customer's firewall to change where data goes. See [Telemetry and routing](telemetry.md).
 
-**Everything is declared as configuration.** Every rule, policy, adapter, output and agent is a record you can write in YAML. One template, kept in Git, rolls out to every tenant. There is no per-tenant testing step and no hidden state that changes what alerts: what is in the record is what runs. Git Sync does not carry every product's records yet; [Operations](operations.md#what-git-sync-does-not-cover-yet) lists what you push with the CLI instead.
+**Everything is declared as configuration.** Every rule, policy, adapter, output and agent is a record you can write in YAML. One template, kept in Git, rolls out to every tenant that includes it. There is no per-tenant testing step. Any state a rule keeps, such as a suppression count, is declared in the rule itself. Git Sync does not carry every product's records yet; [Operations](operations.md#what-git-sync-does-not-cover-yet) lists what you push with the CLI instead.
 
 **One organization per customer.** Each customer is an isolated tenant with its own sensors, data, rules and billing. Your staff reach them through Organization Groups. The [walkthrough](../mssp-walkthrough.md#the-opinionated-mental-model) and [Designing access](../../7-administration/access/designing-access.md) explain the model.
 
 ## The stack for one customer
 
-Everything a customer's environment produces becomes an event in the same organization. The same rules, Cases, Outputs and AI agents then act on all of it.
+Every source you connect for a customer writes events into the same organization, so the rules, Outputs, Cases and AI agents you configure there can act on any of it.
 
 ```mermaid
 flowchart LR
@@ -78,15 +78,15 @@ The table lists every product an MSSP is likely to deploy. Units only: the numbe
 | Product | What it gives you | Deploy when | Configured as code | Billed |
 | --- | --- | --- | --- | --- |
 | [Endpoint agent (EDR)](../../2-sensors-deployment/index.md) | Process, network, file and DNS telemetry, live response, isolation, and the base for App Control, Vulnerabilities, Integrity, YARA and Deception | Week 0, every customer | [Installation keys](../../2-sensors-deployment/installation-keys.md) carry the tags; [Exfil](../../5-integrations/extensions/limacharlie/exfil.md) rules pick the events | Per endpoint per month, flat, with a year of retention. [Sleeper](../../2-sensors-deployment/endpoint-agent/sleeper.md) sensors bill on usage |
-| [Adapters](../../2-sensors-deployment/adapters/index.md) | Logs from cloud, SaaS, identity, firewalls, servers and other security tools | Week 0 to 1 | `cloud_sensor` records; `external_adapter` records set from CI (they hold credentials) | Per GB ingested, counted once, with a year of retention |
+| [Adapters](../../2-sensors-deployment/adapters/index.md) | Logs from cloud, SaaS, identity, firewalls, servers and other security tools | Week 0 to 1 | `cloud_sensor` records; `external_adapter` records set from CI (they hold credentials) | Per GB received, counted once at ingestion, with a year of retention. A few third-party sources have their own plan |
 | [Outputs](../../5-integrations/outputs/index.md) | Copies of events, detections and audit logs to storage, a SIEM or chat | Week 1 | `outputs:` in Git Sync | Egress at cost; [GCP outputs in the datacenter's own region](../../5-integrations/outputs/billing.md) are not charged |
-| [Search (LCQL)](../../4-data-queries/index.md) | A year of every event, searchable across the tenant | From day one | Saved queries in the `query` hive | Per events evaluated |
-| [D&R rules and managed rulesets](../../3-detection-response/index.md) | Detection and automated response on every event | Week 0 | `dr-general`, `fp`, `lookup` records | Managed rulesets per add-on; see pricing |
-| [Cases](../../5-integrations/extensions/limacharlie/cases.md) (public beta) | One alert queue for every product, with SLAs and reports | Week 0 | Subscription in `extensions:`; settings through the Cases API in your onboarding script | See pricing |
-| [Cloud Security](../../cloud-security/index.md) | Cloud and SaaS posture, attack paths, asset inventory and coverage gaps, Entities, mail posture rules, Code Security | Week 2 | `cloudsec_*` records | Flat per organization per month; Code Security per protected repository. [Free tier](../../cloud-security/free-tier.md) |
-| [Email Security](../../email-security/index.md) | Post-delivery mail protection for Microsoft 365, Google Workspace and IMAP | Week 2 | `mailsec_*` and `dr-mail` records | Per protected mailbox per month, billed daily. [Free tier](../../7-administration/billing/security-products.md) |
-| [Vulnerability Reporting](../../5-integrations/extensions/limacharlie/vulnerability-reporting.md) | Package inventory matched to CVEs, ranked with KEV, EPSS and your asset tags | Week 2 | `extension_config` record | Per endpoint |
-| [Application Control](../../5-integrations/extensions/limacharlie/app-control.md) | Allow or block programs at process start, audit first; one-tag lockdown | Week 3 to 4, audit mode first | `app_control_policy`, `app_control_rule` records | Per endpoint |
+| [Search (LCQL)](../../4-data-queries/index.md) | A year of retained events, searchable across the tenant | From day one | Saved queries in the `query` hive | Per events evaluated |
+| [D&R rules and managed rulesets](../../3-detection-response/index.md) | Detection and automated response on every event | Week 0 | `dr-general`, `fp`, `lookup` records | Each managed ruleset per its marketplace listing |
+| [Cases](../../5-integrations/extensions/limacharlie/cases.md) (public beta) | One alert queue across products, with SLAs and reports | Week 0 | Subscription in `extensions:`; settings through the Cases API in your onboarding script | See pricing |
+| [Cloud Security](../../cloud-security/index.md) | Cloud and SaaS posture, attack paths, asset inventory and coverage gaps, Entities, mail posture rules, Code Security | Week 2 | `cloudsec_*` records | Flat per organization per month; Code Security per protected repository, counted daily. [Free tier](../../cloud-security/free-tier.md) |
+| [Email Security](../../email-security/index.md) | Post-delivery mail protection for Microsoft 365, Google Workspace and IMAP | Week 2 | `mailsec_*` and `dr-mail` records | Per protected mailbox per month, counted daily; the mail events bill as adapter data. [Free tier](../../7-administration/billing/security-products.md) |
+| [Vulnerability Reporting](../../5-integrations/extensions/limacharlie/vulnerability-reporting.md) | Package inventory matched to CVEs, ranked with KEV, EPSS and your asset tags | Week 2 | `extension_config` record | Per endpoint, on the organization's sensor quota |
+| [Application Control](../../5-integrations/extensions/limacharlie/app-control.md) | Allow or block programs at process start, audit first; one-tag lockdown | Week 3 to 4, audit mode first | `app_control_policy`, `app_control_rule` records | Per endpoint, on the organization's sensor quota |
 | Host Posture (**Coming soon**) | Configuration checks on each host, mapped to standards | Week 2 to 3, once launched | `host_posture_rule` records | See pricing |
 | Deception (**Coming soon**) | Decoys on endpoints and tokens you place yourself; a hit is a high-signal alert | Week 3, once launched | `extension_config` record | Set at launch |
 | [Integrity (FIM)](../../5-integrations/extensions/limacharlie/integrity.md) | File and registry change alerts | Week 1, where a customer needs it | `extension_config` record | See pricing |
@@ -104,7 +104,7 @@ There is no separate charge for using the API, the CLI or the MCP server. Metere
 
 ## Rollout order for one customer
 
-This is the order Northwind follows for a new customer such as ACME. Each step builds on the one before. Every step is a change to the customer's folder in Git, or a shared template the customer already includes.
+This is the order Northwind follows for a new customer such as ACME. Each step builds on the one before. Apart from installing software at the customer, each step is a change to the customer's folder in Git or to a shared template it includes.
 
 | When | What | Why this order |
 | --- | --- | --- |
@@ -112,7 +112,7 @@ This is the order Northwind follows for a new customer such as ACME. Each step b
 | Week 0 | Install the endpoint agent with role-based installation keys (servers, workstations, VIPs). Pre-deploy to machines you are not monitoring yet in sleeper mode. | Endpoints are the richest source and the base for most other products. Tags from the key target everything later. |
 | Week 0 to 1 | Connect cloud-to-cloud sources: Microsoft 365, Entra ID or Okta, Google Workspace, AWS CloudTrail. | Nothing to install at the customer. Identity and cloud audit logs are high-value and low-volume. |
 | Week 1 | Put one cloud-managed adapter on a customer server as the syslog collector for firewalls and other appliances. Filter on the devices. Add Windows Event Log collection where it is needed. | Network logs are usually the largest source. Decide the filter before you turn them on. |
-| Week 1 | Add Outputs: full event copy to a bucket, detections to the SIEM or triage tool, audit log to long-term storage. Add Usage Alerts. | You have real volumes now, so you can size and alert on them. |
+| Week 1 | Add Outputs: full event copy to a bucket, detections to the SIEM or triage tool, audit log to long-term storage. Add Usage Alerts on output volume and a check on ingestion volume. | You have real volumes now, so you can size and alert on them. |
 | Week 2 | Turn on Cloud Security with the customer's cloud accounts and identity provider; Email Security on their mail; Vulnerability Reporting on their endpoints. | Posture work starts once inventory exists. Cloud Security also builds the User and Host directory the other products join on. |
 | Week 2 to 4 | Tune: false-positive rules for the customer's own software, and their exceptions as tags. Start AI triage on the case queue. | The first two weeks of alerts tell you what this customer's normal looks like. |
 | Week 3 to 4 | Application Control in audit mode on a pilot tag, then enforce. Deception and Host Posture when available. | These need a quiet baseline and a tuned queue, or they add noise. |
@@ -142,7 +142,7 @@ Everything in Essentials, plus:
 
 Everything in Standard, plus:
 
-- Application Control, audit first, then enforcing by tag, and automatic lockdown on confirmed malicious activity.
+- Application Control, audit first, then enforcing by tag, and a D&R rule of yours that tags a host into lockdown.
 - Integrity rules for the customer's regulated systems, and YARA Manager sources.
 - Host Posture and Deception when they launch.
 - Playbooks for the response steps your analysts and agents repeat.
