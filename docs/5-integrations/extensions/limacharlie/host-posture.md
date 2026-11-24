@@ -195,6 +195,8 @@ Each time a host's state for a rule changes, the extension emits an event throug
 
 A `config_finding` event carries the host (`sid`, `hostname`), the rule (`rule_id`, `signature_version`, `severity`, `title`, `description`), the remediation text, the rule's standards and references, the `instance` and its evidence, and the evaluator version that produced it. A managed D&R rule reports each `config_finding` as a detection. Because that rule is in your organization, you can tune it, for example to alert only on `high` and `critical`, or to send findings to an output.
 
+The events reach LimaCharlie through the extension's adapter, but the detection names the host the finding is about: the rule's report sets `case_sid` and `case_hostname` from the event's `sid` and `hostname`. With [Cases](cases.md), a finding's case is therefore filed under that host, grouped with the host's other detections by your auto-grouping settings, and `limacharlie case list --sid <sensor id>` finds it. If you edit the rule, keep those two metadata keys in its `report` action.
+
 ## Writing your own rules
 
 A rule is a YAML or JSON document in the `lc-posture/v1` language. See [Writing your own rules](host-posture-writing-rules.md) for the document, the probes that read the host, the condition language and how to test a rule. To store one, see [Host Posture rules](../../../7-administration/config-hive/host-posture-rule.md).
