@@ -1,5 +1,5 @@
 ---
-description: How an MSSP runs a LimaCharlie deployment day to day across thousands of tenants, changing configuration through Git, closing the Git Sync gaps with the CLI, tuning, watching costs and health, and onboarding and offboarding customers.
+description: How an MSSP runs a LimaCharlie deployment day to day across thousands of tenants, changing configuration through Git, keeping credentials out of the repository, tuning, watching costs and health, and onboarding and offboarding customers.
 ---
 
 # Operations
@@ -17,7 +17,7 @@ flowchart LR
     PR["Pull request"] --> CI["Your CI checks<br/>(structure, rule tests, replay)"]
     CI --> REV["Review and merge"]
     REV --> GS["Git Sync applies it on its next pull<br/>in each tenant that includes the file"]
-    REV --> CLI["CI pushes with the CLI the records<br/>Git Sync does not carry"]
+    REV --> CLI["CI writes the records that hold credentials<br/>from its own secret store"]
 ```
 
 Three habits keep it working:
@@ -26,19 +26,18 @@ Three habits keep it working:
 - **A pull never deletes.** Removing a record from Git leaves it running in the tenant. Delete it there too; the tutorial's [Delete things](../mssp-iac-tutorial.md#step-11-delete-things) step shows how.
 - **Export catches drift.** Turn on export for the types you want to watch, and a scheduled push writes each tenant's live configuration of those types to `exports/`, so a change someone made in the console shows up as a diff. Leave the `secret` hive out of both sync and export.
 
-### What Git Sync does not cover yet
+### What to keep out of Git Sync
 
-Git Sync carries detection and false-positive rules, lookups, saved queries, YARA, playbooks, AI agents, SOPs, org notes, cloud adapters, Application Control policies and rules, investigation policies and plans, outputs, extension subscriptions and settings, and installation keys, for the types you enable in each tenant's Git Sync settings. It does not cover every product's configuration yet. Push the rest from the same repository with the CLI in your CI:
+Git Sync carries detection and false-positive rules, lookups, saved queries, YARA, playbooks, AI agents, SOPs, org notes, cloud adapters, Application Control policies and rules, investigation policies and plans, Email Security (`mailsec_provider`, `mailsec_policy`, `dr-mail`), Cloud Security (`cloudsec_provider`, `cloudsec_policy`, `cloudsec_query`, `cloudsec_code_rule`), Host Posture rules (`host_posture_rule`, coming soon), outputs, extension subscriptions and settings, and installation keys, for the types you enable in each tenant's Git Sync settings. See [Email Security, Cloud Security and Host Posture](../../5-integrations/extensions/limacharlie/git-sync.md#email-security-cloud-security-and-host-posture) for those products' records. A tenant subscribed to Git Sync before it carried them needs a one-time `limacharlie extension rekey --name ext-git-sync`, run by an Owner.
 
-| Product | Records | How to push them |
+Two kinds of record stay out of the repository, because they would put credentials in it:
+
+| Records | Why | How to write them |
 | --- | --- | --- |
-| Email Security | `dr-mail`, `mailsec_policy` | `limacharlie sync push --config-file mail.yaml --hive-dr-mail --hive-mailsec-policy`. See [Email Security rules as code](../../email-security/custom-rules.md#infrastructure-as-code). |
-| Email Security | `mailsec_provider` | `limacharlie sync push --config-file mail.yaml --hive-mailsec-provider`, or a `limacharlie hive set` loop over the files, one per tenant. |
-| Cloud Security | `cloudsec_provider`, `cloudsec_policy`, `cloudsec_query`, `cloudsec_code_rule` | `limacharlie sync push --config-file cloudsec.yaml` with `--hive-cloudsec-provider`, `--hive-cloudsec-policy`, `--hive-cloudsec-query` and `--hive-cloudsec-code-rule` for the hives the file holds, or a `limacharlie hive set` loop. See [Cloud Security API and IaC](../../8-reference/cloud-security-api-iac.md) and [Multi-tenant policy push](../../cloud-security/automation.md#multi-tenant-policy-push). |
-| Host Posture (coming soon) | Default rules | The extension's install flow, run in your onboarding script. |
-| Cloud-managed adapters | `external_adapter` | Git Sync can carry them, but leave it off: the record holds the installation key and source credentials in plain text, because these records cannot use `hive://secret/` references. CI fills the credentials in from its own secret store and runs `limacharlie external-adapter set`. See [Cloud-managed adapters](telemetry.md#logs-adapters). |
+| `secret` | The values themselves. Every other record refers to them as `hive://secret/<name>`, including the Email Security and Cloud Security connections. | CI writes each tenant's secrets from its own secret store with `limacharlie secret set`, before the first pull that needs them. |
+| Cloud-managed adapters (`external_adapter`) | Git Sync can carry them, but leave it off: the record holds the installation key and source credentials in plain text, because these records cannot use `hive://secret/` references. | CI fills the credentials in from its own secret store and runs `limacharlie external-adapter set`. See [Cloud-managed adapters](telemetry.md#logs-adapters). |
 
-Keep these files out of the `index.yaml` that Git Sync reads, so the two tools never write the same record. An Organization API key works on one organization only, so CI needs a key per tenant. Credentials stay in each tenant's `secret` hive or in your CI's secret store, never in the repository.
+Keep these files out of the `index.yaml` that Git Sync reads, so the two tools never write the same record. An Organization API key works on one organization only, so CI needs a key per tenant. Host Posture's default rule pack is installed by the extension's own flow, run in your onboarding script; your own rules, and edited copies of the defaults, can live in Git as `host_posture_rule` records.
 
 ## The tuning loop
 
@@ -87,6 +86,6 @@ Your staff get access through Organization Groups by job function. Customer user
 
 ## Onboarding and offboarding
 
-**Onboarding** is a script: create the organization in the customer's region, add it to the staff groups, store the deploy key and subscribe Git Sync. Then merge the pull request that adds the customer's folder with the shared includes, run a first Git Sync apply and check its result (see [Seeing the results](../../5-integrations/extensions/limacharlie/git-sync.md#seeing-the-results)), and run the CLI pushes for the records Git Sync does not carry. Only then connect sources and send the installation keys. Then follow the [recommended rollout order](index.md#recommended-rollout-order). See the walkthrough's [onboarding playbook](../mssp-walkthrough.md#part-18-onboarding-playbook-the-one-page-version) and the tutorial's [next customer](../mssp-iac-tutorial.md#step-12-onboard-the-next-customer) step.
+**Onboarding** is a script: create the organization in the customer's region, add it to the staff groups, store the deploy key, write the secrets the customer's connection records refer to (`limacharlie secret set`, from your CI's secret store) and subscribe Git Sync. Then merge the pull request that adds the customer's folder with the shared includes, run a first Git Sync apply and check its result (see [Seeing the results](../../5-integrations/extensions/limacharlie/git-sync.md#seeing-the-results)). Only then connect sources and send the installation keys. Then follow the [recommended rollout order](index.md#recommended-rollout-order). See the walkthrough's [onboarding playbook](../mssp-walkthrough.md#part-18-onboarding-playbook-the-one-page-version) and the tutorial's [next customer](../mssp-iac-tutorial.md#step-12-onboard-the-next-customer) step.
 
 **Offboarding** has an order: export what you keep, make sure the archive outputs have delivered, uninstall the agents, then delete the organization. Deleting first leaves the agents installed on the customer's machines. See [Offboarding a customer organization](../../7-administration/org-lifecycle.md#offboarding-a-customer-organization).

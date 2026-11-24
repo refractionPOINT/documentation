@@ -81,6 +81,9 @@ Pass `--enabled` when creating a rule that should run.
 `limacharlie sync pull` and `sync push` support `--hive-dr-mail` and
 `--hive-mailsec-policy`, and include both with `--all`. This lets version-controlled
 configuration own the exact same execution set visible in the console.
+[Git Sync](../5-integrations/extensions/limacharlie/git-sync.md#email-security-cloud-security-and-host-posture)
+applies the same records from a repository to every organization on a schedule,
+with its `dr-mail` and `mailsec_policy` switches.
 
 ## Choose where the rule runs
 
