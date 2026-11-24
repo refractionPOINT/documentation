@@ -161,11 +161,22 @@ are not assessed either, so `Connect-MicrosoftTeams` is never needed for them.
 ## What the connection test says
 
 Run **Test Provider** (or `limacharlie cloudsec provider test`) before saving.
-The test asks Microsoft which cloud the tenant is in and compares the answer with
-`microsoft_cloud`. When they differ, it fails and the message names the cloud the
-tenant is in and the value to set. For example, a GCC High tenant saved with no
-`microsoft_cloud` is refused with a message telling you to set Microsoft cloud to
-GCC High. Fix the field and test again. The test never changes the field for you.
+The test asks the tenant's public Microsoft sign-in metadata which cloud the
+tenant is in and compares the answer with `microsoft_cloud`. When they differ, it
+fails and the message names the cloud the tenant is in and the value to set:
+
+> this tenant is in Microsoft's US Government (GCC High) cloud, but the connection
+> is set to Commercial; set Microsoft cloud to GCC High
+
+The check is named `microsoft_cloud` ("Tenant is in the declared Microsoft
+cloud"). On a mismatch the `auth` check fails with the same message, because no
+token request can succeed against the wrong cloud. It works in both directions:
+a commercial tenant saved as GCC High is refused too, with a message that names
+Commercial as the value to set.
+
+Fix the field and test again. The test never changes the field for you. When
+Microsoft's metadata cannot be read or its values are not recognized, the check
+shows as a failed optional check and the test goes on to the credential checks.
 
 A GCC tenant is not told apart from a commercial one: Microsoft reports no
 separate sub-scope for it, so the test does not flag a `commercial` / `gcc`
@@ -179,8 +190,9 @@ connection does not read Exchange Online.
 ## Checks that are not assessed in a cloud
 
 A check that depends on a Microsoft service LimaCharlie has no supported read
-for in the connection's cloud reports **NOT_ASSESSED** with a reason that says
-so. It is never an error and never a pass.
+for in the connection's cloud reports **NOT_ASSESSED**, with a reason such as
+*Microsoft does not offer this service in GCC High*. It is never an error and
+never a pass.
 
 | Plane (`provider test` check) | Commercial | GCC | GCC High | DoD |
 |---|:--:|:--:|:--:|:--:|
@@ -189,6 +201,10 @@ so. It is never an error and never a pass.
 | Purview (`m365_scc`) | ✅ | ✅ | ✅ | ✅ |
 | Teams policies (`m365_teams`) | ✅ | ✅ | Not assessed | Not assessed |
 | Power BI / Fabric tenant settings (`m365_fabric`) | ✅ | Not assessed | Not assessed | Not assessed |
+
+On an `azure` connection in GCC High or DoD, Key Vault secret expiry is also not
+read, so the secret-expiry findings stay NOT_ASSESSED there. Microsoft does not
+document the Azure Government Key Vault token resource.
 
 Microsoft documents Power BI itself in every US Government cloud, but not a Teams
 admin read or a Fabric admin API that a service principal can call there, so the

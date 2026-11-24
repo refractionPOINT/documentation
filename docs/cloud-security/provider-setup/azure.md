@@ -280,6 +280,7 @@ the Azure-specific checks follow.
 
 | Check | Required | Meaning if it fails |
 |---|:--:|---|
+| `microsoft_cloud` | ✅ | The tenant is in a different Microsoft cloud than the record's `microsoft_cloud` (a GCC High tenant saved as Commercial, for example). The message names the value to set. See [Microsoft US Government clouds](microsoft-government-clouds.md#what-the-connection-test-says). |
 | `auth` | ✅ | The client ID/secret pair was rejected, or the secret expired. |
 | `arm_reader` | ✅ | Reader is not assigned on the configured subscription — no resource inventory. |
 | `graph_directory` | ✅ | `Directory.Read.All` not consented — no identity inventory. |
