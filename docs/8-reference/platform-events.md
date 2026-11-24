@@ -109,6 +109,11 @@ Deleted Sensor deployment events are produced when a sensor that was previously 
 > lapses. To test, add the rule first, then delete a sensor and let it
 > reconnect.
 
+A deleted sensor can be restored for 30 days after its deletion. A sensor
+deleted longer ago than that still produces this event when it tries to
+connect, but the `undelete sensor` action no longer restores it. See
+[Restore window](response-actions.md#restore-window).
+
 Sensors created by [Adapters](../2-sensors-deployment/adapters/index.md) never
 produce this event. When an adapter reconnects for a deleted sensor, the sensor
 is restored automatically. See

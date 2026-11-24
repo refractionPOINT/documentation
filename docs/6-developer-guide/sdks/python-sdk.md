@@ -438,7 +438,8 @@ overview = sensor.get_overview(start=start, end=end)
 ### Sensor Lifecycle
 
 ```python
-# Delete sensor permanently
+# Delete the sensor. It can be restored for 30 days; after that the
+# deletion is permanent and the sensor's tags are removed.
 sensor.delete()
 ```
 
