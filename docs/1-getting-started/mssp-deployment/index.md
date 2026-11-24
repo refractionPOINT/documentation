@@ -75,26 +75,26 @@ flowchart LR
 
 The table lists every product an MSSP is likely to deploy. Units only: the numbers are on the [pricing page](https://limacharlie.io/pricing). Products marked **Coming soon** are not generally available yet.
 
-| Product | What it gives you | Deploy when | Configured as code | Billed |
-| --- | --- | --- | --- | --- |
-| [Endpoint agent (EDR)](../../2-sensors-deployment/index.md) | Process, network, file and DNS telemetry, live response, isolation, and the base for App Control, Vulnerabilities, Integrity, YARA and Deception | Week 0, every customer | [Installation keys](../../2-sensors-deployment/installation-keys.md) carry the tags; [Exfil](../../5-integrations/extensions/limacharlie/exfil.md) rules pick the events | Per endpoint per month, flat, with a year of retention. [Sleeper](../../2-sensors-deployment/endpoint-agent/sleeper.md) sensors bill on usage |
-| [Adapters](../../2-sensors-deployment/adapters/index.md) | Logs from cloud, SaaS, identity, firewalls, servers and other security tools | Week 0 to 1 | `cloud_sensor` records; `external_adapter` records set from CI (they hold credentials) | Per GB received, counted once at ingestion, with a year of retention. A few third-party sources have their own plan |
-| [Outputs](../../5-integrations/outputs/index.md) | Copies of events, detections and audit logs to storage, a SIEM or chat | Week 1 | `outputs:` in Git Sync | Egress at cost; [GCP outputs in the datacenter's own region](../../5-integrations/outputs/billing.md) are not charged |
-| [Search (LCQL)](../../4-data-queries/index.md) | A year of retained events, searchable across the tenant | From day one | Saved queries in the `query` hive | Per events evaluated |
-| [D&R rules and managed rulesets](../../3-detection-response/index.md) | Detection and automated response on every event | Week 0 | `dr-general`, `fp`, `lookup` records | Each managed ruleset per its marketplace listing |
-| [Cases](../../5-integrations/extensions/limacharlie/cases.md) (public beta) | One alert queue across products, with SLAs and reports | Week 0 | Subscription in `extensions:`; settings through the Cases API in your onboarding script | See pricing |
-| [Cloud Security](../../cloud-security/index.md) | Cloud and SaaS posture, attack paths, asset inventory and coverage gaps, Entities, mail posture rules, Code Security | Week 2 | `cloudsec_*` records | Flat per organization per month; Code Security per protected repository, counted daily. [Free tier](../../cloud-security/free-tier.md) |
-| [Email Security](../../email-security/index.md) | Post-delivery mail protection for Microsoft 365, Google Workspace and IMAP | Week 2 | `mailsec_*` and `dr-mail` records | Per protected mailbox per month, counted daily; the mail events bill as adapter data. [Free tier](../../7-administration/billing/security-products.md) |
-| [Vulnerability Reporting](../../5-integrations/extensions/limacharlie/vulnerability-reporting.md) | Package inventory matched to CVEs, ranked with KEV, EPSS and your asset tags | Week 2 | `extension_config` record | Per endpoint, on the organization's sensor quota |
-| [Application Control](../../5-integrations/extensions/limacharlie/app-control.md) | Allow or block programs at process start, audit first; one-tag lockdown | Week 3 to 4, audit mode first | `app_control_policy`, `app_control_rule` records | Per endpoint, on the organization's sensor quota |
-| Host Posture (**Coming soon**) | Configuration checks on each host, mapped to standards | Week 2 to 3, once launched | `host_posture_rule` records | See pricing |
-| Deception (**Coming soon**) | Decoys on endpoints and tokens you place yourself; a hit is a high-signal alert | Week 3, once launched | `extension_config` record | Set at launch |
-| [Integrity (FIM)](../../5-integrations/extensions/limacharlie/integrity.md) | File and registry change alerts | Week 1, where a customer needs it | `extension_config` record | See pricing |
-| [YARA Manager](../../5-integrations/extensions/limacharlie/yara-manager.md) | YARA rule sets kept in sync from your sources | Week 1 | Rules land in the `yara` hive | See pricing |
-| [EPP](../../5-integrations/extensions/limacharlie/epp.md) | Microsoft Defender status, logs and commands | When you manage Defender for the customer | Subscription; the extension writes its collection and D&R rules | The extension is free |
-| [AI Sessions and SOC Bots](../../9-ai-sessions/index.md) | AI agents that triage, investigate and operate the tenant | Week 1 onward | `ai_agent` records | Per minute of session runtime; the model's tokens are billed by your own AI provider |
-| [Python Playbooks](../../5-integrations/extensions/limacharlie/playbook.md) | Deterministic Python steps called by rules or agents | When a step repeats | `playbook` records | Per second of execution |
-| Investigation Engine (**Coming soon**) | Plan-driven investigations with autonomy you declare in policy | Once launched | `investigation_policy`, `investigation_plan` records | Set at launch |
+| Product | What it gives you | Configured as code | Billed |
+| --- | --- | --- | --- |
+| [Endpoint agent (EDR)](../../2-sensors-deployment/index.md) | Process, network, file and DNS telemetry, live response, isolation, and the base for App Control, Vulnerabilities, Integrity, YARA and Deception | [Installation keys](../../2-sensors-deployment/installation-keys.md) carry the tags; [Exfil](../../5-integrations/extensions/limacharlie/exfil.md) rules pick the events | Per endpoint per month, flat, with a year of retention. [Sleeper](../../2-sensors-deployment/endpoint-agent/sleeper.md) sensors bill on usage |
+| [Adapters](../../2-sensors-deployment/adapters/index.md) | Logs from cloud, SaaS, identity, firewalls, servers and other security tools | `cloud_sensor` records; `external_adapter` records set from CI (they hold credentials) | Per GB received, counted once at ingestion, with a year of retention. A few third-party sources have their own plan |
+| [Outputs](../../5-integrations/outputs/index.md) | Copies of events, detections and audit logs to storage, a SIEM or chat | `outputs:` in Git Sync | Egress at cost; [GCP outputs in the datacenter's own region](../../5-integrations/outputs/billing.md) are not charged |
+| [Search (LCQL)](../../4-data-queries/index.md) | A year of retained events, searchable across the tenant | Saved queries in the `query` hive | Per events evaluated |
+| [D&R rules and managed rulesets](../../3-detection-response/index.md) | Detection and automated response on every event | `dr-general`, `fp`, `lookup` records | Managed rulesets bill per their marketplace listing. The Soteria EDR ruleset is per endpoint per month; other Soteria sets have their own plans |
+| [Cases](../../5-integrations/extensions/limacharlie/cases.md) | One alert queue across products, with SLAs and reports | Subscription in `extensions:`; settings through the Cases API in your onboarding script | Flat fee per organization per month, with no per-endpoint charge |
+| [Cloud Security](../../cloud-security/index.md) | Cloud and SaaS posture, attack paths, asset inventory and coverage gaps, Entities, mail posture rules, Code Security | `cloudsec_*` records | Flat per organization per month; Code Security per protected repository, counted daily. [Free tier](../../cloud-security/free-tier.md) |
+| [Email Security](../../email-security/index.md) | Post-delivery mail protection for Microsoft 365, Google Workspace and IMAP | `mailsec_*` and `dr-mail` records | Per protected mailbox per month, counted daily; the mail events bill as adapter data. [Free tier](../../7-administration/billing/security-products.md) |
+| [Vulnerability Reporting](../../5-integrations/extensions/limacharlie/vulnerability-reporting.md) | Package inventory matched to CVEs, ranked with KEV, EPSS and your asset tags | `extension_config` record | Per endpoint per month |
+| [Application Control](../../5-integrations/extensions/limacharlie/app-control.md) | Allow or block programs at process start, audit first; one-tag lockdown | `app_control_policy`, `app_control_rule` records | Per endpoint per month |
+| Host Posture (**Coming soon**) | Configuration checks on each host, mapped to standards | `host_posture_rule` records | No extension charge today; pricing may be set at launch |
+| Deception (**Coming soon**) | Decoys on endpoints and tokens you place yourself; a hit is a high-signal alert | `extension_config` record | Pricing is set at launch |
+| [Integrity (FIM)](../../5-integrations/extensions/limacharlie/integrity.md) | File and registry change alerts | `extension_config` record | No extension charge |
+| [YARA Manager](../../5-integrations/extensions/limacharlie/yara-manager.md) | YARA rule sets kept in sync from your sources | Rules land in the `yara` hive | No extension charge |
+| [EPP](../../5-integrations/extensions/limacharlie/epp.md) | Microsoft Defender status, logs and commands | Subscription; the extension writes its collection and D&R rules | No extension charge |
+| [AI Sessions and SOC Bots](../../9-ai-sessions/index.md) | AI agents that triage, investigate and operate the tenant | `ai_agent` records | Per minute of session runtime; the model's tokens are billed by your own AI provider |
+| [Python Playbooks](../../5-integrations/extensions/limacharlie/playbook.md) | Deterministic Python steps called by rules or agents | `playbook` records | Per second of execution time |
+| Investigation Engine (**Coming soon**) | Plan-driven investigations with autonomy you declare in policy | `investigation_policy`, `investigation_plan` records | Pricing is set at launch |
 
 <!-- TODO(link): Host Posture -> ../../5-integrations/extensions/limacharlie/host-posture.md -->
 <!-- TODO(link): Deception -> ../../5-integrations/extensions/limacharlie/deception.md -->
@@ -102,29 +102,27 @@ The table lists every product an MSSP is likely to deploy. Units only: the numbe
 
 There is no separate charge for using the API, the CLI or the MCP server. Metered operations, such as searches, playbook runtime and AI session runtime, bill the same whichever interface starts them.
 
-## Rollout order for one customer
+## Recommended rollout order
 
 This is the order Northwind follows for a new customer such as ACME. Each step builds on the one before. Apart from installing software at the customer, each step is a change to the customer's folder in Git or to a shared template it includes.
 
 ```mermaid
 flowchart LR
-    W0["Week 0<br/>Organization, Git Sync,<br/>baseline rules, Cases,<br/>endpoint agent"] --> W01["Week 0 to 1<br/>Cloud-to-cloud sources"]
-    W01 --> W1["Week 1<br/>Syslog collector,<br/>Outputs, Usage Alerts"]
-    W1 --> W2["Week 2<br/>Cloud Security, Email Security,<br/>Vulnerability Reporting"]
-    W2 --> W24["Week 2 to 4<br/>Tune FP rules,<br/>AI triage on the case queue"]
-    W24 --> W34["Week 3 to 4<br/>Application Control,<br/>audit then enforce"]
+    S1["1. Organization, Git Sync,<br/>baseline rules, Cases"] --> S2["2. Endpoint agent"]
+    S2 --> S3["3. Cloud-to-cloud sources"]
+    S3 --> S4["4. Syslog collector,<br/>Outputs, Usage Alerts"]
+    S4 --> S5["5. Cloud Security, Email Security,<br/>Vulnerability Reporting"]
+    S5 --> S6["6. Tune FP rules,<br/>AI triage on the case queue"]
+    S6 --> S7["7. Application Control,<br/>audit then enforce"]
 ```
 
-| When | What | Why this order |
-| --- | --- | --- |
-| Week 0 | Create the organization in the right region, add it to your Organization Groups, connect Git Sync, subscribe the standard extensions, turn on the baseline rules and Cases. | The template is ready before any data arrives, so the first event already meets your rules. Run the walkthrough's [onboarding script](../mssp-walkthrough.md#automate-the-new-customer-onboarding) on the new organization, merge the customer's `index.yaml`, then run a first Git Sync apply and check its result before you connect sources or send installation keys. |
-| Week 0 | Install the endpoint agent with role-based installation keys (servers, workstations, VIPs). Pre-deploy to machines you are not monitoring yet in sleeper mode. | Endpoints are the richest source and the base for most other products. Tags from the key target everything later. |
-| Week 0 to 1 | Connect cloud-to-cloud sources: Microsoft 365, Entra ID or Okta, Google Workspace, AWS CloudTrail. | Nothing to install at the customer. Identity and cloud audit logs are high-value and low-volume. |
-| Week 1 | Put one cloud-managed adapter on a customer server as the syslog collector for firewalls and other appliances. Filter on the devices. Add Windows Event Log collection where it is needed. | Network logs are usually the largest source. Decide the filter before you turn them on. |
-| Week 1 | Add Outputs: full event copy to a bucket, detections to the SIEM or triage tool, audit log to long-term storage. Add Usage Alerts on output volume and a check on ingestion volume. | You have real volumes now, so you can size and alert on them. |
-| Week 2 | Turn on Cloud Security with the customer's cloud accounts and identity provider; Email Security on their mail; Vulnerability Reporting on their endpoints. | Posture work starts once inventory exists. Cloud Security also builds the User and Host directory the other products join on. |
-| Week 2 to 4 | Tune: false-positive rules for the customer's own software, and their exceptions as tags. Start AI triage on the case queue. | The first two weeks of alerts tell you what this customer's normal looks like. |
-| Week 3 to 4 | Application Control in audit mode on a pilot tag, then enforce. Deception and Host Posture when available. | These need a quiet baseline and a tuned queue, or they add noise. |
+1. **Create the organization and the template.** Create the organization in the right region, add it to your Organization Groups, connect Git Sync, subscribe the standard extensions, turn on the baseline rules and Cases. *Why first:* the template is ready before any data arrives, so the first event already meets your rules. Run the walkthrough's [onboarding script](../mssp-walkthrough.md#automate-the-new-customer-onboarding) on the new organization, merge the customer's `index.yaml`, then run a first Git Sync apply and check its result before you connect sources or send installation keys.
+2. **Install the endpoint agent.** Use role-based installation keys (servers, workstations, VIPs). Pre-deploy to machines you are not monitoring yet in sleeper mode. *Why:* endpoints are the richest source and the base for most other products. Tags from the key target everything later.
+3. **Connect cloud-to-cloud sources.** Microsoft 365, Entra ID or Okta, Google Workspace, AWS CloudTrail. *Why:* there is nothing to install at the customer, and identity and cloud audit logs are high-value and low-volume.
+4. **Add the syslog collector and Outputs.** Put one cloud-managed adapter on a customer server as the syslog collector for firewalls and other appliances, and filter on the devices. Add Windows Event Log collection where it is needed. Then add Outputs: full event copy to a bucket, detections to the SIEM or triage tool, audit log to long-term storage, with Usage Alerts on output volume and a check on ingestion volume. *Why:* network logs are usually the largest source, so decide the filter before you turn them on. Once real volumes arrive you can size and alert on them.
+5. **Turn on the posture products.** Cloud Security with the customer's cloud accounts and identity provider; Email Security on their mail; Vulnerability Reporting on their endpoints. Integrity and YARA Manager where the customer needs them. *Why:* posture work starts once inventory exists. Cloud Security also builds the User and Host directory the other products join on.
+6. **Tune.** Write false-positive rules for the customer's own software, and record their exceptions as tags. Start AI triage on the case queue. *Why:* the first alerts tell you what this customer's normal looks like.
+7. **Add Application Control.** Run it in audit mode on a pilot tag, then enforce. Add Deception and Host Posture when they are available. *Why:* these need a quiet baseline and a tuned queue, or they add noise.
 
 ## Reference packages
 

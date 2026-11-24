@@ -120,7 +120,7 @@ Connect these first after endpoints. They need nothing at the customer and are h
 - AWS CloudTrail and GuardDuty, Azure Event Hub and Monitor, GCP Pub/Sub.
 - Third-party EDR and EPP consoles (CrowdStrike, Defender, SentinelOne and others), when the customer keeps one.
 
-The full list is in [Adapters](../../2-sensors-deployment/adapters/index.md). For Globex, Northwind connects Okta and CloudTrail in week 0. For Initech, Google Workspace.
+The full list is in [Adapters](../../2-sensors-deployment/adapters/index.md). For Globex, Northwind connects Okta and CloudTrail among the first sources. For Initech, Google Workspace.
 
 Identity adapters matter for more than their own detections. Their events index users the same way Email Security indexes mailboxes, and Entities uses them as leads. See [What the products do together](synergy.md).
 
