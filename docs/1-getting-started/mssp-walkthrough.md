@@ -2112,7 +2112,7 @@ The recipe is designed for autonomous containment, not an approval-gated flow. T
 - Add the isolation and lookup commands to the agent's `denied_tools` ([Tool Permissions](../9-ai-sessions/tool-permissions.md)).
 - Have the agent record its recommendation on the case, then let an analyst, or a separate step that holds the permission, carry it out after approval.
 
-The shipped prompt uses older commands for these actions: `sensor isolate` and `lookup --name <lookup> --add`. Neither exists in CLI 5.13.0. The prompt tells the agent to check `--ai-help` when a command fails, so it may recover, but do not count on that for unattended containment. Update the prompt to the current commands before you deploy the recipe. The commands below are the current CLI equivalents, not the text of the shipped prompt:
+These are the CLI commands the recipe's responder prompt uses for these actions (CLI 5.13.0):
 
 ```bash
 # Network isolation
