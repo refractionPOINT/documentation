@@ -383,7 +383,8 @@ permission to add, and it marks the sweep as partial coverage, as before.
 
 ### What happens to blocked scopes
 
-- **Not scanned.** Cloud Security does not read a blocked region or service.
+- **No data collected.** A blocked region or service is still requested on
+  each scan, but AWS refuses it, so no inventory or findings come from it.
 - **Not reported as empty.** An SCP can exempt other principals, and resources
   can predate the policy, so a refusal tells us nothing about what exists. The
   scope is recorded as not read, never as "nothing there".
