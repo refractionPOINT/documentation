@@ -16,7 +16,7 @@ What this article is *not*:
 
 - A reference manual. The doc tree under [Sensors](../2-sensors-deployment/index.md), [Detection & Response](../3-detection-response/index.md), [Integrations](../5-integrations/index.md), [Administration](../7-administration/index.md), and [Reference](../8-reference/index.md) is the reference manual. We link out to it everywhere.
 - A list of every feature. LimaCharlie has many features that are great for some MSSPs and irrelevant for others. When this walkthrough doesn't mention a thing, that doesn't mean it's bad — it means it's optional for the first 90 days.
-- A product-by-product deployment guide. This article is about running a service on top of the platform. <!-- TODO(mssp-deployment): link mssp-deployment/index.md "Recommended Deployment for MSSPs" here once that page exists -->
+- A product-by-product deployment guide. This article is about running a service on top of the platform. For the products one by one, see [Recommended Deployment for MSSPs](mssp-deployment/index.md).
 
 The whole article is roughly a day of focused work end-to-end. If you do it for real on a friendly first customer, you'll come out the other side with a real production MSSP environment.
 
@@ -2546,7 +2546,7 @@ You'll deviate. That's fine. The point is to have a direction.
 
 What to read next, in priority order, when you finish this article:
 
-<!-- TODO(mssp-deployment): link mssp-deployment/index.md "Recommended Deployment for MSSPs" here once that page exists -->
+Start with [Recommended Deployment for MSSPs](mssp-deployment/index.md): which products to deploy in what order, how each is configured as code, and what they do together. Then:
 
 1. **[Designing Access](../7-administration/access/designing-access.md)** — the operational details of staff/customer access at scale.
 2. **[Cases](../5-integrations/extensions/limacharlie/cases.md)** — the case lifecycle, SLA mechanics, classification, reporting.

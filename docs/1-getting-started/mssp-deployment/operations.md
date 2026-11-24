@@ -33,8 +33,8 @@ Git Sync carries detection and false-positive rules, lookups, saved queries, YAR
 | Product | Records | How to push them |
 | --- | --- | --- |
 | Email Security | `dr-mail`, `mailsec_policy` | `limacharlie sync push --config-file mail.yaml --hive-dr-mail --hive-mailsec-policy`. See [Email Security rules as code](../../email-security/custom-rules.md#infrastructure-as-code). |
-| Email Security | `mailsec_provider` | A `limacharlie hive set` loop over the files, one per tenant. |
-| Cloud Security | `cloudsec_provider`, `cloudsec_policy`, `cloudsec_query`, `cloudsec_code_rule` | A `limacharlie hive set` loop. See [Cloud Security API and IaC](../../8-reference/cloud-security-api-iac.md) and [Multi-tenant policy push](../../cloud-security/automation.md#multi-tenant-policy-push). |
+| Email Security | `mailsec_provider` | `limacharlie sync push --config-file mail.yaml --hive-mailsec-provider`, or a `limacharlie hive set` loop over the files, one per tenant. |
+| Cloud Security | `cloudsec_provider`, `cloudsec_policy`, `cloudsec_query`, `cloudsec_code_rule` | `limacharlie sync push --config-file cloudsec.yaml` with `--hive-cloudsec-provider`, `--hive-cloudsec-policy`, `--hive-cloudsec-query` and `--hive-cloudsec-code-rule` for the hives the file holds, or a `limacharlie hive set` loop. See [Cloud Security API and IaC](../../8-reference/cloud-security-api-iac.md) and [Multi-tenant policy push](../../cloud-security/automation.md#multi-tenant-policy-push). |
 | Host Posture (coming soon) | Default rules | The extension's install flow, run in your onboarding script. |
 | Cloud-managed adapters | `external_adapter` | Git Sync can carry them, but leave it off: the record holds the installation key and source credentials in plain text, because these records cannot use `hive://secret/` references. CI fills the credentials in from its own secret store and runs `limacharlie external-adapter set`. See [Cloud-managed adapters](telemetry.md#logs-adapters). |
 

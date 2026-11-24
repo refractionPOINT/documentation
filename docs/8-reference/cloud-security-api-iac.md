@@ -66,10 +66,20 @@ multi-tenant policy management a script, not a UI workflow.
 | `cloudsec_query` | one per saved query | org-shared saved graph queries (the Query Console library) |
 | `cloudsec_code_rule` | one per rule file | the Semgrep/Opengrep static-analysis rules [Code Security](../cloud-security/code-security/code-rules.md) runs. LimaCharlie's defaults are seeded here at subscription and are yours to edit, disable or delete |
 
-!!! note "`limacharlie sync` does not cover these hives"
-    The `cloudsec_*` hives are outside the set `limacharlie sync` walks, so a
-    config pull/push will not round-trip them. Manage them with explicit
-    `limacharlie hive set` / `hive get` calls — the loops below are the pattern.
+!!! note "`limacharlie sync` and Git Sync"
+    The `limacharlie sync` command pulls and pushes these hives with
+    `--hive-cloudsec-policy`, `--hive-cloudsec-provider`, `--hive-cloudsec-query`
+    and `--hive-cloudsec-code-rule`. Put the records under `hives:` in the
+    config file, each with `data:` and `usr_mtd:` (set `usr_mtd: {enabled: true}`
+    or the record is created disabled), then run
+    `limacharlie sync push --config-file cloudsec.yaml --hive-cloudsec-policy`
+    with the flags for the hives the file holds. Add `--dry-run` first. Without
+    `--force`, a push adds and updates records and never deletes. These flags
+    need a CLI release that has them (check `limacharlie sync push --help`).
+    The [Git Sync](../5-integrations/extensions/limacharlie/git-sync.md)
+    extension does not carry these hives, so a Git Sync pull does not apply
+    them. An explicit `limacharlie hive set` call per record, as in the loops
+    below, works too.
 
 ### Onboarding a tenant (recipe)
 
