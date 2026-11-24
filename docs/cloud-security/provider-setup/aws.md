@@ -371,13 +371,25 @@ policy denies:
 - EKS clusters
 - Bedrock models
 - ECR repositories
+- Lambda functions
+- RDS instances and clusters
+- Elastic Load Balancing (v2) load balancers
+- API Gateway REST, HTTP and WebSocket APIs
+- SageMaker endpoints
+- Bedrock agents, AgentCore runtimes and Q Business applications
+
+Some of these also read a related service for detail, such as the security
+groups and WAF associations of a load balancer, or the IAM role of a Lambda
+function. Such a collector skips blocked scopes only in accounts where your
+SCPs allow those detail reads wherever it uses them. Otherwise it behaves as
+before in that account.
 
 So in an account locked to `eu-north-1`, these are read in `eu-north-1`. Before,
 a refused first region could stop the whole service, and the allowed region was
 never read.
 
-Everything else behaves as before. Other collectors and checks (RDS, Lambda and
-SageMaker, for example) still try every region. A refusal there still shows as
+Everything else behaves as before. Other collectors and checks (ECS and
+Inspector findings, for example) still try every region. A refusal there still shows as
 a failed check under **Needs attention**, even when an SCP you recognize is the
 cause. Adding a permission to the role only fixes a refusal that is a real
 permission gap.
