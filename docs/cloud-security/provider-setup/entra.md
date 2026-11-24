@@ -474,7 +474,7 @@ limacharlie cloudsec provider test --input-file provider.yaml
 
 | Check | Required | Meaning if it fails |
 |---|:--:|---|
-| `microsoft_cloud` | ✅ | The tenant is in a different Microsoft cloud than the record's `microsoft_cloud` (a GCC High tenant saved as Commercial, for example). The message names the value to set. See [Microsoft US Government clouds](microsoft-government-clouds.md#what-the-connection-test-says). |
+| `microsoft_cloud` | ✅ | The tenant is in a different Microsoft cloud than the record's `microsoft_cloud` (a GCC High tenant saved as Commercial, for example). The message names the value to set. Required on a confirmed mismatch; if Microsoft's metadata cannot be read, it fails as optional and the test continues. See [Microsoft US Government clouds](microsoft-government-clouds.md#what-the-connection-test-says). |
 | `auth` | ✅ | The credential was rejected: wrong client ID, a secret that expired, or a certificate not uploaded to the app registration. |
 | `certificate` | ✅ (certificate mode) | The certificate expired or is not valid yet. Nothing can be read until it is replaced. It also warns when the expiry is near and rotation has not replaced it yet. |
 | `client_id` | — | The secret's `client_id` differs from the record's `entra_client_id`; the record's value is used. |

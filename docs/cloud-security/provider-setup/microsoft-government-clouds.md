@@ -176,7 +176,8 @@ Commercial as the value to set.
 
 Fix the field and test again. The test never changes the field for you. When
 Microsoft's metadata cannot be read or its values are not recognized, the check
-shows as a failed optional check and the test goes on to the credential checks.
+fails as optional and the test goes on to the credential checks, so only a
+confirmed mismatch blocks the connection.
 
 A GCC tenant is not told apart from a commercial one: Microsoft reports no
 separate sub-scope for it, so the test does not flag a `commercial` / `gcc`
@@ -201,10 +202,6 @@ never a pass.
 | Purview (`m365_scc`) | ✅ | ✅ | ✅ | ✅ |
 | Teams policies (`m365_teams`) | ✅ | ✅ | Not assessed | Not assessed |
 | Power BI / Fabric tenant settings (`m365_fabric`) | ✅ | Not assessed | Not assessed | Not assessed |
-
-On an `azure` connection in GCC High or DoD, Key Vault secret expiry is also not
-read, so the secret-expiry findings stay NOT_ASSESSED there. Microsoft does not
-document the Azure Government Key Vault token resource.
 
 Microsoft documents Power BI itself in every US Government cloud, but not a Teams
 admin read or a Fabric admin API that a service principal can call there, so the
