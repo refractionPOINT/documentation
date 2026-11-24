@@ -40,3 +40,6 @@ build/
 # Claude plugins - these are user-specific installations from marketplace
 .claude-plugin/
 .claude/session-memory/
+
+# IndexNow fingerprints written by scripts/indexnow.mjs
+.indexnow/
