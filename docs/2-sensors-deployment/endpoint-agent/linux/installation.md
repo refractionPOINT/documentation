@@ -18,6 +18,8 @@ The agent picks the most capable acquisition mode supported by the host kernel a
 
 The agent does **not** require eBPF, kernel headers, or `bpftool` to be installed on the target host — the eBPF programs are pre-compiled into the binary and loaded via libbpf using BTF when the kernel exposes it (`/sys/kernel/btf/vmlinux`). On kernels without BTF / CO-RE the agent automatically remains in the netlink or user-mode tier.
 
+The netlink tier needs a kernel built with `CONFIG_PROC_EVENTS`. Some kernels open the netlink connector without it, for example stock Raspberry Pi OS, whose kernel builds the connector as a module. Others ignore a sensor that runs in a PID namespace of its own. In both cases the connector accepts the subscription and then sends nothing. From endpoint agent 5.4.4, the sensor waits up to 2 seconds for the kernel to confirm the subscription. Without a confirmation, it logs a warning and uses `/proc` polling instead, so new processes are still reported. Older sensors reported no new processes on these hosts. Also from 5.4.4, a burst of process creation that overflows the connector no longer makes the sensor give up on it for the rest of its run; the events that did not fit are dropped and the connector keeps working.
+
 Use `uname -r` to check the host kernel version. If it is below 5.4, expect the agent to run in netlink (2.6.15+) or user-mode-only (anything older) tier with reduced kernel telemetry but full agent control-plane functionality.
 
 ### Forcing a lower tier
