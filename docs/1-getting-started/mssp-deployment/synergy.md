@@ -16,7 +16,7 @@ Most chains are one of these four joins plus a product.
 
 ### 1. One detection pipeline
 
-Each product in this guide writes its output into the tenant as ordinary events from a sensor or an adapter:
+The telemetry and finding sources in this guide write into the tenant as ordinary events from a sensor or an adapter:
 
 | Product | Events |
 | --- | --- |
@@ -29,11 +29,13 @@ Each product in this guide writes its output into the tenant as ordinary events 
 | Host Posture (coming soon) | `config_finding` events on its adapter |
 | Deception (coming soon) | `deception_hit` (decoys) and `deception_drop_hit` (tokens) events on its adapter |
 
-So one D&R language detects on all of it, your Outputs can carry any of it to your SIEM, and the detections your rules raise land in one Cases queue.
+So one D&R language detects on all of it, and your Outputs can carry any of it to your SIEM. In the default `all` ingestion mode, the detections your rules raise land in one Cases queue.
+
+Cases and Playbooks work differently. Cases keeps its own case records and sends case events to the organization's webhook adapter. A playbook returns its data to whatever called it, and can also raise a detection.
 
 ### 2. One IOC index
 
-Email Security indexes sender and link domains, attachment hashes and file names, IP addresses from the headers, and the mailbox address and UPN in the same indicator index the endpoint agent and adapters use. One IOC search for a domain, a hash or an IP lists the sensors that observed it, with first and last seen times: the mailboxes that received it and the endpoints whose telemetry contains it. A search for a UPN finds the mailbox and the identity adapters that saw that person. Run it with `limacharlie ioc search --info locations`, then query those sensors' events to compare times. A match shows where an indicator appeared, not that someone clicked or ran something. See [Using the CLI with frontier models](../../6-developer-guide/frontier-models.md).
+Email Security indexes sender and link domains, attachment hashes and file names, IP addresses from the headers, and the mailbox address and UPN in the same indicator index the endpoint agent and adapters use. One IOC search for a domain, a hash or an IP lists the sensors that observed it, with first and last seen times: the mailboxes that received it and the endpoints whose telemetry contains it. A search for a UPN finds the mailbox and the identity adapters that saw that person. Run it with `limacharlie ioc search --oid "$OID" --type domain --value example.com --info locations`, then query those sensors' events to compare times. A match shows where an indicator appeared, not that someone clicked or ran something. See [Using the CLI with frontier models](../../6-developer-guide/frontier-models.md).
 
 ### 3. Entities: one directory of people and machines
 
@@ -102,7 +104,7 @@ The first time the sensor sees a binary at a path, [BinLib](../../5-integrations
 
 ### Deception, endpoints and Cases (coming soon)
 
-Decoys are placed through the endpoint agent on sensors that a policy selects by tag. Read and modify alerts ride on Exfil and Integrity rules that Deception writes for you, only on hosts that hold a decoy. A live decoy hit becomes a priority-10 detection, and Cases files it under the endpoint that held the decoy, not under the Deception adapter. A policy can also isolate that endpoint, with guards against scanners and a rate limit.
+Decoys are placed through the endpoint agent on sensors that a policy selects by tag. Read and modify alerts ride on Exfil and Integrity rules that Deception writes for you, only on hosts that hold a decoy. A qualifying live decoy hit becomes a priority-10 detection. If Cases ingests it, it is a critical case under the endpoint that held the decoy, not under the Deception adapter. A policy can also isolate that endpoint if you turn isolation on, with guards against scanners and a rate limit.
 
 ### Host Posture and Cloud Security (coming soon)
 

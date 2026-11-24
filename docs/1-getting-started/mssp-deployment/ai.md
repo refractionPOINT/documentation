@@ -28,7 +28,7 @@ Let the AI change your configuration the same way your engineers do:
 
 1. The agent works on a branch of the repository that Git Sync reads, using the `limacharlie` CLI to read tenants (detections, false positives, sensor lists) and to replay rules.
 2. It opens a pull request: a new rule in `global/`, a false-positive rule in `orgs/<ACME OID>/`, a tag change on an installation key.
-3. Your CI runs the unit tests and a replay against sample data. A person reviews and merges.
+3. Your CI runs the checks you added to it, such as rule tests on sample events (see [Test before you ship](detection-response.md#test-before-you-ship)). A person reviews and merges.
 4. On its next pull, Git Sync applies the change in each tenant that includes the changed file, for the types that tenant's Git Sync settings enable.
 
 The agent never needs write access to production tenants for this. Its pull request is the change, your review is the gate, and Git is the record of who changed what. See [Run changes through pull requests](../mssp-iac-tutorial.md#step-10-run-changes-through-pull-requests).

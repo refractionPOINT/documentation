@@ -108,7 +108,7 @@ This is the order Northwind follows for a new customer such as ACME. Each step b
 
 | When | What | Why this order |
 | --- | --- | --- |
-| Week 0 | Create the organization in the right region, add it to your Organization Groups, connect Git Sync, subscribe the standard extensions, turn on the baseline rules and Cases. | The template is ready before any data arrives, so the first event already meets your rules. The walkthrough's [onboarding script](../mssp-walkthrough.md#automate-the-new-customer-onboarding) does this. |
+| Week 0 | Create the organization in the right region, add it to your Organization Groups, connect Git Sync, subscribe the standard extensions, turn on the baseline rules and Cases. | The template is ready before any data arrives, so the first event already meets your rules. Run the walkthrough's [onboarding script](../mssp-walkthrough.md#automate-the-new-customer-onboarding) on the new organization, merge the customer's `index.yaml`, then run a first Git Sync apply and check its result before you connect sources or send installation keys. |
 | Week 0 | Install the endpoint agent with role-based installation keys (servers, workstations, VIPs). Pre-deploy to machines you are not monitoring yet in sleeper mode. | Endpoints are the richest source and the base for most other products. Tags from the key target everything later. |
 | Week 0 to 1 | Connect cloud-to-cloud sources: Microsoft 365, Entra ID or Okta, Google Workspace, AWS CloudTrail. | Nothing to install at the customer. Identity and cloud audit logs are high-value and low-volume. |
 | Week 1 | Put one cloud-managed adapter on a customer server as the syslog collector for firewalls and other appliances. Filter on the devices. Add Windows Event Log collection where it is needed. | Network logs are usually the largest source. Decide the filter before you turn them on. |
@@ -142,7 +142,7 @@ Everything in Essentials, plus:
 
 Everything in Standard, plus:
 
-- Application Control, audit first, then enforcing by tag, and a D&R rule of yours that tags a host into lockdown.
+- Application Control, audit first, then enforcing by tag. For automatic containment, create the reserved lockdown policy in each organization, then add a D&R rule that tags a host into it. See [Automate lockdown with D&R](../../5-integrations/extensions/limacharlie/app-control.md#automate-lockdown-with-dr).
 - Integrity rules for the customer's regulated systems, and YARA Manager sources.
 - Host Posture and Deception when they launch.
 - Playbooks for the response steps your analysts and agents repeat.

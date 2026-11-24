@@ -10,7 +10,7 @@ Once a few customers are running, the work moves from building to keeping thousa
 
 ## Change everything through Git
 
-The repository is the source of truth. A change is a pull request: CI runs the rule tests and a replay, someone reviews, a merge rolls it out, and on its next pull Git Sync applies it in each tenant that includes the changed file. The [IaC tutorial](../mssp-iac-tutorial.md) sets this up, and the [Git Sync reference](../../5-integrations/extensions/limacharlie/git-sync.md) lists every option.
+The repository is the source of truth. A change is a pull request: CI checks it, someone reviews, a merge rolls it out, and on its next pull Git Sync applies it in each tenant that includes the changed file. The [IaC tutorial](../mssp-iac-tutorial.md) sets up the pull request flow and a structure check. Add the rule tests on sample events and, where it helps, a replay over recent history as your own CI steps; [Test before you ship](detection-response.md#test-before-you-ship) has the commands. The [Git Sync reference](../../5-integrations/extensions/limacharlie/git-sync.md) lists every option.
 
 Three habits keep it working:
 
@@ -45,7 +45,7 @@ The walkthrough's [feedback loop](../mssp-walkthrough.md#feedback-loop-on-detect
 
 ## Watch costs
 
-- Put [Usage Alerts](../../5-integrations/extensions/limacharlie/usage-alerts.md) in the shared template, on output volume. An output that sends far more than planned becomes a detection once it crosses your threshold. Usage Alerts do not watch ingestion, so also run a scheduled job over `limacharlie org stats` for each tenant to catch a firewall that starts sending everything.
+- Put [Usage Alerts](../../5-integrations/extensions/limacharlie/usage-alerts.md) in the shared template, on output volume. An output that sends far more than planned becomes a detection once it crosses your threshold. Usage Alerts do not watch ingestion, so also run a scheduled job over `limacharlie org stats` for each tenant to catch a jump in its total ingestion, then find the adapter that grew. See [Routing data out](telemetry.md#routing-data-out).
 - Keep sensors you are not monitoring in [sleeper mode](../../2-sensors-deployment/endpoint-agent/sleeper.md), and let [Sensor Cull](../../5-integrations/extensions/limacharlie/sensor-cull.md) remove the ones that are gone.
 - Prefer outputs to GCP destinations in the datacenter's region for the full copy; other destinations bill on egress. See [Output billing](../../5-integrations/outputs/billing.md).
 - Review AI spend per tenant in [cost tracking](../../9-ai-sessions/cost-tracking.md), and keep `max_budget_usd` on every agent.
@@ -58,9 +58,9 @@ The walkthrough's [cost guardrails part](../mssp-walkthrough.md#part-16-cost-gua
 Silence is the failure you do not see. Alert on it:
 
 - **Sensors and devices that stop sending.** A per-device syslog sensor stays online as long as the adapter runs. Use [Alerting on sensors that stop sending data](../../2-sensors-deployment/troubleshooting/non-responding-sensors.md).
-- **Cloud adapters that fail.** They report `cloud_adapter_error` events, and after 24 hours of continuous failure LimaCharlie disables the adapter and sends `cloud_adapter_disabled`. A D&R rule on the `deployment` target can alert on both. See [A Cloud Adapter keeps failing or was disabled](../../8-reference/faq/adapter-troubleshooting.md#a-cloud-adapter-keeps-failing-or-was-disabled).
+- **Cloud adapters that fail.** They report `cloud_adapter_error` events. After 24 hours of continuous failure LimaCharlie disables the adapter, unless its configuration was edited in the meantime, and sends `cloud_adapter_disabled` when it does. A D&R rule on the `deployment` target can alert on both. See [A Cloud Adapter keeps failing or was disabled](../../8-reference/faq/adapter-troubleshooting.md#a-cloud-adapter-keeps-failing-or-was-disabled).
 - **Git Sync runs that fail.** See [Alerting on failures](../../5-integrations/extensions/limacharlie/git-sync.md#alerting-on-failures).
-- **Outputs that drop.** An output that gives up on a record is disabled for a while, and LimaCharlie sends `output_drop` summary events. They count the drops it observed, not every lost record. See [Output delivery](../../5-integrations/outputs/delivery.md).
+- **Outputs that drop.** An output that gives up on a record is disabled until the next configuration refresh, or deleted if Delete on Failure is on. LimaCharlie sends `output_drop` summary events. They count the drops it observed, not every lost record. See [Output delivery](../../5-integrations/outputs/delivery.md).
 
 Each of these is a D&R rule you write once in `global/`.
 
@@ -79,6 +79,6 @@ Your staff get access through Organization Groups by job function. Customer user
 
 ## Onboarding and offboarding
 
-**Onboarding** is a script: create the organization in the customer's region, add it to the staff groups, store the deploy key and subscribe Git Sync, add the customer's folder with the shared includes, run the CLI pushes for the records Git Sync does not carry, and send the installation keys. Then follow the [rollout order](index.md#rollout-order-for-one-customer). See the walkthrough's [onboarding playbook](../mssp-walkthrough.md#part-18-onboarding-playbook-the-one-page-version) and the tutorial's [next customer](../mssp-iac-tutorial.md#step-12-onboard-the-next-customer) step.
+**Onboarding** is a script: create the organization in the customer's region, add it to the staff groups, store the deploy key and subscribe Git Sync. Then merge the pull request that adds the customer's folder with the shared includes, run a first Git Sync apply and check its result (see [Seeing the results](../../5-integrations/extensions/limacharlie/git-sync.md#seeing-the-results)), and run the CLI pushes for the records Git Sync does not carry. Only then connect sources and send the installation keys. Then follow the [rollout order](index.md#rollout-order-for-one-customer). See the walkthrough's [onboarding playbook](../mssp-walkthrough.md#part-18-onboarding-playbook-the-one-page-version) and the tutorial's [next customer](../mssp-iac-tutorial.md#step-12-onboard-the-next-customer) step.
 
 **Offboarding** has an order: export what you keep, make sure the archive outputs have delivered, uninstall the agents, then delete the organization. Deleting first leaves the agents installed on the customer's machines. See [Offboarding a customer organization](../../7-administration/org-lifecycle.md#offboarding-a-customer-organization).

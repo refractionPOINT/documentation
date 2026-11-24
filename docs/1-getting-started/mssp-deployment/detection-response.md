@@ -6,7 +6,7 @@ description: How an MSSP should build, tune, test and roll out detection and res
 
 Part of [Recommended Deployment for MSSPs](index.md).
 
-The products in this guide all write events into the tenant. [Detection and response (D&R) rules](../../3-detection-response/index.md) are the one engine that acts on them: EDR, adapters, mail, cloud findings, App Control, vulnerabilities. This page covers how to build that layer once and run it in every tenant.
+The telemetry and finding sources in this guide write events into the tenant. [Detection and response (D&R) rules](../../3-detection-response/index.md) are the one engine that acts on them: EDR, adapters, mail, cloud findings, App Control, vulnerabilities. This page covers how to build that layer once and run it in every tenant.
 
 ## Layer the rules
 
@@ -70,7 +70,7 @@ The walkthrough's [threat intelligence part](../mssp-walkthrough.md#part-13-thre
 
 [Cases](../../5-integrations/extensions/limacharlie/cases.md) is the queue your analysts and agents work from. It is in public beta: it can change without notice.
 
-In the default `all` ingestion mode, a rule the extension installs forwards the tenant's detections to Cases, whatever product produced them (internal categories starting with `__` are left out). In `tailored` mode, only detections a D&R rule forwards with the `ingest_detection` action become cases. Pick `tailored` when a tenant produces detections you want to keep but not triage. [Auto-grouping](../../5-integrations/extensions/limacharlie/cases.md#auto-grouping) is on by default: a detection joins an open case from the same sensor within a 24-hour sliding window instead of opening another. Set the grouping key and window in the template.
+In the default `all` ingestion mode, a rule the extension installs forwards the tenant's detections to Cases, whatever product produced them (internal categories starting with `__` are left out). In `tailored` mode, only detections a D&R rule forwards with the `ingest_detection` action become cases. Pick `tailored` when a tenant produces detections you want to keep but not triage. [Auto-grouping](../../5-integrations/extensions/limacharlie/cases.md#auto-grouping) is on by default. Detections from the same sensor within a 24-hour sliding window join one case, and a matching case that was already resolved or closed is reopened rather than a new one opened. Set the grouping key and window in the template.
 
 What feeds the queue:
 
@@ -82,7 +82,7 @@ What feeds the queue:
 | Application Control | Four managed alert rules, off by default |
 | Vulnerability Reporting | A rule you write on `vuln_finding.*` events |
 | Host Posture (coming soon) | A shipped rule that reports each finding |
-| Deception (coming soon) | A shipped rule pack. A live decoy hit is a critical case on the endpoint that held the decoy; token hits are cases with no sensor |
+| Deception (coming soon) | A shipped rule pack. A qualifying live decoy hit is priority 10, a critical case under the default severity mapping, filed on the endpoint that held the decoy; token hits are cases with no sensor |
 
 Cases has severity mapping, SLA targets, assignees, merging, notes, a dashboard and a summary report. Set the severity mapping, SLAs and `retention_days` in your onboarding script. Cases sends case events (creation, status changes, assignments, notes) to the organization's webhook adapter. Add that adapter in your template, and a D&R rule can react to a new case: start an AI agent, run a playbook, notify a channel. See [Webhook notifications](../../5-integrations/extensions/limacharlie/cases.md#webhook-notifications).
 
@@ -98,7 +98,7 @@ The [response actions](../../8-reference/response-actions.md) an MSSP uses most:
 
 | Action | What it does |
 | --- | --- |
-| `report` | Creates a detection, which Cases and Outputs pick up |
+| `report` | Creates a detection. Cases picks it up in `all` mode, and a `detect` output delivers it |
 | `isolate network` | Cuts the host off the network except for LimaCharlie |
 | `add tag`, with an optional `ttl` | Moves the host into another policy: App Control lockdown, a stricter Exfil profile, a watch list |
 | `task` | Runs a sensor command on the host: collect a file, list processes, dump memory |
@@ -108,7 +108,7 @@ The [response actions](../../8-reference/response-actions.md) an MSSP uses most:
 
 Response actions act on the sensor the event came from. For an event from a mailbox, a firewall or the Cloud Security adapter, that is not the machine you want to act on. [What the products do together](synergy.md) shows how to reach the right host.
 
-For destructive steps, put a person in the loop. The [Feedback extension](../../5-integrations/extensions/limacharlie/feedback.md) sends an approval request to chat and runs the response only on a yes. See [Human-in-the-loop response](../../5-integrations/tutorials/human-in-the-loop-response.md).
+For destructive steps, put a person in the loop. The [Feedback extension](../../5-integrations/extensions/limacharlie/feedback.md) sends an approval request to chat and forwards the answer to a playbook or another handler. The handler receives every answer, a denial and the timeout choice included, so it must check for `approved` before it takes the destructive step. See [Human-in-the-loop response](../../5-integrations/tutorials/human-in-the-loop-response.md).
 
 ## Investigation Engine (coming soon)
 

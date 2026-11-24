@@ -131,7 +131,7 @@ Output credentials go in the `secret` hive and the output refers to them as `hiv
 
 Outputs bill on egress, at cost. Outputs that use a GCP mechanism (`gcs`, `pubsub`, `bigquery`) with a destination in the same region as the LimaCharlie datacenter are not charged. The [Output billing](../../5-integrations/outputs/billing.md) page lists the region for each datacenter. Filtering in an output does not reduce what was ingested. Filtering at the source does.
 
-Set [Usage Alerts](../../5-integrations/extensions/limacharlie/usage-alerts.md) on every tenant for output volume, so a runaway output shows up as a detection once it crosses your threshold. Usage Alerts do not watch ingestion. For that, have a scheduled job read each tenant's usage with `limacharlie org stats` and flag a firewall that suddenly sends much more.
+Set [Usage Alerts](../../5-integrations/extensions/limacharlie/usage-alerts.md) on every tenant for output volume, so a runaway output shows up as a detection once it crosses your threshold. Usage Alerts do not watch ingestion. For that, have a scheduled job read each tenant's usage with `limacharlie org stats` and alert when ingestion jumps. The stats are totals per day and product for the whole organization, so they show that volume rose, not which device sent it. Then look at the event volume of the tenant's adapter sensors to find the source.
 
 ## Retention and search
 
