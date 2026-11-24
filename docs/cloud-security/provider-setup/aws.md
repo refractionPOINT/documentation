@@ -412,8 +412,10 @@ Only scopes that were actually skipped are listed. A blocked scope is not a
 failed check and does not count as an error. A refusal from a collector that
 was not skipped is a different thing. It stays under **Needs attention**
 whether the cause is a gap in the role's permissions, a policy shape Cloud
-Security does not interpret, or a recognized policy that denies a collector
-outside the list above. Only the first is fixed by adding a permission.
+Security does not interpret, a recognized policy that denies a collector
+outside the list above, or a recognized policy that denies one of a listed
+collector's detail reads (so that collector behaves as before in that account).
+Only the first is fixed by adding a permission.
 
 ### What happens to blocked scopes
 
@@ -453,15 +455,17 @@ enabled-region list falls back to `us-east-1` alone. Listing that region in
 
 `aws_regions` stays optional. Use it when you want to limit scanning on
 purpose, for example to cover only the regions you operate in. The collectors
-listed above work with a region lock without it. For the other collectors,
+listed above work with a region lock without it, as long as your SCPs allow
+their detail reads (see above). For the other collectors,
 setting `aws_regions` to the allowed regions also removes the **Needs
 attention** entries from refused regions.
 
 ### CloudTrail
 
 AWS logs each refused call as an `AccessDenied` event in the affected
-account's CloudTrail. For the collectors listed above, Cloud Security no
-longer calls denied regions and services, so these events are far fewer. Other
+account's CloudTrail. For the collectors listed above, in accounts where they
+skip blocked scopes, Cloud Security no longer calls denied regions and
+services, so these events are far fewer. Other
 checks can still produce them. Limiting `aws_regions` to the regions you use
 reduces them further.
 
