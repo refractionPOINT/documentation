@@ -1603,7 +1603,13 @@ jq -Rs '{secret: .}' ~/.ssh/gitsync/id_ed25519 \
 limacharlie --oid "$NEW_OID" extension config-set --name ext-git-sync \
   --input-file iac-repo/gitsync.yaml
 
-# 4. Invite the customer's primary contact directly on their own org
+# 4. Write the secrets that the customer's Email Security and Cloud Security
+#    connection records refer to (hive://secret/<name>), from your CI's secret
+#    store, before the first pull. One per connection, for example:
+#    your-secret-store read acme-m365 | jq -Rs '{secret: .}' \
+#      | limacharlie --oid "$NEW_OID" secret set --key acme-m365 --enabled
+
+# 5. Invite the customer's primary contact directly on their own org
 limacharlie --oid "$NEW_OID" user invite --email "$PRIMARY_CONTACT"
 limacharlie --oid "$NEW_OID" user permissions set-role \
   --email "$PRIMARY_CONTACT" --role Viewer
@@ -2489,6 +2495,7 @@ The org:
     - Adds to staff Organization Groups
     - Subscribes standard extension kit
     - Stores the Git Sync deploy key and configuration
+    - Writes the secrets the customer's connection records refer to
     - Invites customer's primary contact
   [ ] Merge the PR adding orgs/<OID>/index.yaml to the IaC repo, then run a pull
       (baseline rules, outputs, extension settings and per-tier installation keys)
