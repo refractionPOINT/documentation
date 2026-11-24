@@ -1,7 +1,5 @@
 # Microsoft US Government clouds (GCC, GCC High, DoD)
 
-<!-- DRAFT: TODO markers below are for the branch only and must be gone before merge. -->
-
 Tenants in Microsoft's US Government clouds sign in at different Microsoft
 addresses than commercial tenants, so a connection has to say which cloud its
 tenant lives in. This page covers that choice for the
@@ -12,6 +10,12 @@ Everything else in those two guides applies unchanged.
 
 Set **Microsoft cloud** on the connection (web app: **Configuration** step), or
 `microsoft_cloud` on the provider record.
+
+In the web app, **Microsoft cloud** is a select on the Azure and Entra ID
+**Configuration** step. It defaults to **Commercial**, which writes nothing to the
+record. Pick **GCC High** or **DoD** if your tenant signs in at
+`login.microsoftonline.us`. The provider list then shows the cloud next to the
+tenant, and the setup instructions and generated PowerShell follow your choice.
 
 | Value | Web app label | Use it when |
 |---|---|---|
@@ -112,7 +116,8 @@ portals:
 - **GCC High and DoD:** sign in to the
   [Azure Government portal](https://portal.azure.us) and open **Microsoft Entra
   ID**, or go to the Microsoft Entra admin center for US Government at
-  `https://entra.microsoft.us`. Use the same menus the guides describe
+  `https://entra.microsoft.us` (Microsoft lists it in the
+  [Entra FAQ](https://learn.microsoft.com/en-us/entra/fundamentals/faq)). Use the same menus the guides describe
   (**App registrations**, **API permissions**, **Certificates & secrets**).
   Azure subscriptions and the **Reader** role assignment are made in
   `https://portal.azure.us`.
@@ -151,19 +156,42 @@ group.
 
 ## What the connection test says
 
-TODO(B): exact mismatch message wording and the fields the test reads.
+Run **Test Provider** (or `limacharlie cloudsec provider test`) before saving.
+The test asks Microsoft which cloud the tenant is in and compares the answer with
+`microsoft_cloud`. When they differ, it fails and the message names the cloud the
+tenant is in and the value to set. For example, a GCC High tenant saved with no
+`microsoft_cloud` is refused with a message telling you to set Microsoft cloud to
+GCC High. Fix the field and test again. The test never changes the field for you.
 
-Run **Test Provider** (or `limacharlie cloudsec provider test`) before saving. It
-asks Microsoft which cloud the tenant is in and compares that with
-`microsoft_cloud`. When they differ, the test fails with a message that names
-the cloud the tenant is in and the value to set. Fix the field and test again.
-The test never changes the field for you.
+A GCC tenant is not told apart from a commercial one: Microsoft reports no
+separate sub-scope for it, so the test does not flag a `commercial` / `gcc`
+choice. Choosing between those two is your declaration.
+
+For GCC High and DoD, the test also requests an Exchange Online token, so a
+tenant that cannot be read there fails the test with a clear message instead of
+passing and leaving Exchange checks empty.
 
 ## Checks that are not assessed in a cloud
 
-TODO(A): list of planes/controls that Microsoft does not offer in each cloud,
-from the go-cloudsec PR.
+A check that depends on a Microsoft service LimaCharlie has no supported read
+for in the connection's cloud reports **NOT_ASSESSED** with a reason that says
+so. It is never an error and never a pass.
 
-A check that depends on a Microsoft service that is not offered in the
-connection's cloud reports **NOT_ASSESSED** with a reason that says so. It is
-never reported as an error and never as a pass.
+| Plane (`provider test` check) | Commercial | GCC | GCC High | DoD |
+|---|:--:|:--:|:--:|:--:|
+| Entra ID, Conditional Access, Intune, Microsoft 365 admin center, SharePoint sharing settings (Microsoft Graph) | ✅ | ✅ | ✅ | ✅ |
+| Exchange Online, Defender for Office 365 (`m365_exo`) | ✅ | ✅ | ✅ | ✅ |
+| Purview (`m365_scc`) | ✅ | ✅ | ✅ | ✅ |
+| Teams policies (`m365_teams`) | ✅ | ✅ | Not assessed | Not assessed |
+| Power BI / Fabric tenant settings (`m365_fabric`) | ✅ | Not assessed | Not assessed | Not assessed |
+
+Microsoft documents Power BI itself in every US Government cloud, but not a Teams
+admin read or a Fabric admin API that a service principal can call there, so the
+controls built on them stay NOT_ASSESSED until Microsoft documents one. The
+sign-in addresses for Power BI in each cloud are in Microsoft's
+[Power BI for US Government](https://learn.microsoft.com/en-us/fabric/enterprise/powerbi/service-government-us-overview)
+overview. Everything else reads in the same way as in commercial.
+
+The same `m365_exo`, `m365_scc`, `m365_teams` and `m365_fabric` checks only run on
+an Entra connection, in every cloud. See
+[Verify](entra.md#verify).
