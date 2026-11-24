@@ -116,7 +116,7 @@ flowchart LR
     S6 --> S7["7. Application Control,<br/>audit then enforce"]
 ```
 
-1. **Create the organization and the template.** Create the organization in the right region, add it to your Organization Groups, connect Git Sync, subscribe the standard extensions, turn on the baseline rules and Cases. *Why first:* the template is ready before any data arrives, so the first event already meets your rules. Run the walkthrough's [onboarding script](../mssp-walkthrough.md#automate-the-new-customer-onboarding) on the new organization, merge the customer's `index.yaml`, then run a first Git Sync apply and check its result before you connect sources or send installation keys.
+1. **Create the organization and the template.** Create the organization in the right region, add it to your Organization Groups, connect Git Sync, subscribe the standard extensions and the Soteria rulesets, turn on your baseline rules and Cases. *Why first:* the template is ready before any data arrives, so the first event already meets your rules. Run the walkthrough's [onboarding script](../mssp-walkthrough.md#automate-the-new-customer-onboarding) on the new organization, merge the customer's `index.yaml`, then run a first Git Sync apply and check its result before you connect sources or send installation keys.
 2. **Install the endpoint agent.** Use role-based installation keys (servers, workstations, VIPs). Pre-deploy to machines you are not monitoring yet in sleeper mode. *Why:* endpoints are the richest source and the base for most other products. Tags from the key target everything later.
 3. **Connect cloud-to-cloud sources.** Microsoft 365, Entra ID or Okta, Google Workspace, AWS CloudTrail. *Why:* there is nothing to install at the customer, and identity and cloud audit logs are high-value and low-volume.
 4. **Add the syslog collector and Outputs.** Put one cloud-managed adapter on a customer server as the syslog collector for firewalls and other appliances, and filter on the devices. Add Windows Event Log collection where it is needed. Then add Outputs: full event copy to a bucket, detections to the SIEM or triage tool, audit log to long-term storage, with Usage Alerts on output volume and a check on ingestion volume. Add Integrity rules and YARA Manager sources where the customer needs them. *Why:* network logs are usually the largest source, so decide the filter before you turn them on. Once real volumes arrive you can size and alert on them.
@@ -132,7 +132,7 @@ Three packages, from minimal to full. Most providers sell something close to one
 
 - Endpoint agent on every computer and server, with Exfil defaults and a few Event Collection rules.
 - Identity and Microsoft 365 or Google Workspace adapters.
-- Managed rulesets plus Northwind's own rules, with per-customer false-positive rules.
+- The Soteria rulesets plus Northwind's own rules, drafted with AI for each customer's priorities and ATT&CK techniques and tested before rollout, with per-customer false-positive rules.
 - Cases as the queue, with an AI triage agent on new cases.
 - Outputs: full copy to a bucket in the same region, detections to Northwind's SIEM.
 

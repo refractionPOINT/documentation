@@ -1,6 +1,6 @@
 # Detection and Response Examples
 
-The following are sample detection and response rules can help you get started in crafting efficient rules utilizing LimaCharlie's telemetry. In addition to these rules, we also recommend checking out [Sigma Rules](managed-rulesets/sigma-converter.md) for more rules.
+The following are sample detection and response rules can help you get started in crafting efficient rules utilizing LimaCharlie's telemetry. For broader coverage, subscribe to the managed [Soteria EDR rules](managed-rulesets/soteria/edr.md), and [have AI generate rules](tutorials/writing-testing-rules.md#using-ai-to-build-a-detection) for the behavior and ATT&CK techniques you care about.
 
 ## Translating Existing Rules
 
