@@ -12,7 +12,7 @@ It is a setting on each organization, with four values: 12 (the default), 18, 24
 | Detections | The object search that answers "where have I seen this indicator" |
 | Audit logs | Usage and summary charts, such as the event type breakdown and the traffic charts |
 
-If you need artifacts or indicator history for longer than a year, send them to an [Output](../5-integrations/outputs/index.md) as they arrive.
+To keep artifacts longer than a year, send the artifact stream to an [Output](../5-integrations/outputs/index.md) as the files arrive.
 
 ## Searching older data
 
