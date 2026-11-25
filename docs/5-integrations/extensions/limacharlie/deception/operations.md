@@ -29,7 +29,7 @@ A **rollout round** visits every sensor your enabled policies target, once, and 
 - **What a round records.** For each sensor it visits, the round keeps what it did there (offline, blocked and why, inventory started, decoys planned, nothing could be placed, or the deploy failed) and when, for 30 days. That is the **Last rollout visit** of the Hosts view and of `list_hosts`, which lists every targeted host, decoy or not (see [Host status](decoys.md#host-status)).
 - **No round runs** while the organization is not subscribed, an uninstall is in progress, or the configuration record is disabled, unreadable or invalid. An uninstall that starts during a round stops it.
 
-Progress is in `plan` (`plan.deploy.rollout`), in the answer of `deploy` (`ops.rollout`, with `ops.more` true while the round runs) and on the [Deception board](board.md#the-deception-board):
+Progress is in `rollout_status` (`deploy.rollout`, cheap enough to poll), in `plan` (`plan.deploy.rollout`), in the answer of `deploy` (`ops.rollout`, with `ops.more` true while the round runs) and on the [Deception board](board.md#the-deception-board):
 
 | Field | Meaning |
 | --- | --- |

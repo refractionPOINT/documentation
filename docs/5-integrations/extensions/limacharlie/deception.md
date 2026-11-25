@@ -115,7 +115,7 @@ Then subscribe the extensions your decoys depend on (`ext-artifact`, `ext-exfil`
 
 ## Quick start
 
-The commands below use `limacharlie deception`, in the LimaCharlie CLI from version 5.14.0 (`pip install --upgrade limacharlie`; see the [command reference](https://github.com/refractionPOINT/python-limacharlie/blob/master/doc/cli/deception.md)). With an older CLI, send the same requests with `limacharlie extension request --name ext-deception --action <action>` (see [Requests](deception/requests.md)).
+The commands below use `limacharlie deception`, in the LimaCharlie CLI from version 5.14.0 (`pip install --upgrade limacharlie`; see the [command reference](https://github.com/refractionPOINT/python-limacharlie/blob/master/doc/cli/deception.md)). With an older CLI, send the same requests with `limacharlie extension request --name ext-deception --action <action>` (see [Requests](deception/requests.md)), and write the configuration with `limacharlie extension config-set --name ext-deception --input-file deception.yaml`, which stores a new record disabled: enable it with `limacharlie hive enable --hive-name extension_config --key ext-deception` (see [Enabling the configuration record](deception/configuration.md#enabling-the-configuration-record)).
 
 1. Read the available kinds and the default library:
 

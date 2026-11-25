@@ -17,7 +17,7 @@ limacharlie extension request --name ext-deception --action <action> --data '<js
 
 Every request is idempotent and listed in the extension's request schema, so the CLI, the web app and MCP discover them. Sending a request needs the `ext.request` permission. Requests that plan, place, remove, verify or test decoys, and the token requests, are refused for an organization that is not subscribed or is being unsubscribed (`not_subscribed`).
 
-Requests that read your policies and templates (`plan`, `deploy`, `verify`, `rotate`, `remove`, `test_fire`, `coverage`, the token requests, and `list` or `list_hosts` with a policy) also refuse while the `ext-deception` configuration record is disabled (`config_disabled`). The extension never writes that record, so it never enables it for you: see [Enabling the configuration record](configuration.md#enabling-the-configuration-record). `list` and `list_hosts` without a policy, `list_hits`, `list_test_runs` and `list_readers` read the extension's own store and keep working while the record is disabled (`list_readers` then judges no reader approved and says so in `allowlist_unavailable`). `list_hits` and `list_test_runs` take `policy` as a plain filter, so they accept the name of a policy you have since removed. `uninstall` and `uninstall_status` need only a subscribed organization, so they work even when your configuration is broken.
+Requests that read your policies and templates (`plan`, `deploy`, `verify`, `rotate`, `remove`, `test_fire`, `list_test_paths`, `coverage`, the token requests including `draft_drop_document`, and `list` or `list_hosts` with a policy) also refuse while the `ext-deception` configuration record is disabled (`config_disabled`). The extension never writes that record, so it never enables it for you: see [Enabling the configuration record](configuration.md#enabling-the-configuration-record). `list` and `list_hosts` without a policy, `list_hits`, `list_test_runs` and `list_readers` read the extension's own store and keep working while the record is disabled (`list_readers` then judges no reader approved and says so in `allowlist_unavailable`). `list_hits` and `list_test_runs` take `policy` as a plain filter, so they accept the name of a policy you have since removed. `uninstall`, `uninstall_status`, `rollout_status` and `restore_rules` need only a subscribed organization, so they work even when your configuration is broken.
 
 Secret values of decoys placed on hosts never appear in any response or log: decoys are described by instance id, template, path and type. The one exception is a token, whose value is what you paste: `create_drop`, `get_drop` and `rotate_drop` return it (see [Tokens](drops.md)).
 
@@ -25,6 +25,8 @@ Secret values of decoys placed on hosts never appear in any response or log: dec
 | --- | --- |
 | [`plan`](#plan) | Read-only preview of what `deploy` would do, with rollout progress. |
 | [`deploy`](#deploy) | Converge rules and configuration entries, then start a rollout. |
+| [`rollout_status`](#rollout_status) | Read how far the rollout is, cheaply enough to poll. |
+| [`restore_rules`](#restore_rules) | Put shipped detection rules back as shipped and enabled, without a rollout. |
 | [`list`](#list) | Page through decoys, with filters and an optional summary by failure cause. |
 | [`list_hosts`](#list_hosts) | Page through every targeted sensor, with a status and its last rollout visit. |
 | [`verify`](#verify-rotate-and-remove) | Re-check that decoys are still in place. |
@@ -32,11 +34,13 @@ Secret values of decoys placed on hosts never appear in any response or log: dec
 | [`remove`](#verify-rotate-and-remove) | Remove decoys from their hosts. |
 | [`test_fire`](#test_fire) | Check the synthetic detection path of each alert, or of one token. |
 | [`list_test_runs`](#list_test_runs) | Page through recent `test_fire` runs and their outcomes. |
+| [`list_test_paths`](#list_test_paths) | Every alert path with its latest test result, or why no test proves it. |
 | [`list_hits`](#list_hits) | Page through the hits the extension recorded. |
 | [`list_readers`](#list_readers) | Who reads the decoys, and an allowlist entry to approve each. |
 | [`coverage`](#coverage) | What is active, unavailable, partial or broken, per template and layer. |
 | [`list_kinds`](#list_kinds) | Decoy kinds, their schemas, the template library and the benign-reader starter list. |
 | [`create_drop`, `list_drops`, `get_drop`, `update_drop`, `rotate_drop`, `delete_drop`](drops.md) | Tokens. |
+| [`draft_drop_document`](#draft_drop_document) | The content a document token would be generated with. |
 | [`uninstall`](operations.md#uninstalling-before-you-unsubscribe) | Remove everything the extension owns, before you unsubscribe. |
 | [`uninstall_status`](#uninstall_status) | Read where an uninstall stands, without changing anything. |
 | [`respond`](detections.md#the-respond-request) | Called by detection rules on a hit, and by the web app's Isolate host and Tag host actions. |
@@ -558,6 +562,40 @@ Per template and layer: `active`, `unavailable` with the missing piece, `partial
 - `coverage.time_to_protected_seconds`, per policy (only the requested policy's when you pass `policy`): the average time from the later of a sensor's enrollment and the policy's first recorded decoy to the sensor's first verified decoy, estimated from a bounded sample, when known.
 
 Counts are read from the registry in bounded pages. When a registry is very large, the counts are lower bounds and the item's note says so. An organization-wide `coverage` also refreshes the organization's row on the [Deception board](board.md#the-deception-board).
+
+## rollout_status
+
+Read-only and cheap enough to poll: where the organization's [rollout](operations.md#rollouts) round stands as of its last pass, read from the extension's own record with no call to the platform. It takes no parameters and answers `deploy`, the same block `plan` returns: `in_progress` (a round is under way; its passes continue on their own) and `rollout` with the round's progress (the fields in [Rollouts](operations.md#rollouts)), absent when the organization never had a round.
+
+```bash
+limacharlie deception rollout-status --oid "$OID"
+```
+
+## restore_rules
+
+Writes the current shipped version of each named shipped detection rule over your organization's record and enables it: the repair for a shipped rule that is disabled, missing, expired or edited (`coverage`'s rule issues, `plan`'s `pack`), `deception-respond` among them. It starts no rollout and places nothing; `deploy` with `apply_pack` writes the same and then deploys to the sensors. `rules` (required, at least one: `rules_required`) names the rules; an unknown name is refused (`unknown_pack_rule`). Each rule is restored on its own, and the answer has one row per rule: `name`, `restored` (the shipped version was written), `enabled` (the record reads enabled afterwards), and `error` and `code` when it was not restored or could not be read back. The CLI command exits 1 unless every rule was restored and reads enabled.
+
+```bash
+limacharlie deception restore-rules --rule deception-respond --oid "$OID"
+```
+
+## list_test_paths
+
+Read-only, paginated by template, policy and layer, then the token forms: one row per alert path of the enabled policies (and per token form in use) with its latest test result. A path `test_fire` tests is `passed`, `failed` or `untested`; an untested row says why (`test_decoy_placing`, `test_decoy_failed` with the sensor and cause, `test_not_run_yet`, or `not_tested` for a token form). A path it never tests is `not_testable` with its code: `layer_has_no_test` (a test never deletes its decoy), `path_not_testable` (the path cannot alert now; `status` says why) or `path_unavailable_in_release`. Filters: `policy`, `template`, `state` (`passed`, `failed`, `untested`, `not_testable`, or `testable` for the first three).
+
+The answer also has `counts` (the paths by state), `last_result_at`, and `proven` with `not_proven` (`nothing_testable`, `test_failing`, `results_unread`, `untested` or `results_old`). These are about the whole organization (or the policy given), whatever the `template` and `state` filters: proven when every testable path's latest test raised its detection and the newest is within 48 hours.
+
+```bash
+limacharlie deception list-test-paths --state failed --oid "$OID"
+```
+
+## draft_drop_document
+
+Read-only: the content a [document token](drops.md) would be generated with, as `create_drop` would generate it (a library template of the format, picked at random each call, filled from your organization's vocabulary). It takes `format` (`docx` or `svg`, required) and an optional `document` whose fields are checked as `create_drop` checks them and kept. The answer is `document` with `file_name`, `title`, `lines`, `link_text` and `author`. The web app fills its create form with it.
+
+```bash
+limacharlie deception drops draft-document --format docx --oid "$OID"
+```
 
 ## list_kinds
 

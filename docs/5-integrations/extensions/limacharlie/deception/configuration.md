@@ -17,7 +17,7 @@ You can also edit the record in the web app: the **Policies** tab edits policies
 
 The extension reads your configuration from the record named `ext-deception`. The platform gives an extension an empty configuration when that record is disabled.
 
-- `limacharlie deception config set` creates a new record enabled (`--disabled` creates it disabled), and keeps an existing record's enabled state unless you pass `--enabled` or `--disabled`.
+- `limacharlie deception config set` creates a new record enabled (`--disabled` creates it disabled). With a file holding only the configuration, an existing record keeps its metadata. With a whole record (a top-level `data` key, as `config get` prints it), its `usr_mtd` replaces the stored metadata. `--enabled` and `--disabled` win over both.
 - `limacharlie extension config-set`, and the generic `hive set`, create a new record disabled unless its `usr_mtd.enabled` says otherwise; an existing record keeps its metadata when the file has no `usr_mtd`.
 
 Enable a disabled record once:
