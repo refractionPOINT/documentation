@@ -133,7 +133,7 @@ drop_preview_match:
     comment: mail gateway egress
 ```
 
-An entry sets `user_agent` (a case-insensitive substring of at least 3 characters), `cidr` (at least /8 for IPv4, /16 for IPv6) or both, and every field it sets must match. At most 50 entries.
+An entry sets `user_agent` (a case-insensitive substring of at least 3 characters), `cidr` (at least /8 for IPv4, /16 for IPv6) or both, and every field it sets must match. At most 50 entries. In the web app, **Add as link preview** on a token's hit adds an entry, and **Settings** > **Link previews** lists and removes them.
 
 ## Observe mode for tokens
 

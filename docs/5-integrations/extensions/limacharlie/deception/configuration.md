@@ -9,7 +9,7 @@ limacharlie extension config-get --name ext-deception --oid "$OID"
 limacharlie extension config-set --name ext-deception --input-file deception.yaml --oid "$OID"
 ```
 
-You can also edit the record in the web app: the **Policies** tab edits policies and templates, copies templates from the Template Library, and has a raw editor for the whole record (custom domains, the reader allowlist and the isolation cap: these have no form of their own; a policy's mode and observe end are in the policy editor, and a template's settings in the template editor). Tokens made in the **Tokens** tab are not part of the record; tokens you declare under `drops` are. The extension validates a save the same way, and a save that conflicts with a newer version is refused without overwriting it.
+You can also edit the record in the web app: the **Policies** tab edits policies (a policy's mode and observe end are in the policy editor), the **Templates** tab edits templates and copies them from the Template library, and the **Settings** tab edits the reader allowlists, link previews, custom domains and the isolation cap, and copies the whole record as YAML with the CLI lines that apply it. A save from the web app keeps every field the page does not show (`schema_version`, `key_sources`, `drops`, and any field a newer release adds). Tokens made in the **Tokens** tab are not part of the record; tokens you declare under `drops` are. The extension validates a save the same way, and a save that conflicts with a newer version is refused without overwriting it.
 
 ## Enabling the configuration record
 
@@ -227,16 +227,19 @@ reader_allowlist:
 ```
 
 - `image_path` is a full absolute path with no wildcards.
-- Windows and macOS entries need the code `signer`, written the way LimaCharlie renders a certificate subject (take it from `list_readers`). Linux entries need the image's SHA-256 in `file_hash`, since Linux has no code signer.
+- Windows and macOS entries need the code `signer`, written the way LimaCharlie renders a certificate subject (take it from `list_readers`). Linux entries need the image's SHA-256 in `file_hash`, since Linux has no code signer, or `match: path`.
+- `match: path` (Linux only) approves a program by its exact path, with no hash. The program must be in a root-owned system folder (`/usr/bin`, `/usr/sbin`, `/usr/libexec`, `/usr/lib`, `/usr/lib32`, `/usr/lib64`, `/bin`, `/sbin`, `/lib`, `/lib32`, `/lib64`, or `/opt/<vendor>/…`), written in canonical form, and it must not be a shell, an interpreter or a general-purpose tool. Such an entry cannot be narrowed by `package` or `ancestry`. Linux reads name the reader by its path only, so this is the entry that approves a Linux reader.
 - A shared interpreter (Python, Node, a shell, PowerShell and similar) is only approved when you also set `user` and `ancestry`, the image paths of at least one required ancestor (the service that launches it). An ancestry entry may not itself be a shared interpreter.
 - `package` (Linux), `user` and `ancestry` narrow the match further. Every field you set must match.
 - A field missing from the observed event never matches, so unknown data fails toward alerting.
+
+In the web app, **Settings** > **Reader allowlists** lists every entry of the organization's list or of one policy's (choose it in **Allowlist**), and adds, edits and removes them, with the checks above made before the save.
 
 The organization-wide `reader_allowlist` applies to every decoy. A policy's `reader_allowlist` applies to the decoys that policy placed (see [Which policy's settings apply to a hit](#which-policys-settings-apply-to-a-hit)).
 
 An approved reader's read or modification is dropped, in either mode, and never becomes a hit. A decoy **use** is never dropped by the allowlist.
 
-**An entry can only match what the event names.** A reader is approved by its code signer or file hash, and many sensor file events carry the acting process's path and user but neither of those. Such reads cannot be approved by any entry: they keep alerting, and `list_readers` shows them with the reason (`not_approvable_reason`). A plain file-read event that names no process at all is never approvable.
+**An entry can only match what the event names.** A reader is approved by its code signer or file hash, or on Linux by a `match: path` entry, and many sensor file events carry the acting process's path and user but neither a signer nor a hash. Such reads cannot be approved by any entry: they keep alerting, and `list_readers` shows them with the reason (`not_approvable_reason`). A plain file-read event that names no process at all is never approvable.
 
 ### Every approved read is recorded
 
@@ -309,7 +312,7 @@ custom_domains:
   - domain: decoy.example.com
 ```
 
-A custom domain is a subdomain you control (at least three labels, no wildcard, no `limacharlie` in the name). It is validated and stored. **In this release no decoy uses it.** Hostnames and URLs in decoys are generated under LimaCharlie-operated decoy domains only. Do not rely on a custom domain until the release notes say it is used. The `verified` field is set only by the extension after its own ownership check, and a value you write is never trusted.
+A custom domain is a subdomain you control (at least three labels, no wildcard, no `limacharlie` in the name). It is validated and stored. **In this release no decoy uses it.** Hostnames and URLs in decoys are generated under LimaCharlie-operated decoy domains only. Do not rely on a custom domain until the release notes say it is used. The `verified` field is set only by the extension after its own ownership check, and a value you write is never trusted. The **Settings** tab of the web app lists, adds and removes custom domains, and says they are not used yet.
 
 ## AWS key sources
 
@@ -324,4 +327,4 @@ The clients verified to honor `endpoint_url` in the credentials file are botocor
 
 ## Isolation cap
 
-`isolation_cap_per_hour` bounds how many hosts the extension may isolate automatically per hour for the organization. Absent or `0` means the default, 5. The cap also applies when the extension re-tries an incident whose earlier attempt failed. If the organization's configuration cannot be read, or this field is invalid, `respond` refuses to isolate at all, because the cap would be unknown.
+`isolation_cap_per_hour` bounds how many hosts the extension may isolate automatically per hour for the organization. Absent or `0` means the default, 5. The cap also applies when the extension re-tries an incident whose earlier attempt failed. If the organization's configuration cannot be read, or this field is invalid, `respond` refuses to isolate at all, because the cap would be unknown. The value is a whole number from 0 to 1,000. The **Settings** tab of the web app shows the cap in force (and whether it is yours or the default) and sets it; **Use the default** removes the field.

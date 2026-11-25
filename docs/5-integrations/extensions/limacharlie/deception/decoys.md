@@ -43,7 +43,7 @@ Placing and verifying a decoy makes the sensor read the file itself, and the pla
 
 ## Default template library
 
-The library is built into the extension and ships with each release, so a newer release can add or improve templates. `list_kinds` returns it in its `library` field, and the **Policies** tab of the web app shows it as the **Template Library**. Adding a template copies it into your organization's configuration: the copy is yours to edit, and the library itself never changes. The library entries are starting points for your own templates. Nothing in the library is placed until you copy a template into your configuration and a policy selects it.
+The library is built into the extension and ships with each release, so a newer release can add or improve templates. `list_kinds` returns it in its `library` field, and the **Templates** tab of the web app shows it under **Add from library**. Adding a template copies it into your organization's configuration: the copy is yours to edit, and the library itself never changes. The library entries are starting points for your own templates. Nothing in the library is placed until you copy a template into your configuration and a policy selects it.
 
 | Template | Kind | Platforms | What it imitates |
 | --- | --- | --- | --- |
