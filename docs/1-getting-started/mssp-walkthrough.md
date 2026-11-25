@@ -1388,7 +1388,7 @@ Cases offers a [WebSocket endpoint](../5-integrations/extensions/limacharlie/cas
 
 ## Part 9 — Outputs: getting your data where it needs to go
 
-Telemetry retention in Insight is one year and is included free. You don't *need* a SIEM to use LimaCharlie. But your customer might already have one, or you might want to build long-term archives or a billing-grade audit trail. That's where Outputs come in.
+Telemetry retention in Insight is one year by default and is included free. [Extended retention](../7-administration/extended-retention.md) keeps it longer, for a fee. You don't *need* a SIEM to use LimaCharlie. But your customer might already have one, or you might want to build long-term archives or a billing-grade audit trail. That's where Outputs come in.
 
 ### Pick the right stream
 

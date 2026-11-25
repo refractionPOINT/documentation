@@ -44,7 +44,7 @@ For example, assume $0.15 per block of data of 1 GB (on the organizational level
 
 ## How Do I Determine How Much I Need to Pay for an Org If It Was in Usage-Based Billing Mode?
 
-If the organization you are trying to assess has [1-year telemetry retention](https://app.limacharlie.io/add-ons/detail/insight) enabled, you could use the stats API to see the number of events retained:
+If the organization you are trying to assess has [telemetry retention](https://app.limacharlie.io/add-ons/detail/insight) enabled, you could use the stats API to see the number of events retained:
 
 `https://api.limacharlie.io/v1/usage/OID`
  or
@@ -58,7 +58,7 @@ There are two categories of Sensors: sensors billed on Quota set by the user (vS
 
 ### vSensors
 
-LimaCharlie has the concept of a vSensor. A vSensor is a virtual sensor used for the purpose of setting up quota and billing of Endpoint Agents. vSensor pricing matches that listed on our pricing page, and includes a year of full telemetry storage.
+LimaCharlie has the concept of a vSensor. A vSensor is a virtual sensor used for the purpose of setting up quota and billing of Endpoint Agents. vSensor pricing matches that listed on our pricing page, and includes a year of full telemetry storage by default. Keeping data past 12 months is billed separately; see [Extended data retention](../../7-administration/extended-retention.md).
 
 Our transparent pricing and quota-based approach allows you to easily mix and match deployments, while staying within a certain price point.
 

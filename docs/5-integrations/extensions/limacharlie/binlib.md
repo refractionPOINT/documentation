@@ -194,7 +194,7 @@ Things to know when reading the result:
 
 Limits to keep in mind:
 
-- The data comes from the Insight retention of your organization (up to one year), so a host that last ran the binary before that does not appear.
+- The data comes from the Insight retention of your organization (up to one year, even if you [extend retention](../../../7-administration/extended-retention.md)), so a host that last ran the binary before that does not appear.
 - `first_seen` and `last_seen` show when the binary was **seen** on the host, not that it is still present. A binary that was removed since still appears.
 - It runs with your own permissions and requires `insight.evt.get` (or `insight.evt.get.simple`), because it reads from Insight. It uses your identity, so it cannot be run by a D&R rule.
 

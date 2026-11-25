@@ -87,7 +87,7 @@ From the Outputs page in your organization, click `Add Output` to open the setup
   - Region
 - Optionally, you can view samples of the detection stream's data (assuming recent detections have occurred)
 
-With this output in place you can extend the life of your detections beyond the 1 year LimaCharlie retains them, and stage them for any tool that can pull from S3.
+With this output in place you can extend the life of your detections beyond the 1 year LimaCharlie retains them by default, and stage them for any tool that can pull from S3.
 
 ---
 

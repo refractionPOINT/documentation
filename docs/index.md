@@ -4,7 +4,7 @@ Welcome to the official documentation for **LimaCharlie**.
 
 ## What is LimaCharlie?
 
-LimaCharlie is cloud-hosted security operations infrastructure that serves as an EDR, a SIEM, or both. Endpoint sensors, log ingestion, and detection and response (D&R) rules run on one multi-tenant system with a year of searchable telemetry. Pricing is usage-based, with a free tier. You run it from the web app, the `limacharlie` CLI, or the API, and AI agents use the same CLI and API.
+LimaCharlie is cloud-hosted security operations infrastructure that serves as an EDR, a SIEM, or both. Endpoint sensors, log ingestion, and detection and response (D&R) rules run on one multi-tenant system with a year of searchable telemetry by default. Pricing is usage-based, with a free tier. You run it from the web app, the `limacharlie` CLI, or the API, and AI agents use the same CLI and API.
 
 ## Quick Navigation
 

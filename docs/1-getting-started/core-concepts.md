@@ -41,7 +41,7 @@ Detailed explanation in the [Detection & Response section](../3-detection-respon
 
 Insight is our built-in data retention and search feature. It is enabled by default and included within our 2 sensor free tier as well.
 
-We configure everything for you so that you get access to one year of your data for visualization and searching.
+We configure everything for you so that you get access to one year of your data by default for visualization and searching. You can [extend retention](../7-administration/extended-retention.md) to 18, 24 or 36 months.
 
 You don't *have to* use the built-in data retention; you can forward data directly to your infrastructure if preferred. However, it is generally much simpler and a better experience to use Insight. If you do disable Insight, any data already collected will remain stored and searchable for the original retention period. If you prefer not to use Insight, go through the next section (Outputs).
 

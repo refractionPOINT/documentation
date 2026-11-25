@@ -59,7 +59,7 @@ This is how Northwind pre-deploys to every ACME machine during onboarding while 
 
 ### How it is billed
 
-Per endpoint per month, at a flat rate, with all the sensor's telemetry and a year of retention included. You do not estimate volume for endpoints. See [Estimating data ingestion](../../7-administration/billing/data-estimation.md).
+Per endpoint per month, at a flat rate, with all the sensor's telemetry and a year of retention included by default. You do not estimate volume for endpoints. See [Estimating data ingestion](../../7-administration/billing/data-estimation.md).
 
 ## Logs: adapters
 
@@ -108,7 +108,7 @@ The sensor is a security sensor, not a log shipper. Its outbound queue is bounde
 
 ### How it is billed
 
-Per GB that LimaCharlie receives, counted once at ingestion, with a year of retention included. A few third-party sources are billed on a plan of their own instead; the [pricing page](https://limacharlie.io/pricing) has the details. See [Estimating data ingestion](../../7-administration/billing/data-estimation.md) and the [billing FAQ](../../8-reference/faq/billing.md).
+Per GB that LimaCharlie receives, counted once at ingestion, with a year of retention included by default. A few third-party sources are billed on a plan of their own instead; the [pricing page](https://limacharlie.io/pricing) has the details. See [Estimating data ingestion](../../7-administration/billing/data-estimation.md) and the [billing FAQ](../../8-reference/faq/billing.md).
 
 ## Identity and SaaS
 
@@ -146,9 +146,9 @@ Set [Usage Alerts](../../5-integrations/extensions/limacharlie/usage-alerts.md) 
 
 ## Retention and search
 
-With Insight on, every event from sensors and adapters is kept for one year and searchable with [LCQL](../../4-data-queries/index.md) in the Query Console, the CLI and the API. Searches are billed by the number of events evaluated, and the console shows an estimate before you run one (see [Query Console](../../4-data-queries/query-console-ui.md)). Narrow searches by sensor selector and event type to keep them fast and cheap. See [Query limits and performance](../../4-data-queries/query-limits-and-performance.md).
+With Insight on, every event from sensors and adapters is kept for one year by default and searchable with [LCQL](../../4-data-queries/index.md) in the Query Console, the CLI and the API. Searches are billed by the number of events evaluated, and the console shows an estimate before you run one (see [Query Console](../../4-data-queries/query-console-ui.md)). Narrow searches by sensor selector and event type to keep them fast and cheap. See [Query limits and performance](../../4-data-queries/query-limits-and-performance.md).
 
-For anything past one year, the bucket from step 1 above is the archive. Artifacts and product data such as cases have their own retention settings.
+For anything past one year, either raise the organization's [retention](../../7-administration/extended-retention.md) to 18, 24 or 36 months, or use the bucket from step 1 above as the archive. Artifacts and product data such as cases have their own retention settings.
 
 ## In Git
 

@@ -558,6 +558,7 @@ nav:
   - Administration:
       - Overview: 7-administration/index.md
       - Organization Lifecycle: 7-administration/org-lifecycle.md
+      - Extended Data Retention: 7-administration/extended-retention.md
       - Access:
           - API Keys: 7-administration/access/api-keys.md
           - User Access: 7-administration/access/user-access.md
