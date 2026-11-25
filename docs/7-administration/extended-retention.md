@@ -12,7 +12,7 @@ It is a setting on each organization, with four values: 12 (the default), 18, 24
 | Detections | The object search that answers "where have I seen this indicator" |
 | Audit logs | Usage and summary charts, such as the event type breakdown and the traffic charts |
 
-To keep artifacts longer than a year, send the artifact stream to an [Output](../5-integrations/outputs/index.md) as the files arrive.
+To keep artifacts longer than a year, send the `log` stream, which carries artifacts, to an [Output](../5-integrations/outputs/index.md) as the files arrive.
 
 ## Searching older data
 
@@ -32,9 +32,11 @@ Extended retention needs a paid plan. It is billed per GB-month of data kept bey
 
 ## Changing the setting
 
-You need both the `org.conf.set` and `billing.ctrl` permissions to change the retention period. `org.conf.set` alone is not enough. See [Permissions](../8-reference/permissions.md).
+You need both the `org.conf.set` and `billing.ctrl` permissions to change the retention period, including to lower it. `org.conf.set` alone is not enough. See [Permissions](../8-reference/permissions.md).
 
-**Raising it** applies immediately. From that moment, data that would have expired is kept. Data that already expired before you raised the setting is gone and does not come back.
+Going above 12 months needs a paid plan. An organization whose sensors all fit in its plan's free tier is refused. Lowering to 12 months is always allowed, whatever the plan.
+
+**Raising it** applies immediately. From that moment, data that would have expired is kept. Data that already expired before you raised the setting is gone and does not come back. If the change is saved but cannot be applied right away, it applies within a day. The web app and the API both say so.
 
 **Lowering it** takes effect 7 days after you make the change. During those 7 days the web app and the API show the change as pending, with the date it applies. You can cancel it by setting the value back to the period that is still applied. Until the change applies, you are billed at the old level. When it applies, LimaCharlie deletes data older than the new period, and that deletion cannot be undone.
 
@@ -42,25 +44,43 @@ You need both the `org.conf.set` and `billing.ctrl` permissions to change the re
 
 ### Web app
 
-Open the organization, then **Organization Settings** and **Data retention**. Pick a period and save. A pending reduction appears in the same section with its date.
+Open the organization, then **Organization Settings**, **General**, and the **Data retention** card. Pick a period and confirm. A pending reduction appears on the same card with its date, with a button to cancel it. The card also shows how much data you keep beyond 12 months.
 
-### API and CLI
+### API
 
-Read the current state:
+Set the period with a POST to the organization configuration endpoint. The value is one of `"12"`, `"18"`, `"24"` or `"36"`.
+
+```text
+POST /v1/configs/{oid}/retention_months
+value=24
+```
+
+The response is the retention status described below. Any other value is rejected, and so is a value above 12 on an organization that does not meet the plan requirement.
+
+A `503` response with `"saved": true` means the value is stored but could not be applied immediately. Do not send it again. It applies within a day.
+
+Read the current state with a GET. This needs the `org.conf.get` permission.
 
 ```text
 GET /v1/orgs/{oid}/retention
 ```
 
-This needs `org.conf.get`. The response includes the period you requested, the period currently applied, a pending reduction and its date if there is one, and the amount of extended data stored.
+| Field | Meaning |
+| --- | --- |
+| `requested_months` | The period you asked for. |
+| `applied_months` | The period in force now. |
+| `pending_months` | The lower period waiting to apply, `0` if none. |
+| `pending_until` | When the pending reduction applies, in Unix seconds, `0` if none. |
+| `extended_bytes` | Bytes stored beyond 12 months. |
+| `extended_as_of` | The day (`YYYY-MM-DD`) that figure was measured, empty if it has not been measured yet. |
 
-Set the period with the organization configuration call, using the config name `retention_months` and one of `"12"`, `"18"`, `"24"` or `"36"`. With the CLI:
+### CLI
 
 ```bash
 limacharlie org config-set --name retention_months --value 24 --oid <OID>
 ```
 
-Any other value is rejected. Setting more than 12 on a free-tier organization is rejected as well.
+The command fails with the API's reason when the change is refused. `limacharlie org config-get --name retention_months` reads the value you set. To see the pending reduction and the extended data size, call the status endpoint above, for example with `limacharlie api`.
 
 ### Infrastructure as code
 
@@ -72,7 +92,9 @@ org-value:
   retention_months: "24"
 ```
 
-Turn on the organization values option when you pull or push (`--org-values` on the CLI, `sync_org_values` in Git Sync). The account or key that runs the sync needs `billing.ctrl` as well as `org.conf.set`, because a sync changes the value through the same checks as a manual change. Lowering it from Git starts the same 7-day delay.
+Quote the number. Turn on the organization values option when you pull or push (`--org-values` on the CLI, `sync_org_values` in Git Sync). The account or key that runs the sync needs `billing.ctrl` as well as `org.conf.set`, because a sync changes the value through the same checks as a manual change. A refused value shows up in the push errors and the push exits with a failure. Lowering it from Git starts the same 7-day delay.
+
+A config that does not mention `retention_months` leaves the current value alone, even with a forced push, so a template written before this setting existed cannot shorten an organization's retention. To return to the default, set it to `"12"`.
 
 ## See also
 
