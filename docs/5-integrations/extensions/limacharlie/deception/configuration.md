@@ -43,7 +43,7 @@ The CLI treats a file with a top-level `data` key as a whole hive record, `usr_m
 
 While the record is disabled:
 
-- `plan`, `deploy`, `verify`, `rotate`, `remove`, `test_fire` and `coverage` (and `list` or `list_hosts` with a `policy` filter) refuse with "the ext-deception configuration is disabled".
+- `plan`, `deploy`, `verify`, `rotate`, `remove`, `test_fire`, `list_test_paths`, `coverage` and the token requests (and `list` or `list_hosts` with a `policy` filter) refuse with "the ext-deception configuration is disabled" (the full list is in [Requests](requests.md)).
 - Hits on decoys already planted are still judged and alerted.
 - The daily run and a configuration update leave the candidate rules derived from your templates and the entries in other extensions' configurations as they are and retire no decoy (the base plumbing rules and any missing shipped detection rules are still repaired), and the daily response says why until the record is enabled. A disabled or unreadable record is never read as "you removed everything".
 - `respond` refuses to isolate, because your isolation cap is unknown. Tagging still works.

@@ -17,7 +17,7 @@ limacharlie extension request --name ext-deception --action <action> --data '<js
 
 Every request is idempotent and listed in the extension's request schema, so the CLI, the web app and MCP discover them. Sending a request needs the `ext.request` permission. Requests that plan, place, remove, verify or test decoys, and the token requests, are refused for an organization that is not subscribed or is being unsubscribed (`not_subscribed`).
 
-Requests that read your policies and templates (`plan`, `deploy`, `verify`, `rotate`, `remove`, `test_fire`, `list_test_paths`, `coverage`, the token requests including `draft_drop_document`, and `list` or `list_hosts` with a policy) also refuse while the `ext-deception` configuration record is disabled (`config_disabled`). The extension never writes that record, so it never enables it for you: see [Enabling the configuration record](configuration.md#enabling-the-configuration-record). `list` and `list_hosts` without a policy, `list_hits`, `list_test_runs` and `list_readers` read the extension's own store and keep working while the record is disabled (`list_readers` then judges no reader approved and says so in `allowlist_unavailable`). `list_hits` and `list_test_runs` take `policy` as a plain filter, so they accept the name of a policy you have since removed. `uninstall`, `uninstall_status`, `rollout_status` and `restore_rules` need only a subscribed organization, so they work even when your configuration is broken.
+Requests that read your policies and templates (`plan`, `deploy`, `verify`, `rotate`, `remove`, `test_fire`, `list_test_paths`, `coverage`, the token requests including `draft_drop_document`, and `list` or `list_hosts` with a policy) also refuse while the `ext-deception` configuration record is disabled (`config_disabled`). The extension never writes that record, so it never enables it for you: see [Enabling the configuration record](configuration.md#enabling-the-configuration-record). `list` and `list_hosts` without a policy, `list_hits`, `list_test_runs` and `list_readers` read the extension's own store and keep working while the record is disabled (`list_readers` then judges no reader approved and says so in `allowlist_unavailable`). `list_hits` and `list_test_runs` take `policy` as a plain filter, so they accept the name of a policy you have since removed. `uninstall`, `uninstall_status`, `rollout_status` and `restore_rules` need only a subscribed organization, so they work even when your configuration is broken (`restore_rules`, like `deploy`, is refused while an uninstall is in progress).
 
 Secret values of decoys placed on hosts never appear in any response or log: decoys are described by instance id, template, path and type. The one exception is a token, whose value is what you paste: `create_drop`, `get_drop` and `rotate_drop` return it (see [Tokens](drops.md)).
 
@@ -117,6 +117,8 @@ The codes, by area. A code's meaning never changes; new codes may be added.
 | `failure_cause_state` | A cause filter is given with states other than failed. |
 | `unknown_host_status` | A status filter is not protected, partial, pending, failed, skipped, no_decoy or none. |
 | `test_fire_target_conflict` | Test_fire names a policy and a drop_id; it takes one. |
+| `rules_required` | Restore_rules names no rule: it needs at least one. |
+| `unknown_pack_rule` | Restore_rules names a rule that is not a shipped detection rule (the rules of plan's `pack` or coverage's `pack_issues`). |
 | `bad_event` | An event sent by the extension's own rules lacks a field it needs. |
 | `event_too_large` | An event sent by the extension's own rules is larger than the extension accepts. |
 | `unknown_sign_in_source` | A sign-in source is not one the extension knows. |
@@ -321,6 +323,12 @@ An issue that is not a refusal still has a `code`, taken from this table, and na
 | `test_decoy_no_secret` | The test decoy has no secret of the type its test needs: not tested. |
 | `test_pipeline_unavailable` | The hit pipeline is not available to this extension: not tested. |
 | `test_decoy_placing` | Not tested yet: the test decoy is being placed (test_fire again in a few minutes). |
+| `test_decoy_ready` | Not tested yet: the test decoy is in place; the next test run tests this path. |
+| `test_decoy_failed` | Not tested yet: the last test decoy could not be placed on its sensor (sid, cause); the next test run tries the other sensors first. |
+| `test_not_run_yet` | Not tested yet: no test of this alert path has finished; the daily run or test_fire tests it. |
+| `test_result_unread` | The latest test result of this alert path could not be read this time: ask again. |
+| `test_no_candidate_sensor` | Not tested: the policy targets no sensor the extension knows yet and holds no placed decoy of the template. |
+| `layer_has_no_test` | No test proves this alert path: the template's kind has no test for its layer (a test never deletes its decoy). |
 | `test_tag_restored` | Not tested yet: the test decoy's sensor had lost the template's tag, which is back; the rules reach it within minutes. |
 | `test_rules_settling` | Not tested yet: the test decoy is new and the template's watch rules are still reaching its sensor. |
 | `test_sensor_search_continues` | Not tested yet: no sensor looked at so far can take the test decoy; test_fire again to keep looking. |
@@ -573,7 +581,7 @@ limacharlie deception rollout-status --oid "$OID"
 
 ## restore_rules
 
-Writes the current shipped version of each named shipped detection rule over your organization's record and enables it: the repair for a shipped rule that is disabled, missing, expired or edited (`coverage`'s rule issues, `plan`'s `pack`), `deception-respond` among them. It starts no rollout and places nothing; `deploy` with `apply_pack` writes the same and then deploys to the sensors. `rules` (required, at least one: `rules_required`) names the rules; an unknown name is refused (`unknown_pack_rule`). Each rule is restored on its own, and the answer has one row per rule: `name`, `restored` (the shipped version was written), `enabled` (the record reads enabled afterwards), and `error` and `code` when it was not restored or could not be read back. The CLI command exits 1 unless every rule was restored and reads enabled.
+Writes the current shipped version of each named shipped detection rule over your organization's record and enables it: the repair for a shipped rule that is disabled, missing, expired or edited (`coverage`'s rule issues, `plan`'s `pack`), `deception-respond` among them. It starts no rollout and places nothing; `deploy` with `apply_pack` writes the same and then deploys to the sensors. `rules` (required, at least one: `rules_required`) names the rules; an unknown name is refused (`unknown_pack_rule`), and the request is refused while an uninstall is in progress (`uninstalling`). Each rule is restored on its own, and the answer has one row per rule: `name`, `restored` (the shipped version was written), `enabled` (the record reads enabled afterwards), and `error` and `code` when it was not restored or could not be read back. The CLI command exits 1 unless every rule was restored and reads enabled.
 
 ```bash
 limacharlie deception restore-rules --rule deception-respond --oid "$OID"
