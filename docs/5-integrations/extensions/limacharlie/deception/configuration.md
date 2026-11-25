@@ -9,7 +9,7 @@ limacharlie extension config-get --name ext-deception --oid "$OID"
 limacharlie extension config-set --name ext-deception --input-file deception.yaml --oid "$OID"
 ```
 
-You can also edit the record in the web app: the **Policies** tab edits policies (a policy's mode and observe end are in the policy editor), the **Templates** tab edits templates and copies them from the Template library, and the **Settings** tab edits the reader allowlists, link previews, custom domains and the isolation cap, and copies the whole record as YAML with the CLI lines that apply it. A save from the web app keeps every field the page does not show (`schema_version`, `key_sources`, `drops`, and any field a newer release adds). Tokens made in the **Tokens** tab are not part of the record; tokens you declare under `drops` are. The extension validates a save the same way, and a save that conflicts with a newer version is refused without overwriting it.
+You can also edit the record in the web app: the **Policies** tab edits policies (a policy's mode and observe end are in the policy editor), the **Templates** tab edits templates and copies them from the Template library, and the **Settings** tab edits the reader allowlists, link previews and the isolation cap, and copies the whole record as YAML with the CLI lines that apply it. A save from the web app keeps every field the page does not show (`schema_version`, `key_sources`, `drops`, `custom_domains`, and any field a newer release adds). Tokens made in the **Tokens** tab are not part of the record; tokens you declare under `drops` are. The extension validates a save the same way, and a save that conflicts with a newer version is refused without overwriting it.
 
 ## Enabling the configuration record
 
@@ -313,7 +313,7 @@ custom_domains:
   - domain: decoy.example.com
 ```
 
-A custom domain is a subdomain you control (at least three labels, no wildcard, no `limacharlie` in the name). It is validated and stored. **In this release no decoy uses it.** Hostnames and URLs in decoys are generated under LimaCharlie-operated decoy domains only. Do not rely on a custom domain until the release notes say it is used. The `verified` field is set only by the extension after its own ownership check, and a value you write is never trusted. The **Settings** tab of the web app lists, adds and removes custom domains, and says they are not used yet.
+A custom domain is a subdomain you control (at least three labels, no wildcard, no `limacharlie` in the name). It is validated and stored. **In this release no decoy uses it.** Hostnames and URLs in decoys are generated under LimaCharlie-operated decoy domains only. Do not rely on a custom domain until the release notes say it is used. The `verified` field is set only by the extension after its own ownership check, and a value you write is never trusted. The web app does not show custom domains while no decoy uses them: set them in your configuration as code, and a save from the web app keeps them as they are.
 
 ## AWS key sources
 
