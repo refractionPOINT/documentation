@@ -373,7 +373,7 @@ limacharlie hive delete --hive-name <hive> --key <record> --confirm --oid <OID>
 limacharlie output delete --name <output> --confirm --oid <OID>
 ```
 
-To make an organization match its files exactly, run `limacharlie sync push --force` with the same `index.yaml` and the same types. Force deletes every record of those types that is not in the files, including records created in the web app, so run it with `--dry-run` first. See [the tutorial](../../../1-getting-started/mssp-iac-tutorial.md#step-11-delete-things).
+To make an organization match its files exactly, run `limacharlie sync push --force` with the same `index.yaml` and the same types. Force deletes every record of those types that is not in the files, including records created in the web app, so run it with `--dry-run` first. A hive with no records in the files is left alone, even with `--force`. So when you remove the last record of a hive from the files, `--force` does not delete it from the organization; delete it with `limacharlie hive delete`. See [the tutorial](../../../1-getting-started/mssp-iac-tutorial.md#step-11-delete-things).
 
 ## Email Security, Cloud Security and Host Posture
 

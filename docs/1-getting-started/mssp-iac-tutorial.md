@@ -600,7 +600,7 @@ Git Sync adds and updates. It does not delete, so removing a rule from a file le
    limacharlie output delete --name northwind-archive-scp --confirm --oid "$ACME_OID"
    ```
 
-To make an org match its files exactly, push with `--force`. It deletes every record of the selected types that is not in the files, including records someone created in the web app. Always run it with `--dry-run` first, name only the types you manage as code (never `--hive-secret`), and give it the same `index.yaml` the extension reads:
+To make an org match its files exactly, push with `--force`. It deletes every record of the selected types that is not in the files, including records someone created in the web app. The exception is a hive with no records in the files: `push` leaves it alone, even with `--force`. So when you remove the last record of a hive from the files, `--force` does not delete it from the organization; delete it with `limacharlie hive delete`. Always run it with `--dry-run` first, name only the types you manage as code (never `--hive-secret`), and give it the same `index.yaml` the extension reads:
 
 ```bash
 limacharlie sync push --config-file orgs/$ACME_OID/index.yaml \
@@ -686,7 +686,7 @@ limacharlie sync push --config-file orgs/$ACME_OID/index.yaml --oid "$ACME_OID" 
   --hive-dr-general --hive-fp --hive-query --hive-extension-config --dry-run
 ```
 
-To keep the files readable by Git Sync, name the types with `--hive-*` flags. Avoid `--all`, which includes the `secret` and `acl` hives, and the legacy `--integrity`, `--exfil`, `--artifact` and `--yara` flags, which write the top-level sections Git Sync ignores. Use `--hive-extension-config` and `--hive-yara` instead.
+To keep the files readable by Git Sync, name the types with `--hive-*` flags. Avoid `--all` and `--all-available` (the lenient form, which skips hives the key cannot read): both include the `secret` and `acl` hives. Also avoid the legacy `--integrity`, `--exfil`, `--artifact` and `--yara` flags, which write the top-level sections Git Sync ignores. Use `--hive-extension-config` and `--hive-yara` instead.
 
 The CLI differs from Git Sync in two ways. It expands wildcards in `include:`, and when two files define the same record it picks one of them in no fixed order. Keep record names unique and do not use wildcards, and the two tools give the same result.
 
