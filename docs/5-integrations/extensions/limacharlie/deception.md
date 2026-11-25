@@ -115,10 +115,12 @@ Then subscribe the extensions your decoys depend on (`ext-artifact`, `ext-exfil`
 
 ## Quick start
 
+The commands below use `limacharlie deception`, in the LimaCharlie CLI from version 5.14.0 (`pip install --upgrade limacharlie`; see the [command reference](https://github.com/refractionPOINT/python-limacharlie/blob/master/doc/cli/deception.md)). With an older CLI, send the same requests with `limacharlie extension request --name ext-deception --action <action>` (see [Requests](deception/requests.md)), and write the configuration with `limacharlie extension config-set --name ext-deception --input-file deception.yaml`, which stores a new record disabled: enable it with `limacharlie hive enable --hive-name extension_config --key ext-deception` (see [Enabling the configuration record](deception/configuration.md#enabling-the-configuration-record)).
+
 1. Read the available kinds and the default library:
 
     ```bash
-    limacharlie extension request --name ext-deception --action list_kinds --oid "$OID"
+    limacharlie deception kinds --oid "$OID"
     ```
 
 2. Copy the templates you want from the `library` array in the answer into the `templates` list of your `ext-deception` extension configuration, and add a policy that selects them. A minimal configuration:
@@ -152,33 +154,34 @@ Then subscribe the extensions your decoys depend on (`ext-artifact`, `ext-exfil`
     `spec: {}` above is a placeholder: copy the full `spec` of the library entry. See [Configuration](deception/configuration.md). In the web app, **Templates** > **Add from library** does the copy for you.
 
     ```bash
-    limacharlie extension config-set --name ext-deception --input-file deception.yaml --oid "$OID"
+    limacharlie deception config set --input-file deception.yaml --oid "$OID"
     ```
 
-    A record saved this way is disabled until you enable it, and requests that read your policies refuse with "the ext-deception configuration is disabled" meanwhile. Enable it once:
+    A new record saved this way is created enabled. A record first saved with `limacharlie extension config-set` is disabled until you enable it, and requests that read your policies refuse with "the ext-deception configuration is disabled" meanwhile. Enable it once (see [Enabling the configuration record](deception/configuration.md#enabling-the-configuration-record)):
 
     ```bash
-    limacharlie hive enable --hive-name extension_config --key ext-deception --oid "$OID"
+    limacharlie deception config enable --oid "$OID"
     ```
 
-3. See what `deploy` would do, then do it. The rollout continues on its own after `deploy` returns; follow it with `plan` (`plan.deploy.rollout`):
+3. See what `deploy` would do, then do it. The rollout continues on its own after `deploy` returns; follow it with `rollout-status` (or `plan`, under `plan.deploy.rollout`):
 
     ```bash
-    limacharlie extension request --name ext-deception --action plan --oid "$OID"
-    limacharlie extension request --name ext-deception --action deploy --oid "$OID"
+    limacharlie deception plan --oid "$OID"
+    limacharlie deception deploy --oid "$OID"
+    limacharlie deception rollout-status --oid "$OID"
     ```
 
 4. Check what is covered, and check the synthetic detection path (`test_fire` does not prove your real-alert rules, cases or isolation, and a run with no detection is final about an hour after it starts; see [Test-fire](deception/detections.md#test-fire)):
 
     ```bash
-    limacharlie extension request --name ext-deception --action coverage --oid "$OID"
-    limacharlie extension request --name ext-deception --action test_fire --oid "$OID"
+    limacharlie deception coverage --oid "$OID"
+    limacharlie deception test-fire --oid "$OID"
     ```
 
 5. While the policy observes, list who reads the decoys and copy the benign readers into `reader_allowlist`, then set `mode: live` (or let `observe_until` pass):
 
     ```bash
-    limacharlie extension request --name ext-deception --action list_readers --oid "$OID"
+    limacharlie deception list-readers --oid "$OID"
     ```
 
-Before you unsubscribe, run [`uninstall`](deception/operations.md#uninstalling-before-you-unsubscribe), then check it with `uninstall_status` until it reports `safe_to_unsubscribe`.
+Before you unsubscribe, run [`uninstall`](deception/operations.md#uninstalling-before-you-unsubscribe), then check it with `limacharlie deception uninstall-status` until it reports `safe_to_unsubscribe`.

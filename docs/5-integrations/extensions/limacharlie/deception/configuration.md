@@ -5,17 +5,26 @@ Everything you can change lives in one record: the `ext-deception` record in the
 Everything that decides what alerts is in this record: policies, templates, observe mode, approved readers and declared tokens. The extension keeps no learned state that changes what alerts. Only the generated decoy instances and their secrets are kept out of the record. They live in the extension's own store, and no request returns a secret value of a decoy placed on a host.
 
 ```bash
-limacharlie extension config-get --name ext-deception --oid "$OID"
-limacharlie extension config-set --name ext-deception --input-file deception.yaml --oid "$OID"
+limacharlie deception config get --output yaml --oid "$OID" > ext-deception.yaml
+limacharlie deception config set --input-file ext-deception.yaml --oid "$OID"
 ```
+
+`config get` prints the whole record: the configuration under `data`, its metadata and its etag. Edit `data` and give the file back to `config set`: the etag makes the save a compare-and-set, refused without overwriting anything if someone saved the record since you read it. `config set` also takes a file holding only the configuration (`schema_version`, `policies`, `templates`, ...). These commands are in the LimaCharlie CLI from version 5.14.0; with an older CLI, use `limacharlie extension config-get --name ext-deception` and `limacharlie extension config-set --name ext-deception --input-file <file>`.
 
 You can also edit the record in the web app: the **Policies** tab edits policies (a policy's mode and observe end are in the policy editor), the **Templates** tab edits templates and copies them from the Template library, and the **Settings** tab edits the reader allowlists, link previews and the isolation cap, and copies the whole record as YAML with the CLI lines that apply it. A save from the web app keeps every field the page does not show (`schema_version`, `key_sources`, `drops`, `custom_domains`, and any field a newer release adds). Tokens made in the **Tokens** tab are not part of the record; tokens you declare under `drops` are. The extension validates a save the same way, and a save that conflicts with a newer version is refused without overwriting it.
 
 ## Enabling the configuration record
 
-The extension reads your configuration from the record named `ext-deception`. The platform gives an extension an empty configuration when that record is disabled, and a record saved with `limacharlie extension config-set` is disabled unless its `usr_mtd.enabled` says otherwise (the CLI's normal behavior for a new record). Enable it once after the first `config-set`:
+The extension reads your configuration from the record named `ext-deception`. The platform gives an extension an empty configuration when that record is disabled.
+
+- `limacharlie deception config set` creates a new record enabled (`--disabled` creates it disabled). With a file holding only the configuration, an existing record keeps its metadata. With a whole record (a top-level `data` key, as `config get` prints it), its `usr_mtd` replaces the stored metadata. `--enabled` and `--disabled` win over both.
+- `limacharlie extension config-set`, and the generic `hive set`, create a new record disabled unless its `usr_mtd.enabled` says otherwise; an existing record keeps its metadata when the file has no `usr_mtd`.
+
+Enable a disabled record once:
 
 ```bash
+limacharlie deception config enable --oid "$OID"
+# or, with any CLI version:
 limacharlie hive enable --hive-name extension_config --key ext-deception --oid "$OID"
 ```
 
