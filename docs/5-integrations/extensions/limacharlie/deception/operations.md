@@ -102,7 +102,7 @@ Plumbing rules contain no secret, token or per-host or per-decoy value. They do 
 Unsubscribing is best-effort cleanup only. The platform deletes the subscription, and every credential the extension holds for your organization, right after the unsubscribe event, whether or not each cleanup step worked, and never retries. Sensors that are offline cannot be reached inside that event. **Run `uninstall` first**, wait for `safe_to_unsubscribe`, then unsubscribe.
 
 ```bash
-limacharlie extension request --name ext-deception --action uninstall --oid "$OID"
+limacharlie deception uninstall --confirm --oid "$OID"
 ```
 
 1. **The first call starts it.** From that moment nothing new is placed or reinstalled: `deploy`, `rotate` and `test_fire` are refused with a clear message, a new sensor's first connection places nothing, and configuration updates and the daily run do not reconcile. Detection keeps working for decoys still in place.
@@ -163,7 +163,8 @@ A new release of the extension takes effect for every subscribed organization at
 - **It never replaces a detection rule it installed earlier.** Rules in `dr-general` are yours once installed. A shipped rule that is missing (for example a rule new in this release) is installed automatically, but an existing one stays as it is, whether you edited it or it is simply the older shipped version. `plan` lists each shipped rule as `missing`, `current` or `modified`, with the current shipped copy, and `coverage` reads an older or edited rule as `unverified (rule edited: <rule>)`. Review the difference, then apply the shipped version when you choose:
 
     ```bash
-    limacharlie extension request --name ext-deception --action deploy       --data '{"apply_pack":["deception-alert","deception-alert-sanctioned-agent","deception-respond"]}' --oid "$OID"
+    limacharlie deception deploy --apply-pack deception-alert --apply-pack deception-alert-sanctioned-agent \
+      --apply-pack deception-respond --oid "$OID"
     ```
 
     Some behavior depends on the current rules. Observe mode, for example, needs the current `deception-alert`, `deception-alert-sanctioned-agent` and `deception-respond`, which leave observe-mode hits out: with older copies, an observe-mode read alerts at priority 10, and `plan` warns about it while a policy observes.

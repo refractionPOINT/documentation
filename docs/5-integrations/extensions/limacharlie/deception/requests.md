@@ -1,6 +1,15 @@
 # Deception: Requests
 
-You drive Deception with extension requests, from the CLI, the API, MCP or a D&R rule. The CLI form is:
+You drive Deception with extension requests, from the CLI, the API, MCP or a D&R rule. From version 5.14.0, the LimaCharlie CLI has a command for each request, with a flag for each field (`limacharlie deception <command> --ai-help` lists them; see the [command reference](https://github.com/refractionPOINT/python-limacharlie/blob/master/doc/cli/deception.md)):
+
+| Request | CLI command |
+| --- | --- |
+| `plan`, `deploy`, `coverage`, `verify`, `rotate`, `remove`, `uninstall` | `limacharlie deception plan`, `deploy`, ... (`remove` and `uninstall` need `--confirm`) |
+| `list`, `list_hosts`, `list_hits`, `list_readers`, `list_test_runs`, `list_test_paths` | `limacharlie deception list`, `list-hosts`, `list-hits`, `list-readers`, `list-test-runs`, `list-test-paths` |
+| `test_fire`, `rollout_status`, `restore_rules`, `uninstall_status`, `list_kinds` | `limacharlie deception test-fire`, `rollout-status`, `restore-rules`, `uninstall-status`, `kinds` |
+| `create_drop`, `list_drops`, `get_drop`, `update_drop`, `rotate_drop`, `delete_drop`, `draft_drop_document` | `limacharlie deception drops create`, `list`, `get`, `update`, `rotate`, `delete` (needs `--confirm`), `draft-document` |
+
+Any CLI version can send a request with its fields as JSON:
 
 ```bash
 limacharlie extension request --name ext-deception --action <action> --data '<json>' --oid "$OID"
@@ -341,8 +350,7 @@ It also reports:
 - `warnings` (a list of strings) and `warning_details` (the same warnings in the same order, each an issue whose `reason` is the text, with its `code` and subject fields, for example `config_problem` with the `field`): configuration records skipped on read, rule signals skipped as unsafe, policies that observe and until when, a passed `observe_until`, shipped observe rules that are missing or not current, Lookups that approve nothing, and a warning for each policy that sets `dc_logon_collection` (ignored in this release).
 
 ```bash
-limacharlie extension request --name ext-deception --action plan \
-  --data '{"policy":"linux-servers"}' --oid "$OID"
+limacharlie deception plan --policy linux-servers --oid "$OID"
 ```
 
 ```json
@@ -386,9 +394,8 @@ applies your declared tokens (`drops`) again, then starts the organization's [ro
 | `apply_all_pack` | Overwrite every shipped rule. Replaces your edits. |
 
 ```bash
-limacharlie extension request --name ext-deception --action deploy --oid "$OID"
-limacharlie extension request --name ext-deception --action deploy \
-  --data '{"apply_pack":["deception-alert"]}' --oid "$OID"
+limacharlie deception deploy --oid "$OID"
+limacharlie deception deploy --apply-pack deception-alert --oid "$OID"
 ```
 
 The response has `ops` (`started`, `skipped`, `operations` ids, `issues`, `rollout` with the round's progress, and `more`, true while the round is not finished), `plumbing_written`, `pack_installed`, `pack_applied`, `others_updated`, `not_subscribed`, `drops` and `warnings`. Placement is asynchronous: sensors reply later, and a decoy counts only after its hash is verified. Use `plan`, `list` and `coverage` to follow it. Every sensor a deploy reaches also gets the missing [template tags](decoys.md#per-host-watch-rules) of the decoys it already holds.
@@ -469,8 +476,7 @@ The decoys a scoped call acts on are exactly the ones `list` with the same `sid`
 - **`remove`** removes the decoys from their hosts after checking that each file is still the one the extension placed. A file the extension cannot prove is its own is left in place and the instance is retired; it never counts as removed. A removal for an offline sensor is queued and runs when it connects. While a policy still selects the template, the next rollout round plants a replacement: that is the next configuration change, change of sources or weekly recheck, so run `deploy` (or `deploy` with the `sid`) if you want it back now. For a full cleanup before unsubscribing, use [`uninstall`](operations.md#uninstalling-before-you-unsubscribe).
 
 ```bash
-limacharlie extension request --name ext-deception --action rotate \
-  --data '{"template":"kubeconfig-backup"}' --oid "$OID"
+limacharlie deception rotate --template kubeconfig-backup --oid "$OID"
 ```
 
 ## test_fire
@@ -478,8 +484,7 @@ limacharlie extension request --name ext-deception --action rotate \
 Fires the test-only decoys of a policy, one run per alert path (for example read, modify and use of a credential file are separate runs), to check that each path reaches a detection. Deletion is not exercised: there is no delete run. The detection is the synthetic `deception-test` rule: a passing test does not prove that the real-alert rules, cases or isolation work. See [Test-fire](detections.md#test-fire) for what a test does and does not do.
 
 ```bash
-limacharlie extension request --name ext-deception --action test_fire \
-  --data '{"policy":"linux-servers"}' --oid "$OID"
+limacharlie deception test-fire --policy linux-servers --oid "$OID"
 ```
 
 `test_fire` takes an optional `policy`, or a `drop_id` to fire one token instead (not both: `test_fire_target_conflict`). The extension picks the test decoys and their sensors. The response lists the started `runs` (run id, policy, template, layer, deadline; never a token or planted name), `issues` (each "not tested" outcome has a `code` from the [note table](#codes-notes-of-plan-deploy-test_fire-and-the-daily-run), and `policy`, `template` and `layer`, plus the test decoy's `sid`, `hostname` and `instance_id` when it is about one), and a `pack_check` object with the result of the [rule integrity](decoys.md#rule-integrity) check. A call starts at most 20 runs. A large configuration is covered by repeated calls, and the daily run walks it over time. Only alert paths whose requirements you meet are tested, since testing a path that cannot work would only report it broken. Paths that are not available in this release (fake AD accounts, internal-domain hostnames) are not tested: `issues` names at most 10 of those policy and template pairs and says how many more there are, and `coverage` lists every one. Refused while an uninstall is in progress.
@@ -516,8 +521,7 @@ Read-only, paginated, newest first: the hits the extension recorded, as they wer
 A row is the [`deception_hit` event](detections.md#the-deception_hit-event) (or the [token hit](drops.md#what-a-hit-looks-like)): `hit_id`, `event_type`, `time`, `decoy_id`, `kind`, `template`, `policy`, `layer`, `sid`, `hostname`, `on_host`, `classification`, `mode`, `platform`, `reader_key`, `synthetic`, `case_group_key`, `source_ip`, `user_agent`, `process` and `details`, plus `drop_id` and `label` on token hits. Approved reads are not hits and are not listed: they are [`deception_read_allowed`](configuration.md#every-approved-read-is-recorded) events in your telemetry.
 
 ```bash
-limacharlie extension request --name ext-deception --action list_hits \
-  --data '{"layer":"read","mode":"observe","page_size":50}' --oid "$OID"
+limacharlie deception list-hits --layer read --mode observe --page-size 50 --oid "$OID"
 ```
 
 ## list_readers

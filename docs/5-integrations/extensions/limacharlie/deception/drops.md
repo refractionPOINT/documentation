@@ -27,9 +27,8 @@ Excel and PDF documents are not offered in this release (`format_unavailable`). 
 From the web app: **Deception** > **Tokens** > **Create token**. From the CLI:
 
 ```bash
-limacharlie extension request --name ext-deception --action create_drop \
-  --data '{"form":"url","label":"finance wiki: payroll page","memo":"pasted in the payroll space"}' \
-  --oid "$OID"
+limacharlie deception drops create --form url --label "finance wiki: payroll page" \
+  --memo "pasted in the payroll space" --oid "$OID"
 ```
 
 The answer holds the token (`drop`) and what to put where it goes (`paste`): `url` for the url and qr forms, `qr_svg` for a QR code, `hostname`, or `document` (`filename`, `content_type`, `content_b64`, `sha256`). These three requests (`create_drop`, `get_drop`, `rotate_drop`) are the only ones that return a secret value, because the value is what you paste. `list_drops` never returns it.
@@ -79,8 +78,7 @@ drops:
 - Read a declared token's link, host name, QR code or document with `get_drop` and its `name`:
 
     ```bash
-    limacharlie extension request --name ext-deception --action get_drop \
-      --data '{"name":"finance-wiki-payroll"}' --oid "$OID"
+    limacharlie deception drops get --name finance-wiki-payroll --oid "$OID"
     ```
 
 - `plan` shows what the next sync would create, restore, update and delete (`drops.pending`), whether the list is applied (`drops.sync`: `applied`, `pending`, `running` or `blocked`), and how many pending creates would not fit under the [limit](#limits) (`drops.cap`). `deploy` and the daily run apply the list again and report what they did (`drops`: `created`, `restored`, `updated`, `deleted`, `blocked`).
