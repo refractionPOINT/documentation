@@ -17,7 +17,7 @@ Release notes for the EDR sensor installed on Windows, macOS, Linux and Chrome e
 - Linux application control: containers started by Docker, podman, containerd or CRI-O run from their images without being blocked; files written inside a container at runtime, and rootless containers, are still checked against the policy.
 - Linux application control: enforcement also covers processes running in private mount namespaces, such as sandboxed services and containers using host volumes.
 - Linux application control: the system's init process is never blocked, and an execution is allowed if a verdict cannot be reached within 1.5 seconds, so a policy cannot hang or freeze a host.
-- Linux application control: an enforcing policy that trusts the OS vendor is held in permissive mode on a host where no package information is available, instead of blocking the operating system's own binaries.
+- Linux application control: an enforcing policy that trusts the OS vendor is held in Rehearsal mode (`permissive_sync`) on a host where no package information is available, instead of blocking the operating system's own binaries.
 - Application control status now reports whether a Linux host can enforce a policy: kernel support, privileges, filesystems covered and kernel release.
 - `FILE_CREATE`, `FILE_DELETE`, `FILE_MODIFIED` and `FILE_READ` events now include the process that acted on the file as `PARENT` (path, command line, user, process IDs and container), so a D&R rule can match on fields such as `event/PARENT/FILE_PATH` without a lookup.
 

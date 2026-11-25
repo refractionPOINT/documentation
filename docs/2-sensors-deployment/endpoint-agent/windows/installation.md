@@ -319,9 +319,17 @@ if ($null -eq $service) {
 
 ### Architecture Mismatch Error
 
-**Cause:** Using a 32-bit installer on a 64-bit system (or vice versa).
+**Cause:** Using an installer built for another CPU architecture: the 32-bit (x86) sensor on 64-bit Windows, or the x64 sensor on a Windows on Arm PC. The sensor does not run under emulation.
 
-**Solution:** Download and use the correct installer for your system architecture. The sensor will display an error message indicating the mismatch.
+**What you see:** From endpoint agent 5.4.4, the installer refuses before it changes anything:
+
+- The `.exe` prints `Installation Failure`, the host's `CPU Architecture`, the `Build Architecture` of the file you ran, and the build to use instead.
+- The x86 MSI on 64-bit Windows fails with `This is the 32-bit LimaCharlie installer, and this is 64-bit Windows.`
+- The x64 MSI on a Windows on Arm PC fails with `This is the x64 LimaCharlie installer, and this is an Arm PC. Use the arm64 installer for this machine.`
+
+Older installers failed partway through instead. The MSI reported a generic error 1920, saying the service failed to start and asking you to check your privileges, and rolled back.
+
+**Solution:** Download the installer for the host's architecture from the tables above: x64 for 64-bit Intel and AMD, ARM64 for Windows on Arm, x86 only for 32-bit Windows.
 
 ### Antivirus Blocking Installation
 

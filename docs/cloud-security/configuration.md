@@ -44,7 +44,7 @@ Per-provider scope fields:
 | `provider_type` | Fields |
 |---|---|
 | `gcp` | `gcp_scope`: `projects/{id}`, `folders/{id}`, or `organizations/{id}` (optional `gcp_project`) |
-| `aws` | `aws_role_arn` (the read-only role to assume), `aws_external_id`, optional `aws_regions`, optional `aws_member_role_name` — the role *name* assumed in each member account of an AWS Organization (defaults to the name in `aws_role_arn`) |
+| `aws` | `aws_role_arn` (the read-only role to assume), `aws_external_id`, optional `aws_regions` (limits scanning on purpose; with SCP region locks, the core inventory collectors work without it), optional `aws_member_role_name` — the role *name* assumed in each member account of an AWS Organization (defaults to the name in `aws_role_arn`) |
 | `azure` | `azure_tenant_id`, `azure_client_id`, `azure_subscription_id` (service-principal auth); optional `microsoft_cloud` — `commercial` (the default, same as empty), `gcc`, `gcc_high` or `dod`, see [Microsoft US Government clouds](provider-setup/microsoft-government-clouds.md) |
 | `okta` | `okta_org_url` — the org base URL; the credential is an SSWS API token or an API Services app (client credentials) |
 | `entra` | `entra_tenant_id`, `entra_client_id` — a standalone Entra directory connection (no Azure subscription); service-principal auth; optional `microsoft_cloud`, same values as `azure` |

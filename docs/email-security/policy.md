@@ -68,7 +68,10 @@ once a day while it stays disabled — see
 The console's **Policy** page edits every record type, and saves are
 **patch-preserving**: fields the form does not manage are written back exactly as
 they were. Editing a policy record in the UI never silently drops a field you set
-through the API or through git-sync.
+through the API or through
+[Git Sync](../5-integrations/extensions/limacharlie/git-sync.md#email-security-cloud-security-and-host-posture).
+If Git Sync manages a record, a later pull puts the repository's version back, so
+make lasting changes in the repository.
 
 ### Defaults
 

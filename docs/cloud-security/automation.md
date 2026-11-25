@@ -46,7 +46,12 @@ limacharlie hive set --hive-name cloudsec_policy --key classification \
 
 ## Multi-tenant policy push
 
-The same records applied to N organizations is the MSSP fleet-policy story:
+The same records applied to N organizations is the MSSP fleet-policy story. The
+way to run it at scale is
+[Git Sync](../5-integrations/extensions/limacharlie/git-sync.md#email-security-cloud-security-and-host-posture):
+keep the `cloudsec_*` records in one repository, include the shared files from
+each tenant's `index.yaml`, and turn on the matching `sync_hives` switches. Every
+scheduled pull then applies them. For a one-off push, loop over the tenants:
 
 ```bash
 for OID in $(cat tenant-oids.txt); do

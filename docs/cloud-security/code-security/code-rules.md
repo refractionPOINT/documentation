@@ -131,7 +131,9 @@ the standard Hive surface — `limacharlie hive list`, `get`, `enable`, `disable
 `/v1/hive/cloudsec_code_rule/<oid>/<key>` REST routes. Like the other `cloudsec_*`
 Hives, it can be pushed with `limacharlie sync push --hive-cloudsec-code-rule`
 (see [Cloud Security API and IaC](../../8-reference/cloud-security-api-iac.md#hive-is-the-iac-surface)),
-but Git Sync does not carry it.
+or kept in Git and applied to every organization by
+[Git Sync](../../5-integrations/extensions/limacharlie/git-sync.md#email-security-cloud-security-and-host-posture)
+with its `cloudsec_code_rule` switch.
 
 A record is checked when you save it, and a rule that cannot run is rejected with
 an error naming it:

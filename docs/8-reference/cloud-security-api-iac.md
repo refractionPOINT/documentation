@@ -76,10 +76,13 @@ multi-tenant policy management a script, not a UI workflow.
     with the flags for the hives the file holds. Add `--dry-run` first. Without
     `--force`, a push adds and updates records and never deletes. These flags
     need a CLI release that has them (check `limacharlie sync push --help`).
-    The [Git Sync](../5-integrations/extensions/limacharlie/git-sync.md)
-    extension does not carry these hives, so a Git Sync pull does not apply
-    them. An explicit `limacharlie hive set` call per record, as in the loops
-    below, works too.
+    The [Git Sync](../5-integrations/extensions/limacharlie/git-sync.md#email-security-cloud-security-and-host-posture)
+    extension carries all four hives: turn on their `sync_hives` switches and
+    list the files in each tenant's `index.yaml`, and every scheduled pull
+    applies them. Leave its `secret` switch off. Provider records hold only
+    `hive://secret/` references, so their credentials never go to Git. An
+    explicit `limacharlie hive set` call per record, as in the loops below,
+    works too.
 
 ### Onboarding a tenant (recipe)
 

@@ -72,8 +72,14 @@ that is all that's needed. For an **AWS Organization**, the collector chains fro
 the management role into each member account, assuming the role *named* by
 `aws_member_role_name` in every member (defaults to the role name parsed from
 `aws_role_arn` — the common StackSet pattern, e.g.
-`OrganizationAccountAccessRole`). Restrict enumeration to specific regions with
-`aws_regions`. The secret may carry base credentials for the initial assume, or
+`OrganizationAccountAccessRole`). By default every enabled region is
+scanned; `aws_regions` is optional and limits scanning on purpose. For the
+core inventory collectors, regions and services that your organization's SCPs
+deny are skipped automatically and listed as blocked. Other collectors still
+try every region; set `aws_regions` to the allowed regions to avoid their
+refusals (see
+[Organization policies that block reads](provider-setup/aws.md#organization-policies-that-block-reads)).
+The secret may carry base credentials for the initial assume, or
 be omitted to use the collector's default chain.
 
 ### Azure (`azure`)
