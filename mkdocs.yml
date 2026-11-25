@@ -700,6 +700,7 @@ nav:
           - Amazon Web Services: cloud-security/provider-setup/aws.md
           - Microsoft Azure: cloud-security/provider-setup/azure.md
           - Microsoft Entra ID / Microsoft 365: cloud-security/provider-setup/entra.md
+          - Microsoft US Government clouds: cloud-security/provider-setup/microsoft-government-clouds.md
           - Okta: cloud-security/provider-setup/okta.md
           - Google Workspace: cloud-security/provider-setup/google-workspace.md
           - 1Password: cloud-security/provider-setup/onepassword.md

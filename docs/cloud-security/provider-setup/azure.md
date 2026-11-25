@@ -22,6 +22,12 @@ licensed, Conditional Access and sign-in activity.
     enumerate, use the [Entra ID](entra.md) provider instead — same app
     registration, none of the ARM setup.
 
+!!! info "Azure Government, GCC High and DoD"
+    A tenant in Microsoft's US Government clouds needs `microsoft_cloud: gcc_high`
+    (or `dod`) on the record, and its subscriptions and app registration are
+    created in the [Azure Government portal](https://portal.azure.us). See
+    [Microsoft US Government clouds](microsoft-government-clouds.md).
+
 ## What we check
 
 - **Governance.** Defender plans off, Defender alert emails off, no security
@@ -274,6 +280,7 @@ the Azure-specific checks follow.
 
 | Check | Required | Meaning if it fails |
 |---|:--:|---|
+| `microsoft_cloud` | ✅ | The tenant is in a different Microsoft cloud than the record's `microsoft_cloud` (a GCC High tenant saved as Commercial, for example). The message names the value to set. Required on a confirmed mismatch; if Microsoft's metadata cannot be read, it fails as optional and the test continues. See [Microsoft US Government clouds](microsoft-government-clouds.md#what-the-connection-test-says). |
 | `auth` | ✅ | The client ID/secret pair was rejected, or the secret expired. |
 | `arm_reader` | ✅ | Reader is not assigned on the configured subscription — no resource inventory. |
 | `graph_directory` | ✅ | `Directory.Read.All` not consented — no identity inventory. |
