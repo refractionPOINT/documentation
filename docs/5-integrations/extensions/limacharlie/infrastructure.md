@@ -125,7 +125,7 @@ For each skipped hive, the CLI prints a warning to stderr, also with `--quiet`, 
 Warning: skipped hive host_posture_rule: this key lacks host_posture.get; grant it to include this hive in the sync.
 ```
 
-Grant the permission named in the warning to include that hive in the file. Use `--all-available` for nightly backups, and `--all` when you want a missing permission to be an error. The two flags cannot be combined. `--all-available` is for `pull` only: `push` only touches the hives present in the file, so it does not hit hives the key cannot read. It needs a version of the Infrastructure extension that supports skipping; an older one fails on the first hive the key cannot read, as `--all` does.
+Grant the permission named in the warning to include that hive in the file. Use `--all-available` for nightly backups, and `--all` when you want a missing permission to be an error. A file written by `--all-available` leaves out the hives that were skipped, and nothing in the file records which. Do not restore such a file with `sync push --all --force`, which deletes cloud records that are missing from the file for every selected hive; restore with explicit `--hive-*` flags, or without `--force`. The two flags cannot be combined. `--all-available` is for `pull` only: `push` only touches the hives present in the file, so it does not hit hives the key cannot read. It needs a version of the Infrastructure extension that supports skipping; an older one fails on the first hive the key cannot read, as `--all` does.
 
 ## Related Articles
 
