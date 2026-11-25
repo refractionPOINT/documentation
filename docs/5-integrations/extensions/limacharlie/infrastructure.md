@@ -112,7 +112,7 @@ The REST interface for the Infrastructure extension mimics the CLI tool. The fol
 
 `limacharlie sync pull` writes the organization's configuration to a YAML file. Two flags select every resource type and hive (`--all-available` needs CLI 5.14.0 or later):
 
-- `--all` pulls every resource type and hive. It is strict: if the API key cannot read one of the hives, the pull fails with the missing permission.
+- `--all` pulls every resource type and hive. It is strict: if the API key cannot read one of the hives, the pull fails with the missing permission. Hives that do not exist for the organization are still skipped (see below).
 - `--all-available` pulls the same set but skips the hives the key has no permission for, so a scheduled backup does not break when LimaCharlie adds a hive or a permission.
 
 ```bash
