@@ -600,7 +600,7 @@ Git Sync adds and updates. It does not delete, so removing a rule from a file le
    limacharlie output delete --name northwind-archive-scp --confirm --oid "$ACME_OID"
    ```
 
-To make an org match its files exactly, push with `--force`. It deletes every record of the selected types that is not in the files, including records someone created in the web app. Always run it with `--dry-run` first, name only the types you manage as code (never `--hive-secret`), and give it the same `index.yaml` the extension reads:
+To make an org match its files exactly, push with `--force`. It deletes every record of the selected types that is not in the files, including records someone created in the web app. The exception is a hive with no records in the files: `push` leaves it alone, even with `--force`. Always run it with `--dry-run` first, name only the types you manage as code (never `--hive-secret`), and give it the same `index.yaml` the extension reads:
 
 ```bash
 limacharlie sync push --config-file orgs/$ACME_OID/index.yaml \

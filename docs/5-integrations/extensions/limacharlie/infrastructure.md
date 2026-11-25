@@ -119,13 +119,15 @@ The REST interface for the Infrastructure extension mimics the CLI tool. The fol
 limacharlie sync pull --config-file org.yaml --all-available
 ```
 
+Both flags include the `secret` and `acl` hives when the key can read them. If the key can read the `secret` hive, the file holds secret values in plain text: store it encrypted with restricted access, or use a key without `secret.get` so that `--all-available` leaves that hive out.
+
 For each skipped hive, the CLI prints a warning to stderr, also with `--quiet`, and the command still exits 0:
 
 ```text
 Warning: skipped hive host_posture_rule: this key lacks host_posture.get; grant it to include this hive in the sync.
 ```
 
-Grant the permission named in the warning to include that hive in the file. Use `--all-available` for nightly backups, and `--all` when you want a missing permission to be an error. A file written by `--all-available` has no section for a skipped hive, and nothing in the file records which hives were skipped, so keep the warnings in your job's log. Restoring such a file leaves the skipped hives as they are in LimaCharlie, even with `sync push --all --force`: `push` only reads and writes the hives that have a section in the file, and `--force` only deletes records missing from those sections. The restore therefore does not bring the skipped hives back, and it does not need access to them. The two flags cannot be combined. `--all-available` is for `pull` only. It needs a version of the Infrastructure extension that supports skipping; an older one fails on the first hive the key cannot read, as `--all` does.
+Grant the permission named in the warning to include that hive in the file. Use `--all-available` for nightly backups, and `--all` when you want a missing permission to be an error. A file written by `--all-available` has no section for a skipped hive, and nothing in the file records which hives were skipped, so keep the warnings in your job's log. Restoring such a file leaves the skipped hives as they are in LimaCharlie, even with `sync push --all --force`: `push` only reads and writes the hives that have records in the file, and `--force` only deletes records missing from those hives. A hive with no records in the file is never emptied. The restore therefore does not bring the skipped hives back, and it does not need access to them. The two flags cannot be combined. `--all-available` is for `pull` only. It needs a version of the Infrastructure extension that supports skipping; an older one fails on the first hive the key cannot read, as `--all` does.
 
 ## Related Articles
 
