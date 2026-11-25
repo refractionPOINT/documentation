@@ -686,7 +686,7 @@ limacharlie sync push --config-file orgs/$ACME_OID/index.yaml --oid "$ACME_OID" 
   --hive-dr-general --hive-fp --hive-query --hive-extension-config --dry-run
 ```
 
-To keep the files readable by Git Sync, name the types with `--hive-*` flags. Avoid `--all` and `--all-available` (the lenient form, which skips hives the key cannot read), which include the `secret` and `acl` hives, and the legacy `--integrity`, `--exfil`, `--artifact` and `--yara` flags, which write the top-level sections Git Sync ignores. Use `--hive-extension-config` and `--hive-yara` instead.
+To keep the files readable by Git Sync, name the types with `--hive-*` flags. Avoid `--all` and `--all-available` (the lenient form, which skips hives the key cannot read): both include the `secret` and `acl` hives. Also avoid the legacy `--integrity`, `--exfil`, `--artifact` and `--yara` flags, which write the top-level sections Git Sync ignores. Use `--hive-extension-config` and `--hive-yara` instead.
 
 The CLI differs from Git Sync in two ways. It expands wildcards in `include:`, and when two files define the same record it picks one of them in no fixed order. Keep record names unique and do not use wildcards, and the two tools give the same result.
 
