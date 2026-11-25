@@ -110,7 +110,7 @@ The REST interface for the Infrastructure extension mimics the CLI tool. The fol
 
 ## Backing up an organization with the CLI
 
-`limacharlie sync pull` writes the organization's configuration to a YAML file. Two flags select every resource type and hive:
+`limacharlie sync pull` writes the organization's configuration to a YAML file. Two flags select every resource type and hive (`--all-available` needs CLI 5.14.0 or later):
 
 - `--all` pulls every resource type and hive. It is strict: if the API key cannot read one of the hives, the pull fails with the missing permission.
 - `--all-available` pulls the same set but skips the hives the key has no permission for, so a scheduled backup does not break when LimaCharlie adds a hive or a permission.
@@ -127,7 +127,13 @@ For each skipped hive, the CLI prints a warning to stderr, also with `--quiet`, 
 Warning: skipped hive host_posture_rule: this key lacks host_posture.get; grant it to include this hive in the sync.
 ```
 
-Grant the permission named in the warning to include that hive in the file. Use `--all-available` for nightly backups, and `--all` when you want a missing permission to be an error. A file written by `--all-available` has no section for a skipped hive, and nothing in the file records which hives were skipped, so keep the warnings in your job's log. Restoring such a file leaves the skipped hives as they are in LimaCharlie, even with `sync push --all --force`: `push` only reads and writes the hives that have records in the file, and `--force` only deletes records missing from those hives. A hive with no records in the file is never emptied. The restore therefore does not bring the skipped hives back, and it does not need access to them. The two flags cannot be combined. `--all-available` is for `pull` only. It needs a version of the Infrastructure extension that supports skipping; an older one fails on the first hive the key cannot read, as `--all` does.
+A hive that does not exist for the organization (a product not yet available in its region) is always skipped, with `--all` too, because there is nothing in it to back up. The CLI prints a note instead of a warning:
+
+```text
+Note: skipped hive investigation_plan: it is not available for this organization, so there is nothing to back up.
+```
+
+Grant the permission named in the warning to include that hive in the file. Use `--all-available` for nightly backups, and `--all` when you want a missing permission to be an error. A file written by `--all-available` has no section for a skipped hive, and nothing in the file records which hives were skipped, so keep the warnings in your job's log. Restoring such a file leaves the skipped hives as they are in LimaCharlie, even with `sync push --all --force`: `push` only reads and writes the hives that have records in the file, and `--force` only deletes records missing from those hives. A hive with no records in the file is never emptied. The restore therefore does not bring the skipped hives back, and it does not need access to them. The two flags cannot be combined. `--all-available` is for `pull` only.
 
 ## Related Articles
 
