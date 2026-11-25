@@ -200,6 +200,7 @@ never a pass.
 | Entra ID, Conditional Access, Intune, SharePoint sharing settings (Microsoft Graph) | ✅ | ✅ | ✅ | ✅ |
 | Microsoft 365 admin center org settings: Office Store and trials, Forms phishing protection (`m365_m365-org`) | ✅ | ✅ | Not assessed | Not assessed |
 | Exchange Online, Defender for Office 365 (`m365_exo`) | ✅ | ✅ | ✅ | ✅ |
+| Zero-hour auto purge for Teams, CIS Microsoft 365 2.4.4 (part of `m365_exo`) | ✅ | Not assessed | Not assessed | Not assessed |
 | Purview (`m365_scc`) | ✅ | ✅ | ✅ | ✅ |
 | Teams policies (`m365_teams`) | ✅ | ✅ | Not assessed | Not assessed |
 | Power BI / Fabric tenant settings (`m365_fabric`) | ✅ | Not assessed | Not assessed | Not assessed |
@@ -224,8 +225,49 @@ In GCC High and DoD, a service principal's last sign-in is also unknown. It come
 Microsoft Graph's
 [service principal sign-in activity report](https://learn.microsoft.com/en-us/graph/api/reportroot-list-serviceprincipalsigninactivities?view=graph-rest-beta),
 which Microsoft offers only on the global service. Users' last sign-in is not
-affected. Everything else reads in the same way as in commercial.
+affected.
+
+Zero-hour auto purge (ZAP) for Microsoft Teams is not available in GCC, GCC High
+or DoD
+([Microsoft Learn](https://learn.microsoft.com/en-us/defender-office-365/zero-hour-auto-purge)).
+In those clouds LimaCharlie does not read the Teams protection policy, CIS
+Microsoft 365 control 2.4.4 is not assessed, and no finding is raised for it. The
+other Defender for Office 365 controls (Safe Links, Safe Attachments,
+anti-phishing, anti-spam, anti-malware) are assessed as usual.
+
+Each Defender for Office 365 and Exchange Online Protection policy type is read on
+its own. If one policy read fails, only the controls that depend on it are not
+assessed, and the rest are still graded.
+
+Everything else reads in the same way as in commercial.
 
 The same `m365_exo`, `m365_scc`, `m365_teams` and `m365_fabric` checks only run on
 an Entra connection, in every cloud. See
 [Verify](entra.md#verify).
+
+### Azure subscriptions in Azure Government
+
+GCC High and DoD subscriptions run in Azure Government. GCC subscriptions run in
+global Azure, so everything below applies to them as in commercial.
+
+| Defender for Cloud plan or feature | Commercial, GCC | GCC High, DoD |
+|---|:--:|:--:|
+| Defender for App Service plan | Checked | Not checked: not offered |
+| Defender for APIs plan | Checked | Not checked: not offered |
+| Other Defender plans (Servers, CSPM, Containers, Storage, databases, Key Vault, Resource Manager, AI services) | Checked | Checked |
+| VM vulnerability scanning (Defender for Servers or Defender CSPM) | Counted as coverage | Counted as coverage |
+
+Microsoft lists Defender for App Service and Defender for APIs as not available in
+Azure Government
+([Defender for Cloud support matrix](https://learn.microsoft.com/en-us/azure/defender-for-cloud/support-matrix-cloud-environment)).
+A subscription there is not told to turn them on, and an older finding for
+either plan closes on the next scan.
+
+The same matrix lists Defender Vulnerability Management (agentless scanning and
+the Defender for Endpoint sensor) as available in Azure Government. So in GCC High
+and DoD, as in commercial, a subscription with a paid Defender for Servers or
+Defender CSPM plan counts as having a VM vulnerability source. Microsoft's
+[feature availability](https://learn.microsoft.com/en-us/azure/security/fundamentals/feature-availability)
+page lists "Integrated vulnerability assessment for machines" as not available
+there. That row refers to the older built-in scanner, not to Defender
+Vulnerability Management.
