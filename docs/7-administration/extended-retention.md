@@ -36,7 +36,7 @@ You need both the `org.conf.set` and `billing.ctrl` permissions to change the re
 
 **Raising it** applies immediately. From that moment, data that would have expired is kept. Data that already expired before you raised the setting is gone and does not come back.
 
-**Lowering it** takes effect 7 days after you make the change. During those 7 days the web app and the API show the change as pending, with the date it applies. You can cancel it by setting the value back to the current one. Until the change applies, you are billed at the old level. When it applies, LimaCharlie deletes data older than the new period, and that deletion cannot be undone.
+**Lowering it** takes effect 7 days after you make the change. During those 7 days the web app and the API show the change as pending, with the date it applies. You can cancel it by setting the value back to the period that is still applied. Until the change applies, you are billed at the old level. When it applies, LimaCharlie deletes data older than the new period, and that deletion cannot be undone.
 
 ## How to set it
 

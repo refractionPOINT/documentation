@@ -14,7 +14,7 @@ flowchart LR
     CLOUD["Cloud and SaaS<br/>(cloud adapters)"] --> TEN
     FW["Firewalls and appliances"] -->|"filter on the device"| COL["One adapter on a customer server<br/>(syslog collector)"]
     COL --> TEN
-    TEN["Customer tenant<br/>(one year retention, searchable)"]
+    TEN["Customer tenant<br/>(one year retention by default, searchable)"]
     TEN -->|"Output: full copy"| COLD["Cold storage bucket<br/>(same region)"]
     TEN -->|"Output: security subset"| SIEM["SIEM or AI triage tool"]
 ```
@@ -126,11 +126,11 @@ Identity adapters matter for more than their own detections. Their events index 
 
 ## Routing data out
 
-With Insight on, LimaCharlie keeps a year of events searchable, so routing out is about what else needs a copy, not about storage. Do it with [Outputs](../../5-integrations/outputs/index.md) in the LimaCharlie cloud, not at the edge, so a change never needs the customer's firewall or a site visit.
+With Insight on, LimaCharlie keeps a year of events searchable by default, so routing out is about what else needs a copy, not about storage. Do it with [Outputs](../../5-integrations/outputs/index.md) in the LimaCharlie cloud, not at the edge, so a change never needs the customer's firewall or a site visit.
 
 The usual pattern for each customer:
 
-1. **Unfiltered copy to cold storage.** An Output on the `event` stream to a bucket, such as [Google Cloud Storage](../../5-integrations/outputs/destinations/google-cloud-storage.md) or [Amazon S3](../../5-integrations/outputs/destinations/amazon-s3.md). This is your archive past one year and your source for anything you want to replay into another system later.
+1. **Unfiltered copy to cold storage.** An Output on the `event` stream to a bucket, such as [Google Cloud Storage](../../5-integrations/outputs/destinations/google-cloud-storage.md) or [Amazon S3](../../5-integrations/outputs/destinations/amazon-s3.md). This is your archive past your retention period and your source for anything you want to replay into another system later.
 2. **Only the security subset downstream.** The `detect` stream to your SIEM, SOAR or AI triage tool, or a filtered `event` stream. An `event` output filters by event type (`event_white_list`, `event_black_list`) and by sensor tag. A `detect` output can also filter by detection category and rule tag. See [Filtering and transforming streams](../../5-integrations/outputs/stream-structures.md#filtering-and-transforming-streams). For finer control, a D&R rule's [`output` action](../../8-reference/response-actions.md#output) sends only the events it matches to a named output on the `tailored` stream.
 3. **The audit stream to long-term storage**, for your own compliance.
 
