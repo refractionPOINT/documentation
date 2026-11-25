@@ -284,8 +284,8 @@ Each record of the Lookup is one allowlist entry in the same format as an inline
 backup-agent-linux:
   platform: linux
   image_path: /opt/backup/bin/agent
-  file_hash: <sha256 of the image>
-  comment: nightly backup
+  match: path
+  comment: nightly backup, folder checked root-owned
 av-scanner-windows:
   platform: windows
   image_path: C:\Program Files\AV\scanner.exe
@@ -304,7 +304,7 @@ av-scanner-windows:
 
 ### Starter list of benign readers
 
-`list_kinds` returns `benign_readers`, a starter list of well-known benign readers to copy into your `reader_allowlist`. It is never applied automatically. It holds Windows Search (`SearchIndexer.exe`, `SearchProtocolHost.exe`, with entries ready to paste) and Microsoft Defender (`MsMpEng.exe`, `MpCmdRun.exe`, whose path carries the platform version: take the exact path from `list_readers`). Spotlight, OneDrive, Dropbox and backup agents are not in it, because their signers could not be verified in LimaCharlie's format: find them with `list_readers`.
+`list_kinds` returns `benign_readers`, a starter list of well-known benign readers to copy into your `reader_allowlist`. It is never applied automatically. It holds Windows Search (`SearchIndexer.exe`, `SearchProtocolHost.exe`, with entries ready to paste), Microsoft Defender (`MsMpEng.exe`, `MpCmdRun.exe`, whose path carries the platform version: take the exact path from `list_readers`), and the Linux desktop indexers as `match: path` entries: the GNOME Tracker and LocalSearch miners (`/usr/libexec/tracker-miner-fs-3`, `/usr/libexec/localsearch-3`, `/usr/lib/localsearch-3`) and KDE Baloo (`baloo_file` and `baloo_file_extractor` at their distributions' paths). These Linux paths are the only ones `list_readers` offers an entry for; any other Linux program is written by hand. Spotlight, OneDrive, Dropbox and backup agents are not in it, because their signers could not be verified in LimaCharlie's format: find them with `list_readers`.
 
 ## Custom domains
 
