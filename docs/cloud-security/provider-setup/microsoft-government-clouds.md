@@ -197,7 +197,8 @@ never a pass.
 
 | Plane (`provider test` check) | Commercial | GCC | GCC High | DoD |
 |---|:--:|:--:|:--:|:--:|
-| Entra ID, Conditional Access, Intune, Microsoft 365 admin center, SharePoint sharing settings (Microsoft Graph) | ✅ | ✅ | ✅ | ✅ |
+| Entra ID, Conditional Access, Intune, SharePoint sharing settings (Microsoft Graph) | ✅ | ✅ | ✅ | ✅ |
+| Microsoft 365 admin center org settings: Office Store and trials, Forms phishing protection (`m365_m365-org`) | ✅ | ✅ | Not assessed | Not assessed |
 | Exchange Online, Defender for Office 365 (`m365_exo`) | ✅ | ✅ | ✅ | ✅ |
 | Purview (`m365_scc`) | ✅ | ✅ | ✅ | ✅ |
 | Teams policies (`m365_teams`) | ✅ | ✅ | Not assessed | Not assessed |
@@ -208,7 +209,22 @@ admin read or a Fabric admin API that a service principal can call there, so the
 controls built on them stay NOT_ASSESSED until Microsoft documents one. The
 sign-in addresses for Power BI in each cloud are in Microsoft's
 [Power BI for US Government](https://learn.microsoft.com/en-us/fabric/enterprise/powerbi/service-government-us-overview)
-overview. Everything else reads in the same way as in commercial.
+overview.
+
+The Microsoft 365 admin center org settings come from the Microsoft Graph
+[apps and services](https://learn.microsoft.com/en-us/graph/api/adminappsandservices-get?view=graph-rest-beta)
+and [Forms](https://learn.microsoft.com/en-us/graph/api/adminforms-get?view=graph-rest-beta)
+settings APIs. Microsoft offers those APIs only on the global service, not in
+GCC High or DoD. So in those two clouds, CIS Microsoft 365 controls 1.3.4 (users
+cannot use the Office Store or start trials) and 1.3.5 (Forms internal phishing
+protection) are not assessed. Their findings also give no PowerShell fix, only
+the admin center steps. GCC uses the global service, so they are assessed there.
+
+In GCC High and DoD, a service principal's last sign-in is also unknown. It comes from
+Microsoft Graph's
+[service principal sign-in activity report](https://learn.microsoft.com/en-us/graph/api/reportroot-list-serviceprincipalsigninactivities?view=graph-rest-beta),
+which Microsoft offers only on the global service. Users' last sign-in is not
+affected. Everything else reads in the same way as in commercial.
 
 The same `m365_exo`, `m365_scc`, `m365_teams` and `m365_fabric` checks only run on
 an Entra connection, in every cloud. See
