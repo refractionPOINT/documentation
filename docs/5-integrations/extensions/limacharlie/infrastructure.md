@@ -121,7 +121,7 @@ limacharlie sync pull --config-file org.yaml --all-available
 
 For each skipped hive, the CLI prints a warning to stderr, also with `--quiet`, and the command still exits 0:
 
-```
+```text
 Warning: skipped hive host_posture_rule: this key lacks host_posture.get; grant it to include this hive in the sync.
 ```
 
