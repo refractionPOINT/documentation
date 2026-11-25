@@ -9,7 +9,7 @@ limacharlie extension config-get --name ext-deception --oid "$OID"
 limacharlie extension config-set --name ext-deception --input-file deception.yaml --oid "$OID"
 ```
 
-You can also edit the record in the web app: the **Policies** tab edits policies and templates, copies templates from the Template Library, and has a raw editor for the whole record (custom domains, the reader allowlist and the isolation cap: these have no form of their own; a policy's mode and observe end are in the policy editor, and a template's settings in the template editor). Tokens made in the **Tokens** tab are not part of the record; tokens you declare under `drops` are. The extension validates a save the same way, and a save that conflicts with a newer version is refused without overwriting it.
+You can also edit the record in the web app: the **Policies** tab edits policies (a policy's mode and observe end are in the policy editor), the **Templates** tab edits templates and copies them from the Template library, and the **Settings** tab edits the reader allowlists, link previews, custom domains and the isolation cap, and copies the whole record as YAML with the CLI lines that apply it. A save from the web app keeps every field the page does not show (`schema_version`, `key_sources`, `drops`, and any field a newer release adds). Tokens made in the **Tokens** tab are not part of the record; tokens you declare under `drops` are. The extension validates a save the same way, and a save that conflicts with a newer version is refused without overwriting it.
 
 ## Enabling the configuration record
 
@@ -183,7 +183,7 @@ This is the complete `kubeconfig-backup` library template. Every name written in
 
 Content must not mention `limacharlie`. A template is checked by rendering it once at write time. Write your own templates the same way as the library ones: take every name you put in or on a file from `{{vocab "..."}}` rather than typing a fixed word, because a fixed word is the same in every organization that copies it.
 
-The `hostname` kind adds `form` (`registry` or `internal`), `hosts` and `zone` (`resolved`, the default, or `unresolved`: names that answer "does not exist", used by `win-desktop-ini-folder` so that Windows stops at the lookup and never connects), and holds a `file` spec for the file that names the hosts. The `document` kind takes the `file` placement fields (`platforms`, `file_name`, `directories`, `alerts`, `mode`, `mtime_days_*`, `max_users`) and, instead of `content`, a `document` block: `format` (`docx` or `svg` in this release), `title`, `lines` (1 to 20) and optionally `author` and `company`. Each of those is a template limited to `vocab`, `user`, `hostname`, `guid` and `timestamp` (not `domain`, `collector` or `home`). `alerts` must include `use` (`[use]` or `[read, use]`), because a document always carries its beacon. The file name must end in the format's extension. Its `use` layer is the document being opened (see [Documents](drops.md#documents) for which viewers fire). The `phantom_account` kind adds `form` (`upn` or `ad`), `source` (`any`, `entra`, `okta`, UPN form only), `upn_domain`, `ad_domain` and a `file` spec; its content uses `{{account}}` and `{{password}}`. Copy these from the default library, or read the schema from `list_kinds`. The library is built into the extension and ships with each release. A template you copy from it is stored in your configuration and is yours to edit: a later release does not change your copy, and the library itself is never changed. In the web app, the **Template Library** copies templates for you, and the template viewer and editor edit your own templates as a form or as JSON. Library templates are read-only in the editor: customize a copy.
+The `hostname` kind adds `form` (`registry` or `internal`), `hosts` and `zone` (`resolved`, the default, or `unresolved`: names that answer "does not exist", used by `win-desktop-ini-folder` so that Windows stops at the lookup and never connects), and holds a `file` spec for the file that names the hosts. The `document` kind takes the `file` placement fields (`platforms`, `file_name`, `directories`, `alerts`, `mode`, `mtime_days_*`, `max_users`) and, instead of `content`, a `document` block: `format` (`docx` or `svg` in this release), `title`, `lines` (1 to 20) and optionally `author` and `company`. Each of those is a template limited to `vocab`, `user`, `hostname`, `guid` and `timestamp` (not `domain`, `collector` or `home`). `alerts` must include `use` (`[use]` or `[read, use]`), because a document always carries its beacon. The file name must end in the format's extension. Its `use` layer is the document being opened (see [Documents](drops.md#documents) for which viewers fire). The `phantom_account` kind adds `form` (`upn` or `ad`), `source` (`any`, `entra`, `okta`, UPN form only), `upn_domain`, `ad_domain` and a `file` spec; its content uses `{{account}}` and `{{password}}`. Copy these from the default library, or read the schema from `list_kinds`. The library is built into the extension and ships with each release. A template you copy from it is stored in your configuration and is yours to edit: a later release does not change your copy, and the library itself is never changed. In the web app, **Templates** > **Add from library** copies templates for you, and the template viewer and editor edit your own templates as a form or as JSON. Library templates are read-only in the editor: customize a copy.
 
 The `internal` hostname form and the `ad` phantom-account form are **not available in this release**. They still validate, so an existing configuration keeps loading, but every alert layer of a template that uses one reports as unavailable ("not available in this release"), nothing is planted, and a decoy of these forms planted by an earlier build is retired by the daily run. Use the `registry` hostname form and the `upn` phantom-account form.
 
@@ -221,22 +221,26 @@ reader_allowlist:
     signer: 'C=US, S=Washington, L=Redmond, O=Microsoft Corporation, CN=Microsoft Windows'
     comment: Windows Search
   - platform: linux
-    image_path: /usr/sbin/backupd
-    file_hash: 9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08
-    user: root
+    image_path: /usr/libexec/tracker-miner-fs-3
+    match: path
+    comment: GNOME desktop indexer
 ```
 
 - `image_path` is a full absolute path with no wildcards.
-- Windows and macOS entries need the code `signer`, written the way LimaCharlie renders a certificate subject (take it from `list_readers`). Linux entries need the image's SHA-256 in `file_hash`, since Linux has no code signer.
+- Windows and macOS entries need the code `signer`, written the way LimaCharlie renders a certificate subject (take it from `list_readers`).
+- A Linux entry is either `match: path` or the image's SHA-256 in `file_hash` (Linux has no code signer). No Linux event carries the image's hash, so a `file_hash` entry approves no Linux read today: use `match: path`.
+- `match: path` (Linux only) approves a program by its exact, case-sensitive path, with no hash and no `signer`. The program must be in a root-owned system folder (`/usr/bin`, `/usr/sbin`, `/usr/libexec`, `/usr/lib`, `/usr/lib32`, `/usr/lib64`, `/bin`, `/sbin`, `/lib`, `/lib32`, `/lib64`, or inside a vendor's folder: `/opt/<vendor>/…/<program>`), written in canonical form (no `.`, `..`, `//` or trailing `/`, at most 255 characters), and it must not be a shell, an interpreter, the dynamic loader, a program runner, a browser or editor, a file or web server, or a general-purpose tool: the entry approves every run of the program, by anyone. `user` may narrow it; `package` and `ancestry` are refused. It matches only a read whose file event names the reader (the event's `PARENT`), never a process the sensor reports in a container, and only on hosts whose sensor release reports `PARENT`.
 - A shared interpreter (Python, Node, a shell, PowerShell and similar) is only approved when you also set `user` and `ancestry`, the image paths of at least one required ancestor (the service that launches it). An ancestry entry may not itself be a shared interpreter.
 - `package` (Linux), `user` and `ancestry` narrow the match further. Every field you set must match.
 - A field missing from the observed event never matches, so unknown data fails toward alerting.
+
+In the web app, **Settings** > **Reader allowlists** lists every entry of the organization's list or of one policy's (choose it in **Allowlist**), and adds, edits and removes them, with the checks above made before the save.
 
 The organization-wide `reader_allowlist` applies to every decoy. A policy's `reader_allowlist` applies to the decoys that policy placed (see [Which policy's settings apply to a hit](#which-policys-settings-apply-to-a-hit)).
 
 An approved reader's read or modification is dropped, in either mode, and never becomes a hit. A decoy **use** is never dropped by the allowlist.
 
-**An entry can only match what the event names.** A reader is approved by its code signer or file hash, and many sensor file events carry the acting process's path and user but neither of those. Such reads cannot be approved by any entry: they keep alerting, and `list_readers` shows them with the reason (`not_approvable_reason`). A plain file-read event that names no process at all is never approvable.
+**An entry can only match what the event names.** On Windows and macOS a reader is approved by its code signer, and many sensor file events carry the acting process's path and user but no signer. On Linux a reader is approved by its path (`match: path`), and only when the file event names it. Reads that carry neither cannot be approved by any entry: they keep alerting, and `list_readers` shows them with the reason (`not_approvable_reason`). A plain file-read event that names no process at all is never approvable.
 
 ### Every approved read is recorded
 
@@ -280,8 +284,8 @@ Each record of the Lookup is one allowlist entry in the same format as an inline
 backup-agent-linux:
   platform: linux
   image_path: /opt/backup/bin/agent
-  file_hash: <sha256 of the image>
-  comment: nightly backup
+  match: path
+  comment: nightly backup, folder checked root-owned
 av-scanner-windows:
   platform: windows
   image_path: C:\Program Files\AV\scanner.exe
@@ -300,7 +304,7 @@ av-scanner-windows:
 
 ### Starter list of benign readers
 
-`list_kinds` returns `benign_readers`, a starter list of well-known benign readers to copy into your `reader_allowlist`. It is never applied automatically. It holds Windows Search (`SearchIndexer.exe`, `SearchProtocolHost.exe`, with entries ready to paste) and Microsoft Defender (`MsMpEng.exe`, `MpCmdRun.exe`, whose path carries the platform version: take the exact path from `list_readers`). Spotlight, OneDrive, Dropbox and backup agents are not in it, because their signers could not be verified in LimaCharlie's format: find them with `list_readers`.
+`list_kinds` returns `benign_readers`, a starter list of well-known benign readers to copy into your `reader_allowlist`. It is never applied automatically. It holds Windows Search (`SearchIndexer.exe`, `SearchProtocolHost.exe`, with entries ready to paste), Microsoft Defender (`MsMpEng.exe`, `MpCmdRun.exe`, whose path carries the platform version: take the exact path from `list_readers`), and the Linux desktop indexers as `match: path` entries: the GNOME Tracker and LocalSearch miners (`/usr/libexec/tracker-miner-fs-3`, `/usr/libexec/localsearch-3`, `/usr/lib/localsearch-3`) and KDE Baloo (`baloo_file` and `baloo_file_extractor` at their distributions' paths). These Linux paths are the only ones `list_readers` offers an entry for; any other Linux program is written by hand. Spotlight, OneDrive, Dropbox and backup agents are not in it, because their signers could not be verified in LimaCharlie's format: find them with `list_readers`.
 
 ## Custom domains
 
@@ -309,7 +313,7 @@ custom_domains:
   - domain: decoy.example.com
 ```
 
-A custom domain is a subdomain you control (at least three labels, no wildcard, no `limacharlie` in the name). It is validated and stored. **In this release no decoy uses it.** Hostnames and URLs in decoys are generated under LimaCharlie-operated decoy domains only. Do not rely on a custom domain until the release notes say it is used. The `verified` field is set only by the extension after its own ownership check, and a value you write is never trusted.
+A custom domain is a subdomain you control (at least three labels, no wildcard, no `limacharlie` in the name). It is validated and stored. **In this release no decoy uses it.** Hostnames and URLs in decoys are generated under LimaCharlie-operated decoy domains only. Do not rely on a custom domain until the release notes say it is used. The `verified` field is set only by the extension after its own ownership check, and a value you write is never trusted. The **Settings** tab of the web app lists, adds and removes custom domains, and says they are not used yet.
 
 ## AWS key sources
 
@@ -324,4 +328,4 @@ The clients verified to honor `endpoint_url` in the credentials file are botocor
 
 ## Isolation cap
 
-`isolation_cap_per_hour` bounds how many hosts the extension may isolate automatically per hour for the organization. Absent or `0` means the default, 5. The cap also applies when the extension re-tries an incident whose earlier attempt failed. If the organization's configuration cannot be read, or this field is invalid, `respond` refuses to isolate at all, because the cap would be unknown.
+`isolation_cap_per_hour` bounds how many hosts the extension may isolate automatically per hour for the organization. Absent or `0` means the default, 5. The cap also applies when the extension re-tries an incident whose earlier attempt failed. If the organization's configuration cannot be read, or this field is invalid, `respond` refuses to isolate at all, because the cap would be unknown. The value is a whole number from 0 to 1,000. The **Settings** tab of the web app shows the cap in force (and whether it is yours or the default) and sets it; **Use the default** removes the field.

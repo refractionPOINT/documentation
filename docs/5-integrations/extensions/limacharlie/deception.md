@@ -43,13 +43,15 @@ The **Deception** page of your organization in the web app is the way to manage 
 | Decoys | Every decoy, with filters for state, policy, template, kind and host, and **Verify**, **Rotate** and **Remove** on selected decoys or, through **All decoys of …**, on every live decoy of a policy, template or host. Failed decoys are grouped by cause, and list what is not protected now: one row per host, template and path, with earlier attempts that were replaced hidden (see [Failed decoys](deception/decoys.md#failed-decoys)). **View: Hosts** lists every host your policies target, with or without a decoy, with its status (Protected, Partial, Pending, Failed, No decoy yet), the last rollout visit and **Place on this host now** (see [Host status](deception/decoys.md#host-status)). Test decoys are hidden unless you ask. |
 | Tokens | Your [tokens](deception/drops.md): **Create token**, the link, QR code or document to put in place, **Send a test hit**, edit, disable, rotate and delete. |
 | Coverage | Each alert path (a template on a layer) with its status and what is stopping alerts, the token alert paths, template tag gaps, the per-sensor watch-rule budget, the shipped detection rules, and **Test fire** with the latest result of every path. |
-| Policies | Your policies and templates: add, edit, enable, disable and delete them. A template viewer and editor edit a template as a form or as its JSON, the **Template Library** copies the built-in templates into your configuration, and the whole record can be edited as JSON. |
+| Policies | Your policies: **Create a policy** (the guided flow: choose templates, choose hosts, place), add one by hand, edit, enable, disable, deploy and delete. A policy's mode and what it alerts on are shown per row. |
+| Templates | Your templates: add them from the **Template library** (**Add from library**), write a new one, view, edit (as a form or as its JSON), duplicate, enable, disable and delete them. Each row shows what the template alerts on. |
+| Settings | The organization-wide settings, each in a form that checks what the extension checks: the reader allowlists (the organization's and each policy's), the link previews of your tokens, the isolation cap with the cap in force, and custom domains. **Configuration as code** copies the whole record as YAML, with the CLI lines that apply it. |
 
 A hit, a decoy, a host and a coverage row open in a detail drawer: a full-height sheet over the page that you close to come back to the list, with the same actions as the row.
 
 The **Overview** page of each sensor in the web app also has a **Deception** section for that sensor: the decoys planted on it, its policies, the last rollout visit, and the hits of the last 30 days. It shows why nothing is placed when that is the case (no policy targets the sensor, or placement is blocked and why), and links to the Deception page.
 
-A policy's **Mode** (Live or Observe) and **Observe until** are in the policy editor. The reader allowlist, custom domains and the isolation cap have no form of their own: edit them in the raw JSON editor of the **Policies** tab, or in your configuration as code.
+A policy's **Mode** (Live or Observe) and **Observe until** are in the policy editor. The reader allowlists, link previews, custom domains and the isolation cap are on the **Settings** tab. Link previews are added from a token's hit (**Add as link preview**) and listed and removed on **Settings**. Tokens declared as code (`drops`) are edited in your configuration as code. Every save from the web app writes the whole record on the version you were shown and keeps every field the page does not show.
 
 The **Deception** board, in the web app's top navigation, shows every organization you can see in one table: see [Managing many organizations](deception/board.md).
 
@@ -147,7 +149,7 @@ Then subscribe the extensions your decoys depend on (`ext-artifact`, `ext-exfil`
           isolate: false
     ```
 
-    `spec: {}` above is a placeholder: copy the full `spec` of the library entry. See [Configuration](deception/configuration.md). In the web app, **Policies** > **Template Library** does the copy for you.
+    `spec: {}` above is a placeholder: copy the full `spec` of the library entry. See [Configuration](deception/configuration.md). In the web app, **Templates** > **Add from library** does the copy for you.
 
     ```bash
     limacharlie extension config-set --name ext-deception --input-file deception.yaml --oid "$OID"
