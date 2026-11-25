@@ -489,7 +489,7 @@ limacharlie cloudsec provider test --input-file provider.yaml
 | `signin_activity` | — | Last-sign-in and dormancy enrichment unavailable (usually a missing Entra ID P1/P2 licence). |
 | `m365_entra-ext` | — | Entra ID policies for `cis-m365-v7` (device registration, PIM settings, access reviews and others) are unreadable. |
 | `m365_intune` | — | Intune settings are unreadable (permission or licence). |
-| `m365_m365-org` | — | Microsoft 365 admin center settings are unreadable. |
+| `m365_m365-org` | — | Microsoft 365 admin center settings are unreadable. In GCC High and DoD this check always reports *not offered*: Microsoft has no such API there ([details](microsoft-government-clouds.md#checks-that-are-not-assessed-in-a-cloud)). |
 | `m365_sharepoint` | — | SharePoint and OneDrive sharing settings are unreadable. |
 | `m365_exo` | — | Exchange Online is unreadable: check `Exchange.ManageAsApp`, Global Reader, and certificate mode. |
 | `m365_scc` | — | Purview is unreadable: check `Exchange.ManageAsApp` on Microsoft Exchange Online Protection, Global Reader, and certificate mode. |
