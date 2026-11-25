@@ -189,7 +189,7 @@ A host's status says whether it holds a decoy to touch. It is judged over the ho
 
 | Status | Meaning |
 | --- | --- |
-| `protected` | At least one decoy on the host is verified, and none of the decoys its policies want there is missing because of a fault. A decoy [skipped on purpose](#file-names-and-paths) does not count against it: such a host reads protected, with a "skipped" note. |
+| `protected` | At least one decoy on the host is verified, none of the decoys its policies want there is missing because of a fault, and no template its policies select is still to place there. A decoy [skipped on purpose](#file-names-and-paths) does not count against it: such a host reads protected, with a "skipped" note. |
 | `partial` | A decoy is verified, but another decoy the host's policy wants is missing: it has a current failure, or its template was added to the policy after the host's last planning pass (the host's `to_place` names it, for example because the host was offline when the rollout reached it). A host is never `protected` while something it should hold is missing. |
 | `pending` | Decoys are planned or placed, and none is verified yet. |
 | `failed` | No live decoy, and at least one decoy failed with a fault: nothing protects the host. |
