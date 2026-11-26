@@ -14,7 +14,7 @@ flowchart LR
     CLOUD["Cloud and SaaS<br/>(cloud adapters)"] --> TEN
     FW["Firewalls and appliances"] -->|"filter on the device"| COL["One adapter on a customer server<br/>(syslog collector)"]
     COL --> TEN
-    TEN["Customer tenant<br/>(one year retention, searchable)"]
+    TEN["Customer tenant<br/>(one year retention by default, searchable)"]
     TEN -->|"Output: full copy"| COLD["Cold storage bucket<br/>(same region)"]
     TEN -->|"Output: security subset"| SIEM["SIEM or AI triage tool"]
 ```
@@ -59,7 +59,7 @@ This is how Northwind pre-deploys to every ACME machine during onboarding while 
 
 ### How it is billed
 
-Per endpoint per month, at a flat rate, with all the sensor's telemetry and a year of retention included. You do not estimate volume for endpoints. See [Estimating data ingestion](../../7-administration/billing/data-estimation.md).
+Per endpoint per month, at a flat rate, with all the sensor's telemetry and a year of retention included by default. You do not estimate volume for endpoints. See [Estimating data ingestion](../../7-administration/billing/data-estimation.md).
 
 ## Logs: adapters
 
@@ -108,7 +108,7 @@ The sensor is a security sensor, not a log shipper. Its outbound queue is bounde
 
 ### How it is billed
 
-Per GB that LimaCharlie receives, counted once at ingestion, with a year of retention included. A few third-party sources are billed on a plan of their own instead; the [pricing page](https://limacharlie.io/pricing) has the details. See [Estimating data ingestion](../../7-administration/billing/data-estimation.md) and the [billing FAQ](../../8-reference/faq/billing.md).
+Per GB that LimaCharlie receives, counted once at ingestion, with a year of retention included by default. A few third-party sources are billed on a plan of their own instead; the [pricing page](https://limacharlie.io/pricing) has the details. See [Estimating data ingestion](../../7-administration/billing/data-estimation.md) and the [billing FAQ](../../8-reference/faq/billing.md).
 
 ## Identity and SaaS
 
@@ -126,11 +126,11 @@ Identity adapters matter for more than their own detections. Their events index 
 
 ## Routing data out
 
-With Insight on, LimaCharlie keeps a year of events searchable, so routing out is about what else needs a copy, not about storage. Do it with [Outputs](../../5-integrations/outputs/index.md) in the LimaCharlie cloud, not at the edge, so a change never needs the customer's firewall or a site visit.
+With Insight on, LimaCharlie keeps a year of events searchable by default, so routing out is about what else needs a copy, not about storage. Do it with [Outputs](../../5-integrations/outputs/index.md) in the LimaCharlie cloud, not at the edge, so a change never needs the customer's firewall or a site visit.
 
 The usual pattern for each customer:
 
-1. **Unfiltered copy to cold storage.** An Output on the `event` stream to a bucket, such as [Google Cloud Storage](../../5-integrations/outputs/destinations/google-cloud-storage.md) or [Amazon S3](../../5-integrations/outputs/destinations/amazon-s3.md). This is your archive past one year and your source for anything you want to replay into another system later.
+1. **Unfiltered copy to cold storage.** An Output on the `event` stream to a bucket, such as [Google Cloud Storage](../../5-integrations/outputs/destinations/google-cloud-storage.md) or [Amazon S3](../../5-integrations/outputs/destinations/amazon-s3.md). This is your archive past your retention period and your source for anything you want to replay into another system later.
 2. **Only the security subset downstream.** The `detect` stream to your SIEM, SOAR or AI triage tool, or a filtered `event` stream. An `event` output filters by event type (`event_white_list`, `event_black_list`) and by sensor tag. A `detect` output can also filter by detection category and rule tag. See [Filtering and transforming streams](../../5-integrations/outputs/stream-structures.md#filtering-and-transforming-streams). For finer control, a D&R rule's [`output` action](../../8-reference/response-actions.md#output) sends only the events it matches to a named output on the `tailored` stream.
 3. **The audit stream to long-term storage**, for your own compliance.
 
@@ -146,9 +146,9 @@ Set [Usage Alerts](../../5-integrations/extensions/limacharlie/usage-alerts.md) 
 
 ## Retention and search
 
-With Insight on, every event from sensors and adapters is kept for one year and searchable with [LCQL](../../4-data-queries/index.md) in the Query Console, the CLI and the API. Searches are billed by the number of events evaluated, and the console shows an estimate before you run one (see [Query Console](../../4-data-queries/query-console-ui.md)). Narrow searches by sensor selector and event type to keep them fast and cheap. See [Query limits and performance](../../4-data-queries/query-limits-and-performance.md).
+With Insight on, every event from sensors and adapters is kept for one year by default and searchable with [LCQL](../../4-data-queries/index.md) in the Query Console, the CLI and the API. Searches are billed by the number of events evaluated, and the console shows an estimate before you run one (see [Query Console](../../4-data-queries/query-console-ui.md)). Narrow searches by sensor selector and event type to keep them fast and cheap. See [Query limits and performance](../../4-data-queries/query-limits-and-performance.md).
 
-For anything past one year, the bucket from step 1 above is the archive. Artifacts and product data such as cases have their own retention settings.
+For anything past one year, either raise the organization's [retention](../../7-administration/extended-retention.md) to 18, 24 or 36 months, or use the bucket from step 1 above as the archive. Artifacts and product data such as cases have their own retention settings.
 
 ## In Git
 

@@ -90,9 +90,9 @@ While sending detections and events data from LimaCharlie into the SIEM is the m
 
 ## What is the retention policy for management/audit logs?
 
-LimaCharlie stores management/audit logs for one year.
+LimaCharlie stores management/audit logs for one year by default. [Extended data retention](../../7-administration/extended-retention.md) keeps them for 18, 24 or 36 months.
 
-We suggest you set up an [Output](../../5-integrations/outputs/index.md) to send logs to an external destination if you are looking to have your logs stored for over one year.
+To keep logs longer than that, set up an [Output](../../5-integrations/outputs/index.md) to send them to an external destination.
 
 ## What are the API rate limits?
 

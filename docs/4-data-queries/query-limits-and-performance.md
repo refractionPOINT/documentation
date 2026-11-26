@@ -2,6 +2,8 @@
 
 This page describes the operational limits that apply to Query Console and LCQL searches - how many queries you can run at once and how long a query may run - along with guidance on how large an aggregation can reasonably get and how to write efficient queries that stay within those limits and cost less. It also covers the different query types, since how a query executes determines how it behaves against these limits, and the search modes that decide how a paginated query's pages are shaped.
 
+A single search covers at most 1 year of data. With [extended retention](../7-administration/extended-retention.md), search older periods one year at a time.
+
 ## Query Types
 
 How a query executes - and therefore how it behaves against the limits below - depends on what it does. LCQL queries fall into four kinds:

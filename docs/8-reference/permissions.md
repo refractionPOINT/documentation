@@ -21,7 +21,7 @@ LimaCharlie uses a granular permission system that controls access to all platfo
 | org.conf.get | View organization configuration |
 | org.conf.set | Modify organization configuration |
 
-To delete an organization, use a user with `billing.ctrl` and `user.ctrl` on it. See [Organization Lifecycle](../7-administration/org-lifecycle.md#deleting-an-organization). Sensor quota changes need `billing.ctrl`. Creating an organization needs no permission.
+To delete an organization, use a user with `billing.ctrl` and `user.ctrl` on it. See [Organization Lifecycle](../7-administration/org-lifecycle.md#deleting-an-organization). Sensor quota changes need `billing.ctrl`. Changing the [data retention](../7-administration/extended-retention.md) period needs `billing.ctrl` and `org.conf.set`. Creating an organization needs no permission.
 
 ### User & Access Control
 

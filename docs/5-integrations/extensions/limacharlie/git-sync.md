@@ -51,7 +51,7 @@ Git Sync handles these types:
 | Outputs | `outputs:` | `sync_outputs`, `export_outputs` |
 | Resources | `resources:` | `sync_resources`, `export_resources` |
 | Extension subscriptions | `extensions:` | `sync_extensions`, `export_extensions` |
-| Organization values | `org-value:` | `sync_org_values`, `export_org_values` |
+| Organization values (including `retention_months`, see [Extended data retention](../../../7-administration/extended-retention.md#infrastructure-as-code)) | `org-value:` | `sync_org_values`, `export_org_values` |
 | Installation keys | `installation_keys:` | `sync_installation_keys`, `export_installation_keys` |
 | Hive records | `hives: <hive>:` | `sync_hives.<hive>`, `export_hives.<hive>` |
 

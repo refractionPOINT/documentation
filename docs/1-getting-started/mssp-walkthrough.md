@@ -159,8 +159,8 @@ If your team's emails all share a domain, opt into [Unified Billing](../7-admini
 
 LimaCharlie's pricing is usage-based across two main axes:
 
-- **EDR endpoints** — flat per-endpoint per-month, all telemetry included, with one year of Insight retention bundled in.
-- **External telemetry** (everything from adapters: M365, Okta, CloudTrail, etc.) — standard sources are metered on the bytes received and billed once at ingestion in organization-level GB blocks, with one year of retention included. A source on a subscription plan follows that plan.
+- **EDR endpoints** — flat per-endpoint per-month, all telemetry included, with one year of Insight retention bundled in by default.
+- **External telemetry** (everything from adapters: M365, Okta, CloudTrail, etc.) — standard sources are metered on the bytes received and billed once at ingestion in organization-level GB blocks, with one year of retention included by default. A source on a subscription plan follows that plan.
 
 A few helpful order-of-magnitude estimates so you can quote customers credibly:
 
@@ -1388,7 +1388,7 @@ Cases offers a [WebSocket endpoint](../5-integrations/extensions/limacharlie/cas
 
 ## Part 9 — Outputs: getting your data where it needs to go
 
-Telemetry retention in Insight is one year and is included free. You don't *need* a SIEM to use LimaCharlie. But your customer might already have one, or you might want to build long-term archives or a billing-grade audit trail. That's where Outputs come in.
+Telemetry retention in Insight is one year by default and is included free. [Extended retention](../7-administration/extended-retention.md) keeps it longer, for a fee. You don't *need* a SIEM to use LimaCharlie. But your customer might already have one, or you might want to build long-term archives or a billing-grade audit trail. That's where Outputs come in.
 
 ### Pick the right stream
 
@@ -1485,7 +1485,7 @@ An output can filter its stream before delivery, rather than shipping everything
 
 A pattern that works well for MSSPs: send LimaCharlie a superset of the customer's telemetry, then use outputs to decide who gets what, instead of trimming at the customer's edge.
 
-- Ingest the sources you may need. Standard external telemetry is billed once at ingestion, in organization-level GB blocks, and it includes a year of retention in LimaCharlie (a source on a subscription plan follows that plan) ([Estimating Data Ingestion](../7-administration/billing/data-estimation.md)). Filter noise at the source first (Part 5), since data that is never sent is never billed. Routing with outputs, as described here, does not reduce ingestion billing, only what you send onward.
+- Ingest the sources you may need. Standard external telemetry is billed once at ingestion, in organization-level GB blocks, and it includes a year of retention in LimaCharlie by default (a source on a subscription plan follows that plan) ([Estimating Data Ingestion](../7-administration/billing/data-estimation.md)). Filter noise at the source first (Part 5), since data that is never sent is never billed. Routing with outputs, as described here, does not reduce ingestion billing, only what you send onward.
 - Send an unfiltered copy of the `event` stream to a cheap, long-term home: a cold storage bucket **in the same cloud region as the customer's LimaCharlie datacenter**. A [Google Cloud Storage](../5-integrations/outputs/destinations/google-cloud-storage.md) bucket works well for this, because a GCS, Pub/Sub or BigQuery output whose destination is in the datacenter's own region is not billed for output (see below). Outputs are best effort, with no durable queue, so watch for `output_drop` events and check coverage where the archive has a retention requirement ([Output Delivery](../5-integrations/outputs/delivery.md)).
 - Send only the security-relevant subset to the tool that charges by volume, such as a downstream SIEM or an AI triage tool: a second output on the `event` stream with `event_white_list` or sensor-tag filters, or an output on the `detect` stream, which is small by nature and can filter by category or rule tag.
 - Do the routing in the cloud, in output configuration, and not at the customer's site. A change to what the SIEM receives is then one edit to a record in Git, with no firewall change, no collector reconfiguration and no troubleshooting on the customer network.

@@ -2,6 +2,10 @@
 
 LimaCharlie users have multiple billing options available to them, depending on their unique needs. We'll walk through these two options, *Default Billing* and *Unified Billing*, below.
 
+## Data retention
+
+Every organization includes 12 months of searchable telemetry. [Extended data retention](../extended-retention.md) keeps it for 18, 24 or 36 months and is billed per GB-month of data kept beyond the first 12 months.
+
 ## Default Billing
 
 By default, every Organization is billed using a credit card set at the individual organization level. The billing cycle for each organization starts at the time the organization goes from the free tier into a paid tier. The invoices go to the email address of the user who initially created the organization.
