@@ -309,6 +309,11 @@ sweeps**:
   account (a permission gap, a throttled or failed call, an organization policy
   that blocks the read) leaves that part's resources as they were: it neither
   records nor cancels a miss.
+- Resources matched by a [`collection` exclusion](configuration.md#exclusions-the-escape-hatch)
+  are the exception: a partial or failed pass still counts toward their removal.
+- A sighting counts once the sweep has saved what it read for that part. If the
+  sweep fails later, before it finishes, the next sweep that misses the
+  resource still keeps it and records a fresh miss instead of removing it.
 
 In practice, a resource you delete in the cloud leaves Cloud Security inventory
 **one sweep later** than its deletion is first observed, and its findings close
