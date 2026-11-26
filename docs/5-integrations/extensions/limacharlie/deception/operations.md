@@ -160,7 +160,7 @@ They are recorded as `ext-deception:covered_sensors` and `ext-deception:covered_
 
 A new release of the extension takes effect for every subscribed organization at once. What it never does on its own:
 
-- **It never replaces a detection rule it installed earlier.** Rules in `dr-general` are yours once installed. A shipped rule that is missing (for example a rule new in this release) is installed automatically, but an existing one stays as it is, whether you edited it or it is simply the older shipped version. `plan` lists each shipped rule as `missing`, `current` or `modified`, with the current shipped copy, and `coverage` reads an older or edited rule as `unverified (rule edited: <rule>)`. Review the difference, then apply the shipped version when you choose:
+- **It never replaces a detection rule it installed earlier.** Rules in `dr-general` are yours once installed. A shipped rule that is missing (for example a rule new in this release) is installed automatically, but an existing one stays as it is, whether you edited it or it is simply the older shipped version. `plan` lists each shipped rule as `missing`, `current` or `modified` (its content differs; enabling, tags and expiry are not compared), with the current shipped copy, and `coverage` reads an older or edited rule as `unverified (rule edited: <rule>)`. Review the difference, then apply the shipped version when you choose:
 
     ```bash
     limacharlie deception deploy --apply-pack deception-alert --apply-pack deception-alert-sanctioned-agent \
