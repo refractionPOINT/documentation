@@ -12,6 +12,7 @@ The Config Hive is LimaCharlie's hierarchical configuration store. It provides a
 - [Cloud Sensors](cloud-sensors.md) - Cloud sensor configurations
 - [Application Control Policies](app-control-policy.md) - Which sensors Application Control covers, and in which mode
 - [Application Control Rules](app-control-rule.md) - Allow and deny rules for Application Control
+- [Host Posture Rules](host-posture-rule.md) - Misconfiguration checks that Host Posture runs on your sensors
 - [Apps](apps.md) - User-authored, AI-generated mini web applications
 - [SOPs](../../9-ai-sessions/sops.md) - Standard Operating Procedures that AI agents read and follow
 - [Organization Notes](../../9-ai-sessions/org-notes.md) - Free-form reference documents about the organization, read by analysts and AI agents
@@ -168,3 +169,4 @@ Answers built from several hives (Stories, access-control resources) use `INCOMP
 - [Lookups](lookups.md)
 - [Application Control Policies](app-control-policy.md)
 - [Application Control Rules](app-control-rule.md)
+- [Host Posture Rules](host-posture-rule.md)
