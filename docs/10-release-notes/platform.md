@@ -5,6 +5,24 @@ Release notes for platform announcements, the command line interface and the SDK
 !!! tip "Subscribe"
     Get each release as it ships with the [Platform announcements RSS feed](https://docs.limacharlie.io/10-release-notes/platform.xml) or [CLI RSS feed](https://docs.limacharlie.io/10-release-notes/cli.xml).
 
+<!-- PLACEHOLDER DATE: 2026-11-20 is not the release date. Set the real release date before this entry is merged. -->
+
+## 2026-11-20
+
+### Platform: OpenTelemetry collector fleets (beta)
+
+#### New Features
+
+- **OpenTelemetry collector fleets**: a webhook adapter can now manage OpenTelemetry Collectors over OpAMP. Run the upstream `otelcol-contrib` under its OpAMP supervisor, or Bindplane BDOT, and write collector configs in LimaCharlie with selectors on the collectors' attributes. Every matching collector applies a config at its next check-in. Each collector is its own sensor, named after its host, and fleet changes such as `config_applied`, `config_failed` and `blocked` arrive on that sensor as `opamp_status` events for D&R rules. The console has a fleet page per organization and a view across organizations, behind a beta flag. See [OpenTelemetry Collector Fleets](../2-sensors-deployment/adapters/tutorials/otel-collector-fleets.md).
+- **Two fleet modes**: in the default **LimaCharlie only** mode, included at no extra cost, LimaCharlie adds its own exporter to every config and blocks any collector whose local configuration sends data elsewhere. The paid **Any destination** mode lets configs define their own exporters, send a pipeline to LimaCharlie and to other backends at once, and read credentials with `${env:...}` and `${file:...}`. It also allows Bindplane BDOT v1 collectors, which are supported only in this mode. It costs $0.75 per managed collector per month, billed as collector-days at $0.025, needs a paid plan, and shows in usage as **Managed OpenTelemetry collectors**. See [Fleet modes](../2-sensors-deployment/adapters/tutorials/otel-collector-fleets.md#fleet-modes).
+- **OTLP ingestion on webhooks**: OTLP/HTTP logs, traces and metrics sent to a webhook become one event per log record, span or metric data point. The secret can go in a header, event times come from the records, and errors use the status codes OTLP exporters retry or drop on. Records flagged by the webhook's own D&R rules are kept, and the response reports them in a warning. See [Ingesting OpenTelemetry Data via Webhook](../2-sensors-deployment/adapters/tutorials/otel-webhook.md).
+
+#### Schema Changes
+
+- OTLP events use the OTLP/JSON field names (`timeUnixNano`, `severityText`, `traceId`, `metricName`, `asInt`, ...), with nanosecond times as strings. The earlier version of the OTLP webhook page described snake_case names (`timestamp_ns`, `severity_text`, `trace_id`, `metric_name`, `value`). Rules and searches written from that page need the new names.
+
+---
+
 ## 2026-08-20
 
 ### Platform: Multi-Provider AI Sessions
