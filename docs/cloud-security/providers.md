@@ -305,6 +305,8 @@ sweeps**:
 - The next sweep that also misses it removes it from inventory and the graph,
   emits `cloud_resource.deleted`, and closes its findings.
 - A sweep that sees the resource again in between cancels the recorded miss.
+  So does any update to the stored resource after the miss (for example by a
+  partial read): the next complete miss then records a fresh miss.
 - Only a complete read counts. A sweep that could not read a service, region or
   account (a permission gap, a throttled or failed call, an organization policy
   that blocks the read) leaves that part's resources as they were: it neither
