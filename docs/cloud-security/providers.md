@@ -291,10 +291,13 @@ in seconds; the periodic sweep remains the safety net. See
 
 ### When a deleted resource disappears
 
-Cloud listings are sometimes briefly incomplete: an API page can omit a resource
-for a moment, or answer an empty list once. So that one such read does not
-remove a resource, close its findings and bring them back on the next sweep,
-a resource is removed only after it is missing from **two consecutive sweeps**:
+This applies to every connector: cloud resources, identity-provider users and
+groups, SaaS, source-control and AI assets, and LimaCharlie resources alike.
+Provider listings are sometimes briefly incomplete: an API page can omit a
+resource for a moment, or answer an empty list once. So that one such read does
+not remove a resource, close its findings and bring them back on the next
+sweep, a resource is removed only after it is missing from **two consecutive
+sweeps**:
 
 - The first sweep that no longer sees a resource keeps it and records the miss.
   It emits no `cloud_resource.deleted`, and the resource's findings stay as
@@ -315,5 +318,5 @@ resource is removed by the next complete read of that account (the next
 targeted refresh of it, or the next periodic sweep).
 
 Two connections that cover the same account, or two sweeps of the same account
-that run at the same time, may remove a resource on its first miss, which is how
-deletions worked before.
+that run at the same time, may remove a resource on its first miss, as if the
+two-sweep rule did not apply.

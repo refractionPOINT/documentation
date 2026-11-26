@@ -267,10 +267,13 @@ has no effect on the others. At least one list must be non-empty:
 | `emission` | Matching events are dropped before delivery to the event stream. Only account/name/provider matchers are honored here — an emission rule constrained on labels or tags can never be satisfied by a lean event and so never drops one. |
 
 !!! warning "A collection exclusion deletes the inventory it excludes"
-    Collection exclusion is not just "stop collecting from here". On the next
+    Collection exclusion is not just "stop collecting from here". From the next
     sweep the excluded scope is reported as *covered with zero rows*, so the
-    authoritative diff **deletes the scope's existing inventory rows** (the
-    resulting delete storm is kept out of the event feed). This is deliberate —
+    authoritative diff **deletes the scope's existing inventory rows**, under
+    the same [two-sweep rule](providers.md#when-a-deleted-resource-disappears)
+    as any missing resource: the first sweep under the exclusion keeps them, the
+    second removes them (the resulting delete storm is kept out of the event
+    feed). This is deliberate —
     an excluded scope disappears instead of lingering as stale rows — but it
     means excluding a scope you still want recorded loses that inventory until
     you remove the exclusion and let a sweep repopulate it.
@@ -291,7 +294,8 @@ How a `collection` rule is judged:
   its relationships, so a bucket-name rule removes that bucket's access grants.
   Containers are the exception: a project-name rule does not remove grants made
   at the project level.
-- **A fully excluded type is removed even when the pass was partial or failed.**
+- **A fully excluded type is removed even when the pass was partial or failed**
+  (on the second sweep under the exclusion, as above).
 - **Only deletes the exclusion caused are kept out of the event feed.** A
   resource that is really deleted in the cloud still emits
   `cloud_resource.deleted`.
