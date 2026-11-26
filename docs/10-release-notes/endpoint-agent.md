@@ -5,6 +5,18 @@ Release notes for the EDR sensor installed on Windows, macOS, Linux and Chrome e
 !!! tip "Subscribe"
     Get each release as it ships with the [Endpoint Agent RSS feed](https://docs.limacharlie.io/10-release-notes/endpoint-agent.xml).
 
+## 2026-11-25
+
+### Endpoint Agent 5.3.21
+
+#### Bug Fixes
+
+- Windows Event Log collection now recovers on its own when a subscription goes silent, such as after a Microsoft Defender platform update; it resumes from where it left off, so no events are skipped.
+
+#### Improvements
+
+- The sensor can now resume TLS 1.3 sessions when reconnecting to the cloud, avoiding a full handshake each time, with forward secrecy kept on every resumed session.
+
 ## 2026-11-23
 
 ### Endpoint Agent 5.4.4
