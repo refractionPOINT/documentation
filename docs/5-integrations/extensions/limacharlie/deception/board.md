@@ -24,8 +24,8 @@ Each row has one status: the first of these rules that matches, in this order. A
 | Status | Reasons |
 | --- | --- |
 | Uninstalling | An [uninstall](operations.md#uninstalling-before-you-unsubscribe) is in progress. |
-| Broken | Deception is not alerting: the `deception-alert` rule is missing or disabled (no read, modification or use of a decoy raises a detection), no alert path works, or only Delete paths still work. |
-| Needs attention | Alerts work, with something to fix: an alert path or token form is broken, a test raised no detection, a shipped detection rule is missing, disabled or edited (the respond and test rules included), the rules could not be checked, or a path is only partly covered. |
+| Broken | Deception is not alerting: the `deception-alert` rule is missing or disabled (no read, modification or use of a decoy raises a detection), no alert path raises an alert, or only Delete paths still do. A path broken by a test that raised no detection counts as not alerting here (the test found that path silent); a path partly covered still alerts on the hosts that hold its decoy. |
+| Needs attention | Alerts work, with something to fix: an alert path or token form is broken, a test raised no detection, a shipped detection rule is missing, disabled, edited or has changed tags (the respond and test rules included), the rules could not be checked, or a path is only partly covered. |
 | Not tested | Nothing is deployed yet, a testable path has no result yet, a passed test is older than 48 hours, a test passed while its alert rule was off, or a test ran while the test rule was off. |
 | Unavailable | Policies select templates the organization cannot run. (A quiet source would count here too, but no source is ever judged quiet in this release: see the `blind` status in [Coverage statuses](decoys.md#coverage-statuses).) |
 | Rolling out | A [rollout](operations.md#rollouts) is still running. |
