@@ -24,18 +24,22 @@ Each row has one status: the first of these rules that matches, in this order. A
 | Status | Reasons |
 | --- | --- |
 | Uninstalling | An [uninstall](operations.md#uninstalling-before-you-unsubscribe) is in progress. |
-| Broken | An alert path is broken, a token form is broken, a shipped detection rule is missing or disabled, or a test-fire found a path that raised no detection. |
-| Not tested | Nothing is deployed yet, so nothing could be tested, or there is no test-fire result in the last 48 hours. |
+| Broken | Deception is not alerting: at least one alert path is deployed, and the `deception-alert` rule is missing or disabled (no read, modification or use of a decoy raises a detection), no alert path raises an alert, or only Delete paths still do. With nothing deployed the row reads Not tested, never Broken. A path broken by a test that raised no detection counts as not alerting here (the test found that path silent); a path partly covered still alerts on the hosts that hold its decoy. |
+| Needs attention | Alerts work, with something to fix: an alert path or token form is broken, a test raised no detection, a shipped detection rule is missing, disabled, edited or has changed tags (the respond and test rules included), the rules could not be checked, or a path is only partly covered. |
+| Not tested | Nothing is deployed yet, a testable path has no result yet, a passed test is older than 48 hours, a test passed while its alert rule was off, or a test ran while the test rule was off. |
 | Unavailable | Policies select templates the organization cannot run. (A quiet source would count here too, but no source is ever judged quiet in this release: see the `blind` status in [Coverage statuses](decoys.md#coverage-statuses).) |
-| Rolling out | Not every targeted sensor holds a decoy yet, a [rollout](operations.md#rollouts) is still running, or a sensor count is a lower bound, so whether the rollout is complete is unknown (never assumed complete). |
+| Rolling out | A [rollout](operations.md#rollouts) is still running. |
+| Hosts missing decoys | A targeted host is not fully protected (partial, pending, failed, skipped, no decoy yet, not reached, or restricted by ACLs), a targeted sensor has not been reached, or the host counts are lower bounds, so whether every host holds its decoys is unknown (never assumed). |
 | Observing | A policy is in [observe mode](configuration.md#observe-mode): its unapproved reads and modifications alert at low priority, with no automatic response. |
-| Protected | None of the above. |
+| Protected | None of the above: every alert path works, every targeted host holds its decoys, and every testable path passed a test in the last 48 hours. |
 
 Observing comes after every problem status, so it never hides a problem, and a healthy organization in observe mode reads Observing, not Protected. An **Observing** badge is also shown next to any other status.
 
 The board adds three states of its own: **Pending first run** (subscribed, but its first summary has not been computed yet, or that computation failed, with the reason), **Datacenter unavailable** (a datacenter did not answer, or runs an older Deception that cannot answer the board), and **No Deception**.
 
-Partial paths, edited shipped rules, unverified token forms and paths not tested yet do not change the status. They are counted in the **Unverified** column instead.
+### One verdict
+
+Each row also has a verdict, the same one the organization's **Coverage** tab and **Overview** show: **Working** (no reason in the table above matches: every alert path works, nothing is unavailable, every targeted host holds its decoys, every testable path passed in the last 48 hours), **Working, with gaps** (alerts work, and a reason of Needs attention, Not tested, Unavailable or Hosts missing decoys matches), or **Not alerting** (the Broken status). Only two reasons never change the verdict: observe mode, and the fact that a rollout round is running (`deploy_in_progress`). Hosts the round has not reached yet still count (`rollout_incomplete`). The board reads test results live, but judges them by the test rule's off times as of the row's last computation, so a test that ran while `deception-test` was off can read failing on the board until the row is recomputed (opening the organization's **Coverage** tab does it). `fleet_summary` returns it as `verdict: {state, reasons}` (`working`, `gaps`, `not_alerting`), and an organization-wide [`coverage`](requests.md#coverage) returns the same object.
 
 ### Columns and freshness
 

@@ -171,13 +171,15 @@ Google Workspace is not a supported source. **Not verified:** that Entra ID and 
 
 ### Rule integrity
 
-Besides the test result, `coverage` checks each shipped detection rule in `dr-general` against what the extension wrote. The check compares the whole stored record, not just the detection logic: the detect and respond sections, scoping, options and the rule's tags and expiry. It gives each rule one of three outcomes:
+Besides the test result, `coverage` checks each shipped detection rule in `dr-general` against what the extension wrote. To decide the outcome, the check compares the whole stored record, not just the detection logic: the detect and respond sections, scoping, options and the rule's tags and expiry. It gives each rule one of three outcomes:
 
 | Outcome | Meaning |
 | --- | --- |
 | verified | The stored rule is identical to the shipped one. |
-| `unverified (rule edited: <rule>)` | The rule differs from the shipped one in any way. The extension does not evaluate rules, so it neither calls an edit healthy nor broken. Check that the rule still fires on `deception_hit` events as the shipped one does, or restore it with `deploy` and `apply_pack`. |
+| `unverified (rule edited: <rule>)` | The rule is enabled and differs from the shipped one in any way, its tags or expiry included (its detections carry the rule's tags, and an expiry stops it). The extension does not evaluate rules, so it neither calls an edit healthy nor broken. Check that the rule still fires on `deception_hit` events as the shipped one does, or restore it with `deploy` and `apply_pack`. |
 | `broken` | The rule is missing, or disabled. |
+
+Each issue also says `edited`, a narrower question: whether the rule's content (its detect, respond and the rest of the rule) differs from the shipped rule's, so that restoring it would replace your change. It ignores the rule's enabled state and its metadata (tags, expiry, comment): a rule that was only disabled, even by a tool that dropped its tags while disabling it, is not edited, and an enabled rule whose only change is its tags reads `unverified` with `edited: false`. On the [board](board.md#statuses) a content edit is the reason `rule_edited` and a metadata-only change `rule_unverified`; both put the row in **Needs attention**.
 
 A missing or disabled `deception-alert` marks the read, modify and use layers `broken`; a missing or disabled `deception-alert-decoy-deleted` marks the delete layer `broken`. For the other shipped rules the finding is reported but marks no path. The answer carries `pack_issues` and a `pack_check` object: `status` (`ok`: every rule verified; `issues`: one is missing or disabled; `unverified`: a rule was edited, or the check itself could not run, with a `reason`), `checked_at` (the last check that ran to an answer) and `attempted_at` (the latest attempt). If an attempt fails, the platform error is logged and not returned, `checked_at` keeps the last good result, and the two times differ. Never read `unverified` as healthy.
 
