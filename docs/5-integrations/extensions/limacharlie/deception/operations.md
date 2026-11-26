@@ -143,7 +143,7 @@ If you unsubscribe without uninstalling, the same cleanup runs inside the unsubs
 
 Pricing is per covered machine per period of time. **The price is not set yet and nothing on this page states one.**
 
-A **covered sensor** is a sensor with at least one verified decoy that has a working alert path. A host whose decoys are all broken or retired is not covered.
+A **covered sensor** is a sensor with at least one verified decoy that has a working alert path. A host whose decoys are all broken or retired is not covered. A path whose latest test produced no detection (shown as not proven in `coverage`) does not count toward covering a host either.
 
 Once a day the extension reports two numbers for the last completed UTC day, with an idempotency key per organization and day so a retried run counts once:
 
