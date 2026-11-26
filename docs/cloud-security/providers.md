@@ -288,3 +288,32 @@ changes. For sub-sweep freshness on GCP, `feed_subscription` names a Pub/Sub
 subscription carrying a cloud change feed, so targeted re-sweeps reflect changes
 in seconds; the periodic sweep remains the safety net. See
 [Configuration](configuration.md#cloudsec_provider) for these shared fields.
+
+### When a deleted resource disappears
+
+Cloud listings are sometimes briefly incomplete: an API page can omit a resource
+for a moment, or answer an empty list once. So that one such read does not
+remove a resource, close its findings and bring them back on the next sweep,
+a resource is removed only after it is missing from **two consecutive sweeps**:
+
+- The first sweep that no longer sees a resource keeps it and records the miss.
+  It emits no `cloud_resource.deleted`, and the resource's findings stay as
+  they are.
+- The next sweep that also misses it removes it from inventory and the graph,
+  emits `cloud_resource.deleted`, and closes its findings.
+- A sweep that sees the resource again in between cancels the recorded miss.
+- Only a complete read counts. A sweep that could not read a service, region or
+  account (a permission gap, a throttled or failed call, an organization policy
+  that blocks the read) leaves that part's resources as they were: it neither
+  records nor cancels a miss.
+
+In practice, a resource you delete in the cloud leaves Cloud Security inventory
+**one sweep later** than its deletion is first observed, and its findings close
+one sweep later. A targeted refresh (for example after a GCP change-feed event)
+counts as a sweep for the account it reads: it records the first miss, and the
+resource is removed by the next complete read of that account (the next
+targeted refresh of it, or the next periodic sweep).
+
+Two connections that cover the same account, or two sweeps of the same account
+that run at the same time, may remove a resource on its first miss, which is how
+deletions worked before.
