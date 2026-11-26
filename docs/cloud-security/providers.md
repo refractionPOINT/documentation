@@ -305,12 +305,12 @@ sweeps**:
 - The next sweep that also misses it removes it from inventory and the graph,
   emits `cloud_resource.deleted`, and closes its findings.
 - A sweep that sees the resource again in between cancels the recorded miss.
-  So does any update to the stored resource after the miss (for example by a
-  partial read): the next complete miss then records a fresh miss.
-- Only a complete read counts. A sweep that could not read a service, region or
-  account (a permission gap, a throttled or failed call, an organization policy
-  that blocks the read) leaves that part's resources as they were: it neither
-  records nor cancels a miss.
+  So does any read that sees it after the miss, even a partial one: the next
+  complete miss then records a fresh miss.
+- Only a complete read records a miss. A sweep that could not read a service,
+  region or account (a permission gap, a throttled or failed call, an
+  organization policy that blocks the read) leaves that part's resources as they
+  were: it records no miss for them.
 - Resources matched by a [`collection` exclusion](configuration.md#exclusions-the-escape-hatch)
   are the exception: a partial or failed pass still counts toward their removal.
 - A sighting counts once the sweep has saved what it read for that part. If the
