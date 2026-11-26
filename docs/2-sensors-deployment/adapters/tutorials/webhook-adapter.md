@@ -16,7 +16,6 @@ Webhook adapters can be created either through the webapp, API, or CLI. Before c
         "signature_secret": "",
         "signature_header": "",
         "signature_scheme": "",
-        "events_path": "",
         "client_options": {
             "hostname": "<any_name>",
             "identity": {
@@ -39,7 +38,7 @@ Field descriptions:
   - A request with a missing or wrong signature is refused with `401`. A request carrying a signature already accepted in the last 24 hours is acknowledged with `{"success":true,"duplicate":true}` and not ingested again.
   - JSON events from a verified request carry `"__lc_signature_verified": true`, so a D&R rule can require it. The field is removed from events of any request that was not verified.
   - If you require another signature format, please get in touch with us.
-- `events_path`: optional path to a list of events inside each JSON object the sender posts, for senders that batch several events in an envelope. See [Splitting batched events](#splitting-batched-events-events_path).
+- `client_options.mapping.events_path`: optional path to a list of events inside each JSON object the sender posts, for senders that batch several events in an envelope. See [Splitting batched events](#splitting-batched-events-events_path). This is the same option every adapter has, documented in [Adapter Usage](../usage.md#splitting-batched-events).
 - `client_options.hostname`: provide your own name for the webhook adapter.
 - `client_options.identity.oid`: the OID of the organization you wish to send to.
 - `client_options.identity.installation_key`: the installation key to be used for the adapter.
@@ -119,25 +118,43 @@ Some platforms push several events in a single request, wrapped in an envelope, 
 {"jsonrpc": "2.0", "method": "addEvents", "params": {"events": [{"id": 1}, {"id": 2}, {"id": 3}]}, "id": 123}
 ```
 
-By default this whole envelope is ingested as a single event. Set `events_path` to the location of the list inside the envelope, as object keys separated by `/` (here `params/events`), to ingest each element of the list as its own event instead:
+By default this whole envelope is ingested as a single event. Set `client_options.mapping.events_path` to the location of the list inside the envelope, as object keys separated by `/` (here `params/events`), to ingest each element of the list as its own event instead:
+
+```json
+{
+    "sensor_type": "webhook",
+    "webhook": {
+        "secret": "some-secret-value-hard-to-predict",
+        "client_options": {
+            "hostname": "<any_name>",
+            "identity": {"oid": "<oid>", "installation_key": "<installation_key>"},
+            "platform": "json",
+            "sensor_seed_key": "<any-super-secret-seed-key>",
+            "mapping": {"events_path": "params/events"}
+        }
+    }
+}
+```
+
+This is the `events_path` option every adapter shares, so the rules for the list, mixed lists, lists that cannot be split and paths that do not resolve are the same everywhere. They are described in [Adapter Usage](../usage.md#splitting-batched-events). In short:
 
 - Each object in the list becomes an event.
-- Each string in the list is handled like a line of newline-separated text, so formats such as CEF go through the adapter's normal text parsing.
-- If a list mixes objects and strings, all the objects are ingested as events, then all the strings as text lines. The relative order between the two kinds is not kept.
+- Each non-empty string in the list is handled like a line of newline-separated text, so formats such as CEF go through the adapter's normal text parsing.
 - A list that holds anything other than objects and strings (numbers, `null`, nested lists) is not split: the envelope is ingested unchanged, so no data is lost.
-- If the path is missing from an object, does not lead to a list, or leads to a list that would produce no event (empty, or only empty strings), that object is ingested unchanged. This keeps pings and test messages, and means a request is never acknowledged with nothing ingested.
-- Keys are matched exactly, and `events_path` has no wildcards or list indexes. It is applied to each JSON object of the request, so it also works with the list and newline-separated formats above. It is not applied to form-encoded bodies.
+- If the path is missing from an object, does not lead to a list, or leads to a list that would produce no event, that object is ingested unchanged. This keeps pings and test messages, and means a request is never acknowledged with nothing ingested.
 
-Signature verification, if enabled, is computed over the original request body. Detection rules that you attach to the webhook (`dr_rules`) are evaluated on each split event.
+For webhooks, `events_path` is applied to each JSON object of the request, so it also works with the list and newline-separated formats above. It is not applied to form-encoded bodies.
+
+Signature verification, if enabled, is computed over the original request body. Detection rules that you attach to the webhook (`dr_rules`) are evaluated on the request as the sender posted it, before it is split.
 
 ## Example: Bitdefender GravityZone Event Push Service
 
 [Bitdefender GravityZone](https://www.bitdefender.com/business/support/en/77209-135319-setpusheventsettings.html) can push events to an HTTPS endpoint, and only needs a `2xx` response back. It sends its configured `authorization` value in the `Authorization` header, and batches events as `params/events` in a JSON-RPC message.
 
-First create the webhook adapter, with `events_path` set:
+First create the webhook adapter, with `client_options.mapping.events_path` set:
 
 ```bash
-echo '{"sensor_type": "webhook", "webhook": {"secret": "some-secret-value-hard-to-predict", "events_path": "params/events", "client_options": {"hostname": "bitdefender-gravityzone", "identity": {"oid": "<oid>", "installation_key": "<installation_key>"}, "platform": "json", "sensor_seed_key": "bitdefender-gravityzone"}}}' | limacharlie hive set cloud_sensor --key bitdefender --data -
+echo '{"sensor_type": "webhook", "webhook": {"secret": "some-secret-value-hard-to-predict", "client_options": {"hostname": "bitdefender-gravityzone", "identity": {"oid": "<oid>", "installation_key": "<installation_key>"}, "platform": "json", "sensor_seed_key": "bitdefender-gravityzone", "mapping": {"events_path": "params/events"}}}}' | limacharlie hive set cloud_sensor --key bitdefender --data -
 ```
 
 Then, in the GravityZone [`setPushEventSettings`](https://www.bitdefender.com/business/support/en/77209-135319-setpusheventsettings.html) API call, use the hook URL without the secret and pass the secret as the `authorization` value:
