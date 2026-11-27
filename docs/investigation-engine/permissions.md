@@ -84,6 +84,13 @@ template to `draft` always works.
 This is deliberate: an AI agent or a script holding an API key can write drafts but
 cannot make a template start from a rule or act on its own.
 
+An organization that manages active templates with API keys, for example from a
+Git-synced pipeline, can opt out by adding the tag `allow-api-key-promotion` to the
+enabled `investigation_policy/default` record. Setting that tag needs
+`investigation_policy.set.mtd`, so **never give an AI agent's key any
+`investigation_policy.*` permission**: it could turn the gate off and make its own
+drafts active. If the settings record cannot be read, the write is refused.
+
 !!! warning "Checks are not behind this gate"
     A [check](templates.md#checks-templates-other-templates-call) runs as it is stored,
     whatever its `status` (an active template that calls a draft check only gets the warning
@@ -92,13 +99,7 @@ cannot make a template start from a rule or act on its own.
     the check, or a "check again" that releases a containment. Treat `investigation_plan.set`
     on a key as the power to change active templates' checks, review check edits like edits
     of active templates, and keep the checks your active templates call in the same
-    reviewed source (Git) as the templates. An
-organization that manages active templates with API keys, for example from a
-Git-synced pipeline, can opt out by adding the tag `allow-api-key-promotion` to the
-enabled `investigation_policy/default` record. Setting that tag needs
-`investigation_policy.set.mtd`, so **never give an AI agent's key any
-`investigation_policy.*` permission**: it could turn the gate off and make its own
-drafts active. If the settings record cannot be read, the write is refused.
+    reviewed source (Git) as the templates.
 
 ### Naming a secret as the run identity
 

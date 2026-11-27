@@ -17,17 +17,17 @@ The workflow:
 7. Save as a draft.
 8. A person reviews it and makes it active.
 
-The agent cannot make a template active. It can, however, save a
+The agent cannot make a template active. The save tool always writes `status: draft` and
+refuses to overwrite an active template, and the Hive refuses an `active` write that
+comes from an API key (unless the organization opted out; see
+[Permissions](permissions.md#active-templates-can-only-be-written-by-a-person)).
+
+The agent can, however, save a
 [check](templates.md#checks-templates-other-templates-call), and an active template that calls
 a check runs it as stored, draft or not: see the warning in
 [Permissions](permissions.md#active-templates-can-only-be-written-by-a-person). Ask the agent
 to save changed checks under a new name, and review them before an active template calls
 them.
-
-The agent cannot make a template active. The save tool always writes `status: draft` and
-refuses to overwrite an active template, and the Hive refuses an `active` write that
-comes from an API key (unless the organization opted out; see
-[Permissions](permissions.md#active-templates-can-only-be-written-by-a-person)).
 
 ## Set up the agent
 
