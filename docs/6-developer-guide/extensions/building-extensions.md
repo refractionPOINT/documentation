@@ -2,6 +2,8 @@
 
 An Extension is a small HTTPS service that LimaCharlie calls over webhooks. You host it and own the code; LimaCharlie handles multi-tenancy, credentials, configuration storage and the user interface.
 
+New to extensions? Read this page for the concepts, then follow the [Step-by-Step Walkthrough](walkthrough.md) to deploy one. [Common Patterns](patterns.md) and [Design Considerations & Gotchas](design-considerations.md) cover what to think about before customers depend on it.
+
 Feel free to reach out on the [community forum](https://community.limacharlie.com/) if you get stuck.
 
 ## Why Extensions?
@@ -27,9 +29,17 @@ The full set of guarantees — timeouts, retries, size limits, signing — is in
 
 ### Public and Private Extensions
 
-Anyone can build an extension. Subscribing any organization to any extension requires the `billing.ctrl` and `user.ctrl` permissions on that organization. A **private** extension additionally can only be subscribed by its owner, so while it is private you can only install it into organizations you can administer yourself.
+Anyone can build an extension. An extension definition belongs to one user, the one who created it, not to an organization. New definitions are private, and ownership cannot be transferred.
+
+Subscribing any organization to any extension requires the `billing.ctrl` and `user.ctrl` permissions on that organization. A **private** extension additionally can only be subscribed by its owner. That owner can subscribe it into any organization, in any region, including your customers' organizations, as long as they hold those two permissions there. Nobody else can, even with the same permissions, and neither can an Organization API key or Git Sync. Subscribe the organization as the extension owner before applying Git Sync configuration. Automation that subscribes it must call the subscription API with the owner's user API key.
+
+The target organization needs a billing plan on file. Unsubscribing only needs `billing.ctrl`, and anyone with it can do so.
+
+There is no sharing between private and public, such as per organization or per group. If you serve many customers, create the extension from a dedicated LimaCharlie user account rather than a personal one, since you cannot hand ownership to someone else later. Extension creation is subject to a per-user limit of about 50. Contact support to raise it.
 
 To make an extension public, and optionally monetize it, contact `answers@limacharlie.io`. Once public, it is visible to and subscribable by everyone.
+
+Signed-in users with `ext.request` on a subscribed organization can view the definition. Only the owner sees its webhook URL and secret.
 
 ## Install
 
@@ -84,6 +94,10 @@ Once registered, LimaCharlie fetches your schema. Subscribe an organization to i
 ### Flairs
 
 The `segment` flair isolates your extension's resources so it can only see and modify the things it created — rules, configurations and so on. It is the right default for most extensions, and you should leave it on unless you specifically need to read or modify resources your extension did not create.
+
+A segmented extension cannot read secrets the customer created through its own key. Secrets referenced in `secret` fields are still resolved for you on requests, because the platform does that, not your key. See [Credentials for Third-Party Services](design-considerations.md#credentials-for-third-party-services).
+
+Settle the flairs before launch. Changing them changes the identity of your extension's key in organizations that subscribe or re-key afterwards, and a segmented extension then no longer sees records created under the old identity.
 
 The `bulk` flair marks an extension as expecting a high volume of API calls. Note that extension API keys already receive the platform's highest request quota by virtue of being extension keys, so setting this flair does not currently change the quota an extension gets.
 
@@ -203,6 +217,9 @@ For extensions that need isolation between organizations, the [Cloud Run multipl
 
 ## Next Steps
 
+- [Step-by-Step Walkthrough](walkthrough.md) — from an empty directory to a subscribed organization
+- [Common Patterns](patterns.md) — how existing extensions solve recurring problems
+- [Design Considerations & Gotchas](design-considerations.md) — tenancy, security, state, availability, and a pre-launch checklist
 - [Schema & Data Types](schema-data-types.md) — what the platform enforces, and every data type
 - [Building the User Interface](building-ui.md) — layouts and field presentation
 - [Testing Extensions](testing.md) — the simulator and mock API

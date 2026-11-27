@@ -27,6 +27,13 @@ them as PASS.
 
 There is no ARM or subscription setup.
 
+!!! info "GCC, GCC High and DoD tenants"
+    A tenant in one of Microsoft's US Government clouds needs
+    `microsoft_cloud` set to `gcc`, `gcc_high` or `dod` (the **Microsoft cloud**
+    select in the wizard). Setup uses the government portals and PowerShell
+    environments, and some Microsoft 365 services are not offered in every cloud.
+    See [Microsoft US Government clouds](microsoft-government-clouds.md).
+
 !!! tip "Already connecting Azure?"
     The [Azure](azure.md) provider collects this same directory as part of its
     sweep. You only need a standalone Entra record when there is no Azure
@@ -467,6 +474,7 @@ limacharlie cloudsec provider test --input-file provider.yaml
 
 | Check | Required | Meaning if it fails |
 |---|:--:|---|
+| `microsoft_cloud` | ✅ | The tenant is in a different Microsoft cloud than the record's `microsoft_cloud` (a GCC High tenant saved as Commercial, for example). The message names the value to set. Required on a confirmed mismatch; if Microsoft's metadata cannot be read, it fails as optional and the test continues. See [Microsoft US Government clouds](microsoft-government-clouds.md#what-the-connection-test-says). |
 | `auth` | ✅ | The credential was rejected: wrong client ID, a secret that expired, or a certificate not uploaded to the app registration. |
 | `certificate` | ✅ (certificate mode) | The certificate expired or is not valid yet. Nothing can be read until it is replaced. It also warns when the expiry is near and rotation has not replaced it yet. |
 | `client_id` | — | The secret's `client_id` differs from the record's `entra_client_id`; the record's value is used. |
@@ -481,7 +489,7 @@ limacharlie cloudsec provider test --input-file provider.yaml
 | `signin_activity` | — | Last-sign-in and dormancy enrichment unavailable (usually a missing Entra ID P1/P2 licence). |
 | `m365_entra-ext` | — | Entra ID policies for `cis-m365-v7` (device registration, PIM settings, access reviews and others) are unreadable. |
 | `m365_intune` | — | Intune settings are unreadable (permission or licence). |
-| `m365_m365-org` | — | Microsoft 365 admin center settings are unreadable. |
+| `m365_m365-org` | — | Microsoft 365 admin center settings are unreadable. In GCC High and DoD this check always reports *not offered*: Microsoft has no such API there ([details](microsoft-government-clouds.md#checks-that-are-not-assessed-in-a-cloud)). |
 | `m365_sharepoint` | — | SharePoint and OneDrive sharing settings are unreadable. |
 | `m365_exo` | — | Exchange Online is unreadable: check `Exchange.ManageAsApp`, Global Reader, and certificate mode. |
 | `m365_scc` | — | Purview is unreadable: check `Exchange.ManageAsApp` on Microsoft Exchange Online Protection, Global Reader, and certificate mode. |

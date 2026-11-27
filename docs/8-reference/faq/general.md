@@ -12,7 +12,7 @@ LimaCharlie is SOC 2 Type 2 and PCI-DSS compliant. Our infrastructure is housed 
 
 ## Where will my data be processed and stored?
 
-The LimaCharlie global infrastructure is built on the Google Cloud Platform (GCP). Currently, computing resources are available in the USA, Canada, Europe, India, and the United Kingdom. New data centers can be spun up anywhere GCP is available upon request.
+The LimaCharlie global infrastructure is built on the Google Cloud Platform (GCP). Currently, computing resources are available in the USA, Canada, Europe, India, the United Kingdom, and Australia. The region codes used when creating an organization are listed in [Regions](../../7-administration/org-lifecycle.md#regions). New data centers can be spun up anywhere GCP is available upon request.
 
 When you set up an Organization for the first time, you can select the Data Residency Region of your choice:
 
@@ -93,6 +93,10 @@ While sending detections and events data from LimaCharlie into the SIEM is the m
 LimaCharlie stores management/audit logs for one year.
 
 We suggest you set up an [Output](../../5-integrations/outputs/index.md) to send logs to an external destination if you are looking to have your logs stored for over one year.
+
+## What are the API rate limits?
+
+A regular API key or user can make 500 requests per 60 seconds. A bulk key can make 1,000. Going over returns an `HTTP 429` response, and a few expensive endpoints have tighter hourly limits. See [API Rate Limits](../api-rate-limits.md) for endpoint examples and retry guidance.
 
 ## Does LimaCharlie offer reporting capabilities?
 

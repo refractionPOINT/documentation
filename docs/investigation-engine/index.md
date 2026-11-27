@@ -1,81 +1,98 @@
 # Investigation Engine
 
-!!! info "Pre-release"
-    The Investigation Engine is documented here ahead of general availability.
-    Names, defaults and screens can still change before release, and the
-    service is only reachable where it has been enabled for your organization.
+!!! warning "Experimental"
+    The Investigation Engine is experimental. It is reachable only where it has been
+    enabled for your organization, and names, defaults and screens can still change.
+    Each page says what is not available yet.
 
-The Investigation Engine investigates an alert for you. You hand it a detection,
-a case, an entity or a question. It gathers what its plan template lists, every
-step whose inputs are ready **in parallel**, stops as soon as one of the template's
-rules decides, writes the result to a
-[case](../5-integrations/extensions/limacharlie/cases.md), and proposes or takes
-containment actions **only as far as your organization's policy allows**.
+The Investigation Engine investigates an alert, decides what it is, and acts on its
+own when you have written that it may. A person reviews afterwards.
 
-It is deterministic at its core. Templates decide with rules your team writes and can
-read: "close when the binary is on our approved list and the file on the host is
-signed", "escalate when a recipient clicked a link that lands on a password page".
-The AI answers focused questions and, when no rule decides, reviews the evidence and
-**recommends**. It decides alone only for the templates where your policy says so.
-The engine, not the AI, decides what runs next, what can be skipped and when to stop.
+You describe one kind of alert in a **template**: what to fetch, the rules that decide,
+and what to do about each decision. When a detection fires, a D&R rule starts a run. The
+engine fetches every step whose inputs are ready **in parallel**, stops as soon as a rule
+decides, writes a [case](../5-integrations/extensions/limacharlie/cases.md), and takes the
+actions the template lists: isolate the host for one hour, tag it, close the case as a
+false positive. Each action says whether it acts on its own or waits for a person, how long
+it stays in effect and what happens when that time is up.
+
+The template is the authority. No organization policy sits above it and turns its actions
+on, off or into suggestions. Three things still apply to every template of an
+organization, because they belong to no single template: an emergency **pause**, a
+**circuit breaker** on automatic containments, and the platform permissions of the key the
+engine runs as.
 
 !!! tip "Start here"
-    New to the engine, or an AI agent setting it up? Follow the
-    [Walkthrough](walkthrough.md): from an empty organization to a finished
-    investigation, every step copy-pasteable.
+    Follow the [Walkthrough](walkthrough.md): from an empty organization to a host isolated
+    by itself for one minute, released, and undone, then the same with an approval.
+
+## Where it sits
+
+| You want | Use |
+|---|---|
+| Decide on what the event in hand carries | A [D&R rule](../3-detection-response/index.md). A false-positive rule drops what never needs a look. |
+| Decide on what you have to go and fetch (who started the process, what else ran on the host, whether the hash is on your list) | An Investigation Engine template. A D&R rule starts it with [`start investigation`](../8-reference/response-actions.md#start-investigation). |
+| Run your own Python, as a read or as an action | A [Playbook](../5-integrations/extensions/limacharlie/playbook.md), called from a template as a step or an action. See [Custom Code and AI Agents](custom-code.md). |
+| A judgement that needs more than one question | An [AI agent](../9-ai-sessions/index.md), called from a template as a step, or handed a run the template could not decide. |
+| A one-off question, no template | A [wave](concepts.md#waves-and-fact-packs). |
+
+A template that fetches nothing is a D&R rule in the wrong place, and validation says so
+(`decides_on_trigger_only`). The engine has no loops and no second detection language: a
+template is steps, rules and actions.
 
 ## How to read these pages
 
-1. [Walkthrough](walkthrough.md): set it up and use it, end to end.
-2. [How to Think About Templates](how-to-think-about-templates.md): the method for
-   writing a template, from the analyst's questions to rules you own.
-3. [Concepts](concepts.md): steps, rules, outcomes, unknowns, runs, identity.
-4. [Plan Templates](templates.md): the library and every section of a template,
-   validation, testing, making a template active.
-5. [Policies and Autonomy](policies.md), with the
-   [policy record reference](../7-administration/config-hive/investigation-policy.md):
-   what the engine may do on its own, and what the AI may decide.
-6. [Automatic Starts](automation.md): D&R rules on detections and on new cases.
-7. [Troubleshooting](troubleshooting.md): every refusal and error, and what to do.
+1. [Walkthrough](walkthrough.md): set it up and see it act, end to end.
+2. [Concepts](concepts.md): runs, steps, unknowns, outcomes, actions, identity, cost.
+3. [Plan Templates](templates.md): every section of a template, validation, testing,
+   draft and active.
+4. [Actions, Approvals and Undo](actions.md): `approval`, leases, `on_lease_end`, undo,
+   bulk undo, the audit log.
+5. [Settings](settings.md): the one settings record (pause, circuit breaker, identity,
+   budgets, limits, case, notifications).
+6. [The Run Queue](run-queue.md): coalescing, fairness, the parallel limit, the hourly
+   cap, the queue display and Flush.
+7. [Custom Code and AI Agents](custom-code.md): Playbook steps and actions, extension
+   actions, AI agent steps and hand-off.
+8. [Automatic Starts](automation.md): D&R rules on a detection and on a new case.
+9. [How to Think About Templates](how-to-think-about-templates.md) and
+   [Build Templates with an AI Agent](build-templates-with-ai.md).
+10. [Troubleshooting](troubleshooting.md).
 
 Reference: [Permissions](permissions.md), [API Reference](api-reference.md),
-[MCP Tools](mcp.md), [CLI](cli.md), [Console](console.md) and
-[Build and Tune Templates with an AI Agent](build-templates-with-ai.md).
-
-## What you get
-
-| Capability | What it gives you |
-|---|---|
-| **Runs** | One investigation per alert, case, entity or question, ending with one [outcome](concepts.md#outcomes): closed or escalated by a rule, closed or escalated by the AI, the AI recommends, couldn't tell, or conflict. With it: the rule or the AI answer behind it, what was missing, each step's reason and finding, and the actions taken. |
-| **Plan templates** | Reusable, versioned plans for a class of alerts, stored as Hive records in your organization: steps to gather, rules that decide, an optional AI review. Install the [default library](templates.md#the-default-library), edit it, write your own. |
-| **Checks** | Logic several templates repeat, written once as a [check](templates.md#checks-templates-other-templates-call) (for example where a link lands) and called by each template, once or per element of a list. |
-| **Test on past alerts** | Run a template, read-only, on real past detections and cases: which rule decided each alert, and whether it agreed with your analysts. |
-| **Policies and autonomy** | Per action class: `off`, `suggest`, `approve` or `auto`, with leases, caps and approvers; per template, whether the AI may decide. The policy record is the only thing that decides what the engine may do. One Policy page lists the records, what the engine ignores in them and what the AI may decide per template, and a pause switch stops anything running by itself while a person can still approve. |
-| **Approvals inbox** | Every action that waits for a person, across all runs, in one list: why each is there, the soonest deadline first, filters by template, target and what you may decide, and approve or deny several at once. A suggestion has no Approve button, and an action whose outcome is uncertain has none either. |
-| **Automatic actions** | A log lists everything the engine did on its own (the actions your policy sets to `auto`), and each entry can be undone. |
-| **Automatic starts** | A D&R rule starts a run with the [`start investigation`](../8-reference/response-actions.md#start-investigation) response action, on a detection or on a new case. This is the only way an investigation starts without a person: you write or install the rule, and deploy it like any other D&R rule. |
-| **Cases** | Each run writes its case: the outcome sentence, the evidence behind it, entities, telemetry, what stayed unknown, the open question, the actions. |
-| **Performance stats** | What the engine did, how fast and at what cost, per template and action class. |
-| **Waves** | For a one-off question, a batch of checks that run in parallel and answer compactly, with no rules and no outcome. |
+[Command Line Interface](cli.md), [MCP Tools](mcp.md), [Console](console.md), and the
+[settings record](../7-administration/config-hive/investigation-policy.md).
 
 ## Rules that never bend
 
-- **Unknown is never false.** A step that failed, timed out, was not allowed, was
-  skipped or whose data is incomplete is *unknown*. It never reads as "nothing found",
-  and "nothing found" never closes an alert.
-- **Every search stays inside the free time range.** No search window may start
-  earlier than 30 days before now.
-- **A run can never do more than its identity can.** Every read and every action
-  uses the permissions of the identity the run executes as.
-- **A draft template never acts on its own.** Drafts run only when a person starts
-  them, with every action capped at `suggest`. A person makes a template
-  active.
-- **Nothing is installed for you.** An organization's templates are exactly its
-  `investigation_plan` records, and no D&R rule is added for you.
-- **The AI recommends unless you say otherwise.** It decides alone only where the
-  `default` policy's `ai_may_decide` allows it: a template's own entry, or `"*"` for
-  every template. An `act` entry that fires on an AI decision always waits for a
-  person. The case close after `closed_by_ai` follows the `close.false_positive`
-  mode, so under `auto` it runs by itself.
-- **Nothing is learned behind your back.** Templates decide exactly as their rules
-  say, and no history, score or label changes what the engine may do.
+- **The template says what happens.** An action the template does not list is never
+  taken. Every `act` entry must say `approval` (`none`, `required` or a condition), so no
+  action acts on its own by omission and a reader always sees which ones do.
+- **A draft never acts.** A draft template only suggests: its actions are recorded as
+  `suggested` and never executed. Making a template active is the permission to act. An AI
+  agent saves drafts; a person promotes them.
+- **Unknown is never false.** A step that failed, timed out, was not allowed or was
+  skipped is *unknown*. It never reads as "nothing found", and "nothing found" on
+  incomplete data never closes an alert.
+- **A run can never do more than its key.** Every read and every action uses the
+  permissions of the identity the run executes as.
+- **Every search stays inside the free time range.** No search window starts earlier
+  than 30 days before now.
+- **A person's decision on a case wins.** An automatic close never overrides a case a
+  person already decided.
+- **Every action keeps its record.** What acted, on what, why, for how long, who
+  approved or undid it, and how to undo it.
+- **Nothing is installed or learned for you.** An organization's templates are exactly
+  its `investigation_plan` records, no D&R rule is added for you, and no history or score
+  changes what a template does.
+
+## Not available yet
+
+- The engine runs only where it has been enabled; it is not generally available.
+- Billing per run is not switched on. This documentation states no price.
+- The `limacharlie investigate queue` and `limacharlie investigate answer` commands are in
+  the CLI's source but not in the latest release on PyPI (5.14.0). Until a release
+  includes them, use the [API routes](api-reference.md) or the [MCP tools](mcp.md).
+- There is no CLI command and no MCP tool for undo, extend or confirm. Use the API or the
+  console.
+- An AI agent can be a step or a hand-off, not an action.

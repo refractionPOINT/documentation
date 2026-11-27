@@ -138,7 +138,7 @@ The inactivity test is separate from the selector. The extension compares each s
 
 - `ttl` is not validated by the extension. A rule with `ttl: 0`, or without `ttl`, treats every matching sensor that is not connected right now as expired and deletes it on the next run. The web UI refuses a limit below 1 day, but the API, the CLI and IaC do not.
 - A rule that has only `selector: "*"` matches every sensor in the organization.
-- A deleted sensor that later tries to reconnect is refused and produces a [`deleted_sensor`](../../../8-reference/platform-events.md#deleted_sensor) event. A rule can bring it back with [`undelete sensor`](../../../8-reference/response-actions.md#undelete-sensor), which would undo the cull.
+- A deleted sensor that later tries to reconnect is refused and produces a [`deleted_sensor`](../../../8-reference/platform-events.md#deleted_sensor) event. A rule can bring it back with [`undelete sensor`](../../../8-reference/response-actions.md#undelete-sensor), which would undo the cull, for 30 days after the sensor was deleted. After that the sensor can no longer be restored and its tags are removed; the endpoint has to be enrolled again. See [Restore window](../../../8-reference/response-actions.md#restore-window).
 
 ## Actions
 

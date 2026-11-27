@@ -22,6 +22,7 @@ Technical reference documentation for LimaCharlie operators, commands, and schem
 
 ## Other
 
+- [API Rate Limits](api-rate-limits.md) - Request limits and 429 handling
 - [Template Strings](../4-data-queries/template-strings.md) - Template syntax and transforms
 - [Authentication](authentication-resource-locator.md) - Auth resource locator reference
 - [Log Collection Guide](../2-sensors-deployment/log-collection-guide.md)

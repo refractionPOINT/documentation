@@ -55,7 +55,9 @@ Git Sync handles these types:
 | Installation keys | `installation_keys:` | `sync_installation_keys`, `export_installation_keys` |
 | Hive records | `hives: <hive>:` | `sync_hives.<hive>`, `export_hives.<hive>` |
 
-Detection rules, false-positive rules, lookups, saved queries, YARA rules, AI agents and the settings of extensions such as Exfil, Integrity and Artifact are all hive records: `dr-general`, `fp`, `lookup`, `query`, `yara`, `ai_agent` and `extension_config` (one record per extension, named after it, for example `ext-exfil`). The hives you can enable are listed by `limacharlie extension schema --name ext-git-sync`.
+Detection rules, false-positive rules, lookups, saved queries, YARA rules, AI agents and the settings of extensions such as Exfil, Integrity and Artifact are all hive records: `dr-general`, `fp`, `lookup`, `query`, `yara`, `ai_agent` and `extension_config` (one record per extension, named after it, for example `ext-exfil`). So is the configuration of Email Security, Cloud Security and Host Posture; see [Email Security, Cloud Security and Host Posture](#email-security-cloud-security-and-host-posture). The hives you can enable are listed by `limacharlie extension schema --name ext-git-sync`.
+
+A pull applies `secret`, `yara` and `lookup` first, so records that reference them find them. The other hives follow in a fixed order, with each product's connection records before its other records.
 
 The older top-level sections `rules`, `fps`, `integrity`, `exfil`, `artifact` and `yara` that the `limacharlie sync` command can write are **ignored** by Git Sync, without an error. Write them as `hives:` records.
 
@@ -371,60 +373,115 @@ limacharlie hive delete --hive-name <hive> --key <record> --confirm --oid <OID>
 limacharlie output delete --name <output> --confirm --oid <OID>
 ```
 
-To make an organization match its files exactly, run `limacharlie sync push --force` with the same `index.yaml` and the same types. Force deletes every record of those types that is not in the files, including records created in the web app, so run it with `--dry-run` first. See [the tutorial](../../../1-getting-started/mssp-iac-tutorial.md#step-11-delete-things).
+To make an organization match its files exactly, run `limacharlie sync push --force` with the same `index.yaml` and the same types. Force deletes every record of those types that is not in the files, including records created in the web app, so run it with `--dry-run` first. A hive with no records in the files is left alone, even with `--force`. So when you remove the last record of a hive from the files, `--force` does not delete it from the organization; delete it with `limacharlie hive delete`. See [the tutorial](../../../1-getting-started/mssp-iac-tutorial.md#step-11-delete-things).
 
-## Investigation policies and plans
+## Email Security, Cloud Security and Host Posture
 
-On versions with investigation hive synchronization, select `investigation_policy` and `investigation_plan` under `sync_hives` for apply and `export_hives` for export. A policy's `autonomy` section controls actions; a plan defines the investigation. See [Investigation Action Policies](../../../7-administration/config-hive/investigation-policy.md) for modes, limits, emergency pause, engine performance stats and permissions.
+Git Sync carries the configuration of these products, so one repository configures them in every tenant along with everything else:
 
-!!! note "Check version support"
-    These hive selections require a Git Sync version that includes them in its catalog. If absent, upgrade support is needed. SDK and CLI capabilities depend on their installed release; this YAML example does not imply that new CLI flags or SDK helpers are already released.
+| Product | Hive | Holds |
+| --- | --- | --- |
+| Cloud Security | `cloudsec_provider` | one connection per cloud, identity or SaaS account |
+| Cloud Security | `cloudsec_policy` | classification, coverage, exclusions, suppressions, compliance, custom posture rules, SLAs |
+| Cloud Security | `cloudsec_query` | saved graph queries |
+| Cloud Security | `cloudsec_code_rule` | Code Security static-analysis rules |
+| Email Security | `mailsec_provider` | the mail connection (Microsoft 365, Google Workspace or IMAP) |
+| Email Security | `mailsec_policy` | automations, exclusions, VIPs, thresholds, banners, retention |
+| Email Security | `dr-mail` | custom mail rules |
+| Host Posture (coming soon) | `host_posture_rule` | posture rules, one per record, named after the rule's `id` |
 
-For a fictional organization, add `hives/investigation_policy.yaml` to the existing `index.yaml` include list. This example creates a separate `review-sensitive-mail` policy scoped to the `mail-triage` template, leaving the existing `default` record intact. Use an unused record name when adding it. The file contains a native Hive record wrapper:
+Each hive has its own `sync_hives` and `export_hives` switch, off by default. Records use the same `data` and `usr_mtd` wrapper as every other hive. A pull sends `usr_mtd.enabled` as written, so a record without `usr_mtd: {enabled: true}` is saved disabled.
+
+**Credentials stay out of Git.** A `cloudsec_provider` or `mailsec_provider` record never holds a credential. Its `credentials` field (on an IMAP connection, each mailbox's) is a `hive://secret/<name>` reference, and Hive refuses anything else. Exporting these hives writes the reference and the connection settings, such as account IDs and mailbox scope, but no secret. The secrets themselves are in the `secret` hive, which keeps its own switch: leave it off, and write each tenant's secrets out of band (for example from your CI's secret store) before the first pull that includes the connection. Email Security refuses a connection whose secret does not exist yet.
+
+**Email Security connections.** Hive tags each `mailsec_provider` record `mailsec:provider:<provider>` itself. Git Sync leaves that tag out of exports and comparisons, so you do not write it in the repository. Hive allows one enabled connection per provider type in an organization, and a pull that would enable a second one fails.
+
+**Host Posture rules.** Host Posture is not generally available yet. Saving or enabling a rule makes the extension run it on the organization's sensors. Hive therefore requires `sensor.task` as well as `host_posture.set` for that write, and Git Sync has both.
+
+**Older subscriptions need a rekey.** An organization's Git Sync key gets its permissions when the organization subscribes. If a pull or push of these hives fails with `UNAUTHORIZED - access to <OID> requires mailsec.get` (or `mailsec_provider.get`, `host_posture.get`), the subscription predates them. Rekey it once, as an Owner of the organization (the call needs `billing.ctrl` and `user.ctrl`):
+
+```bash
+limacharlie extension rekey --name ext-git-sync --oid <OID>
+```
+
+A rekey replaces the extension's key in that organization. It changes nothing in the Git Sync configuration and needs no other step.
+
+## Investigation Engine records
+
+The [Investigation Engine](../../../investigation-engine/index.md) keeps its configuration in
+three hives: `investigation_policy` (the one settings record, `default`),
+`investigation_plan` (templates and checks) and `investigation_pack` (your own fact packs).
+Select them under `sync_hives` for apply and `export_hives` for export. Selecting one does not
+select the others.
+
+!!! note "Version support"
+    The Investigation Engine is experimental. `investigation_pack` needs a Git Sync version
+    that includes it in its catalog.
+
+Git Sync applies them in this order: settings, packs, templates (removals in the reverse
+order), so a template never arrives before what it reads. For a fictional organization, add
+`hives/investigation.yaml` to the `index.yaml` include list:
 
 ```yaml
 version: 3
 hives:
   investigation_policy:
-    review-sensitive-mail:
+    default:
       data:
-        match:
-          run: template == "mail-triage"
-        autonomy:
-          close.false_positive:
-            mode: suggest
-            max_targets_per_run: 3
-            max_targets_per_hour: 50
-            lease: 2h
-            approval_timeout: 15m
-          eradicate.*:
-            mode: approve
-          tag.remove:
-            mode: approve
+        paused: false
+        circuit_breaker: {per_hour: 20, per_run: 5}
+        identity: {default: hive://secret/ie-runner}
+        limits: {max_parallel_runs: 100}
       usr_mtd:
         enabled: true
-        tags: [fictional-iac]
+        tags: [allow-api-key-promotion]
+  investigation_plan:
+    banned-binary:
+      data:
+        status: active
+        version: 1
+        description: "Isolate the host for one minute when the binary is on our banned list."
+        applies_to: {rule: ['general.banned-binary-exec']}
+        starts_from: detection
+        gather:
+          trigger: {op: detection.get, args: {detect_id: $detection_id, window: [-29d, now]}}
+          banned: {op: lookup.get, args: {name: banned-software, keys: ['$trigger.hash']}}
+        rules:
+          escalate:
+            - {id: banned_binary, when: 'banned.found', say: "The binary is on our banned software list."}
+        act:
+          - {do: contain.network, target: '$trigger.sid', on_rules: [banned_binary], approval: none, lease: 1m, on_lease_end: release}
+      usr_mtd:
+        enabled: true
 ```
 
-The named policy adds restrictions for matching investigations; it cannot loosen matching default restrictions. When editing an existing record, export it first and preserve its complete `data`, including identity, budgets, intake and other fields. Preserve `usr_mtd` such as tags, enabled state, expiry and comments. Do not commit `sys_mtd`, authentication tokens or resolved secret values. New records need `usr_mtd.enabled: true` to participate.
+- **The template carries the behaviour.** What acts alone, for how long and what happens at
+  the end of a lease is in each template's `act` entries, so one repository deploys the same
+  behaviour to every tenant with no per-tenant step. Tenants that must differ get template
+  variants, or an `approval` condition that reads the difference (a tag, a lookup).
+- **Active templates need a person, or the tag.** Git Sync writes with an API key, and an API
+  key can write `status: active` templates (and any fact pack) only when the enabled
+  `default` settings record is tagged `allow-api-key-promotion`, as above. The settings are
+  applied first, so one apply works. Without the tag, sync drafts and let a person promote
+  them. With it, whoever can push to the repository can make a template act: review merges
+  accordingly.
+- **Validate before you push.** `limacharlie investigate templates validate --file <file>`
+  checks a template, and `limacharlie hive validate --hive-name investigation_policy --key
+  default --input-file <file>` the settings. A record the Hive refuses stops the apply at that
+  record; records applied before it stay applied.
+- **Old formats are refused.** A template in an earlier format (`facts`, `proofs`, `class`
+  on an act entry, no `approval`) or a settings record with `autonomy`, `match` or
+  `operators` is refused with a message naming what replaced it. Rewrite it in the repository.
+- Preserve `usr_mtd` (tags, enabled state, comments). Do not commit `sys_mtd`, tokens or
+  secret values.
 
-Plans use `hives.investigation_plan.<record-name>` with the same `data` / `usr_mtd` wrapper. Export an existing valid plan into `hives/investigation_plan.yaml` and include it too. Empty `data: {}` is not a runnable plan. Selecting one hive does not select the other.
+### Keep the pause in git
 
-### Review, apply and verify
-
-1. Export selected records and review the full diff, keeping unrelated fields and existing includes.
-2. Start new policies in `suggest`. Inspect the would-do proposals before changing a governing entry to `auto`. A named auto record cannot loosen a matching default restriction.
-3. Use credentials with native Hive grants, including `investigation_policy.get` and `investigation_policy.set` for policy management, and `investigation_policy.del` for deletion. Git Sync does not bypass permissions or grant product execution access.
-4. Apply, re-export and compare data and user metadata. Native versions are read at apply time for compare-and-swap; a version in git does not authorize an unconditional overwrite. On a conflict, reload, reconcile and retry.
-5. Read the record back through the Hive to confirm it saved, then watch the [engine performance report](../../../7-administration/config-hive/investigation-policy.md#engine-performance) to see what the engine does under it.
-
-Force deletion through configuration sync remains limited to selected hives and existing tag selection; unselected hives are untouched and existing ACL exclusions remain. The extension's ordinary pull still adds and updates without deleting. See [Removing things](#removing-things) before using a deletion-enabled sync workflow.
-
-### Preserve emergency pauses
-
-The emergency pause is an enabled `investigation_policy` record named `autonomy-manual-pause` with `data` equal to `autonomy: {"*": {mode: approve}}`: nothing runs by itself, and a person can still approve. A pause that an earlier console saved with `mode: suggest` also refuses approvals; pause again in the console to rewrite it. Keep it in the authoritative git configuration for as long as the pause is intended, or adjust sync selection so it is preserved. A force-deleting sync could remove a console-created pause absent from git.
-
-To resume, remove the pause from git and delete the record with normal Hive deletion permission. An ordinary extension pull will not delete it for you. If left in git, a later pull can recreate it. Other policy restrictions still apply, and previously held suggestions never automatically execute on resume.
+The emergency pause is the `paused` field of `investigation_policy/default`. If Git Sync
+manages that hive, set `paused: true` in git: a pause set in the console or with
+`limacharlie investigate settings pause` is overwritten by the next sync. While paused,
+nothing acts alone and every action that would have waits for a person; actions that waited
+keep waiting after the pause is lifted.
 
 ## Setting up Git Sync
 

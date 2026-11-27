@@ -96,6 +96,7 @@ Via web browser, navigate to one of the below test URLs that corresponds to the 
 [Test URL - India Region](https://4d897015b0815621.lc.limacharlie.io/)
 [Test URL - Europe Region](https://b76093c3662d5b4f.lc.limacharlie.io/)
 [Test URL - Canada Region](https://aae67d7e76570ec1.lc.limacharlie.io/)
+[Test URL - Australia Region](https://abc32764762fce67.lc.limacharlie.io/)
 
 No website will open; you should get a "Your connection is not private" type of message instead.
 

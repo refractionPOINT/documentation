@@ -46,6 +46,7 @@ These are the events emitted by the endpoint agent for each supported operating 
 | [FILE\_INFO\_REP](#file_info_rep) | ☑️ | ☑️ | ☑️ |  |  |
 | [FILE\_MODIFIED](#file_modified) | ☑️ | ☑️ | ☑️ |  |  |
 | [FILE\_MOV\_REP](#file_mov_rep) | ☑️ | ☑️ | ☑️ |  |  |
+| [FILE\_READ](#file_read) | ☑️ | ☑️ | ☑️ |  |  |
 | [FILE\_TYPE\_ACCESSED](#file_type_accessed) | ☑️ | ☑️ |  |  |  |
 | [GET\_DOCUMENT\_REP](#get_document_rep) | ☑️ | ☑️ |  |  |  |
 | [GET\_EXFIL\_EVENT\_REP](#get_exfil_event_rep) | ☑️ | ☑️ | ☑️ |  |  |
@@ -264,6 +265,22 @@ sensor command. Requires sensor version 5.4.0 or later, 5.4.4 on Linux.
   refused `APP_CONTROL_GENERATION`, the `APP_CONTROL_REASON` (listed under
   [Managed alerts](../5-integrations/extensions/limacharlie/app-control.md#managed-alerts))
   and the `TIMESTAMP` of the refusal
+- `APP_CONTROL_DEGRADED`: why enforcement on this host is not whole, as a bit
+  mask. `0` means nothing is wrong. A newer sensor can set bits not listed here.
+
+| Bit | Meaning |
+| --- | --- |
+| `0x001` | No policy is installed. |
+| `0x002` | The installed policy is older than its allowed age. |
+| `0x004` | At least once, a decision needed a file's hash and the sensor could not compute it. Stays set until the sensor restarts or receives a new configuration. |
+| `0x008` | The enforcement point (the Windows driver or the macOS system extension) holds no policy. |
+| `0x010` | The enforcement point holds an older policy than the sensor. |
+| `0x020` | The enforcement point holds no signing key, so it refuses every policy. |
+| `0x040` | The enforcement lease lapsed, so the enforcement point dropped to permissive. |
+| `0x080` | The policy's `on_enable` action did not finish for the installed policy. |
+| `0x100` | The policy's list of the sensor's own signing identities is not applied on this host. |
+| `0x200` | The last policy the cloud sent was refused. `APP_CONTROL_REFUSED` says why. |
+| `0x400` | Linux: an enforcing allowlist that trusts the OS vendor runs as `permissive_sync`, because the host's package index lists no platform package. See [Application Control on Linux](../5-integrations/extensions/limacharlie/app-control/linux.md#when-the-host-has-no-package-information). |
 
 Each `APP_CONTROL_RULE` carries:
 
@@ -782,9 +799,41 @@ Generated when a file is created.
 ```json
 {
   "FILE_PATH": "C:\\Users\\dev\\AppData\\Local\\Microsoft\\Windows\\WebCache\\V01tmp.log",
+  "PROCESS_ID": 4412,
+  "PARENT": {
+    "FILE_PATH": "C:\\Windows\\System32\\taskhostw.exe",
+    "COMMAND_LINE": "taskhostw.exe",
+    "USER_NAME": "DESKTOP-1\\dev",
+    "PROCESS_ID": 4412,
+    "PARENT_PROCESS_ID": 1288
+  },
   "TIMESTAMP": 1468335271948
 }
 ```
+
+#### The process that acted on the file
+
+From endpoint agent 5.4.4, `FILE_CREATE`, `FILE_DELETE`, `FILE_MODIFIED` and `FILE_READ` events sent to the cloud carry the process that created, deleted, modified or read the file, as `PARENT`. A D&R rule can match on it directly, for example on `event/PARENT/FILE_PATH`, without a lookup.
+
+`PARENT` is the acting process itself, not that process's parent. It holds these fields of the process's `NEW_PROCESS` event:
+
+| Field | Description |
+| --- | --- |
+| `FILE_PATH` | The process's executable. |
+| `COMMAND_LINE` | The command line, cut at 2,048 characters. |
+| `USER_NAME`, `USER_ID` | The user the process runs as, where the platform reports them. |
+| `PROCESS_ID`, `PARENT_PROCESS_ID` | The process and its own parent. |
+| `IS_CONTAINER`, `CONTAINER_ID`, `CONTAINER_POD_UID` | Linux: the container the process runs in, when it runs in one. |
+
+For anything else about the process, join on the event's `routing/parent`, which is the process's atom, or look up its `NEW_PROCESS`.
+
+`PARENT` is added on a best-effort basis. Write rules that handle it being absent:
+
+- It is absent when the sensor could not identify the process in time, for example a process that exited before the event was linked, or a process ID that was already reused.
+- It is absent on events returned by `history_dump`, and on events the sensor did not send to the cloud.
+- [Exfil watch rules](../5-integrations/extensions/limacharlie/exfil.md) decide which events are sent before `PARENT` is added, so a watch rule cannot select on it.
+
+A rule written as "alert unless the reader is a known program" also fires when `PARENT` is absent. That is the safe default, but expect it.
 
 ### FILE\_DEL\_REP
 
@@ -828,9 +877,19 @@ history_dump -e FILE_DELETE
 ```json
 {
   "FILE_PATH": "C:\\Users\\dev\\AppData\\Local\\Temp\\EBA4E4F0-3020-459E-9E34-D5336E244F05\\api-ms-win-core-processthreads-l1-1-2.dll",
+  "PROCESS_ID": 7720,
+  "PARENT": {
+    "FILE_PATH": "C:\\Program Files\\Vendor\\Updater\\updater.exe",
+    "COMMAND_LINE": "\"C:\\Program Files\\Vendor\\Updater\\updater.exe\" /cleanup",
+    "USER_NAME": "NT AUTHORITY\\SYSTEM",
+    "PROCESS_ID": 7720,
+    "PARENT_PROCESS_ID": 812
+  },
   "TIMESTAMP": 1468335611906
 }
 ```
+
+From endpoint agent 5.4.4, the event carries the process that deleted the file as `PARENT`. See [The process that acted on the file](#the-process-that-acted-on-the-file).
 
 ### FILE\_GET\_REP
 
@@ -975,9 +1034,19 @@ history_dump -e FILE_MODIFIED
 ```json
 {
   "FILE_PATH": "C:\\Users\\dev\\AppData\\Local\\Microsoft\\Windows\\WebCache\\V01.log",
+  "PROCESS_ID": 4412,
+  "PARENT": {
+    "FILE_PATH": "C:\\Windows\\System32\\taskhostw.exe",
+    "COMMAND_LINE": "taskhostw.exe",
+    "USER_NAME": "DESKTOP-1\\dev",
+    "PROCESS_ID": 4412,
+    "PARENT_PROCESS_ID": 1288
+  },
   "TIMESTAMP": 1468335272949
 }
 ```
+
+From endpoint agent 5.4.4, the event carries the process that modified the file as `PARENT`. See [The process that acted on the file](#the-process-that-acted-on-the-file).
 
 ### FILE\_MOV\_REP
 
@@ -993,6 +1062,41 @@ Response event for the `file_mov` sensor command.
   "SOURCE": "C:\\test\\test.txt"
 }
 ```
+
+### FILE\_READ
+
+Generated when a process reads a file:
+
+- **Windows:** a read of a file by a process other than the one that read it last. Repeated reads by the same process are reported once.
+- **macOS:** a file opened through the system extension's open notification.
+- **Linux:** a file opened read-only.
+
+> Note:
+>
+> Like the other file events, `FILE_READ` needs the sensor's kernel acquisition component (driver on Windows, system extension or kext on macOS, eBPF on Linux).
+>
+> Be Aware:
+>
+> This is the busiest file event: some servers produce millions of reads a day. Send it to the cloud only where you need it, through [exfil watch rules](../5-integrations/extensions/limacharlie/exfil.md) on paths of interest, an [`exfil_add`](endpoint-commands.md#exfil_add) on a single host, or `history_dump -e FILE_READ` from the Sensor Console.
+
+**Platforms:** Windows | macOS | Linux
+
+```json
+{
+  "FILE_PATH": "C:\\Users\\dev\\Documents\\passwords.xlsx",
+  "PROCESS_ID": 9184,
+  "PARENT": {
+    "FILE_PATH": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+    "COMMAND_LINE": "powershell.exe -nop -c Get-Content C:\\Users\\dev\\Documents\\passwords.xlsx",
+    "USER_NAME": "DESKTOP-1\\dev",
+    "PROCESS_ID": 9184,
+    "PARENT_PROCESS_ID": 6020
+  },
+  "TIMESTAMP": 1795527574944
+}
+```
+
+From endpoint agent 5.4.4, the event carries the process that read the file as `PARENT`. See [The process that acted on the file](#the-process-that-acted-on-the-file). `PARENT` makes it practical to filter out expected readers, such as an indexer, an antivirus or a backup agent, in a D&R rule.
 
 ### FILE\_TYPE\_ACCESSED
 

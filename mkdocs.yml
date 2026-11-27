@@ -1,6 +1,6 @@
 site_name: LimaCharlie Documentation
 site_url: https://docs.limacharlie.io/
-site_description: Official documentation for LimaCharlie Agentic SecOps Workspace
+site_description: "Official documentation for LimaCharlie: cloud-hosted security operations infrastructure that serves as an EDR, a SIEM, or both."
 site_author: refractionPOINT
 repo_url: https://github.com/refractionPOINT/documentation
 repo_name: refractionPOINT/documentation
@@ -243,6 +243,14 @@ nav:
       - Core Concepts: 1-getting-started/core-concepts.md
       - Starting an MSSP — Walkthrough: 1-getting-started/mssp-walkthrough.md
       - MSSP Infrastructure as Code with Git Sync: 1-getting-started/mssp-iac-tutorial.md
+      - Recommended Deployment for MSSPs:
+          - Overview: 1-getting-started/mssp-deployment/index.md
+          - Telemetry and Routing: 1-getting-started/mssp-deployment/telemetry.md
+          - Protection and Posture: 1-getting-started/mssp-deployment/protection-posture.md
+          - Detection and Response: 1-getting-started/mssp-deployment/detection-response.md
+          - What the Products Do Together: 1-getting-started/mssp-deployment/synergy.md
+          - AI as a Main User: 1-getting-started/mssp-deployment/ai.md
+          - Operations: 1-getting-started/mssp-deployment/operations.md
       - Tutorials:
           - Overview: 1-getting-started/tutorials/index.md
 
@@ -414,6 +422,7 @@ nav:
       - Outputs:
           - Overview: 5-integrations/outputs/index.md
           - Stream Structures: 5-integrations/outputs/stream-structures.md
+          - Delivery Guarantees: 5-integrations/outputs/delivery.md
           - Testing: 5-integrations/outputs/testing.md
           - Allowlisting: 5-integrations/outputs/allowlisting.md
           - Billing: 5-integrations/outputs/billing.md
@@ -537,6 +546,9 @@ nav:
       - Using the CLI with other Frontier Models: 6-developer-guide/frontier-models.md
       - Building Extensions:
           - Getting Started: 6-developer-guide/extensions/building-extensions.md
+          - Step-by-Step Walkthrough: 6-developer-guide/extensions/walkthrough.md
+          - Common Patterns: 6-developer-guide/extensions/patterns.md
+          - Design Considerations & Gotchas: 6-developer-guide/extensions/design-considerations.md
           - Schema & Data Types: 6-developer-guide/extensions/schema-data-types.md
           - User Interface: 6-developer-guide/extensions/building-ui.md
           - Testing Extensions: 6-developer-guide/extensions/testing.md
@@ -545,6 +557,7 @@ nav:
 
   - Administration:
       - Overview: 7-administration/index.md
+      - Organization Lifecycle: 7-administration/org-lifecycle.md
       - Access:
           - API Keys: 7-administration/access/api-keys.md
           - User Access: 7-administration/access/user-access.md
@@ -585,6 +598,7 @@ nav:
       - Permissions: 8-reference/permissions.md
       - Cloud Security API & IaC: 8-reference/cloud-security-api-iac.md
       - Error Codes: 8-reference/error-codes.md
+      - API Rate Limits: 8-reference/api-rate-limits.md
       - Auth Resource Locator: 8-reference/authentication-resource-locator.md
       - YARA Modules: 8-reference/yara-modules.md
       - Latency: 8-reference/latency.md
@@ -686,6 +700,7 @@ nav:
           - Amazon Web Services: cloud-security/provider-setup/aws.md
           - Microsoft Azure: cloud-security/provider-setup/azure.md
           - Microsoft Entra ID / Microsoft 365: cloud-security/provider-setup/entra.md
+          - Microsoft US Government clouds: cloud-security/provider-setup/microsoft-government-clouds.md
           - Okta: cloud-security/provider-setup/okta.md
           - Google Workspace: cloud-security/provider-setup/google-workspace.md
           - 1Password: cloud-security/provider-setup/onepassword.md

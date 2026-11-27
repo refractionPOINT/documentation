@@ -505,6 +505,8 @@ To remove an adapter sensor for good, stop the source first: uninstall or stop t
 
 Adapter sensors never produce the [`deleted_sensor`](../../8-reference/platform-events.md#deleted_sensor) deployment event, so an [`undelete sensor`](../../8-reference/response-actions.md#undelete-sensor) rule is not needed to bring them back.
 
+The tags of a deleted sensor are kept for 30 days after its deletion. An adapter that brings its sensor back later than that gets the sensor back without the tags it had before it was deleted, except tags in the reserved `acl:` namespace. Tags an installation key applies are applied when a sensor is first created, not when it comes back, so add the tags the sensor needs again.
+
 ### Discovering adapter types and finding an adapter's sensor
 
 The CLI can enumerate the supported adapter types, describe their configuration schema, and locate the sensor an adapter produced. These commands work for both `cloud-adapter` (the hosted set) and `external-adapter` (the on-prem set); the examples below use `cloud-adapter`.

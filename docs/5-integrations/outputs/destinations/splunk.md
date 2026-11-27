@@ -46,7 +46,7 @@ Flatten will flatted the JSON; no changes are needed for the email configuration
 
 \*\*Wrap JSON event with Event Type \*\*- by default, we do not add prefix in front of every record. Prefix is useful for loading data into relational databases. If you are looking to receive a human-readable email, leave this option unchecked.
 
-**Delete on Failure** - when set to Yes, the system will completely delete the output configuration in case of failure. This is useful when you are configuring a temporary output needed for a short while and you don't want to have to worry about cleaning up later.
+**Delete on Failure** - when set to Yes, LimaCharlie tries to permanently delete the output configuration on a delivery failure. Records dropped because the output is falling behind do not trigger the deletion on their own. This is useful when you are configuring a temporary output needed for a short while and you don't want to have to worry about cleaning up later. See [Output Delivery Guarantees](../delivery.md) for what counts as a failure.
 
 You can choose to only send a specific list of event types by configuring an allow list in the **Detection Category** section. Alternatively, if you want to exclude certain event types, you can denote it in a deny list **(Disallowed Detection Categories)**.
 

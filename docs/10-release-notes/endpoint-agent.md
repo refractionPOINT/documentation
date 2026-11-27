@@ -5,6 +5,64 @@ Release notes for the EDR sensor installed on Windows, macOS, Linux and Chrome e
 !!! tip "Subscribe"
     Get each release as it ships with the [Endpoint Agent RSS feed](https://docs.limacharlie.io/10-release-notes/endpoint-agent.xml).
 
+## 2026-11-25
+
+### Endpoint Agent 5.3.21
+
+#### Bug Fixes
+
+- Windows Event Log collection now recovers on its own when a subscription goes silent, such as after a Microsoft Defender platform update; it resumes from where it left off, so no events are skipped.
+
+#### Improvements
+
+- The sensor can now resume TLS 1.3 sessions when reconnecting to the cloud, avoiding a full handshake each time, with forward secrecy kept on every resumed session.
+
+## 2026-11-23
+
+### Endpoint Agent 5.4.4
+
+#### New Features
+
+- Application control on Linux: the sensor can now enforce an application control policy on Linux, blocking executions the policy does not allow, with the same permissive mode as on Windows and macOS.
+- Linux application control: files installed by the distribution's own packages (dpkg and rpm) and left unmodified are recognized as OS-vendor software, so a policy can trust the operating system without listing it.
+- Linux application control: trusted installers are supported, so package upgrades through apt, dnf or rpm keep working under an enforcing allowlist.
+- Linux application control: containers started by Docker, podman, containerd or CRI-O run from their images without being blocked; files written inside a container at runtime, and rootless containers, are still checked against the policy.
+- Linux application control: enforcement also covers processes running in private mount namespaces, such as sandboxed services and containers using host volumes.
+- Linux application control: the system's init process is never blocked, and an execution is allowed if a verdict cannot be reached within 1.5 seconds, so a policy cannot hang or freeze a host.
+- Linux application control: an enforcing policy that trusts the OS vendor is held in Rehearsal mode (`permissive_sync`) on a host where no package information is available, instead of blocking the operating system's own binaries.
+- Application control status now reports whether a Linux host can enforce a policy: kernel support, privileges, filesystems covered and kernel release.
+- `FILE_CREATE`, `FILE_DELETE`, `FILE_MODIFIED` and `FILE_READ` events now include the process that acted on the file as `PARENT` (path, command line, user, process IDs and container), so a D&R rule can match on fields such as `event/PARENT/FILE_PATH` without a lookup.
+
+#### Bug Fixes
+
+- Windows: the kernel driver no longer fails to load on hosts where another security product's driver registers the same kind of process-handle callback, which left the sensor without its kernel driver.
+- Windows: installing a sensor built for another CPU architecture (such as the 32-bit sensor on 64-bit Windows) is now refused before anything is changed, with a message naming the build to use, instead of failing partway through with no explanation.
+- Windows on Arm: the x64 MSI now refuses to install with a clear message, instead of installing under emulation and failing with a generic service-start error (1920).
+- Linux: fixed a startup race that could leave the sensor reporting no kernel telemetry (processes, files, network) for as long as it ran, while appearing healthy and using a full CPU core.
+- Linux: file and process paths are now correct on hosts whose root is a btrfs subvolume (Fedora, openSUSE), which previously gained a prefix such as `/root/usr/bin/...`.
+- Linux: file and process paths on a separate partition or mount no longer lose their mount point (for example `/user/bin/x` instead of `/home/user/bin/x`).
+- Linux: file events are now reported from every CPU on Ubuntu's 7.0 kernel for x86_64, where only the activity of one CPU was being reported.
+- Linux: file events from a process holding many open files no longer report their directory as `/`.
+- Linux: on hosts without eBPF support, process events are now reported when the kernel lacks the process-event connector (such as stock Raspberry Pi OS) or the sensor runs in its own PID namespace; previously no new process was reported.
+- Linux: on hosts without eBPF support, a burst of process creation no longer switches process tracking to slower polling, which can miss short-lived processes.
+- Linux: network connections now report the correct TCP state for closed, closing and mid-handshake sockets, which were reported as unknown or mislabelled.
+- Linux: `mem_find_string` and `mem_strings` no longer permanently grow the searched process's memory, which on some kernels added gigabytes to Go and Java processes.
+- 32-bit Windows 10: the kernel driver is now signed by Microsoft, so Windows loads it; Windows used to refuse it, leaving the sensor without its kernel driver.
+- macOS 12 and 13: fixed a compatibility issue that kept the sensor's system extension from installing, leaving those hosts without kernel telemetry; the sensor's helper app crashed at launch every 20 minutes.
+- Editing an organization's exfil rules no longer drops the events added with `exfil_add`.
+- An `exfil_add --expire` reaching its expiry no longer stops an event that the organization's exfil rules also ask for.
+- Fixed memory growth in the sensor when a D&R rule issues `exfil_add` on every match.
+- An `exfil_add --expire` whose expiry cannot be scheduled is now refused instead of staying in force indefinitely.
+- Fixed a sensor crash when a stop or module upgrade arrived while the Host Based Sensor was still starting.
+- Fixed rare sensor crashes caused by memory being released while still in use, in process tracking and during shutdown.
+
+#### Improvements
+
+- Host posture: custom rules are now evaluated exactly like the built-in ones, with no difference in how unreadable or missing evidence is treated.
+- Windows: when the kernel driver fails to start, the sensor now reports the failing driver component and its error code to LimaCharlie, so support can diagnose the cause.
+
+---
+
 ## 2026-11-18
 
 ### Endpoint Agent 5.3.20

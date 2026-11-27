@@ -6,6 +6,7 @@ Stream telemetry to external destinations.
 
 - [Output Allowlisting](allowlisting.md) - Filtering output data
 - [Output Billing](billing.md) - Billing and usage
+- [Output Delivery Guarantees](delivery.md) - Retries, drops and how to detect them
 - [Output Stream Structures](stream-structures.md) - Data format specifications
 - [Testing Outputs](testing.md) - Testing output configurations
 - [Pivots in Rules and Outputs](../../cloud-security/rule-pivots.md#outputs) - Adding Entity data, such as a host's owner, to output records

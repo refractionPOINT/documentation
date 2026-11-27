@@ -1,8 +1,5 @@
 # Cases
 
-!!! warning "Public Beta"
-    Cases is currently in Public Beta. It will change without warnings, and no backward compatibility is promised or provided.
-
 The Cases extension is a purpose-built SOC triage system that automatically converts LimaCharlie detections into trackable cases with SLA enforcement, investigation tooling, and performance reporting. It is designed for high-volume environments where every detection needs to be acknowledged, investigated, classified, and resolved within measurable timeframes.
 
 Once subscribed, detections from the organization are ingested and converted into cases. By default all detections are ingested automatically; alternatively, [Tailored mode](#ingestion-mode) lets you select which detections create cases via D&R rules. Analysts work the case queue through a defined lifecycle, attach investigation evidence, and classify outcomes. SOC managers get real-time dashboards and MTTA/MTTR reports.

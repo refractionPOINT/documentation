@@ -245,7 +245,7 @@ provider_type: aws
 aws_role_arn: "arn:aws:iam::<ACCOUNT_ID>:role/LimaCharlieCloudSecRO"
 aws_external_id: "<EXTERNAL_ID>"
 credentials: hive://secret/aws-credentials
-# aws_regions: [us-east-1, ...]                 # optional; omit = all enabled regions
+# aws_regions: [us-east-1, ...]                 # optional; omit = all enabled regions. Optional with region locks; see below.
 # aws_member_role_name: LimaCharlieCloudSecRO   # ONLY for AWS Organization member accounts
 ```
 
@@ -266,7 +266,7 @@ the AWS-specific checks follow.
 | `iam` | ✅ | IAM inventory unavailable — the CIEM access graph cannot be built. |
 | `iam_boundaries` | — | IAM permission boundaries unreadable (`iam:GetAccountAuthorizationDetails`). A principal whose boundary caps it below its policies is scored on the uncapped policies, so it can be reported as an administrator when it is not. |
 | `s3` | ✅ | Storage inventory unavailable. |
-| `regions` | — | Only meaningful when `aws_regions` is **unset** (with it set the check is skipped as unnecessary, and still counts as passing). Enabled-region enumeration was denied, so the sweep falls back to `us-east-1` alone — list the regions you want in `aws_regions`. |
+| `regions` | — | Only meaningful when `aws_regions` is **unset** (with it set the check is skipped as unnecessary, and still counts as passing). The role was refused `ec2:DescribeRegions` for a missing permission, so the sweep cannot list the enabled regions and falls back to `us-east-1` alone. Grant `ec2:DescribeRegions` (see [Compliance metadata permissions](#compliance-metadata-permissions)), or list the regions you want in `aws_regions`. A refusal that names an organization policy is not this failure: the request is retried through a region the policy allows. See [Organization policies that block reads](#organization-policies-that-block-reads). |
 | `organizations` | — | Member-account discovery unavailable; only the connected account is swept. |
 | `org_policies` | — | The organization's **service control policies** (SCPs) and **resource control policies** (RCPs) are unreadable, so they are not collected. Passes when the account is not in an organization, or no policy type is enabled on the organization root — in both cases there is nothing to read. |
 | `inspector` | — | Workload vulnerability findings unavailable. |
@@ -306,7 +306,9 @@ documents are stored verbatim, each labelled with the level it is attached at.
     that were *granted*, without subtracting what an SCP forbids — so they can
     over-state access. If the collection role cannot read the policies at all,
     that is reported as a finding ("effective-permission analysis is
-    unconstrained") rather than left implicit.
+    unconstrained") rather than left implicit. The one place the policies are
+    used today is deciding which regions and services to skip, described in
+    [Organization policies that block reads](#organization-policies-that-block-reads).
 
 Collecting them uses these read-only actions on the role named by
 `aws_role_arn`, all of which `SecurityAudit` already grants:
@@ -337,12 +339,144 @@ guardrails to account for.
     Fresh IAM keys and role trust can take a few seconds to propagate; retry
     once on a transient `AccessDenied` / `InvalidClientTokenId`.
 
+## Organization policies that block reads
+
+Many organizations use SCPs as guardrails: a region lock that denies every
+region except one or two (for example the Control Tower region deny), or a deny
+on whole services such as DynamoDB or EKS. Cloud Security works within these
+policies. There is no setting to turn on, and you do not need to loosen a
+policy or exempt the LimaCharlie role.
+
+### What Cloud Security does
+
+Cloud Security already reads your organization's SCPs (see above). It
+recognizes two standard shapes:
+
+- **Region lock:** a deny on every action outside a list of allowed regions,
+  including the Control Tower region deny and its exemptions for specific
+  actions and principals.
+- **Whole-service deny:** a deny on all actions of a service, such as
+  `dynamodb:*`.
+
+If the policy exempts the LimaCharlie role, nothing is blocked for that role.
+
+For these collectors, Cloud Security does not call a region or service the
+policy denies:
+
+- EC2 instances
+- EC2 security groups
+- DynamoDB
+- Redshift
+- Secrets Manager
+- EKS clusters
+- Bedrock models
+- ECR repositories
+- Lambda functions
+- RDS instances and clusters
+- Elastic Load Balancing (v2) load balancers
+- API Gateway REST, HTTP and WebSocket APIs
+- SageMaker endpoints
+- Bedrock agents, AgentCore runtimes and Q Business applications
+
+Some of these also read a related service for detail, such as the security
+groups and WAF associations of a load balancer, or the IAM role of a Lambda
+function. Such a collector skips blocked scopes only in accounts where your
+SCPs allow those detail reads wherever it uses them. Otherwise it behaves as
+before in that account.
+
+So in an account locked to `eu-north-1`, these are read in `eu-north-1`. Before,
+a refused first region could stop the whole service, and the allowed region was
+never read.
+
+Everything else behaves as before. Other collectors and checks (ECS and
+Inspector findings, for example) still try every region. A refusal there still shows as
+a failed check under **Needs attention**, even when an SCP you recognize is the
+cause. Adding a permission to the role only fixes a refusal that is a real
+permission gap.
+
+A policy shape Cloud Security cannot interpret blocks nothing. The scan then
+behaves as it did without this feature. The organization's management account
+is never subject to SCPs, so nothing is blocked there.
+
+### What you see
+
+Under the connection, **Blocked by your organization policy** lists, for each
+account:
+
+- **Services** the policy denies (for example `dynamodb`).
+- **Service-in-region pairs**, written `service@region` (for example
+  `ec2@ap-south-1`), where the policy denies a service in one region.
+- **Policy IDs** (`p-...`) of the policies behind them.
+
+Only scopes that were actually skipped are listed. A blocked scope is not a
+failed check and does not count as an error. A refusal from a collector that
+was not skipped is a different thing. It stays under **Needs attention**
+whether the cause is a gap in the role's permissions, a policy shape Cloud
+Security does not interpret, a recognized policy that denies a collector
+outside the list above, or a recognized policy that denies one of a listed
+collector's detail reads (so that collector behaves as before in that account).
+Only the first is fixed by adding a permission.
+
+### What happens to blocked scopes
+
+- **No calls, no data.** A blocked region or service is not requested, so no
+  inventory or findings come from it.
+- **Not reported as empty.** An SCP can exempt other principals, and resources
+  can predate the policy, so a block says nothing about what exists. The scope
+  is recorded as not read, never as "nothing there".
+- **Earlier data is kept.** Inventory collected from a scope before it was
+  blocked is not deleted.
+- **Other regions are unaffected.** A service denied in one region is still
+  read in every allowed region.
+
+**Current limitation.** In an account locked to some regions, a resource
+deleted in an allowed region is not removed from the inventory yet. It stays as
+last seen while the lock is in place. Removal works as before once the lock is
+lifted.
+
+### Account-wide reads
+
+Some reads are not tied to a region: listing S3 buckets, finding a bucket's
+region, reading the account-level S3 public access block, and listing the
+enabled regions. AWS answers these from any enabled region. If your policy
+refuses the default region (`us-east-1`), Cloud Security repeats the request
+through another region. It tries the regions in `aws_regions` first, then the
+standard regions that AWS enables on every account, and keeps the first one
+your policy lets through. A real permission gap (a plain `AccessDenied` that
+names no organization policy) is not retried.
+
+**Limitation.** The standard regions do not include regions you have to opt in
+to (for example `ap-east-1` or `me-south-1`). If the only region your policy
+allows is an opt-in region, these reads can still be refused, and the
+enabled-region list falls back to `us-east-1` alone. Listing that region in
+`aws_regions` makes it a candidate.
+
+### `aws_regions`
+
+`aws_regions` stays optional. Use it when you want to limit scanning on
+purpose, for example to cover only the regions you operate in. The collectors
+listed above work with a region lock without it, as long as your SCPs allow
+their detail reads (see above). For the other collectors,
+setting `aws_regions` to the allowed regions also removes the **Needs
+attention** entries from refused regions.
+
+### CloudTrail
+
+AWS logs each refused call as an `AccessDenied` event in the affected
+account's CloudTrail. For the collectors listed above, in accounts where they
+skip blocked scopes, Cloud Security no longer calls denied regions and
+services, so these events are far fewer. Other
+checks can still produce them. Limiting `aws_regions` to the regions you use
+reduces them further.
+
 ## Troubleshooting
 
 | `provider test` error | Cause | Fix |
 |---|---|---|
 | `auth` fails: `… no EC2 IMDS role found` | Secret used the wrong key names → no static creds → default chain → IMDS | Use `access_key_id` / `secret_access_key` (no `aws_` prefix) |
 | `AccessDenied` on `sts:AssumeRole` | External ID mismatch, wrong trust-policy principal, or propagation | Confirm `aws_external_id` matches the trust condition; retry after a few seconds |
+| A region or service appears under **Blocked by your organization policy** | An SCP in your organization denies it | Nothing to fix. See [Organization policies that block reads](#organization-policies-that-block-reads) |
+| **Needs attention** shows a permission to add | The role lacks a read permission, or an SCP denies a collector that does not skip blocked scopes yet | Add the permission to the role (and to member-account roles) only if no SCP denies the call. For a region lock, set `aws_regions` to the allowed regions |
 
 ## Private ECR images
 

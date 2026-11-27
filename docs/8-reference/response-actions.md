@@ -330,7 +330,8 @@ The `command` parameter supports [string templates](../4-data-queries/template-t
 
 ### undelete sensor
 
-Un-deletes a sensor that was previously deleted.
+Un-deletes a sensor that was previously deleted. A sensor can be restored for
+30 days after it was deleted; see [Restore window](#restore-window) below.
 
 ```yaml
 detect:
@@ -360,6 +361,25 @@ Two things to know when relying on this:
   `event: DELETED_SENSOR` loads without error and never fires, because the
   `event:` selector is compared case-sensitively and is not affected by
   `case sensitive: false`.
+
+#### Restore window
+
+A deleted sensor can be restored for 30 days after its deletion, by this action
+or by the restore option of the web app and the API. Deleting a sensor that is
+already deleted does not restart the 30 days. A sensor that was already deleted
+when the restore window was introduced gets 30 days from that point.
+
+Once the 30 days have passed:
+
+- The sensor can no longer be restored. This action leaves it deleted, and the
+  sensor keeps being refused when it tries to connect.
+- The refusal is reported as an error on the organization, rate limited rather
+  than once per sensor. It does not count as a failure of the rule, so the rule keeps restoring
+  the sensors that are still inside their 30 days.
+- The sensor's tags are removed within hours, except tags in the reserved `acl:` namespace
+  used by [Resource ACLs](../7-administration/access/resource-acls.md).
+- To bring the endpoint back, enroll it again with an installation key. It
+  joins as a new sensor, with a new Sensor ID.
 
 ### wait
 

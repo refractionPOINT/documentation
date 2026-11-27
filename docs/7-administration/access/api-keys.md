@@ -8,11 +8,13 @@ The list of available permissions can be programmatically retrieved from the `pe
 
 ## Managing
 
-The API Keys are managed through the Organization view of the <https://limacharlie.io> web interface.
+Organization API keys are managed from the Organization view of the web app, the REST API, or the CLI. See [Programmatic Management](#programmatic-management). Managing them requires the `apikey.ctrl` permission.
+
+Each key has a name, unique within the organization. The secret is shown once, when the key is created. Keys never expire, so rotate them on your own schedule, see [Rotating API Keys](#rotating-api-keys).
 
 ## Getting a JWT
 
-Issue an HTTP POST to `https://jwt.limacharlie.io` with the Organization ID and API key. The returned JWT is valid for one hour.
+Issue an HTTP POST to `https://jwt.limacharlie.io` with the Organization ID and API key. The returned JWT is valid for one hour by default. To change that, add an `expiry` form parameter holding the lifetime in seconds.
 
 === "REST API"
 
@@ -52,6 +54,8 @@ Issue an HTTP POST to `https://jwt.limacharlie.io` with the Organization ID and 
     limacharlie auth login
     ```
 
+A JWT carries a snapshot of permissions. To pick up changed permissions, request a new JWT. Some operations, like deleting an organization, check current permissions on every request.
+
 ### User API Keys
 
 User API keys are to generate JSON web tokens (JWTs) for the REST API. In contrast to Organization API keys, the User API keys are associated with a specific user and provide the exact same access across all organizations.
@@ -71,6 +75,8 @@ You may also use a User API Key to get the list of organizations available to it
 `curl "https://api.limacharlie.io/v1/user/orgs?fields=oid,name&limit=1000" -H "Authorization: Bearer <YOUR_JWT>"`
 
 The response is a JSON object with an `orgs` list, each entry carrying the requested `oid` and `name`. Use `offset` and `limit` to page through large lists.
+
+User API keys are managed from your user settings in the web app. The CLI and the REST routes documented here manage Organization API keys only. Rotate a user key the same way as an Organization key: create a new one, switch your clients over, delete the old one.
 
 #### Ingestion Keys
 
@@ -110,7 +116,7 @@ Flairs are used to modify the behavior of an API key or provide some usage hints
 
 The following flairs are currently supported:
 
-- `bulk`: indicates to the REST API that this key is meant to do a large amount of calls, the API gateway tweaks the API call limits accordingly.
+- `bulk`: indicates to the REST API that this key is meant to do a large amount of calls, a bulk key can make 1,000 API calls per 60 seconds instead of 500. See [API Rate Limits](../../8-reference/api-rate-limits.md).
 - `segment`: indicates that only resources created by this key will be visible by this key. This is useful to provide access to a 3rd party in a limited fashion.
 
 ## Allowed IP Range
@@ -126,7 +132,7 @@ Similar to agents, Sensors send telemetry to the LimaCharlie platform in the for
 ## Programmatic Management
 
 !!! info "Prerequisites"
-    Managing API keys programmatically requires an existing API key with the `apikey.ctrl` permission. See [Managing](#managing) for initial setup through the web interface.
+    Managing organization API keys needs a JWT with `apikey.ctrl`. A signed-in user with that permission can create the first key in the web app or through the API.
 
 ### List API Keys
 
@@ -260,6 +266,24 @@ Similar to agents, Sensors send telemetry to the LimaCharlie platform in the for
     ```bash
     limacharlie api-key delete --key-hash KEY_HASH_TO_DELETE --confirm
     ```
+
+## Rotating API Keys
+
+There is no edit or rotate call. To rotate an Organization API key:
+
+1. Create a new key with a new name, the permissions it needs, and the same [allowed IP range](#allowed-ip-range) if the old key has one.
+2. Switch your clients to the new key. If the key lives in the [secret hive](../config-hive/secrets.md), `limacharlie api-key create --store-secret` writes it there in one step.
+3. Check that your clients use the new key, then delete the old one.
+
+Deleting a key does not cut off access instantly:
+
+- No new JWT can be minted from the key after about 10 seconds.
+- A JWT already issued stays valid until its own expiry: one hour by default, or longer if it was minted with a custom `expiry`.
+- A call that sends the raw key in the `X-LC-API-KEY` header uses a JWT that is cached for up to 30 minutes. A deleted key can keep working that way for that long.
+
+Delete a leaked key immediately. The cached credentials above can still be accepted for a while after deletion, and JWTs minted from the key before then stay valid until their own expiry, which the caller chooses. Don't treat the one-hour default as a containment deadline.
+
+The organization configuration format used by [Git Sync](../../5-integrations/extensions/limacharlie/git-sync.md) and Infrastructure as Code does not manage API keys. Create keys through the web app, API or CLI. If you store a key in the secret hive, exclude that hive from Git exports so the value is not written to your repository.
 
 ---
 
