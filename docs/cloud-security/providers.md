@@ -293,6 +293,9 @@ in seconds; the periodic sweep remains the safety net. See
 
 This applies to every connector: cloud resources, identity-provider users and
 groups, SaaS, source-control and AI assets, and LimaCharlie resources alike.
+It does not apply to results that are pushed rather than listed: Code Security
+scan results, Host Posture checks and vulnerabilities reported by the
+LimaCharlie sensor are replaced as soon as a new result arrives, as before.
 Provider listings are sometimes briefly incomplete: an API page can omit a
 resource for a moment, or answer an empty list once. So that one such read does
 not remove a resource, close its findings and bring them back on the next
