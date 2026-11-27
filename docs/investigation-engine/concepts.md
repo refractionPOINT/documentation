@@ -112,7 +112,7 @@ waiting for storage.
 (`llm_usd`), AI agent sessions (`agent_usd`) and wall time. The settings' budgets cap each
 run; a run that reaches one ends `budget_exhausted` with what it had. An AI call already sent
 is still billed when the run no longer needs it, so a finished run's AI cost can grow for a
-short while after it ended (`late_usage`). Billing per run is not switched on.
+short while after it ended (`late_usage`). Billing per run is not on.
 
 ### The case
 

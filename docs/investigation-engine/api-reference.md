@@ -62,11 +62,11 @@ Permission shorthand: **read** is `investigation.get` + `insight.evt.get`; **wri
 | `POST /compare` | write | The same against up to 50 finished runs (`run_ids`, or `last: {template, limit}`). |
 | `GET /runs/{id}/check-source` | read + `investigation_plan.get` | A check's source exactly as the run froze it. |
 | `POST /runs/{id}/agent-answers/{request_id}` | `investigation.get` + the answer token | An AI agent's answer. See [Custom Code](custom-code.md#how-the-agent-answers). |
-| `GET /stats` | read + `investigation_policy.set` | The performance report. |
+| `GET /stats` | read | The performance report. |
 
 **Listing runs.** Filters: `state` (`queued`, `running`, `decided`, `completed`,
 `cancelled`, `failed`, `budget_exhausted`, `flushed`, `capped`), `outcome` (an
-[outcome](concepts.md#outcomes) or `undecided`; needs `investigation_policy.set`),
+[outcome](concepts.md#outcomes) or `undecided`),
 `verdict`, `template`, `trigger`, `entity`, `started_by`, `idempotency_key`,
 `detection_id`, `case_id`, `message_id`, `sid`, `needs_person`, `kind` (`template`, `wave`
 or `lease_check`), `since`, `until`, and `sort` (`-created` default, `created`,
@@ -180,6 +180,8 @@ The settings record itself is written through the Hive. See [Settings](settings.
 | `POST /test-plan` | write | A dry run on past alerts. `202` with a `test_id` while it runs. |
 | `GET /test-plan/{test_id}` | read | Poll a test: `after`, `wait` (0 to 10 s). |
 | `POST /waves` | write | A batch of questions with no template. See [Waves](concepts.md#waves-and-fact-packs). |
+| `POST /trusted-lookups/validate` | read | Check entries you would add to a Lookup named in a template's `trust` before you save them. |
+| `GET /trusted-lookups/usage` | read | The runs that used a trusted Lookup (`lookup_name`, time window, paging), with a total. |
 
 **Validate** answers `valid`, `errors` and `warnings` (each `{code, path, message,
 suggestion?}`), `ai_rules`, an `estimate` of the worst case, and `actions` (per entry
@@ -198,7 +200,7 @@ per rule how many samples it decided and how many agree or disagree with your an
 
 ## Stats
 
-`GET /stats?template=&since=&until=` (read + `investigation_policy.set`) aggregates the most
+`GET /stats?template=&since=&until=` (read) aggregates the most
 recent matching runs: runs by state and outcome, time to verdict, AI spend, operators, the
 actions per template, and three per-template lists:
 

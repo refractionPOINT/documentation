@@ -57,8 +57,8 @@ speculation: {low: conservative, medium: balanced, high: aggressive, critical: a
 | `llm.agent` | `ai_agent` record name | none | The AI agent that answers `ask_ai` steps and the AI review. |
 | `limits.max_parallel_runs` | integer, 1 to 2000 | 100 | Runs executing at once, region-wide; the rest wait in the run queue. |
 | `limits.runs_per_hour` | integer, at least 1 | none (no cap) | Runs that may start in a UTC clock hour; above it a start is recorded `capped`. |
-| `budgets.max_wall_seconds` | number, positive | 600 | A run's wall time. |
-| `budgets.max_steps_per_run` | integer, positive | 200 | Steps per run. |
+| `budgets.max_wall_seconds` | integer, not negative | 600 | A run's wall time. |
+| `budgets.max_steps_per_run` | integer, not negative | 200 | Steps per run. |
 | `budgets.max_llm_usd_per_run` | number, 0 or more | 0.5 | AI questions and the review, US dollars. |
 | `budgets.max_agent_usd_per_run` | number, 0 to 1000 | 5.0 | AI agent steps and hand-off of one run, US dollars. |
 | `budgets.search_slot_share` | number, above 0, at most 1 | 0.5 | Share of the organization's concurrent LCQL slots the engine may hold. |

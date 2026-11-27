@@ -1,8 +1,7 @@
 # Permissions
 
 The Investigation Engine is checked at the API gateway, which requires the
-permissions below. Beyond them, a few reads need `investigation_policy.set`, and every
-read or action a run makes is authorized as the run's identity (see
+permissions below. Beyond them, every read or action a run makes is authorized as the run's identity (see
 [What a run can do](#what-a-run-can-do)). There are no approver lists.
 
 !!! warning "Template and settings permissions are not part of any role"
@@ -23,7 +22,7 @@ with `unauthorized: missing permission <name>`.
 | Approve, deny, revert, extend or confirm an action; **undo an automatic action** | `investigation.set`, `insight.evt.get`, **and the permission of the action's class** (below) |
 | Answer an AI agent step (from the agent's session) | `investigation.get`, plus the one-time answer token the engine gave the session |
 | Bulk undo by selector (a route and a time range) | the above, plus `investigation_policy.set` |
-| Read the performance stats (the console hides the **Performance** tab without it); filter the run list by outcome or verdict | `investigation.get`, `insight.evt.get` **and `investigation_policy.set`** |
+| Read the performance stats; filter the run list by outcome or verdict | `investigation.get`, `insight.evt.get` (the console still shows its **Measure** page only to people who also hold `investigation_policy.set`) |
 
 `insight.evt.get` is required everywhere because a run's results are what a search of
 the organization's telemetry found: a role that can use Cases but cannot read
@@ -83,7 +82,17 @@ can create an active template, make a draft active or edit an active one. Demoti
 template to `draft` always works.
 
 This is deliberate: an AI agent or a script holding an API key can write drafts but
-can never put a template in a position to start from a rule or act on its own. An
+cannot make a template start from a rule or act on its own.
+
+!!! warning "Checks are not behind this gate"
+    A [check](templates.md#checks-templates-other-templates-call) runs as it is stored,
+    whatever its `status` (an active template that calls a draft check only gets the warning
+    `check_is_draft`). So a key holding `investigation_plan.set` can change what an
+    **active** template decides through a check it calls: an approval condition that reads
+    the check, or a "check again" that releases a containment. Treat `investigation_plan.set`
+    on a key as the power to change active templates' checks, review check edits like edits
+    of active templates, and keep the checks your active templates call in the same
+    reviewed source (Git) as the templates. An
 organization that manages active templates with API keys, for example from a
 Git-synced pipeline, can opt out by adding the tag `allow-api-key-promotion` to the
 enabled `investigation_policy/default` record. Setting that tag needs
@@ -217,7 +226,7 @@ that starts `permission_denied:` and names the permissions the class needs.
 
 The console needs `investigation.get` **and** `insight.evt.get` to show the
 Investigations section at all, and the automatic-actions log needs only those two to
-read (**Undo** needs `investigation.set`). The **Performance** tab needs
+read (**Undo** needs `investigation.set`). The **Measure** page needs
 `investigation_policy.set` as well and is hidden without it. Controls the gateway would refuse are disabled with a
 tooltip naming the permissions you need. See [Console](console.md).
 

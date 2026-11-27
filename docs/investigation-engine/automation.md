@@ -47,8 +47,9 @@ respond:
 - Put the action **after** `report`. The run is tied to the detection `report` just
   created: its id, category and priority, plus the rule's tags. Without a `report`, the
   run only knows the rule name and the sensor.
-- **One detection starts at most one run**: the detection id is the run's idempotency
-  key.
+- **One run per rule and detection**: a repeated delivery returns the run it already has
+  (the idempotency key is `detection:<id>:<rule>`); two rules that match one detection start
+  two runs, each with its own template and inputs.
 - **Alerts with the same `coalesce_key` join the open run** instead of starting
   another. The default, `sid:<sensor id>`, makes a burst of alerts on one host one
   investigation. A key built from a field some events lack renders the same text for

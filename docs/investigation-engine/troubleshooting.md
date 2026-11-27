@@ -36,7 +36,8 @@ Every refusal and error of the Investigation Engine, and what to do about it.
 | `own_case` | `own_case` (409) | The engine wrote that case: a run without a person never starts in it. | Nothing: this is the loop guard. A person can still investigate the case. |
 
 A start is never refused for the organization's load: above `limits.max_parallel_runs` it
-waits in the [run queue](run-queue.md).
+waits in the [run queue](run-queue.md). Only an hourly cap you set (`limits.runs_per_hour`)
+records starts above it as `capped`, not investigated.
 
 ## Error codes
 

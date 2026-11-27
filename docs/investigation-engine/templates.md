@@ -19,8 +19,9 @@ not write the scheduling. There is no probability, weight or threshold: a run en
 ## Where templates live
 
 A template is a Hive record in the `investigation_plan` hive; the record name is the
-template name (lowercase letters, digits, `-` and `_`, at most 64 characters, no `name:`
-key in the YAML). An organization's templates are exactly its records: the engine adds
+template name. Use lowercase letters, digits, `-` and `_`, starting with a letter or digit,
+at most 64 characters: that is what the CLI and the MCP save tools write, and it fits a D&R
+rule's `template` parameter. There is no `name:` key in the YAML. An organization's templates are exactly its records: the engine adds
 none. Manage them with `limacharlie investigate templates ...`, the console, the Hive API
 or [Git Sync](../5-integrations/extensions/limacharlie/git-sync.md#investigation-engine-records).
 
@@ -214,7 +215,7 @@ place in `gather`: call it from `act`.
 Rules, `only_if`, approval conditions and signal explanations use one language: a path, or
 a comparison of paths and literals, combined with `and`, `or`, `not` and parentheses.
 
-```
+```text
 sender_history.prior_messages_30d > 0
 message.sender_domain in org.trusted_domains
 judge.label == "yes"
@@ -427,6 +428,7 @@ verdict. Write a check for logic several templates repeat, and for
 ```yaml
 # investigation_plan/host-is-protected
 kind: check
+status: active
 description: "Is this host one we never isolate without a person?"
 params:
   sid: {type: string, required: true, description: "The sensor."}
@@ -460,7 +462,11 @@ waits). In a check, "escalated" means the condition the check tests holds.
   `max_items` (1 to 25, required). The fact then has `items`, `any_malicious`, `all_benign`,
   counts and `first_malicious`.
 - **Versions.** A call names a check by record name: a saved check takes effect on the next
-  run of every caller. `validate` with the check's name returns `used_by`, each caller
+  run of every caller. A check's `status` does not gate it: saving a check, even as a draft,
+  changes what the **active** templates that call it decide (validation warns
+  `check_is_draft`). So a key holding `investigation_plan.set`, even one that may only write
+  drafts, can change active templates through the checks they call: review a check edit like
+  an edit of an active template. `validate` with the check's name returns `used_by`, each caller
   validated against your draft. At most 3 nested calls, 256 steps and 50 check instances per
   run.
 - A check is never started on its own (`check_not_startable`). Test it with `params`

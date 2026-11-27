@@ -87,5 +87,6 @@ If Git Sync manages the record, change it in git instead.
 Per template: runs and outcomes, time to verdict and from detection to verdict and to
 action, AI spend, which rules decided how many runs, which evidence was missing and why,
 hand-offs and the drafts agents proposed, and per action how often it acted alone, waited
-(by reason), was approved, denied, expired, released, held or undone. It needs
-`investigation_policy.set` and is hidden without it.
+(by reason), was approved, denied, expired, released, held or undone. The console shows it only to people who
+also hold `investigation_policy.set`; the same numbers are a plain read through the API, CLI
+and MCP.

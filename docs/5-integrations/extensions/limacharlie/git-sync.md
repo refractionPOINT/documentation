@@ -465,6 +465,12 @@ hives:
   applied first, so one apply works. Without the tag, sync drafts and let a person promote
   them. With it, whoever can push to the repository can make a template act: review merges
   accordingly.
+- **The Git Sync key's grants.** `investigation_policy.get` and `investigation_policy.set`
+  for the settings, `investigation_plan.get` and `investigation_plan.set` for templates,
+  checks and packs (`.del` for removals; grant the matching `.set.mtd` permissions too if your
+  pipeline changes a record's metadata, such as its tags, on its own), and read access to every secret the settings name
+  (`secret.get` or `secret.get.<name>`): the Hive refuses a settings write that introduces a
+  `hive://secret/<name>` the writer cannot read. Git Sync does not bypass permissions.
 - **Validate before you push.** `limacharlie investigate templates validate --file <file>`
   checks a template, and `limacharlie hive validate --hive-name investigation_policy --key
   default --input-file <file>` the settings. A record the Hive refuses stops the apply at that

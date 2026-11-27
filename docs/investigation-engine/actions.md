@@ -131,6 +131,7 @@ lease is extended, up to a maximum you state.
 ```yaml
 # investigation_plan/hash-still-banned
 kind: check
+status: active
 description: "Is this hash still banned, or has it been approved since?"
 params:
   hash: {type: string, required: true, description: "The SHA-256 to check."}
@@ -209,14 +210,14 @@ case:
 
 ## What an action can do
 
-| `do` | Effect | Lease | Run key needs |
+| `do` | Effect | Lease | Run key needs (besides what [every run needs](permissions.md#what-the-key-needs)) |
 |---|---|---|---|
-| `contain.network` | Isolates the sensor from the network | yes | `sensor.task` |
-| `contain.seal` | Seals the sensor | yes | `sensor.task` |
-| `contain.email` | Quarantines the message's copies | yes | `mailsec.act` |
-| `tag`, `tag.add` | Adds a sensor tag for `attrs.ttl` seconds (or until removed) | no | `sensor.tag` |
-| `tag.remove` | Removes a sensor tag (irreversible) | no | `sensor.tag` |
-| `eradicate.file` | Deletes a file on the sensor (irreversible) | no | `sensor.task`, `output.set` |
+| `contain.network` | Isolates the sensor from the network | yes | `sensor.task`, `sensor.get` |
+| `contain.seal` | Seals the sensor | yes | `sensor.task`, `sensor.get` |
+| `contain.email` | Quarantines the message's copies | yes | `mailsec.act`, `mailsec.get` |
+| `tag`, `tag.add` | Adds a sensor tag for `attrs.ttl` seconds (or until removed) | no | `sensor.tag`, `sensor.get` |
+| `tag.remove` | Removes a sensor tag (irreversible) | no | `sensor.tag`, `sensor.get` |
+| `eradicate.file` | Deletes a file on the sensor (irreversible) | no | `sensor.task`, `output.set`, `sensor.get` |
 | `close.false_positive` | Closes the run's case (and the message the run started from) as a false positive | no | `investigation.get`, `investigation.set` (`mailsec.set` for a message) |
 | `playbook:<name>` | Runs a Python Playbook | with `undo` | `ext.request`, `playbook.get` |
 | `extension:<name>/<action>` | Sends one extension request | with `undo` | `ext.request` and what the extension needs |
@@ -302,8 +303,9 @@ curl -s -X POST "$API/investigate/$OID/actions/automatic/undo" \
   -d '{"ids": ["<action id>", "<action id>"]}'
 ```
 
-A bulk undo takes 1 to 100 explicit ids, or a selector (`route_id` and a time range; it
-needs `investigation_policy.set`). Results keep the input order and report each item's
+A bulk undo takes 1 to 100 explicit ids, or a selector: `route_id` (the
+`decision_route.id` each run and automatic action shows) with an inclusive `from` and an
+optional `to`, which needs `investigation_policy.set`. Prefer explicit ids. Results keep the input order and report each item's
 state, error code and whether a retry can work. Retry failed ids explicitly. Each undo still
 needs the action's own permission.
 

@@ -566,7 +566,7 @@ Place it **after** the `report`: the run is tied to that detection (its id, cate
 |-----------|-------------|
 | `template` | Name of the plan template to run. A literal (not templated): a letter or digit, then up to 127 letters, digits, `_`, `.` and `-`. The template must exist and be **active**. When omitted, the engine picks the active template whose `applies_to` best matches. |
 | `urgency` | `low`, `medium`, `high` or `critical`, as a literal. When omitted, the engine derives it from the detection priority (8 or more `critical`, 6 or more `high`, 3 or more `medium`, otherwise `low`), or for a case from its severity. |
-| `coalesce_key` | [Template string](../4-data-queries/template-transforms.md), at most 256 bytes once rendered. Starts with the same key join the run already open for it. Defaults to `sid:<sensor id>` on a detection, and to `case:<number>` with `case`. |
+| `coalesce_key` | [Template string](../4-data-queries/template-transforms.md), at most 256 bytes once rendered. Starts with the same key join the run already open for it, unless the template says `coalesce: off` (then every alert gets its own run). Defaults to `sid:<sensor id>` on a detection, and to `case:<number>` with `case`. |
 | `inputs` | A map of values handed to the run as its inputs, using the same [transform syntax](../4-data-queries/template-transforms.md) as the `data` block of `start ai agent`. At most 64 KiB once rendered. The template's steps read them as optional inputs (`$?hash`); its rules never read them. See [Where a run starts](../investigation-engine/templates.md#where-a-run-starts-starts_from). |
 | `case` | Template string that must render to an existing case number, such as `'{{ .event.case_number }}'`. The run writes into that case instead of opening one. Meant for rules on the Cases `case_created` event: take it only from Cases events, since its value decides which case the run writes into. See [D&R rules on a new case](../investigation-engine/automation.md#dr-rules-on-a-new-case). |
 | `suppression` | The usual [suppression](#suppression) descriptor. |
@@ -586,13 +586,15 @@ Unknown parameters are rejected when the rule is saved, as are a `template` or `
 #### Behavior
 
 - Starting a run never delays the rule: the request is sent in the background, and when the engine is busy or unreachable the host keeps it and sends it again for up to 15 minutes. The detection is reported whether or not a run starts. Once the engine has the start it is queued and never dropped for load (see [The Run Queue](../investigation-engine/run-queue.md)).
-- One detection starts at most one run (the detection id is the idempotency key). With `case`, one rule starts at most one run per case (the key is `case:<number>:<rule>`).
+- One run per rule and detection: a repeated delivery of the same rule's start returns the run it already has, and two rules that match one detection start two runs (the idempotency key is `detection:<id>:<rule>`). With `case`, one rule starts at most one run per case (the key is `case:<number>:<rule>`).
 - With `case`, no `report` is needed, and the detection of a `report` before the action is not sent. The engine never starts a run in a case it wrote itself.
 - If `case`, `coalesce_key` or `inputs` fails to render, or is over its size limit, the action fails for that event and nothing is sent. With `case`, an empty or non-numeric value fails with `start investigation: case did not render to a case number`.
 - When the engine refuses a start for a reason you can fix (no active template applies, a draft, no run identity, ...), or a start could not be delivered, a record appears on the organization's **Errors** page under the rule's name, at most once every 30 minutes per rule and cause. A refusal never disables the rule. See [Troubleshooting](../investigation-engine/troubleshooting.md#a-dr-rule-matched-but-no-investigation-started) for the messages.
 - The run is recorded as started by the rule: its trigger has `source: dr-rule` (or `case`), and `rule` is the rule record name prefixed with `general.`. Use that form in a template's `applies_to` (`rule: ['general.my-rule']`). A rule on a detection never sends a severity, so an `applies_to` with a `severity` key does not match it.
 - Resource ACL checks work like `start ai agent`: an event restricted by `acl:` tags is refused unless the rule's `acl_scopes` covers it, and the run's key must be a member of the scope to read it (see [Sensors with resource ACL tags](../investigation-engine/automation.md#sensors-with-resource-acl-tags)).
 - The rule tester and replay never start a run: a match is reported as an `investigation` action.
+
+---
 
 ## See Also
 

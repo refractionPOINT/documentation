@@ -17,6 +17,13 @@ The workflow:
 7. Save as a draft.
 8. A person reviews it and makes it active.
 
+The agent cannot make a template active. It can, however, save a
+[check](templates.md#checks-templates-other-templates-call), and an active template that calls
+a check runs it as stored, draft or not: see the warning in
+[Permissions](permissions.md#active-templates-can-only-be-written-by-a-person). Ask the agent
+to save changed checks under a new name, and review them before an active template calls
+them.
+
 The agent cannot make a template active. The save tool always writes `status: draft` and
 refuses to overwrite an active template, and the Hive refuses an `active` write that
 comes from an API key (unless the organization opted out; see
@@ -59,8 +66,9 @@ run the key starts executes as the settings' identity unless it picks `caller` (
     The agent saves and tests templates. It does not need `sensor.task` or
     `mailsec.act`, which approving actions requires. Withholding them does not stop
     a run: a run the key starts on an **active** template acts as the settings' identity,
-    not as the key. Do not give the key `investigation.set` unless it should be able to
-    start runs.
+    not as the key. A key that tests templates needs `investigation.set`, which also lets
+    it start runs: give the agent a key for an organization where its runs can do no harm
+    (a test tenant), or accept that it can start runs on active templates there.
 
 ## 1. Read the kit, in sections
 
@@ -163,8 +171,8 @@ errors:
 ```
 
 Fix the errors first. Then read the **warnings**: they pass validation but make a
-template useless. Typical ones are `unused_step`, `operator_denied`,
-`rule_never_holds` and `act_class_off`. The report lists the AI-assisted rules in
+template useless. Typical ones are `unused_step`, `contradictory_rules`,
+`close_rule_without_close_entry`, `auto_tag_permanent` and `agent_step_unconditional`. The report lists the AI-assisted rules in
 `ai_rules`, and estimates the worst case of one run, so the agent can see before
 testing whether the template fits the settings' budgets.
 

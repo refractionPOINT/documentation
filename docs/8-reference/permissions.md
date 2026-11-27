@@ -263,7 +263,7 @@ No preset role holds any `investigation_plan.*` or `investigation_policy.*` perm
 | investigation\_plan.get.mtd | View plan template metadata only |
 | investigation\_plan.set.mtd | Modify plan template metadata only |
 | investigation\_policy.get | Read the Investigation Engine settings record |
-| investigation\_policy.set | Create and modify the settings record, including the pause and the identity runs execute as. Also needed to read the Investigation Engine performance stats. |
+| investigation\_policy.set | Create and modify the settings record, including the pause and the identity runs execute as. The console also shows its Measure page only to holders of this permission. |
 | investigation\_policy.del | Delete the settings record |
 | investigation\_policy.get.mtd | View settings record metadata only |
 | investigation\_policy.set.mtd | Modify settings record metadata only |

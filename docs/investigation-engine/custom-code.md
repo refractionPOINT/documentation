@@ -72,6 +72,11 @@ act:
     approval: none
     lease: 4h
     on_lease_end: release
+  - do: tag.add
+    target: '$trigger.sid'
+    attrs: {tag: 'ie:persistence', ttl: 604800}
+    on_rules: [banned_and_persistent]
+    approval: none
   - do: extension:ext-example-pager/page
     target: '$asset.owner_team'
     attrs: {team: '$asset.owner_team', severity: high}
@@ -87,6 +92,10 @@ case:
   mode: create
   severity: {escalated_by_rule: high, escalated_by_ai: high, default: medium}
 ```
+
+`banned_and_persistent` has its own `act` entry, so its steps (the agent's question) keep
+being gathered after `banned_binary` decided: an escalate rule with no `act` entry is not
+gathered once another rule decided.
 
 `asset-inventory-lookup`, `firewall-block-hash`, `firewall-unblock-hash`, `host-triage`,
 `ie-distiller` and `ext-example-pager` stand for your own records; validation offline warns

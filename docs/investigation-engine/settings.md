@@ -7,7 +7,8 @@ An organization's Investigation Engine settings are **one record**:
 - a **circuit breaker** on automatic containments;
 - the **identity** (the key) runs execute as;
 - where **notifications** go, which **AI agent** answers, run **budgets**, run **limits**,
-  and the default **case** mode.
+  the default **case** mode, and **speculation** (how eagerly steps start before they are
+  known to be needed, per urgency: `conservative`, `balanced` or `aggressive`).
 
 Whether an action acts on its own or waits for a person, how long it lasts, what happens
 when its lease ends and whether the AI may decide are written in each template, never
@@ -47,6 +48,7 @@ budgets:
   search_slot_share: 0.5
   lookback_days: 30
 case: create
+speculation: {low: conservative, medium: balanced, high: aggressive, critical: aggressive}
 ```
 
 Every field is optional; a missing one takes its default. With no record at all the

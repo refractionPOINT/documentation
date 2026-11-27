@@ -89,7 +89,7 @@ Reference: [Permissions](permissions.md), [API Reference](api-reference.md),
 ## Not available yet
 
 - The engine runs only where it has been enabled; it is not generally available.
-- Billing per run is not switched on. This documentation states no price.
+- Billing per run is not on. This documentation states no price.
 - The `limacharlie investigate queue` and `limacharlie investigate answer` commands are in
   the CLI's source but not in the latest release on PyPI (5.14.0). Until a release
   includes them, use the [API routes](api-reference.md) or the [MCP tools](mcp.md).

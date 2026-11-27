@@ -98,7 +98,7 @@ case: create
 
 ```bash
 limacharlie hive set --hive-name investigation_policy --key default \
-  --input-file settings.yaml --oid "$OID"
+  --input-file settings.yaml --enabled --oid "$OID"
 limacharlie investigate settings get --oid "$OID"
 ```
 
@@ -117,7 +117,7 @@ lookup_data:
   "<sha256 of the test binary>": {mtd: "test entry"}
 EOF
 limacharlie hive set --hive-name lookup --key banned-software \
-  --input-file banned.yaml --oid "$OID"
+  --input-file banned.yaml --enabled --oid "$OID"
 ```
 
 ## 5. The template
@@ -212,10 +212,12 @@ respond:
 ```
 
 ```bash
-limacharlie dr set --key banned-binary-exec --input-file rule.yaml --oid "$OID"
+limacharlie dr set --key banned-binary-exec --input-file rule.yaml --enabled --oid "$OID"
 ```
 
-The run is tied to the detection the `report` just raised. See
+`--enabled` matters: a new rule (and a new record in most hives) is created disabled
+without it, and a disabled rule or lookup looks exactly like one that never matches. The run
+is tied to the detection the `report` just raised. See
 [Automatic Starts](automation.md).
 
 ## 8. Fire it and watch
@@ -269,8 +271,9 @@ organization's audit log, filed under who decided it. See
 
 ## 10. The same with an approval
 
-Servers should not be isolated without a person. Change one line of the isolation entry
-and add the step its condition reads:
+Servers should not be isolated without a person. Change the `approval` of the isolation
+entry and add the step its condition reads (this version also drops the `tag.add` entry, to
+keep the example short):
 
 ```yaml
 # investigation_plan/banned-binary

@@ -1,13 +1,13 @@
 # The Run Queue
 
 Every start of a run goes through a durable queue in the organization's region. A start is
-**never dropped and never refused for load**: above the organization's limit it waits, and
+**never dropped and never refused for load** (unless you set an hourly cap, `limits.runs_per_hour`): above the organization's limit it waits, and
 it starts as soon as a slot frees. The queue is what lets a burst of alerts (a noisy rule,
 a worm) be investigated in order without losing any of them, and what lets you see and
 clear what waits.
 
 !!! warning "Experimental"
-    Billing per run is not switched on. This page states no price.
+    Billing per run is not on. This page states no price.
 
 ## What happens to a start
 
@@ -44,8 +44,9 @@ decided, even if an action still waits for a person), it takes no more alerts: t
 alert on that sensor starts one new run, which the later ones join. The first 1,000 alerts
 of a run are fed to it; later ones are counted (`coalesced_alerts`) but not fed.
 
-A D&R rule can set its own `coalesce_key`; the run joins only an open run of the same
-template. A repeated start of the same detection by the same rule returns the run it
+A D&R rule's `coalesce_key` (default `sid:<sensor id>`) says which alerts belong together;
+an alert joins only an open run of the same template. A template that says `coalesce: off`
+wins: one run per alert and rule, whatever key the rule sends. A repeated start of the same detection by the same rule returns the run it
 already has (`joined_by: idempotency_key`).
 
 ## Fairness and order
@@ -145,7 +146,7 @@ exactly one of `rule`, `template` or `all: true`, and an optional `note`.
 
 A run is counted once, when it starts. Joined alerts, `flushed` and `capped` starts, starts
 that failed before starting, waves, tests and "check again" runs are not counted. Billing
-per run is not switched on yet.
+per run is not on.
 
 ## Not available yet
 

@@ -215,8 +215,8 @@ what it must have seen before it may answer benign:
 ```yaml
 ai_review:
   question: "Is this process activity malicious? Say what in the evidence shows it."
-  sees: [alert__trigger, lineage, host__card, spread__prevalence]   # the steps it reads
-  needs: [alert__trigger, lineage]                                  # it may not answer benign without these
+  sees: [alert__trigger, banned, approved, starts_on_its_own]   # the steps it reads
+  needs: [alert__trigger]                                       # it may not answer benign without these
 ```
 
 The review **recommends**: the outcome is `ai_recommends_benign` or

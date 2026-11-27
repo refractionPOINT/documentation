@@ -28,7 +28,13 @@ that API host.
 limacharlie investigate kit [--section guide|schema|operators|examples|settings|codes|packs|library]...
 limacharlie investigate operators [--brief] [--name OP]... [--match TEXT]
 limacharlie investigate packs [--brief] [--name PACK]
+limacharlie investigate pack get NAME                    # an organization's own fact pack
+limacharlie investigate pack save NAME --file pack.yaml [--etag ETAG]
+limacharlie investigate pack delete NAME --confirm
 ```
+
+Organization packs are `investigation_pack` records. Writing one needs `investigation_plan.set`
+and a person (or an API key when the settings record is tagged `allow-api-key-promotion`).
 
 The whole kit is large: read it in sections (`--section guide --section codes` first).
 
@@ -71,7 +77,7 @@ Rules the CLI enforces:
 | `--samples-file FILE` | a list of samples |
 
 At most 25 samples in all. Other options: `--mode triage|full`, `--overrides-json`
-(tighten-only budgets), `--timeout` (default 600 s), `--no-wait`, `--test-id` (keep waiting
+(tighten-only budgets), `--strict` (refuse instead of ignoring a loosening), `--timeout` (default 600 s), `--no-wait`, `--test-id` (keep waiting
 on a test started earlier), `--include-steps`. Exit codes: 0 done, 4 the template is
 invalid, 1 the test failed.
 
@@ -124,7 +130,7 @@ limacharlie investigate stats [--template T] [--since TIME] [--until TIME]
   `investigation_policy.set`. If Git Sync manages that hive, set the pause in git.
 - `settings get` shows what the engine enforces, including `warnings` (a record that does
   not parse is `settings_rejected`).
-- `stats` and `runs list --outcome` / `--verdict` also need `investigation_policy.set`.
+- `stats` and `runs list --outcome` / `--verdict` are reads like the others (`investigation.get` + `insight.evt.get`). The 5.14.0 help text still says they need `investigation_policy.set`; the engine does not ask for it.
 
 ## In the next release
 
