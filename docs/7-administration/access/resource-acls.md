@@ -179,7 +179,7 @@ limacharlie output create --name siem --module syslog --type event --input-file 
 
 D&R rules cannot add or remove `acl:` tags. The `add tag`, `remove tag`, `add hive tag` and `remove hive tag` actions reject them, because rules run without a user identity to check `acl.set` against.
 
-Three response actions send event content outside the platform and are refused on events from restricted sensors: `service request`, `extension request` and `start ai agent`. The [`ask ai`](../../8-reference/detection-logic-operators.md#ask-ai) detection operator sends event content to an AI provider and is refused the same way: it produces an operator error and the rule does not match. To allow them, list the scopes in the rule's `acl_scopes` field, next to `detect` and `respond`:
+Four response actions send event content outside the rule and are refused on events from restricted sensors: `service request`, `extension request`, `start ai agent` and `start investigation`. The [`ask ai`](../../8-reference/detection-logic-operators.md#ask-ai) detection operator sends event content to an AI provider and is refused the same way: it produces an operator error and the rule does not match. To allow them, list the scopes in the rule's `acl_scopes` field, next to `detect` and `respond`:
 
 ```yaml
 detect:
@@ -197,6 +197,8 @@ respond:
 acl_scopes:
   - mailsec
 ```
+
+For `start investigation`, `acl_scopes` lets the alert reach the [Investigation Engine](../../investigation-engine/automation.md#sensors-with-resource-acl-tags); the key the run executes as must also be a member of the scope to read the sensor's content.
 
 - The action is allowed only when every `acl:` scope on the event's sensor is in `acl_scopes`.
 - Changing `acl_scopes` requires `acl.set` or membership in every scope in the new list. Removing all scopes requires `acl.set`.

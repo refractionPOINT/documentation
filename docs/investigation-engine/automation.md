@@ -7,18 +7,21 @@ response action: on a detection the rule reports, or on a new case. This is the 
 way a run starts without a person; the engine itself listens to nothing.
 
 A run without a person has no token of its own, so it executes with the identity
-named in the organization's [policy](policies.md#run-identity), and it can only use
-**active** templates.
+named in the organization's [settings](settings.md#identity), and it can only use
+**active** templates. What the run does is what that template's `act` entries say.
+Every start goes through the [run queue](run-queue.md): it is never dropped for load.
 
 ## Before you add a rule
 
-1. **A policy identity.** Set `identity.default` in the `default` investigation policy
-   to a Hive secret holding an organization API key, or give the template its own
-   `identity.templates.<name>.default`. Without one every start is refused
-   (`no_policy_identity`). See [step 3 of the walkthrough](walkthrough.md#3-the-run-identity-an-api-key-the-policy-names).
+1. **A run identity.** Set `identity.default` in the settings record
+   (`investigation_policy/default`) to a Hive secret holding an organization API key, or
+   give the template its own `identity.templates.<name>.default`. Without one every start
+   is refused (`no_policy_identity`). See [step 2 of the walkthrough](walkthrough.md#2-the-key-the-engine-runs-as).
 2. **An active template** whose `applies_to` matches what the rule sends, or a rule
    that names its template. A draft is never used (`template_draft`).
-3. **Autonomy you are comfortable with.** Start with every class in `suggest`.
+3. **Actions you have read.** An active template acts as its `act` entries say. Keep
+   `approval: required` on the entries you are not ready to let act alone, and remember
+   the [pause](settings.md#pause) if something goes wrong.
 
 When a start is refused for a reason you can fix, a record appears on the
 organization's **Errors** page under the rule's name. See
@@ -63,7 +66,42 @@ respond:
   once. When it cannot (an event restricted by resource ACL tags), the engine reads the
   detection itself and, since it may not be stored yet, retries that lookup for up to
   about two minutes before the step is `unknown(not_found)`.
-- Starting a run never delays the rule and never fails the detection.
+- A rule with `target: detection` and no `report` starts the run on the detection it
+  matched, so "investigate every detection of this category" is one rule:
+
+    ```yaml
+    detect:
+      target: detection
+      op: starts with
+      path: cat
+      value: email-security-
+    respond:
+      - action: start investigation
+        template: mailsec-message
+        inputs: {msg_uuid: '{{ .detect.event.msg_uuid }}'}
+    ```
+
+- Starting a run never delays the rule and never fails the detection. The host sends the
+  start in the background; when the engine is busy or unreachable it keeps the start and
+  sends it again for up to 15 minutes. A start it could not deliver in that time is
+  reported on the organization's **Errors** page, never dropped silently.
+
+### Sensors with resource ACL tags
+
+A sensor tagged `acl:<scope>` is visible only to the members of that scope. For a run on
+such a sensor, two keys must allow it:
+
+1. **The rule** must list the scope in its `acl_scopes`, or the `start investigation`
+   action is refused for events from that sensor (reported on the **Errors** page under the
+   rule's name), like the other actions that send event content out of the rule. See
+   [Resource ACLs](../7-administration/access/resource-acls.md).
+2. **The run's key** must be a member of the scope to read the sensor's content. Otherwise
+   its reads of that sensor are `unknown(acl_restricted)` and the detection read by its id
+   is `unknown(not_found_or_restricted)`. `limacharlie investigate settings get` lists, per
+   template, the scopes its key is outside of (`template_readiness.<template>.acl`).
+
+The host does not hand an ACL-restricted detection over with the start, so such a run reads
+the detection from storage, which can take longer than a run on an untagged sensor.
 
 ## D&R rules on a new case
 
@@ -129,7 +167,7 @@ respond:
   `case:<number>:<rule>`, the coalesce key `case:<number>`).
 - **No loops.** The engine never starts a run for a case it wrote itself (`own_case`),
   whatever the rule matches, so a run's own writes into a case cannot start another run.
-- The engine reads the case's severity, tags and detection with the policy's identity,
+- The engine reads the case's severity, tags and detection with the run identity,
   then picks the template the rule names, or the active one whose `applies_to` matches
   (`source: case`, `severity`, `tag`, `detect_cat`, `rule`). The run's inputs are the
   case number and, when the case has one, the detection it was opened for.
@@ -153,5 +191,5 @@ started.
 
 A run started by a rule appears in the Runs list like any other, started by
 `dr-rule:<rule>` (on a detection) or `case:<case number>` (on a case). Its case has the
-run linked, and its actions follow the policy. If the policy asks for notifications,
-[events](policies.md#notifications) are written to the organization's audit log.
+run linked, and its actions follow the template. If the settings ask for notifications,
+[events](settings.md#notifications) go to the destinations they name.

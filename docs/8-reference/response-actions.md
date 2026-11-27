@@ -545,7 +545,7 @@ For detailed configuration options, see [D&R-Driven AI Sessions](../9-ai-session
 
 ### start investigation
 
-Starts one [Investigation Engine](../investigation-engine/index.md) run, the way `start ai agent` starts an AI session. Use it after a `report` to investigate the detection the rule just reported, or with `case` to investigate an existing case. The run executes with the identity named in the organization's [investigation policy](../investigation-engine/policies.md#run-identity), and what it may do on its own is set by that policy. See [Automatic Starts](../investigation-engine/automation.md) for the full behavior.
+Starts one [Investigation Engine](../investigation-engine/index.md) run, the way `start ai agent` starts an AI session. Use it after a `report` to investigate the detection the rule just reported, or with `case` to investigate an existing case. The run executes with the identity named in the organization's [Investigation Engine settings](../investigation-engine/settings.md#identity), and what it does is what the template's `act` entries say. See [Automatic Starts](../investigation-engine/automation.md) for the full behavior.
 
 ```yaml
 - action: report
@@ -580,19 +580,18 @@ Unknown parameters are rejected when the rule is saved, as are a `template` or `
 
 - The Investigation Engine must be enabled for your organization. Where it is not, saving a rule that uses this action fails with `start investigation is not enabled in this environment`.
 - An **active** template that applies, or one named with `template`. A draft is never started by a rule.
-- The `default` investigation policy names an identity for runs without a person: `identity.default`, a `hive://secret/<name>` holding an organization API key (or the template's own `identity.templates.<name>.default`).
+- The settings record (`investigation_policy/default`) names an identity for runs without a person: `identity.default`, a `hive://secret/<name>` holding an organization API key (or the template's own `identity.templates.<name>.default`).
 - With `case`, the organization is [subscribed to Cases](../5-integrations/extensions/limacharlie/cases.md) and the identity can read and write the case.
 
 #### Behavior
 
-- Starting a run never delays the rule: the request is sent in the background (5 seconds per attempt, 8 seconds in all, one retry when the engine is unavailable). The detection is reported whether or not a run starts.
+- Starting a run never delays the rule: the request is sent in the background, and when the engine is busy or unreachable the host keeps it and sends it again for up to 15 minutes. The detection is reported whether or not a run starts. Once the engine has the start it is queued and never dropped for load (see [The Run Queue](../investigation-engine/run-queue.md)).
 - One detection starts at most one run (the detection id is the idempotency key). With `case`, one rule starts at most one run per case (the key is `case:<number>:<rule>`).
 - With `case`, no `report` is needed, and the detection of a `report` before the action is not sent. The engine never starts a run in a case it wrote itself.
 - If `case`, `coalesce_key` or `inputs` fails to render, or is over its size limit, the action fails for that event and nothing is sent. With `case`, an empty or non-numeric value fails with `start investigation: case did not render to a case number`.
-- When the engine refuses a start for a reason you can fix (no active template applies, a draft, no policy identity, ...), a record appears on the organization's **Errors** page under the rule's name, at most once every 30 minutes per rule and cause. A refusal never disables the rule. See [Troubleshooting](../investigation-engine/troubleshooting.md#a-dr-rule-matched-but-no-investigation-started) for the messages.
-- Starts are limited to 2 per second sustained per organization, with bursts of 20; over that, a start is dropped.
+- When the engine refuses a start for a reason you can fix (no active template applies, a draft, no run identity, ...), or a start could not be delivered, a record appears on the organization's **Errors** page under the rule's name, at most once every 30 minutes per rule and cause. A refusal never disables the rule. See [Troubleshooting](../investigation-engine/troubleshooting.md#a-dr-rule-matched-but-no-investigation-started) for the messages.
 - The run is recorded as started by the rule: its trigger has `source: dr-rule` (or `case`), and `rule` is the rule record name prefixed with `general.`. Use that form in a template's `applies_to` (`rule: ['general.my-rule']`). A rule on a detection never sends a severity, so an `applies_to` with a `severity` key does not match it.
-- Resource ACL checks work like `start ai agent`: an event restricted by `acl:` tags is refused unless the rule's author scope covers it.
+- Resource ACL checks work like `start ai agent`: an event restricted by `acl:` tags is refused unless the rule's `acl_scopes` covers it, and the run's key must be a member of the scope to read it (see [Sensors with resource ACL tags](../investigation-engine/automation.md#sensors-with-resource-acl-tags)).
 - The rule tester and replay never start a run: a match is reported as an `investigation` action.
 
 ## See Also

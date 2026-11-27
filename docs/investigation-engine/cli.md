@@ -1,209 +1,141 @@
 # Command Line Interface
 
-The `limacharlie investigate` command group is the CLI for the Investigation Engine:
-build and test templates, start and follow runs, work the approvals inbox, and read
-the effective policy and the performance stats.
+The `limacharlie investigate` command group builds and tests templates, starts and follows
+runs, works the approvals inbox, and reads the settings, the queue and the stats. Install or
+upgrade with `python -m pip install --upgrade limacharlie`.
 
-!!! info "Not released yet"
-    The `investigate` group is not in a released CLI version yet. Every command on this
-    page has an [API](api-reference.md) equivalent. Once your CLI has it, check the
-    exact flags of your version with:
+!!! info "Versions"
+    The commands on this page are in CLI **5.14.0**, except `investigate queue`,
+    `investigate queue flush` and `investigate answer`, which are in the CLI's source but
+    not in a release on PyPI yet. Until then use their [API routes](api-reference.md) or
+    [MCP tools](mcp.md). Check what your CLI has with `limacharlie investigate --help`;
+    every command also answers `--ai-help`.
 
-    ```bash
-    limacharlie investigate --help
-    limacharlie investigate templates test --help
-    ```
+Commands take the global options (`--oid`, `--output json|yaml|table|csv|jsonl`,
+`--filter`, `--fields`). Use the organization's UUID for `--oid`. The permissions each
+command needs are those of its [API route](api-reference.md).
 
-    Every command and subgroup also answers `--ai-help` with task-oriented guidance.
+A command that completes but says "no" (an invalid template or wave, a save the CLI refuses)
+prints the engine's coded answer and exits with code **4**. Other failures keep the CLI's
+codes: **2** for an HTTP 401 or 403, **3** for something that does not exist, **5** for a
+rate limit, **1** for anything else. Read the `error_code`, not the exit code, to tell
+causes apart. A 404 with no `error_code` means the Investigation Engine is not enabled on
+that API host.
 
-Commands take the global options (`--oid`, `--output json|yaml|toon|csv|table|jsonl`,
-`--filter <jmespath>`, `--fields <names>`). Use the organization's UUID for `--oid`.
-The permissions each command needs are the ones of the corresponding
-[API route](api-reference.md#routes).
-
-A command that completes but says "no" (an invalid template or wave; a save the CLI
-itself refuses because the template does not validate, a record of that name exists, or
-it would replace an active template; an activation (`templates promote`) that did not happen because the
-template is already active or does not validate) prints the engine's coded answer and **exits with code 4**. A call that fails
-keeps the CLI's standard exit codes: **2** when the API answers 401 or 403
-(authentication or permission), **3** for a resource that does not exist, **4** for
-invalid input, **5** for a rate limit, and **1** for anything else: a timeout, a test
-that failed, an `install-defaults` that could not write a template, and every other
-error status. That includes the Hive's own refusals, which the CLI receives as an HTTP
-`400` carrying an `error_code`: an activation or save the Hive rejects (for instance an
-`active` write from an API key, `error_code` `INVALID`) exits **1**, not 4. A missing
-Hive permission is also a `400` from the Hive (`error_code` `UNAUTHORIZED`) and exits
-**1**; the CLI then writes `"status": 403` in the error document, which is a label for
-the permission failure, not the HTTP status it received. Only a real HTTP 401 or 403
-exits 2. Read the `error_code`, not the exit code, to tell these apart. With a structured
-`--output` (`json`, `yaml`, ...) the failure is also written to stderr as a document
-with the message, the HTTP `status`, the `error_code` when there is one, and any coded
-`errors`; a 404 without an `error_code` means the Investigation Engine is not enabled
-on that API host.
+## Reference data
 
 ```bash
-export OID=<organization UUID>
+limacharlie investigate kit [--section guide|schema|operators|examples|settings|codes|packs|library]...
+limacharlie investigate operators [--brief] [--name OP]... [--match TEXT]
+limacharlie investigate packs [--brief] [--name PACK]
 ```
+
+The whole kit is large: read it in sections (`--section guide --section codes` first).
 
 ## Templates
 
 ```bash
-# What the organization has
-limacharlie investigate templates list --oid $OID
-limacharlie investigate templates list --status active --oid $OID
-limacharlie investigate templates get suspicious-process --yaml --oid $OID
-
-# What the default library offers (it is not installed until you install it)
-limacharlie investigate kit --section library --oid $OID
-
-# Install the default library (written as drafts unless you say otherwise)
-limacharlie investigate templates install-defaults --oid $OID
-limacharlie investigate templates install-defaults --name suspicious-process --oid $OID
+limacharlie investigate templates list [--status draft|active]
+limacharlie investigate templates get NAME [--yaml]
+limacharlie investigate templates validate --file plan.yaml           # '-' reads stdin; exit 4 when invalid
+limacharlie investigate templates test [NAME | --file plan.yaml] [samples] [options]
+limacharlie investigate templates save NAME --file plan.yaml [--overwrite] [--status draft|active] [--comment TEXT] [--tag T]...
+limacharlie investigate templates promote NAME --confirm
+limacharlie investigate templates delete NAME --confirm
+limacharlie investigate templates install-defaults [--name NAME]... [--overwrite] [--status draft|active]
 ```
 
-| Command | What it does |
+Rules the CLI enforces:
+
+- `save` writes a **draft** unless a person passes `--status active`. A source that says
+  `status: active` is refused. An AI agent never passes `--status active` and never runs
+  `promote`.
+- A record is never overwritten without `--overwrite`, and a draft never replaces an active
+  template.
+- Every `act` entry is checked before saving: `approval` is required (`missing_approval`),
+  a leased action needs `lease` and `on_lease_end`, and `class` is refused
+  (`act_class_renamed`). Nothing is saved when validation reports an error.
+- The CLI never rewrites a template's content beyond `status`, and converts nothing from an
+  earlier format.
+- `install-defaults` skips existing records, with their installed and library versions,
+  unless `--overwrite`. Library templates are installed as drafts.
+
+### Test on past alerts
+
+| Flag | Sample |
 |---|---|
-| `templates list [--status draft\|active]` | The organization's templates: name, version, description, `applies_to`, status. |
-| `templates get NAME [--yaml]` | A stored template record. `--yaml` prints only the source. |
-| `templates validate -f FILE` | Checks a template (`-` for stdin) and runs nothing. Exit 4 when it has errors. |
-| `templates test [NAME] -f FILE ...` | Dry run on past alerts. See below. |
-| `templates save NAME -f FILE` | Validates, then saves a **draft** record. Exit 4 when the CLI refuses it; exit 1 when the Hive does (see above). |
-| `templates promote NAME --confirm` | Makes a reviewed draft **active** (the console's **Make active**). A person's decision. |
-| `templates delete NAME --confirm` | Deletes the record. |
-| `templates install-defaults` | Writes the [default library](templates.md#the-default-library) into the organization. |
+| `--detection-id ID` | a stored detection (repeatable) |
+| `--case-id ID` | a case; a closed case's classification is the expected answer |
+| `--detect-cat CATEGORY --last N` | the newest N alerts of a category (N 1 to 25) |
+| `--sample '{"inputs": {...}, "expected": "false_positive"}'` | free inputs |
+| `--samples-file FILE` | a list of samples |
 
-**`templates install-defaults`** never overwrites silently: a template that already
-exists is skipped unless you pass `--overwrite`. `--name` (repeatable) installs only
-the templates you name. `--status` is the status the templates are written with,
-whatever the library says; the CLI default is `draft`, so review and make active what you
-want to run on its own.
-
-**`templates save`** writes a draft. `--comment` stores what the template was tested on
-and how it did as the record's comment, `--tag` (repeatable) adds tags, and
-`--overwrite` replaces an existing draft. An AI agent leaves `--status` at its default,
-`draft`. Writing an active template is a person's decision, and by default the Hive
-refuses it from an API key (see [Permissions](permissions.md#active-templates-can-only-be-written-by-a-person)).
-
-**`templates promote`** (named for the step it performs, **Make active** in the console) requires `--confirm`. It writes `status: active`, which the Hive
-refuses by default when the CLI is authenticated with an **API key** (unless an
-administrator opted out; see [Permissions](permissions.md#active-templates-can-only-be-written-by-a-person)). Run it with a user login
-(`limacharlie auth login --oauth`), or have a person click **Make active** in the console.
-The same applies to `templates save --status active` and
-`templates install-defaults --status active`.
-
-### Testing a template on past alerts
-
-```bash
-# The newest 15 detections of a category
-limacharlie investigate templates test -f plan.yaml \
-  --detect-cat rare-process --last 15 --oid $OID
-
-# Specific detections and a closed case (its classification is the expected answer)
-limacharlie investigate templates test -f plan.yaml \
-  --detection-id <detect id> --case-id <case id> --oid $OID
-
-# A stored template of your own, with a free-form sample
-limacharlie investigate templates test my-template \
-  --sample '{"inputs": {"msg_uuid": "..."}, "expected": "false_positive"}' --oid $OID
-```
-
-| Flag | Meaning |
-|---|---|
-| `NAME` or `-f FILE` | A stored template, or a template file (`-` for stdin). |
-| `--detection-id`, `--case-id` | A sample (repeatable). |
-| `--detect-cat` with `--last N` | The newest N alerts of the category (1 to 25, default 10). |
-| `--sample JSON`, `--samples-file FILE` | Free samples. At most 25 alerts in all. |
-| `--mode triage\|full` | `triage` (the default, the cheap pass) or `full`. |
-| `--strict` | Refuse the test, instead of reducing the value, when an override in `--overrides-json` would loosen the policy. Without overrides it changes nothing. It does not fail the test because of unknown steps; read the unknowns in the result. |
-| `--overrides-json JSON` | Tighten-only overrides, such as `{"budgets": {"max_wall_seconds": 120}}`. |
-| `--wait SECONDS`, `--timeout SECONDS`, `--no-wait` | How long the start call and the whole command wait. `--no-wait` prints the `test_id` and returns. |
-| `--test-id ID` | Keep waiting on a test started earlier. |
-| `--include-steps` | Keep every step of every sample (large). By default only the steps that did not succeed. |
-
-The result is the one described in [Test on past alerts](templates.md#test-on-past-alerts):
-per sample the outcome, the deciding rule, the AI's recommendation, what was missing,
-the cost and the agreement of the rule and of the AI with the case; and a summary with
-the share decided by rules, agree/disagree per rule and the AI's record on the rest.
-Read it in this order: the validation, the summary, each disagreement (tighten or
-remove that rule), then the undecided samples (`couldnt_tell`, `conflict`).
-
-## Authoring helpers
-
-```bash
-limacharlie investigate kit --section guide --section schema --section codes --oid $OID
-limacharlie investigate operators --match mailsec --brief --oid $OID
-limacharlie investigate packs --brief --oid $OID
-```
-
-| Command | What it does |
-|---|---|
-| `kit [--section S]...` | The authoring kit. Sections: `schema`, `guide`, `operators`, `examples`, `policy`, `codes`, `packs`, `library`. Without `--section`, everything but `library` (about 33,000 tokens). |
-| `operators [--match TEXT] [--name NAME]... [--brief]` | The typed operator catalog. |
-| `packs [--name NAME] [--brief]` | The fact packs. `--brief` is the compact index. |
-
-## Waves
-
-```bash
-limacharlie investigate wave -f wave.yaml --oid $OID
-limacharlie investigate wave -f wave.yaml --validate-only --oid $OID
-```
-
-`wave.yaml` (or JSON) has the fields of the [wave request](api-reference.md#waves):
-`steps`, `stop_when`, `deadline_ms`, `inputs`. The flags `--stop-when` (repeatable, up to
-8), `--deadline-ms` and `--input KEY=VALUE` add to the file, `--full` returns raw
-values, and `--validate-only` validates and runs nothing.
+At most 25 samples in all. Other options: `--mode triage|full`, `--overrides-json`
+(tighten-only budgets), `--timeout` (default 600 s), `--no-wait`, `--test-id` (keep waiting
+on a test started earlier), `--include-steps`. Exit codes: 0 done, 4 the template is
+invalid, 1 the test failed.
 
 ## Runs
 
 ```bash
-limacharlie investigate runs start --template suspicious-process \
-  --detection-id <detect id> --wait 30 --oid $OID
-limacharlie investigate runs list --state running --oid $OID
-limacharlie investigate runs events <run id> --follow --oid $OID
-limacharlie investigate runs case <run id> --oid $OID
+limacharlie investigate runs start (--template NAME | --file plan.yaml | --auto) \
+    (--detection-id ID | --case-id ID | --entity-id ID | --question TEXT) \
+    [--category C] [--severity S] [--priority N] [--tag T]... \
+    [--input K=V]... [--inputs-json JSON] [--urgency low|medium|high|critical] [--mode triage|full|scope] \
+    [--case-mode create|none|attach:ID] [--idempotency-key KEY] [--wait SECONDS] [--follow [--timeout S]] \
+    [--trust-lookup NAME]... [--trust-value VALUE]...
+limacharlie investigate runs get RUN_ID
+limacharlie investigate runs list [--state S] [--outcome O] [--verdict V] [--template T] [--trigger T] \
+    [--entity E] [--started-by ID] [--idempotency-key K] [--since TIME] [--until TIME] [--limit N] [--cursor C | --all]
+limacharlie investigate runs events RUN_ID [--after SEQ] [--wait S] [--limit N] [--follow [--timeout S]]
+limacharlie investigate runs steps RUN_ID [--values]
+limacharlie investigate runs case RUN_ID
+limacharlie investigate runs cancel RUN_ID [--revert-leases]
+limacharlie investigate runs delete RUN_ID --confirm
+limacharlie investigate wave --file wave.yaml [--validate-only] [--full] [--stop-when EXPR]... [--deadline-ms N] [--input K=V]...
 ```
 
-| Command | What it does |
-|---|---|
-| `runs start` | Starts a run on `--detection-id`, `--case-id`, `--entity-id` or `--question`, with exactly one of `--template NAME`, a template file `-f`, or `--auto` (sends no template: the engine picks the active template whose `applies_to` matches the trigger, and refuses with a reason when none does). `--category`, `--severity`, `--priority` and `--tag` (repeatable) describe the alert: they feed `--auto` and the run-scoped policy records, and `--severity` and `--priority` set the default urgency. `--urgency low\|medium\|high\|critical` overrides it. `--input KEY=VALUE` and `--inputs-json` give run inputs; `--mode triage\|full\|scope` (default `full`); `--case-mode create\|none\|attach:<id>`; `--idempotency-key`; `--wait SECONDS` (up to 60) to block for the outcome; `--follow` to stream events until the run ends. |
-| `runs get RUN_ID` | State, phase, the outcome with `decided_by`, `recommendation` and `missing`, `ai_may_decide`, `ai_agent`, actions and usage. |
-| `runs list` | The organization's runs, newest first, with their outcome and what decided it. Filters `--state`, `--outcome` (one of the eight outcomes, or `undecided`), `--verdict` (the label), `--template`, `--trigger`, `--entity`, `--started-by`, `--idempotency-key`, `--since`, `--until`; `--limit` and `--cursor` page; `--all` follows every page. |
-| `runs events RUN_ID` | The run's events after `--after`. `--follow` keeps polling until the run is over, one event per line. It exits 0 when the run finished and 1 when `--timeout` is reached. |
-| `runs steps RUN_ID [--values]` | The step log with each step's narrative (why it ran, what it found, what used it), the plan graph, usage and the outcome timeline. `--values` includes customer values; by default the output is structure only. |
-| `runs case RUN_ID` | The case document the run wrote. |
-| `runs cancel RUN_ID [--revert-leases]` | Cancels a run, and optionally reverts the leases of its active actions. |
+- `--auto` sends no plan: the engine picks the active template whose `applies_to` matches
+  `--category`, `--severity` and `--tag` (`source` is `api`).
+- A start is sent once and never retried; `--idempotency-key` makes a repeat return the
+  same run.
+- `runs list --state` takes `queued`, `running`, `decided`, `completed`, `cancelled`,
+  `failed`, `budget_exhausted`, `flushed`, `capped`.
+- `runs events --follow` writes one JSON event per line until the run is over (exit 0) or
+  `--timeout` passes (exit 1).
 
-A run started with a draft template runs with autonomy capped at `suggest`.
-
-## Approvals, policy and stats
+## Actions, settings and stats
 
 ```bash
-limacharlie investigate actions list --state awaiting_approval --oid $OID
-limacharlie investigate actions approve <run id> <action id> --oid $OID
-limacharlie investigate actions deny <run id> <action id> --note "Expected maintenance" --oid $OID
-
-limacharlie investigate policy get --category rare-process --priority 5 --oid $OID
-limacharlie investigate policy ai --oid $OID
-limacharlie investigate policy ai-set suspicious-process escalate --confirm --oid $OID
-limacharlie investigate stats --template suspicious-process --since 2026-11-01T00:00:00Z --oid $OID
+limacharlie investigate actions list [--state awaiting_approval,held] [--class C] [--run-id ID] [--limit N] [--cursor C | --all]
+limacharlie investigate actions approve RUN_ID ACTION_ID
+limacharlie investigate actions deny RUN_ID ACTION_ID [--note TEXT]
+limacharlie investigate settings get
+limacharlie investigate settings pause
+limacharlie investigate settings resume
+limacharlie investigate stats [--template T] [--since TIME] [--until TIME]
 ```
 
-| Command | What it does | Needs |
-|---|---|---|
-| `actions list [--state S] [--class C] [--run-id ID]` | The approvals inbox, what needs a person first. `--limit`, `--cursor`, `--all` page. | read |
-| `actions approve RUN_ID ACTION_ID` | Approves an action. Refused for an action in `suggest` mode, and for a person who is not on the class's `approvers` list when it has one. | write, plus the action class's permission |
-| `actions deny RUN_ID ACTION_ID [--note TEXT]` | Denies an action (same `approvers` check). | same |
-| `policy get [--category] [--priority] [--severity] [--target-tag]... [--class] [--template]` | The effective policy, record by record, for those attributes. `--template` shows the run identity that template would use. | read |
-| `policy ai` | What the AI may decide per template: the `ai_may_decide` field of the `default` policy record (`off` when a template has no entry). | `investigation_policy.get` |
-| `policy ai-set TEMPLATE\|'*' off\|escalate\|close_and_escalate --confirm` | Changes only that field of the `default` record, conditional on the version it read. A person's decision: see [What the AI may decide](policies.md#what-the-ai-may-decide). | `investigation_policy.get`, `investigation_policy.set` |
-| `stats [--template] [--since] [--until]` | The [performance report](api-reference.md#stats). | read and `investigation_policy.set` |
-| `runs delete RUN_ID --confirm` | Deletes a finished run for good. | write |
+- There is no `revert`, `extend` or `confirm` command: use the
+  [API](actions.md#deciding-an-action), for example
+  `limacharlie api "investigate/$OID/runs/<run>/actions/<action>/revert" -X POST`.
+- `settings pause` and `resume` change only `paused` in `investigation_policy/default`,
+  with a write conditional on the version read. They need `investigation_policy.get` and
+  `investigation_policy.set`. If Git Sync manages that hive, set the pause in git.
+- `settings get` shows what the engine enforces, including `warnings` (a record that does
+  not parse is `settings_rejected`).
+- `stats` and `runs list --outcome` / `--verdict` also need `investigation_policy.set`.
 
-Revert, extend and confirm an action with the [API](api-reference.md#actions) or the
-console. `policy status`, `policy pause` and `policy resume` call retired routes:
-`pause` and `resume` answer `410 route_control_retired`. To pause automatic actions,
-save the [`autonomy-manual-pause` record](../7-administration/config-hive/investigation-policy.md#emergency-pause-and-resume).
+## In the next release
 
-Policies and templates themselves are Hive records. Create and edit them with the
-standard `limacharlie hive` commands for the `investigation_plan` and
-`investigation_policy` types, or with infrastructure-as-code.
+```bash
+limacharlie investigate queue
+limacharlie investigate queue flush (--rule NAME | --template NAME | --all) [--note TEXT] [--yes]
+limacharlie investigate answer (--answer JSON | --answer-file PATH|-) [--run-id ID] [--request-id ID] [--token TOKEN]
+```
+
+`queue` and `queue flush` are described in [The Run Queue](run-queue.md); `answer` is how an
+AI agent's session answers a step (its ids and token default from `LC_IE_RUN_ID`,
+`LC_IE_REQUEST_ID` and `LC_IE_ANSWER_TOKEN`; see
+[Custom Code](custom-code.md#how-the-agent-answers)). Inside such a session, `runs start`
+sends `parent_run`, so a run an agent starts asks no other agent.

@@ -252,8 +252,8 @@ No preset role holds any `investigation_plan.*` or `investigation_policy.*` perm
 
 | Permission | Description |
 | --- | --- |
-| investigation.get | Read Investigation Engine runs, actions, templates, operators and the effective policy (together with `insight.evt.get`) |
-| investigation.set | Start runs, waves and tests, cancel, compare and delete runs, and decide actions (together with `insight.evt.get` and, to decide an action, that action class's own permission) |
+| investigation.get | Read Investigation Engine runs, actions, templates, operators, the run queue and the settings as the engine enforces them (together with `insight.evt.get`) |
+| investigation.set | Start runs, waves and tests, cancel, compare and delete runs, flush the run queue, and decide actions (together with `insight.evt.get` and, to decide an action, that action class's own permission) |
 | investigation.del | Delete permission of the `investigation` family, shared with Cases (held by the Owner role) |
 | investigation.get.mtd | Metadata read permission of the `investigation` family, shared with Cases |
 | investigation.set.mtd | Metadata write permission of the `investigation` family, shared with Cases |
@@ -262,11 +262,11 @@ No preset role holds any `investigation_plan.*` or `investigation_policy.*` perm
 | investigation\_plan.del | Delete plan templates |
 | investigation\_plan.get.mtd | View plan template metadata only |
 | investigation\_plan.set.mtd | Modify plan template metadata only |
-| investigation\_policy.get | Read Investigation Engine policies |
-| investigation\_policy.set | Create and modify policies, including the identity runs execute as. Also needed to read the Investigation Engine performance stats. |
-| investigation\_policy.del | Delete policies |
-| investigation\_policy.get.mtd | View policy metadata only |
-| investigation\_policy.set.mtd | Modify policy metadata only |
+| investigation\_policy.get | Read the Investigation Engine settings record |
+| investigation\_policy.set | Create and modify the settings record, including the pause and the identity runs execute as. Also needed to read the Investigation Engine performance stats. |
+| investigation\_policy.del | Delete the settings record |
+| investigation\_policy.get.mtd | View settings record metadata only |
+| investigation\_policy.set.mtd | Modify settings record metadata only |
 
 ### Playbooks
 

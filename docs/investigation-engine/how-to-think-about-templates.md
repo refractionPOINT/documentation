@@ -11,8 +11,8 @@ A template has four parts:
 |---|---|---|
 | Gather | `gather` | The questions: steps that fetch answers. Steps run in parallel unless one reads another's answer. |
 | Rules | `rules` | The decisions: "escalate when ..." and "close when ...", each with an id and a sentence for the case. Rules are the only way the engine decides on its own by default. |
-| AI review | `ai_review` | Optional. A second opinion when no rule decided. It recommends; a person decides, unless the policy lets the AI decide for this template. |
-| Act and case | `act`, `case` | What to propose when a rule decides, and how the case reads. |
+| AI review | `ai_review` | Optional. A second opinion when no rule decided. It recommends; a person decides, unless the template's `ai_may_decide` lets the AI decide. |
+| Act and case | `act`, `case` | What to do when a rule decides (each action acts on its own or waits for a person, as its `approval` says), and how the case reads. |
 
 There is no probability, prior, weight or threshold anywhere. A run ends with an
 [outcome](concepts.md#outcomes) a person can read, and the rule or the AI answer
@@ -120,7 +120,6 @@ reads its answer. A step nothing reads is the warning `unused_step`: it only cos
 Here is the whole template. It never asks the AI anything: the same data always
 gives the same answer, and it costs a few Lookup reads and at most one live read.
 
-<!-- validate: template -->
 ```yaml
 description: "Remote admin tool started on a host: our own lists and the file on the host decide."
 version: 1
@@ -170,7 +169,8 @@ rules:
       when: ['approved.found', 'file_on_host.matches', 'file_on_host.verified']
       say: "The binary is on our approved remote-admin tools list, and the file on the host is that file, signed and verified."
 act:
-  - {class: contain.network, target: '$alert__trigger.sid', on_rules: [banned_tool, unapproved_and_persisted]}
+  - {do: contain.network, target: '$alert__trigger.sid', on_rules: [banned_tool, unapproved_and_persisted], approval: required, lease: 2h, on_lease_end: release}
+  - {do: close.false_positive, on_rules: [approved_and_signed], approval: none}
 case:
   mode: create
   severity: {escalated_by_rule: high, closed_by_rule: low, default: medium}
@@ -196,7 +196,7 @@ The case is what an analyst reads, so decide what it shows while you write the s
   (like `file_on_host` when the binary is not approved) reads "not established".
 - **One entity per item** of a list, such as each recipient of a phishing message with
   "clicked" or "did not click", comes from `record:` with `each` (see
-  [What a step records](templates.md#what-a-step-records-record)). A "did not click"
+  [What a step records](templates.md#what-a-step-records)). A "did not click"
   holds only when the click check is complete.
 - **The open question** is the `ask:` of a step that stayed unknown.
 
@@ -221,13 +221,13 @@ ai_review:
 
 The review **recommends**: the outcome is `ai_recommends_benign` or
 `ai_recommends_malicious`, nothing is acted on, and a person decides with one click
-(see [What "AI recommends" means](walkthrough.md#9-what-ai-recommends-means)). Its
+(see [How an action is decided](actions.md#how-an-action-is-decided)). Its
 self-rated confidence is shown, labelled "self-rated", and never used.
 
 A narrower tool is the `ask_ai` step: one focused question whose answer rules can
 read (`cmd.label == "yes"`). A rule that reads an `ask_ai` answer, directly or
-through another step, is **AI-assisted**: it also only recommends unless the policy
-lets the AI decide. `validate_plan` lists those rules in `ai_rules`.
+through another step, is **AI-assisted**: it also only recommends unless the
+template's `ai_may_decide` lets the AI decide. `validate_plan` lists those rules in `ai_rules`.
 
 Do not ask the AI what an exact read answers. "Is this hash on our banned list?" is
 a Lookup read, not an AI question.
@@ -251,23 +251,26 @@ and nothing waits for them.
 
 ## 7. Make it active
 
-A person makes the template active (**Make active** on the template's page). Its
-rules now act within your [policy](policies.md)'s modes: with every class in
-`suggest`, the engine proposes and never executes.
+Before a person makes the template active, read its `act` entries: making it active is the
+permission to act. Each entry says whether its action acts on its own (`approval: none`),
+waits for a person (`required`) or waits only under a condition (`{when: ...}`), and what
+happens when its lease ends. In the example above, isolation always waits for a person and
+the close acts on its own. Start with `required` on the actions you are not ready to let
+act alone, and change them one by one.
 
-Separately, when the AI's record on your past alerts is good enough for you, turn
-on **AI may decide** for this template: `escalate`, or `close_and_escalate`. It is
-off by default. See [What the AI may decide](policies.md#what-the-ai-may-decide).
-Testing is not a gate: you decide when, and you can switch it on for many tenants
-at once.
+Separately, when the AI's record on your past alerts is good enough for you, set
+`ai_may_decide` in the template: `escalate`, or `close_and_escalate`. It is `off` by
+default. See [The AI](templates.md#the-ai). Testing is not a gate: you decide when, and
+the template carries the decision to every tenant you deploy it to.
 
 ## 8. Turn repeated decisions into rules
 
 Watch what people do with the runs:
 
 - **People keep closing the same AI-recommended alert for the same reason.** Put that
-  reason in a Lookup, or write the rule. The console's **Add to list and close** does
-  the first for you: the next identical alert closes by your rule, with no AI call.
+  reason in a Lookup, or write the rule: the next identical alert closes by your rule,
+  with no AI call. A [hand-off](custom-code.md#hand-off-to-an-ai-agent) agent can propose
+  that rule as a draft for you.
 - **"Couldn't tell" keeps naming the same missing step.** A step, an operator
   permission or an identity permission is missing. The `reason` on the missing step
   says which (see [Troubleshooting](troubleshooting.md#a-run-finished-but-the-outcome-means-little)).
@@ -312,4 +315,5 @@ next run.
 - [ ] `validate_plan` has no errors and no warnings you cannot explain.
 - [ ] Logic that two templates repeat is a check, not a copy.
 - [ ] The test on past alerts shows the rules agreeing with analysts.
+- [ ] Every `act` entry says `approval`, and you have read which ones act alone.
 - [ ] The template is saved as a draft; a person makes it active.

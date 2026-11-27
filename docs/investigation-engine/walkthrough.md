@@ -186,6 +186,11 @@ Making a template active is the permission to act. Read the template, then:
 limacharlie investigate templates promote banned-binary --confirm --oid "$OID"
 ```
 
+The Hive accepts an active template only from a person signed in as a user (the console,
+or the CLI after `limacharlie auth login --oauth`), not from an API key, unless the
+settings record carries the `allow-api-key-promotion` tag (see
+[Permissions](permissions.md#active-templates-can-only-be-written-by-a-person)).
+
 ## 7. The D&R rule that starts it
 
 Save as `rule.yaml`. It reports any process started from the test path and starts the

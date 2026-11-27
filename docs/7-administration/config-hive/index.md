@@ -5,7 +5,7 @@ The Config Hive is LimaCharlie's hierarchical configuration store. It provides a
 ## Hive Types
 
 - [D&R Rules](dr-rules.md) - Detection and response rule storage
-- [Investigation Action Policies](investigation-policy.md) - Action modes, limits, emergency pause and engine performance stats
+- [Investigation Engine Settings](investigation-policy.md) - The one settings record: pause, circuit breaker, run identity, limits and budgets
 - [Lookups](lookups.md) - Key-value lookup tables for enrichment
 - [Secrets](secrets.md) - Secure credential management
 - [YARA](yara.md) - YARA rule storage and management

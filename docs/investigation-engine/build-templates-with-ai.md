@@ -26,9 +26,9 @@ comes from an API key (unless the organization opted out; see
 
 The agent needs the engine's tools and a credential that can use them.
 
-**With the MCP server.** Use the `investigation_engine` profile, which holds the
-fourteen investigation tools, or `investigation_engine_readonly` if the agent should only
-read, validate and look up (no start, delete, wave, test or save). See [MCP Tools](mcp.md)
+**With the MCP server.** Use the `investigation_engine` profile, or
+`investigation_engine_readonly` if the agent should only read, validate and look up (no
+start, delete, wave, test or save). See [MCP Tools](mcp.md)
 for the tool list and how to connect.
 
 **With the CLI.** The `limacharlie investigate` command group offers the same
@@ -46,11 +46,11 @@ Give the agent's API key only what the workflow needs:
 The two `investigation_plan.*` permissions are not part of the Owner role. Grant them
 to the key explicitly. A test reads the data the key can read, so a key that cannot
 read a detection or its case reports those samples as unreadable, not as failures. A
-run the key starts executes as the policy identity unless it picks `caller` (see [Run
-identity](policies.md#run-identity)).
+run the key starts executes as the settings' identity unless it picks `caller` (see
+[Identity](settings.md#identity)).
 
 !!! warning "Do not give the agent key any `investigation_policy.*` permission"
-    The opt-out tag `allow-api-key-promotion` is set on a policy record with
+    The opt-out tag `allow-api-key-promotion` is set on the settings record with
     `investigation_policy.set.mtd`. A key that holds any broad `investigation_policy.*`
     grant could set it, turn off the gate on active templates and then make its own drafts active. The
     agent only needs the `investigation_plan.*` permissions above.
@@ -58,17 +58,9 @@ identity](policies.md#run-identity)).
 !!! tip "Keep the key away from containment"
     The agent saves and tests templates. It does not need `sensor.task` or
     `mailsec.act`, which approving actions requires. Withholding them does not stop
-    a run: a run the key starts on an **active** template acts as the policy identity,
+    a run: a run the key starts on an **active** template acts as the settings' identity,
     not as the key. Do not give the key `investigation.set` unless it should be able to
     start runs.
-
-### Or let the console start the agent
-
-The console can start this workflow for you. **Draft with AI** (on the Templates tab,
-and on a detection) starts an AI session with the *Investigation plan author* agent from
-the AI agent catalog. Describe the alerts in plain words, or start from a detection as
-the example alert. The agent follows the steps below and saves a draft that appears in
-the Templates list. See [Console](console.md#draft-a-template-with-ai).
 
 ## 1. Read the kit, in sections
 
@@ -78,9 +70,9 @@ large (about 33,000 tokens as a whole), so fetch it in parts:
 | Call | Sections | Size | Why |
 |---|---|---|---|
 | First | `guide`, `schema`, `codes` | about 13k tokens | How to write a plan, the template JSON Schema, every validation code. |
-| Second | `operators` | about 14k tokens | What each operator takes and returns, and which ones your policy denies (`available: false`). Never guess a field name. |
+| Second | `operators` | about 14k tokens | What each operator takes and returns, and which ones this organization may not use (`available: false`). Never guess a field name. |
 | As needed | `examples` or `library` | varies | Real templates to copy a shape from. |
-| As needed | `policy` | small | The budgets a plan must fit and each action class's autonomy mode. Worth fetching when you plan `act` entries. |
+| As needed | `settings` | small | The budgets a plan must fit, the pause and the circuit breaker, and whether an AI agent is configured. |
 | For one-off questions, or reusable bundles | `packs` | small | The fact packs. |
 
 Ask the agent to read the guide first. The guide the kit returns is the same text
@@ -103,9 +95,8 @@ everything else with steps (see
 
 A first draft for rare processes:
 
-<!-- validate: template -->
 ```yaml
-description: "Rare process: a banned binary escalates; a command the AI judges malicious on a busy host escalates where the policy allows."
+description: "Rare process: a banned binary escalates; a command the AI judges malicious on a busy host is recommended for escalation."
 version: 1
 applies_to:
   detect_cat: ['rare-process']
@@ -135,7 +126,7 @@ rules:
       when: ['cmd.label == "yes"', 'related.count >= 5']
       say: "The command was judged malicious on a host that raised {related.count} detections this week."
 act:
-  - {class: contain.network, target: '$trigger.sid', on_rules: [banned_binary]}
+  - {do: contain.network, target: '$trigger.sid', on_rules: [banned_binary], approval: required, lease: 2h, on_lease_end: release}
 case:
   severity: {escalated_by_rule: high, escalated_by_ai: high, ai_recommends_malicious: high, default: medium}
 ```
@@ -145,14 +136,15 @@ Why it looks like this:
 - `banned` is a Lookup read: exact, cheap, and the organization's own. It is the
   first rule.
 - `cmd` is the only AI step, and it sees one field. `judged_malicious_on_busy_host`
-  reads it, so it is **AI-assisted**: with the policy's AI switch off for this
-  template, it recommends instead of deciding.
+  reads it, so it is **AI-assisted**: with no `ai_may_decide` in the template, it
+  recommends instead of deciding.
 - There is no close rule yet. Nothing here is positive benign evidence, and "the AI
   said no" alone should not close an alert. Runs where no rule holds end
   `couldnt_tell` (there is no review yet), which is honest; when the AI-assisted rule
   holds, the run ends `ai_recommends_malicious`.
-- `act` proposes isolation only on the deterministic rule. The policy decides whether
-  that proposal is only suggested, needs approval or runs.
+- `act` isolates only on the deterministic rule, and `approval: required` makes it wait for
+  a person. Every entry must say `approval`: the agent writes `required` and leaves it to
+  the person who reviews the template to change it.
 
 ## 4. Validate
 
@@ -174,7 +166,7 @@ Fix the errors first. Then read the **warnings**: they pass validation but make 
 template useless. Typical ones are `unused_step`, `operator_denied`,
 `rule_never_holds` and `act_class_off`. The report lists the AI-assisted rules in
 `ai_rules`, and estimates the worst case of one run, so the agent can see before
-testing whether the template fits the policy's budgets.
+testing whether the template fits the settings' budgets.
 
 ## 5. Test on past alerts
 
@@ -203,7 +195,6 @@ positive. The template could not close them. Add the organization's approved sof
 list, a check of the file on the host, a close rule on both, and an AI review for what
 the rules leave open:
 
-<!-- validate: template -->
 ```yaml
 description: "Rare process: our banned and approved lists and the file on the host decide; otherwise the AI review recommends."
 version: 2
@@ -253,7 +244,8 @@ ai_review:
   sees: [trigger, related]
   needs: [trigger]
 act:
-  - {class: contain.network, target: '$trigger.sid', on_rules: [banned_binary]}
+  - {do: contain.network, target: '$trigger.sid', on_rules: [banned_binary], approval: required, lease: 2h, on_lease_end: release}
+  - {do: close.false_positive, on_rules: [approved_and_signed], approval: required}
 case:
   severity: {escalated_by_rule: high, escalated_by_ai: high, ai_recommends_malicious: high, closed_by_rule: low, default: medium}
 ```
@@ -305,14 +297,15 @@ point:
 
 - a D&R rule can start it;
 - `applies_to` can pick it automatically;
-- it acts within the [autonomy policy](policies.md), which is a separate decision;
-- its AI-assisted rules and its AI review still only recommend, until a person turns
-  on [AI may decide](policies.md#what-the-ai-may-decide) for it. That is a third
-  decision, and the agent never makes it.
+- it does what its `act` entries say: each one acts on its own or waits for a person as
+  its `approval` says, within the [pause and the circuit breaker](settings.md);
+- its AI-assisted rules and its AI review still only recommend, until a person sets
+  `ai_may_decide` in it. The agent never sets it.
 
-Go live in two steps for anything that proposes containment. First activate the
-template with the relevant action classes at `suggest` in the policy, and watch what
-it proposes. Raise a class to `approve`, and only later to `auto`, when you trust it.
+Go live in steps for anything that contains. First activate the template with
+`approval: required` on its containment entries and watch what it proposes. Change an
+entry to a condition (`{when: ...}`, for example "a person approves on servers"), and only
+later to `none`, when you trust it.
 
 ## A prompt to start from
 
@@ -337,7 +330,8 @@ You are writing an Investigation Engine plan template for detections of category
 
 Rules: unknown is never false; a close rule needs positive, complete benign
 evidence, never "nothing found"; keep every window within 30 days; never guess a
-field name, read it from the operator catalog; never change the policy.
+field name, read it from the operator catalog; every act entry says approval: required;
+never set ai_may_decide; never touch the settings record.
 ```
 
 ## Common mistakes
@@ -351,5 +345,5 @@ field name, read it from the operator catalog; never change the policy.
 | Putting containment on a broad escalate rule | Every escalate rule that holds fires its own `act` entries (`verdict.also_held`). Give each rule the actions it alone justifies. |
 | Guessing a field name | Validation fails with `unknown_field` and a suggestion. |
 | A window older than 30 days | Validation fails with `window_outside_free_range`. |
-| Proposing a class the policy has `off` | The action is never proposed (`act_class_off`). |
+| An `act` entry without `approval` | Validation fails with `missing_approval`. |
 | Writing a template for a one-off question | Use a [wave](concepts.md#waves-and-fact-packs). Write a template only when the same alert comes back. |

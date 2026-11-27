@@ -1,16 +1,15 @@
 # Permissions
 
 The Investigation Engine is checked at the API gateway, which requires the
-permissions below. Three more checks happen beyond them: the engine applies the
-policy's per-class `approvers` list to decisions, a few reads need
-`investigation_policy.set`, and every read or action a run makes is authorized as the
-run's identity (see [What a run can do](#what-a-run-can-do)).
+permissions below. Beyond them, a few reads need `investigation_policy.set`, and every
+read or action a run makes is authorized as the run's identity (see
+[What a run can do](#what-a-run-can-do)). There are no approver lists.
 
-!!! warning "Plan and policy permissions are not part of any role"
+!!! warning "Template and settings permissions are not part of any role"
     `investigation_plan.*` and `investigation_policy.*` are **not** in the Owner role
     or in any preset role. They are granted explicitly, to a person or to an API key.
     An Owner who has not been granted them is refused by the Hive when saving a
-    template or a policy.
+    template or the settings record.
 
 ## Using runs
 
@@ -19,9 +18,11 @@ with `unauthorized: missing permission <name>`.
 
 | To do this | Required permissions |
 |---|---|
-| Read runs, steps, the run graph, events, case documents, labels, templates, operators, fact packs, the effective policy, the approvals inbox, the log of automatic actions and the authoring kit; validate a template; read test results | `investigation.get`, `insight.evt.get` |
-| Start a run or a wave; add inputs; cancel, compare or delete a run; submit a label; **test a template on past alerts** | `investigation.set`, `insight.evt.get` |
-| Approve, deny, revert, extend or confirm an action; dismiss a suggestion; **undo an automatic action** | `investigation.set`, `insight.evt.get`, **and the permission of the action's class** (below). Undoing an automatic action needs the first two. |
+| Read runs, steps, the run graph, events, case documents, labels, templates, operators, fact packs, the settings as the engine enforces them, the run queue, the approvals inbox, the log of automatic actions and the authoring kit; validate a template; read test results | `investigation.get`, `insight.evt.get` |
+| Start a run or a wave; add inputs; cancel, compare or delete a run; submit a label; flush the run queue; **test a template on past alerts** | `investigation.set`, `insight.evt.get` |
+| Approve, deny, revert, extend or confirm an action; **undo an automatic action** | `investigation.set`, `insight.evt.get`, **and the permission of the action's class** (below) |
+| Answer an AI agent step (from the agent's session) | `investigation.get`, plus the one-time answer token the engine gave the session |
+| Bulk undo by selector (a route and a time range) | the above, plus `investigation_policy.set` |
 | Read the performance stats (the console hides the **Performance** tab without it); filter the run list by outcome or verdict | `investigation.get`, `insight.evt.get` **and `investigation_policy.set`** |
 
 `insight.evt.get` is required everywhere because a run's results are what a search of
@@ -35,21 +36,18 @@ explicitly to anyone who should use the engine, and check your roles: holding
 Deciding an action needs `investigation.set` plus the permission of what the action
 does, because approving is how a person authorizes the engine to do it:
 
-| Action class | Additional permission |
+| Action | Additional permission |
 |---|---|
 | `contain.email` | `mailsec.act` |
-| `contain.network`, `contain.seal`, `contain.process`, `contain.identity` | `sensor.task` |
-| `eradicate.process`, `eradicate.file` | `sensor.task` |
-| `collect.memory`, `collect.file`, `collect.artifact` | `sensor.task` |
+| `contain.network`, `contain.seal`, `eradicate.file` | `sensor.task` |
 | `tag`, `tag.add`, `tag.remove` | `sensor.tag` |
 | `close.false_positive` | Nothing more for a case (the `investigation.set` every decision needs); `mailsec.set` for an email message, and for a close whose product is unknown |
+| `playbook:<name>`, `extension:<name>/<action>` | `ext.request` |
 
-A class with no mapping is refused (fail closed). Which classes can actually execute
-is in [Action classes](policies.md#action-classes).
-
-When the class's policy names `approvers`, the engine also requires the person to be
-on that list to **approve, deny, extend or confirm**; **revert** only needs the
-permissions above. See [Approvals](policies.md#approvals).
+An action with no mapping is refused (fail closed), and so is any decision on an
+`extension:ext-playbook/...` action. Anyone holding these permissions may decide an
+action: there are no approver lists. Which actions can execute is in
+[What an action can do](actions.md#what-an-action-can-do).
 
 ### Who can see a run
 
@@ -58,9 +56,9 @@ organization's runs, and anyone with the write permissions can cancel, compare o
 delete one. Only the identity that **started** a run can add inputs to it
 (`403` otherwise); the steps the added inputs release run as the run's own identity.
 
-## Templates and policies
+## Templates and settings
 
-Templates and policies are Hive records with the usual
+Templates and the settings record are Hive records with the usual
 [Config Hive](../7-administration/config-hive/index.md) permissions.
 
 | To do this | Required permission |
@@ -69,9 +67,9 @@ Templates and policies are Hive records with the usual
 | Create or edit templates, make a draft active | `investigation_plan.get`, `investigation_plan.set` |
 | Delete templates | `investigation_plan.del` |
 | Read or change template metadata only | `investigation_plan.get.mtd`, `investigation_plan.set.mtd` |
-| Read, change or delete policies and their metadata | `investigation_policy.get`, `.set`, `.del`, `.get.mtd`, `.set.mtd` |
-| Change what the AI may decide for a template (**AI may decide** in the console, `ai_may_decide` in the `default` policy record) | `investigation_policy.get`, `investigation_policy.set` |
-| Use organization fact packs (`investigation_pack` records) | The `investigation_plan.*` permissions above |
+| Read, change or delete the settings record and its metadata (including the pause) | `investigation_policy.get`, `.set`, `.del`, `.get.mtd`, `.set.mtd` |
+| Change what the AI may decide for a template | Editing the template (`ai_may_decide` is a key of the template) |
+| Read or write organization fact packs (`investigation_pack` records) | The `investigation_plan.*` permissions above. A write must come from a person, or from an API key when the settings record is tagged `allow-api-key-promotion` |
 
 Running a validation needs the read permissions, and a test the write permissions. A
 test creates no run, case or action; its result is kept for 24 hours.
@@ -91,13 +89,13 @@ Git-synced pipeline, can opt out by adding the tag `allow-api-key-promotion` to 
 enabled `investigation_policy/default` record. Setting that tag needs
 `investigation_policy.set.mtd`, so **never give an AI agent's key any
 `investigation_policy.*` permission**: it could turn the gate off and make its own
-drafts active. If the policy record cannot be read, the write is refused.
+drafts active. If the settings record cannot be read, the write is refused.
 
 ### Naming a secret as the run identity
 
-The `identity` section of the `default` policy can name an organization API key
+The `identity` section of the settings record can name an organization API key
 stored as a Hive secret, as `hive://secret/<name>`. Adding a **new** secret reference
-requires that the person saving the policy can read that secret (`secret.get`, or
+requires that the person saving the record can read that secret (`secret.get`, or
 `secret.get.<name>` within the secret's access scope), and the secret must already
 exist. Only an organization API key can be a run identity: a user API key is refused
 when the run starts. Granting `investigation_policy.set` therefore lets its holder
@@ -106,12 +104,12 @@ point runs at any secret they can read.
 ## What a run can do
 
 A run executes with the permissions of its identity: the token of the person or key
-that started it, or the API key the policy names. Everything it reads and every action
+that started it, or the API key the settings name. Everything it reads and every action
 it takes is checked against those permissions; a run can never read or do what its
 identity cannot. The gateway permissions above only get a call to the engine; each
 operator then needs the permission of its own data source. Without it the step is
-`unknown` (`forbidden`), never empty. A recommended starting set for a policy identity
-is in [step 3 of the walkthrough](walkthrough.md#3-the-run-identity-an-api-key-the-policy-names).
+`unknown` (`forbidden`), never empty. A worked example of a run key is in
+[step 2 of the walkthrough](walkthrough.md#2-the-key-the-engine-runs-as).
 
 A **live sensor read** (`sensor.read.*`) tasks a sensor and needs `sensor.task.read`
 (or the broader `sensor.task`) plus `output.set` on the identity. `sensor.task.read`
@@ -119,15 +117,15 @@ is an explicit grant, never part of a preset role. It permits only allowlisted l
 metadata reads (processes, connections, autoruns, services, file hashes); file
 contents, scripts, process termination, file deletion, isolation and unknown commands
 are refused. For an observe-only identity, grant `sensor.task.read` instead of
-`sensor.task` and keep actions at `suggest`.
+`sensor.task` and write no `act` entry with `approval: none`.
 
 ## The key a template's runs use
 
 A run without a person (started by a D&R rule or for a case) runs with the identity
-the `default` policy names for its template: an **organization API key** stored as a
+the settings record names for its template: an **organization API key** stored as a
 Hive secret (see [Naming a secret as the run identity](#naming-a-secret-as-the-run-identity)
-and [Run identity](policies.md#run-identity)). You create that key, store it as a
-secret and name it in the policy, the same way in every organization, so it can be
+and [Identity](settings.md#identity)). You create that key, store it as a
+secret and name it in the settings, the same way in every organization, so it can be
 deployed as code. The engine never creates, rotates or revokes a key.
 
 ### What the key needs
@@ -153,7 +151,9 @@ the same template needs the same permissions in every organization. It adds up:
 | Permission | What needs it |
 |---|---|
 | `cloudsec.get` | Entity, identity, cloud-security and code findings, and the endpoint click and coverage checks. |
-| `ext.request` | Every run (writing the case); the reads of vulnerabilities and application control. |
+| `ext.request` | Every run (writing the case); the reads of vulnerabilities and application control; Playbook steps; Playbook and extension actions. |
+| `playbook.get` | Playbook steps and actions (the record is read before each call). |
+| `ai_agent.get` | AI agent steps (the record is read before each start). |
 | `insight.det.get` | Every run: the triggering detection; detection reads. |
 | `insight.evt.get` | Telemetry reads and searches, process ancestry, prevalence, and the domain intelligence of link checks. |
 | `investigation.get`, `investigation.set` | Every run: related cases, and the case close. |
@@ -183,9 +183,30 @@ secret is named for several templates (or as the org-wide `identity.default`, wh
 covers every template without its own entry), its key needs the permissions of all of
 them.
 
-These are ordinary LimaCharlie permissions. **What runs by itself is still decided by
-the policy**, not by the key: the autonomy modes, the caps and the
-[registered authorizations](policies.md#autonomy-modes) apply whatever the key can do.
+These are ordinary LimaCharlie permissions, and they are the real limit on what a run
+can do: there is no allow or deny list of operators or actions in the settings. **What
+acts by itself is decided by the template's `act` entries**, inside the pause and the
+circuit breaker. `limacharlie investigate settings get` checks each template's key before
+its first run (`template_readiness`: `missing_grants`, and `needed_for` naming what needs
+each one).
+
+## ACL-scoped sensors
+
+A sensor tagged `acl:<scope>` shows its content only to the members of that
+[resource ACL scope](../7-administration/access/resource-acls.md). For a run on such a
+sensor:
+
+- the D&R rule that starts it must list the scope in `acl_scopes`, or the start is refused
+  (see [Automatic Starts](automation.md#sensors-with-resource-acl-tags));
+- the run's key must be a member of the scope (`hive://acl/<scope>` members). Otherwise its
+  reads of that sensor are `unknown(acl_restricted)`, never "not found", and a detection
+  read by its id is `unknown(not_found_or_restricted)`, with the scopes named. An undo on
+  such a sensor fails with `acl_restricted` until the key is a member.
+
+`settings get` lists per template the scopes its key is outside of
+(`template_readiness.<template>.acl.outside_scopes`). It is a warning, not a refusal: a
+key outside a scope works for every sensor that does not carry that scope's tag. A key
+holding `access.global` is never gated.
 
 **A run whose key lacks a permission is never broken without saying why.** A step the
 platform refuses is `unknown` (`forbidden`), a case it cannot write is

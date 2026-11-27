@@ -5,7 +5,7 @@ the Investigation Engine to AI assistants. The tools are built for an agent that
 **writes, tests and saves plan templates**, and that **answers one-off questions** by
 driving waves of parallel checks. Saving is always a draft: a person makes it active.
 
-!!! info "Pre-release"
+!!! info "Experimental"
     The `investigate_*` tools exist only when the server is started with
     `INVESTIGATION_ENGINE_ENABLED=true` (or `1`). Without it they are not registered:
     they are absent from the tool list on every endpoint, including `all`, and the two
@@ -18,8 +18,8 @@ with one of two profiles:
 
 | Profile | Tools |
 |---|---|
-| `investigation_engine` | All fourteen tools below. |
-| `investigation_engine_readonly` | `investigate_operators`, `investigate_authoring_kit`, `investigate_packs`, `investigate_get_pack`, `investigate_validate_plan`, `investigate_list_templates`, `investigate_get`. No start, delete, wave, test or save. |
+| `investigation_engine` | Every tool below. |
+| `investigation_engine_readonly` | The reads: kit, operators, packs, validation, templates, runs, stats, coverage, labels and the queue. No start, delete, wave, test, save, compare, label, cancel, flush or answer. |
 
 For a local client, set `MCP_PROFILE=investigation_engine` in the server's environment.
 The table below lists the permissions each tool needs **at the gateway**. Give the
@@ -27,23 +27,23 @@ API key those, plus only the permissions of the data the checks you ask for read
 wave or a test executes with the key's own permissions, so for example the `org_roster`
 pack also needs `sensor.list`, and live sensor reads need `sensor.task.read` (or `sensor.task`) plus `output.set`;
 without them the steps come back `unknown`. A **run** (`investigate_start`) is different:
-it executes as the policy's identity (`identity.default`) unless the request picks
-`caller` and the policy allows it, so on an active template it can act with that secret's
-permissions even if the key has none of them (see [Run identity](policies.md#run-identity)). Profiles select tools; each call still
+it executes as the settings' identity (`identity.default`) unless the request picks
+`caller` and the settings allow it, so on an active template it can act with that secret's
+permissions even if the key has none of them (see [Identity](settings.md#identity)). Profiles select tools; each call still
 checks the key's permissions at the gateway.
 
 ## Tools
 
 | Tool | What it does | Gateway permissions |
 |---|---|---|
-| `investigate_authoring_kit` | One call for everything needed to write a template: the template JSON Schema, the authoring guide, the organization's typed operator catalog, the default template library, the effective policy and every validation code. `sections` (`schema`, `guide`, `operators`, `examples`, `policy`, `codes`, `packs`, `library`) fetches part of it. The whole kit is large: start with `guide,schema,codes`. | `investigation.get`, `insight.evt.get` |
+| `investigate_authoring_kit` | One call for everything needed to write a template: the template JSON Schema, the authoring guide, the organization's typed operator catalog, the default template library, the settings that shape a plan and every validation code. `sections` (`schema`, `guide`, `operators`, `examples`, `settings`, `codes`, `packs`, `library`) fetches part of it. The whole kit is large: start with `guide,schema,codes`. | `investigation.get`, `insight.evt.get` |
 | `investigate_operators` | The operator catalog, with `filter`, `names` and `brief`. | same |
 | `investigate_packs` | The fact packs as a compact index: parameters with types, exports with type, reference form and a short meaning. `name` returns one pack in full. Enough to write waves without the operator catalog. | same |
 | `investigate_validate_plan` | Type-checks a template (`yaml`): structure, operators, references, expressions, free time range and budgets. The report lists `ai_rules` (the AI-assisted rules), and for a [check](templates.md#checks-templates-other-templates-call) validated with its record `name` (without `name` there is no `used_by`), `used_by`: the templates that call it, checked again against your draft; a template in the earlier format is `legacy_template_format`. | `investigation.get`, `insight.evt.get` |
 | `investigate_test_plan` | Dry run on real past alerts: a stored `template` or `yaml`, plus `samples` (a detection id, a case id, the newest alerts of a category, or free inputs with an expected label). Waits and polls (`wait_seconds` up to 180, default 60) and returns, per alert, which rule decided or what the AI recommended, whether each agreed with the analyst, and what was missing; the summary has the share decided by rules, agree/disagree per rule, the AI's agree/disagree/unclear on the rest, and costs. `test_id` continues a test that is still running. `include_steps` adds every step. No run, case, label or action is written; the test result itself is kept for 24 hours. | `investigation.set`, `investigation.get`, `insight.evt.get` (starting needs `investigation.set`; the polling and `test_id` continuation read with `investigation.get`) |
 | `investigate_save_plan` | Saves a template to the `investigation_plan` Hive, **always as a draft**. | `investigation_plan.get`, `investigation_plan.set`, `investigation.get`, `insight.evt.get` |
 | `investigate_list_templates` | The organization's templates: name, version, description, `applies_to`, status. `status` filters draft or active. | `investigation.get`, `insight.evt.get` |
-| `investigate_start` | Starts a run on a `template` for a `detection_id`, `case_id`, `entity_id` or `question`. Optional `inputs`, `urgency` (`low`, `medium`, `high`, `critical`), `mode` (`full`, `triage`, `scope`), `case` (`create`, `none`, `attach:<case number>`: send `attach:` to write into an existing case), `idempotency_key`, `trust` (`lookups`, at most 64, and `values`, at most 100, trusted for this run only; the run identity needs `lookup.get`), and `wait_seconds` (up to 60) to wait for the outcome. The answer is the run: `verdict.outcome`, `decided_by`, `recommendation`, `missing`, `ai_agent`. A draft template runs with autonomy capped at `suggest`. | `investigation.set`, `insight.evt.get` |
+| `investigate_start` | Starts a run on a `template` for a `detection_id`, `case_id`, `entity_id` or `question`. Optional `inputs`, `urgency` (`low`, `medium`, `high`, `critical`), `mode` (`full`, `triage`, `scope`), `case` (`create`, `none`, `attach:<case number>`: send `attach:` to write into an existing case), `idempotency_key`, `trust` (`lookups`, at most 64, and `values`, at most 100, trusted for this run only; the run identity needs `lookup.get`), and `wait_seconds` (up to 60) to wait for the outcome. The answer is the run: `verdict.outcome`, `decided_by`, `recommendation`, `missing`, `ai_agent`. A draft template only suggests: its actions are recorded `suggested`. Inside an AI agent's session, `parent_run` (or `LC_IE_RUN_ID`) is sent, so the run asks no agent itself. | `investigation.set`, `insight.evt.get` |
 | `investigate_delete` | Deletes a run for good by its `run_id`. Refused while the run is active or has actions in effect. | `investigation.set`, `insight.evt.get` |
 | `investigate_get_pack` | Reads an organization-authored fact pack: its YAML, etag and enabled state. | `investigation_plan.get` |
 | `investigate_save_pack` | Creates an organization-authored fact pack, or replaces one when given the `etag` from `investigate_get_pack`. Like an active template, a pack can only be written by a person: the Hive refuses it from an API key unless the organization opted out (see [Permissions](permissions.md#active-templates-can-only-be-written-by-a-person)). | `investigation_plan.set` |
@@ -51,7 +51,19 @@ checks the key's permissions at the gateway.
 | `investigate_get` | Reads a run. `view` is `run` (default: the outcome and what decided it), `steps` (each step with its `narrative`: why it ran, what it found, what used it), `events` (long-poll: `after`, `wait` up to 10) or `case`. | `investigation.get`, `insight.evt.get` |
 | `investigate_wave` | Runs a batch of questions (operators, fact packs or [checks](templates.md#checks-templates-other-templates-call), `use: template:<name>`, which may take `each`) in parallel and returns compact typed answers, stopping as soon as a `stop_when` condition is true. Steps carry `select` and `limit`; `full` returns raw values; `validate_only` checks a wave without running it; `deadline_ms` defaults to 30000. | `investigation.set`, `insight.evt.get` |
 
-All of them work against the organization the session is connected to.
+| `investigate_list_runs` | The runs behind a number, as compact rows: `template`, `state`, `outcome`, `sensor`, `detection_id`, `case_id`, `message_id`, `needs_person`, `kind`, a time window, `sort`, paging. Filtering by `outcome` also needs `investigation_policy.set`. | `investigation.get`, `insight.evt.get` |
+| `investigate_stats` | How templates perform over a window: outcomes, time to verdict, AI spend, which rule decided how many runs, which evidence was missing and why, the action counters. | `investigation.get`, `insight.evt.get`, `investigation_policy.set` |
+| `investigate_compare` | Replays an edited template against one finished run, a list of up to 50, or the newest finished runs of a template, offline: recorded facts only, nothing written. Per run whether the outcome `changed`, the `diff`, and `not_recorded`. | `investigation.set`, `insight.evt.get` |
+| `investigate_coverage` | Which template a start with no named template runs for a trigger, the others that apply, ties; `as_active` previews a draft taking over. | `investigation.get`, `insight.evt.get` |
+| `investigate_get_labels`, `investigate_submit_label` | Read, or add, people's labels on a run. A label decides nothing. | read; `investigation.set` to submit |
+| `investigate_cancel` | Cancels a run; `revert_leases` also undoes its actions in effect that the key may undo. | `investigation.set`, `insight.evt.get` |
+| `investigate_queue` | The organization's [run queue](run-queue.md): counts, the oldest wait, by band, rule and template, the hour's cap and recent flushes. | `investigation.get`, `insight.evt.get` |
+| `investigate_flush_queue` | Flushes the queued starts of one `rule`, one `template` or `all: true`, with an optional `note`. **Cannot be undone.** Sent once. | `investigation.set`, `insight.evt.get` |
+| `investigate_answer` | Answers the `ai_agent` step (or hand-off) of the run that started THIS session: `answer` holds the declared fields and a `rationale`. The ids and the one-time token default from `LC_IE_RUN_ID`, `LC_IE_REQUEST_ID` and `LC_IE_ANSWER_TOKEN` when the server runs inside the session. See [Custom Code](custom-code.md#how-the-agent-answers). | `investigation.get` |
+
+All of them work against the organization the session is connected to. There is no tool to
+approve, deny, undo, extend or confirm an action: a person does that in the console, the
+CLI or the API.
 
 ## Templates and the default library
 
@@ -65,9 +77,9 @@ default an `active` write from an API key (an administrator can opt out; see
 [Permissions](permissions.md#active-templates-can-only-be-written-by-a-person)). Fact packs (`use:` in a step) are built in, and an organization can add its own
 (`investigate_save_pack`).
 
-No tool changes what the AI may decide. `ai_may_decide` is a person's policy decision,
-made in the console on the template's page or in the `default` policy record (see
-[What the AI may decide](policies.md#what-the-ai-may-decide)).
+No tool makes a template act. What a template does on its own (`approval` on each `act`
+entry) and whether the AI may decide (`ai_may_decide`) are keys of the template, and a
+draft only suggests until a person promotes it.
 
 ## `investigate_save_plan` and what it refuses
 
@@ -126,4 +138,4 @@ For a one-off question, drive waves directly:
    from it, and stop when the question is answered.
 
 Read `unknown` as "not established", never as "no". A step with a cut list is a lower
-bound, not a count. See [Waves](api-reference.md#waves).
+bound, not a count. See [Waves](concepts.md#waves-and-fact-packs).

@@ -1,1081 +1,67 @@
 # Plan Templates
 
-A plan template tells the Investigation Engine how to investigate one kind of
-alert. This page is the reference: where templates live, the default library, every
-section of a template, and how to validate, test and make one active. For the method
-(what to write first, and why), read
-[How to Think About Templates](how-to-think-about-templates.md). For a guided
-workflow with an AI agent, see
-[Build and Tune Templates with an AI Agent](build-templates-with-ai.md).
+A **template** tells the Investigation Engine how to investigate one kind of alert. You
+write:
+
+1. **what to gather** (`gather`): steps, each one operator call, one fact pack, one check,
+   one Playbook or one AI agent, that can read each other's answers;
+2. **the rules that decide** (`rules`): `escalate` and `close` rules over what was gathered,
+   each with an id and a sentence for the case;
+3. optionally **AI**: focused `ask_ai` questions a rule reads, and one `ai_review`, the
+   fallback when no rule decides;
+4. **what to do about it** (`act`) and **how the case reads** (`case`).
+
+The engine runs every ready step in parallel, stops gathering as soon as a rule decides,
+and cancels the steps that can no longer change the outcome. You write the template; you do
+not write the scheduling. There is no probability, weight or threshold: a run ends with an
+[outcome](concepts.md#outcomes) a person can read, and the rule (or the AI) behind it.
 
 ## Where templates live
 
-Templates are [Config Hive](../7-administration/config-hive/index.md) records of
-the `investigation_plan` type, named by the record key. **An organization's
-templates are exactly its `investigation_plan` records.** The engine adds none and
-hides none. A template you did not write, edit or install does not exist for your
-organization.
-
-Reading and writing these records needs the `investigation_plan.get` and
-`investigation_plan.set` permissions, which are **granted explicitly** and are not
-part of the Owner role. See [Permissions](permissions.md).
+A template is a Hive record in the `investigation_plan` hive; the record name is the
+template name (lowercase letters, digits, `-` and `_`, at most 64 characters, no `name:`
+key in the YAML). An organization's templates are exactly its records: the engine adds
+none. Manage them with `limacharlie investigate templates ...`, the console, the Hive API
+or [Git Sync](../5-integrations/extensions/limacharlie/git-sync.md#investigation-engine-records).
 
 ## The default library
 
-LimaCharlie provides a **default library**, one template per kind of alert. It is
-content you choose to install. Nothing in the library reaches your organization until
-a person installs it, and an installed copy is yours to edit.
+The engine ships a library you can install and edit. It is installed as **drafts**, and
+every action in it asks a person (`approval: required`). Change that in your copy, entry
+by entry, once you have read what the template does.
 
-| Template | Picked for (`applies_to`) | Starts from | How it decides | Proposes |
-|---|---|---|---|---|
-| `endpoint-detection` | any detection category (`detect_cat: ['*']`) | detection | Your banned and approved software Lookups and what is true on the host now (running, connected, set to start on its own, the file signed and verified) decide; AI-assisted rules on a judged command line; otherwise one AI review of the stored event, lineage, workload, host and exposure recommends. | `contain.network`, `tag.add` |
-| `suspicious-process` | `encoded-powershell`, `lolbin-*`, `suspicious-process`, `rare-process` | detection | The same model, for a trusted system binary used in a suspicious way. | `contain.network`, `tag.add` |
-| `mailsec-message` | `mailsec-ai-triage` | message | Every reason Email Security flagged is explained; where the links land, attachments, the sender's history and clicks decide harm; a known sender whose reasons are all explained closes; otherwise the AI recommends. | `contain.email` (with a registered authorization) |
-| `phishing-campaign` | `mailsec-ai-triage` | message | A malicious message many people received: where its link goes, who got it, who clicked, whether a payload ran. | `contain.email` (with a registered authorization), `contain.network` |
-| `identity-sign-in` | `identity-suspicious-sign-in` | none (the caller gives the provider, sensor and principal) | The account's exact native activity and directory context; an AI-assisted rule; nothing closes on an empty search. | |
-| `saas-admin-action` | `saas-risky-admin-action` | none (as above) | The actor's exact native activity and directory context; admin activity alone never establishes abuse. | |
-| `cloud-exposure-finding` | `cloud-exposure-finding` | none (the caller gives `finding_id`) | Established reachability escalates; abuse beyond exposure is judged by the AI. | |
-| `code-finding` | `code-security-finding` | none (the caller gives `finding_id`) | A live exposed secret escalates by rule; the AI reviews dependency and infrastructure-as-code findings. | |
-| `appcontrol` | `app-control-policy-refused`, `app-control-break-glass`, `app-control-enforced-block`, `app-control-resident-terminated` | detection | One AI review of the stored event, lineage, workload, host, exposure and the application's record recommends. | |
+| Template | Applies to | Starts from | Actions |
+|---|---|---|---|
+| `endpoint-detection` | any detection on a sensor (`detect_cat: ['*']`) | detection | `contain.network` (lease 2h, release), `tag.add`, close |
+| `suspicious-process` | `encoded-powershell`, `lolbin-*`, `suspicious-process`, `rare-process` | detection | `contain.network` (lease 2h, release), `tag.add`, close |
+| `mailsec-message` | `mailsec-ai-triage` | message | `contain.email` (lease 2h, release), close |
+| `phishing-campaign` | `mailsec-ai-triage` | message | `contain.email`, `contain.network` (lease 2h, release), close |
+| `identity-sign-in` | `identity-suspicious-sign-in` | none | close |
+| `saas-admin-action` | `saas-risky-admin-action` | none | close |
+| `cloud-exposure-finding` | `cloud-exposure-finding` | none | close |
+| `code-finding` | `code-security-finding` | none | close |
+| `appcontrol` | the Application Control policy categories | detection | close |
+| `payload-reached-landing` | a check (`kind: check`) the email templates call | | |
 
-Every library entry is a draft (`status: draft`). Read the current list, with each
-entry's exact `applies_to` and YAML, from the authoring kit (`sections=library`). The
-library also ships one D&R rule, `investigate-high-critical-case` (see
-[D&R rules on a new case](automation.md#dr-rules-on-a-new-case)).
-
-The Lookups the library reads (`banned-software` and `approved-software`, keyed by
-file hash, in `endpoint-detection` and `suspicious-process`) are yours to create. A Lookup that does not exist answers unknown
-(`not_found`), so the rules that read it never hold: nothing closes or escalates on a
-list you have not written.
-
-!!! warning "Installing the generic fallback"
-    `endpoint-detection` matches **every** detection category. Once it is
-    installed and active, a D&R rule that says `start investigation` without a
-    `template` can choose it for any detection no more specific template covers.
-    Install it deliberately.
-
-!!! note "Versions and updates"
-    Each library entry has a `version`. The console compares the library entry's
-    version with the installed record's and offers an explicit update. An update
-    **replaces your edits**; there is no merge. If you changed a template,
-    copy it under another name before updating. The CLI never replaces an active
-    template with a draft (move it back to draft first), and the console asks you to
-    confirm before it does.
-
-### Install the library
-
-- **Console:** open **Investigations**, then **Templates**, and choose **Install default
-  templates**. The dialog starts at **Draft** for every template; making a template
-  active is an explicit choice, confirmed separately. See
-  [Console](console.md#install-default-templates).
-- **CLI:** `limacharlie investigate templates install-defaults`, which writes drafts
-  unless you pass `--status`. See [CLI](cli.md#templates).
-- **API or AI agent:** fetch the library with the authoring kit section
-  `library` (each entry has `name`, `description`, `version`, `status`, `applies_to`
-  and the `yaml` to store), then write the record `investigation_plan/<name>` with
-  that YAML. Keep `status: draft` when you store one, and have a person make it active
-  once it is tested. Writing `status: active` is refused by default from an API key.
-  See [Permissions](permissions.md#active-templates-can-only-be-written-by-a-person),
-  [API Reference](api-reference.md#authoring-kit) and [MCP Tools](mcp.md).
-
-## Anatomy of a template
-
-A template is YAML. Unknown keys are errors, so a typo is never silently ignored.
-
-<!-- validate: template -->
-```yaml
-status: draft                      # draft (the default) or active
-version: 1
-description: "Escalate a message whose link lands on a password page a recipient reached; close one from a sender with history whose flagged reasons are all explained."
-applies_to:                        # which alerts it is picked for automatically
-  detect_cat: ['mailsec-ai-triage']
-starts_from: message               # which ids the run is given (see below)
-gather:                            # the steps: what to look at
-  message:
-    op: mailsec.message_get
-    args: {msg_uuid: $msg_uuid}
-  sender_history:
-    why: "Has this sender written to the org before?"
-    op: mailsec.sender_profile
-    args: {sender: '$message.sender', domain: '$message.sender_domain', before: '$message.received', exclude_group: '$message.group_id'}
-  link_landing:
-    op: mailsec.link_resolve
-    args: {links: '$message.links', links_complete: '$message.links_complete', sender_domain: '$message.sender_domain', reply_to_domain: '$message.reply_to_domain', detonation: '$message.detonation'}
-    record:                        # what the case shows of this step
-      kind: entity
-      entity_type: domain
-      indicator: link_landing.final_domain
-      title: Where the link lands
-      note: "The link lands on {link_landing.final_domain}."
-      malicious_when: 'link_landing.credential_harvest'
-  recipients:
-    op: mailsec.group_recipients
-    args: {group_id: '$message.group_id'}
-  clicks:
-    ask: "Did the recipients whose machines could not be checked open the link?"
-    op: endpoint.click_check
-    args: {copies: '$recipients.copies', domains: '$link_landing.malicious_domains', window: [{at: '$message.received'}, now]}
-    only_if: 'link_landing.credential_harvest'
-    record:                        # one entity per recipient, with its own verdict
-      kind: entity
-      entity_type: account
-      title: Recipient outcome
-      each: clicks.per_recipient
-      item_key: recipient
-      outcome_key: outcome
-      outcome_map: {clicked: malicious, possible: suspicious, not_clicked: benign, unknown: unknown}
-      absence: [not_clicked]       # "did not click" holds only when the check is complete
-      outcome_notes:
-        clicked: "The recipient's machine looked up the link's landing domain after the message was delivered."
-        not_clicked: "The recipient's machine reported events after delivery and none looked up the link's landing domain."
-        unknown: "Could not be checked: the machine or its telemetry was not available."
-rules:                             # what decides
-  escalate:
-    - id: clicked_credential_harvest
-      when: ['link_landing.credential_harvest', 'clicks.any_clicked']
-      say: "A link lands on a page that asks for a password, and a recipient's machine reached it after delivery."
-  close:
-    - id: known_sender
-      when: [signals.all_explained, 'sender_history.prior_messages_30d > 0']
-      say: "The sender wrote {sender_history.prior_messages_30d} message(s) in the last 30 days, and every reason Email Security flagged has a benign explanation."
-explain_signals:                   # for alerts that come with reasons
-  ms_sender_first_contact:
-    question: Is this really the first time this sender wrote to the org?
-    malicious_when: 'sender_history.prior_messages_30d == 0'
-    benign_when: 'sender_history.prior_messages_30d > 0'
-act:                               # what to propose when a rule decides
-  - {class: contain.email, target: '$message.msg_id', attrs: {group_id: '$recipients.action_attrs.group_id'}, on_rules: [clicked_credential_harvest]}
-case:                              # how the case reads
-  mode: create
-  severity: {escalated_by_rule: high, closed_by_rule: low, default: medium}
-  kind: [phishing]
+```bash
+limacharlie investigate kit --section library --oid "$OID"      # read them
+limacharlie investigate templates install-defaults --oid "$OID" # install as drafts
 ```
 
-Top-level keys, exactly: `kind`, `description`, `version`, `status`, `applies_to`,
-`starts_from`, `deadline`, `scope`, `trust`, `params`, `gather`, `rules`,
-`explain_signals`, `ai_review`, `act` and `case`. `kind` is `alert` (the default) or
-`check`, a template that other templates call, and `params` belongs to checks (see
-[Checks](#checks-templates-other-templates-call), which also lists the keys a check
-may not have). A template needs at least one step, and at least one
-rule or an `ai_review` (`no_verdict_path`). The authoring kit's `schema` section is
-the JSON Schema of every key.
+`install-defaults` never overwrites a record silently: an existing one is skipped with its
+installed and library versions unless you pass `--overwrite`.
 
-A record in the earlier format (`facts`, `inputs`, `proofs`, `evidence`, `prior`,
-`signals`, `signals_from`, `respond`, `report`, `decision`...) is refused with
-`legacy_template_format`, and the engine does not run it. Rewrite it: facts become
-`gather` steps, proofs become rules with ids, `respond` becomes `act` with `on_rules`,
-`report` becomes `case`, and evidence, priors and thresholds go.
-
-- `deadline` (`10m`, `2h`, `1d`) caps the run's wall time. It never loosens the
-  policy's budget.
-- `scope: {from: [step ids]}` names the steps that run only once a rule (or the AI)
-  escalated: the scoping of an incident, never part of the decision.
-- `trust` declares values and Lookups your organization maintains as trusted for this
-  template. A match skips active analysis of an initial target; it never counts as
-  verified benign. The run identity needs `lookup.get`.
-
-## Where a run starts: `starts_from`
-
-A run gets very little from what started it: the id of the thing it was started on,
-plus `alert_time`. `starts_from` says which of those ids the template reads as
-`$name`:
-
-| `starts_from` | Inputs it provides |
-|---|---|
-| `detection` | `detection_id` |
-| `message` | `msg_uuid`, `fired_signals`, `detection_id` |
-| `case` | `case_id`, `detection_id` |
-| `none` (the default) | none |
-
-Who provides them:
-
-| Started by | The run has |
-|---|---|
-| Console on a **detection** | `detection_id` |
-| Console on a **case** | `case_id` |
-| Console on an **email message** | `msg_uuid` |
-| D&R rule, `start investigation` | `detection_id` of the detection that fired, plus exactly the inputs the action lists |
-| D&R rule `start investigation` with `case` (a new case) | `case_id`, and `detection_id` of the detection the case was opened for, when it has one |
-| Test sample `{detection_id}` or `{detect_cat, last}` | `detection_id` |
-| Test sample `{case_id}` | `case_id` and `detection_id` (the case's first detection) |
-| Test sample `{inputs: {...}}` | exactly the inputs you give |
-| Every one of them | `alert_time`: when the run (or test) started. In a test this is the time of the test, not of the past alert; read the alert's own time from `detection.get`. |
-
-Reading `$name` that the starting point does not provide is the error
-`unknown_reference`. Any other value a caller may pass (a D&R rule's `inputs`, a test
-sample's `inputs`) is an **optional input**, `$?name`, readable in a step's `args`
-only: when it was not given, the step reads null. Rules, conditions and `act` entries
-never read `$?name`: a caller's value never decides an outcome and never chooses what
-is acted on (`bad_reference`).
-
-**The recommended pattern: start from the id and derive everything else with
-steps.** A template written this way runs unchanged from the console, from a D&R
-rule and from every kind of test sample:
+## A template
 
 ```yaml
-starts_from: detection
-gather:
-  trigger:
-    op: detection.get          # the detection's own record: category, sensor, time, hash...
-    args: {detect_id: $detection_id, window: [-29d, now]}
-  host:
-    op: entity.resolve
-    args: {type: sensor_id, value: '$trigger.sid'}   # a field of the detection, not an input
-```
-
-To prefer a value a caller gave and fall back to the derived one, use `plan.pick`:
-
-```yaml
-  hash:
-    op: plan.pick
-    args: {candidates: ['$?hash', '$trigger.hash'], optional: true}
-```
-
-## Gather
-
-A step is `{op: <operator>, args: {...}}`, one operator call, or
-`{use: <pack>, args: {...}}`, a [fact pack](concepts.md#waves-and-fact-packs). A step
-also takes:
-
-| Key | Meaning |
-|---|---|
-| `why` | The question the step answers, for the person reading the run. It replaces the operator's default sentence. |
-| `ask` | The question for a person when the step stays unknown. The case asks it. |
-| `only_if` | Run the step only when this condition is true (below). |
-| `record` | What the step puts in the case: an entity with a verdict, one entity per list item, a telemetry reference or an artifact. See [What a step records](#what-a-step-records-record). |
-| `always: true` | Gather it for the case even after a rule decided (the triggering detection, who else received it). Without it, a step that can no longer change the outcome is cancelled. |
-
-### References
-
-| Form | Meaning |
-|---|---|
-| `$name` | A step, or an input the starting point provides. A step that reads another waits for it. |
-| `$name.path.to.field` | A field of that step. References are checked against the operator's declared output, so a misspelled field is a validation error with a suggestion. |
-| `$list[0].field` | An element of a list. |
-| `$?name` | An optional caller input, in a step's `args` only. |
-
-Steps with no dependency start at once, in parallel. A cycle is an error
-(`dependency_cycle`).
-
-A `window` is `[start, end]`. A bound is `-24h`, `+30m` (relative to the alert),
-`now`, `now-7d`, an RFC 3339 time, or `{at: '$message.received', offset: -2h}` (a time
-read from a step). Durations accept `s`, `m`, `h` and `d`. No window may start earlier
-than 30 days ago: validation **rejects** an older one (`window_outside_free_range`).
-
-### `only_if`
-
-```yaml
-  live_net:
-    op: sensor.read.netstat
-    args: {sid: $sensor, pid: '$live_process.matches[0].pid'}
-    only_if: 'live_process.found'      # only ask the host when the process still runs
-```
-
-- The step waits while the steps its condition reads are pending, then runs when the
-  condition is true.
-- It is **skipped** when the condition is false (reason `only_if_false`), or when a
-  step its condition reads failed (`condition_unknown`). Steps that read a skipped step
-  are skipped too (`dependency_skipped`).
-- **A skipped step reads as unknown** to rules and to the AI review. The condition
-  decides cost, never the outcome: it can only ever cost a decision, never make one.
-- It reads what a rule may read (see [Expressions](#expressions)). A condition on
-  `signals.*` waits for the fired signals and every step the explanations read.
-
-### Packs
-
-`use: <pack>` expands a tested bundle of steps named `<id>__<step>`: `ctx` using
-`detection_context` gives `ctx__trigger`, `ctx__host_alerts` and the others. Rules
-read those names; the bare pack id is not a value. `GET /packs` (or the kit's
-`packs` section) lists each pack's parameters and exports. A pack step takes `use`,
-`args`, `only_if`, `why`, `ask`, `always` and an optional pin (`pack_version`,
-`pack_digest`).
-
-### Checks
-
-`use: template:<name>` calls another template of your organization, a
-[check](#checks-templates-other-templates-call), once or once per element of a list.
-The caller reads one fact from the call: the check's verdict.
-
-### Steps that need care
-
-- **`lookup.get`** `{name, keys}` reads one of your organization's
-  [Lookups](../7-administration/config-hive/lookups.md): one `{key, found, value}` per
-  key, plus `found`, `all_found` and `missing`. A key the Lookup does not list is
-  `found: false`, and that answer is complete. A Lookup that does not exist is
-  unknown (`not_found`). These are the best rules you can write: exact, cheap, and
-  yours.
-- **`search.exists`** and **`search.rows`** take an LCQL `filter`. A value read from a
-  step never goes into the text: write `:name` in the filter and bind it in
-  `params: {name: $step.path}`.
-- **`extension.request`** `{extension, action, data}` calls an extension. Its side
-  effects are unknown to the engine, so it is denied unless the policy lists the pair
-  in `operators.extension_requests`, and a test never calls it.
-- **`ask_ai`** asks the AI one question (see [The AI](#the-ai-ask_ai-and-the-review)).
-- Actions are never steps (`action_in_gather`): they belong in `act`.
-
-Prefer indexed reads (entities, detections, email messages, Lookups) when they answer
-the question. Searches, live sensor reads and AI questions cost more time and money:
-put an `only_if` on them when they matter only in some cases.
-
-## Expressions
-
-Rules (`when`, `never_close_when`), `only_if` and signal explanations
-(`benign_when`, `malicious_when`) share one expression language: a path, or a
-comparison of paths and literals, combined with `and`, `or`, `not` and parentheses.
-
-```text
-sender_history.prior_messages_30d > 0
-message.sender_domain in org.trusted_domains
-link_landing.open_redirect and not message.reply_to_mismatch
-cmd.label == "yes"
-is_ok(trigger)
-signals.all_explained     signals.any_holds     signals.ms_sender_first_contact.explained
-```
-
-- Operators are `==`, `!=`, `<`, `<=`, `>`, `>=` and `in`. A bare path is true when
-  the value is the boolean true. Only numbers are ordered, and a string is never
-  equal to a number.
-- `is_ok(step)` is true when the step answered, false when it ran and failed, and
-  unknown while it is pending or when its `only_if` skipped it.
-- An expression reads exactly: the steps of `gather` (pack steps as `<id>__<step>`),
-  the inputs the starting point provides and `alert_time`, and the builtins
-  `signals` and `org`. It never reads `$?name` inputs or the AI review.
-
-## Rules
-
-```yaml
-rules:
-  escalate:
-    - {id: banned_binary, when: 'banned.found', say: "The binary is on our banned software list."}
-  close:
-    - id: approved_and_signed
-      when: ['approved.found', 'live_file.matches', 'live_file.verified']   # a list is "all of"
-      say: "The binary is on our approved list, and the file on the host is that file, signed and verified."
-  never_close_when:
-    - 'live_autoruns.found'      # never close while the binary is set to start on its own
-```
-
-| Key | Meaning |
-|---|---|
-| `id` | Required, unique across both sides, lowercase letters, digits and `_`. The case, the run, `act` entries and test results name rules by id. |
-| `when` | A string, a list (all of), `{all: [...]}` or `{any: [...]}`, nested as you need. |
-| `say` | The sentence the case leads with when the rule decides. `{step.path}` puts a value in (see [What a sentence reads](#what-a-sentence-reads)). |
-| `never_close_when` | Conditions that block every close while one of them is true or unknown. Only a known false lets a close through. |
-
-- **An escalate rule decides as soon as it holds**, and gathering stops, except for
-  the steps that other escalate rules with `act` entries, or an `act` entry's target
-  or guard, still read (below).
-- **A close rule decides once it holds on complete answers** and nothing blocks a
-  close (a fired signal not explained, a `never_close_when` condition). It does not
-  wait for steps only escalate rules read: those are cancelled. The exception: a close
-  waits while an escalate rule, or a fired signal's malicious check, is still open on
-  a step that runs anyway (`always: true`, or a step such a step reads). It decides once
-  that step answered, so it never turns into a conflict. Waiting costs time, not
-  steps: meanwhile the run gathers only what a decided close would.
-- **An escalate rule and a close rule that hold at once**, at the moment of the first
-  decision, end the run `conflict`.
-  `contradictory_rules` warns about a rule that can never be true, or an escalate
-  rule and a close rule that always hold together ([below](#rules-that-overlap)).
-- **Which rule decides:** the escalate rule that held **first** (the last of the steps
-  it reads arrived first; at the same moment, a deterministic rule before an
-  AI-assisted one, then the template's order), or, on the close side, the first
-  deterministic close rule in order, then the first AI-assisted one. The
-  decision is written at once and never moves: it is pinned, both ways. After an
-  escalation, later answers only add rules to `also_held`, and a close rule that holds
-  afterwards is listed in `verdict.contradicted_by` and noted in the case for the
-  analyst, never a `conflict` and never a close. After a close, an escalate rule that
-  holds later is listed in `contradicted_by` the same way, and the case note says
-  which side stands.
-- **Other escalate rules keep counting** after an escalation when they have `act`
-  entries: the steps they read are not cancelled until each rule is true, false or
-  finally unknown, within the run's budgets. One that holds is listed in
-  `verdict.also_held` and in the case's decision sentence, and fires its own `act`
-  entries under the normal policy and authorization rules (an AI-assisted one only
-  where the AI may escalate). The cost: those steps can still run after the
-  decision.
-- When no rule decides and nothing relevant is left to gather, the run ends
-  `couldnt_tell` (or the AI review runs). Never write a rule that turns missing data
-  into a decision.
-
-### What a sentence reads
-
-A `say` may name a step that no condition reads (`say: "Lands on
-{landing.final_domain}."`). Such a step is not gathered before a decision, since it
-cannot change one. Once a rule has decided, the engine **gathers the steps its
-sentence names**, so the case leads with your sentence and not with the generic "Escalate
-rule X held.":
-
-- The sentences gathered are those of the rule that decided, of every rule in
-  `also_held` or `contradicted_by` (the case shows them too) and, for a decided call to
-  a [check](#checks-templates-other-templates-call) that those rules read, of the
-  check rule that decided it.
-- **The decision never waits.** It is made and logged at once. When a value arrives the
-  sentence is rendered again and the verdict is reported again with it. The case is
-  not written while a sentence still waits for a step the run will gather, and the
-  final case write always happens.
-- **A value that stays missing reads `[unknown: step.path]`**: the step failed, was
-  skipped, or the run's budget ran out. The sentence is never dropped and the decision
-  is the same. While a step is still being gathered, the run view shows
-  `[pending: step.path]`. The generic "Escalate rule X held." appears only for a rule
-  with no `say`.
-- A step named only by the `say` of a rule that did not hold is cancelled, and a step
-  with a side effect is never run just to fill in a sentence (its value reads unknown).
-- The cost is a few steps after the decision, within the run's budgets and deadline: a
-  run whose budget runs out while such a step is in flight ends `budget_exhausted`
-  after deciding.
-- The warning `say_step_never_gathered` flags a step that only sentences read and
-  that cannot be gathered whenever those rules hold, because its `only_if` (or that of
-  a step it reads) excludes what the rule's `when` requires: the sentence would always
-  show `[unknown: ...]`.
-
-### Rules that overlap
-
-`contradictory_rules` warns when an escalate rule and a close rule **always hold
-together**, which ends a run `conflict`: the same conditions on both sides, or every
-condition of one rule also required by the other (`a` escalates and `a and b`
-closes). `any` branches are checked one by one, and a branch that contradicts itself
-is ignored. The order of the conditions and the form (`and`, or an `all:` list) do not
-matter. Two rules that only **share a condition** are fine when their other
-conditions exclude each other:
-
-```yaml
-rules:
-  escalate:
-    - {id: bad_landing,  when: ['landing != ""', 'label == "bad"']}
-  close:
-    - {id: good_landing, when: ['landing != ""', 'label == "good"']}   # no warning
-```
-
-The warning is reported at the close rule and names both rules. The same code also
-flags a rule that can never be true (a value equal to two things, a condition and its
-negation).
-
-## Signals: `explain_signals`
-
-For alerts that come with reasons, such as an Email Security message's fired
-signals, every reason that fired must be answered before anything closes:
-
-```yaml
-explain_signals:
-  ms_sender_first_contact:
-    question: Is this really the first time this sender wrote to the org?
-    malicious_when: 'sender_history.prior_messages_30d == 0'
-    benign_when: 'sender_history.prior_messages_30d > 0'
-```
-
-- The fired set is the run's `fired_signals` input when given, else the
-  `fired_signals` field of the template's one `mailsec.message_get` step. Until it
-  is read, the fired signals are unknown: no `signals.*` condition is vacuously true.
-- Each signal needs a `question` and at least one of `benign_when` and
-  `malicious_when`. **Give both**: a signal with no `benign_when` can never be
-  explained, so it blocks every close when it fires (`signal_missing_explanation`).
-  Names are the detection's reason ids with `-` written `_`.
-- A fired signal whose `malicious_when` holds blocks every close; so does a fired
-  signal the template does not explain. `signals.all_explained` is true only when
-  every fired signal has a benign explanation that holds and no malicious check
-  holds.
-
-## The AI: `ask_ai` and the review
-
-**A focused question.** An `ask_ai` step asks one question about what other steps
-gathered:
-
-```yaml
-  cmd:
-    op: ask_ai
-    args:
-      question: "Is this command line malicious? Answer yes only for explicit malicious behavior, no only for a recognizable benign use, otherwise unclear."
-      sees: [ctx__trigger]
-```
-
-`question` and `sees` (the steps, or `step.path` for one field, whose answers it
-reads) are required. The step waits for what it sees; when one of them is unknown,
-the question is not asked. The answer is `label` (`yes`, `no` or `unclear`), a
-self-rated `confidence` (shown, never used), a short `rationale` and the `agent` that
-answered. Write the question so that yes is the risky reading and no the benign one.
-
-**AI-assisted rules.** A rule that reads an `ask_ai` step, directly or through
-another step's arguments, is AI-assisted, and `validate_plan` lists it in
-`ai_rules`. When a signal explanation or a `never_close_when` condition reads an AI
-answer, that answer can lift the veto on every close, so every close rule becomes
-AI-assisted. An AI-assisted rule decides only on the sides the policy's
-`ai_may_decide` allows for this template. Otherwise, when it holds, it
-**recommends**: the outcome is `ai_recommends_malicious` or `ai_recommends_benign`,
-nothing is acted on, and a person decides.
-
-**The review.** `ai_review` is the fallback when no rule decided and nothing
-relevant is left to gather:
-
-```yaml
-ai_review:
-  question: "Is this process activity malicious? Say what in the evidence shows it."
-  sees: [ctx__trigger, host__card, spread__prevalence]   # the steps it reads
-  needs: [ctx__trigger]                                   # it may not answer benign unless these are known
-```
-
-- `question` is required. `sees` lists the steps it reads, each whole; the default is
-  everything gathered.
-- It answers malicious, benign or unclear, and cites the step fields it used. The
-  engine checks every claim against what it saw. A benign answer counts only when
-  every step it `needs` (by default every step it sees) is known and complete, and
-  every claim checks out. Otherwise the answer is unclear.
-- Nothing reads the review: it is not a step in `gather`, and no rule or condition
-  reads it. `act` entries name it in `on_rules: [ai_review]`.
-- It decides only where the policy's `ai_may_decide` allows; otherwise it
-  recommends.
-
-Both run on the organization's `ai_agent` record that the policy's `llm.agent` names,
-or `investigation-judge` when the policy names none (see the
-[walkthrough](walkthrough.md#2-the-ai-agent-record)). Without an agent, `ask_ai`
-steps and the review are unknown (`llm_agent_not_found`).
-
-## Act
-
-```yaml
-act:
-  - {class: contain.network, target: '$ctx__trigger.sid', on_rules: [banned_binary, judged_malicious_on_noisy_host]}
-  - {class: tag.add, target: '$ctx__trigger.sid', attrs: {tag: 'ie:banned-binary', ttl: 86400}, on_rules: [banned_binary]}
-```
-
-| Key | Meaning |
-|---|---|
-| `class` | The action class. See [Action classes](policies.md#action-classes). |
-| `target` | A step path or a literal. |
-| `attrs` | An object of literals or step paths, for the class (a tag and its TTL, a message group). |
-| `on_rules` | Required. The rule ids, or `ai_review`, whose decision fires the entry, each named once. A recommendation fires nothing. The key is `on_rules`, not `on`: some YAML readers turn a bare `on` into the boolean true, so `on` is refused as an unknown field. |
-| `before` | A class whose actions on the same target must wait for this one: evidence before eradication. |
-| `authorize` | A registered authorization the engine re-checks from the run's evidence (below). |
-
-**A template only proposes.** The organization's
-[autonomy policy](policies.md#autonomy-modes) decides per class whether an action is
-only suggested, needs approval or runs by itself. A class whose mode is `off` is never
-proposed (`act_class_off`). A draft template and an inline plan only suggest.
-
-**Nothing runs without a person unless a registered authorization holds**, an engine
-check rebuilt from the run's own evidence. There are exactly three:
-
-- `contain.email` with `authorize: mail.verified_credential_harvest.v1`: one message,
-  a credential-harvest landing of that message's links that a stored link detonation
-  verified, the recipients of that message's group, decided by a deterministic rule
-  with no support from the AI or from case history.
-- The engine's own close check of `close.false_positive`.
-- The **tag check** of every `tag`, `tag.add` and `tag.remove` entry (see
-  [Tags](#tags-run-by-themselves-and-last-their-ttl)). It has no `authorize:` key:
-  writing one is `bad_action_guard`.
-
-Every other `act` entry, host isolation included, and every entry that fires on a
-decision the AI made, waits for a person even under `auto` (the reason
-`no_registered_authorization`). An entry whose decision read a [check's](#checks-templates-other-templates-call)
-verdict never has an authorization either (the reason `via_check`, for information).
-
-### Tags run by themselves, and last their `ttl`
-
-Tagging a sensor is low impact and can be undone, so a tag entry (`tag`, `tag.add`,
-`tag.remove`) runs by itself when the policy's mode for its class is `auto` **and** the
-tag check holds:
-
-- a **deterministic** rule that the entry's `on_rules` names decided the run (the
-  deciding rule, or an escalate rule that also held after an escalation), not a rule
-  that reads the AI's judgement;
-- that rule holds again on the facts the run logged (a close rule needs complete
-  facts);
-- every step the rule, the entry's `target` and its `attrs` read, and every step those
-  were derived from, is the template's own call with the run's inputs, and neither an
-  AI output nor case history (`case.related`), and **never a [check's](#checks-templates-other-templates-call)
-  verdict**: a call to a check is not the template's own evidence;
-- the target and attributes resolve to the action's own.
-
-A tag that fails any of these waits for a person like every other action; one whose
-deciding rule read a check's verdict carries the informational reason `via_check`. A draft
-template only suggests. `tag.remove` cannot be undone, so it runs by itself only
-when the policy names the exact class `tag.remove` with `mode: auto`
-(`irreversible_requires_exact_class`).
-
-**A tag has no lease and no automatic undo.** It lasts what its `act` entry declares:
-the `ttl` in `attrs` (whole seconds; the platform removes the tag then) or, without a
-`ttl`, until someone removes it.
-
-```yaml
-act:
-  - {class: tag.add, target: '$ctx__trigger.sid', attrs: {tag: 'ie:banned-binary', ttl: 86400}, on_rules: [banned_binary]}
-```
-
-- The engine marks the tag `confirmed` as soon as it is added. No lease end undoes
-  it, cancelling the run leaves it, and nobody can confirm or extend it (those are
-  refused). A person can still undo it from the action, which removes the tag.
-- This holds whoever decided it, a rule under `auto` or a person who approved it: the
-  template declares a tag's lifetime. The policy's `lease` does not apply to a tag
-  class.
-- An entry with no `ttl` gets the warning `auto_tag_permanent`: under `auto` that tag
-  stays on the sensor until someone removes it. Set `ttl` to what the tag should last, or
-  leave it off on purpose when the tag is meant to stay.
-- Every other automatic action keeps the policy's lease and is undone when it ends,
-  unless a person confirms or extends it.
-
-**The case close.** `closed_by_rule` and `closed_by_ai` propose `close.false_positive`
-under the policy's mode for that class. `closed_by_ai` closes by itself only while the
-policy still lets the AI close for the template. `ai_recommends_benign` proposes the
-close of the case the run wrote (and, for an email, of the message) at most at
-`approve`: under `auto` it waits for a person, under `suggest` it is only a
-suggestion, under `off` nothing is proposed. Approving it is the person's **Close as
-benign** button. `ai_recommends_malicious` proposes no close.
-
-`before: <class>` makes this entry a prerequisite of the actions of the named class
-on the same target: `collect.file` with `before: eradicate.file` means the collection
-comes first. If this entry's class is only suggested or off, the later action goes
-ahead with a caveat saying the collection was not performed; if the collection was
-allowed but was denied, failed or expired, the later action needs a person.
-
-## Case
-
-```yaml
-case:
-  mode: create                 # create | none: this template's default
-  severity: {escalated_by_rule: high, escalated_by_ai: high, ai_recommends_malicious: high, closed_by_rule: low, default: medium}
-  kind: [phishing]
-  attack: [T1566.002]
-  trigger_step: detection      # the step that holds the detection the run is about
-  fp_rule_tag: watch-fp-rule   # a tag the case gets when it is closed
-```
-
-`severity` is keyed by outcome (`closed_by_rule`, `escalated_by_rule`,
-`closed_by_ai`, `escalated_by_ai`, `ai_recommends_benign`,
-`ai_recommends_malicious`, `couldnt_tell`, `conflict`) plus `default`, with values
-`low`, `medium`, `high` and `critical`. A close outcome without its own key
-(`closed_by_rule`, `closed_by_ai`) is `low`; `default` does not raise it. The case leads with the outcome sentence and
-lists the fired signals, the detections, the evidence (each step a rule or the review
-read that answered, with its sentence), what stayed unknown, the actions and the open
-question. A test writes no case.
-
-### What a step records: `record:`
-
-A step says what the case shows of it with `record:`, one record or a list. The
-[anatomy example](#anatomy-of-a-template) has two: the landing domain as an entity
-with a verdict, and one account entity per recipient with its own outcome.
-
-| Key | Meaning |
-|---|---|
-| `kind` | `telemetry`, `entity` or `artifact` (`bad_record_kind` otherwise). |
-| `title` | The step's title in the case: the first record's `title` is used for all of the step's items. |
-| `note` | The item's sentence. `{step.path}` puts a value in. |
-| `entity_type` | For an entity: `ip`, `domain`, `hash`, `url`, `user`/`account`, `email`/`sender`, `file`, `host`... |
-| `indicator` | For an entity: the path of its value (`link_landing.final_domain`). An entity needs `indicator` or `each` (`entity_needs_indicator`). |
-| `malicious_when`, `benign_when` | Conditions, in the [expression language](#expressions), that give the entity its verdict. |
-| `each`, `item_key`, `outcome_key` | One entity per element of the list at `each`: `item_key` names the element's field that holds the value, `outcome_key` the field that holds its outcome word. |
-| `outcome_map` | Outcome word to verdict (`{clicked: malicious, not_clicked: benign}`). |
-| `absence` | The outcome words that are claims of absence (`not_clicked`): they hold only when the step is complete. |
-| `outcome_notes` | The note per outcome word (with `each`) or per verdict (without). |
-| `source`, `type`, `ref` | For an artifact: where it lives, its type, and its reference (`mailsec/messages/{message.msg_uuid}`). |
-
-- **The verdict.** `malicious` when `malicious_when` holds, else `benign` when
-  `benign_when` holds, else `unknown`. An unknown never asserts a verdict, and an
-  entity whose value is not known is not written. A record on a step that did not
-  answer (skipped, unknown or cancelled) is "not established", whatever its conditions
-  say: put it on a step that always answers.
-- **Absence needs completeness.** With `each`, an outcome listed in `absence` holds
-  only when the step is complete; on an incomplete step that element reads `unknown`.
-- **Notes do not overclaim.** A note that claims causation or activity is written only
-  when its condition holds; otherwise the item reads "<title>: <verdict>", and with
-  `each` it reads its outcome word.
-- **An artifact `ref` holds ids only.** Once rendered it may contain only lower-case
-  letters, digits, `:`, `_`, `-` and `/`, and never a caller's input (a sender, for
-  example). Otherwise the **whole case is refused** (`case_error` "case refused: ...",
-  see [Troubleshooting](troubleshooting.md#a-run-finished-but-the-outcome-means-little)),
-  and validation does not catch it: keep domains and file names out of a `ref`.
-  Without `ref`, it points at the step in the run.
-- **A `record:` does not make a step run.** A step is gathered when a rule, a
-  condition, the review, an `act` entry or another step reads it, or it is
-  `always: true`. A step that only a record reads is cancelled and records nothing:
-  validation warns `record_only_step`. Mark such a step `always: true`, or record what
-  the case needs on a step a rule reads.
-- Paths are checked like any reference (`unknown_field`, and `not_an_array` for an
-  `each` that is not a list). A `use:` step takes no `record`: record the pack's step
-  on a step that reads it.
-- **What the engine adds by itself:** the telemetry of each step a rule or the review
-  reads (its sensor event when it references one, else its finding), an `entity.get`
-  step's entity, and the `mailsec/messages/<uuid>` artifact of each
-  `mailsec.message_get` step. A step's own telemetry or entity record replaces the
-  default of that kind; the message artifact is added unless the step records the same
-  reference.
-
-## Checks: templates other templates call
-
-A **check** is a template that other templates call, like a function. It takes
-**params**, gathers, runs its own rules and hands back **one fact**: its verdict.
-Write one for logic that several templates repeat (where a link lands, what a file
-hash is, whether a sender is known), so that you fix it once and every template that
-calls it gets the fix on its next run. A check is `kind: check` and is stored like any
-other template, as an `investigation_plan` record.
-
-### A check
-
-<!-- validate: template -->
-```yaml
-# investigation_plan/url-harm
-kind: check                      # alert (the default) or check
-description: "Does one link of a stored message land on a page that asks for a password?"
-version: 1
-status: active
-params:                          # the call's arguments
-  link: {type: object, required: true, description: "One element of the message's links."}
-gather:
-  landing:
-    op: mailsec.link_resolve
-    args: {links: ['$link'], links_complete: true}   # the list is the one link this check judges
-    record:
-      kind: entity
-      entity_type: url
-      indicator: $link.href
-      title: Where the link lands
-      note: "The link lands on {landing.final_domain}."
-      malicious_when: 'landing.credential_harvest'
-      benign_when: 'landing.final_domain_matches_shown'
-rules:
-  escalate:
-    - {id: credential_page, when: 'landing.credential_harvest', say: "{link.href} lands on a page that asks for a password."}
-  close:
-    - {id: lands_where_shown, when: ['landing.verified', 'landing.final_domain_matches_shown'], say: "{link.href} lands on the site it shows."}
-  never_close_when: ['landing.open_redirect']
-```
-
-- **`params`** declare the call's arguments, one entry per name: `type` (`string`,
-  `integer`, `number`, `boolean`, `array`, `object` or `any`), `required` and
-  `description`. Inside the check, `$<param>` reads one in step `args`, `only_if`,
-  rules, `say` and `record` (`$link.href` reads a field of an object param). `params`
-  belong to checks only (`params_on_alert`). A param nothing reads is the warning
-  `check_param_unused`. A param shares its namespace with the steps, so it cannot
-  share a step's name, and these names are **reserved** for params and steps alike:
-  `ai_review`, `alert_time`, `is_ok`, `now`, `org`, `p`, `signals` and `verdict`
-  (`reserved_name`; the error lists them).
-- **What a check may contain:** `kind`, `description`, `version`, `status`, `params`,
-  `gather` (with `only_if`, `why`, `ask`, `always` and `record` on its steps, and calls
-  of fact packs and of other checks) and `rules` (`escalate`, `close`,
-  `never_close_when`). It needs at least one rule (`no_verdict_path`).
-- **What a check may not contain:** `applies_to`, `starts_from`, `act`, `case`,
-  `ai_review`, `explain_signals`, `scope`, `deadline` or `trust`. Each is refused with
-  `check_forbidden_key`, and the message names the key. A check is never started by a
-  detection or a case. It never acts and never writes or shapes the case: the template
-  that calls it does all of that, once per run, under its own policy. One AI review
-  per run keeps the cost of an alert predictable (a check may still use `ask_ai`
-  steps). `trust` stays the caller's, so a check cannot quietly widen or narrow the
-  analysis of the run that calls it.
-- A check's `status` is informational: a check never acts on its own. An active
-  template that calls a `draft` check gets the warning `check_is_draft`.
-- A check can be tested on its own with `params` samples
-  ([below](#test-a-check)), and is never started as a run: naming one where a template
-  that starts a run is expected is `check_not_startable`. That covers starting a run
-  (the API, the console, the CLI, MCP), the template an automatic source or a policy's
-  template choice names, a D&R rule's `start investigation`, and a test with no
-  `params` sample. Name the template that calls the check instead.
-
-### Calling a check
-
-A template calls a check as one gather step with `use: template:<name>`. The prefix
-keeps a check's name apart from a fact pack's.
-
-<!-- validate: template -->
-```yaml
-# investigation_plan/mailsec-links  (an alert template)
-description: "Escalate a message when any of its links lands on a password page; close one whose every link is benign and whose sender has history."
-version: 1
-status: draft
-applies_to:
-  detect_cat: ['mailsec-ai-triage']
-starts_from: message
-gather:
-  message:
-    op: mailsec.message_get
-    args: {msg_uuid: $msg_uuid}
-  sender_history:
-    op: mailsec.sender_profile
-    args: {sender: '$message.sender', domain: '$message.sender_domain', before: '$message.received', exclude_group: '$message.group_id'}
-  links:                                # one call per link of the message
-    use: template:url-harm
-    each: '$message.links'
-    as: link
-    key: '$link.href'
-    max_items: 25
-    args: {link: '$link'}
-rules:
-  escalate:
-    - {id: phishing_link, when: 'links.any_malicious', say: "A link of this message is malicious: {links.first_malicious.say}"}
-  close:
-    - {id: clean_known_sender, when: ['links.all_benign', 'sender_history.prior_messages_30d > 0'], say: "Every link is benign and the sender wrote {sender_history.prior_messages_30d} message(s) before."}
-case:
-  mode: create
-  severity: {escalated_by_rule: high, closed_by_rule: low, default: medium}
-  kind: [phishing]
-```
-
-This template validates with no error. It has one warning, `each_close_on_cap`,
-which any close rule that reads `all_benign` of an `each` call gets: a reminder that
-a message with more than `max_items` links never closes by rule (see the limit
-below).
-
-- **`use: template:<name>`** names a check of the same organization (`check_missing`
-  when there is none, `check_not_callable` when the record is an alert template).
-- **`args`** are checked against the check's `params`: `missing_arg`, `unknown_arg`
-  and `arg_type_mismatch`. An argument reads the caller's steps, the run's inputs,
-  `alert_time` or a literal. A caller's optional input `$?name` never reaches a check
-  (`bad_reference`): a check's rules only ever see what the template's own steps and
-  the run's own ids give it.
-- **The call waits** for every step its `args` read. When one of them is unknown or
-  was skipped, the check does not run, and the call is unknown with the reason
-  `check_input_unknown` (or `dependency_skipped`, as for any step).
-- `only_if`, `why`, `ask` and `always` work on the call as on any step. `only_if`
-  gates the whole check. `always: true` gathers the check's verdict even after the
-  caller decided, for the case.
-- **Once, or once per element.** Without `each` the call runs the check once. With
-  `each` it runs the check once per element of a list (below).
-- **A call takes no `op`**: `use` and `op` together, a call with `as`, `key` or
-  `max_items` and no `each`, or a malformed name is `bad_check_call`.
-
-### What the caller reads: the verdict, only
-
-A check is a black box: params go in, a verdict comes out. The calling template can
-**not** read the check's steps (`links__landing.final_domain` is `unknown_reference`).
-When the caller also needs a value the check reads, it writes that step itself.
-Identical reads in one run are made once, so the repeat costs nothing, and the author
-of a check is free to restructure it without breaking the templates that call it.
-
-**A call without `each`** has this fact once the check decided:
-
-| Field | The check escalated | The check closed |
-|---|---|---|
-| `malicious` | `true` | `false` |
-| `benign` | `false` | `true` |
-| `outcome` | `escalated` | `closed` |
-| `label` | `true_positive` | `false_positive` |
-| `rule` | the id of the check's deciding rule | the same |
-| `say` | its sentence, with the values filled in | the same |
-| `ai_assisted` | `true` when the deciding rule is [AI-assisted](#the-ai-switch-and-registered-authorizations) | the same |
-| `template`, `version` | the check that ran | the same |
-
-The decision is the check's own, made with the rules of
-[Rules](#rules): an escalate rule decides as soon as it holds; a close rule decides
-once it holds on complete answers and no `never_close_when` blocks it; the first rule
-to hold wins and the decision never moves. A decided call is known and complete, and
-its step is `ok`.
-
-**The check's sentence.** The check rule's `say` may name a step no condition of the
-check reads (`{landing.final_domain}`). The call decides at once, so the caller is
-never delayed by a sentence, and when the caller's deciding rule reads the call (in
-`when` or in its `say`), the engine gathers that step afterwards, as for any
-[sentence](#what-a-sentence-reads). For a call with `each`, that is the elements
-`decided_by.via` lists. `{call.say}` in the caller's sentence, `decided_by.via` and
-the call's narrative then show the sentence with the value; the call's own `say`
-field keeps it as it was when the check decided (a value still to come reads
-`[pending: ...]`). The close check compares a call's decision, never its sentence.
-
-**A check that did not decide is unknown, never false.** This is
-[Unknown is never false](concepts.md#unknown-is-never-false) applied to a call:
-
-| What happened | The call | `reason` |
-|---|---|---|
-| No rule decided and nothing is left to gather | unknown | `check_couldnt_tell` |
-| An escalate and a close rule held together | unknown | `check_conflict` |
-| An input of the check did not answer, or the call was skipped, over budget or cancelled | unknown | `check_input_unknown`, `dependency_skipped`, `only_if_false`, `budget_exceeded` or `cancelled` |
-
-So `not first_link.malicious` is unknown while the check has not decided, and it is
-never a reason to close. When a call stops the caller from deciding, the run's
-`missing` lists the call with its reason and, nested under it, what the check itself
-was missing: its steps, their reasons and the questions for a person (`ask`).
-
-**One call per element: `each`.**
-
-| Key | Meaning |
-|---|---|
-| `each` | A reference to a list, such as `'$message.links'`. A reference that is not a list is `not_an_array`. |
-| `as` | The name the element takes. Read it as `$<name>` in `args` and `key` only. |
-| `max_items` | Required, 1 to 25 (`bad_max_items`). The most elements checked. |
-| `key` | Optional. What identifies an element: the same key runs once, and the key names the element in the run view, the narrative and the case. Without it, the element's position. |
-
-The check runs once per element, each with its own copy of the check's steps. The
-fan-out happens at run time, once the list is known. The call's fact is the sum of
-the elements, with the same rule as everywhere: what is not known is not false.
-
-| Field | Meaning |
-|---|---|
-| `items` | One entry per element, in list order: `key`, `outcome` (`escalated`, `closed`, `couldnt_tell`, `conflict` or `not_run`), `rule`, `say`, `ai_assisted`, `reason`. |
-| `any_malicious` | True as soon as one element escalated: more elements cannot take it back, so it holds on a partial list. False only when `all_benign` is true. Otherwise unknown. |
-| `all_benign` | True only when the list is known, has at most `max_items` distinct keys and every element closed. False when one element escalated. Otherwise unknown. |
-| `malicious_count`, `benign_count` | The counts so far: a lower bound until every element settled, never a total. |
-| `first_malicious` | The first escalated element, `{key, rule, say}`, in list order among those that settled. |
-| `item_count`, `not_run` | The distinct keys in the list, and how many were not run because of `max_items`. |
-
-- **A list longer than `max_items` is incomplete.** A close never holds on it: the
-  elements that did not run are not benign. An escalation on the elements that did
-  run still holds. The run's narrative says so ("10 of 14 links checked: ..., 4 not
-  checked (limit 10)").
-  The warning `each_close_on_cap` is a reminder of this on every close rule that reads
-  `all_benign`.
-- **The first decisive element stops the others.** When `any_malicious` decides the
-  caller, or the caller decides another way, the elements still running are
-  cancelled as no longer relevant, unless the call is `always: true`. An escalation on
-  the first malicious link spares the cost of the other nine.
-- **An element stopped on purpose is not "could not tell".** Its entry in `items`
-  reads `outcome: couldnt_tell` (the five outcomes do not change) with `reason:
-  irrelevant`. The reason is what tells the cases apart: `irrelevant` (nothing needed
-  its verdict any more), `truncated` (past `max_items`, never run), `cancelled` or
-  `budget_exhausted` (the run itself was cancelled or ran out of budget, so the
-  element is "stopped before answering"), or no reason when it ran and could not
-  tell. A call that decided (`any_malicious` true) is `ok` even when other elements
-  were stopped: it is not `check_couldnt_tell`, and the stopped elements are in no
-  `missing` and not in the case's unknowns.
-- **Nesting multiplies.** An `each` call inside a check that is itself called with
-  `each` multiplies. The run may hold at most 50 check instances, counted at the
-  worst case when the template is validated (`check_size_limit`).
-
-### A worked example
-
-The check `url-harm` and the template `mailsec-links` above. An email arrives with
-three links.
-
-1. `message` and `sender_history` gather as usual. Once `message` has answered,
-   `links` runs `url-harm` three times in parallel, one per link, each keyed by the
-   link's URL. Each copy resolves where its link lands.
-2. One link lands on a page that asks for a password. Its copy escalates by
-   `credential_page`, so `links.any_malicious` is true. The caller's `phishing_link`
-   rule decides at once, and the copies still running are cancelled. The run is
-   `escalated_by_rule`, and its sentence reads "A link of this message is malicious:
-   https://… lands on a page that asks for a password."
-3. If all three copies close instead, `links.all_benign` is true and
-   `clean_known_sender` closes the run once the sender has history.
-4. If one copy could not tell (the link was never inspected), its item is
-   `couldnt_tell`. `all_benign` is unknown, so nothing closes, and the run is
-   `couldnt_tell` with that link in `missing`.
-5. A message with 30 links runs 25 of them. If all 25 close, `all_benign` is still
-   unknown, because five links were not checked. The run does not close, and the
-   narrative says "25 of 30 links checked: 25 benign, 5 not checked (limit 25)".
-
-To record the check's verdict of each link on the case, put a `record` on the call
-step. It reads the call's `items`:
-
-```yaml
-  links:
-    use: template:url-harm
-    each: '$message.links'
-    as: link
-    key: '$link.href'
-    max_items: 25
-    args: {link: '$link'}
-    record:
-      kind: entity
-      entity_type: url
-      each: links.items
-      item_key: key
-      outcome_key: outcome
-      outcome_map: {escalated: malicious, closed: benign, couldnt_tell: unknown, conflict: unknown, not_run: unknown}
-```
-
-### The AI switch and registered authorizations
-
-- **The AI switch is the caller's.** [`ai_may_decide`](policies.md#what-the-ai-may-decide)
-  is set for the template a run **starts with**. A key that names a check has no
-  effect (the warning `ai_switch_on_check` on the policy). A rule of the caller that
-  reads a call is **AI-assisted** when the side of the check behind that read has an
-  AI-assisted rule: reading `malicious`, `any_malicious`, `first_malicious`,
-  `malicious_count` or `outcome` rests on the check's escalate rules; reading
-  `benign`, `all_benign` or `benign_count` rests on its close rules and
-  `never_close_when`; reading `items` or `rule` rests on both. The test is strict:
-  a **negated** read (`not links.any_malicious`, which holds because the check
-  closed) rests on the opposite side, and **any comparison** on a call fact rests on
-  either side. A call whose `args` read an AI answer (an `ask_ai` step of the caller)
-  is AI-assisted too, so every rule that reads it is.
-- **The report names the check rules behind each one.** The validation report lists
-  the caller's AI-assisted rules in `ai_rules`, a list of rule ids. A separate field,
-  `ai_rules_via`, maps each AI-assisted caller rule that rests on a check to the check
-  rules behind it, each entry `<call>/<check>/<rule>`: if `url-harm` had an
-  AI-assisted escalate rule `ai_says_phish`, `phishing_link` would map to
-  `["links/url-harm/ai_says_phish"]`. With the switch off, a caller rule whose check rule was
-  AI-assisted only recommends, as any AI-assisted rule does.
-- **A decision that rests on a call never gets a registered authorization.** The
-  [mail guard](#act) reads the caller's own `mailsec.*` steps, never a check's, and a
-  decision that read a call fact is capped at `approve` like any decision without
-  one. The action carries the informational reason `via_check`. The engine's close
-  check re-decides each call from the check's recorded steps, and refuses a close
-  whose logged call it cannot reproduce.
-- **A draft caller stays at `suggest`**, whatever its checks are.
-
-### Versions, and what saving a check does
-
-- **A call names a check, never a version.** There is no pin. A check saved before a
-  run starts is the one that run uses, so saving a check changes every template that
-  calls it, from its next run. That is the point of a check: fix the link logic once.
-- **Each run records the checks it ran** (`checks`: the call, the check's name,
-  version and etag, and its depth). Replay, resume and the close check use what the
-  run recorded and never read the check again, so editing a check does not change
-  what an earlier run decided.
-- **See what a save would break, before you save.** Validating a check with its record
-  `name` (without it, the engine cannot know which record the draft replaces, and the
-  report has no `used_by`) returns `used_by`: every template that calls it, directly or through another
-  check, validated again against your draft, with its status, whether it is still
-  valid and its issues. The console and the authoring tools show "Saving this breaks
-  2 templates". Nothing blocks the save, since a pipeline from a Git repository writes
-  checks and callers together.
-- **A run whose check is missing or invalid is refused**, with `check_missing` or
-  `check_invalid` (the code and path of the check's own problem are nested). An
-  automatic start that is refused is recorded on the organization's **Errors** page
-  like any failed start. Validate the callers after you edit a check.
-- **Limits.** A check calling a check calling a check is the deepest allowed: more
-  than 3 nested calls is `check_depth_limit`. A check that reaches its own name,
-  through any chain, is `check_cycle`. The calls expand to at most 256 steps and 50
-  check instances in all, counted at the worst case (`check_size_limit`). A check's
-  steps count in the run's `max_steps_per_run` and in the AI budget like any step, and
-  the caller's `deadline` covers them.
-
-### How a check shows in runs and cases
-
-- **In a run**, a check is one collapsible node with its outcome badge. Expanded, it
-  shows the check's own steps (a row per element for `each`). The outcome banner
-  shows the chain, from the caller's rule to the call and the check's rule, when the
-  decision rested on a call. See [Console](console.md#a-run).
-- **In the narrative**, the call's **Why** reads `Run the check <name>: <description>`
-  unless you wrote a `why`. **Found** reads `Escalated by <rule>: <sentence>`,
-  `Closed by <rule>: <sentence>` or `Could not tell: <n> step(s) missing` and, for
-  `each`, a count of every kind apart: "1 of 4 links checked: 1 malicious
-  (credential_page), 2 not needed once item `<key>` was malicious, 1 not checked
-  (limit 3)." It says "once rule `<id>` decided the run" when the deciding rule did
-  not rest on this call, and "once stop_when `<expr>` held" in a wave. "Could not
-  tell" counts only elements that ran and could not tell.
-- **In the case**, the caller's decision sentence comes first, then a sentence naming
-  the check. The check's `record` entries are written into the **caller's** case, titled
-  `<check>: <title>`, for the element that wrote them; its telemetry is added only
-  when the decision rested on the call and the check's deciding rule read it.
-- **In the statistics**, a run counts under the template it started with. Filtering
-  runs by template matches the caller only.
-
-### Test a check
-
-`test_plan` takes `params` samples for a check: `{params: {...}, expected: {outcome:
-escalated}}`, where `outcome` is `escalated`, `closed`, `couldnt_tell` or `conflict`.
-The result's `agreement.rule` compares the check's outcome with `expected`. The check's
-own AI-assisted rules decide its verdict in a test, since the switch belongs to its
-callers. Any other kind of sample for a check is `check_not_startable`; a `params`
-sample for an alert template is `bad_request` (`bad_sample`).
-
-For a template that calls checks, each sample lists what every call answered in
-`checks: [{call, template, version, outcome, rule, item_key, reason}]` (`reason`
-`irrelevant` tells an element stopped on purpose from one that could not tell), `verdict.decided_by.via`
-names the calls the deciding rule read, and the summary counts each check rule as
-`<call>/<rule>`: how many samples it decided the call, and how many of the decisions
-that agreed with an analyst rested on it. That count is for information only.
-
-## A complete example
-
-A rare-process detection. A banned binary escalates by rule and proposes host
-isolation. A command the AI judges malicious, on a host that keeps alerting,
-escalates where the policy lets the AI decide, and otherwise recommends. Otherwise
-the AI review recommends.
-
-<!-- validate: template -->
-```yaml
+# investigation_plan/rare-process
 status: draft
 version: 1
-description: "Triage a rare-process detection: a banned binary escalates; a command the AI judges malicious on a host that keeps alerting escalates where the policy lets the AI decide; otherwise one AI review recommends."
+description: "Triage a rare-process detection: a banned binary escalates and isolates the host; a command the AI judges malicious on a host that keeps alerting escalates when the template lets the AI decide; otherwise one AI review recommends."
 applies_to:
   detect_cat: ['rare-process']
 starts_from: detection
+ai_may_decide: escalate
 gather:
   ctx:
     use: detection_context
@@ -1086,6 +72,10 @@ gather:
   spread:
     use: hash_spread
     args: {hash: '$ctx__trigger.hash'}
+  sensor:
+    why: "Is this host a server?"
+    op: sensor.get
+    args: {sid: '$ctx__trigger.sid'}
   banned:
     why: "Is this binary on our banned software list?"
     op: lookup.get
@@ -1108,184 +98,450 @@ ai_review:
   sees: [ctx__trigger, host__card, spread__prevalence]
   needs: [ctx__trigger]
 act:
-  - {class: contain.network, target: '$ctx__trigger.sid', on_rules: [banned_binary]}
+  - do: contain.network
+    target: '$ctx__trigger.sid'
+    on_rules: [banned_binary, judged_malicious_on_noisy_host]
+    approval: {when: '"server" in sensor.tags'}
+    lease: 2h
+    on_lease_end: release
+  - do: tag.add
+    target: '$ctx__trigger.sid'
+    attrs: {tag: 'ie:malicious-process', ttl: 86400}
+    on_rules: [banned_binary]
+    approval: none
 case:
   mode: create
   severity: {escalated_by_rule: high, escalated_by_ai: high, ai_recommends_malicious: high, default: medium}
 ```
 
-Read it this way. `ctx` answers first; `host`, `spread`, `banned` and the question
-wait for the fields of `ctx__trigger` they read, then run in parallel.
-`judged_malicious_on_noisy_host` is AI-assisted: with the policy's AI switch off for
-this template, it only recommends. There is no close rule: a binary seen on many hosts
-is never what closes an alert, so only the review reads the prevalence, and it may
-answer benign only with the detection's own record known.
+Read it this way: `ctx` answers first; `host`, `spread`, `banned` and the AI question wait
+for the fields of `ctx__trigger` they read, then run in parallel. A banned binary escalates
+by rule: the host is isolated on its own for two hours, unless it is tagged `server`, in
+which case a person approves first; it is also tagged for a day. The second rule reads the
+AI's answer, so it is AI-assisted: `ai_may_decide: escalate` lets it escalate. There is no
+close rule: a binary seen on many hosts is never what closes an alert, so only the review
+reads the prevalence, and it recommends.
+
+Top-level keys, exactly: `description`, `version`, `status`, `kind`, `applies_to`,
+`starts_from`, `ai_may_decide`, `coalesce`, `deadline`, `scope`, `trust`, `gather`, `rules`,
+`explain_signals`, `ai_review`, `act`, `hand_off`, `case` (and `params` for a check).
+Unknown keys are errors: a typo is never silently ignored. A template in the engine's
+earlier formats (`facts`, `proofs`, `evidence`, `prior`, `respond`, `report`, ...) is
+refused with `legacy_template_format`.
+
+| Key | Meaning |
+|---|---|
+| `status` | `draft` (the default) or `active`. See [Draft and active](#draft-and-active). |
+| `kind` | `alert` (the default) or `check`. See [Checks](#checks-templates-other-templates-call). |
+| `applies_to` | Which detections pick this template when a start names none. See [How templates are chosen](#how-templates-are-chosen). |
+| `starts_from` | Which ids the run has. See below. |
+| `ai_may_decide` | `off` (default), `escalate` or `close_and_escalate`. See [The AI](#the-ai). |
+| `coalesce` | `sensor` (default: alerts on one sensor join the open run) or `off` (one run per alert). See [The Run Queue](run-queue.md#coalescing). |
+| `deadline` | Caps the run's wall time (`10m`, `2h`); it never loosens the settings' budget. |
+| `scope` | `{from: [step ids]}`: steps that run only once a rule or the AI escalated (who else, what else). |
+| `trust` | Values and lookups your organization maintains as trusted (`{lookups: [...], values: [...]}`). A match skips active analysis of an initial target; it never makes anything benign. |
+| `hand_off` | Hand a run that could not decide to an AI agent. See [Custom Code](custom-code.md#hand-off-to-an-ai-agent). |
+
+## Where a run starts: `starts_from`
+
+A run gets very little from what started it: the id of the thing it was started on, plus
+`alert_time`. `starts_from` says which ids the template reads as `$name`:
+
+| `starts_from` | Inputs |
+|---|---|
+| `detection` | `detection_id` |
+| `message` | `msg_uuid`, `fired_signals`, `detection_id` |
+| `case` | `case_id`, `detection_id` |
+| `none` (default) | none |
+
+**Start from the id and derive everything else with steps.** `detection.get` of
+`$detection_id` gives the category, sensor, hash, command line and time.
+
+Any other value a caller passes (a D&R rule's `inputs`, a console field) is an **optional
+input**, read as `$?name` in a step's `args` only, and null when not given. Rules, conditions
+and `act` entries never read `$?name`: a caller's value never decides an outcome and never
+chooses what is acted on (`bad_reference`). To prefer a caller's value and fall back to the
+derived one, use `plan.pick`: `{op: plan.pick, args: {candidates: ['$?msg_uuid', '$trigger.msg_uuid']}}`.
+
+A run a D&R rule started answers `detection.get` of its own detection, and `event.get` of
+the event the detection was raised on, from the document the rule handed over, with no read
+and no wait (the step says `source: trigger`). Other reads go to storage.
+
+## Gather
+
+A step is one of:
+
+| Form | What it is |
+|---|---|
+| `{op: <operator>, args: {...}}` | One operator call. `limacharlie investigate operators` lists them with their `args` and `output`. |
+| `{use: <pack>, args: {...}}` | A fact pack: a tested bundle of steps, named `<id>__<step>` (`ctx__trigger`). `limacharlie investigate packs --brief` lists them. |
+| `{use: template:<check>, args: {...}}` | A [check](#checks-templates-other-templates-call). |
+| `{op: playbook, args: {name, data, returns}}` | A read-only Playbook. See [Custom Code](custom-code.md#playbook-steps). |
+| `{op: ai_agent, args: {agent, prompt, sees, returns, budget}}` | A read-only AI agent. See [Custom Code](custom-code.md#ai-agent-steps). |
+
+A step also takes:
+
+- `why`: the question it answers, for the person reading the run.
+- `ask`: the question for a person when the step stays unknown (the case's open question).
+- `only_if: '<expression>'`: run it only when the condition is true. A skipped step reads as
+  unknown. The condition can only cost a decision, never make one.
+- `always: true`: gather it for the case even after a rule decided.
+- `deadline: 40s` (op steps, 1s to 5m): how long the call may take. A call that does not
+  answer in time is `unknown(timeout)`; a read that can stop early answers with what it read,
+  incomplete.
+- `record:` what the step puts in the case. See [Case](#case).
+
+**References.** `$name` is a step or an input; `$name.path.to.field` reads into it;
+`$list[0].field` indexes a list. A step that reads another waits for it; steps with no
+dependency start at once. References are checked against the operator's output schema:
+`$sender_history.prior_mesages_30d` is `unknown_field` with the suggestion
+`prior_messages_30d`. Cycles are errors.
+
+**Windows.** `[start, end]`, with bounds such as `-24h`, `+30m` (from the alert), `now`,
+`now-7d`, an RFC 3339 time, or `{at: '$message.received', offset: -2h}`. No window may start
+earlier than now minus 30 days (`window_outside_free_range`: validation refuses, it does not
+clamp).
+
+**Searches.** `search.exists` and `search.rows` take an LCQL `filter`. A value from a step
+never goes into the text: write `:name` in the filter and bind it in
+`params: {name: $step.path}`.
+
+**Actions are never steps** (`action_in_gather`). A step that could change something has no
+place in `gather`: call it from `act`.
+
+## Expressions
+
+Rules, `only_if`, approval conditions and signal explanations use one language: a path, or
+a comparison of paths and literals, combined with `and`, `or`, `not` and parentheses.
+
+```
+sender_history.prior_messages_30d > 0
+message.sender_domain in org.trusted_domains
+judge.label == "yes"
+is_ok(trigger)
+signals.all_explained
+process_event.fields.FILE_PATH glob_nocase 'C:\Users\*\AppData\Local\Temp\*.exe'
+```
+
+- Operators: `== != < <= > >= in`, and the string tests `starts_with`, `ends_with`,
+  `contains`, `glob`, each with a `_nocase` form. `glob` is a path glob (`*` within a path
+  element, `**` across elements), not a regular expression; there is none. Windows paths
+  ignore case: use the `_nocase` forms.
+- `x in list` is true when the list holds `x`. `"/usr/sbin/cron" in lineage.paths` asks
+  "any ancestor" without a loop.
+- `is_ok(step)` is true when the step answered, false when it ran and did not answer.
+- The roots are the steps, the starting inputs and `alert_time`, `signals` and `org`. A
+  rule never reads `ai_review` or a `$?name` input.
+
+## Unknown is never false
+
+A step is **ok** (it answered), **unknown** (it failed, timed out, was not allowed, was
+skipped: it has a `reason`), or **incomplete** (ok, but possibly missing data: truncated,
+index lag, a lower bound). Expressions use three-valued logic:
+
+- A comparison on an unknown step is unknown, never false. `not unknown` is unknown.
+- A rule decides only when its condition is **true**.
+- **An escalate rule reads incomplete answers for what they show**: `count > 0`, `found`,
+  `x in list` hold as soon as the data shows them. A claim of absence (`count == 0`,
+  `not found`) on incomplete data is unknown.
+- **A close rule decides only on complete answers.** A value that is only derived, or a
+  lower bound ("seen on 50+ hosts"), never closes anything. **A close never rests on a step
+  that did not answer**: `not is_ok(x)` can raise or hold up a case, never close one
+  (`close_rests_on_no_answer`).
+- An answer is never more complete than its arguments: a lookup over the keys of a
+  truncated listing is partial too.
+- When no rule decides and nothing relevant is left to gather, the run says so:
+  `couldnt_tell`, with what was missing. That is a good answer when the data is missing.
+
+A sensor tagged `acl:<scope>` shows its content only to the scope's members: a read the run
+key may not make is `unknown(acl_restricted)`. See
+[Permissions](permissions.md#acl-scoped-sensors).
+
+## Rules
+
+```yaml
+rules:
+  escalate:
+    - {id: banned_binary, when: 'banned.found', say: "The binary is on our banned software list."}
+  close:
+    - id: approved_and_signed
+      when: ['approved.found', 'live_file.matches', 'live_file.verified']   # a list is "all of"
+      say: "The binary is on our approved list, and the file on the host is that file, signed and verified."
+  never_close_when:
+    - 'message.stored_credential_harvest'
+```
+
+- `id` is required and unique across both sides (`[a-z_][a-z0-9_]*`). It is what the case,
+  the run, the `act` entries and the test results name.
+- `when` is a string, a list (all of), `{all: [...]}` or `{any: [...]}`, nested as needed.
+- `say` is the sentence the case leads with. `{step.path}` puts a value in; a value not known
+  reads `[unknown: step.path]`. A step only a `say` reads is gathered after the decision and
+  never delays it.
+- `never_close_when` blocks every close while a condition is true or unknown. To keep a case
+  open when a read fails, say so: `never_close_when: ['not is_ok(hash)']`.
+- **An escalate rule decides as soon as it holds**, and gathering stops. A close rule
+  decides once it holds on complete answers and nothing blocks a close.
+- Rules on both sides holding at the first decision is the outcome `conflict`; the case asks
+  a person. A decision is pinned: a rule of the other side that holds later is listed in
+  `verdict.contradicted_by`, never a conflict.
+- The escalate rule whose facts arrived first decides. Other escalate rules that have `act`
+  entries keep being gathered; one that holds is listed in `verdict.also_held` and fires its
+  own entries.
+
+## Signals: `explain_signals`
+
+For alerts that come with reasons (Email Security's fired signals), every reason that fired
+must be answered before anything closes:
+
+```yaml
+explain_signals:
+  ms_sender_first_contact:
+    question: Is this really the first time this sender wrote to the org?
+    malicious_when: 'sender_history.prior_messages_30d == 0'
+    benign_when: 'sender_history.prior_messages_30d > 0'
+```
+
+A fired signal whose `malicious_when` holds blocks every close, and so does one nothing
+explains. `signals.all_explained` is true only when every fired signal has a benign
+explanation that holds. Names are the detection's reason ids with `-` written `_`.
+
+## The AI
+
+**A focused question.** An `ask_ai` step asks one question about what other steps gathered:
+
+```yaml
+  cmd:
+    op: ask_ai
+    args:
+      question: "Is this command line malicious? Answer yes only for explicit malicious behavior, no only for a recognizable benign use, otherwise unclear."
+      sees: [ctx__trigger]
+```
+
+The answer is `label` (`yes`, `no`, `unclear`), a self-rated `confidence` (shown, never
+used), a `rationale` and `evidence_complete` (true when every step it saw was complete).
+Write the question so that yes means the risky reading. A close that must not rest on an AI
+reading partial data requires it: `close: ['judge.label == "no"', judge.evidence_complete]`.
+The AI answers through the `ai_agent` record named by the settings' `llm.agent`.
+
+**The review.** `ai_review` runs only when no rule decided and nothing relevant is left to
+gather. It reads the steps it `sees` and answers malicious, benign or unclear; a benign
+answer counts only when every step it `needs` is known and complete. `act` entries name it
+in `on_rules`.
+
+**What the AI may decide.** A rule that reads an `ask_ai` step (directly or through other
+steps), or an AI agent step, is **AI-assisted** (`validate` lists them in `ai_rules`). It,
+and the review, decide only on the sides the template's `ai_may_decide` allows:
+
+| `ai_may_decide` | The AI |
+|---|---|
+| `off` (default) | only recommends: the outcome is `ai_recommends_malicious` or `ai_recommends_benign`, and the entries that name the rule wait for a person |
+| `escalate` | may escalate (`escalated_by_ai`); a benign answer recommends |
+| `close_and_escalate` | may also close (`closed_by_ai`) |
+
+Only the template says it: no settings field and no run override changes it, and a run
+keeps the value it started with. An action that fires on an AI decision follows its own
+`approval`.
+
+**AI agents.** A step can hand a judgement to one of your AI agents, and a run that could
+not decide can be handed off to one. See [Custom Code and AI Agents](custom-code.md).
+
+## Act
+
+Each entry is one action, the rules that fire it, and whether it waits for a person:
+
+```yaml
+act:
+  - do: contain.network
+    target: '$ctx__trigger.sid'
+    on_rules: [banned_binary]
+    approval: {when: '"server" in sensor.tags'}
+    lease: 2h
+    on_lease_end: release
+  - {do: tag.add, target: '$ctx__trigger.sid', attrs: {tag: 'ie:malicious-process', ttl: 86400}, on_rules: [banned_binary], approval: none}
+  - {do: close.false_positive, on_rules: [approved_and_signed], approval: required}
+```
+
+- `do`: `contain.network`, `contain.seal`, `contain.email`, `tag`, `tag.add`, `tag.remove`,
+  `eradicate.file`, `close.false_positive`, `playbook:<name>` or
+  `extension:<name>/<action>`.
+- `approval` is **required**: `none` (acts on its own), `required` (always waits for a
+  person) or `{when: <condition>}` (waits when the condition holds or is unknown).
+- `lease` (1m to 7d) and `on_lease_end` (`release`, `hold`, or check again) for the actions
+  that hold one. A tag lasts its `attrs.ttl`.
+- `undo` names what reverts a Playbook or extension action.
+- The key is `on_rules`, never `on`: YAML 1.1 parsers read a bare `on:` as `true`.
+
+The full reference, with "check again", the action states, approvals, undo and the audit
+log, is [Actions, Approvals and Undo](actions.md).
+
+## Case
+
+```yaml
+case:
+  mode: create                 # create | none. Stated, it decides for every start; leave it out to follow the settings
+  severity: {escalated_by_rule: high, escalated_by_ai: high, ai_recommends_malicious: high, closed_by_rule: low, default: medium}
+  kind: [phishing]
+  attack: [T1566.002]
+```
+
+- `mode`: a stated `create` or `none` decides for every start that names no case, whatever
+  the settings' `case` says. Left out, the settings decide. A start that names a case writes
+  into it. A close entry with `mode: none` warns `close_entry_without_case`.
+- `severity` is keyed by outcome, plus `default`.
+- The case leads with the outcome sentence (the deciding rule's `say`, or the AI's
+  recommendation and what was missing), then the fired signals, the detections, the
+  evidence (each step a rule or the review read, with its sentence), what stayed unknown, the
+  actions and the open question.
+
+### What a step records
+
+A step's `record:` names what the case shows of it:
+
+```yaml
+  link_landing:
+    op: mailsec.link_resolve
+    args: {links: '$message.links'}
+    record:
+      kind: entity                          # telemetry | entity | artifact
+      entity_type: domain
+      indicator: link_landing.final_domain
+      title: Where the link lands
+      note: "The link lands on {link_landing.final_domain}."
+      malicious_when: 'link_landing.open_redirect'
+      benign_when: 'link_landing.via_tracker'
+```
+
+The verdict is `malicious` when `malicious_when` holds, else `benign` when `benign_when`
+holds, else `unknown`: an unknown never asserts a verdict. With `each`, one entity is written
+per list element (`item_key`, `outcome_key`, `outcome_map`, `absence`, `outcome_notes`). An
+artifact `ref` holds ids only. The engine adds, with no template, the telemetry of the steps a
+rule or the review reads.
+
+## Checks: templates other templates call
+
+A **check** is a template with `kind: check`: `params`, `gather` and `rules`. A template
+calls it as one step, `use: template:<name>`, and reads one fact from it: the check's
+verdict. Write a check for logic several templates repeat, and for
+[protected hosts](actions.md#approval) or ["check again"](actions.md#check-again-the-automatic-rollback-of-a-false-positive).
+
+```yaml
+# investigation_plan/host-is-protected
+kind: check
+description: "Is this host one we never isolate without a person?"
+params:
+  sid: {type: string, required: true, description: "The sensor."}
+gather:
+  host:
+    op: sensor.get
+    args: {sid: $sid}
+  listed:
+    op: lookup.get
+    args: {name: protected-hosts, keys: ['$host.hostname']}
+rules:
+  escalate:
+    - {id: tagged_protected, when: '"protected" in host.tags', say: "The host is tagged protected."}
+    - {id: listed_protected, when: 'listed.found', say: "{host.hostname} is on the protected hosts list."}
+  close:
+    - {id: not_protected, when: ['not "protected" in host.tags', 'not listed.found'], say: "The host is neither tagged nor listed as protected."}
+```
+
+A calling template reads `protected.malicious`: an approval condition
+`{when: 'protected.malicious'}` waits for a person while the check has not decided (unknown
+waits). In a check, "escalated" means the condition the check tests holds.
+
+- **A check never acts and never shapes the case.** It may not have `applies_to`,
+  `starts_from`, `act`, `case`, `ai_review`, `explain_signals`, `scope`, `deadline`, `trust`,
+  `ai_may_decide`, `coalesce` or `hand_off` (`check_forbidden_key`).
+- **The call's fact**: `malicious`, `benign`, `outcome` (`escalated` or `closed`), `label`,
+  `rule`, `say`, `ai_assisted`, `template`, `version`. Known only once the check decided;
+  otherwise unknown, never false: `not x.malicious` is never a reason to close.
+- **A check is a black box.** A caller cannot read its steps.
+- **One call per element**: `each: '$message.links'`, `as: link`, `key: '$link.href'`,
+  `max_items` (1 to 25, required). The fact then has `items`, `any_malicious`, `all_benign`,
+  counts and `first_malicious`.
+- **Versions.** A call names a check by record name: a saved check takes effect on the next
+  run of every caller. `validate` with the check's name returns `used_by`, each caller
+  validated against your draft. At most 3 nested calls, 256 steps and 50 check instances per
+  run.
+- A check is never started on its own (`check_not_startable`). Test it with `params`
+  samples.
 
 ## How templates are chosen
 
-A run names its template, or the engine picks one. A run **with no person** (a D&R
-rule) that names no template gets the **active** template whose `applies_to` matches
-the trigger. A person who starts a run from the console on a detection or a case gets
-the same automatic choice. A person's start through the API is matched on the
-request's own `trigger`, so it must carry the detection's `category` (and `tags` or
-`severity` when `applies_to` uses them): without a category, no `detect_cat` matches,
-not even `*`.
+A start that names no template (a D&R rule without `template`, the console's Investigate on
+a detection) gets the **active** template whose `applies_to` matches:
 
-| `applies_to` key | Matches |
+| Key | Matches |
 |---|---|
-| `detect_cat` | The detection's category. |
-| `rule` | The D&R rule, written `general.<rule record name>`. A bare record name never matches. |
-| `severity` | The case severity, or the severity a person's start carries. A rule on a detection never sends one. |
-| `tag` | Any of the trigger's tags. For a D&R rule these are the rule record's tags. |
-| `source` | `api` (a person or a script), `dr-rule` (a rule on a detection) or `case` (a rule on a case). |
+| `detect_cat` | the detection's category |
+| `rule` | the D&R rule, **namespaced**: `general.<record name>` |
+| `tag` | any of the rule's or the case's tags |
+| `severity` | the case's severity (a rule on a detection sends none) |
+| `source` | `dr-rule`, `case` or `api` |
 
-Values are exact (case-insensitive) or `*` globs (`lolbin-*`). A template matches
-when **every** key it lists matches. With several matches, the one that lists more
-keys wins, then the one with more exact (non-glob) values, then the lower name. If
-none matches, the start is refused with a message that names what was tried. A
-template with no `applies_to` is never chosen automatically; it can still be named.
+Values are exact (case-insensitive) or `*` globs. Every key the template lists must match.
+When several active templates match, the one that lists more keys wins, then the one with
+more exact values, then the lower name (warning `applies_to_tie`). A template without
+`applies_to` is never chosen automatically. The run records why it got its template
+(`template_selection`), and
+
+```bash
+limacharlie api "investigate/$OID/templates/coverage?category=rare-process&source=dr-rule" --oid "$OID"
+```
+
+shows which template a trigger picks (`as_active=<draft>` previews a draft taking over).
 
 ## Validate
 
-Validation type-checks a template against your organization's operator catalog:
-operators, argument types, every reference and expression path, and the free time
-range. Every issue has a stable `code`, a `path`, a message and often a `suggestion`
-that is the replacement to type.
-
-```text
-errors:
-  - code: window_outside_free_range
-    path: gather.related.args.window
-    message: window starts earlier than 30 days ago: searches must stay inside the free time range
-  - code: unknown_field
-    path: rules.escalate[0].when
-    message: 'spread__prevalence.hosts_30: the fact has no field "hosts_30" (did you mean "hosts_30d"?)'
-    suggestion: hosts_30d
+```bash
+limacharlie investigate templates validate --file plan.yaml --oid "$OID"
 ```
 
-**Errors** make a template invalid. **Warnings** do not, and are what to fix next:
-they are the mistakes that pass validation but make a template useless. The most
-useful ones are below; the authoring kit returns the complete list as `codes`.
+The report has `valid`, `errors` and `warnings` (each with a stable `code`, a `path`, a
+message and often a `suggestion`), `ai_rules`, an `estimate` of the worst-case cost, and per
+`act` entry its `do`, `approval`, lease and `acts_alone_possible`. Fix the errors, then the
+warnings: they are the mistakes that pass validation but make a template useless. Every code
+is listed with its fix in the kit (`limacharlie investigate kit --section codes`), and the
+common ones in [Troubleshooting](troubleshooting.md#a-template-is-refused-when-you-save-or-validate-it).
 
-| Code | Meaning |
-|---|---|
-| `legacy_template_format` | The template is in the earlier format. Rewrite it in this one. |
-| `unknown_reference` | A reference names something that is neither a step nor an input of the starting point. Derive it with a step, or read a caller's value as `$?name` in a step's args. |
-| `unknown_field` | A reference reads a field the operator does not return. The suggestion is the field you probably meant. |
-| `window_outside_free_range` | A search window starts earlier than 30 days ago. |
-| `no_verdict_path` | No rule and no `ai_review`: the template can never decide or recommend. |
-| `unknown_rule` | An `act` entry's `on_rules` names a rule the template does not have. |
-| `bad_record_kind`, `entity_needs_indicator` | A step's `record` has a kind other than `telemetry`, `entity` or `artifact`, or an entity with neither `indicator` nor `each`. |
-| `reads_review` | A rule, a condition or a step reads `ai_review`. |
-| `unused_step` | A step nothing reads, and not `always`. It only costs a step. |
-| `record_only_step` | A step only its `record:` reads: nothing gathers it, so it is cancelled and records nothing. Mark it `always: true`. |
-| `operator_denied` | Your policy does not allow the operator, so the step is always unknown. |
-| `rule_never_holds` | A rule reads a step that is always unknown. |
-| `contradictory_rules` | A rule that can never be true, or an escalate rule and a close rule that always hold together (the same conditions, or all of one rule's conditions also required by the other). Rules that only share a condition are not flagged. |
-| `say_step_never_gathered` | A step that only rules' sentences (`say`) read can never be gathered when those rules hold, because its `only_if` excludes what the rule requires: the sentence would always show `[unknown: ...]`. |
-| `reserved_name` | A step or a check param uses a [reserved name](#a-check) (`ai_review`, `alert_time`, `is_ok`, `now`, `org`, `p`, `signals`, `verdict`), or a param shares a step's name. |
-| `signal_missing_explanation` | A signal lacks its `benign_when` or `malicious_when`. |
-| `act_class_off` | The policy has this action class `off`; it is never proposed. |
-| `auto_tag_permanent` | A `tag` or `tag.add` entry has no `ttl`: a tag holds no lease, so it stays on the sensor until someone removes it. Set `attrs.ttl`. |
-| `bad_check_call`, `check_missing`, `check_not_callable`, `check_invalid` | A [check](#checks-templates-other-templates-call) call is malformed, names no check or an alert template, or the check fails its own validation (the message starts with the check's own code). |
-| `check_forbidden_key`, `params_on_alert` | A check has a key only an alert template may have, or an alert template has `params`. |
-| `check_not_startable` | A check is named where a template that starts a run is expected (start a run, an automatic source, a policy's template choice, a D&R `start investigation`, a test with no `params` sample). Name the template that calls it. |
-| `check_cycle`, `check_depth_limit`, `check_size_limit`, `bad_max_items` | Checks that call themselves, nest more than 3 deep, expand past 256 steps or 50 instances, or an `each` call whose `max_items` is not 1 to 25. |
-| `check_is_draft`, `check_never_benign`, `check_param_unused`, `each_close_on_cap` | Warnings: an active template calls a draft check; a rule reads `benign` of a check with no close rule; a param nothing reads; a close rule reads `all_benign` of an `each` call (a longer list never closes). |
-| `applies_to_never_matches` | An `applies_to` key a D&R rule cannot match. |
-| `budget_exceeded` | The worst case does not fit your policy's budgets. |
-
-The validation report also has `ai_rules`, the ids of the AI-assisted rules, and an
-`estimate` of the worst case of one run: the number of steps, search steps, AI steps,
-billed steps, the longest chain of step deadlines in seconds, and which policy budgets
-it would exceed. A check's steps are counted, and an `each` call counts at its
-`max_items`. For a template that calls checks, `ai_rules_via` names the check rules
-behind each AI-assisted rule; for a check validated with its record name,
-`used_by` lists the templates that call it, validated against your draft (see
-[Versions](#versions-and-what-saving-a-check-does)).
-
-Validation, `used_by` and the other reads you use while authoring (the template list,
-the operators, the effective policy, the packs and the authoring kit) **see what you
-just saved**: a parent template validated a second after its check was saved sees the
-new check, not the copy cached before the save. An organization's first fact pack is
-seen by the next read too. The engine confirms this by comparing the versions of your
-records with the ones its cached copy was built from, and that comparison has a
-2-second limit: if the Hive does not answer within it, the read serves the cached copy
-instead of waiting, and the copy is refreshed at the latest within five minutes. If a
-read right after a save shows the old record, read again.
+The Hive validates the same shapes when a record is saved, so a record one side accepts is
+not refused by the other.
 
 ## Test on past alerts
 
-Testing runs a template for real, **read-only**, on past alerts, and shows how it
-would have done. Nothing is written: no run, no case, no feedback label, no action,
-no audit event. The only thing kept is the test result itself, for 24 hours.
+```bash
+limacharlie investigate templates test --file plan.yaml --detect-cat rare-process --last 10 --oid "$OID"
+```
 
-A test takes a stored template (draft or active) or a template you paste, and up to
-**25 samples**, each one of:
+A test runs the template for real, **read only**, with your own token, on past detections
+(`--detection-id`), cases (`--case-id`), the newest alerts of a category
+(`--detect-cat ... --last N`, N at most 25) or free inputs. Nothing is written: no run, no
+case, no action. Per sample it says which rule decided (or what the AI recommended), what
+stayed unknown and why, the cost, the actions it `would_propose` (with whether each would
+wait for a person), and, for a closed case, whether the rule agreed with your analysts. The
+`summary` counts per rule how many samples it decided and how many of those agree or
+disagree.
 
-| Sample | Meaning |
-|---|---|
-| `{detection_id}` | One past detection. |
-| `{case_id}` | A case; the run gets its first detection, and the case's classification is the expected label. |
-| `{detect_cat, last: N}` | The newest N stored detections of that category in the free time range (N up to 25). |
-| `{inputs: {...}, expected: ...}` | Free run inputs, with an optional expected label. |
-| `{params: {...}, expected: {outcome: ...}}` | Only for a [check](#test-a-check): the call's arguments and the outcome you expect. |
+Read it in this order: the validation, the summary, each `disagree` (tighten that rule),
+then the undecided samples. A test never reads the pause or the circuit breaker, starts no
+AI agent session, and counts against your organization's parallel runs.
 
-Pick a mix: some detections whose cases were classified true positive, some false
-positive, some with no case.
-
-A test runs **as you**, with your token and your permissions, whatever identity the
-policy configures for real runs. It is forced to autonomy `suggest`, no case, and
-never calls `extension.request` (those steps stay unknown with the reason
-`policy_denied`). It counts against your organization's concurrent run cap.
-
-For each sample you get:
-
-- `verdict`: the outcome, `decided_by` (`kind` and `rule`), `also_held`,
-  `contradicted_by`, the AI's `recommendation`, `missing` and `unknowns`. A test result carries no rendered
-  sentences: `decided_by` has no `say` and the recommendation no `rationale`;
-- the steps with status, reason and timing, the `cost` and the time;
-- the actions the template **would** propose, by target reference only;
-- when the detection belongs to a closed case that an analyst classified:
-  `expected` (`label`, `source`, `case_id`) and `agreement`. `agreement.rule` is
-  `agree`, `disagree` or `none` (no rule decided); `agreement.ai` is `agree`,
-  `disagree`, `unclear` or `none` (no recommendation).
-
-The `summary` gives:
-
-| Field | Meaning |
-|---|---|
-| `decided_by_rules` | How many samples a rule decided. |
-| `rules.<rule id>` | For each rule, how many samples it `decided`, and how many of those `agree` or `disagree` with the analysts. |
-| `ai` | On the samples no rule decided, how the AI's recommendation fared: `recommended`, `agree`, `disagree`, `unclear`. |
-| `by_outcome` | Samples per outcome. |
-| `unknown_reasons` | The most frequent reasons steps stayed unknown. |
-| `cost_per_sample`, `wall_ms` | Steps, AI cost and time per sample; time percentiles. |
-| `expected_complete` | `false` when the engine could not read every closed case (it looks at the newest 100): a sample without `expected` may still have a case. |
-
-**These numbers are informational.** Nothing at run time reads them, and nothing
-waits for them before a template is made active or the AI may decide.
-
-| You see | It usually means | Do |
-|---|---|---|
-| Steps unknown, reason `llm_agent_not_found` | No AI agent is set for the run. | Set `llm.agent` in the `default` policy, or create the `investigation-judge` record. |
-| Many `couldnt_tell`, reason `not_found` or `forbidden` | The sample's data is not readable by you, or a step reads the wrong field. | Check the sample, then the step's args. |
-| Many `couldnt_tell`, reason `index_lag` or `truncated` | A claim of absence on incomplete data. | Prefer a positive condition, or end the window before the last few minutes. |
-| A rule with `disagree` | The rule is too eager. | Read the samples it decided and tighten its condition. |
-| Most samples decided by the AI, few by rules | The rules miss the deciding fact. | Add a rule on that fact, often a Lookup of your own. |
-| High `wall_ms` or step count | Too many scans or AI questions. | Drop steps nothing reads, add `only_if`. |
+After a template is live, `compare` replays an edit against finished runs offline (recorded
+facts only, no call): see [API Reference](api-reference.md#templates-and-authoring).
 
 ## Draft and active
 
-New templates, and everything written by an AI agent, are **drafts**. A draft:
+- **A draft only suggests.** It runs only through a test or a run a person starts, and its
+  actions are recorded `suggested`: never executed, never approvable. A D&R rule never starts
+  a draft (`template_draft`).
+- **Making a template active is the permission to act.** An active template does what its
+  `act` entries say, within the pause, the circuit breaker and its key's permissions.
+- `templates save` always writes a draft. A person promotes it: `templates promote <name>
+  --confirm`, or `save --status active`. An AI agent saves drafts and never promotes. An API
+  key can write an active template only when the settings record is tagged
+  `allow-api-key-promotion`.
+- A run pins the template's version when it starts. A run whose template is no longer the
+  active one it pinned only suggests.
 
-- runs only through a test or a run a person starts;
-- is capped at `suggest` for every action class, and says so in the run's
-  `policy.clamped`;
-- cannot be started by a D&R rule, and is never picked by `applies_to`.
-
-A person **makes a template active** with **Make active** on the template's page in
-the console, or by setting `status: active` in the Hive record. Read what was tested
-first. Making a template active does not change the policy: an active template still only does what
-[the policy](policies.md) allows, and the AI still only recommends until someone turns
-on [AI may decide](policies.md#what-the-ai-may-decide) for it.
+Permissions: saving needs `investigation_plan.set` (reading `investigation_plan.get`).
+Validating and testing need only `investigation.get` / `investigation.set` and store nothing.
