@@ -262,10 +262,11 @@ actions per call):
 ```bash
 curl -s -X POST "$API/investigate/$OID/actions/automatic/undo" \
   -H "Authorization: Bearer $LC_JWT" -H "Content-Type: application/json" \
-  -d '{"ids": ["<action id>", "<action id>"]}'
+  -d '{"ids": ["<action id>", "<action id>"], "was_engine_wrong": false}'
 ```
 
-Each result says its own state. Every undo, approval and denial is an entry in the
+`was_engine_wrong` is required: `false` is a plain undo, `true` records that the engine
+was wrong (a person signed in as a user only). Each result says its own state. Every undo, approval and denial is an entry in the
 organization's audit log, filed under who decided it. See
 [Actions, Approvals and Undo](actions.md).
 

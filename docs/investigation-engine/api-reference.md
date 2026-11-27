@@ -144,8 +144,7 @@ you need the finished case.
 | `POST /runs/{id}/actions/{aid}/{verb}` | write + the action's permission | `approve`, `deny`, `revert`, `extend` or `confirm`. Body: `note` (deny, revert), `seconds` (extend). Answers with the action. |
 | `GET /actions/automatic` | read | The log of what the engine did on its own. |
 | `GET /actions/automatic/{aid}` | read | One entry. |
-| `POST /actions/automatic/undo` | write + each action's permission | Bulk undo: `ids` (1 to 100), per-item `items`, or a `selector` (needs `investigation_policy.set`). Per-item results. |
-| `POST /actions/automatic/{aid}/undo` | write + the action's permission | Undo one. Body `run_id`. |
+| `POST /actions/automatic/undo` | write + each action's permission | Bulk undo: `ids` (1 to 100) with `was_engine_wrong`, per-item `items` (each with its own `was_engine_wrong`), or a `selector` with `was_engine_wrong` (needs `investigation_policy.set`). Per-item results. To undo one action, send one id here, or use `POST /runs/{id}/actions/{aid}/revert`. |
 
 States, reasons, eligibility and the audit entries are in
 [Actions, Approvals and Undo](actions.md).

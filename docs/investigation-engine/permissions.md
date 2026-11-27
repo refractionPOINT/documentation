@@ -170,13 +170,13 @@ the same template needs the same permissions in every organization. It adds up:
 | `lookup.get` | Your Lookups, including the trust lists. |
 | `mailsec.act` | `contain.email`: quarantining a message and releasing it. |
 | `mailsec.detonate` | Requesting a link detonation. |
-| `mailsec.get` | Every Email Security read, the quarantine, the quarantine and the message close. |
+| `mailsec.get` | Every Email Security read, the quarantine and the message close. |
 | `mailsec.set` | Closing a message as a false positive, and undoing it. |
 | `output.set` | The answer stream of live sensor reads (`sensor.read.*`) and of file eradication. |
 | `sensor.get` | Sensor records: host state before isolation or tagging. |
 | `sensor.list` | The sensor roster (`org.roster`). |
 | `sensor.tag` | `tag`, `tag.add`, `tag.remove`. |
-| `sensor.task` | `contain.network` (isolating a sensor and releasing it), file eradication and the live sensor reads. |
+| `sensor.task` | `contain.network` (isolating a sensor and releasing it), `contain.seal`, file eradication and the live sensor reads. |
 
 For the default library, a template's key needs:
 

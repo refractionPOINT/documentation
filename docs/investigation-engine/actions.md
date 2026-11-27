@@ -218,7 +218,7 @@ case:
 | `tag`, `tag.add` | Adds a sensor tag for `attrs.ttl` seconds (or until removed) | no | `sensor.tag`, `sensor.get` |
 | `tag.remove` | Removes a sensor tag (irreversible) | no | `sensor.tag`, `sensor.get` |
 | `eradicate.file` | Deletes a file on the sensor (irreversible) | no | `sensor.task`, `output.set`, `sensor.get` |
-| `close.false_positive` | Closes the run's case (and the message the run started from) as a false positive | no | `investigation.get`, `investigation.set` (`mailsec.set` for a message) |
+| `close.false_positive` | Closes the run's case (and the message the run started from) as a false positive | no | `investigation.get`, `investigation.set`, `insight.det.get` (`mailsec.get`, `mailsec.set` for a message) |
 | `playbook:<name>` | Runs a Python Playbook | with `undo` | `ext.request`, `playbook.get` |
 | `extension:<name>/<action>` | Sends one extension request | with `undo` | `ext.request` and what the extension needs |
 
@@ -300,8 +300,13 @@ The log of automatic actions, and a bulk undo:
 curl -s "$API/investigate/$OID/actions/automatic?limit=50" -H "Authorization: Bearer $LC_JWT"
 curl -s -X POST "$API/investigate/$OID/actions/automatic/undo" \
   -H "Authorization: Bearer $LC_JWT" -H "Content-Type: application/json" \
-  -d '{"ids": ["<action id>", "<action id>"]}'
+  -d '{"ids": ["<action id>", "<action id>"], "was_engine_wrong": false}'
 ```
+
+`was_engine_wrong` is required with `ids` and with a selector. `false` is a plain undo (you
+changed your mind, the action is no longer needed). `true` records that the engine was wrong
+about the alert; it needs a person signed in as a user, and it is what the stats count as
+wrong. With per-item `items`, each item carries its own answer.
 
 A bulk undo takes 1 to 100 explicit ids, or a selector: `route_id` (the
 `decision_route.id` each run and automatic action shows) with an inclusive `from` and an

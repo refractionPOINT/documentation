@@ -470,7 +470,8 @@ hives:
   checks and packs (`.del` for removals; grant the matching `.set.mtd` permissions too if your
   pipeline changes a record's metadata, such as its tags, on its own), and read access to every secret the settings name
   (`secret.get` or `secret.get.<name>`): the Hive refuses a settings write that introduces a
-  `hive://secret/<name>` the writer cannot read. Git Sync does not bypass permissions.
+  `hive://secret/<name>` the writer cannot read (the secret must exist, and the key must be
+  inside its ACL scope). Git Sync does not bypass permissions.
 - **Validate before you push.** `limacharlie investigate templates validate --file <file>`
   checks a template, and `limacharlie hive validate --hive-name investigation_policy --key
   default --input-file <file>` the settings. A record the Hive refuses stops the apply at that
