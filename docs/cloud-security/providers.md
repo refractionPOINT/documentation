@@ -317,13 +317,19 @@ sweeps**:
   sweep fails later, before it finishes, the next sweep that misses the
   resource still keeps it and records a fresh miss instead of removing it.
 
-In practice, a resource you delete in the cloud leaves Cloud Security inventory
-**one sweep later** than its deletion is first observed, and its findings close
-one sweep later. A targeted refresh (for example after a GCP change-feed event)
+In practice, a resource you delete in the cloud usually leaves Cloud Security
+inventory **one sweep later** than its deletion is first observed, and its
+findings close one sweep later. A targeted refresh (for example after a GCP change-feed event)
 counts as a sweep for the account it reads: it records the first miss, and the
 resource is removed by the next complete read of that account (the next
 targeted refresh of it, or the next periodic sweep).
 
-Two connections that cover the same account, or two sweeps of the same account
-that run at the same time, may remove a resource on its first miss, as if the
-two-sweep rule did not apply.
+The two-sweep rule covers sweeps that run one at a time. Two connections that
+cover the same account, or two sweeps of the same account that run at the same
+time, may remove a resource on its first miss, as if the rule did not apply.
+They never remove a resource that a sweep did not miss.
+
+On a free-tier organization, AWS resources are removed on their first miss.
+The free tier counts the resources Cloud Security stores, and a resource kept
+for one more sweep would still count. Replacing a resource at the free-tier
+limit would then be refused on every sweep.
