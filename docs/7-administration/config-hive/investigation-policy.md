@@ -1,177 +1,115 @@
-# Investigation Action Policies
+# Investigation Engine Settings Record
 
-An `investigation_policy` Hive record controls whether the Investigation Engine proposes, requests approval for, or automatically performs an action. The `autonomy` section is the action control.
+!!! warning "Experimental"
+    The [Investigation Engine](../../investigation-engine/index.md) is experimental and
+    reachable only where it has been enabled for your organization.
 
-The policy record is the only thing that decides what the engine may do. Each action class has a mode (`off`, `suggest`, `approve` or `auto`) and limits, and the engine follows them. Nothing pauses, samples or promotes an action behind your back, and no history or score changes a decision. To pause everything, save the [`autonomy-manual-pause` record](#emergency-pause-and-resume). Actions that support undo (`undo_supported`) keep it, and every action keeps its audit trail.
+The `investigation_policy` hive holds the Investigation Engine's settings for an
+organization: **one record, named `default`**. A write to any other record name is refused
+(`policy_record_name`). New records default to enabled; the engine reads only an enabled
+record.
 
-!!! note "Version support"
-    This guide describes the policy-controlled actions interface. If the interface reports `upgrade_required`, upgrade support is needed before using these controls. SDK and CLI availability depends on the installed release; the YAML and public API names here do not imply that corresponding SDK methods or CLI commands are available in every released version.
+The record holds only what belongs to no single template. What an action does, whether it
+acts on its own or waits for a person, its lease and what happens when the lease ends, and
+whether the AI may decide are written in each
+[template](../../investigation-engine/templates.md#act), never here. How each setting
+behaves is explained on the [Settings](../../investigation-engine/settings.md) page.
 
-## Choose an action mode
-
-| Mode | Behavior |
-|------|----------|
-| `off` | Creates no proposal for the action. |
-| `suggest` | Records what the engine would do, without changing the product. Use this for a dry run. |
-| `approve` | Requires an authorized explicit approval before the approval deadline. |
-| `auto` | Runs automatically when the effective policy, confidence, limits, permissions, evidence and target checks allow it. The engine holds an action as a suggestion when a limit, permission, evidence or target check does not pass, or when the approver lists leave nobody (`policy_no_approvers`). |
-
-There is no label-count requirement or separate route graduation, enablement or demotion step. Investigation intake settings decide what to investigate; they do not grant automatic action authority. Draft, shadow and test execution contexts remain read-only.
-
-## Start with a visible policy
-
-The following is the action section of the starter policy. It is the `data` of the `default` record in the `investigation_policy` hive. The record name is supplied separately, not as a YAML field. Merge this section into your existing policy while preserving identity, budgets, triggers, intake and other settings.
+## Example
 
 ```yaml
-autonomy:
-  close.false_positive:
-    mode: suggest
-    min_confidence: 0.90
-    max_targets_per_run: 3
-    max_targets_per_hour: 50
-    lease: 2h
-    approval_timeout: 15m
-  eradicate.*:
-    mode: approve
-  tag.remove:
-    mode: approve
+# investigation_policy/default
+paused: false
+circuit_breaker:
+  per_hour: 20
+  per_run: 5
+identity:
+  default: hive://secret/ie-runner
+  allow: [caller, hive://secret/ie-runner]
+notify:
+  action.needs_approval: [output:soc-slack]
+  action.held: [output:soc-slack]
+llm:
+  agent: soc-agent
+limits:
+  max_parallel_runs: 100
+budgets:
+  max_wall_seconds: 600
+  max_steps_per_run: 200
+  max_llm_usd_per_run: 0.5
+  max_agent_usd_per_run: 5.0
+  lookback_days: 30
+case: create
+speculation: {low: conservative, medium: balanced, high: aggressive, critical: aggressive}
 ```
 
-Starter content does not overwrite an installed policy. The explicit `approve` entries govern eradication and tag removal; check `undo_supported` before approving any action, since some operations have no undo.
+## Fields
 
-To allow automatic false-positive closes, deliberately change the governing `close.false_positive` mode to `auto` after reviewing the proposed actions, permissions and the matching policy records.
+| Field | Type, range | Default | Meaning |
+|---|---|---|---|
+| `paused` | boolean | `false` | Emergency stop: while true nothing acts alone; every action that would act alone waits for a person. Approvals, undos, lease ends and lease checks still work. |
+| `circuit_breaker.per_hour` | integer, 1 to 10000 | 20 | Automatic containment-family executions of the organization in a sliding hour; over it an action waits for a person. |
+| `circuit_breaker.per_run` | integer, 1 to 1000 | 5 | The same, inside one run. |
+| `identity.default` | `caller` or `hive://secret/<name>` | none | The identity runs execute as. A run started by a D&R rule or a case needs a secret holding an organization API key. |
+| `identity.allow` | list of the same | none | Identities a person's start may ask for instead. |
+| `identity.templates.<template>.default` | `caller` or `hive://secret/<name>` | none | The identity one template's runs use. |
+| `notify.<event>` | list of `output:<name>` | none | Destinations per event: `run.decided`, `action.needs_approval`, `action.held`, `action.executed`, `action.reverted`, `run.completed` (aliases `decided`, `approval_needed`). |
+| `llm.agent` | `ai_agent` record name | none | The AI agent that answers `ask_ai` steps and the AI review. |
+| `limits.max_parallel_runs` | integer, 1 to 2000 | 100 | Runs executing at once, region-wide; the rest wait in the run queue. |
+| `limits.runs_per_hour` | integer, at least 1 | none (no cap) | Runs that may start in a UTC clock hour; above it a start is recorded `capped`. |
+| `budgets.max_wall_seconds` | integer, not negative | 600 | A run's wall time. |
+| `budgets.max_steps_per_run` | integer, not negative | 200 | Steps per run. |
+| `budgets.max_llm_usd_per_run` | number, 0 or more | 0.5 | AI questions and the review, US dollars. |
+| `budgets.max_agent_usd_per_run` | number, 0 to 1000 | 5.0 | AI agent steps and hand-off of one run, US dollars. |
+| `budgets.search_slot_share` | number, above 0, at most 1 | 0.5 | Share of the organization's concurrent LCQL slots the engine may hold. |
+| `budgets.lookback_days` | integer, 1 to 30 | 30 | The free search range. |
+| `case` | `create` or `none` | `create` | Default case mode for templates that state no `case.mode`. |
+| `speculation.<urgency>` | `conservative`, `balanced` or `aggressive` per `low`, `medium`, `high`, `critical` | as in the example | How eagerly the engine starts steps before they are known to be needed. |
 
-### Fields and defaults
+Validation is strict and case-sensitive: an unknown or misspelled key is refused, never
+dropped. Introducing a `hive://secret/<name>` reference the stored record does not hold yet
+requires the writer to be able to read that secret.
 
-Defaults below apply only after all matching policy entries have been combined.
+## Removed fields
 
-| Field | Accepted value | Default when unresolved |
-|-------|----------------|-------------------------|
-| `mode` | `off`, `suggest`, `approve`, `auto` | `suggest` |
-| `min_confidence` | Number from 0 through 1 | `0.85` |
-| `max_targets_per_run` | Positive integer, at most 2147483647 | 3 for containment/eradication; otherwise unlimited |
-| `max_targets_per_hour` | Positive integer, at most 2147483647 | 10 for containment/eradication; otherwise unlimited |
-| `lease` | Positive duration | `2h` |
-| `approval_timeout` | Positive duration | `15m` |
-| `approvers` | Distinct principal/group identifiers, such as `group:soc-leads` | Any ordinarily authorized approver |
+| Removed | Replaced by |
+|---|---|
+| `autonomy`, `match`, `operators`, `ai_may_decide`, `automation_routes`, `auto_investigation`, `triggers`, `decision` | The template: each `act` entry's `approval`, `lease` and `on_lease_end`, and its top-level `ai_may_decide`. Starts come from D&R rules (`start investigation`). |
+| `budgets.max_concurrent_runs` | `limits.max_parallel_runs` |
+| Other records of the hive (for example `autonomy-manual-pause`) | The `paused` field of `default` |
 
-Author caps as positive integers. `approvers: []` explicitly permits nobody. It does not restore unrestricted approval. Identifiers must be nonempty, contain no whitespace/control characters and fit within 256 UTF-8 bytes.
+A write that carries a removed field is refused (`policy_unknown_field`, the message names
+what replaced it). A stored record that still carries a section of the earlier format is
+rejected by the engine (it keeps its last good copy, or runs the organization paused with
+no identity) until it is rewritten. A stored record that still carries
+`budgets.max_concurrent_runs` keeps working without it, with the warning
+`settings_field_ignored`.
 
-Supported concrete classes are `close.false_positive`, `contain.network`, `contain.process`, `contain.identity`, `contain.email`, `contain.seal`, `tag`, `tag.add`, `tag.remove`, `eradicate.process`, `eradicate.file`, `collect.memory`, `collect.file` and `collect.artifact`. Patterns such as `*`, `contain.*` and `eradicate.*` match supported classes; matching a pattern does not create a new operation.
+## Tags
 
-### How multiple records combine
+Tagging the enabled `default` record `allow-api-key-promotion` lets API keys write
+`status: active` templates and write fact packs. Without the tag only a person can promote
+a template or write a pack. An
+infrastructure-as-code pipeline that writes active templates with an API key (Git Sync,
+for example) needs the tag; it is a deliberate choice: whoever holds that key can then make
+a template act.
 
-Every applicable entry contributes restrictions. The lowest mode wins in the order `off`, `suggest`, `approve`, `auto`; confidence uses the highest minimum; positive target caps, lease and approval timeout use the lowest value. Present approver lists intersect. An empty approver intersection limits the effective mode to at most `suggest`, with reason `policy_no_approvers`.
+## Permissions
 
-A named record cannot loosen a matching restriction from `default`. For example, adding `mode: auto` to a named record will not override `mode: suggest` in a matching default entry. Review the `investigation_policy` records that match the run to find the restriction to edit.
+| Permission | Allows |
+|---|---|
+| `investigation_policy.get` | Read the record |
+| `investigation_policy.set` | Write it, including the identity runs execute as and the pause |
+| `investigation_policy.del` | Delete it |
+| `investigation_policy.get.mtd`, `investigation_policy.set.mtd` | Read or write its metadata |
 
-Scope a named record using record-level `match`, as in this fictional `review-mail-triage` record:
+No preset role holds these, not even Owner: grant them explicitly. Reading the settings
+**as the engine enforces them** (`limacharlie investigate settings get`) needs only
+`investigation.get` and `insight.evt.get`.
 
-```yaml
-match:
-  run: template == "fictional-mail-triage"
-autonomy:
-  close.false_positive:
-    mode: suggest
-```
+## Managing it as code
 
-`template` is the plan's Hive record name. `match.run` and `match.target` belong to the record, never inside an action entry. Missing match attributes do not exempt an action from a potentially applicable restriction.
-
-## Emergency pause and resume
-
-To pause automatic actions organization-wide, create an enabled, unscoped `investigation_policy` record named `autonomy-manual-pause` with this `data`:
-
-```yaml
-autonomy:
-  "*":
-    mode: approve
-```
-
-The console's manual pause writes this same record. It caps every action class at `approve`, so nothing runs on its own while the record is enabled. Every action the policy would have run automatically waits in the approvals inbox for a person, and authorized explicit approvals still work. It combines with all other policies by the strictest rule: a class the policy already sets to `suggest` or `off` stays that way, and a class no `default` entry names keeps the platform's `suggest`. The pause never turns approvals into suggestions. Use `mode: off` in the applicable policy if you also need to suppress proposals. Existing confirmed effects require their normal undo or remediation procedure.
-
-Consoles before 2026-11-21 wrote `mode: suggest` in this record. The engine still treats that content as a pause, but the cap is stricter: actions that would have waited for approval are recorded as suggestions only. Replace it with `mode: approve` if you want approvals to stay possible during the pause.
-
-To resume, delete `autonomy-manual-pause` using normal Hive deletion permissions. The remaining policy determines what new actions may do. Removing the record does not release previously held suggestions into automatic execution.
-
-If Git Sync manages this hive, coordinate the pause with your repository and sync selection. An apply that deletes selected records absent from git could remove a console-created pause; a pause still present in git could be recreated after a console resume. Preserve the pause in the authoritative configuration until you deliberately resume. See [Git Sync](../../5-integrations/extensions/limacharlie/git-sync.md#investigation-policies-and-plans).
-
-## Engine performance
-
-The engine reports how it performed from its own records of runs and actions:
-
-```text
-GET /v1/investigate/{oid}/stats
-```
-
-Query parameters, all optional: `template` (a template name), `since` and `until` (RFC 3339 timestamps, applied to when each run was created). It needs `investigation.get`. The report covers a capped number of the most recent matching runs; `window.truncated` is `true` when more matched, so narrow the window or the template for a complete picture.
-
-It reports:
-
-- Runs by state and by verdict, and time to verdict.
-- AI cost and tokens, and search volume.
-- Per-operator call counts, timings and errors.
-- For each template and action type, how many actions were suggested, approved, denied, expired, executed automatically, failed, undone or held, and why they were held (`actions.by_template_class`).
-
-An abridged example, with only the action section filled in beyond the headline counts:
-
-```json
-{
-  "window": {"template": "phishing-triage", "runs_considered": 41, "truncated": false},
-  "runs": {"total": 41, "by_state": {"completed": 30, "decided": 8, "cancelled": 3},
-           "by_verdict": {"true_positive": 9, "false_positive": 28, "inconclusive": 2, "undecided": 2}},
-  "time_to_verdict_ms": {"p50": 410, "p95": 2300, "samples": 39},
-  "llm": {"usd": 0.31, "tokens": 91000},
-  "actions": {
-    "by_class_state": {"close.false_positive": {"proposed": 5, "confirmed": 7, "reverted": 1, "denied": 1, "expired": 1}},
-    "by_template_class": [
-      {
-        "template": "phishing-triage",
-        "action_class": "close.false_positive",
-        "total": 15,
-        "suggested": 3,
-        "approved": 3,
-        "denied": 1,
-        "expired": 1,
-        "auto_executed": 5,
-        "failed": 0,
-        "undone": 1,
-        "held": 2,
-        "held_by_reason": {"policy_no_approvers": 2},
-        "by_state": {"proposed": 5, "confirmed": 7, "reverted": 1, "denied": 1, "expired": 1}
-      }
-    ]
-  }
-}
-```
-
-The counters in each `by_template_class` row are not a partition of `total`: an approved action can later be undone, so it counts under both. In the example, 3 suggested and 2 held actions are the 5 still `proposed`, and the 3 approved and 5 automatic executions are the 7 `confirmed` plus the 1 that a person undid (`reverted`). `undone` counts only undos a person asked for; a lease that simply expires shows as `reverted` in `by_state` and is not an undo. `held` counts an action once however many reasons held it, and `held_by_reason` counts it once under each reason, using the hold reason as recorded (for example `policy_no_approvers`). `by_state` always adds up to `total`.
-
-From the command line:
-
-```bash
-limacharlie investigate stats --template phishing-triage --since 2026-11-01T00:00:00Z --until 2026-11-08T00:00:00Z --oid <OID> --output yaml
-```
-
-This is a report on how the engine performed: how much it ran, how fast, at what cost, and what became of the actions it proposed. It does not score whether its verdicts were right, and it does not change policy. Policy changes only when you edit the record.
-
-## Permissions and safe edits
-
-| Operation | Required existing permission |
-|-----------|------------------------------|
-| Read the engine performance report | `investigation.get` |
-| Read or edit policy records | `investigation_policy.get` / `investigation_policy.set` |
-| Delete a policy record, including resume after manual pause | `investigation_policy.del` |
-| Close or undo a case | `investigation.set` under the execution credential |
-| Close or undo mail disposition | `mailsec.set` under the execution credential |
-
-API keys can manage policy with the same grants; editing policy does not itself grant product execution permissions.
-
-Save through native Hive operations with the version you read (compare-and-swap). Merge only intended changes and preserve unrelated fields. If someone else edited the record, reload and reconcile; do not force-overwrite. Policy changes can tighten an existing action, but loosening policy cannot promote an old held action to automatic execution. Existing receipt-based undo remains available with normal permissions even if policy is now `off`.
-
-Validation rejects duplicate keys, multiple YAML documents, aliases/merge keys, null action fields, unknown action fields, wrong scalar types and out-of-range values. Durations use unsigned integer components with units `d`, `h`, `m`, `s`, `ms`, `us`, `ns`; `d` means 24 hours, so `7d` and `168h` are equivalent. Validation errors include `error_code`, `error` and a JSON Pointer `path` into record `data`.
-
-Legacy route-decision and autonomy mutation endpoints return `410 route_control_retired`; edit `investigation_policy` instead. Legacy `automation_routes` data grants no action authority. Review existing policy explicitly when changing versions rather than assuming previous route state will preserve the intended mode. If support is missing, controls are read-only with `upgrade_required`; a network outage is a separate error.
-
-## Manage policies from Git
-
-Store policy records under `hives.investigation_policy` and plans under `hives.investigation_plan`, each using the native `data` / `usr_mtd` wrapper. Enable and select the hives you intend to synchronize. Keep the complete existing record, including identity, intake and trigger settings, and user metadata. See [Git Sync investigation policies and plans](../../5-integrations/extensions/limacharlie/git-sync.md#investigation-policies-and-plans) for a fictional configuration example and conflict/pause handling.
+Write it with `limacharlie hive set --hive-name investigation_policy --key default`, Hive
+compare-and-swap, or
+[Git Sync](../../5-integrations/extensions/limacharlie/git-sync.md#investigation-engine-records).
+Keep the pause in the same source of truth: a sync overwrites a pause set elsewhere.

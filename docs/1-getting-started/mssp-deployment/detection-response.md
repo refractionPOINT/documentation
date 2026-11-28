@@ -114,7 +114,7 @@ flowchart LR
     RULE --> PB["Playbook<br/>(extension request)"]
     RULE --> AI["AI agent<br/>(start ai agent)"]
     RULE --> OUT["Tailored output<br/>(chat, webhook)"]
-    RULE --> IE["Investigation Engine<br/>(coming soon)"]
+    RULE --> IE["Investigation Engine<br/>(experimental)"]
     RULE -->|"destructive step"| FB["Feedback extension<br/>asks a person in chat"]
     FB --> HAND["Playbook or handler<br/>checks for approved"]
     HAND --> DEST["Destructive step"]
@@ -136,23 +136,14 @@ Response actions act on the sensor the event came from. For an event from a mail
 
 For destructive steps, put a person in the loop. The [Feedback extension](../../5-integrations/extensions/limacharlie/feedback.md) sends an approval request to chat and forwards the answer to a playbook or another handler. The handler receives every answer, a denial and the timeout choice included, so it must check for `approved` before it takes the destructive step. See [Human-in-the-loop response](../../5-integrations/tutorials/human-in-the-loop-response.md).
 
-## Investigation Engine (coming soon)
+## Investigation Engine (experimental)
 
-The Investigation Engine is not generally available yet, and most of its documentation is not published.
+The [Investigation Engine](../../investigation-engine/index.md) investigates a detection or a case by following a template: it fetches what the template lists, in parallel where it can, stops when one of the template's rules decides, writes the result to the case, and takes the template's actions. It is experimental and enabled per deployment.
 
-<!-- TODO(link): Investigation Engine -> ../../investigation-engine/index.md -->
+A D&R rule decides on what the event in hand carries; a template decides on what it had to fetch (who started the process, whether the hash is on your list, what else ran on the host). A D&R rule starts it with `start investigation`: an investigation starts without a person only that way.
 
-It investigates a detection or a case by following a plan template: it runs the plan's checks, in parallel where it can, stops when a rule in the template decides, and writes the result to the case. The rules your team writes make the decisions. AI answers focused questions inside the plan, and decides alone only where your policy allows it.
+**The template is the authority.** Each `act` entry says whether its action acts on its own (`approval: none`), always waits for a person (`required`) or waits under a condition (`{when: '"server" in sensor.tags'}`), how long it stays in effect (`lease`) and what happens then (`release`, `hold`, or check again and release on its own once the alert proves benign). No organization policy turns those on or off. A draft template only suggests; a person makes it active. AI answers focused questions inside the template and decides alone only where the template's `ai_may_decide` says so.
 
-What it may do is declared in an [`investigation_policy` record](../../7-administration/config-hive/investigation-policy.md). Each class of action has one of four modes:
+Three controls stay per tenant, in one [settings record](../../investigation-engine/settings.md): an emergency **pause** (nothing acts alone), a **circuit breaker** on automatic containments per hour, and the key runs execute as, whose platform permissions are the real limit on what a run can do. Templates and settings are records, so Git Sync rolls the same behaviour out to every tenant; see [Investigation Engine records](../../5-integrations/extensions/limacharlie/git-sync.md#investigation-engine-records).
 
-| Mode | Behaviour |
-| --- | --- |
-| `off` | The engine does not propose it |
-| `suggest` | The engine records what it would do and does nothing |
-| `approve` | The engine asks for approval and acts only on a yes before the deadline |
-| `auto` | The engine acts when the policy's limits, confidence, permissions and evidence checks pass; otherwise it holds the action as a suggestion |
-
-Nothing in the engine changes these modes on its own: no history, score or sampling promotes an action. The console's pause writes a policy record that caps every class at `approve`: investigations keep running, and nothing acts without a person's yes. Policies and plan templates are records, so Git Sync rolls them out; see [Investigation policies and plans](../../5-integrations/extensions/limacharlie/git-sync.md#investigation-policies-and-plans). An investigation starts without a person only from a D&R rule.
-
-For a new tenant, start with `close.false_positive` on `suggest` and every eradication action on `approve`, read what the engine would have done on real cases, then move the classes you trust to `auto`.
+For a new tenant, start with `approval: required` on containment and close entries, read what the engine did on real alerts, then change the entries you trust to a condition or to `none`.

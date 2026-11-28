@@ -88,11 +88,9 @@ Agents run on Claude with your Anthropic key by default, or on Claude through [A
 
 [Cost tracking](../../9-ai-sessions/cost-tracking.md) shows AI spend by model and trigger rule per tenant, and the **Fleet Billing → AI Spend** tab rolls savings up across your tenants.
 
-### Investigation Engine (coming soon)
+### Investigation Engine (experimental)
 
-The Investigation Engine runs plan templates on detections and cases, with AI answering focused questions inside the plan and autonomy declared in policy. See [Detection and response](detection-response.md#investigation-engine-coming-soon).
-
-<!-- TODO(link): Investigation Engine -> ../../investigation-engine/index.md -->
+The [Investigation Engine](../../investigation-engine/index.md) runs templates on detections and cases, with AI answering focused questions inside the template, AI agents as steps or as a hand-off for what the template could not decide, and every action's approval written in the template. An AI agent writes templates as drafts; a person promotes them. See [Detection and response](detection-response.md#investigation-engine-experimental) and [Build Templates with an AI Agent](../../investigation-engine/build-templates-with-ai.md).
 
 ## Turn repeated steps into playbooks
 

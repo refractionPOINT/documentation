@@ -43,6 +43,7 @@ Unlike most hive permissions, these have no per-record form: `acl.set.<scope>` g
 | sensor.list | List all sensors in organization |
 | sensor.get | View detailed sensor information |
 | sensor.task | Send commands and tasks to sensors |
+| sensor.task.read | Send only allowlisted read-only metadata commands to sensors (processes, connections, autoruns, services, file hashes); used by Investigation Engine live reads. Never part of a preset role. |
 | sensor.del | Delete sensors |
 | sensor.tag | Manage sensor tags and labels |
 
@@ -242,6 +243,30 @@ approval; they do not grant organization API permissions. See
 | cloudsensor.del | Delete cloud sensor configurations |
 | cloudsensor.get.mtd | View cloud sensor metadata only |
 | cloudsensor.set.mtd | Modify cloud sensor metadata only |
+
+### Investigation Engine
+
+See [Investigation Engine permissions](../investigation-engine/permissions.md) for what each permission allows and which combinations a task needs.
+
+No preset role holds any `investigation_plan.*` or `investigation_policy.*` permission, not even Owner; grant them explicitly.
+
+| Permission | Description |
+| --- | --- |
+| investigation.get | Read Investigation Engine runs, actions, templates, operators, the run queue and the settings as the engine enforces them (together with `insight.evt.get`) |
+| investigation.set | Start runs, waves and tests, cancel, compare and delete runs, flush the run queue, and decide actions (together with `insight.evt.get` and, to decide an action, that action class's own permission) |
+| investigation.del | Delete permission of the `investigation` family, shared with Cases (held by the Owner role) |
+| investigation.get.mtd | Metadata read permission of the `investigation` family, shared with Cases |
+| investigation.set.mtd | Metadata write permission of the `investigation` family, shared with Cases |
+| investigation\_plan.get | Read Investigation Engine plan templates |
+| investigation\_plan.set | Create and modify plan templates. |
+| investigation\_plan.del | Delete plan templates |
+| investigation\_plan.get.mtd | View plan template metadata only |
+| investigation\_plan.set.mtd | Modify plan template metadata only |
+| investigation\_policy.get | Read the Investigation Engine settings record |
+| investigation\_policy.set | Create and modify the settings record, including the pause and the identity runs execute as. The console also shows its Measure page only to holders of this permission. |
+| investigation\_policy.del | Delete the settings record |
+| investigation\_policy.get.mtd | View settings record metadata only |
+| investigation\_policy.set.mtd | Modify settings record metadata only |
 
 ### Playbooks
 

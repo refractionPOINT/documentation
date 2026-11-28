@@ -94,11 +94,10 @@ The table lists every product an MSSP is likely to deploy. Units only: the numbe
 | [EPP](../../5-integrations/extensions/limacharlie/epp.md) | Microsoft Defender status, logs and commands | Subscription; the extension writes its collection and D&R rules | No extension charge |
 | [AI Sessions and SOC Bots](../../9-ai-sessions/index.md) | AI agents that triage, investigate and operate the tenant | `ai_agent` records | Per minute of session runtime; the model's tokens are billed by your own AI provider |
 | [Python Playbooks](../../5-integrations/extensions/limacharlie/playbook.md) | Deterministic Python steps called by rules or agents | `playbook` records | Per second of execution time |
-| Investigation Engine (**Coming soon**) | Plan-driven investigations with autonomy you declare in policy | `investigation_policy`, `investigation_plan` records | Pricing is set at launch |
+| [Investigation Engine](../../investigation-engine/index.md) (**Experimental**) | Template-driven investigations that act as each template says, inside a per-tenant pause and circuit breaker | `investigation_plan`, `investigation_pack`, `investigation_policy` records | Pricing is set at launch |
 
 <!-- TODO(link): Host Posture -> ../../5-integrations/extensions/limacharlie/host-posture.md -->
 <!-- TODO(link): Deception -> ../../5-integrations/extensions/limacharlie/deception.md -->
-<!-- TODO(link): Investigation Engine -> ../../investigation-engine/index.md -->
 
 There is no separate charge for using the API, the CLI or the MCP server. Metered operations, such as searches, playbook runtime and AI session runtime, bill the same whichever interface starts them.
 

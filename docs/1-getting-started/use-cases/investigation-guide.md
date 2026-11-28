@@ -2,9 +2,9 @@
 
 This guide provides opinionated best practices for SOC analysts using LimaCharlie Investigations to document and encode security investigations. By following these conventions, you enable attack chain visualization, cross-investigation analysis, and consistent reporting.
 
-## Policy-controlled investigation actions
+## Investigation Engine actions
 
-For Investigation Engine actions, use an `investigation_policy` Hive record to choose `off`, `suggest`, `approve` or `auto`. Start in `suggest` to inspect what the engine would do without changing the product. The [Investigation Action Policies guide](../../7-administration/config-hive/investigation-policy.md) explains confidence and limits, emergency pause and resume, permissions, Git Sync management and the engine performance report (`limacharlie investigate stats`). Check the guide's version-support note before using the new controls.
+The [Investigation Engine](../../investigation-engine/index.md) does what each template's `act` entries say: every entry states whether its action acts on its own (`approval: none`), waits for a person (`approval: required`) or waits only under a condition, how long it stays in effect and what happens when that time is up. A draft template only suggests; a person makes it active. The organization-wide controls are in one [settings record](../../investigation-engine/settings.md): an emergency pause, a circuit breaker on automatic containments, and the key runs execute as. Start with `approval: required` on the actions you are not ready to let act alone, and read the [walkthrough](../../investigation-engine/walkthrough.md).
 
 ## Tag Format Specification
 

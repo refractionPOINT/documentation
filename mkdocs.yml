@@ -728,6 +728,25 @@ nav:
       - API Reference: cloud-security/api-reference.md
       - Automation & IaC: cloud-security/automation.md
 
+  - Investigation Engine:
+      - Overview: investigation-engine/index.md
+      - "Walkthrough: Empty Org to Automatic Isolation": investigation-engine/walkthrough.md
+      - Concepts: investigation-engine/concepts.md
+      - Plan Templates: investigation-engine/templates.md
+      - Actions, Approvals and Undo: investigation-engine/actions.md
+      - Settings: investigation-engine/settings.md
+      - The Run Queue: investigation-engine/run-queue.md
+      - Custom Code and AI Agents: investigation-engine/custom-code.md
+      - Automatic Starts: investigation-engine/automation.md
+      - How to Think About Templates: investigation-engine/how-to-think-about-templates.md
+      - Build Templates with an AI Agent: investigation-engine/build-templates-with-ai.md
+      - Permissions: investigation-engine/permissions.md
+      - API Reference: investigation-engine/api-reference.md
+      - Command Line Interface: investigation-engine/cli.md
+      - MCP Tools: investigation-engine/mcp.md
+      - Console: investigation-engine/console.md
+      - Troubleshooting: investigation-engine/troubleshooting.md
+
   - Apps:
       - Overview: apps/index.md
       - Creating & Managing Apps: apps/creating-and-managing-apps.md
