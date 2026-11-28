@@ -138,7 +138,63 @@ Sessions behave the same regardless of provider:
 - **Lifecycle**: hibernation, transparent resume, and [session forking](user-sessions.md) work the same everywhere.
 - **Usage and cost tracking**: usage rows carry the provider and model, so spend can be broken down per provider and per model. See [Cost Tracking](cost-tracking.md).
 
-A few capabilities are specific to Claude: plan mode, `bypassPermissions` (on other providers it is treated as `acceptEdits`, so tools outside `allowed_tools` still prompt), `task_budget_tokens`, Task subagents, and extended thinking. Sessions on other providers surface a clear notice when one of these is requested instead of silently ignoring it.
+- **Reasoning effort**: how long the model thinks before it answers can be set on every provider. See [Reasoning effort](#reasoning-effort) below.
+
+A few capabilities are specific to Claude: plan mode, `bypassPermissions` (on other providers it is treated as `acceptEdits`, so tools outside `allowed_tools` still prompt), `task_budget_tokens`, Task subagents, and showing the model's thinking in the transcript. Sessions on other providers surface a clear notice when one of these is requested instead of silently ignoring it.
+
+## Reasoning effort
+
+Reasoning effort sets how long the model thinks before it answers. Higher levels think longer. They do better on hard investigations, but they are slower and use more tokens on your AI provider's bill. Default lets the model choose.
+
+| Level | Value |
+|-------|-------|
+| Default | not set (omit the field) |
+| Low | `low` |
+| Medium | `medium` |
+| High | `high` |
+| Extra high | `xhigh` |
+| Max | `max` |
+
+Leave it unset to keep the model's own default, which is how every session behaved before the setting existed. Any other value is rejected with `400`.
+
+Where to set it:
+
+- On a [session profile](user-sessions.md#profile-options) (`effort`), used by every session started from that profile.
+- On a single user session, with `effort` on [`POST /v1/sessions`](api-reference.md#create-session) or `--effort` on [`limacharlie ai chat`](cli.md#limacharlie-ai-chat). This overrides the profile's level for that session.
+- On a [SOC bot](soc-bots.md#your-own-bots-and-groups), in its **Advanced configuration**.
+- On an API session, as `effort` inside the inline `profile` of `POST /v1/api/sessions`, or with `--effort` on [`limacharlie ai start-session`](cli.md#limacharlie-ai-start-session).
+
+Agent records in the `ai_agent` Hive and the `start ai agent` D&R action do not take a reasoning effort yet.
+
+The level is fixed for the session's life: a session resumed from hibernation keeps it. A [fork](api-reference.md#fork-session) takes its level from the same place as its model, which is the fork's profile for Claude sessions and the source session for other providers.
+
+### How each provider takes it
+
+| Provider | What the session sends | A level the model lacks |
+|----------|------------------------|-------------------------|
+| Anthropic Claude | The Claude Agent SDK's effort setting | Most current Claude models take all five levels. Some, such as Claude Sonnet 4.6 and Claude Opus 4.6, have no Extra high and use High instead. Claude 4.5 and earlier models (Claude Sonnet 4.5, Opus 4.5, Opus 4.1, Sonnet 4 and Opus 4) and Claude Haiku 4.5 take no effort setting, so they get nothing and keep their default. So do model IDs the runner does not recognize, such as Bedrock model IDs and dated Vertex model IDs. |
+| OpenAI and Azure OpenAI | `reasoning_effort` | When the model rejects the level, the session retries one level lower until the model accepts one. When the model takes no reasoning setting at all, or rejects every level, the session sends nothing and keeps the model's default. |
+| Google Gemini 3 and later | `thinking_level` | Gemini has no level above High, so Extra high and Max are sent as High. If the model rejects a level, the session steps down. |
+| Google Gemini 2.5 | `thinking_budget`, a token budget that grows with the level, with Max at the model's own ceiling | If the model rejects the budget, the session steps down. Other Gemini models get nothing and keep their default. |
+| OpenRouter | OpenRouter's `reasoning.effort` | OpenRouter maps the level to the upstream model's own setting, and drops it for models without one. Because OpenRouter accepts the request either way, the session reports the level it sent. |
+
+The rule on every provider is to step down, never fail: when the model does not support the chosen level, the session uses the nearest lower level it supports, and when the model has no reasoning setting at all, the session runs at the model's default. The session does not fail because of the level.
+
+### What the session reports
+
+When a session has a reasoning effort, it posts a note in its activity saying what was applied when it starts, and again after a resume. A session without one posts nothing.
+
+| `system` subtype | Fields in `data` | When |
+|------------------|------------------|------|
+| `effort_set` | `effort`, `model` | The level was sent as chosen. The message reads, for example, "Reasoning effort: High". |
+| `effort_adjusted` | `requested`, `effort`, `model`, `reason` | The model lacks the chosen level, so a lower one was sent, for example "Extra high reasoning effort isn't available on this model; using High." |
+| `effort_skipped` | `requested`, `model`, `reason` | The model takes no reasoning setting, or the provider refused every level, so nothing was sent and the model runs at its default. |
+
+On OpenAI, Azure OpenAI, OpenRouter and Gemini, the note usually arrives with the first answer, once the provider has accepted the request. The web application also shows a **Reasoning effort** line next to the model in the session details.
+
+### Cost
+
+Extra thinking is billed by your own AI provider, not by LimaCharlie: as output tokens on an API key, or against your plan's usage on a Claude subscription. The thinking tokens are counted in the session's token usage and cost, so `max_budget_usd` covers them. On SOC bots running on OpenAI, Azure OpenAI, OpenRouter or Gemini, High and above also raise the per-request output limit, so the model has room to think and still answer.
 
 ## Cost notes per provider
 
