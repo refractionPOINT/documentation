@@ -346,7 +346,9 @@ operator/policy disposition).
     - `cloud_resource.created` / `.updated` / `.deleted` — inventory-level
       change events, gated by the [`emission`
       policy](configuration.md#emission-the-event-feed)'s `resource_events`
-      flag (**off by default**).
+      flag (**off by default**). `.deleted` fires when a resource has been
+      missing from two consecutive sweeps (see
+      [When a deleted resource disappears](providers.md#when-a-deleted-resource-disappears)).
     - `cloud_query.match` / `.resolved` / `.overbudget` — the
       [scheduled-query](configuration.md#scheduled-queries-any-saved-query-as-a-detection-source)
       feed: a saved graph query becomes a detection source, emitting per anchor

@@ -288,3 +288,51 @@ changes. For sub-sweep freshness on GCP, `feed_subscription` names a Pub/Sub
 subscription carrying a cloud change feed, so targeted re-sweeps reflect changes
 in seconds; the periodic sweep remains the safety net. See
 [Configuration](configuration.md#cloudsec_provider) for these shared fields.
+
+### When a deleted resource disappears
+
+This applies to every connector: cloud resources, identity-provider users and
+groups, SaaS, source-control and AI assets, and LimaCharlie resources alike.
+It does not apply to results that are pushed rather than listed: Code Security
+scan results, Host Posture checks and vulnerabilities reported by the
+LimaCharlie sensor are replaced as soon as a new result arrives, as before.
+Provider listings are sometimes briefly incomplete: an API page can omit a
+resource for a moment, or answer an empty list once. So that one such read does
+not remove a resource, close its findings and bring them back on the next
+sweep, a resource is removed only after it is missing from **two consecutive
+sweeps**:
+
+- The first sweep that no longer sees a resource keeps it and records the miss.
+  It emits no `cloud_resource.deleted`, and the resource's findings stay as
+  they are.
+- The next sweep that also misses it removes it from inventory and the graph,
+  emits `cloud_resource.deleted`, and closes its findings.
+- A sweep that sees the resource again in between cancels the recorded miss.
+  So does any read that sees it after the miss, even a partial one: the next
+  complete miss then records a fresh miss.
+- Only a complete read records a miss. A sweep that could not read a service,
+  region or account (a permission gap, a throttled or failed call, an
+  organization policy that blocks the read) leaves that part's resources as they
+  were: it records no miss for them.
+- Resources matched by a [`collection` exclusion](configuration.md#exclusions-the-escape-hatch)
+  are the exception: a partial or failed pass still counts toward their removal.
+- A sighting counts once the sweep has saved what it read for that part. If the
+  sweep fails later, before it finishes, the next sweep that misses the
+  resource still keeps it and records a fresh miss instead of removing it.
+
+In practice, a resource you delete in the cloud usually leaves Cloud Security
+inventory **one sweep later** than its deletion is first observed, and its
+findings close one sweep later. A targeted refresh (for example after a GCP change-feed event)
+counts as a sweep for the account it reads: it records the first miss, and the
+resource is removed by the next complete read of that account (the next
+targeted refresh of it, or the next periodic sweep).
+
+The two-sweep rule covers sweeps that run one at a time. Two connections that
+cover the same account, or two sweeps of the same account that run at the same
+time, may remove a resource on its first miss, as if the rule did not apply.
+They never remove a resource that a sweep did not miss.
+
+On a free-tier organization, AWS resources are removed on their first miss.
+The free tier counts the resources Cloud Security stores, and a resource kept
+for one more sweep would still count. Replacing a resource at the free-tier
+limit would then be refused on every sweep.
