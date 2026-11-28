@@ -125,7 +125,10 @@ rule always use a secret identity.
 ### Check again: the automatic rollback of a false positive
 
 At the end of the lease the engine runs a [check](templates.md#checks-templates-other-templates-call)
-(a `kind: check` template). If it now says benign, the action is undone. Otherwise the
+(a `kind: check` template). The check, and any check it calls, must be `status: active`: an
+active template whose lease-end check is a draft does not run (`check_not_active`), so a draft
+never decides whether a containment is released. The check runs as it was when the run started.
+ If it now says benign, the action is undone. Otherwise the
 lease is extended, up to a maximum you state.
 
 ```yaml
@@ -339,7 +342,12 @@ the person or key):
 | `ie_agent_answered` | an AI agent's answer (never the answer itself) |
 | `ie_queue_flushed` | a [queue flush](run-queue.md#flush) |
 
-- A refused decision is recorded `outcome: refused` with its error code.
+- A refused decision is recorded `outcome: refused` with its error code. So is an approval the
+  engine took and then settled without executing it, with the reason the action records:
+  `caller_token_expiry` or `caller_token_assumed_expiry` (the caller's token cannot see the
+  action through; the action is `failed`) or `approval_timeout` (the approval came after the
+  decision deadline; the action is `expired`). The entry says what happened, not what was
+  requested.
 - A decision that changes nothing (undo of what is already undone, a retried start) records
   nothing.
 - What the engine does on its own (an action that acts alone, a release at lease end, an
@@ -347,7 +355,9 @@ the person or key):
   `history`, the run's log and the stats.
 - No entry carries a token, a note, an input value or an answer.
 - An entry is written in the same transaction as the decision, then delivered; receivers
-  can deduplicate on its `event_id`.
+  can deduplicate on its `event_id`. An entry the audit log does not take is tried again, on
+  any engine server, after a growing delay (30 seconds at first, at most every 15 minutes).
+  The decision's answer never waits for the audit log.
 
 Settings, pause and template edits are Hive writes, audited by the Hive.
 

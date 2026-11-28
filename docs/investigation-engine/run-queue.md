@@ -13,7 +13,8 @@ clear what waits.
 
 1. A D&R rule (or a person, or the API) starts a run. The start is recorded in the queue in
    one transaction and answered at once with `queued: true`. From that moment the platform
-   has the alert.
+   has the alert. If the queue cannot accept the start within about 2 seconds, the call is
+   answered `unavailable` ("busy, retry"): see [When the engine is busy](#when-the-engine-is-busy).
 2. If the alert belongs to a run that is already open, it **joins** that run instead (see
    [Coalescing](#coalescing)).
 3. A replica with a free slot claims the start, pins the template as it is **now** (a
@@ -28,6 +29,28 @@ when the run starts, not when it was queued.
 
 Waves, template tests and "check again" runs are not queued.
 
+## When the engine is busy
+
+The start call answers within about 2 seconds of store work. If the queue has not accepted
+the start in that time, or the engine server is already handling as many start calls as it
+bounds, the call is answered `unavailable` (HTTP 503, "busy, retry"). This is about the
+call, not the run: nothing was queued, so a D&R rule's `start investigation` action keeps the
+start and sends it again for up to 15 minutes, and an API caller should retry.
+
+- **Retry with the same `idempotency_key`.** If the first attempt did commit after all, the
+  retry is answered by its run (`joined_by: idempotency_key`), so there is exactly one run.
+  A start with no `idempotency_key` is not answered `unavailable` for the 2 seconds alone
+  (a retry could not find its run): it waits for its enqueue's outcome.
+- **A start that was accepted is never answered `unavailable`.** Past the 2 seconds it is
+  answered with the run (`queued: true` until it starts) and goes on in the background. A start
+  refused for good after it was accepted (its template became a draft, its identity is
+  not allowed) answers that refusal when it comes within the 2 seconds, and otherwise shows
+  it on the run (`state: failed`, `error_code`).
+- A `wait_seconds` is honoured when the run goes live within the 2 seconds; one that starts
+  later is answered queued.
+- A start that a server could not start right away is given back to the queue and can be
+  claimed again at once by any server.
+
 ## Coalescing
 
 A template says how its alerts group into runs with the top-level key `coalesce`:
@@ -37,12 +60,22 @@ A template says how its alerts group into runs with the top-level key `coalesce`
 | `sensor` (the default) | Alerts on the same sensor, while a run of the same template is open for it, join that run. |
 | `off` | One run per alert. |
 
-A joined alert is added to the run's inputs and its case; it never changes the alert the run
-is about. A queued run receives the alerts that joined it when it starts, oldest first; a
+**The alert a run started on is its subject for its whole life.** A joined alert is an extra
+alert of the run: it is counted (`coalesced_alerts`), listed in the run's `detections` and
+attached to its case. It is **not an input**: no step reads it, so it never changes what the
+run investigates (its `detection_id`, the detection's document and event, its `entity_id`,
+`question`, `case_id` and `alert_time` stay those of the alert that started it) or when
+the run says it started. This holds whether the alert joined while the run waited or while
+it ran. A queued run receives the alerts that joined it when it starts, oldest first; a
 running one receives each within about a second. Once a run's investigation ended (it
 decided, even if an action still waits for a person), it takes no more alerts: the next
-alert on that sensor starts one new run, which the later ones join. The first 1,000 alerts
-of a run are fed to it; later ones are counted (`coalesced_alerts`) but not fed.
+alert on that sensor starts one new run, which the later ones join. About the first 1,000
+alerts of a run are listed with their documents; later ones are counted (`coalesced_alerts`)
+and not listed. The bound is about 1,000, not exact: each engine server counts it from its
+own reads, so alerts that arrive on several servers in the same second can pass it by a few.
+
+Evidence you add yourself to a running run (`add_run_inputs`, below) is different: it is the
+starter's own, and the steps read it, except for what the run started on.
 
 A D&R rule's `coalesce_key` (default `sid:<sensor id>`) says which alerts belong together;
 an alert joins only an open run of the same template. A template that says `coalesce: off`
@@ -69,9 +102,9 @@ Both are in the [settings record](settings.md#limits):
 | `limits.max_parallel_runs` | 100 (1 to 2000) | How many runs of the organization execute at once, region-wide. The rest wait. |
 | `limits.runs_per_hour` | none | How many runs may start in a UTC clock hour. Above it a new start is not queued: it is recorded as a terminal **`capped`** run (its alert shows as not investigated, it is not billed, kept 7 days). Starts already queued wait for the next hour. |
 
-At most 5 times `max_parallel_runs` (and never more than 2,000) of an organization's runs
+About 5 times `max_parallel_runs` (and never more than 2,000) of an organization's runs
 can be parked on AI agents at once; past that a run waits for its agent while holding its
-slot. A parked run that resumes counts again without waiting, so the organization can run
+slot. The bound is approximate: parks that commit in the same instant can pass it by a few. A parked run that resumes counts again without waiting, so the organization can run
 above its limit by at most the runs that resumed.
 
 ## The queue display
@@ -122,11 +155,18 @@ limacharlie investigate queue flush --rule fictional-noisy-rule --note "rule fix
 - Only starts queued before the flush began are taken; alerts that arrive during it queue
   as usual. Running runs are never touched (cancel them instead). **A flush cannot be
   undone.**
+- A run that took an alert after the flush began is not the flush's: it runs with that alert
+  and the ones it already had. Every engine server learns of a flush within about a second,
+  so when a sensor keeps alerting as the flush begins, its queued run usually takes one of
+  those alerts and runs instead of being flushed. Nothing is lost and nothing is cancelled
+  twice either way.
 - The command shows how many starts it will take and asks first (`--yes` skips the
   question). The answer has `flush_id`, `flushed` and `done`; a large flush goes on in the
   engine and the queue display shows its progress.
-- The same flush repeated within a minute (a retry) is answered by the first one with
-  `replayed: true`: it flushed nothing itself.
+- The same flush repeated within a minute (a retry: same scope written the same way, same
+  note and caller) is answered by the first one with `replayed: true`: it flushed nothing
+  itself. A rule named `foo` after `general.foo` (or the reverse) is a new flush, not a
+  replay.
 - Every flush is in the organization's audit log (`ie_queue_flushed`), filed under who
   flushed.
 

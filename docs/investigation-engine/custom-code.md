@@ -235,7 +235,8 @@ it must fit the run's budget (`agent_wait_exceeds_budget`).
 - **A rule that reads it is AI-assisted**, like one that reads an `ask_ai` step: it decides
   only on the sides the template's `ai_may_decide` grants, otherwise it recommends.
 - **Unknown, never false.** No answer by the deadline is `unknown(timeout)`, a session that
-  ended without one `unknown(agent_ended)`, a start refused `unknown(agent_unavailable)`, a
+  ended without one `unknown(agent_ended)`, a start refused `unknown(agent_unavailable)`, the run's key refused when the engine reads the agent's record (it lacks `ai_agent.get`, or its credential was not accepted)
+  `unknown(agent_permission_denied)`: grant the permission to the key the run uses, the agent is not missing, a
   budget that does not fit `unknown(agent_budget)`.
 - **Money.** Each step reserves its `budget` from the run's `budgets.max_agent_usd_per_run`
   (default 5.00) before its session starts. What the session really cost shows in the run's

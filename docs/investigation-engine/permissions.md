@@ -91,15 +91,17 @@ enabled `investigation_policy/default` record. Setting that tag needs
 `investigation_policy.*` permission**: it could turn the gate off and make its own
 drafts active. If the settings record cannot be read, the write is refused.
 
-!!! warning "Checks are not behind this gate"
-    A [check](templates.md#checks-templates-other-templates-call) runs as it is stored,
-    whatever its `status` (an active template that calls a draft check only gets the warning
-    `check_is_draft`). So a key holding `investigation_plan.set` can change what an
-    **active** template decides through a check it calls: an approval condition that reads
-    the check, or a "check again" that releases a containment. Treat `investigation_plan.set`
-    on a key as the power to change active templates' checks, review check edits like edits
-    of active templates, and keep the checks your active templates call in the same
-    reviewed source (Git) as the templates.
+!!! note "Checks pass the same gate"
+    A [check](templates.md#checks-templates-other-templates-call) decides for the template
+    that calls it (whether an action needs approval, whether a containment is released at
+    lease end). So promoting a check to `status: active`, and editing an active check, need
+    the same activation permission as activating a template: a person, or an API key only
+    when the settings record carries `allow-api-key-promotion`. An active template runs only
+    active checks: when a check it calls (directly, through another check, or to run again at
+    lease end) is a draft, the template does not run (`check_not_active`, see
+    [Checks](templates.md#checks-templates-other-templates-call)). An API key may still demote
+    an active check to a draft, which stops its active callers until a person promotes it
+    again.
 
 ### Naming a secret as the run identity
 

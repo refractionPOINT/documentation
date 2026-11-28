@@ -461,14 +461,27 @@ waits). In a check, "escalated" means the condition the check tests holds.
 - **One call per element**: `each: '$message.links'`, `as: link`, `key: '$link.href'`,
   `max_items` (1 to 25, required). The fact then has `items`, `any_malicious`, `all_benign`,
   counts and `first_malicious`.
+- **An active template runs only active checks.** Activating a template is the permission
+  to act, and a check decides for its caller, so every check in an active template's closure
+  (the checks it calls, the checks they call, and the check an `act` entry runs again at
+  lease end) must itself be `status: active`. When one is a draft, the template does not run:
+  a start that names it is refused with `check_not_active`, naming the check, and
+  `applies_to` selection skips it (the trigger goes to the next matching active template, or
+  to none), the same as a check that is missing or disabled (`check_missing`). An active
+  check that calls a draft check is itself refused. Nothing is evaluated and nothing acts. A
+  run already started keeps the checks it started with. A draft template may call a draft
+  check directly: a person tests it and nothing acts.
+- **Promoting a check is gated like activating a template.** Setting a check to
+  `status: active`, and editing an active check, need a person (or an API key only when the
+  settings record carries `allow-api-key-promotion`, see
+  [Permissions](permissions.md#active-templates-can-only-be-written-by-a-person)). An API key
+  may still demote an active check to a draft: its active callers then stop running until a
+  person promotes it again. Promote the checks before, or in the same push as, the template
+  that calls them.
 - **Versions.** A call names a check by record name: a saved check takes effect on the next
-  run of every caller. A check's `status` does not gate it: saving a check, even as a draft,
-  changes what the **active** templates that call it decide (validation warns
-  `check_is_draft`). So a key holding `investigation_plan.set`, even one that may only write
-  drafts, can change active templates through the checks they call: review a check edit like
-  an edit of an active template. `validate` with the check's name returns `used_by`, each caller
-  validated against your draft. At most 3 nested calls, 256 steps and 50 check instances per
-  run.
+  run of every caller. `validate` with the check's name returns `used_by`, each caller
+  validated against your draft; `as_active` refuses to preview a draft that would not run
+  once active. At most 3 nested calls, 256 steps and 50 check instances per run.
 - A check is never started on its own (`check_not_startable`). Test it with `params`
   samples.
 

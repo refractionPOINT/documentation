@@ -24,6 +24,7 @@ Every refusal and error of the Investigation Engine, and what to do about it.
 |---|---|---|---|
 | `no_template_applies` | `bad_request` (400) | No **active** template's `applies_to` matches the trigger. | Activate one whose `applies_to` covers the alert, or name a template. See [How templates are chosen](templates.md#how-templates-are-chosen). |
 | `unknown_template` | `bad_request` (400) | The named template does not exist, or its record does not load. | Fix the name, or the record (`templates list --oid ...` with the API's `stored=true` shows `load_error`). |
+| `check_not_active` | `bad_request` (400) | An active template calls a check (or runs one again at lease end) that is a draft, directly or through another check. The template does not run: a start that names it is refused, and selection skips it. | Have a person set `status: active` on the check (gated like activating a template), or set the template back to draft. |
 | `check_missing`, `check_not_callable`, `check_invalid`, `check_cycle`, `check_depth_limit`, `check_size_limit`, `check_not_startable` | `bad_request` (400) | A check the template calls is gone or does not validate, or a check was named as the template. | Fix the check, then validate the caller. |
 | `inline_plan_not_allowed` | `bad_request` (400) | A start without a person brought an inline plan. | Name a stored template. |
 | `no_policy_identity` | `bad_request` (400) | The settings name no secret identity for a run without a person. | Set `identity.default` in the [settings](settings.md#identity). |
@@ -37,7 +38,9 @@ Every refusal and error of the Investigation Engine, and what to do about it.
 
 A start is never refused for the organization's load: above `limits.max_parallel_runs` it
 waits in the [run queue](run-queue.md). Only an hourly cap you set (`limits.runs_per_hour`)
-records starts above it as `capped`, not investigated.
+records starts above it as `capped`, not investigated. A start call can still be answered
+`unavailable` ("busy, retry") when the queue itself is slow to accept it: that is about the
+call, and nothing was queued (see [When the engine is busy](run-queue.md#when-the-engine-is-busy)).
 
 ## Error codes
 
@@ -51,7 +54,7 @@ records starts above it as `capped`, not investigated.
 | `invalid_answer` | 400 | An AI agent answer that does not match the step's `returns`; `fields` says which. | Fix and send again before the deadline. |
 | `too_many_runs` | 429 | A wave or a test above the organization's parallel limit. | Retry later. |
 | `not_implemented` | 501 | The feature is not available on this deployment (for example the run queue or agent answers on an engine that predates them). | Nothing to fix on your side. |
-| `unavailable` | 503 | Storage or a dependency did not answer. | Retry. |
+| `unavailable` | 503 | Storage or a dependency did not answer, or the start call is busy: the queue did not accept the start within about 2 seconds, or the engine server is handling as many starts as it bounds (retryable; nothing was queued). | Retry, with the same `idempotency_key` for a start: if the first attempt did commit, the retry is answered by its run. A D&R rule's start does this by itself. See [When the engine is busy](run-queue.md#when-the-engine-is-busy). |
 | `policy_unknown_field`, `policy_type`, `policy_range`, `policy_enum`, `policy_null`, `policy_record_name`, ... | 400 | A settings field (in the record, or a run's `overrides`) is not valid; `path` names it. A removed field's message names what replaced it. | Fix the field. See the [settings record](../7-administration/config-hive/investigation-policy.md). |
 
 Failures of the gateway itself, with no `error_code`:
@@ -135,7 +138,8 @@ A rule that uses `start investigation` cannot be saved where the engine is not e
 | `ask_ai` steps or the review `unknown(llm_agent_not_found)` | No AI agent: the settings' `llm.agent` names none and the deployment has no default. | Create an `ai_agent` record and set `llm.agent`. |
 | A Playbook step `unknown(playbook_identity_disabled)` or `unknown(playbook_unsupported)` | The Playbook extension on this deployment does not run Playbooks as the engine's identity yet. Nothing ran. | Nothing in the template to fix. |
 | A Playbook step `unknown(not_read_only)` | The record no longer says `read_only: true`, or changed. | Fix the record, or move the Playbook to `act`. |
-| An AI agent step `unknown(agent_unavailable)` | The session could not start: no record, the run key lacks `ai_agent.get`, no credentials. | Grant `ai_agent.get`; check the record. |
+| An AI agent step `unknown(agent_unavailable)` | The session could not start: no record, or no credentials. | Check the record and the agent's credentials. |
+| An AI agent step `unknown(agent_permission_denied)` | The run's key was refused when the engine read the agent's record: it lacks `ai_agent.get`, or its credential was not accepted. The agent is not missing. | Grant `ai_agent.get` to the key the run uses; check the key is valid. |
 | An AI agent step `unknown(timeout)` | No answer by the step's deadline. | Check that the session can answer (`investigate_answer` MCP tool, or a CLI with `investigate answer`). |
 | An AI agent step `unknown(agent_depth)` | The run was started from an agent's session or with an agent's key: such a run asks no agent. | Nothing: this is the loop guard. |
 | Steps `skipped` (`only_if_false`, `condition_unknown`, `dependency_skipped`) | A step's `only_if` was false, or a step it reads failed. | Fix the first step that failed; its `reason` says why. |

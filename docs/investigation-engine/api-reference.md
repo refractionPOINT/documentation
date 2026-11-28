@@ -56,7 +56,7 @@ Permission shorthand: **read** is `investigation.get` + `insight.evt.get`; **wri
 | `GET /runs/{id}/case` | read | The case document the run wrote, with `case_error` when it could not. |
 | `GET /runs/{id}/trace` | read | An anonymized trace. |
 | `GET /runs/{id}/labels`, `POST /runs/{id}/labels` | read, write | People's labels on a run (`benign`, `threat`, `disputed`, `unlabeled`, with a `revision`). Stored and read back; no decision reads them. |
-| `POST /runs/{id}/inputs` | write | Add `inputs` or a `detection_id` to a running run. Only its starter may. |
+| `POST /runs/{id}/inputs` | write | Add `inputs` or a `detection_id` to a running run. Only its starter may. The `detection_id` adds a detection to the run (listed, on its case); it never becomes the `detection_id` the steps read. An input named `detection_id`, `entity_id`, `question`, `case_id` or `alert_time` is refused (`bad_request`): the run's subject is the alert it started on. |
 | `POST /runs/{id}/cancel` | write | Cancel. `revert_leases: true` also undoes its actions in effect that you may undo. |
 | `POST /runs/{id}/compare` | write | Replay the run's recorded answers under an edited template, offline: no operator call, nothing written. |
 | `POST /compare` | write | The same against up to 50 finished runs (`run_ids`, or `last: {template, limit}`). |
@@ -131,6 +131,23 @@ The answer is `{"run": {...}, "queued": true, "joined": false}`. A run, abbrevia
   "started_by": {"identity": "trigger:dr-rule", "actor": "dr-rule:general.banned-binary-exec"}
 }
 ```
+
+`get_run` also shows the run's AI agent requests as `agent_waits` (absent when the template has no
+`ai_agent` step, and on a list row), so a console can say "waiting for the agent until ...":
+
+```json
+"agent_waits": [{"step": "triage", "agent": "host-triage", "request_id": "rq...", "state": "waiting",
+                 "session_id": "...", "requested_at": "2026-11-27T12:00:03Z", "deadline": "2026-11-27T12:10:03Z"}]
+```
+
+- `state` is `waiting`, `answered`, `expired`, `ended`, `refused` or `cancelled`. An `expired`
+  request is `unknown(timeout)` for its step, an `ended` one `unknown(agent_ended)`.
+- `requested_at` is when the request was recorded; `deadline` is when it expires with no answer
+  (never later than the run's own wall budget). Treat a missing `deadline` as "not known yet".
+- `ended_at` appears once it ended, `session_id` once the session started, and `reason` on a
+  `refused` request says why no session started: `input_too_large`, `agent_unavailable`,
+  `not_found`, `acl_restricted`, `not_read_only` or `agent_permission_denied`.
+- One entry per step, ordered by step. The prompt, the answer and the token are never in it.
 
 A `conflict` verdict names both rules (`"conflict": {"escalate": "...", "close": "..."}`).
 `also_held` and `contradicted_by` are set only after a decision. Wait for `case_final` when
@@ -208,6 +225,31 @@ actions per template, and three per-template lists:
   drafts proposed;
 - `deciding_rules[]`: how many runs each rule decided;
 - `missing_reasons[]`: which step's evidence was missing, and why, how often.
+
+It also has a `queue` object, always present and made of numbers only: what the
+[run queue](run-queue.md) did with the window's runs.
+
+```json
+"queue": {"started": 812, "fast_path": 640, "claimed": 172, "fast_path_share": 0.788,
+          "wait_ms": {"p50": 40, "p95": 21000, "samples": 812},
+          "waiting": 12, "flushed": 1200, "capped": 3, "requeued": 5, "requeues": 6,
+          "coalesced_alerts": 4410, "legacy_runs": 0}
+```
+
+- `started` runs left the queue and started: `fast_path` of them on their own enqueue (the
+  organization was idle), `claimed` through a claim. `fast_path_share` is `fast_path` over the
+  two (`null` when none).
+- `wait_ms` is the `p50` and `p95` of the queue wait (accepted to started) over the runs that
+  have one, and `samples`.
+- `waiting` runs are still queued or being claimed. `flushed` and `capped` are starts that never
+  ran. `requeued` runs were given back to the queue at least once; `requeues` counts the times.
+- `coalesced_alerts` counts the alerts that joined a run of the window instead of starting their
+  own.
+- `legacy_runs` are runs recorded before these numbers existed: they count everywhere else in the
+  report, not here. A run that started moments ago can still count as `waiting` until its record
+  is written again.
+
+What waits right now is `GET /queue`; the hour's counters are in its `hour` object.
 
 The report says what the engine did. It never scores whether an outcome was right, and it
 changes nothing.

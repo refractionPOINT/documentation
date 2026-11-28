@@ -82,7 +82,9 @@ and for a start that never ran, `flushed` and `capped`. `phase` says where a run
 ### Coalescing and idempotency
 
 Alerts on the same sensor while a run of the same template is open join that run
-(`coalesce: sensor`, the default; `off` gives one run per alert). A repeated start with the
+as extra alerts (`coalesce: sensor`, the default; `off` gives one run per alert). The run keeps
+investigating the alert it started on: a joined alert is counted and attached to the case,
+and no step reads it. A repeated start with the
 same idempotency key returns the run it already has. A D&R rule starts at most one run per
 detection and rule.
 

@@ -52,7 +52,8 @@ respond:
   two runs, each with its own template and inputs.
 - **Alerts with the same `coalesce_key` join the open run** instead of starting
   another. The default, `sid:<sensor id>`, makes a burst of alerts on one host one
-  investigation. A key built from a field some events lack renders the same text for
+  investigation (the run is about the first alert; the others are counted and attached to
+  its case, and no step reads them). A key built from a field some events lack renders the same text for
   all of them and joins everything into one run.
 - The trigger carries `source: dr-rule`, `rule: general.<rule record name>`, the
   detection's category and priority and the rule's tags; `applies_to` matches on them.

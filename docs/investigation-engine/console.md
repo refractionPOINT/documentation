@@ -35,7 +35,8 @@ A run's page shows:
   missing;
 - the evidence: each step a rule or the review read, with its sentence;
 - how it ran: every step with its status, reason, timing and cost, the steps it skipped or
-  cancelled, Playbook and AI agent steps, and a hand-off with the agent's proposal;
+  cancelled, Playbook and AI agent steps (a step waiting for its agent shows the request's
+  state and the deadline it expires at), and a hand-off with the agent's proposal;
 - its actions, each with how it is decided (acts on its own, after a person approves, or
   on a condition), why it waits, its lease and what happens at its end, its "check again"
   history and its buttons;
