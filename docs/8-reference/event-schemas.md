@@ -150,7 +150,7 @@ The `routing` object contains **metadata** about the event - information about w
 | `sid` | string (UUID) | Sensor ID - uniquely identifies the endpoint | Host-based correlation, sensor management |
 | `event_type` | string | Type of event (e.g., `NEW_PROCESS`, `DNS_REQUEST`) | Event filtering in D&R rules, LCQL queries |
 | `event_time` | integer | Unix timestamp in milliseconds | Timeline analysis, temporal correlation |
-| `event_id` | string (UUID) | Unique identifier for this specific event | Deduplication, event tracking |
+| `event_id` | string (UUID) | Unique identifier for this specific event. An event a sensor sends again under [durable telemetry delivery](../2-sensors-deployment/endpoint-agent/durable-delivery.md) gets a new `event_id`, so it does not identify duplicates of that kind | Event tracking |
 | `hostname` | string | Hostname of the sensor | Host-based investigations |
 | `iid` | string (UUID) | Installation Key ID used to install the sensor | Deployment tracking, sensor grouping |
 | `did` | string (UUID) | Device ID - hardware identifier | Device tracking across reinstalls |
@@ -183,6 +183,7 @@ The `routing` object contains **metadata** about the event - information about w
 | Field | Type | Description | Use Cases |
 |-------|------|-------------|-----------|
 | `tags` | array[string] | Sensor tags applied at event time | Tag-based filtering, dynamic grouping |
+| `replayed` | boolean (optional) | `true` on an event a sensor sent again under [durable telemetry delivery](../2-sensors-deployment/endpoint-agent/durable-delivery.md); absent otherwise | Excluding or counting repeated events |
 
 ### The `event` Object
 
