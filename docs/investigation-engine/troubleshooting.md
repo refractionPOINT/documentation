@@ -175,6 +175,7 @@ A rule that uses `start investigation` cannot be saved where the engine is not e
 | `missing_approval` | An `act` entry has no `approval`. | Add `approval: none`, `required` or `{when: ...}`. |
 | `act_class_renamed` | An `act` entry says `class`. | Rename it `do` and add `approval`. |
 | `missing_lease`, `missing_on_lease_end`, `lease_not_allowed` | A leased action without its lease, or a lease on an action that holds none. | See [Leases](actions.md#leases-and-what-happens-when-they-end). |
+| `check_not_active` | An active template calls a check (or runs one again at lease end) that is a draft, directly or through another check. It is an error: the template does not run. | Have a person set `status: active` on the check, or set the template back to draft. |
 | `bad_on_lease_end`, `bad_lease_max`, `lease_check_not_check` | A malformed "check again". | `check`, `max` and `at_max` are required; `check` names a `kind: check` template. |
 | `bad_undo`, `action_not_supported`, `unknown_action_class` | An `undo` on a built-in action, or an action that does not exist. | See [What an action can do](actions.md#what-an-action-can-do). |
 | `playbook_not_read_only`, `playbook_sdk_version`, `agent_not_read_only` | A step's Playbook or agent record is not marked read-only, or the Playbook is not SDK v5. | Fix the record, or call it from `act`. |
