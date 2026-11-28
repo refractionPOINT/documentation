@@ -431,8 +431,8 @@ Only the first is fixed by adding a permission.
 
 **Current limitation.** In an account locked to some regions, a resource
 deleted in an allowed region is not removed from the inventory yet. It stays as
-last seen while the lock is in place. Removal works as before once the lock is
-lifted.
+last seen while the lock is in place. Once the lock is lifted, removal follows
+[the two-sweep rule](../providers.md#when-a-deleted-resource-disappears).
 
 ### Account-wide reads
 
