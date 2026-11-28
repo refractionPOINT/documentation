@@ -42,7 +42,7 @@ by entry, once you have read what the template does.
 | `cloud-exposure-finding` | `cloud-exposure-finding` | none | close |
 | `code-finding` | `code-security-finding` | none | close |
 | `appcontrol` | the Application Control policy categories | detection | close |
-| `payload-reached-landing` | a check (`kind: check`) the email templates call | | |
+| `payload-reached-landing` | a check (`kind: check`) the email templates call; installed as a draft like the rest, and it must be made active before the email templates that call it can run | | |
 
 ```bash
 limacharlie investigate kit --section library --oid "$OID"      # read them

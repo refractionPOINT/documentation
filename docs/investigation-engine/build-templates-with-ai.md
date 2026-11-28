@@ -23,11 +23,11 @@ comes from an API key (unless the organization opted out; see
 [Permissions](permissions.md#active-templates-can-only-be-written-by-a-person)).
 
 The agent can, however, save a
-[check](templates.md#checks-templates-other-templates-call), and an active template that calls
-a check runs it as stored, draft or not: see the warning in
-[Permissions](permissions.md#active-templates-can-only-be-written-by-a-person). Ask the agent
-to save changed checks under a new name, and review them before an active template calls
-them.
+[check](templates.md#checks-templates-other-templates-call), as a draft. An active template
+runs only active checks, so a draft check the agent saved never decides for one (the template
+does not run, `check_not_active`), and promoting a check needs a person, like activating a
+template: see [Permissions](permissions.md#active-templates-can-only-be-written-by-a-person).
+Review the agent's checks before you promote them.
 
 ## Set up the agent
 
